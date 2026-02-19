@@ -552,12 +552,29 @@
       z-index: 1;
     }
 
-    .hero-text h1 {
+    .hero-text h1,
+    .hero-h1-seo {
       font-size: clamp(52px, 6vw, 84px);
       line-height: 1.05;
       color: rgba(245, 225, 175, 0.78);
       margin-bottom: 24px;
       animation: fadeUp 0.8s ease both;
+    }
+
+    /* Визуально делим h1 на две части: бренд крупно + ключевые слова мелко */
+    .hero-h1-seo::before {
+      content: 'Milovi Cake';
+      display: block;
+      font-size: clamp(52px, 6vw, 84px);
+      line-height: 1.05;
+      color: rgba(245, 225, 175, 0.78);
+    }
+    .hero-h1-seo {
+      font-size: clamp(16px, 1.6vw, 22px);
+      font-weight: 300;
+      letter-spacing: 0.01em;
+      color: rgba(245, 225, 175, 0.42) !important;
+      line-height: 1.4;
     }
 
     .hero-text p {
@@ -1769,7 +1786,7 @@
 
   <div class="hero-content">
     <div class="hero-text">
-      <h1>Milovi Cake</h1>
+      <h1 class="hero-h1-seo">Milovi Cake — торты и десерты на заказ в Санкт-Петербурге</h1>
       <p>Нежнейшие торты, меренговые рулеты и десерты ручной работы на заказ в Санкт-Петербурге</p>
       <div class="hero-actions">
         <a href="#catalog" class="btn-primary">Заказать онлайн</a>
