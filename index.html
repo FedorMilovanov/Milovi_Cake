@@ -751,6 +751,41 @@
 
     .slide-img.active { opacity: 1; }
 
+    /* Video slide */
+    .slide-video {
+      object-fit: unset;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slide-video-play {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 5;
+      background: rgba(0,0,0,0.12);
+      transition: background 0.2s;
+    }
+    .slide-video-play:hover { background: rgba(0,0,0,0.22); }
+    .slide-video-play svg { filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)); transition: transform 0.2s; }
+    .slide-video-play:hover svg { transform: scale(1.1); }
+
+    /* Video dot marker */
+    .dot-video::after {
+      content: '▶';
+      position: absolute;
+      font-size: 6px;
+      top: -1px;
+      right: -8px;
+      color: rgba(255,255,255,0.8);
+    }
+    .dot-video { position: relative; }
+
     .slider-dots {
       position: absolute;
       bottom: 12px;
@@ -2136,8 +2171,8 @@ const products = [
     slides: ['pavlova.png', 'pavlova_2.jpg', 'pavlova_3.png'],
     slidePos: ['center 55%', 'center 45%', 'center 50%'] },
   { id: 6, name: 'Капкейки', desc: 'Набор изящных капкейков с разными вкусами', min: 'Заказ от 6 шт одного вкуса', price: '350 ₽/шт', priceNum: 350, unit: 'шт', emoji: '🧁',
-    slides: ['cupcakes.png', 'cupcakes_2.png'],
-    slidePos: ['center 35%', 'center 40%'] },
+    slides: ['cupcakes.png', 'cupcakes_2.png', { type: 'vk', embed: 'https://vkvideo.ru/video_ext.php?oid=-68859909&id=456239113&hd=2', thumb: 'cupcakes_2.png' }],
+    slidePos: ['center 35%', 'center 40%', ''] },
 ];
 
 // cart: { [id]: { qty: number } }  — for kg-products qty is in kg (step 0.5)
@@ -2153,18 +2188,31 @@ function renderCatalog() {
   grid.innerHTML = products.map(p => {
     let imgHtml;
     if (p.slides && p.slides.length) {
+      const totalSlides = p.slides.length;
       imgHtml = `
         <div class="slider-wrap" id="slider-${p.id}">
           ${p.slides.map((src, i) => {
+            const active = i === 0 ? ' active' : '';
+            if (src && typeof src === 'object' && src.type === 'vk') {
+              // Video slide — iframe, lazy: only insert src when active
+              return `<div class="slide-img slide-video${active}" data-vk-embed="${src.embed}">
+                <iframe class="vk-iframe" src="" frameborder="0" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen style="width:100%;height:100%;border:0;display:block;"></iframe>
+                <div class="slide-video-play" onclick="activateVkSlide(this)">
+                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="24" fill="rgba(0,0,0,0.45)"/><polygon points="19,15 37,24 19,33" fill="white"/></svg>
+                </div>
+              </div>`;
+            }
             const pos = p.slidePos ? p.slidePos[i] : 'center center';
             const scale = p.slideScale ? p.slideScale[i] : 1;
-            const active = i === 0 ? ' active' : '';
             return `<img src="${src}" alt="${p.name}" class="slide-img${active}"
-              onerror="this.style.cssText='display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;font-size:60px;background:linear-gradient(135deg,#e8d8c4,#d4b896);'; this.src=''; this.alt=p.emoji"
+              onerror="this.style.cssText='display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;font-size:60px;background:linear-gradient(135deg,#e8d8c4,#d4b896);'; this.src=''; this.alt='${p.emoji}'"
               style="object-position:${pos};transform:scale(${scale});transform-origin:${pos};">`;
           }).join('')}
           <div class="slider-dots">
-            ${p.slides.map((_, i) => `<span class="dot${i === 0 ? ' active' : ''}" onclick="goSlide(${p.id},${i})"></span>`).join('')}
+            ${p.slides.map((s, i) => {
+              const isVideo = s && typeof s === 'object' && s.type === 'vk';
+              return `<span class="dot${i === 0 ? ' active' : ''}${isVideo ? ' dot-video' : ''}" onclick="goSlide(${p.id},${i})"></span>`;
+            }).join('')}
           </div>
         </div>`;
     } else if (p.img) {
@@ -2192,6 +2240,17 @@ function renderCatalog() {
     if (p.slides && p.slides.length > 1) {
       let cur = 0;
       slideTimers[p.id] = setInterval(() => {
+        // Don't auto-advance if current slide is a playing video
+        const wrap = document.getElementById('slider-' + p.id);
+        if (wrap) {
+          const active = wrap.querySelector('.slide-img.active');
+          if (active && active.classList.contains('slide-video')) {
+            const iframe = active.querySelector('.vk-iframe');
+            const playBtn = active.querySelector('.slide-video-play');
+            // If video is playing (play button hidden), skip auto-advance
+            if (iframe && iframe.src && (!playBtn || playBtn.style.display === 'none')) return;
+          }
+        }
         cur = (cur + 1) % p.slides.length;
         goSlide(p.id, cur);
       }, 3000);
@@ -2206,8 +2265,34 @@ function renderCatalog() {
 function goSlide(pid, idx) {
   const wrap = document.getElementById('slider-' + pid);
   if (!wrap) return;
-  wrap.querySelectorAll('.slide-img').forEach((el, i) => el.classList.toggle('active', i === idx));
+  const slides = wrap.querySelectorAll('.slide-img');
+  slides.forEach((el, i) => {
+    const wasActive = el.classList.contains('active');
+    el.classList.toggle('active', i === idx);
+    // Video slide: load iframe lazily when first shown, pause when leaving
+    if (el.classList.contains('slide-video')) {
+      const iframe = el.querySelector('.vk-iframe');
+      const playBtn = el.querySelector('.slide-video-play');
+      if (i === idx) {
+        // Don't autoload — show play button overlay
+      } else if (wasActive && iframe) {
+        // Leaving video slide — stop playback by clearing src
+        iframe.src = '';
+        if (playBtn) playBtn.style.display = 'flex';
+      }
+    }
+  });
   wrap.querySelectorAll('.dot').forEach((el, i) => el.classList.toggle('active', i === idx));
+}
+
+function activateVkSlide(playBtn) {
+  const slide = playBtn.closest('.slide-video');
+  if (!slide) return;
+  const iframe = slide.querySelector('.vk-iframe');
+  if (iframe && !iframe.src) {
+    iframe.src = slide.dataset.vkEmbed + '&autoplay=1';
+  }
+  playBtn.style.display = 'none';
 }
 
 // ── PRODUCT SLIDER TOUCH SWIPE ──
