@@ -311,6 +311,11 @@
       border-radius: 2px;
       border: none;
       outline: none;
+      background: transparent;
+    }
+    /* Ensure thumb sits centered on track */
+    .calc-slider::-webkit-slider-thumb {
+      margin-top: -9px;
     }
     .calc-slider::-webkit-slider-thumb {
       -webkit-appearance: none;
@@ -1116,15 +1121,27 @@
     }
 
     .cart-close {
-      background: none;
-      border: none;
-      font-size: 22px;
+      background: var(--cream);
+      border: 1.5px solid var(--cream-dark);
+      border-radius: 12px;
       cursor: pointer;
-      color: var(--text-muted);
-      padding: 4px;
+      color: var(--brown);
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      transition: background 0.2s, border-color 0.2s;
     }
+    .cart-close:hover { background: var(--cream-dark); border-color: var(--gold); }
 
-    .cart-body { flex: 1; overflow-y: auto; padding: 20px 28px; }
+    .cart-body { 
+      flex: 1; 
+      overflow-y: auto; 
+      padding: 20px 28px;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
 
     .cart-item {
       background: var(--cream);
@@ -1662,7 +1679,10 @@
 <div class="cart-drawer" id="cartDrawer">
   <div class="cart-header">
     <h3>🛒 Ваш заказ <span class="cart-count-badge" id="cartCountBadge">0</span></h3>
-    <button class="cart-close" onclick="closeCart()">✕</button>
+    <button class="cart-close" onclick="closeCart()" title="Свернуть">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      <span style="font-size:11px;display:block;line-height:1;margin-top:1px;color:var(--text-muted)">закрыть</span>
+    </button>
   </div>
   <div class="cart-body" id="cartBody"></div>
   <div class="cart-footer" id="cartFooter" style="display:none">
@@ -1784,6 +1804,8 @@ function renderCatalog() {
         cur = (cur + 1) % p.slides.length;
         goSlide(p.id, cur);
       }, 3000);
+      // Add touch swipe after DOM renders
+      setTimeout(() => addSliderTouch(p.id, p.slides.length), 100);
     }
   });
 
@@ -1795,6 +1817,31 @@ function goSlide(pid, idx) {
   if (!wrap) return;
   wrap.querySelectorAll('.slide-img').forEach((el, i) => el.classList.toggle('active', i === idx));
   wrap.querySelectorAll('.dot').forEach((el, i) => el.classList.toggle('active', i === idx));
+}
+
+// ── PRODUCT SLIDER TOUCH SWIPE ──
+function addSliderTouch(pid, total) {
+  const wrap = document.getElementById('slider-' + pid);
+  if (!wrap || wrap._touchBound) return;
+  wrap._touchBound = true;
+  let startX = 0;
+  wrap.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+  wrap.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) < 40) return;
+    // Find current active slide index
+    const dots = wrap.querySelectorAll('.dot');
+    let cur = 0;
+    dots.forEach((d, i) => { if (d.classList.contains('active')) cur = i; });
+    const next = dx < 0 ? (cur + 1) % total : (cur - 1 + total) % total;
+    goSlide(pid, next);
+    // Reset auto-slide timer
+    if (slideTimers[pid]) {
+      clearInterval(slideTimers[pid]);
+      let c = next;
+      slideTimers[pid] = setInterval(() => { c = (c + 1) % total; goSlide(pid, c); }, 3000);
+    }
+  }, { passive: true });
 }
 
 function addToCart(id) {
@@ -1936,6 +1983,37 @@ function closeCart() {
   document.getElementById('cartOverlay').classList.remove('open');
   document.body.style.overflow = '';
 }
+
+// ── CART SWIPE-RIGHT TO CLOSE ──
+(function() {
+  const drawer = document.getElementById('cartDrawer');
+  let startX = 0, startY = 0, dragging = false;
+  drawer.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    dragging = true;
+    drawer.style.transition = 'none';
+  }, { passive: true });
+  drawer.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    const dx = e.touches[0].clientX - startX;
+    const dy = Math.abs(e.touches[0].clientY - startY);
+    if (dy > 30 && Math.abs(dx) < dy) { dragging = false; drawer.style.transition = ''; return; }
+    if (dx > 0) drawer.style.transform = `translateX(${dx}px)`;
+  }, { passive: true });
+  drawer.addEventListener('touchend', e => {
+    if (!dragging) return;
+    dragging = false;
+    drawer.style.transition = '';
+    const dx = e.changedTouches[0].clientX - startX;
+    if (dx > 100) {
+      drawer.style.transform = '';
+      closeCart();
+    } else {
+      drawer.style.transform = '';
+    }
+  }, { passive: true });
+})();
 
 // ── REVEAL ON SCROLL ──
 function observeReveal() {
@@ -2140,7 +2218,7 @@ document.getElementById('reviewsTrack').addEventListener('touchstart', e => {
 document.getElementById('reviewsTrack').addEventListener('touchend', e => {
   const dx = e.changedTouches[0].clientX - touchStartX;
   if (Math.abs(dx) > 40) shiftReview(dx < 0 ? 1 : -1);
-});
+}, { passive: true });
 </script>
 </body>
 </html>
