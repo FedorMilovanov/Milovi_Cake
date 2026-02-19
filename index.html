@@ -754,7 +754,7 @@
     /* Video slide */
     .slide-video {
       object-fit: unset;
-      background: #000;
+      background: #111;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -768,12 +768,35 @@
       justify-content: center;
       cursor: pointer;
       z-index: 5;
-      background: rgba(0,0,0,0.12);
+      text-decoration: none;
       transition: background 0.2s;
     }
-    .slide-video-play:hover { background: rgba(0,0,0,0.22); }
-    .slide-video-play svg { filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)); transition: transform 0.2s; }
-    .slide-video-play:hover svg { transform: scale(1.1); }
+    .slide-video-play:hover { background: rgba(0,0,0,0.15); }
+
+    .vk-play-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      filter: drop-shadow(0 4px 16px rgba(0,0,0,0.5));
+      transition: transform 0.2s;
+    }
+    .slide-video-play:hover .vk-play-btn { transform: scale(1.07); }
+
+    .vk-play-label {
+      display: flex;
+      align-items: center;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      font-family: 'Jost', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      padding: 6px 14px;
+      border-radius: 20px;
+      white-space: nowrap;
+      backdrop-filter: blur(4px);
+    }
 
     /* Video dot marker */
     .dot-video::after {
@@ -2171,8 +2194,8 @@ const products = [
     slides: ['pavlova.png', 'pavlova_2.jpg', 'pavlova_3.png'],
     slidePos: ['center 55%', 'center 45%', 'center 50%'] },
   { id: 6, name: 'Капкейки', desc: 'Набор изящных капкейков с разными вкусами', min: 'Заказ от 6 шт одного вкуса', price: '350 ₽/шт', priceNum: 350, unit: 'шт', emoji: '🧁',
-    slides: ['cupcakes.png', 'cupcakes_2.png', { type: 'vk', embed: 'https://vkvideo.ru/video_ext.php?oid=-68859909&id=456239113&hd=2', thumb: 'cupcakes_2.png' }],
-    slidePos: ['center 35%', 'center 40%', ''] },
+    slides: ['cupcakes.png', 'cupcakes_2.png', { type: 'vk', embed: 'https://vkvideo.ru/video_ext.php?oid=-68859909&id=456239113&hash=885a745c79a3aed5&hd=3', thumb: 'cupcakes.png' }],
+    slidePos: ['center 35%', 'center 40%', 'center 35%'] },
 ];
 
 // cart: { [id]: { qty: number } }  — for kg-products qty is in kg (step 0.5)
@@ -2194,12 +2217,18 @@ function renderCatalog() {
           ${p.slides.map((src, i) => {
             const active = i === 0 ? ' active' : '';
             if (src && typeof src === 'object' && src.type === 'vk') {
-              // Video slide — iframe, lazy: only insert src when active
               return `<div class="slide-img slide-video${active}" data-vk-embed="${src.embed}">
-                <iframe class="vk-iframe" src="" frameborder="0" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen style="width:100%;height:100%;border:0;display:block;"></iframe>
-                <div class="slide-video-play" onclick="activateVkSlide(this)">
-                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="24" fill="rgba(0,0,0,0.45)"/><polygon points="19,15 37,24 19,33" fill="white"/></svg>
+                <img src="${src.thumb}" alt="Видео" class="vk-thumb" style="width:100%;height:100%;object-fit:cover;object-position:center 35%;display:block;transition:opacity 0.3s;">
+                <div class="slide-video-play" onclick="activateVkSlide(this)" aria-label="Смотреть видео">
+                  <div class="vk-play-btn">
+                    <svg width="56" height="56" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="28" fill="rgba(0,0,0,0.52)"/><polygon points="23,18 43,28 23,38" fill="white"/></svg>
+                    <span class="vk-play-label">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="white" style="margin-right:5px;flex-shrink:0"><path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.05-1.727-1.033-1.01-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C4.624 10.857 4 8.408 4 7.935c0-.254.102-.491.593-.491h1.744c.441 0 .61.203.78.677.863 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.203.17-.407.44-.407h2.744c.373 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.253-1.406 2.15-3.574 2.15-3.574.119-.254.322-.491.763-.491h1.744c.525 0 .644.27.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.78 1.203 1.253.745.847 1.32 1.558 1.473 2.049.17.491-.085.745-.576.745z"/></svg>
+                      Нажми для просмотра
+                    </span>
+                  </div>
                 </div>
+                <iframe class="vk-iframe" src="" frameborder="0" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0;display:none;"></iframe>
               </div>`;
             }
             const pos = p.slidePos ? p.slidePos[i] : 'center center';
@@ -2240,17 +2269,6 @@ function renderCatalog() {
     if (p.slides && p.slides.length > 1) {
       let cur = 0;
       slideTimers[p.id] = setInterval(() => {
-        // Don't auto-advance if current slide is a playing video
-        const wrap = document.getElementById('slider-' + p.id);
-        if (wrap) {
-          const active = wrap.querySelector('.slide-img.active');
-          if (active && active.classList.contains('slide-video')) {
-            const iframe = active.querySelector('.vk-iframe');
-            const playBtn = active.querySelector('.slide-video-play');
-            // If video is playing (play button hidden), skip auto-advance
-            if (iframe && iframe.src && (!playBtn || playBtn.style.display === 'none')) return;
-          }
-        }
         cur = (cur + 1) % p.slides.length;
         goSlide(p.id, cur);
       }, 3000);
@@ -2269,17 +2287,14 @@ function goSlide(pid, idx) {
   slides.forEach((el, i) => {
     const wasActive = el.classList.contains('active');
     el.classList.toggle('active', i === idx);
-    // Video slide: load iframe lazily when first shown, pause when leaving
-    if (el.classList.contains('slide-video')) {
+    // Stop video if navigating away
+    if (wasActive && i !== idx && el.classList.contains('slide-video')) {
       const iframe = el.querySelector('.vk-iframe');
+      const thumb = el.querySelector('.vk-thumb');
       const playBtn = el.querySelector('.slide-video-play');
-      if (i === idx) {
-        // Don't autoload — show play button overlay
-      } else if (wasActive && iframe) {
-        // Leaving video slide — stop playback by clearing src
-        iframe.src = '';
-        if (playBtn) playBtn.style.display = 'flex';
-      }
+      if (iframe) { iframe.src = ''; iframe.style.display = 'none'; }
+      if (thumb) thumb.style.opacity = '1';
+      if (playBtn) playBtn.style.display = 'flex';
     }
   });
   wrap.querySelectorAll('.dot').forEach((el, i) => el.classList.toggle('active', i === idx));
@@ -2289,9 +2304,12 @@ function activateVkSlide(playBtn) {
   const slide = playBtn.closest('.slide-video');
   if (!slide) return;
   const iframe = slide.querySelector('.vk-iframe');
-  if (iframe && !iframe.src) {
+  const thumb = slide.querySelector('.vk-thumb');
+  if (iframe) {
     iframe.src = slide.dataset.vkEmbed + '&autoplay=1';
+    iframe.style.display = 'block';
   }
+  if (thumb) thumb.style.opacity = '0';
   playBtn.style.display = 'none';
 }
 
