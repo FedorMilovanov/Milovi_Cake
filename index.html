@@ -141,27 +141,99 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(245,240,232,0.97);
+      background: linear-gradient(160deg, #f5efe4 0%, #ede4d2 100%);
       backdrop-filter: blur(20px);
       z-index: 600;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 32px;
+      gap: 8px;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.3s;
+      transition: opacity 0.35s;
+      box-shadow: inset 0 0 120px rgba(201,147,74,0.07);
     }
     .mobile-menu.open { opacity: 1; pointer-events: all; }
+    
+    /* Close button inside menu */
+    .mobile-menu-close {
+      position: absolute;
+      top: 24px; right: 24px;
+      background: rgba(201,147,74,0.12);
+      border: 1.5px solid rgba(201,147,74,0.25);
+      border-radius: 50px;
+      padding: 10px 18px;
+      display: flex; align-items: center; gap: 7px;
+      color: var(--brown);
+      font-family: 'Jost', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .mobile-menu-close:hover { background: rgba(201,147,74,0.22); border-color: var(--gold); }
+
+    .mobile-menu-nav {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      width: 100%;
+      padding: 0 40px;
+    }
+
     .mobile-menu a {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 42px;
+      font-size: 46px;
       color: var(--brown);
       text-decoration: none;
-      font-weight: 500;
+      font-weight: 400;
+      width: 100%;
+      text-align: center;
+      padding: 14px 24px;
+      border-radius: 20px;
+      position: relative;
+      transition: color 0.25s, background 0.25s, letter-spacing 0.25s, transform 0.2s;
+      letter-spacing: 0.01em;
+    }
+    .mobile-menu a::after {
+      content: '';
+      position: absolute;
+      bottom: 10px; left: 50%;
+      transform: translateX(-50%) scaleX(0);
+      width: 40px; height: 2px;
+      background: var(--gold);
+      border-radius: 2px;
+      transition: transform 0.25s, opacity 0.25s;
+      opacity: 0;
+    }
+    .mobile-menu a:hover {
+      color: var(--gold);
+      background: rgba(201,147,74,0.07);
+      letter-spacing: 0.06em;
+      transform: translateX(4px);
+    }
+    .mobile-menu a:hover::after { transform: translateX(-50%) scaleX(1); opacity: 1; }
+
+    /* Декоративная линия-разделитель */
+    .mobile-menu-divider {
+      width: 40px; height: 1px;
+      background: rgba(201,147,74,0.3);
+      margin: 12px auto;
+    }
+
+    /* Телефон внизу меню */
+    .mobile-menu-phone {
+      position: absolute;
+      bottom: 48px;
+      font-family: 'Jost', sans-serif;
+      font-size: 15px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      display: flex; align-items: center; gap: 8px;
       transition: color 0.2s;
     }
-    .mobile-menu a:hover { color: var(--gold); }
+    .mobile-menu-phone:hover { color: var(--gold); }
 
     @media (max-width: 768px) {
       .burger-btn { display: flex; }
@@ -266,13 +338,22 @@
     }
     .lightbox.open img { transform: scale(1); }
     .lightbox-close {
-      position: absolute; top: 24px; right: 32px;
-      font-size: 36px; color: #fff;
-      background: none; border: none; cursor: pointer;
-      opacity: 0.7; transition: opacity 0.2s;
-      line-height: 1;
+      position: absolute; top: 20px; right: 20px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 50px;
+      padding: 8px 18px;
+      display: flex; align-items: center; gap: 7px;
+      color: #fff; cursor: pointer;
+      font-family: 'Jost', sans-serif;
+      font-size: 14px; font-weight: 400;
+      letter-spacing: 0.03em;
+      transition: background 0.2s, border-color 0.2s;
+      z-index: 9001;
     }
-    .lightbox-close:hover { opacity: 1; }
+    .lightbox-close:hover { background: rgba(255,255,255,0.25); border-color: rgba(255,255,255,0.5); }
 
     /* ── CALCULATOR ── */
     #calculator { background: linear-gradient(180deg, #faf6ef 0%, #f0e6d4 100%); }
@@ -1324,10 +1405,23 @@
 
 <!-- ── MOBILE MENU ── -->
 <div class="mobile-menu" id="mobileMenu">
-  <a href="#catalog" onclick="closeMobileMenu()">Каталог</a>
-  <a href="#reviews" onclick="closeMobileMenu()">Отзывы</a>
-  <a href="#calculator" onclick="closeMobileMenu()">Калькулятор</a>
-  <a href="#contacts" onclick="closeMobileMenu()">Контакты</a>
+  <button class="mobile-menu-close" onclick="closeMobileMenu()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    Закрыть
+  </button>
+  <div class="mobile-menu-nav">
+    <a href="#catalog" onclick="closeMobileMenu()">Каталог</a>
+    <div class="mobile-menu-divider"></div>
+    <a href="#reviews" onclick="closeMobileMenu()">Отзывы</a>
+    <div class="mobile-menu-divider"></div>
+    <a href="#calculator" onclick="closeMobileMenu()">Калькулятор</a>
+    <div class="mobile-menu-divider"></div>
+    <a href="#contacts" onclick="closeMobileMenu()">Контакты</a>
+  </div>
+  <a href="tel:+79119038886" class="mobile-menu-phone">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.07 2.18 2 2 0 012.03 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+    +7 911 903 88 86
+  </a>
 </div>
 
 <!-- ── FLOATING CTA ── -->
@@ -1336,9 +1430,12 @@
 </a>
 
 <!-- ── LIGHTBOX ── -->
-<div class="lightbox" id="lightbox" onclick="closeLightbox()">
-  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
-  <img id="lightboxImg" src="" alt="Отзыв" />
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    Закрыть
+  </button>
+  <img id="lightboxImg" src="" alt="" style="user-select:none; -webkit-user-drag:none;" />
 </div>
 
 <!-- ══════════ HERO ══════════ -->
@@ -1825,22 +1922,26 @@ function addSliderTouch(pid, total) {
   if (!wrap || wrap._touchBound) return;
   wrap._touchBound = true;
   let startX = 0;
-  wrap.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+  wrap.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+    wrap._wasSwiped = false;
+  }, { passive: true });
   wrap.addEventListener('touchend', e => {
     const dx = e.changedTouches[0].clientX - startX;
     if (Math.abs(dx) < 40) return;
-    // Find current active slide index
+    wrap._wasSwiped = true;
     const dots = wrap.querySelectorAll('.dot');
     let cur = 0;
     dots.forEach((d, i) => { if (d.classList.contains('active')) cur = i; });
     const next = dx < 0 ? (cur + 1) % total : (cur - 1 + total) % total;
     goSlide(pid, next);
-    // Reset auto-slide timer
     if (slideTimers[pid]) {
       clearInterval(slideTimers[pid]);
       let c = next;
       slideTimers[pid] = setInterval(() => { c = (c + 1) % total; goSlide(pid, c); }, 3000);
     }
+    // Reset swipe flag after click event fires
+    setTimeout(() => { wrap._wasSwiped = false; }, 300);
   }, { passive: true });
 }
 
@@ -1885,7 +1986,14 @@ function updateCartUI() {
 
   const items = Object.entries(cart);
   if (!items.length) {
-    body.innerHTML = '<div class="cart-empty">Корзина пуста 🧁<br><br>Добавьте что-нибудь!</div>';
+    body.innerHTML = `<div class="cart-empty">
+      <div style="font-size:48px;margin-bottom:16px">🧁</div>
+      <div style="font-size:18px;color:var(--brown);font-family:'Cormorant Garamond',serif;margin-bottom:8px">Корзина пуста</div>
+      <div style="font-size:14px;color:var(--text-muted);margin-bottom:28px">Добавьте что-нибудь вкусное!</div>
+      <a href="#catalog" onclick="closeCart()" style="display:inline-flex;align-items:center;gap:8px;background:var(--gold);color:#fff;padding:12px 24px;border-radius:50px;text-decoration:none;font-family:'Jost',sans-serif;font-size:14px;font-weight:500;box-shadow:0 6px 20px rgba(201,147,74,0.35)">
+        Перейти в каталог →
+      </a>
+    </div>`;
     footer.style.display = 'none';
     return;
   }
@@ -2025,6 +2133,7 @@ function observeReveal() {
 }
 
 renderCatalog(); // calls observeReveal() internally for catalog cards
+setTimeout(wireProductLightbox, 200);
 updateCartUI();
 observeReveal(); // picks up static .reveal elements (hero, sections, etc.)
 
@@ -2112,23 +2221,81 @@ window.addEventListener('scroll', () => {
 });
 
 // ── LIGHTBOX ──
-function openLightbox(src) {
+// ── LIGHTBOX with gallery + swipe ──
+let _lbSrcs = [], _lbIdx = 0;
+
+function openLightbox(src, srcs) {
+  _lbSrcs = srcs || [src];
+  _lbIdx = _lbSrcs.indexOf(src);
+  if (_lbIdx < 0) _lbIdx = 0;
   const lb = document.getElementById('lightbox');
-  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightboxImg').src = _lbSrcs[_lbIdx];
   lb.classList.add('open');
   document.body.style.overflow = 'hidden';
+}
+function lbNavigate(dir) {
+  if (_lbSrcs.length < 2) return;
+  _lbIdx = (_lbIdx + dir + _lbSrcs.length) % _lbSrcs.length;
+  const img = document.getElementById('lightboxImg');
+  img.style.opacity = '0';
+  img.style.transition = 'opacity 0.15s';
+  setTimeout(() => {
+    img.src = _lbSrcs[_lbIdx];
+    img.style.opacity = '1';
+  }, 150);
 }
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
   document.body.style.overflow = '';
+  _lbSrcs = []; _lbIdx = 0;
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
-// Wire up review images to lightbox after DOM ready
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowRight') lbNavigate(1);
+  if (e.key === 'ArrowLeft') lbNavigate(-1);
+});
+
+// Click on backdrop closes lightbox
+document.getElementById('lightbox').addEventListener('click', function(e) {
+  if (e.target === this) closeLightbox();
+});
+
+// Swipe on lightbox
+(function() {
+  const lb = document.getElementById('lightbox');
+  let sx = 0;
+  lb.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
+  lb.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - sx;
+    if (Math.abs(dx) > 50) lbNavigate(dx < 0 ? 1 : -1);
+  }, { passive: true });
+})();
+
+// Wire up review images
 setTimeout(() => {
   document.querySelectorAll('.review-img-wrap img').forEach(img => {
+    img.style.cursor = 'zoom-in';
     img.addEventListener('click', () => openLightbox(img.src));
   });
 }, 100);
+
+// Wire up product card images (called after renderCatalog)
+function wireProductLightbox() {
+  products.forEach(p => {
+    if (!p.slides || p.slides.length === 0) return;
+    const wrap = document.getElementById('slider-' + p.id);
+    if (!wrap || wrap._lbBound) return;
+    wrap._lbBound = true;
+    wrap.querySelectorAll('.slide-img').forEach(img => {
+      img.style.cursor = 'zoom-in';
+      img.addEventListener('click', (e) => {
+        // Only open if it wasn't a swipe
+        if (wrap._wasSwiped) return;
+        openLightbox(img.src, p.slides);
+      });
+    });
+  });
+}
 
 // ── CALCULATOR ──
 function selectOpt(el, groupId) {
