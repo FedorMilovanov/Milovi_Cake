@@ -674,14 +674,15 @@
       text-align: center;
       font-size: clamp(42px, 5vw, 72px);
       color: var(--brown);
-      margin-bottom: 12px;
+      margin-bottom: 0;
     }
 
     .section-sub {
       text-align: center;
       color: var(--text-muted);
       font-size: 17px;
-      margin-bottom: 60px;
+      margin-top: 48px;
+      margin-bottom: 64px;
       font-weight: 300;
     }
 
@@ -849,6 +850,7 @@
       grid-template-columns: repeat(4, 1fr);
       gap: 32px;
       text-align: center;
+      margin-top: 64px;
     }
 
     .feature-icon {
@@ -1544,13 +1546,14 @@
       display: block;
       text-align: center;
       width: 100%;
+      padding-bottom: 24px;
     }
     .section-title::after {
       content: '';
       position: absolute;
-      bottom: -10px; left: 50%;
+      bottom: 0; left: 50%;
       transform: translateX(-50%) scaleX(0);
-      width: 60px; height: 2px;
+      width: 80px; height: 2px;
       background: linear-gradient(90deg, transparent, var(--gold), transparent);
       border-radius: 2px;
       transition: transform 0.6s 0.4s ease;
@@ -1594,10 +1597,10 @@
     /* ── SECTION TITLE BLOCK ── */
     .section-title-wrap {
       text-align: center;
-      margin-bottom: 60px;
+      margin-bottom: 64px;
     }
     .section-title-wrap .section-title { margin-bottom: 0; }
-    .section-title-wrap .section-sub { margin-top: 20px; margin-bottom: 0; }
+    .section-title-wrap .section-sub { margin-top: 48px; margin-bottom: 0; }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
@@ -1721,26 +1724,26 @@
 
 <section id="why">
   <div class="container">
-    <h2 class="section-title reveal">Почему выбирают нас</h2>
-    <div class="features-grid" style="margin-top:60px;">
+    <h2 class="section-title reveal">Почему Выбирают Нас</h2>
+    <div class="features-grid">
       <div class="feature reveal">
         <div class="feature-icon">🤍</div>
-        <h4>Ручная работа</h4>
+        <h4>Ручная Работа</h4>
         <p>Каждый десерт создаётся с любовью и заботой вручную</p>
       </div>
       <div class="feature reveal">
         <div class="feature-icon">🌿</div>
-        <h4>Натуральные ингредиенты</h4>
+        <h4>Натуральные Ингредиенты</h4>
         <p>Только качественные продукты без искусственных добавок</p>
       </div>
       <div class="feature reveal">
         <div class="feature-icon">🎯</div>
-        <h4>Свежесть под заказ</h4>
+        <h4>Свежесть Под Заказ</h4>
         <p>Готовим специально для вас, всегда свежее</p>
       </div>
       <div class="feature reveal">
         <div class="feature-icon">📦</div>
-        <h4>Доставка по СПб</h4>
+        <h4>Доставка По СПб</h4>
         <p>Аккуратная доставка в красивой упаковке</p>
       </div>
     </div>
@@ -1751,8 +1754,8 @@
 <!-- ══════════ REVIEWS ══════════ -->
 <section id="reviews" style="background:var(--white);padding:100px 60px;">
   <div class="container">
-    <h2 class="section-title reveal">Отзывы клиентов</h2>
-    <p class="section-sub reveal">Нам пишут — мы очень стараемся 🤍</p>
+    <h2 class="section-title reveal">Отзывы Клиентов</h2>
+    <p class="section-sub reveal">Нам Пишут — Мы Очень Стараемся 🤍</p>
     <div class="reviews-carousel reveal">
       <button class="rev-arrow rev-prev" onclick="shiftReview(-1)" aria-label="Предыдущий">&#8592;</button>
       <div class="reviews-track" id="reviewsTrack">
@@ -1931,8 +1934,8 @@
 <!-- ══════════ CONTACTS ══════════ -->
 <section id="contacts">
   <div class="container">
-    <h2 class="section-title reveal">Свяжитесь с нами</h2>
-    <p class="section-sub reveal">Готовы сделать заказ? Мы всегда на связи!</p>
+    <h2 class="section-title reveal">Свяжитесь С Нами</h2>
+    <p class="section-sub reveal">Готовы Сделать Заказ? Мы Всегда На Связи!</p>
     <div class="contacts-grid">
       <div class="card reveal">
         <h3>Контакты</h3>
@@ -1997,11 +2000,11 @@
       </div>
 
       <div class="card reveal">
-        <h3>Форма заказа</h3>
+        <h3>Форма Заказа</h3>
         <p class="hours" style="opacity:0"> </p>
         <div class="form-group float-label">
           <input type="text" id="fname" placeholder=" " />
-          <label for="fname">Как к Вам обращаться?</label>
+          <label for="fname">Как К Вам Обращаться?</label>
         </div>
         <div class="form-group float-label">
           <input type="tel" id="fphone" placeholder=" " />
@@ -2009,10 +2012,10 @@
         </div>
         <div class="form-group float-label">
           <textarea id="fcomment" placeholder=" "></textarea>
-          <label for="fcomment">Комментарий — вес, декор, дата…</label>
+          <label for="fcomment">Комментарий — Вес, Декор, Дата…</label>
         </div>
-        <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="#">обработкой персональных данных</a></p>
-        <button class="btn-wa" onclick="sendFormWA()">Отправить заказ</button>
+        <p class="form-note">Нажимая Кнопку, Вы Соглашаетесь С <a href="#">Обработкой Персональных Данных</a></p>
+        <button class="btn-wa" onclick="sendFormWA()">Отправить Заказ</button>
       </div>
     </div>
   </div>
