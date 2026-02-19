@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Milovi Cake — Торты и десерты на заказ в Санкт-Петербурге</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #f5f0e8;
+      --cream-dark: #ede5d5;
+      --gold: #c9934a;
+      --gold-light: #d4a76a;
+      --brown: #3d2b1f;
+      --brown-light: #6b4c38;
+      --text: #2c1a10;
+      --text-muted: #9a7a62;
+      --white: #ffffff;
+      --radius: 16px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Jost', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 500;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #faf6ef 0%, #f0e8d8 60%, #e8dcc8 100%);
+      display: flex;
+      align-items: center;
+      padding: 80px 60px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(201,147,74,0.12) 0%, transparent 70%);
+      top: -100px; right: -100px;
+      border-radius: 50%;
+    }
+
+    .hero-content {
+      max-width: 1300px;
+      width: 100%;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .hero-text h1 {
+      font-size: clamp(52px, 6vw, 84px);
+      line-height: 1.05;
+      color: var(--brown);
+      margin-bottom: 24px;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .hero-text p {
+      font-size: clamp(18px, 2vw, 24px);
+      color: var(--brown-light);
+      line-height: 1.5;
+      margin-bottom: 40px;
+      font-weight: 300;
+      animation: fadeUp 0.8s 0.15s ease both;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
+
+    .btn-primary {
+      background: var(--gold);
+      color: var(--white);
+      border: none;
+      padding: 16px 36px;
+      border-radius: 50px;
+      font-family: 'Jost', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+    .btn-phone {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--brown);
+      font-size: 16px;
+      font-weight: 500;
+      text-decoration: none;
+      padding: 14px 20px;
+      border-radius: 50px;
+      border: 1.5px solid rgba(61,43,31,0.2);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-phone:hover { border-color: var(--gold); background: rgba(201,147,74,0.05); }
+
+    .hero-image {
+      animation: fadeIn 1s 0.2s ease both;
+    }
+
+    .hero-image img {
+      width: 100%;
+      max-width: 560px;
+      border-radius: 24px;
+      object-fit: cover;
+      aspect-ratio: 4/3;
+      display: block;
+      margin-left: auto;
+      box-shadow: 0 30px 80px rgba(61,43,31,0.2);
+    }
+
+    /* placeholder image */
+    .hero-img-wrap {
+      width: 100%;
+      max-width: 560px;
+      aspect-ratio: 4/3;
+      border-radius: 24px;
+      margin-left: auto;
+      box-shadow: 0 30px 80px rgba(61,43,31,0.22);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      /* Zoom into the hands + cake cutting area */
+      object-position: 72% 38%;
+      transform: scale(1.18);
+      transform-origin: 72% 38%;
+      display: block;
+      transition: transform 6s ease;
+    }
+
+    .hero-img-wrap:hover img {
+      transform: scale(1.25);
+    }
+
+    /* ── SECTION BASE ── */
+    section { padding: 100px 60px; }
+
+    .section-title {
+      text-align: center;
+      font-size: clamp(42px, 5vw, 72px);
+      color: var(--brown);
+      margin-bottom: 12px;
+    }
+
+    .section-sub {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 17px;
+      margin-bottom: 60px;
+      font-weight: 300;
+    }
+
+    .container { max-width: 1300px; margin: 0 auto; }
+
+    /* ── CATALOG ── */
+    #catalog { background: var(--white); }
+
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+
+    .product-card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--cream);
+      transition: transform 0.25s, box-shadow 0.25s;
+      cursor: pointer;
+    }
+
+    .product-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 50px rgba(61,43,31,0.12);
+    }
+
+    .product-img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* ── SLIDER ── */
+    .slider-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      background: #1a1a1a;
+    }
+
+    .slide-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.9s ease;
+      display: block;
+    }
+
+    .slide-img.active { opacity: 1; }
+
+    .slider-dots {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 7px;
+      z-index: 10;
+    }
+
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.45);
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    .dot.active { background: #fff; transform: scale(1.35); }
+
+    .product-img-ph {
+      width: 100%;
+      aspect-ratio: 1/1;
+      background: linear-gradient(135deg, #e8d8c4, #d4b896);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+    }
+
+    .product-info { padding: 20px 20px 24px; }
+
+    .product-info h3 {
+      font-size: 22px;
+      color: var(--brown);
+      margin-bottom: 6px;
+    }
+
+    .product-info .desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      line-height: 1.5;
+      font-weight: 300;
+    }
+
+    .product-info .min-order {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      font-weight: 300;
+    }
+
+    .product-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px;
+      color: var(--gold);
+      font-weight: 500;
+    }
+
+    .btn-add {
+      background: var(--gold);
+      color: var(--white);
+      border: none;
+      padding: 10px 22px;
+      border-radius: 50px;
+      font-family: 'Jost', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .btn-add:hover { background: var(--gold-light); transform: scale(1.04); }
+
+    /* ── WHY US ── */
+    #why { background: linear-gradient(180deg, #faf6ef 0%, #f0e6d4 100%); }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 32px;
+      text-align: center;
+    }
+
+    .feature-icon {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: rgba(201,147,74,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 26px;
+    }
+
+    .feature h4 {
+      font-size: 18px;
+      color: var(--brown);
+      margin-bottom: 8px;
+    }
+
+    .feature p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    /* ── CONTACTS ── */
+    #contacts { background: linear-gradient(135deg, #f0e8d8 0%, #e8dcc8 100%); }
+
+    .contacts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 40px;
+    }
+
+    .card h3 {
+      font-size: 28px;
+      color: var(--brown);
+      margin-bottom: 8px;
+    }
+
+    .card .hours {
+      font-size: 14px;
+      color: var(--gold);
+      margin-bottom: 32px;
+      font-weight: 400;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .contact-icon {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: var(--cream);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .contact-item .label {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .contact-item .value {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--brown);
+    }
+
+    .btn-wa {
+      display: block;
+      width: 100%;
+      margin-top: 32px;
+      background: var(--gold);
+      color: var(--white);
+      border: none;
+      padding: 18px;
+      border-radius: 50px;
+      font-family: 'Jost', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-wa:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+    /* Form */
+    .form-group { margin-bottom: 18px; }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 14px 18px;
+      border: 1.5px solid #e8ddd0;
+      border-radius: 12px;
+      font-family: 'Jost', sans-serif;
+      font-size: 15px;
+      background: var(--cream);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: var(--text-muted); }
+
+    .form-group input:focus,
+    .form-group textarea:focus { border-color: var(--gold); }
+
+    .form-group textarea { resize: vertical; min-height: 100px; }
+
+    .form-note {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+    .form-note a { color: var(--gold); }
+
+    /* ── CART ── */
+    .cart-btn {
+      position: fixed;
+      bottom: 30px; right: 30px;
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: var(--gold);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 8px 24px rgba(201,147,74,0.4);
+      z-index: 100;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .cart-btn:hover { transform: scale(1.1); box-shadow: 0 12px 32px rgba(201,147,74,0.5); }
+
+    .cart-badge {
+      position: absolute;
+      top: -4px; right: -4px;
+      background: var(--brown);
+      color: var(--white);
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: 600;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Jost', sans-serif;
+    }
+    .cart-badge.visible { display: flex; }
+
+    /* Cart drawer */
+    .cart-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .cart-overlay.open { opacity: 1; pointer-events: all; }
+
+    .cart-drawer {
+      position: fixed;
+      top: 0; right: -420px;
+      width: 420px;
+      max-width: 100vw;
+      height: 100vh;
+      background: var(--white);
+      z-index: 201;
+      transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .cart-drawer.open { right: 0; }
+
+    .cart-header {
+      padding: 24px 28px;
+      border-bottom: 1px solid var(--cream-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .cart-header h3 {
+      font-size: 22px;
+      color: var(--brown);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cart-count-badge {
+      background: var(--gold);
+      color: var(--white);
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      font-size: 13px;
+      font-family: 'Jost', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cart-close {
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 4px;
+    }
+
+    .cart-body { flex: 1; overflow-y: auto; padding: 20px 28px; }
+
+    .cart-item {
+      background: var(--cream);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .cart-item-info { flex: 1; }
+    .cart-item-info h4 { font-size: 16px; color: var(--brown); margin-bottom: 2px; }
+    .cart-item-info .item-price { font-size: 14px; color: var(--gold); font-weight: 500; }
+    .cart-item-info .item-min { font-size: 12px; color: var(--text-muted); }
+
+    .qty-ctrl {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .qty-btn {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 1.5px solid var(--gold);
+      background: none;
+      color: var(--gold);
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+      line-height: 1;
+    }
+    .qty-btn:hover { background: var(--gold); color: var(--white); }
+
+    .qty-val { font-size: 15px; font-weight: 500; min-width: 20px; text-align: center; }
+
+    .del-btn {
+      background: none;
+      border: none;
+      color: #e07070;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px;
+      transition: color 0.15s;
+    }
+    .del-btn:hover { color: #c04040; }
+
+    .cart-empty {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 60px 0;
+      font-size: 16px;
+    }
+
+    .cart-footer { padding: 20px 28px; border-top: 1px solid var(--cream-dark); }
+
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .cart-total span:first-child { font-size: 16px; color: var(--brown); }
+    .cart-total .total-val { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--gold); }
+    .cart-footer .note { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
+
+    .cart-form { margin-top: 20px; }
+    .cart-form h4 { font-size: 16px; color: var(--brown); margin-bottom: 14px; font-family: 'Jost',sans-serif; font-weight: 500; }
+
+    .cart-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+
+    .btn-tg {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px;
+      border-radius: 50px;
+      font-family: 'Jost', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.2s, transform 0.15s;
+      text-decoration: none;
+    }
+    .btn-tg:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-tg.wa { background: #25D366; color: white; }
+    .btn-tg.tg { background: #2AABEE; color: white; }
+    .btn-tg.call { background: none; border: 1.5px solid #ddd; color: var(--brown); }
+
+    .policy-note { font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 10px; line-height: 1.5; }
+    .policy-note a { color: var(--gold); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .hero { padding: 60px 30px; }
+      .hero-content { grid-template-columns: 1fr; gap: 40px; }
+      .hero-image { order: -1; }
+      .img-placeholder { max-width: 100%; margin: 0; }
+      section { padding: 70px 30px; }
+      .catalog-grid { grid-template-columns: 1fr 1fr; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      .contacts-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 560px) {
+      .catalog-grid { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      .cart-drawer { width: 100vw; }
+      .hero-actions { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero" id="home">
+  <div class="hero-content">
+    <div class="hero-text">
+      <h1>Milovi Cake</h1>
+      <p>Нежнейшие торты, меренговые рулеты и десерты ручной работы на заказ в Санкт-Петербурге</p>
+      <div class="hero-actions">
+        <a href="#catalog" class="btn-primary">Заказать онлайн</a>
+        <a href="tel:+79119038886" class="btn-phone">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.07 2.18 2 2 0 012.03 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          +7 911 903 88 86
+        </a>
+      </div>
+    </div>
+    <div class="hero-image">
+      <div class="hero-img-wrap">
+        <img src="hero.jpg" alt="Milovi Cake — авторский торт ручной работы" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ CATALOG ══════════ -->
+<section id="catalog">
+  <div class="container">
+    <h2 class="section-title reveal">Наши Десерты</h2>
+    <p class="section-sub reveal">Выберите свой любимый торт или десерт из нашей коллекции</p>
+    <div class="catalog-grid" id="catalogGrid">
+      <!-- rendered by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ WHY US ══════════ -->
+<section id="why">
+  <div class="container">
+    <h2 class="section-title reveal">Почему выбирают нас</h2>
+    <div class="features-grid" style="margin-top:60px;">
+      <div class="feature reveal">
+        <div class="feature-icon">🤍</div>
+        <h4>Ручная работа</h4>
+        <p>Каждый десерт создаётся с любовью и заботой вручную</p>
+      </div>
+      <div class="feature reveal">
+        <div class="feature-icon">🌿</div>
+        <h4>Натуральные ингредиенты</h4>
+        <p>Только качественные продукты без искусственных добавок</p>
+      </div>
+      <div class="feature reveal">
+        <div class="feature-icon">🎯</div>
+        <h4>Свежесть под заказ</h4>
+        <p>Готовим специально для вас, всегда свежее</p>
+      </div>
+      <div class="feature reveal">
+        <div class="feature-icon">📦</div>
+        <h4>Доставка по СПб</h4>
+        <p>Аккуратная доставка в красивой упаковке</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ CONTACTS ══════════ -->
+<section id="contacts">
+  <div class="container">
+    <h2 class="section-title reveal">Свяжитесь с нами</h2>
+    <p class="section-sub reveal">Готовы сделать заказ? Мы всегда на связи!</p>
+    <div class="contacts-grid">
+      <div class="card reveal">
+        <h3>Контакты</h3>
+        <p class="hours">Отвечаем обычно за 5–10 минут • Ежедневно 10:00–20:00</p>
+        <div class="contact-item">
+          <div class="contact-icon">📞</div>
+          <div>
+            <div class="label">Позвоните нам</div>
+            <a href="tel:+79119038886" class="value" style="text-decoration:none;color:inherit;">+7 911 903 88 86</a>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">💬</div>
+          <div>
+            <div class="label">Напишите в WhatsApp</div>
+            <div class="value">Быстрый ответ</div>
+          </div>
+        </div>
+        <a href="https://wa.me/79119038886?text=Здравствуйте!%20Хочу%20сделать%20заказ" target="_blank" class="btn-wa">Заказать через WhatsApp</a>
+      </div>
+
+      <div class="card reveal">
+        <h3>Форма заказа</h3>
+        <p class="hours" style="opacity:0"> </p>
+        <div class="form-group">
+          <label>Имя</label>
+          <input type="text" id="fname" placeholder="Как к Вам обращаться?" />
+        </div>
+        <div class="form-group">
+          <label>Телефон</label>
+          <input type="tel" id="fphone" placeholder="+7 911 903 88 86" />
+        </div>
+        <div class="form-group">
+          <label>Комментарий к заказу</label>
+          <textarea id="fcomment" placeholder="Какой десерт, вес/размер, дата, пожелания по декору…"></textarea>
+        </div>
+        <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="#">обработкой персональных данных</a></p>
+        <button class="btn-wa" onclick="sendFormWA()">Отправить заказ</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ CART BUTTON ══════════ -->
+<button class="cart-btn" onclick="openCart()" aria-label="Корзина">
+  🛒
+  <span class="cart-badge" id="cartBadge">0</span>
+</button>
+
+<!-- ══════════ CART DRAWER ══════════ -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-header">
+    <h3>🛒 Ваш заказ <span class="cart-count-badge" id="cartCountBadge">0</span></h3>
+    <button class="cart-close" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-body" id="cartBody"></div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-total">
+      <span>Итого:</span>
+      <span class="total-val" id="cartTotal">0 ₽</span>
+    </div>
+    <p class="note">Дополнительный декор оплачивается отдельно.</p>
+
+    <div class="cart-form">
+      <h4>Ваши данные</h4>
+      <div class="form-group">
+        <input type="text" id="cname" placeholder="Как к Вам обращаться?" />
+      </div>
+      <div class="form-group">
+        <input type="tel" id="cphone" placeholder="+7 911 903 88 86" />
+      </div>
+      <div class="form-group">
+        <input type="text" id="cdate" placeholder="дд.мм.гггг" />
+      </div>
+      <div class="form-group">
+        <textarea id="ccomment" placeholder="Укажите вес/размер, пожелания по декору, доставка/самовывоз, адрес…" style="min-height:70px;"></textarea>
+      </div>
+    </div>
+
+    <div class="cart-actions">
+      <a id="btnWA" href="#" target="_blank" class="btn-tg wa" onclick="buildWA(event)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Отправить в WhatsApp
+      </a>
+      <a id="btnTG" href="#" target="_blank" class="btn-tg tg" onclick="buildTG(event)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.96 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        Отправить в Telegram
+      </a>
+      <a href="tel:+79119038886" class="btn-tg call">
+        📞 Позвонить +7 911 903 88 86
+      </a>
+    </div>
+    <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="#">обработкой персональных данных</a></p>
+  </div>
+</div>
+
+<script>
+// ── DATA ──
+const products = [
+  { id: 1, name: 'Бисквитный торт', desc: 'Воздушный торт с нежнейшим кремом и авторским декором', min: 'Заказ от 2 кг, декор рассчитывается отдельно', price: 'от 2 800 ₽/кг', priceNum: 2800, unit: 'кг', emoji: '🎂',
+    slides: ['cake_biscuit_1.png', 'cake_biscuit_2.png', 'cake_biscuit_3.png'],
+    slidePos: ['center 30%', 'center 25%', 'center 20%'] },
+  { id: 2, name: 'Бенто торт', desc: 'Миниатюрный торт — идеальный подарок для особенного момента', min: '', price: '1 600 ₽', priceNum: 1600, unit: 'шт', emoji: '🍰',
+    slides: ['bento_1.jpg', 'bento_2.png', 'bento_3.png', 'bento_4.png'],
+    slidePos: ['60% 50%', 'center 5%', 'center 45%', 'center 40%'],
+    slideScale: [1.4, 1, 1, 1] },
+  { id: 3, name: '3D Торт', desc: 'Уникальный дизайнерский торт с объёмными элементами', min: 'Заказ от 3 кг', price: '5 000 ₽/кг', priceNum: 5000, unit: 'кг', emoji: '✨',
+    slides: ['cake_3d.png', 'cake_3d_2.png'],
+    slidePos: ['center 0%', 'center 0%'],
+    slideScale: [1, 1] },
+  { id: 4, name: 'Меренговый рулет', desc: 'Хрустящая меренга с нежным кремом — наш фирменный десерт', min: '', price: '2 500 ₽/шт', priceNum: 2500, unit: 'шт', emoji: '🥐',
+    img: 'meringue_roll.png', imgPos: 'center 35%' },
+  { id: 5, name: 'Пирожное "Павлова"', desc: 'Воздушная меренга с кремом и начинкой из ягод', min: 'Заказ от 2 шт', price: '350 ₽/шт', priceNum: 350, unit: 'шт', emoji: '🍓',
+    slides: ['pavlova.png', 'pavlova_2.jpg'],
+    slidePos: ['center 55%', 'center 45%'] },
+  { id: 6, name: 'Капкейки', desc: 'Набор изящных капкейков с разными вкусами', min: 'Заказ от 6 шт одного вкуса', price: '350 ₽/шт', priceNum: 350, unit: 'шт', emoji: '🧁',
+    slides: ['cupcakes.png', 'cupcakes_2.png'],
+    slidePos: ['center 35%', 'center 40%'] },
+];
+
+let cart = {};
+
+function renderCatalog() {
+  const grid = document.getElementById('catalogGrid');
+  grid.innerHTML = products.map(p => {
+    let imgHtml;
+    if (p.slides && p.slides.length) {
+      imgHtml = `
+        <div class="slider-wrap" id="slider-${p.id}">
+          ${p.slides.map((src, i) => {
+            const pos = p.slidePos ? p.slidePos[i] : 'center center';
+            const scale = p.slideScale ? p.slideScale[i] : 1;
+            const active = i === 0 ? ' active' : '';
+            return `<img src="${src}" alt="${p.name}" class="slide-img${active}"
+              style="object-position:${pos};transform:scale(${scale});transform-origin:${pos};">`;
+          }).join('')}
+          <div class="slider-dots">
+            ${p.slides.map((_, i) => `<span class="dot${i === 0 ? ' active' : ''}" onclick="goSlide(${p.id},${i})"></span>`).join('')}
+          </div>
+        </div>`;
+    } else if (p.img) {
+      imgHtml = `<img src="${p.img}" alt="${p.name}" class="product-img" style="object-position:${p.imgPos || 'center center'};">`;
+    } else {
+      imgHtml = `<div class="product-img-ph">${p.emoji}</div>`;
+    }
+    return `
+    <div class="product-card reveal">
+      ${imgHtml}
+      <div class="product-info">
+        <h3>${p.name}</h3>
+        <p class="desc">${p.desc}</p>
+        ${p.min ? `<p class="min-order">${p.min}</p>` : '<p class="min-order"> </p>'}
+        <div class="product-footer">
+          <span class="price">${p.price}</span>
+          <button class="btn-add" onclick="addToCart(${p.id})">Добавить в корзину</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Auto-slide
+  products.forEach(p => {
+    if (p.slides && p.slides.length > 1) {
+      let cur = 0;
+      setInterval(() => {
+        cur = (cur + 1) % p.slides.length;
+        goSlide(p.id, cur);
+      }, 3000);
+    }
+  });
+
+  observeReveal();
+}
+
+function goSlide(pid, idx) {
+  const wrap = document.getElementById('slider-' + pid);
+  if (!wrap) return;
+  wrap.querySelectorAll('.slide-img').forEach((el, i) => el.classList.toggle('active', i === idx));
+  wrap.querySelectorAll('.dot').forEach((el, i) => el.classList.toggle('active', i === idx));
+}
+
+function addToCart(id) {
+  cart[id] = (cart[id] || 0) + 1;
+  updateCartUI();
+}
+
+function removeFromCart(id) {
+  delete cart[id];
+  updateCartUI();
+}
+
+function changeQty(id, delta) {
+  cart[id] = (cart[id] || 0) + delta;
+  if (cart[id] <= 0) delete cart[id];
+  updateCartUI();
+}
+
+function updateCartUI() {
+  const count = Object.values(cart).reduce((a, b) => a + b, 0);
+  const badge = document.getElementById('cartBadge');
+  badge.textContent = count;
+  badge.classList.toggle('visible', count > 0);
+  document.getElementById('cartCountBadge').textContent = count;
+
+  const body = document.getElementById('cartBody');
+  const footer = document.getElementById('cartFooter');
+
+  const items = Object.entries(cart);
+  if (!items.length) {
+    body.innerHTML = '<div class="cart-empty">Корзина пуста 🧁<br><br>Добавьте что-нибудь!</div>';
+    footer.style.display = 'none';
+    return;
+  }
+
+  let total = 0;
+  body.innerHTML = items.map(([id, qty]) => {
+    const p = products.find(x => x.id === +id);
+    total += p.priceNum * qty;
+    return `
+      <div class="cart-item">
+        <div class="cart-item-info">
+          <h4>${p.name}</h4>
+          <div class="item-price">${p.price}</div>
+          ${p.min ? `<div class="item-min">${p.min}</div>` : ''}
+        </div>
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="changeQty(${id}, -1)">−</button>
+          <span class="qty-val">${qty} шт.</span>
+          <button class="qty-btn" onclick="changeQty(${id}, 1)">+</button>
+        </div>
+        <button class="del-btn" onclick="removeFromCart(${id})">🗑</button>
+      </div>`;
+  }).join('');
+
+  document.getElementById('cartTotal').textContent = total.toLocaleString('ru') + ' ₽';
+  footer.style.display = 'block';
+}
+
+function buildMessage() {
+  const name = document.getElementById('cname').value || '—';
+  const phone = document.getElementById('cphone').value || '—';
+  const date = document.getElementById('cdate').value || '—';
+  const comment = document.getElementById('ccomment').value || '—';
+
+  const items = Object.entries(cart).map(([id, qty]) => {
+    const p = products.find(x => x.id === +id);
+    return `• ${p.name} — ${qty} шт. (${p.price})`;
+  }).join('\n');
+
+  const total = Object.entries(cart).reduce((s, [id, qty]) => {
+    return s + products.find(x => x.id === +id).priceNum * qty;
+  }, 0);
+
+  return `Привет! Хочу сделать заказ 🎂\n\n${items}\n\nИтого: ${total.toLocaleString('ru')} ₽\n\nИмя: ${name}\nТелефон: ${phone}\nДата готовности: ${date}\nКомментарий: ${comment}`;
+}
+
+function buildWA(e) {
+  e.preventDefault();
+  const msg = encodeURIComponent(buildMessage());
+  window.open(`https://wa.me/79119038886?text=${msg}`, '_blank');
+}
+
+function buildTG(e) {
+  e.preventDefault();
+  const msg = encodeURIComponent(buildMessage());
+  window.open(`https://t.me/+79119038886?text=${msg}`, '_blank');
+}
+
+function sendFormWA() {
+  const name = document.getElementById('fname').value || '—';
+  const phone = document.getElementById('fphone').value || '—';
+  const comment = document.getElementById('fcomment').value || '—';
+  const msg = encodeURIComponent(`Привет! 👋\nИмя: ${name}\nТелефон: ${phone}\nКомментарий: ${comment}`);
+  window.open(`https://wa.me/79119038886?text=${msg}`, '_blank');
+}
+
+function openCart() {
+  document.getElementById('cartDrawer').classList.add('open');
+  document.getElementById('cartOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCart() {
+  document.getElementById('cartDrawer').classList.remove('open');
+  document.getElementById('cartOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ── REVEAL ON SCROLL ──
+function observeReveal() {
+  const els = document.querySelectorAll('.reveal:not(.visible)');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0.15 });
+  els.forEach(el => io.observe(el));
+}
+
+renderCatalog();
+updateCartUI();
+observeReveal();
+</script>
+</body>
+</html>
