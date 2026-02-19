@@ -705,8 +705,21 @@
 
     .product-card:hover {
       transform: translateY(-6px);
-      box-shadow: 0 20px 50px rgba(61,43,31,0.12);
+      box-shadow: 0 20px 50px rgba(61,43,31,0.12), 0 0 0 1.5px rgba(201,147,74,0.35);
     }
+    .product-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius);
+      border: 1.5px solid transparent;
+      transition: border-color 0.35s ease;
+      pointer-events: none;
+    }
+    .product-card:hover::after {
+      border-color: rgba(201,147,74,0.45);
+    }
+    .product-card { position: relative; }
 
     .product-img {
       width: 100%;
@@ -825,7 +838,11 @@
     .btn-add:hover { background: var(--gold-light); transform: scale(1.04); }
 
     /* ── WHY US ── */
-    #why { background: linear-gradient(180deg, #faf6ef 0%, #f0e6d4 100%); }
+    #why { 
+      background: linear-gradient(180deg, #faf6ef 0%, #f0e6d4 100%);
+      padding-top: 100px;
+      padding-bottom: 100px;
+    }
 
     .features-grid {
       display: grid;
@@ -1216,6 +1233,75 @@
     }
     .cart-close:hover { background: var(--cream-dark); border-color: var(--gold); }
 
+    /* ── CART PROGRESS ── */
+    .cart-progress {
+      display: flex;
+      align-items: center;
+      padding: 14px 28px;
+      border-bottom: 1px solid var(--cream-dark);
+      background: var(--cream);
+    }
+    .cart-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .cart-step-dot {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      border: 2px solid var(--cream-dark);
+      background: var(--white);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-family: 'Jost', sans-serif;
+      font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.35s, border-color 0.35s, color 0.35s;
+    }
+    .cart-step span {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-family: 'Jost', sans-serif;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: color 0.35s;
+    }
+    .cart-step.active .cart-step-dot {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(201,147,74,0.4);
+    }
+    .cart-step.active span { color: var(--gold); font-weight: 500; }
+    .cart-step.done .cart-step-dot {
+      background: var(--brown);
+      border-color: var(--brown);
+      color: #fff;
+    }
+    .cart-step-line {
+      flex: 1;
+      height: 2px;
+      background: var(--cream-dark);
+      margin: 0 8px;
+      margin-bottom: 14px;
+      border-radius: 2px;
+      position: relative;
+      overflow: hidden;
+    }
+    .cart-step-line::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.5s ease;
+      border-radius: 2px;
+    }
+    .cart-step-line.done::after { transform: scaleX(1); }
+
     .cart-body { 
       flex: 1; 
       overflow-y: auto; 
@@ -1339,6 +1425,66 @@
     .policy-note { font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 10px; line-height: 1.5; }
     .policy-note a { color: var(--gold); }
 
+    /* ── VK WIDGET SECTION ── */
+    #vk-section {
+      background: linear-gradient(180deg, var(--white) 0%, #f5efe4 100%);
+      padding: 100px 60px;
+    }
+    .vk-section-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .vk-widget-wrap {
+      display: flex;
+      justify-content: center;
+      margin-top: 48px;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 16px 60px rgba(61,43,31,0.12);
+    }
+    .vk-widget-wrap iframe {
+      border-radius: 24px;
+      width: 100%;
+      max-width: 600px;
+    }
+    .vk-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 32px;
+      padding: 14px 28px;
+      background: #0077FF;
+      color: #fff;
+      border-radius: 50px;
+      text-decoration: none;
+      font-family: 'Jost', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0,119,255,0.3);
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+    .vk-cta:hover {
+      background: #0066dd;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0,119,255,0.4);
+    }
+    .vk-section-footer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .vk-section-sub {
+      font-size: 14px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+    @media (max-width: 900px) {
+      #vk-section { padding: 70px 24px; }
+    }
+
     /* ── ANIMATIONS ── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(30px); }
@@ -1349,12 +1495,109 @@
       to   { opacity: 1; }
     }
 
+    /* ── WAVE DIVIDERS ── */
+    .wave-divider {
+      line-height: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .wave-divider svg {
+      display: block;
+      width: 100%;
+    }
+    .wave-hero-catalog {
+      background: #0d0805; /* hero bg color */
+      margin-bottom: -1px;
+    }
+    .wave-catalog-why {
+      background: #ffffff;
+      margin-bottom: -1px;
+    }
+    .wave-stats-calc {
+      background: var(--brown);
+      margin-bottom: -1px;
+    }
+
+    /* ── STAGGER REVEAL ── */
     .reveal {
       opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
+      transform: translateY(28px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
     }
     .reveal.visible { opacity: 1; transform: none; }
+    /* Stagger for catalog cards */
+    .product-card.reveal:nth-child(1) { transition-delay: 0s; }
+    .product-card.reveal:nth-child(2) { transition-delay: 0.08s; }
+    .product-card.reveal:nth-child(3) { transition-delay: 0.16s; }
+    .product-card.reveal:nth-child(4) { transition-delay: 0.24s; }
+    .product-card.reveal:nth-child(5) { transition-delay: 0.32s; }
+    .product-card.reveal:nth-child(6) { transition-delay: 0.40s; }
+    /* Stagger for features */
+    .feature.reveal:nth-child(1) { transition-delay: 0s; }
+    .feature.reveal:nth-child(2) { transition-delay: 0.1s; }
+    .feature.reveal:nth-child(3) { transition-delay: 0.2s; }
+    .feature.reveal:nth-child(4) { transition-delay: 0.3s; }
+
+    /* ── ANIMATED UNDERLINE ON SECTION TITLES ── */
+    .section-title {
+      position: relative;
+      display: block;
+      text-align: center;
+      width: 100%;
+    }
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -10px; left: 50%;
+      transform: translateX(-50%) scaleX(0);
+      width: 60px; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      border-radius: 2px;
+      transition: transform 0.6s 0.4s ease;
+    }
+    .section-title.visible::after { transform: translateX(-50%) scaleX(1); }
+
+    /* ── FLOATING LABEL FORM ── */
+    .form-group { margin-bottom: 22px; position: relative; }
+    .form-group.float-label label {
+      position: absolute;
+      top: 15px; left: 18px;
+      font-size: 14px;
+      color: var(--text-muted);
+      pointer-events: none;
+      transition: top 0.22s ease, font-size 0.22s ease, color 0.22s ease;
+      background: var(--cream);
+      padding: 0 4px;
+      border-radius: 3px;
+      z-index: 1;
+      margin-bottom: 0;
+    }
+    .form-group.float-label input:focus + label,
+    .form-group.float-label input:not(:placeholder-shown) + label,
+    .form-group.float-label textarea:focus + label,
+    .form-group.float-label textarea:not(:placeholder-shown) + label {
+      top: -9px;
+      font-size: 11px;
+      color: var(--gold);
+      background: var(--white);
+      letter-spacing: 0.03em;
+    }
+    .form-group.float-label input,
+    .form-group.float-label textarea { padding-top: 16px; }
+    /* Cart form uses white bg */
+    .cart-form .form-group.float-label label { background: var(--white); }
+    .cart-form .form-group.float-label input:not(:placeholder-shown) + label,
+    .cart-form .form-group.float-label input:focus + label,
+    .cart-form .form-group.float-label textarea:not(:placeholder-shown) + label,
+    .cart-form .form-group.float-label textarea:focus + label { background: var(--white); }
+
+    /* ── SECTION TITLE BLOCK ── */
+    .section-title-wrap {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+    .section-title-wrap .section-title { margin-bottom: 0; }
+    .section-title-wrap .section-sub { margin-top: 20px; margin-bottom: 0; }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
@@ -1463,6 +1706,7 @@
 </section>
 
 <!-- ══════════ CATALOG ══════════ -->
+
 <section id="catalog">
   <div class="container">
     <h2 class="section-title reveal">Наши Десерты</h2>
@@ -1474,6 +1718,7 @@
 </section>
 
 <!-- ══════════ WHY US ══════════ -->
+
 <section id="why">
   <div class="container">
     <h2 class="section-title reveal">Почему выбирают нас</h2>
@@ -1621,19 +1866,27 @@
   </div>
 </div>
 
+
+<!-- wave between reviews and calculator -->
+<div style="line-height:0;overflow:hidden;background:#ffffff;margin-bottom:-1px;">
+  <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;">
+    <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="#faf6ef"/>
+  </svg>
+</div>
+
 <!-- ══════════ CALCULATOR ══════════ -->
 <section id="calculator">
   <div class="container">
-    <h2 class="section-title reveal">Рассчитать стоимость</h2>
-    <p class="section-sub reveal">Узнайте примерную цену вашего торта</p>
+    <h2 class="section-title reveal">Рассчитать Стоимость</h2>
+    <p class="section-sub reveal">Узнайте Примерную Цену Вашего Торта</p>
     <div class="calc-wrap reveal">
       <div class="calc-row">
-        <label>Тип торта</label>
+        <label>Тип Торта</label>
         <div class="calc-options" id="calcType">
           <div class="calc-opt selected" data-price="2800" onclick="selectOpt(this,'calcType')">Бисквитный</div>
           <div class="calc-opt" data-price="1600" onclick="selectOpt(this,'calcType')">Бенто</div>
-          <div class="calc-opt" data-price="5000" onclick="selectOpt(this,'calcType')">3D торт</div>
-          <div class="calc-opt" data-price="2500" onclick="selectOpt(this,'calcType')">Меренговый рулет</div>
+          <div class="calc-opt" data-price="5000" onclick="selectOpt(this,'calcType')">3D Торт</div>
+          <div class="calc-opt" data-price="2500" onclick="selectOpt(this,'calcType')">Меренговый Рулет</div>
         </div>
       </div>
       <div class="calc-row" id="calcWeightRow">
@@ -1648,7 +1901,7 @@
         <label>Начинка</label>
         <div class="calc-options" id="calcFill">
           <div class="calc-opt selected" data-price="0" onclick="selectOpt(this,'calcFill')">Классическая</div>
-          <div class="calc-opt" data-price="200" onclick="selectOpt(this,'calcFill')">С ягодами</div>
+          <div class="calc-opt" data-price="200" onclick="selectOpt(this,'calcFill')">С Ягодами</div>
           <div class="calc-opt" data-price="300" onclick="selectOpt(this,'calcFill')">Фисташковая</div>
           <div class="calc-opt" data-price="300" onclick="selectOpt(this,'calcFill')">Шоколадная</div>
         </div>
@@ -1656,18 +1909,18 @@
       <div class="calc-row">
         <label>Декор</label>
         <div class="calc-options" id="calcDecor">
-          <div class="calc-opt selected" data-price="0" onclick="selectOpt(this,'calcDecor')">Без декора</div>
+          <div class="calc-opt selected" data-price="0" onclick="selectOpt(this,'calcDecor')">Без Декора</div>
           <div class="calc-opt" data-price="500" onclick="selectOpt(this,'calcDecor')">Цветы</div>
           <div class="calc-opt" data-price="800" onclick="selectOpt(this,'calcDecor')">Фигурки</div>
-          <div class="calc-opt" data-price="1200" onclick="selectOpt(this,'calcDecor')">Авторский декор</div>
+          <div class="calc-opt" data-price="1200" onclick="selectOpt(this,'calcDecor')">Авторский Декор</div>
         </div>
       </div>
       <div class="calc-result">
         <div>
-          <div class="calc-result-label" id="calcLabel">Примерная стоимость</div>
+          <div class="calc-result-label" id="calcLabel">Примерная Стоимость</div>
           <div class="calc-result-price" id="calcResult">5 600 ₽</div>
-          <div class="calc-approx-badge" id="calcApproxBadge">⚠ Уточните точную цену при заказе</div>
-          <div class="calc-result-note" id="calcNote">Точная цена согласовывается при заказе</div>
+          <div class="calc-approx-badge" id="calcApproxBadge">⚠ Уточните Точную Цену При Заказе</div>
+          <div class="calc-result-note" id="calcNote">Точная Цена Согласовывается При Заказе</div>
         </div>
         <a href="#contacts" class="calc-order-btn">Заказать 🎂</a>
       </div>
@@ -1746,17 +1999,17 @@
       <div class="card reveal">
         <h3>Форма заказа</h3>
         <p class="hours" style="opacity:0"> </p>
-        <div class="form-group">
-          <label>Имя</label>
-          <input type="text" id="fname" placeholder="Как к Вам обращаться?" />
+        <div class="form-group float-label">
+          <input type="text" id="fname" placeholder=" " />
+          <label for="fname">Как к Вам обращаться?</label>
         </div>
-        <div class="form-group">
-          <label>Телефон</label>
-          <input type="tel" id="fphone" placeholder="+7 911 903 88 86" />
+        <div class="form-group float-label">
+          <input type="tel" id="fphone" placeholder=" " />
+          <label for="fphone">Телефон</label>
         </div>
-        <div class="form-group">
-          <label>Комментарий к заказу</label>
-          <textarea id="fcomment" placeholder="Какой десерт, вес/размер, дата, пожелания по декору…"></textarea>
+        <div class="form-group float-label">
+          <textarea id="fcomment" placeholder=" "></textarea>
+          <label for="fcomment">Комментарий — вес, декор, дата…</label>
         </div>
         <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="#">обработкой персональных данных</a></p>
         <button class="btn-wa" onclick="sendFormWA()">Отправить заказ</button>
@@ -1781,6 +2034,23 @@
       <span style="font-size:11px;display:block;line-height:1;margin-top:1px;color:var(--text-muted)">закрыть</span>
     </button>
   </div>
+  <!-- Progress steps -->
+  <div class="cart-progress" id="cartProgress">
+    <div class="cart-step active" id="step1">
+      <div class="cart-step-dot">1</div>
+      <span>Выбор</span>
+    </div>
+    <div class="cart-step-line" id="stepLine1"></div>
+    <div class="cart-step" id="step2">
+      <div class="cart-step-dot">2</div>
+      <span>Данные</span>
+    </div>
+    <div class="cart-step-line" id="stepLine2"></div>
+    <div class="cart-step" id="step3">
+      <div class="cart-step-dot">3</div>
+      <span>Отправка</span>
+    </div>
+  </div>
   <div class="cart-body" id="cartBody"></div>
   <div class="cart-footer" id="cartFooter" style="display:none">
     <div class="cart-total">
@@ -1791,17 +2061,21 @@
 
     <div class="cart-form">
       <h4>Ваши данные</h4>
-      <div class="form-group">
-        <input type="text" id="cname" placeholder="Как к Вам обращаться?" />
+      <div class="form-group float-label">
+        <input type="text" id="cname" placeholder=" " />
+        <label for="cname">Как к Вам обращаться?</label>
       </div>
-      <div class="form-group">
-        <input type="tel" id="cphone" placeholder="+7 911 903 88 86" />
+      <div class="form-group float-label">
+        <input type="tel" id="cphone" placeholder=" " />
+        <label for="cphone">Телефон</label>
       </div>
-      <div class="form-group">
-        <input type="text" id="cdate" placeholder="дд.мм.гггг" />
+      <div class="form-group float-label">
+        <input type="text" id="cdate" placeholder=" " />
+        <label for="cdate">Дата получения (дд.мм.гггг)</label>
       </div>
-      <div class="form-group">
-        <textarea id="ccomment" placeholder="Укажите вес/размер, пожелания по декору, доставка/самовывоз, адрес…" style="min-height:70px;"></textarea>
+      <div class="form-group float-label">
+        <textarea id="ccomment" placeholder=" " style="min-height:70px;"></textarea>
+        <label for="ccomment">Вес, декор, доставка/самовывоз…</label>
       </div>
     </div>
 
@@ -1974,6 +2248,28 @@ function changeQty(id, delta) {
   updateCartUI();
 }
 
+function setCartStep(step) {
+  // step 1 = items added, step 2 = filling form, step 3 = sent
+  const steps = [
+    document.getElementById('step1'),
+    document.getElementById('step2'),
+    document.getElementById('step3')
+  ];
+  const lines = [
+    document.getElementById('stepLine1'),
+    document.getElementById('stepLine2')
+  ];
+  if (!steps[0]) return;
+  steps.forEach((s, i) => {
+    s.classList.remove('active', 'done');
+    if (i + 1 < step) s.classList.add('done');
+    else if (i + 1 === step) s.classList.add('active');
+  });
+  lines.forEach((l, i) => {
+    l.classList.toggle('done', i + 1 < step);
+  });
+}
+
 function updateCartUI() {
   const totalItems = Object.keys(cart).length;
   const badge = document.getElementById('cartBadge');
@@ -2059,6 +2355,7 @@ function buildMessage() {
 }
 
 function buildWA(e) {
+  setCartStep(3);
   e.preventDefault();
   const msg = buildMessage();
   if (!msg) return;
@@ -2084,6 +2381,19 @@ function openCart() {
   document.getElementById('cartDrawer').classList.add('open');
   document.getElementById('cartOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+  // Set step based on cart state
+  const hasItems = Object.keys(cart).length > 0;
+  setCartStep(hasItems ? 2 : 1);
+  // Watch for form interaction → step 2
+  setTimeout(() => {
+    ['cname','cphone','cdate','ccomment'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && !el._stepBound) {
+        el._stepBound = true;
+        el.addEventListener('focus', () => setCartStep(2), { once: false });
+      }
+    });
+  }, 200);
 }
 
 function closeCart() {
@@ -2091,6 +2401,31 @@ function closeCart() {
   document.getElementById('cartOverlay').classList.remove('open');
   document.body.style.overflow = '';
 }
+
+// ── PARALLAX ON HERO ORBS ──
+(function() {
+  const orbs = document.querySelectorAll('.hero-orb-1, .hero-orb-2, .hero-orb-3');
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const y = window.scrollY;
+      if (orbs[0]) orbs[0].style.transform = `translateY(${y * 0.15}px)`;
+      if (orbs[1]) orbs[1].style.transform = `translateY(${y * -0.10}px)`;
+      if (orbs[2]) orbs[2].style.transform = `translateY(${y * 0.08}px)`;
+      ticking = false;
+    });
+  }, { passive: true });
+})();
+
+// ── SMOOTH IMAGE FADE-IN ON LOAD ──
+document.querySelectorAll('img').forEach(img => {
+  if (img.complete) return;
+  img.style.opacity = '0';
+  img.style.transition = 'opacity 0.5s ease';
+  img.addEventListener('load', () => { img.style.opacity = '1'; });
+});
 
 // ── CART SWIPE-RIGHT TO CLOSE ──
 (function() {
