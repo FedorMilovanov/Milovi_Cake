@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Milovi Cake — Торты и десерты на заказ в Санкт-Петербурге</title>
+  <meta name="description" content="Авторские торты, бенто, 3D-торты, меренговые рулеты и десерты ручной работы на заказ в Санкт-Петербурге. Доставка по СПб. Заказ от 2 кг." />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:title" content="Milovi Cake — Авторские торты на заказ в СПб" />
+  <meta property="og:description" content="Нежнейшие торты и десерты ручной работы. Бисквитные, бенто, 3D-торты, меренговые рулеты, Павлова, капкейки." />
+  <meta property="og:image" content="hero.jpg" />
+  <meta property="og:type" content="website" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
@@ -40,7 +46,6 @@
     /* ── HERO ── */
     .hero {
       min-height: 100vh;
-      background: linear-gradient(135deg, #faf6ef 0%, #f0e8d8 60%, #e8dcc8 100%);
       display: flex;
       align-items: center;
       padding: 80px 60px;
@@ -48,23 +53,57 @@
       overflow: hidden;
     }
 
-    .hero::before {
+    /* Video background */
+    .hero-video-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      background: #1a1209;
+    }
+
+    .hero-video-bg iframe {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      /* scale up to cover the whole area regardless of aspect ratio */
+      width: 177.78vh;  /* 16/9 * 100vh */
+      height: 56.25vw;  /* 9/16 * 100vw */
+      min-width: 100%;
+      min-height: 100%;
+      transform: translate(-50%, -50%);
+      border: 0;
+      pointer-events: none;
+    }
+
+    /* Dark overlay so text is readable */
+    .hero-video-bg::after {
       content: '';
       position: absolute;
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(201,147,74,0.12) 0%, transparent 70%);
-      top: -100px; right: -100px;
-      border-radius: 50%;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(20, 10, 5, 0.62) 0%,
+        rgba(30, 15, 5, 0.45) 60%,
+        rgba(20, 10, 5, 0.35) 100%
+      );
     }
+
+    /* Text colours adapted for dark background */
+    .hero-text h1 { color: #fff; }
+    .hero-text p  { color: rgba(255,255,255,0.82); }
+    .btn-phone    { color: #fff; border-color: rgba(255,255,255,0.35); }
+    .btn-phone:hover { border-color: var(--gold); background: rgba(201,147,74,0.15); }
 
     .hero-content {
       max-width: 1300px;
       width: 100%;
       margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 60px;
-      align-items: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
     }
 
     .hero-text h1 {
@@ -141,6 +180,19 @@
       box-shadow: 0 30px 80px rgba(61,43,31,0.2);
     }
 
+    /* Video wrap */
+    .hero-video-wrap {
+      position: relative;
+      overflow: hidden;
+      border-radius: 24px;
+      box-shadow: 0 30px 80px rgba(61,43,31,0.22);
+      background: #1a1209;
+      width: 100%;
+      max-width: 560px;
+      aspect-ratio: 4/3;
+      margin-left: auto;
+    }
+
     /* placeholder image */
     .hero-img-wrap {
       width: 100%;
@@ -203,7 +255,6 @@
       overflow: hidden;
       background: var(--cream);
       transition: transform 0.25s, box-shadow 0.25s;
-      cursor: pointer;
     }
 
     .product-card:hover {
@@ -580,7 +631,6 @@
       margin-bottom: 12px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
       gap: 12px;
     }
 
@@ -612,6 +662,23 @@
     .qty-btn:hover { background: var(--gold); color: var(--white); }
 
     .qty-val { font-size: 15px; font-weight: 500; min-width: 20px; text-align: center; }
+
+    .cart-item-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+    .cart-line-total {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--brown);
+      white-space: nowrap;
+    }
+
+    /* Image error fallback */
+    img { background: linear-gradient(135deg, #e8d8c4, #d4b896); }
 
     .del-btn {
       background: none;
@@ -692,9 +759,6 @@
     /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
       .hero { padding: 60px 30px; }
-      .hero-content { grid-template-columns: 1fr; gap: 40px; }
-      .hero-image { order: -1; }
-      .img-placeholder { max-width: 100%; margin: 0; }
       section { padding: 70px 30px; }
       .catalog-grid { grid-template-columns: 1fr 1fr; }
       .features-grid { grid-template-columns: 1fr 1fr; }
@@ -713,6 +777,15 @@
 
 <!-- ══════════ HERO ══════════ -->
 <section class="hero" id="home">
+  <!-- Fullscreen video background -->
+  <div class="hero-video-bg">
+    <iframe
+      src="https://vk.com/video_ext.php?oid=-68859909&id=456239021&hd=2&autoplay=1&loop=1&muted=1&controls=0&js_api=1"
+      allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+      allowfullscreen
+    ></iframe>
+  </div>
+
   <div class="hero-content">
     <div class="hero-text">
       <h1>Milovi Cake</h1>
@@ -723,11 +796,6 @@
           <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.07 2.18 2 2 0 012.03 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
           +7 911 903 88 86
         </a>
-      </div>
-    </div>
-    <div class="hero-image">
-      <div class="hero-img-wrap">
-        <img src="hero.jpg" alt="Milovi Cake — авторский торт ручной работы" />
       </div>
     </div>
   </div>
@@ -878,14 +946,14 @@
 <script>
 // ── DATA ──
 const products = [
-  { id: 1, name: 'Бисквитный торт', desc: 'Воздушный торт с нежнейшим кремом и авторским декором', min: 'Заказ от 2 кг, декор рассчитывается отдельно', price: 'от 2 800 ₽/кг', priceNum: 2800, unit: 'кг', emoji: '🎂',
+  { id: 1, name: 'Бисквитный торт', desc: 'Воздушный торт с нежнейшим кремом и авторским декором', min: 'Заказ от 2 кг, декор рассчитывается отдельно', price: 'от 2 800 ₽/кг', priceNum: 2800, unit: 'кг', minKg: 2, emoji: '🎂',
     slides: ['cake_biscuit_1.png', 'cake_biscuit_2.png', 'cake_biscuit_3.png'],
     slidePos: ['center 30%', 'center 25%', 'center 20%'] },
   { id: 2, name: 'Бенто торт', desc: 'Миниатюрный торт — идеальный подарок для особенного момента', min: '', price: '1 600 ₽', priceNum: 1600, unit: 'шт', emoji: '🍰',
     slides: ['bento_1.jpg', 'bento_2.png', 'bento_3.png', 'bento_4.png'],
     slidePos: ['60% 50%', 'center 5%', 'center 45%', 'center 40%'],
     slideScale: [1.4, 1, 1, 1] },
-  { id: 3, name: '3D Торт', desc: 'Уникальный дизайнерский торт с объёмными элементами', min: 'Заказ от 3 кг', price: '5 000 ₽/кг', priceNum: 5000, unit: 'кг', emoji: '✨',
+  { id: 3, name: '3D Торт', desc: 'Уникальный дизайнерский торт с объёмными элементами', min: 'Заказ от 3 кг', price: '5 000 ₽/кг', priceNum: 5000, unit: 'кг', minKg: 3, emoji: '✨',
     slides: ['cake_3d.png', 'cake_3d_2.png'],
     slidePos: ['center 0%', 'center 0%'],
     slideScale: [1, 1] },
@@ -899,9 +967,15 @@ const products = [
     slidePos: ['center 35%', 'center 40%'] },
 ];
 
+// cart: { [id]: { qty: number } }  — for kg-products qty is in kg (step 0.5)
 let cart = {};
 
+const slideTimers = {};
+
 function renderCatalog() {
+  Object.values(slideTimers).forEach(id => clearInterval(id));
+  Object.keys(slideTimers).forEach(k => delete slideTimers[k]);
+
   const grid = document.getElementById('catalogGrid');
   grid.innerHTML = products.map(p => {
     let imgHtml;
@@ -913,6 +987,7 @@ function renderCatalog() {
             const scale = p.slideScale ? p.slideScale[i] : 1;
             const active = i === 0 ? ' active' : '';
             return `<img src="${src}" alt="${p.name}" class="slide-img${active}"
+              onerror="this.style.display='none'"
               style="object-position:${pos};transform:scale(${scale});transform-origin:${pos};">`;
           }).join('')}
           <div class="slider-dots">
@@ -920,7 +995,7 @@ function renderCatalog() {
           </div>
         </div>`;
     } else if (p.img) {
-      imgHtml = `<img src="${p.img}" alt="${p.name}" class="product-img" style="object-position:${p.imgPos || 'center center'};">`;
+      imgHtml = `<img src="${p.img}" alt="${p.name}" class="product-img" onerror="this.style.display='none'" style="object-position:${p.imgPos || 'center center'};">`;
     } else {
       imgHtml = `<div class="product-img-ph">${p.emoji}</div>`;
     }
@@ -939,11 +1014,11 @@ function renderCatalog() {
     </div>`;
   }).join('');
 
-  // Auto-slide
+  // Auto-slide (store IDs to allow cleanup)
   products.forEach(p => {
     if (p.slides && p.slides.length > 1) {
       let cur = 0;
-      setInterval(() => {
+      slideTimers[p.id] = setInterval(() => {
         cur = (cur + 1) % p.slides.length;
         goSlide(p.id, cur);
       }, 3000);
@@ -961,7 +1036,15 @@ function goSlide(pid, idx) {
 }
 
 function addToCart(id) {
-  cart[id] = (cart[id] || 0) + 1;
+  const p = products.find(x => x.id === id);
+  if (!cart[id]) {
+    // Default: 1 шт or minimum kg
+    const defaultQty = p.unit === 'кг' ? (p.minKg || 1) : 1;
+    cart[id] = { qty: defaultQty };
+  } else {
+    const step = p.unit === 'кг' ? 0.5 : 1;
+    cart[id].qty = Math.round((cart[id].qty + step) * 10) / 10;
+  }
   updateCartUI();
 }
 
@@ -971,17 +1054,22 @@ function removeFromCart(id) {
 }
 
 function changeQty(id, delta) {
-  cart[id] = (cart[id] || 0) + delta;
-  if (cart[id] <= 0) delete cart[id];
+  const p = products.find(x => x.id === id);
+  const step = p.unit === 'кг' ? 0.5 : 1;
+  const minQty = p.unit === 'кг' ? (p.minKg || 1) : 1;
+  cart[id].qty = Math.round((cart[id].qty + delta * step) * 10) / 10;
+  if (cart[id].qty < minQty) {
+    delete cart[id];
+  }
   updateCartUI();
 }
 
 function updateCartUI() {
-  const count = Object.values(cart).reduce((a, b) => a + b, 0);
+  const totalItems = Object.keys(cart).length;
   const badge = document.getElementById('cartBadge');
-  badge.textContent = count;
-  badge.classList.toggle('visible', count > 0);
-  document.getElementById('cartCountBadge').textContent = count;
+  badge.textContent = totalItems;
+  badge.classList.toggle('visible', totalItems > 0);
+  document.getElementById('cartCountBadge').textContent = totalItems;
 
   const body = document.getElementById('cartBody');
   const footer = document.getElementById('cartFooter');
@@ -994,9 +1082,18 @@ function updateCartUI() {
   }
 
   let total = 0;
-  body.innerHTML = items.map(([id, qty]) => {
+  body.innerHTML = items.map(([id, entry]) => {
     const p = products.find(x => x.id === +id);
-    total += p.priceNum * qty;
+    const qty = entry.qty;
+    const lineTotal = p.priceNum * qty;
+    total += lineTotal;
+
+    const isKg = p.unit === 'кг';
+    const qtyLabel = isKg ? `${qty} кг` : `${qty} шт.`;
+    const lineTotalFmt = lineTotal.toLocaleString('ru') + ' ₽';
+    const minQty = isKg ? (p.minKg || 1) : 1;
+    const atMin = qty <= minQty;
+
     return `
       <div class="cart-item">
         <div class="cart-item-info">
@@ -1005,11 +1102,14 @@ function updateCartUI() {
           ${p.min ? `<div class="item-min">${p.min}</div>` : ''}
         </div>
         <div class="qty-ctrl">
-          <button class="qty-btn" onclick="changeQty(${id}, -1)">−</button>
-          <span class="qty-val">${qty} шт.</span>
+          <button class="qty-btn" onclick="changeQty(${id}, -1)" ${atMin ? 'title="Минимальный заказ"' : ''}>−</button>
+          <span class="qty-val">${qtyLabel}</span>
           <button class="qty-btn" onclick="changeQty(${id}, 1)">+</button>
         </div>
-        <button class="del-btn" onclick="removeFromCart(${id})">🗑</button>
+        <div class="cart-item-right">
+          <div class="cart-line-total">${lineTotalFmt}</div>
+          <button class="del-btn" onclick="removeFromCart(${id})" aria-label="Удалить">🗑</button>
+        </div>
       </div>`;
   }).join('');
 
@@ -1018,33 +1118,41 @@ function updateCartUI() {
 }
 
 function buildMessage() {
-  const name = document.getElementById('cname').value || '—';
-  const phone = document.getElementById('cphone').value || '—';
-  const date = document.getElementById('cdate').value || '—';
-  const comment = document.getElementById('ccomment').value || '—';
+  const name = document.getElementById('cname').value.trim() || '—';
+  const phone = document.getElementById('cphone').value.trim() || '—';
+  const date = document.getElementById('cdate').value.trim() || '—';
+  const comment = document.getElementById('ccomment').value.trim() || '—';
 
-  const items = Object.entries(cart).map(([id, qty]) => {
+  if (!Object.keys(cart).length) { alert('Корзина пуста!'); return null; }
+  if (!phone || phone === '—') { alert('Пожалуйста, укажите телефон.'); return null; }
+
+  const items = Object.entries(cart).map(([id, entry]) => {
     const p = products.find(x => x.id === +id);
-    return `• ${p.name} — ${qty} шт. (${p.price})`;
+    const qty = entry.qty;
+    const label = p.unit === 'кг' ? `${qty} кг` : `${qty} шт.`;
+    return `• ${p.name} — ${label} (${p.price})`;
   }).join('\n');
 
-  const total = Object.entries(cart).reduce((s, [id, qty]) => {
-    return s + products.find(x => x.id === +id).priceNum * qty;
+  const total = Object.entries(cart).reduce((s, [id, entry]) => {
+    const p = products.find(x => x.id === +id);
+    return s + p.priceNum * entry.qty;
   }, 0);
 
-  return `Привет! Хочу сделать заказ 🎂\n\n${items}\n\nИтого: ${total.toLocaleString('ru')} ₽\n\nИмя: ${name}\nТелефон: ${phone}\nДата готовности: ${date}\nКомментарий: ${comment}`;
+  return `Привет! Хочу сделать заказ 🎂\n\n${items}\n\nИтого (ориентировочно): ${total.toLocaleString('ru')} ₽\n\nИмя: ${name}\nТелефон: ${phone}\nДата готовности: ${date}\nКомментарий: ${comment}`;
 }
 
 function buildWA(e) {
   e.preventDefault();
-  const msg = encodeURIComponent(buildMessage());
-  window.open(`https://wa.me/79119038886?text=${msg}`, '_blank');
+  const msg = buildMessage();
+  if (!msg) return;
+  window.open(`https://wa.me/79119038886?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 function buildTG(e) {
   e.preventDefault();
-  const msg = encodeURIComponent(buildMessage());
-  window.open(`https://t.me/+79119038886?text=${msg}`, '_blank');
+  const msg = buildMessage();
+  if (!msg) return;
+  window.open(`https://t.me/milovi_cake?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 function sendFormWA() {
@@ -1076,9 +1184,9 @@ function observeReveal() {
   els.forEach(el => io.observe(el));
 }
 
-renderCatalog();
+renderCatalog(); // calls observeReveal() internally for catalog cards
 updateCartUI();
-observeReveal();
+observeReveal(); // picks up static .reveal elements (hero, sections, etc.)
 </script>
 </body>
 </html>
