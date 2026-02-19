@@ -1716,6 +1716,53 @@
       .hero-actions { flex-direction: column; align-items: flex-start; }
     }
 
+
+    /* ── GEO DELIVERY BLOCK ── */
+    .geo-section {
+      background: var(--cream);
+      padding: 50px 0 44px;
+      border-top: 1px solid rgba(201,147,74,0.12);
+    }
+    .geo-section .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+    .geo-section h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--brown);
+      margin-bottom: 14px;
+      letter-spacing: 0.02em;
+    }
+    .geo-section p {
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+      font-weight: 300;
+    }
+    .geo-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .geo-tag {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--brown-light);
+      background: rgba(201,147,74,0.08);
+      border: 1px solid rgba(201,147,74,0.2);
+      border-radius: 20px;
+      padding: 5px 14px;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    @media (max-width: 600px) {
+      .geo-section .container { padding: 0 24px; }
+      .geo-section { padding: 36px 0 32px; }
+    }
     /* ── SEO TEXT BLOCK ── */
     .seo-section {
       background: var(--cream-dark);
@@ -2221,6 +2268,32 @@
     <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="#">обработкой персональных данных</a></p>
   </div>
 </div>
+
+<!-- ══════════ GEO DELIVERY ══════════ -->
+<section class="geo-section">
+  <div class="container">
+    <h2>Доставка тортов по Санкт-Петербургу и пригородам</h2>
+    <p>Мы доставляем торты и десерты на заказ по всему Санкт-Петербургу, а также в пригороды и города Ленинградской области — Пушкин, Петергоф, Гатчину, Всеволожск, Колпино, Красное Село, Павловск, Сестрорецк, Ломоносов, Кронштадт, Тосно, Мурино, Кудрово, Шушары и другие. Доставка осуществляется собственной службой (по договорённости) или через Яндекс.Доставку. Самовывоз также доступен.</p>
+    <div class="geo-tags">
+      <span class="geo-tag">Торты в Пушкине</span>
+      <span class="geo-tag">Торты в Петергофе</span>
+      <span class="geo-tag">Торты в Гатчине</span>
+      <span class="geo-tag">Торты во Всеволожске</span>
+      <span class="geo-tag">Торты в Колпино</span>
+      <span class="geo-tag">Торты в Красном Селе</span>
+      <span class="geo-tag">Торты в Павловске</span>
+      <span class="geo-tag">Торты в Сестрорецке</span>
+      <span class="geo-tag">Торты в Ломоносове</span>
+      <span class="geo-tag">Торты в Кронштадте</span>
+      <span class="geo-tag">Торты в Тосно</span>
+      <span class="geo-tag">Торты в Мурино</span>
+      <span class="geo-tag">Торты в Кудрово</span>
+      <span class="geo-tag">Торты в Шушарах</span>
+      <span class="geo-tag">Доставка по ЛО</span>
+    </div>
+  </div>
+</section>
+
 
 <!-- ══════════ SEO TEXT ══════════ -->
 <section class="seo-section">
