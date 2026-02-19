@@ -52,46 +52,7 @@
       box-shadow: 0 0 8px rgba(201,147,74,0.5);
     }
 
-    /* ── CUSTOM CURSOR ── */
-    .cursor-dot {
-      position: fixed;
-      width: 8px; height: 8px;
-      background: var(--gold);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 9998;
-      transform: translate(-50%, -50%);
-      transition: transform 0.08s ease;
-      mix-blend-mode: multiply;
-    }
-    .cursor-ring {
-      position: fixed;
-      width: 34px; height: 34px;
-      border: 1.5px solid rgba(201,147,74,0.6);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 9997;
-      transform: translate(-50%, -50%);
-      transition: transform 0.18s ease, width 0.2s, height 0.2s, border-color 0.2s;
-    }
-    .cursor-ring.hover { width: 50px; height: 50px; border-color: var(--gold); }
 
-    /* ── CURSOR TRAIL ── */
-    .trail-dot {
-      position: fixed;
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--gold);
-      pointer-events: none;
-      z-index: 9996;
-      transform: translate(-50%, -50%);
-      opacity: 0;
-      transition: opacity 0.4s ease;
-    }
-
-    @media (hover: none) {
-      .cursor-dot, .cursor-ring, .trail-dot { display: none; }
-    }
 
     /* ── HEADER ── */
     .site-header {
@@ -113,12 +74,16 @@
     }
     .header-logo {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 22px;
-      font-weight: 600;
-      color: #fff;
+      font-size: 20px;
+      font-weight: 300;
+      color: rgba(255, 245, 220, 0.95);
       text-decoration: none;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
       transition: color 0.3s;
+      line-height: 72px;
+      display: flex;
+      align-items: center;
     }
     .site-header.scrolled .header-logo { color: var(--brown); }
 
@@ -330,15 +295,40 @@
     .calc-opt.selected { border-color: var(--gold); background: var(--gold); color: #fff; }
     .calc-slider-wrap { display: flex; align-items: center; gap: 16px; }
     .calc-slider {
-      flex: 1; -webkit-appearance: none; appearance: none;
-      height: 4px; border-radius: 2px;
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      border-radius: 2px;
       background: linear-gradient(90deg, var(--gold) var(--val, 33%), var(--cream-dark) var(--val, 33%));
-      outline: none; cursor: pointer;
+      outline: none;
+      cursor: pointer;
+      /* Скрываем нативный трек на всех браузерах */
+      border: none;
+    }
+    .calc-slider::-webkit-slider-runnable-track {
+      height: 4px;
+      border-radius: 2px;
+      border: none;
+      outline: none;
     }
     .calc-slider::-webkit-slider-thumb {
-      -webkit-appearance: none; width: 20px; height: 20px;
-      border-radius: 50%; background: var(--gold);
-      box-shadow: 0 2px 8px rgba(201,147,74,0.4); cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 2px 8px rgba(201,147,74,0.4);
+      cursor: pointer;
+      border: 3px solid #fff;
+    }
+    .calc-slider::-moz-range-thumb {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 2px 8px rgba(201,147,74,0.4);
+      cursor: pointer;
+      border: 3px solid #fff;
     }
     .calc-slider-val { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--gold); min-width: 60px; text-align: right; }
     .calc-result {
@@ -349,6 +339,16 @@
     .calc-result-label { color: rgba(255,255,255,0.7); font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; }
     .calc-result-price { font-family: 'Cormorant Garamond', serif; font-size: 42px; color: var(--gold-light); font-weight: 600; }
     .calc-result-note { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 4px; }
+    .calc-approx-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 50px; padding: 3px 10px;
+      font-size: 11px; color: rgba(255,255,255,0.7);
+      margin-top: 6px; letter-spacing: 0.03em;
+      opacity: 0; transform: translateY(4px);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .calc-approx-badge.visible { opacity: 1; transform: translateY(0); }
     .calc-order-btn {
       background: var(--gold); color: #fff;
       border: none; padding: 14px 28px; border-radius: 50px;
@@ -360,25 +360,6 @@
 
     /* ── PRODUCT CARD HOVER OVERLAY ── */
     .product-card { position: relative; }
-    .card-overlay {
-      position: absolute;
-      inset: 0; top: auto;
-      height: 50%;
-      background: linear-gradient(to top, rgba(61,43,31,0.85) 0%, transparent 100%);
-      display: flex; align-items: flex-end; justify-content: center;
-      padding-bottom: 20px;
-      opacity: 0; transition: opacity 0.3s;
-      border-radius: 0 0 var(--radius) var(--radius);
-      z-index: 2;
-    }
-    .product-card:hover .card-overlay { opacity: 1; }
-    .card-overlay-btn {
-      background: var(--gold); color: #fff;
-      border: none; padding: 10px 24px; border-radius: 50px;
-      font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 500;
-      cursor: pointer; transition: background 0.2s, transform 0.15s;
-    }
-    .card-overlay-btn:hover { background: var(--gold-light); transform: scale(1.04); }
     .slider-wrap, .product-img, .product-img-ph {
       transition: transform 0.4s ease;
     }
@@ -387,8 +368,6 @@
     .product-card:hover .product-img-ph {
       transform: scale(1.04);
     }
-    /* Hide original button when overlay is shown */
-    .product-card:hover .btn-add { opacity: 0; pointer-events: none; }
 
     h1, h2, h3, h4 {
       font-family: 'Cormorant Garamond', serif;
@@ -405,50 +384,76 @@
       overflow: hidden;
     }
 
-    /* Video background - triple layout */
-    .hero-video-bg {
+    /* Dark hero background */
+    .hero-dark-bg {
       position: absolute;
       inset: 0;
       z-index: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(201,147,74,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(201,147,74,0.08) 0%, transparent 50%),
+        linear-gradient(135deg, #0d0805 0%, #1a1009 40%, #120c06 70%, #0a0703 100%);
       overflow: hidden;
-      background: #1a1209;
     }
-
-    .hero-video-triple {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      width: 100%;
-      height: 100%;
-    }
-
-    .hero-video-triple iframe {
-      flex: 1;
-      height: 100%;
-      border: 0;
-      pointer-events: none;
-      /* each iframe covers its third; scale up to fill without gaps */
-      min-width: 0;
-    }
-
-    /* Dark overlay so text is readable */
-    .hero-video-bg::after {
+    /* Subtle grain texture */
+    .hero-dark-bg::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(
-        135deg,
-        rgba(20, 10, 5, 0.62) 0%,
-        rgba(30, 15, 5, 0.45) 60%,
-        rgba(20, 10, 5, 0.35) 100%
-      );
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.35;
+      pointer-events: none;
+    }
+    /* Gold shimmer line */
+    .hero-dark-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, transparent 0%, rgba(201,147,74,0.06) 50%, transparent 100%),
+        linear-gradient(180deg, rgba(201,147,74,0.04) 0%, transparent 40%, transparent 70%, rgba(201,147,74,0.03) 100%);
+      pointer-events: none;
+    }
+
+    /* Floating orbs */
+    .hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      animation: orbFloat 8s ease-in-out infinite;
+    }
+    .hero-orb-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(201,147,74,0.18) 0%, transparent 70%);
+      top: -100px; left: -100px;
+      animation-duration: 10s;
+    }
+    .hero-orb-2 {
+      width: 350px; height: 350px;
+      background: radial-gradient(circle, rgba(180,120,50,0.12) 0%, transparent 70%);
+      bottom: -80px; right: 10%;
+      animation-duration: 13s;
+      animation-delay: -4s;
+    }
+    .hero-orb-3 {
+      width: 250px; height: 250px;
+      background: radial-gradient(circle, rgba(220,170,90,0.1) 0%, transparent 70%);
+      top: 40%; left: 50%;
+      animation-duration: 9s;
+      animation-delay: -2s;
+    }
+    @keyframes orbFloat {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50%       { transform: translateY(-30px) scale(1.05); }
     }
 
     /* Text colours adapted for dark background */
-    .hero-text h1 { color: #fff; }
-    .hero-text p  { color: rgba(255,255,255,0.82); }
-    .btn-phone    { color: #fff; border-color: rgba(255,255,255,0.35); }
+    .hero-text h1 { color: rgba(245, 225, 175, 0.78); }
+    .hero-text p  { color: rgba(255, 235, 185, 0.65); }
+    .btn-phone    { color: rgba(255,255,255,0.95); border-color: rgba(255,255,255,0.35); }
     .btn-phone:hover { border-color: var(--gold); background: rgba(201,147,74,0.15); }
+    .hero .btn-phone { color: rgba(255,255,255,0.72) !important; border-color: rgba(255,255,255,0.28) !important; }
 
     .hero-content {
       max-width: 1300px;
@@ -464,14 +469,14 @@
     .hero-text h1 {
       font-size: clamp(52px, 6vw, 84px);
       line-height: 1.05;
-      color: var(--brown);
+      color: rgba(245, 225, 175, 0.78);
       margin-bottom: 24px;
       animation: fadeUp 0.8s ease both;
     }
 
     .hero-text p {
       font-size: clamp(18px, 2vw, 24px);
-      color: var(--brown-light);
+      color: rgba(255, 235, 185, 0.62);
       line-height: 1.5;
       margin-bottom: 40px;
       font-weight: 300;
@@ -703,26 +708,32 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 12px;
+      flex-wrap: nowrap;
     }
 
     .price {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 24px;
+      font-size: 20px;
       color: var(--gold);
       font-weight: 500;
+      flex-shrink: 1;
+      min-width: 0;
     }
 
     .btn-add {
       background: var(--gold);
       color: var(--white);
       border: none;
-      padding: 10px 22px;
+      padding: 10px 18px;
       border-radius: 50px;
       font-family: 'Jost', sans-serif;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
       cursor: pointer;
       transition: background 0.2s, transform 0.15s;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
 
     .btn-add:hover { background: var(--gold-light); transform: scale(1.04); }
@@ -839,11 +850,15 @@
     .google-btn { background: #4285F4; color: #fff; }
 
     .contact-item:has(.contact-social-btn) { align-items: center; }
+
+    .btn-wa {
+      display: block;
+      width: 100%;
       margin-top: 32px;
-      background: var(--gold);
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
       color: var(--white);
       border: none;
-      padding: 18px;
+      padding: 18px 32px;
       border-radius: 50px;
       font-family: 'Jost', sans-serif;
       font-size: 16px;
@@ -851,9 +866,124 @@
       cursor: pointer;
       text-align: center;
       text-decoration: none;
-      transition: background 0.2s, transform 0.15s;
+      letter-spacing: 0.03em;
+      box-shadow: 0 8px 24px rgba(201,147,74,0.40), 0 2px 8px rgba(201,147,74,0.2);
+      transition: background 0.25s, transform 0.18s, box-shadow 0.25s;
+      position: relative;
+      overflow: hidden;
     }
-    .btn-wa:hover { background: var(--gold-light); transform: translateY(-2px); }
+    .btn-wa::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+      border-radius: inherit;
+      pointer-events: none;
+    }
+    .btn-wa:hover {
+      background: linear-gradient(135deg, var(--gold-light) 0%, #e8c080 100%);
+      transform: translateY(-3px);
+      box-shadow: 0 14px 36px rgba(201,147,74,0.50), 0 4px 12px rgba(201,147,74,0.25);
+    }
+    .btn-wa:active { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(201,147,74,0.35); }
+
+    /* ── CONTACT PRIMARY ITEMS ── */
+    .contact-primary {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 20px 0 24px;
+    }
+    .contact-primary-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      background: var(--cream);
+      border-radius: 14px;
+      text-decoration: none;
+      color: inherit;
+      border: 1px solid var(--cream-dark);
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+    }
+    .contact-primary-item:hover {
+      border-color: var(--gold);
+      box-shadow: 0 4px 16px rgba(201,147,74,0.12);
+      transform: translateY(-1px);
+    }
+    .contact-primary-icon {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: var(--white);
+      border: 1px solid var(--cream-dark);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      color: var(--gold);
+    }
+    .contact-primary-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 2px;
+    }
+    .contact-primary-value {
+      font-size: 15px;
+      color: var(--brown);
+      font-weight: 500;
+    }
+
+    /* ── SOCIAL DIVIDER ── */
+    .social-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0 16px;
+    }
+    .social-divider::before,
+    .social-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--cream-dark);
+    }
+    .social-divider span {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+    }
+
+    /* ── SOCIAL LINKS ── */
+    .social-links {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 14px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.15s;
+      flex: 1;
+      min-width: fit-content;
+      justify-content: center;
+    }
+    .social-link:hover { opacity: 0.85; transform: translateY(-1px); }
+    .social-link.vk     { background: #0077FF22; color: #0077FF; border: 1px solid #0077FF33; }
+    .social-link.tg     { background: #2AABEE22; color: #0088cc; border: 1px solid #2AABEE33; }
+    .social-link.yt     { background: #FF000018; color: #cc0000; border: 1px solid #FF000025; }
+    .social-link.ya     { background: #FC3F1D18; color: #cc2200; border: 1px solid #FC3F1D25; }
+    .social-link.google { background: #4285F418; color: #2a6dd9; border: 1px solid #4285F425; }
+
+    /* ── BTN-WA with icon flex ── */
+    .btn-wa { display: flex; align-items: center; justify-content: center; gap: 10px; }
 
     /* Form */
     .form-group { margin-bottom: 18px; }
@@ -898,7 +1028,7 @@
     /* ── CART ── */
     .cart-btn {
       position: fixed;
-      bottom: 30px; right: 30px;
+      bottom: 90px; right: 30px;
       width: 60px; height: 60px;
       border-radius: 50%;
       background: var(--gold);
@@ -1142,6 +1272,7 @@
       #reviews { padding: 70px 16px !important; }
       .calc-wrap { padding: 28px 20px; }
       .floating-cta { display: none; }
+
     }
     @media (max-width: 560px) {
       .catalog-grid { grid-template-columns: 1fr; }
@@ -1155,10 +1286,6 @@
 
 <!-- ── PROGRESS BAR ── -->
 <div id="scroll-progress"></div>
-
-<!-- ── CUSTOM CURSOR ── -->
-<div class="cursor-dot" id="cursorDot"></div>
-<div class="cursor-ring" id="cursorRing"></div>
 
 <!-- ── TOAST ── -->
 <div class="toast" id="toast"></div>
@@ -1199,16 +1326,11 @@
 
 <!-- ══════════ HERO ══════════ -->
 <section class="hero" id="home">
-  <!-- Three videos side by side, covering full hero width -->
-  <div class="hero-video-bg">
-    <div class="hero-video-triple">
-      <iframe src="https://vk.com/video_ext.php?oid=-68859909&id=456239185&hd=2&autoplay=1&loop=1&muted=1&controls=0"
-        allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>
-      <iframe src="https://vk.com/video_ext.php?oid=-68859909&id=456239021&hd=2&autoplay=1&loop=1&muted=1&controls=0"
-        allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>
-      <iframe src="https://vk.com/video_ext.php?oid=-68859909&id=456239137&hd=2&autoplay=1&loop=1&muted=1&controls=0"
-        allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>
-    </div>
+  <div class="hero-dark-bg">
+    <!-- Decorative floating orbs -->
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-orb hero-orb-3"></div>
   </div>
 
   <div class="hero-content">
@@ -1428,9 +1550,10 @@
       </div>
       <div class="calc-result">
         <div>
-          <div class="calc-result-label">Примерная стоимость</div>
+          <div class="calc-result-label" id="calcLabel">Примерная стоимость</div>
           <div class="calc-result-price" id="calcResult">5 600 ₽</div>
-          <div class="calc-result-note">Точная цена согласовывается при заказе</div>
+          <div class="calc-approx-badge" id="calcApproxBadge">⚠ Уточните точную цену при заказе</div>
+          <div class="calc-result-note" id="calcNote">Точная цена согласовывается при заказе</div>
         </div>
         <a href="#contacts" class="calc-order-btn">Заказать 🎂</a>
       </div>
@@ -1446,59 +1569,64 @@
     <div class="contacts-grid">
       <div class="card reveal">
         <h3>Контакты</h3>
-        <p class="hours">Отвечаем обычно за 5–10 минут • Ежедневно 10:00–20:00</p>
-        <div class="contact-item">
-          <div class="contact-icon">📞</div>
-          <div>
-            <div class="label">Позвоните нам</div>
-            <a href="tel:+79119038886" class="value" style="text-decoration:none;color:inherit;">+7 911 903 88 86</a>
-          </div>
-        </div>
-        <div class="contact-item">
-          <div class="contact-icon">💬</div>
-          <div>
-            <div class="label">Напишите в WhatsApp</div>
-            <div class="value">Быстрый ответ</div>
-          </div>
-        </div>
-        <div class="contact-item">
-          <a href="https://vk.com/milovi_cake" target="_blank" class="contact-social-btn vk-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.05-1.727-1.033-1-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C5.044 10.8 4.06 8.494 4.06 8.087c0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.677.863 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.203.17-.407.44-.407h2.744c.373 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.253-1.406 2.151-3.574 2.151-3.574.119-.254.322-.491.762-.491h1.744c.525 0 .644.27.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.779 1.203 1.253.745.847 1.32 1.558 1.473 2.05.17.49-.085.745-.576.745z"/></svg>
-            Мы ВКонтакте
+        <p class="hours">Отвечаем обычно за 5–10 минут · Ежедневно 10:00–20:00</p>
+
+        <!-- Основные контакты -->
+        <div class="contact-primary">
+          <a href="tel:+79119038886" class="contact-primary-item">
+            <div class="contact-primary-icon">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.07 2.18 2 2 0 012.03 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            </div>
+            <div>
+              <div class="contact-primary-label">Позвоните нам</div>
+              <div class="contact-primary-value">+7 911 903 88 86</div>
+            </div>
+          </a>
+          <a href="https://maps.app.goo.gl/6aCJvobUQPcBZTmz6" target="_blank" class="contact-primary-item">
+            <div class="contact-primary-icon">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div>
+              <div class="contact-primary-label">Самовывоз по предзаказу</div>
+              <div class="contact-primary-value">Пулковская ул., 19, СПб</div>
+            </div>
           </a>
         </div>
-        <div class="contact-item">
-          <a href="https://t.me/MiloviCake" target="_blank" class="contact-social-btn tg-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.96 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-            Telegram-канал
+
+        <!-- CTA WhatsApp -->
+        <a href="https://wa.me/79119038886?text=Здравствуйте!%20Хочу%20сделать%20заказ" target="_blank" class="btn-wa">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Заказать через WhatsApp
+        </a>
+
+        <!-- Соцсети и отзывы -->
+        <div class="social-divider">
+          <span>Мы в соцсетях</span>
+        </div>
+        <div class="social-links">
+          <a href="https://vk.com/milovi_cake" target="_blank" class="social-link vk">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.05-1.727-1.033-1-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C5.044 10.8 4.06 8.494 4.06 8.087c0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.677.863 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.203.17-.407.44-.407h2.744c.373 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.253-1.406 2.151-3.574 2.151-3.574.119-.254.322-.491.762-.491h1.744c.525 0 .644.27.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.779 1.203 1.253.745.847 1.32 1.558 1.473 2.05.17.49-.085.745-.576.745z"/></svg>
+            ВКонтакте
+          </a>
+          <a href="https://t.me/MiloviCake" target="_blank" class="social-link tg">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.96 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+            Telegram
+          </a>
+          <a href="https://www.youtube.com/channel/UCMDnxfGZiBqcDzgUV1zjFpw" target="_blank" class="social-link yt">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            YouTube
           </a>
         </div>
-        <div class="contact-item">
-          <a href="https://www.youtube.com/channel/UCMDnxfGZiBqcDzgUV1zjFpw" target="_blank" class="contact-social-btn yt-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-            YouTube (иноагент)
+        <div class="social-links" style="margin-top:10px">
+          <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/" target="_blank" class="social-link ya">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11.998 0C5.366 0 0 5.367 0 12c0 6.634 5.366 12 11.998 12C18.633 24 24 18.634 24 12 24 5.367 18.633 0 11.998 0zm.004 4.457c1.748 0 3.15.47 4.205 1.41 1.056.94 1.583 2.198 1.583 3.77 0 1.133-.3 2.104-.9 2.912-.6.808-1.478 1.393-2.635 1.757L17.1 19.5h-2.818l-2.57-4.89h-1.04V19.5H8.13V4.457h3.872zm-.107 2.18H10.67v5.85h1.332c1.005 0 1.77-.245 2.297-.735.526-.49.79-1.19.79-2.1 0-.896-.261-1.58-.783-2.05-.522-.47-1.28-.705-2.275-.705-.046 0-.09.003-.136.004v.036z"/></svg>
+            Яндекс Карты
+          </a>
+          <a href="https://maps.app.goo.gl/6aCJvobUQPcBZTmz6" target="_blank" class="social-link google">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            Google Карты
           </a>
         </div>
-        <div class="contact-item">
-          <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/" target="_blank" class="contact-social-btn ya-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.998 0C5.366 0 0 5.367 0 12c0 6.634 5.366 12 11.998 12C18.633 24 24 18.634 24 12 24 5.367 18.633 0 11.998 0zm.004 4.457c1.748 0 3.15.47 4.205 1.41 1.056.94 1.583 2.198 1.583 3.77 0 1.133-.3 2.104-.9 2.912-.6.808-1.478 1.393-2.635 1.757L17.1 19.5h-2.818l-2.57-4.89h-1.04V19.5H8.13V4.457h3.872zm-.107 2.18H10.67v5.85h1.332c1.005 0 1.77-.245 2.297-.735.526-.49.79-1.19.79-2.1 0-.896-.261-1.58-.783-2.05-.522-.47-1.28-.705-2.275-.705-.046 0-.09.003-.136.004v.036z"/></svg>
-            Отзывы на Яндекс Картах
-          </a>
-        </div>
-        <div class="contact-item">
-          <a href="https://maps.app.goo.gl/6aCJvobUQPcBZTmz6" target="_blank" class="contact-social-btn google-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-            Отзывы на Google Картах
-          </a>
-        </div>
-        <div class="contact-item">
-          <div class="contact-icon">📍</div>
-          <div>
-            <div class="label">Адрес (самовывоз)</div>
-            <a href="https://maps.app.goo.gl/6aCJvobUQPcBZTmz6" target="_blank" class="value" style="text-decoration:none;color:inherit;">Пулковская ул., 19, Санкт-Петербург</a>
-          </div>
-        </div>
-        <a href="https://wa.me/79119038886?text=Здравствуйте!%20Хочу%20сделать%20заказ" target="_blank" class="btn-wa">Заказать через WhatsApp</a>
       </div>
 
       <div class="card reveal">
@@ -1592,7 +1720,7 @@ const products = [
     slidePos: ['center 0%', 'center 0%'],
     slideScale: [1, 1] },
   { id: 4, name: 'Меренговый рулет', desc: 'Хрустящая меренга с нежным кремом — наш фирменный десерт', min: '', price: '2 500 ₽/шт', priceNum: 2500, unit: 'шт', emoji: '🥐',
-    img: 'meringue_roll.png', imgPos: 'center 35%' },
+    img: 'meringue_roll.png', imgPos: 'center 35%', showEmoji: true },
   { id: 5, name: 'Пирожное "Павлова"', desc: 'Воздушная меренга с кремом и начинкой из ягод', min: 'Заказ от 2 шт', price: '350 ₽/шт', priceNum: 350, unit: 'шт', emoji: '🍓',
     slides: ['pavlova.png', 'pavlova_2.jpg'],
     slidePos: ['center 55%', 'center 45%'] },
@@ -1621,7 +1749,7 @@ function renderCatalog() {
             const scale = p.slideScale ? p.slideScale[i] : 1;
             const active = i === 0 ? ' active' : '';
             return `<img src="${src}" alt="${p.name}" class="slide-img${active}"
-              onerror="this.style.display='none'"
+              onerror="this.style.cssText='display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;font-size:60px;background:linear-gradient(135deg,#e8d8c4,#d4b896);'; this.src=''; this.alt=p.emoji"
               style="object-position:${pos};transform:scale(${scale});transform-origin:${pos};">`;
           }).join('')}
           <div class="slider-dots">
@@ -1629,7 +1757,7 @@ function renderCatalog() {
           </div>
         </div>`;
     } else if (p.img) {
-      imgHtml = `<img src="${p.img}" alt="${p.name}" class="product-img" onerror="this.style.display='none'" style="object-position:${p.imgPos || 'center center'};">`;
+      imgHtml = `<img src="${p.img}" alt="${p.name}" class="product-img" onerror="this.style.cssText='display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;font-size:60px;background:linear-gradient(135deg,#e8d8c4,#d4b896);'; this.src=''; this.alt=p.emoji" style="object-position:${p.imgPos || 'center center'};">`;
     } else {
       imgHtml = `<div class="product-img-ph">${p.emoji}</div>`;
     }
@@ -1819,7 +1947,6 @@ function observeReveal() {
 }
 
 renderCatalog(); // calls observeReveal() internally for catalog cards
-addCardOverlays();
 updateCartUI();
 observeReveal(); // picks up static .reveal elements (hero, sections, etc.)
 
@@ -1837,28 +1964,7 @@ window.addEventListener('scroll', () => {
   header.classList.toggle('scrolled', window.scrollY > 60);
 });
 
-// ── CUSTOM CURSOR ──
-const dot = document.getElementById('cursorDot');
-const ring = document.getElementById('cursorRing');
-if (window.matchMedia('(hover: hover)').matches) {
-  document.body.style.cursor = 'none';
-  let mx = 0, my = 0, rx = 0, ry = 0;
-  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-  function animCursor() {
-    dot.style.left = mx + 'px';
-    dot.style.top = my + 'px';
-    rx += (mx - rx) * 0.14;
-    ry += (my - ry) * 0.14;
-    ring.style.left = rx + 'px';
-    ring.style.top = ry + 'px';
-    requestAnimationFrame(animCursor);
-  }
-  animCursor();
-  document.querySelectorAll('a, button, .product-card, .rev-arrow').forEach(el => {
-    el.addEventListener('mouseenter', () => ring.classList.add('hover'));
-    el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
-  });
-}
+
 
 // ── TOAST ──
 function showToast(msg) {
@@ -1980,51 +2086,33 @@ function updateCalc() {
     total = (basePrice + fillPrice) * weight + decorPrice;
   }
 
-  document.getElementById('calcResult').textContent = total.toLocaleString('ru') + ' ₽';
+  // Determine if fill or decor adds uncertainty
+  const fillIsNonStandard = fillPrice > 0;
+  const decorIsNonStandard = decorPrice > 0;
+  const isApprox = fillIsNonStandard || decorIsNonStandard;
+
+  // Show ~ prefix if non-standard options selected
+  const prefix = isApprox ? '~ ' : '';
+  document.getElementById('calcResult').textContent = prefix + total.toLocaleString('ru') + ' ₽';
+
+  // Show/hide approx badge
+  const badge = document.getElementById('calcApproxBadge');
+  badge.classList.toggle('visible', isApprox);
+
+  // Build note text
+  let noteText = 'Точная цена согласовывается при заказе';
+  const notes = [];
+  if (fillIsNonStandard) notes.push('начинка уточняется');
+  if (decorIsNonStandard) notes.push('декор рассчитывается отдельно');
+  if (notes.length) noteText = '* ' + notes.map(n => n[0].toUpperCase() + n.slice(1)).join(', ');
+  document.getElementById('calcNote').textContent = noteText;
 }
 // Init slider gradient
 document.getElementById('calcWeight').style.setProperty('--val', '11%');
 
-// ── CURSOR TRAIL ──
-if (window.matchMedia('(hover: hover)').matches) {
-  const TRAIL_COUNT = 8;
-  const trails = Array.from({length: TRAIL_COUNT}, (_, i) => {
-    const d = document.createElement('div');
-    d.className = 'trail-dot';
-    d.style.cssText = `width:${6 - i*0.4}px;height:${6 - i*0.4}px;opacity:0;`;
-    document.body.appendChild(d);
-    return d;
-  });
-  const positions = Array(TRAIL_COUNT).fill({x: 0, y: 0});
-  let mouseX = 0, mouseY = 0;
-  document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
-  function animTrail() {
-    positions.unshift({x: mouseX, y: mouseY});
-    positions.length = TRAIL_COUNT;
-    trails.forEach((dot, i) => {
-      const pos = positions[i] || positions[0];
-      dot.style.left = pos.x + 'px';
-      dot.style.top = pos.y + 'px';
-      dot.style.opacity = ((TRAIL_COUNT - i) / TRAIL_COUNT * 0.35).toFixed(2);
-    });
-    requestAnimationFrame(animTrail);
-  }
-  animTrail();
-}
 
-// ── CARD HOVER OVERLAY ── (called after renderCatalog)
-function addCardOverlays() {
-  document.querySelectorAll('.product-card').forEach(card => {
-    if (card.querySelector('.card-overlay')) return;
-    const pid = card.querySelector('[onclick]')?.getAttribute('onclick')?.match(/\d+/)?.[0];
-    if (!pid) return;
-    const overlay = document.createElement('div');
-    overlay.className = 'card-overlay';
-    overlay.innerHTML = `<button class="card-overlay-btn" onclick="addToCart(${pid})">+ В корзину</button>`;
-    const imgEl = card.querySelector('.slider-wrap, .product-img, .product-img-ph');
-    if (imgEl) card.insertBefore(overlay, card.querySelector('.product-info'));
-  });
-}
+
+
 
 let currentReview = 0;
 const totalReviews = document.querySelectorAll('.review-slide').length;
