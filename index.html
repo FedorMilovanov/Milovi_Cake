@@ -10,6 +10,30 @@
   <meta property="og:description" content="Нежнейшие торты и десерты ручной работы. Бисквитные, бенто, 3D-торты, меренговые рулеты, Павлова, капкейки." />
   <meta property="og:image" content="hero.jpg" />
   <meta property="og:type" content="website" />
+  <link rel="canonical" href="https://milovicake.ru/" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Milovi Cake",
+    "description": "Авторские торты, меренговые рулеты и десерты на заказ в Санкт-Петербурге.",
+    "url": "https://milovicake.ru/",
+    "telephone": "+79119038886",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Пулковская ул., 19",
+      "addressLocality": "Санкт-Петербург",
+      "addressCountry": "RU"
+    },
+    "openingHours": "Mo-Su 10:00-20:00",
+    "priceRange": "₽₽",
+    "sameAs": [
+      "https://vk.com/milovi_cake",
+      "https://t.me/MiloviCake",
+      "https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/"
+    ]
+  }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
@@ -86,6 +110,20 @@
       align-items: center;
     }
     .site-header.scrolled .header-logo { color: var(--brown); }
+    .header-logo { flex-direction: column; align-items: flex-start; justify-content: center; line-height: 1.2; }
+    .header-logo-sub {
+      display: block;
+      font-family: 'Jost', sans-serif;
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,235,185,0.45);
+      line-height: 1;
+      margin-top: 3px;
+      transition: color 0.3s;
+    }
+    .site-header.scrolled .header-logo-sub { color: var(--text-muted); }
 
     .header-nav {
       display: flex;
@@ -1484,7 +1522,11 @@
       font-size: 16px;
     }
 
-    .cart-footer { padding: 20px 28px; border-top: 1px solid var(--cream-dark); }
+    .cart-footer {
+      padding: 20px 28px;
+      padding-bottom: max(28px, calc(20px + env(safe-area-inset-bottom)));
+      border-top: 1px solid var(--cream-dark);
+    }
 
     .cart-total {
       display: flex;
@@ -1726,7 +1768,7 @@
       .cart-drawer.open { right: 0; }
       .cart-header { padding: 20px 20px; }
       .cart-body { padding: 16px 20px; }
-      .cart-footer { padding: 16px 20px; }
+      .cart-footer { padding: 16px 20px; padding-bottom: max(24px, calc(16px + env(safe-area-inset-bottom))); }
       .cart-progress { padding: 12px 20px; }
       .hero-actions { flex-direction: column; align-items: flex-start; }
     }
@@ -1881,7 +1923,7 @@
 
   <div class="hero-content">
     <div class="hero-text">
-      <h1 class="hero-title">Milovi Cake</h1>
+      <h1 class="hero-title">Торты на Заказ<br>в Санкт-Петербурге</h1>
       <p>Нежнейшие торты, меренговые рулеты и десерты на заказ в Санкт-Петербурге</p>
       <div class="hero-actions">
         <a href="#catalog" class="btn-primary">Заказать онлайн</a>
@@ -1924,12 +1966,12 @@
       </div>
       <div class="feature reveal">
         <div class="feature-icon">🎯</div>
-        <h4>Свежесть Под Заказ</h4>
+        <h4>Свежесть под заказ</h4>
         <p>Готовим специально для вас, всегда свежее</p>
       </div>
       <div class="feature reveal">
         <div class="feature-icon">📦</div>
-        <h4>Доставка По СПб</h4>
+        <h4>Доставка по СПб</h4>
         <p>Аккуратная доставка в красивой упаковке</p>
       </div>
     </div>
@@ -2067,10 +2109,10 @@
 <section id="calculator">
   <div class="container">
     <h2 class="section-title reveal">Рассчитать Стоимость</h2>
-    <p class="section-sub reveal">Узнайте Примерную Цену Вашего Торта</p>
+    <p class="section-sub reveal">Узнайте примерную цену вашего торта</p>
     <div class="calc-wrap reveal">
       <div class="calc-row">
-        <label>Тип Торта</label>
+        <label>Тип торта</label>
         <div class="calc-options" id="calcType">
           <div class="calc-opt selected" data-price="2800" onclick="selectOpt(this,'calcType')">Бисквитный</div>
           <div class="calc-opt" data-price="1600" onclick="selectOpt(this,'calcType')">Бенто</div>
@@ -2086,19 +2128,27 @@
           <span style="font-size:13px;color:var(--text-muted)">10 кг</span>
         </div>
       </div>
-      <div class="calc-row">
+      <div class="calc-row" id="calcFillRow">
         <label>Начинка</label>
         <div class="calc-options" id="calcFill">
-          <div class="calc-opt selected" data-price="0" onclick="selectOpt(this,'calcFill')">Классическая</div>
-          <div class="calc-opt" data-price="200" onclick="selectOpt(this,'calcFill')">С Ягодами</div>
-          <div class="calc-opt" data-price="300" onclick="selectOpt(this,'calcFill')">Фисташковая</div>
-          <div class="calc-opt" data-price="300" onclick="selectOpt(this,'calcFill')">Шоколадная</div>
+          <div class="calc-opt selected" data-price="0" onclick="selectOpt(this,'calcFill')">Воздушный поцелуй (клубника)</div>
+          <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')">Ванильная вишня</div>
+          <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')">Микс ягод</div>
+          <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')">Ванильные тропики (манго-маракуйя)</div>
+          <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')">Белый сникерс (карамель, арахис)</div>
+          <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')">Ваниль в молочном шоколаде</div>
+          <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')">Вишня в шоколаде</div>
+          <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')">Шоколадный микс ягод</div>
+          <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')">Сникерс (карамель, арахис)</div>
+          <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')">Ферреро (вафля, шоколад, орех)</div>
+          <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')">Красный бархат</div>
+          <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')">Медовик</div>
         </div>
       </div>
       <div class="calc-row">
         <label>Декор</label>
         <div class="calc-options" id="calcDecor">
-          <div class="calc-opt selected" data-price="0" onclick="selectOpt(this,'calcDecor')">Без Декора</div>
+          <div class="calc-opt selected" data-price="0" onclick="selectOpt(this,'calcDecor')">Без декора</div>
           <div class="calc-opt" data-price="500" onclick="selectOpt(this,'calcDecor')">Цветы</div>
           <div class="calc-opt" data-price="800" onclick="selectOpt(this,'calcDecor')">Фигурки</div>
           <div class="calc-opt" data-price="1200" onclick="selectOpt(this,'calcDecor')">Авторский Декор</div>
@@ -2106,10 +2156,10 @@
       </div>
       <div class="calc-result">
         <div>
-          <div class="calc-result-label" id="calcLabel">Примерная Стоимость</div>
+          <div class="calc-result-label" id="calcLabel">Примерная стоимость</div>
           <div class="calc-result-price" id="calcResult">5 600 ₽</div>
-          <div class="calc-approx-badge" id="calcApproxBadge">⚠ Уточните Точную Цену При Заказе</div>
-          <div class="calc-result-note" id="calcNote">Точная Цена Согласовывается При Заказе</div>
+          <div class="calc-approx-badge" id="calcApproxBadge">⚠ Уточните точную цену при заказе</div>
+          <div class="calc-result-note" id="calcNote">Точная цена согласовывается при заказе</div>
         </div>
         <a href="#contacts" class="calc-order-btn">Заказать 🎂</a>
       </div>
@@ -2120,8 +2170,8 @@
 <!-- ══════════ CONTACTS ══════════ -->
 <section id="contacts">
   <div class="container">
-    <h2 class="section-title reveal">Свяжитесь С Нами</h2>
-    <p class="section-sub reveal">Готовы Сделать Заказ? Мы Всегда На Связи!</p>
+    <h2 class="section-title reveal">Свяжитесь с Нами</h2>
+    <p class="section-sub reveal">Готовы сделать заказ? Мы всегда на связи!</p>
     <div class="contacts-grid">
       <div class="card reveal">
         <h3>Контакты</h3>
@@ -2186,11 +2236,11 @@
       </div>
 
       <div class="card reveal">
-        <h3>Форма Заказа</h3>
+        <h3>Форма заказа</h3>
         <p class="hours" style="opacity:0"> </p>
         <div class="form-group float-label">
           <input type="text" id="fname" placeholder=" " />
-          <label for="fname">Как к Вам Обращаться?</label>
+          <label for="fname">Как к Вам обращаться?</label>
         </div>
         <div class="form-group float-label">
           <input type="tel" id="fphone" placeholder=" " />
@@ -2198,9 +2248,9 @@
         </div>
         <div class="form-group float-label">
           <textarea id="fcomment" placeholder=" "></textarea>
-          <label for="fcomment">Комментарий — Вес, Декор, Дата…</label>
+          <label for="fcomment">Комментарий — вес, декор, дата…</label>
         </div>
-        <p class="form-note">Нажимая Кнопку, Вы Соглашаетесь С <a href="#">Обработкой Персональных Данных</a></p>
+        <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="#">обработкой персональных данных</a></p>
         <button class="btn-wa" onclick="sendFormWA()">Отправить Заказ</button>
       </div>
     </div>
@@ -2291,7 +2341,7 @@
     <h2>Доставка тортов по Санкт-Петербургу и пригородам</h2>
     <p>Мы доставляем торты и десерты на заказ по всему Санкт-Петербургу, а также в пригороды и города Ленинградской области — Пушкин, Петергоф, Гатчину, Всеволожск, Колпино, Красное Село, Павловск, Сестрорецк, Ломоносов, Кронштадт, Тосно, Мурино, Кудрово, Шушары и другие. Доставка осуществляется собственной службой (по договорённости) или через Яндекс.Доставку. Самовывоз также доступен.</p>
     <div class="geo-tags">
-      <span class="geo-tag">Торты в Пушкине</span>
+      <a href="/pushkin/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Пушкине →</a>
       <span class="geo-tag">Торты в Петергофе</span>
       <span class="geo-tag">Торты в Гатчине</span>
       <span class="geo-tag">Торты во Всеволожске</span>
@@ -2624,7 +2674,10 @@ function buildMessage() {
     return s + p.priceNum * entry.qty;
   }, 0);
 
-  return `Привет! Хочу сделать заказ 🎂\n\n${items}\n\nИтого (ориентировочно): ${total.toLocaleString('ru')} ₽\n\nИмя: ${name}\nТелефон: ${phone}\nДата готовности: ${date}\nКомментарий: ${comment}`;
+    const fillEl = document.querySelector('#calcFill .selected');
+  const fillLine = fillEl ? '\nНачинка: ' + fillEl.textContent.trim() : '';
+
+  return `Привет! Хочу сделать заказ 🎂\n\n${items}${fillLine}\n\nИтого (ориентировочно): ${total.toLocaleString('ru')} ₽\n\nИмя: ${name}\nТелефон: ${phone}\nДата готовности: ${date}\nКомментарий: ${comment}`;
 }
 
 function buildWA(e) {
@@ -2639,13 +2692,17 @@ function buildTG(e) {
   e.preventDefault();
   const msg = buildMessage();
   if (!msg) return;
-  window.open(`https://t.me/milovi_cake?text=${encodeURIComponent(msg)}`, '_blank');
+  navigator.clipboard.writeText(msg).then(() => {
+    alert('Текст заказа скопирован! Вставьте его в чат Telegram (Ctrl+V / ⌘V).');
+  }).catch(() => {});
+  window.open('https://t.me/MiloviCake', '_blank');
 }
 
 function sendFormWA() {
-  const name = document.getElementById('fname').value || '—';
-  const phone = document.getElementById('fphone').value || '—';
-  const comment = document.getElementById('fcomment').value || '—';
+  const name = document.getElementById('fname').value.trim() || '—';
+  const phone = document.getElementById('fphone').value.trim();
+  const comment = document.getElementById('fcomment').value.trim() || '—';
+  if (!phone) { alert('Пожалуйста, укажите телефон.'); return; }
   const msg = encodeURIComponent(`Привет! 👋\nИмя: ${name}\nТелефон: ${phone}\nКомментарий: ${comment}`);
   window.open(`https://wa.me/79119038886?text=${msg}`, '_blank');
 }
@@ -2919,9 +2976,13 @@ function wireProductLightbox() {
 function selectOpt(el, groupId) {
   document.querySelectorAll(`#${groupId} .calc-opt`).forEach(o => o.classList.remove('selected'));
   el.classList.add('selected');
-  // Hide weight slider for fixed-price items
-  const isBento = groupId === 'calcType' && el.dataset.price === '1600';
-  document.getElementById('calcWeightRow').style.display = isBento ? 'none' : 'block';
+  if (groupId === 'calcType') {
+    const price = +el.dataset.price;
+    const isFixed = price === 1600 || price === 2500;
+    document.getElementById('calcWeightRow').style.display = isFixed ? 'none' : 'block';
+    const isBento = price === 1600;
+    document.getElementById('calcFillRow').style.display = isBento ? 'none' : 'block';
+  }
   updateCalc();
 }
 
@@ -2935,7 +2996,7 @@ function updateCalc() {
   const fillPrice = +(fillEl?.dataset.price || 0);
   const decorPrice = +(decorEl?.dataset.price || 0);
   const weight = +weightEl.value;
-  const isBento = basePrice === 1600;
+  const isFixed = basePrice === 1600 || basePrice === 2500;
 
   document.getElementById('calcWeightVal').textContent = weight + ' кг';
   // Update slider gradient
@@ -2943,29 +3004,24 @@ function updateCalc() {
   weightEl.style.setProperty('--val', pct + '%');
 
   let total;
-  if (isBento) {
-    total = basePrice + fillPrice + decorPrice;
+  if (isFixed) {
+    total = basePrice + decorPrice;
   } else {
-    total = (basePrice + fillPrice) * weight + decorPrice;
+    total = basePrice * weight + decorPrice;
   }
 
-  // Determine if fill or decor adds uncertainty
-  const fillIsNonStandard = fillPrice > 0;
+  // Determine if decor adds uncertainty
   const decorIsNonStandard = decorPrice > 0;
-  const isApprox = fillIsNonStandard || decorIsNonStandard;
+  const isApprox = decorIsNonStandard;
 
-  // Show ~ prefix if non-standard options selected
   const prefix = isApprox ? '~ ' : '';
   document.getElementById('calcResult').textContent = prefix + total.toLocaleString('ru') + ' ₽';
 
-  // Show/hide approx badge
   const badge = document.getElementById('calcApproxBadge');
   badge.classList.toggle('visible', isApprox);
 
-  // Build note text
   let noteText = 'Точная цена согласовывается при заказе';
   const notes = [];
-  if (fillIsNonStandard) notes.push('начинка уточняется');
   if (decorIsNonStandard) notes.push('декор рассчитывается отдельно');
   if (notes.length) noteText = '* ' + notes.map(n => n[0].toUpperCase() + n.slice(1)).join(', ');
   document.getElementById('calcNote').textContent = noteText;
@@ -3005,5 +3061,10 @@ document.getElementById('reviewsTrack').addEventListener('touchend', e => {
   if (Math.abs(dx) > 40) shiftReview(dx < 0 ? 1 : -1);
 }, { passive: true });
 </script>
+<!-- ══════════ FOOTER ══════════ -->
+<footer style="background: var(--brown); padding: 18px 40px; text-align: center;">
+  <p style="font-family: 'Cormorant Garamond', serif; font-size: 14px; font-weight: 400; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,235,185,0.35);">© 2026 Milovi Cake</p>
+</footer>
+
 </body>
 </html>
