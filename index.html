@@ -11,6 +11,21 @@
   <meta property="og:image" content="hero.jpg" />
   <meta property="og:type" content="website" />
   <link rel="canonical" href="https://milovicake.ru/" />
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript">
+    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+    m[i].l=1*new Date();
+    for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+    k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+    (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+    ym(106945185, "init", {
+      clickmap: true,
+      trackLinks: true,
+      accurateTrackBounce: true,
+      webvisor: true
+    });
+  </script>
+  <!-- /Yandex.Metrika counter -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -617,17 +632,18 @@
 
     .hero-title .hero-title-brand {
       display: block;
+      font-size: clamp(52px, 6vw, 84px);
+      color: rgba(245, 225, 175, 0.85);
+      font-weight: 400;
+      font-family: 'Cormorant Garamond', serif;
     }
 
     .hero-title .hero-title-seo {
       display: block;
-      font-size: clamp(16px, 1.6vw, 22px);
+      font-size: clamp(26px, 3vw, 42px);
       font-weight: 300;
-      letter-spacing: 0.01em;
-      color: rgba(245, 225, 175, 0.42);
-      line-height: 1.4;
-      font-family: 'Jost', sans-serif;
-      margin-top: 6px;
+      color: rgba(245, 225, 175, 0.65);
+      font-family: 'Cormorant Garamond', serif;
     }
 
     .hero-text p {
@@ -1854,6 +1870,9 @@
   </style>
 </head>
 <body>
+  <!-- Yandex.Metrika noscript -->
+  <noscript><div><img src="https://mc.yandex.ru/watch/106945185" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+  <!-- /Yandex.Metrika noscript -->
 
 <!-- ── PROGRESS BAR ── -->
 <div id="scroll-progress"></div>
@@ -1923,7 +1942,7 @@
 
   <div class="hero-content">
     <div class="hero-text">
-      <h1 class="hero-title">Торты на Заказ<br>в Санкт-Петербурге</h1>
+      <h1 class="hero-title"><span class="hero-title-brand">Milovi Cake</span></h1>
       <p>Нежнейшие торты, меренговые рулеты и десерты на заказ в Санкт-Петербурге</p>
       <div class="hero-actions">
         <a href="#catalog" class="btn-primary">Заказать онлайн</a>
