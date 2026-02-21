@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Dark brown background circle -->
+  <circle cx="16" cy="16" r="16" fill="#2e1a0e"/>
+
+  <!-- Cake: bottom tier -->
+  <rect x="6" y="21" width="20" height="6" rx="2.5" fill="#c9934a"/>
+  <!-- Cream drip bottom tier -->
+  <ellipse cx="16" cy="21" rx="10" ry="2.2" fill="#f5e1af"/>
+
+  <!-- Cake: top tier -->
+  <rect x="10" y="15" width="12" height="7" rx="2" fill="#b8823c"/>
+  <!-- Cream drip top tier -->
+  <ellipse cx="16" cy="15" rx="6" ry="1.8" fill="#f5e1af"/>
+
+  <!-- Berry decorations on top tier -->
+  <circle cx="13" cy="14.2" r="1.3" fill="#8b1a1a"/>
+  <circle cx="16" cy="13.8" r="1.3" fill="#c0392b"/>
+  <circle cx="19" cy="14.2" r="1.3" fill="#8b1a1a"/>
+
+  <!-- Candle -->
+  <rect x="15.2" y="9" width="1.6" height="5" rx="0.8" fill="#f5e1af"/>
+
+  <!-- Flame outer -->
+  <ellipse cx="16" cy="8.2" rx="1.4" ry="2" fill="#c9934a"/>
+  <!-- Flame inner glow -->
+  <ellipse cx="16" cy="8.6" rx="0.65" ry="1.1" fill="#fff8e7"/>
+</svg>
