@@ -11,21 +11,6 @@
   <meta property="og:image" content="hero.jpg" />
   <meta property="og:type" content="website" />
   <link rel="canonical" href="https://milovicake.ru/" />
-  <!-- Yandex.Metrika counter -->
-  <script type="text/javascript">
-    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-    m[i].l=1*new Date();
-    for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-    k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-    (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-    ym(106945185, "init", {
-      clickmap: true,
-      trackLinks: true,
-      accurateTrackBounce: true,
-      webvisor: true
-    });
-  </script>
-  <!-- /Yandex.Metrika counter -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -632,18 +617,17 @@
 
     .hero-title .hero-title-brand {
       display: block;
-      font-size: clamp(52px, 6vw, 84px);
-      color: rgba(245, 225, 175, 0.85);
-      font-weight: 400;
-      font-family: 'Cormorant Garamond', serif;
     }
 
     .hero-title .hero-title-seo {
       display: block;
-      font-size: clamp(26px, 3vw, 42px);
+      font-size: clamp(16px, 1.6vw, 22px);
       font-weight: 300;
-      color: rgba(245, 225, 175, 0.65);
-      font-family: 'Cormorant Garamond', serif;
+      letter-spacing: 0.01em;
+      color: rgba(245, 225, 175, 0.42);
+      line-height: 1.4;
+      font-family: 'Jost', sans-serif;
+      margin-top: 6px;
     }
 
     .hero-text p {
@@ -1338,7 +1322,7 @@
     .cart-drawer.open { right: 0; }
 
     .cart-header {
-      padding: 24px 28px;
+      padding: 16px 28px;
       border-bottom: 1px solid var(--cream-dark);
       display: flex;
       align-items: center;
@@ -1389,7 +1373,7 @@
     .cart-progress {
       display: flex;
       align-items: center;
-      padding: 14px 28px;
+      padding: 10px 28px;
       border-bottom: 1px solid var(--cream-dark);
       background: var(--cream);
     }
@@ -1419,6 +1403,13 @@
       letter-spacing: 0.04em;
       text-transform: uppercase;
       transition: color 0.35s;
+    }
+    .cart-step[onclick]:hover .cart-step-dot {
+      transform: scale(1.1);
+      box-shadow: 0 0 0 3px rgba(201,147,74,0.2);
+    }
+    .cart-step[onclick]:hover span {
+      color: var(--gold);
     }
     .cart-step.active .cart-step-dot {
       background: var(--gold);
@@ -1458,7 +1449,7 @@
       flex: 1; 
       overflow-y: auto; 
       overflow-x: hidden;
-      padding: 20px 28px;
+      padding: 14px 28px;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior: contain;
       touch-action: pan-y;
@@ -1539,26 +1530,30 @@
     }
 
     .cart-footer {
-      padding: 20px 28px;
-      padding-bottom: max(28px, calc(20px + env(safe-area-inset-bottom)));
+      padding: 14px 28px;
+      padding-bottom: max(18px, calc(14px + env(safe-area-inset-bottom)));
       border-top: 1px solid var(--cream-dark);
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      max-height: 70vh;
     }
 
     .cart-total {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
-    .cart-total span:first-child { font-size: 16px; color: var(--brown); }
-    .cart-total .total-val { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--gold); }
-    .cart-footer .note { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
+    .cart-total span:first-child { font-size: 15px; color: var(--brown); }
+    .cart-total .total-val { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--gold); }
+    .cart-footer .note { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
 
-    .cart-form { margin-top: 20px; }
-    .cart-form h4 { font-size: 16px; color: var(--brown); margin-bottom: 14px; font-family: 'Jost',sans-serif; font-weight: 500; }
+    .cart-form { margin-top: 12px; }
+    .cart-form h4 { font-size: 15px; color: var(--brown); margin-bottom: 10px; font-family: 'Jost',sans-serif; font-weight: 500; }
 
-    .cart-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+    .cart-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
 
     .btn-tg {
       display: flex;
@@ -1870,9 +1865,6 @@
   </style>
 </head>
 <body>
-  <!-- Yandex.Metrika noscript -->
-  <noscript><div><img src="https://mc.yandex.ru/watch/106945185" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-  <!-- /Yandex.Metrika noscript -->
 
 <!-- ── PROGRESS BAR ── -->
 <div id="scroll-progress"></div>
@@ -2294,17 +2286,17 @@
   </div>
   <!-- Progress steps -->
   <div class="cart-progress" id="cartProgress">
-    <div class="cart-step active" id="step1">
+    <div class="cart-step active" id="step1" onclick="navigateToStep(1)" style="cursor:pointer;" title="Перейти к выбору">
       <div class="cart-step-dot">1</div>
       <span>Выбор</span>
     </div>
     <div class="cart-step-line" id="stepLine1"></div>
-    <div class="cart-step" id="step2">
+    <div class="cart-step" id="step2" onclick="navigateToStep(2)" style="cursor:pointer;" title="Перейти к данным">
       <div class="cart-step-dot">2</div>
       <span>Данные</span>
     </div>
     <div class="cart-step-line" id="stepLine2"></div>
-    <div class="cart-step" id="step3">
+    <div class="cart-step" id="step3" id="step3" style="cursor:default;">
       <div class="cart-step-dot">3</div>
       <span>Отправка</span>
     </div>
@@ -2318,6 +2310,11 @@
     <p class="note">Дополнительный декор оплачивается отдельно.</p>
 
     <div class="cart-form">
+      <div style="margin-bottom:12px;">
+        <button onclick="goBackToCart()" style="background:none;border:1px solid var(--cream-dark);border-radius:50px;padding:7px 16px;font-size:13px;color:var(--text-muted);cursor:pointer;font-family:'Jost',sans-serif;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--brown)'" onmouseout="this.style.borderColor='var(--cream-dark)';this.style.color='var(--text-muted)'">
+          ← Назад к выбору
+        </button>
+      </div>
       <h4>Ваши данные</h4>
       <div class="form-group float-label">
         <input type="text" id="cname" placeholder=" " />
@@ -2332,7 +2329,7 @@
         <label for="cdate">Дата получения (дд.мм.гггг)</label>
       </div>
       <div class="form-group float-label">
-        <textarea id="ccomment" placeholder=" " style="min-height:70px;"></textarea>
+        <textarea id="ccomment" placeholder=" " style="min-height:52px;"></textarea>
         <label for="ccomment">Вес, декор, доставка/самовывоз…</label>
       </div>
     </div>
@@ -2399,9 +2396,9 @@ const products = [
     slides: ['cake_biscuit_1.png', 'cake_biscuit_2.png', 'cake_biscuit_3.png', 'cake_biscuit_4.png', 'cake_biscuit_5.png'],
     slidePos: ['center 30%', 'center 25%', 'center 20%', 'center 30%', 'center 20%'] },
   { id: 2, name: 'Бенто торт', desc: 'Миниатюрный торт — идеальный подарок для особенного момента', min: '', price: '1 600 ₽', priceNum: 1600, unit: 'шт', emoji: '🍰',
-    slides: ['bento_1.jpg', 'bento_2.png', 'bento_3.png', 'bento_4.png'],
-    slidePos: ['60% 50%', 'center 5%', 'center 45%', 'center 40%'],
-    slideScale: [1.4, 1, 1, 1] },
+    slides: ['bento_1.jpg', 'bento_2.png', 'bento_4.png'],
+    slidePos: ['60% 50%', 'center 5%', 'center 40%'],
+    slideScale: [1.4, 1, 1] },
   { id: 3, name: '3D Торт', desc: 'Уникальный дизайнерский торт с объёмными элементами', min: 'Заказ от 3 кг', price: '5 000 ₽/кг', priceNum: 5000, unit: 'кг', minKg: 3, emoji: '✨',
     slides: ['cake_3d.png', 'cake_3d_2.png'],
     slidePos: ['center 0%', 'center 0%'],
@@ -2668,8 +2665,28 @@ function updateCartUI() {
       </div>`;
   }).join('');
 
-  document.getElementById('cartTotal').textContent = total.toLocaleString('ru') + ' ₽';
-  footer.style.display = 'block';
+  const totalFmt = total.toLocaleString('ru') + ' ₽';
+  document.getElementById('cartTotal').textContent = totalFmt;
+
+  // Step 1: add summary + next button at bottom of cart-body
+  body.innerHTML += `
+    <div id="cartStep1Footer" style="margin-top:16px;padding-top:14px;border-top:1px solid var(--cream-dark);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <span style="font-size:15px;color:var(--brown);">Итого:</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--gold);">${totalFmt}</span>
+      </div>
+      <button onclick="goToFormStep()" style="width:100%;background:var(--gold);color:#fff;border:none;border-radius:50px;padding:14px 24px;font-size:15px;font-family:'Jost',sans-serif;font-weight:500;cursor:pointer;box-shadow:0 6px 20px rgba(201,147,74,0.35);">
+        Далее →
+      </button>
+    </div>`;
+
+  footer.style.display = 'none';
+}
+
+function goToFormStep() {
+  setCartStep(2);
+  document.getElementById('cartFooter').style.display = 'block';
+  document.getElementById('cartBody').style.display = 'none';
 }
 
 function buildMessage() {
@@ -2726,6 +2743,25 @@ function sendFormWA() {
   window.open(`https://wa.me/79119038886?text=${msg}`, '_blank');
 }
 
+function navigateToStep(step) {
+  const hasItems = Object.keys(cart).length > 0;
+  if (!hasItems) return; // can't navigate if cart is empty
+
+  if (step === 1) {
+    goBackToCart();
+  } else if (step === 2) {
+    // Only go to step 2 if there are items
+    goToFormStep();
+  }
+}
+
+function goBackToCart() {
+  setCartStep(1);
+  document.getElementById('cartFooter').style.display = 'none';
+  document.getElementById('cartBody').style.display = '';
+  updateCartUI();
+}
+
 function openCart() {
   document.getElementById('cartDrawer').classList.add('open');
   document.getElementById('cartOverlay').classList.add('open');
@@ -2735,19 +2771,9 @@ function openCart() {
   document.body.style.top = `-${scrollY}px`;
   document.body.style.width = '100%';
   document.body.dataset.scrollY = scrollY;
-  // Set step based on cart state
-  const hasItems = Object.keys(cart).length > 0;
-  setCartStep(hasItems ? 2 : 1);
-  // Watch for form interaction → step 2
-  setTimeout(() => {
-    ['cname','cphone','cdate','ccomment'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el && !el._stepBound) {
-        el._stepBound = true;
-        el.addEventListener('focus', () => setCartStep(2), { once: false });
-      }
-    });
-  }, 200);
+  // Always start at step 1 (showing cart items)
+  setCartStep(1);
+  // Step advances only via explicit button (goToFormStep)
 }
 
 function closeCart() {
