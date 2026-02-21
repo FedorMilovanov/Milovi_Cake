@@ -1,0 +1,5 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://milovecake.ru/sitemap.xml
+Host: milovecake.ru
