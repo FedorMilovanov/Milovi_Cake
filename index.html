@@ -435,6 +435,29 @@
       z-index: 9001;
     }
     .lightbox-close:hover { background: rgba(255,255,255,0.25); border-color: rgba(255,255,255,0.5); }
+    .lightbox-arrow {
+      position: absolute;
+      top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 50%;
+      width: 48px; height: 48px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      z-index: 9001;
+    }
+    .lightbox-arrow:hover { background: rgba(255,255,255,0.25); transform: translateY(-50%) scale(1.08); }
+    .lightbox-arrow-left { left: 24px; }
+    .lightbox-arrow-right { right: 24px; }
+    .lightbox-arrow.hidden { opacity: 0; pointer-events: none; }
+    @media (max-width: 600px) {
+      .lightbox-arrow { width: 38px; height: 38px; }
+      .lightbox-arrow-left { left: 10px; }
+      .lightbox-arrow-right { right: 10px; }
+    }
 
     /* ── CALCULATOR ── */
     #calculator { background: linear-gradient(180deg, #faf6ef 0%, #f0e6d4 100%); }
@@ -2077,7 +2100,13 @@
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
     Закрыть
   </button>
+  <button class="lightbox-arrow lightbox-arrow-left" onclick="lbNavigate(-1)" id="lbArrowLeft" aria-label="Назад">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
   <img id="lightboxImg" src="" alt="" style="user-select:none; -webkit-user-drag:none;" />
+  <button class="lightbox-arrow lightbox-arrow-right" onclick="lbNavigate(1)" id="lbArrowRight" aria-label="Вперёд">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
 </div>
 
 <!-- ══════════ HERO ══════════ -->
@@ -3214,12 +3243,14 @@ let _lbSrcs = [], _lbIdx = 0;
 
 function openLightbox(src, srcs) {
   _lbSrcs = srcs || [src];
-  _lbIdx = _lbSrcs.indexOf(src);
+  // Normalize: find index by matching end of path
+  _lbIdx = _lbSrcs.findIndex(s => src.endsWith(s) || s.endsWith(src) || src === s);
   if (_lbIdx < 0) _lbIdx = 0;
   const lb = document.getElementById('lightbox');
   document.getElementById('lightboxImg').src = _lbSrcs[_lbIdx];
   lb.classList.add('open');
   document.body.style.overflow = 'hidden';
+  _lbUpdateArrows();
 }
 function lbNavigate(dir) {
   if (_lbSrcs.length < 2) return;
@@ -3231,6 +3262,12 @@ function lbNavigate(dir) {
     img.src = _lbSrcs[_lbIdx];
     img.style.opacity = '1';
   }, 150);
+  _lbUpdateArrows();
+}
+function _lbUpdateArrows() {
+  const show = _lbSrcs.length > 1;
+  document.getElementById('lbArrowLeft').classList.toggle('hidden', !show);
+  document.getElementById('lbArrowRight').classList.toggle('hidden', !show);
 }
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
@@ -3274,12 +3311,11 @@ function wireProductLightbox() {
     const wrap = document.getElementById('slider-' + p.id);
     if (!wrap || wrap._lbBound) return;
     wrap._lbBound = true;
-    wrap.querySelectorAll('.slide-img').forEach(img => {
+    wrap.querySelectorAll('.slide-img').forEach((img, idx) => {
       img.style.cursor = 'zoom-in';
       img.addEventListener('click', (e) => {
-        // Only open if it wasn't a swipe
         if (wrap._wasSwiped) return;
-        openLightbox(img.src, p.slides);
+        openLightbox(p.slides[idx], p.slides);
       });
     });
   });
