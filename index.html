@@ -1011,6 +1011,7 @@
       opacity: 0;
       transition: opacity 0.9s ease;
       display: block;
+      cursor: zoom-in;
     }
 
     .slide-img.active { opacity: 1; }
@@ -3351,12 +3352,23 @@ function wireProductLightbox() {
     const wrap = document.getElementById('slider-' + p.id);
     if (!wrap || wrap._lbBound) return;
     wrap._lbBound = true;
-    wrap.querySelectorAll('.slide-img').forEach((img, idx) => {
-      img.style.cursor = 'zoom-in';
-      img.addEventListener('click', (e) => {
-        if (wrap._wasSwiped) return;
-        openLightbox(p.slides[idx], p.slides);
-      });
+
+    // Use event delegation on the wrap — works even after bento tab switches new imgs in
+    wrap.addEventListener('click', (e) => {
+      if (wrap._wasSwiped) return;
+      const img = e.target.closest('.slide-img');
+      if (!img || img.classList.contains('slide-video')) return;
+
+      // Find which slide is currently active by dot index
+      const dots = wrap.querySelectorAll('.dot');
+      let activeIdx = 0;
+      dots.forEach((d, i) => { if (d.classList.contains('active')) activeIdx = i; });
+
+      // Get current slides list (bento may have switched to maxi)
+      const mode = typeof bentoModes !== 'undefined' && bentoModes[p.id];
+      const currentSlides = (mode === 'maxi' && p.maxiVariant) ? p.maxiVariant.slides : p.slides;
+
+      openLightbox(currentSlides[activeIdx], currentSlides);
     });
   });
 }
