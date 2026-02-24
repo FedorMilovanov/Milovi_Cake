@@ -435,28 +435,28 @@
       z-index: 9001;
     }
     .lightbox-close:hover { background: rgba(255,255,255,0.25); border-color: rgba(255,255,255,0.5); }
-    .lightbox-arrow {
+    .lightbox-nav {
       position: absolute;
-      top: 50%; transform: translateY(-50%);
+      bottom: 28px; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 16px;
+      z-index: 9001;
+    }
+    .lightbox-nav.hidden { opacity: 0; pointer-events: none; }
+    .lightbox-arrow {
       background: rgba(255,255,255,0.12);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       border: 1px solid rgba(255,255,255,0.2);
       border-radius: 50%;
-      width: 48px; height: 48px;
+      width: 44px; height: 44px;
       display: flex; align-items: center; justify-content: center;
       color: #fff; cursor: pointer;
-      transition: background 0.2s, transform 0.2s;
-      z-index: 9001;
+      transition: background 0.2s, transform 0.15s;
     }
-    .lightbox-arrow:hover { background: rgba(255,255,255,0.25); transform: translateY(-50%) scale(1.08); }
-    .lightbox-arrow-left { left: 24px; }
-    .lightbox-arrow-right { right: 24px; }
-    .lightbox-arrow.hidden { opacity: 0; pointer-events: none; }
+    .lightbox-arrow:hover { background: rgba(255,255,255,0.28); transform: scale(1.1); }
     @media (max-width: 600px) {
+      .lightbox-nav { bottom: 18px; gap: 12px; }
       .lightbox-arrow { width: 38px; height: 38px; }
-      .lightbox-arrow-left { left: 10px; }
-      .lightbox-arrow-right { right: 10px; }
     }
 
     /* ── CALCULATOR ── */
@@ -2100,13 +2100,15 @@
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
     Закрыть
   </button>
-  <button class="lightbox-arrow lightbox-arrow-left" onclick="lbNavigate(-1)" id="lbArrowLeft" aria-label="Назад">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-  </button>
   <img id="lightboxImg" src="" alt="" style="user-select:none; -webkit-user-drag:none;" />
-  <button class="lightbox-arrow lightbox-arrow-right" onclick="lbNavigate(1)" id="lbArrowRight" aria-label="Вперёд">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-  </button>
+  <div class="lightbox-nav hidden" id="lbNav">
+    <button class="lightbox-arrow" onclick="lbNavigate(-1)" aria-label="Назад">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="lightbox-arrow" onclick="lbNavigate(1)" aria-label="Вперёд">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
 </div>
 
 <!-- ══════════ HERO ══════════ -->
@@ -3266,8 +3268,7 @@ function lbNavigate(dir) {
 }
 function _lbUpdateArrows() {
   const show = _lbSrcs.length > 1;
-  document.getElementById('lbArrowLeft').classList.toggle('hidden', !show);
-  document.getElementById('lbArrowRight').classList.toggle('hidden', !show);
+  document.getElementById('lbNav').classList.toggle('hidden', !show);
 }
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
