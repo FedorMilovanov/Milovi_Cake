@@ -587,6 +587,125 @@
     }
     .fill-mobile-popup.open { transform: translateY(0); }
     .fill-mobile-popup strong { color: #fff; font-size: 16px; font-weight: 500; display: block; margin-bottom: 8px; }
+    /* ── COOKIE BANNER ── */
+    #cookieBanner {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 9000;
+      background: var(--brown);
+      color: rgba(255,235,185,0.9);
+      font-family: 'Jost', sans-serif;
+      font-size: 13px;
+      padding: 14px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      box-shadow: 0 -4px 24px rgba(61,43,31,0.25);
+      transform: translateY(100%);
+      transition: transform 0.4s ease;
+    }
+    #cookieBanner.visible { transform: translateY(0); }
+    #cookieBanner a {
+      color: var(--gold-light);
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    #cookieAccept {
+      background: var(--gold);
+      color: #fff;
+      border: none;
+      padding: 8px 22px;
+      border-radius: 50px;
+      font-family: 'Jost', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    #cookieAccept:hover { background: var(--gold-light); }
+
+    /* ── PRIVACY MODAL ── */
+    #privacyOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9100;
+      background: rgba(45,28,18,0.72);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    #privacyOverlay.open { opacity: 1; pointer-events: all; }
+    #privacyModal {
+      background: var(--cream);
+      border-radius: 20px;
+      max-width: 680px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 40px 48px;
+      position: relative;
+      box-shadow: 0 24px 80px rgba(61,43,31,0.25);
+      font-family: 'Jost', sans-serif;
+    }
+    #privacyModal h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      color: var(--brown);
+      margin-bottom: 24px;
+      letter-spacing: -0.01em;
+    }
+    #privacyModal h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--brown);
+      margin: 20px 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    #privacyModal p {
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    #privacyClose {
+      position: absolute;
+      top: 18px; right: 20px;
+      background: rgba(201,147,74,0.12);
+      border: 1.5px solid rgba(201,147,74,0.25);
+      border-radius: 50%;
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: var(--brown);
+      font-size: 18px;
+      line-height: 1;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    #privacyClose:hover { background: rgba(201,147,74,0.25); border-color: var(--gold); }
+
+    /* ── CONSENT NOTE (under buttons) ── */
+    .consent-note {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      line-height: 1.5;
+      text-align: center;
+    }
+    .consent-note a {
+      color: var(--gold);
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
     .fill-mobile-popup-close {
       position: absolute; top: 14px; right: 18px;
       background: rgba(255,255,255,0.12); border: none; border-radius: 50%;
@@ -2378,7 +2497,10 @@
           <div class="calc-approx-badge" id="calcApproxBadge">⚠ Уточните точную цену при заказе</div>
           <div class="calc-result-note" id="calcNote">Точная цена согласовывается при заказе</div>
         </div>
-        <a href="#contacts" class="calc-order-btn">Заказать 🎂</a>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+          <a href="#contacts" class="calc-order-btn">Заказать 🎂</a>
+          <span class="consent-note">Нажимая кнопку, вы даёте согласие на<br><a onclick="openPrivacy()">обработку персональных данных</a></span>
+        </div>
       </div>
     </div>
   </div>
@@ -2564,6 +2686,7 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           Заказать через WhatsApp
         </a>
+        <p class="consent-note" style="text-align:left;">Нажимая кнопку, вы даёте согласие на <a onclick="openPrivacy()">обработку персональных данных</a></p>
 
         <!-- Соцсети и отзывы -->
         <div class="social-divider">
@@ -2610,7 +2733,7 @@
           <textarea id="fcomment" placeholder=" "></textarea>
           <label for="fcomment">Комментарий — вес, декор, дата…</label>
         </div>
-        <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="#">обработкой персональных данных</a></p>
+        <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a onclick="openPrivacy()" style="cursor:pointer;">обработкой персональных данных</a></p>
         <button class="btn-wa" onclick="sendFormWA()">Отправить Заказ</button>
       </div>
     </div>
@@ -2696,7 +2819,7 @@
         📞 Позвонить +7 911 903 88 86
       </a>
     </div>
-    <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="#">обработкой персональных данных</a></p>
+    <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a onclick="openPrivacy()" style="cursor:pointer;">обработкой персональных данных</a></p>
   </div>
 </div>
 
@@ -3622,6 +3745,7 @@ document.getElementById('reviewsTrack').addEventListener('touchend', e => {
 <!-- ══════════ FOOTER ══════════ -->
 <footer style="background: var(--brown); padding: 18px 40px; text-align: center;">
   <p style="font-family: 'Cormorant Garamond', serif; font-size: 14px; font-weight: 400; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,235,185,0.35);">© 2026 Milovi Cake</p>
+  <p style="margin-top: 8px;"><a onclick="openPrivacy()" style="font-family:'Jost',sans-serif; font-size:12px; color:rgba(255,235,185,0.3); text-decoration:underline; cursor:pointer; letter-spacing:0.04em;">Политика конфиденциальности</a></p>
 </footer>
 
 <div class="bento-weight-toast" id="bentoWeightToast"></div>
@@ -3646,6 +3770,73 @@ function showBentoWeightToast(text) {
   <strong id="fillPopupTitle"></strong>
   <span id="fillPopupText"></span>
 </div>
+
+<!-- ══════════ COOKIE BANNER ══════════ -->
+<div id="cookieBanner">
+  <span>Мы используем файлы cookie для улучшения работы сайта.&nbsp;
+    <a onclick="openPrivacy()">Политика конфиденциальности</a>
+  </span>
+  <button id="cookieAccept" onclick="acceptCookie()">Хорошо</button>
+</div>
+
+<!-- ══════════ PRIVACY MODAL ══════════ -->
+<div id="privacyOverlay" onclick="if(event.target===this)closePrivacy()">
+  <div id="privacyModal">
+    <button id="privacyClose" onclick="closePrivacy()" aria-label="Закрыть">×</button>
+    <h2>Политика конфиденциальности</h2>
+
+    <h3>1. Общие положения</h3>
+    <p>Настоящая Политика конфиденциальности (далее — «Политика») определяет порядок обработки и защиты персональных данных пользователей сайта milovicake.ru (далее — «Сайт»), осуществляемой ИП / кондитерской Milovi Cake (далее — «Оператор»).</p>
+    <p>Политика разработана в соответствии с требованиями Федерального закона от 27.07.2006 № 152-ФЗ «О персональных данных».</p>
+
+    <h3>2. Какие данные мы собираем</h3>
+    <p>При оформлении заказа через формы на сайте или мессенджеры Оператор может собирать следующие персональные данные:</p>
+    <p>— Имя (для персонального обращения);<br>— Номер телефона (для связи и подтверждения заказа);<br>— Дата и адрес доставки (при необходимости);<br>— Комментарии к заказу (пожелания по декору, вкусу и прочее).</p>
+
+    <h3>3. Цели обработки данных</h3>
+    <p>Персональные данные обрабатываются исключительно в следующих целях:</p>
+    <p>— Оформление и выполнение заказа;<br>— Связь с клиентом для уточнения деталей заказа;<br>— Уведомление о готовности и доставке заказа.</p>
+
+    <h3>4. Хранение и защита данных</h3>
+    <p>Оператор принимает необходимые организационные и технические меры для защиты персональных данных от несанкционированного доступа, изменения, раскрытия или уничтожения. Данные не передаются третьим лицам, за исключением случаев, предусмотренных законодательством РФ.</p>
+
+    <h3>5. Cookies</h3>
+    <p>Сайт использует файлы cookie — небольшие текстовые файлы, сохраняемые на устройстве пользователя. Они необходимы для корректной работы сайта и улучшения пользовательского опыта. Cookie не содержат персональных данных. Вы можете отключить cookie в настройках браузера, однако это может повлиять на работу отдельных функций сайта.</p>
+
+    <h3>6. Права субъекта данных</h3>
+    <p>Вы вправе в любой момент запросить уточнение, блокирование или удаление ваших персональных данных, направив запрос по контактам, указанным на сайте.</p>
+
+    <h3>7. Контакты</h3>
+    <p>По вопросам обработки персональных данных обращайтесь:<br>
+    Телефон: +7 911 903 88 86<br>
+    Telegram: @MiloviCake</p>
+  </div>
+</div>
+
+<script>
+// ── Cookie banner ──
+function acceptCookie() {
+  localStorage.setItem('cookieAccepted', Date.now() + 365 * 24 * 60 * 60 * 1000);
+  document.getElementById('cookieBanner').classList.remove('visible');
+}
+function initCookieBanner() {
+  const stored = localStorage.getItem('cookieAccepted');
+  if (stored && Date.now() < parseInt(stored)) return;
+  setTimeout(() => document.getElementById('cookieBanner').classList.add('visible'), 800);
+}
+initCookieBanner();
+
+// ── Privacy modal ──
+function openPrivacy() {
+  document.getElementById('privacyOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closePrivacy() {
+  document.getElementById('privacyOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePrivacy(); });
+</script>
 
 </body>
 </html>
