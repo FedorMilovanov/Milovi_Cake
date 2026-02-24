@@ -482,17 +482,82 @@
     }
     .calc-row { margin-bottom: 28px; }
     .calc-row label { display: block; font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
-    .calc-options { display: flex; flex-wrap: wrap; gap: 10px; }
+    .calc-options { display: flex; flex-wrap: wrap; gap: 7px; }
     .calc-opt {
-      padding: 10px 20px; border-radius: 50px;
+      position: relative;
+      padding: 7px 14px; border-radius: 50px;
       border: 1.5px solid var(--cream-dark);
       background: var(--cream); color: var(--brown);
-      font-family: 'Jost', sans-serif; font-size: 14px;
+      font-family: 'Jost', sans-serif; font-size: 13px;
       cursor: pointer; transition: border-color 0.2s, background 0.2s, color 0.2s;
       user-select: none;
+      display: inline-flex; align-items: center; gap: 5px;
     }
-    .calc-opt.selected { border-color: var(--gold); background: var(--gold); color: #fff; }
-    /* ── WEIGHT STEPPER (cart style) ── */
+    .calc-opt.selected { border-color: var(--gold); background: var(--gold); color: #fff; box-shadow: 0 4px 14px rgba(201,147,74,0.45); }
+    .calc-opt.selected .fill-tag { background: rgba(255,255,255,0.25); color: #fff; }
+
+    /* ── FILL TOOLTIP ── */
+    .fill-tooltip {
+      position: absolute;
+      bottom: calc(100% + 10px);
+      left: 50%; transform: translateX(-50%);
+      background: var(--brown);
+      color: rgba(255,240,210,0.95);
+      font-size: 12px; line-height: 1.55;
+      padding: 10px 14px;
+      border-radius: 12px;
+      width: 220px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.18s, transform 0.18s;
+      transform: translateX(-50%) translateY(4px);
+      z-index: 200;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+      white-space: normal;
+      text-align: left;
+    }
+    .fill-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%; left: 50%; transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: var(--brown);
+    }
+    .fill-tooltip strong { color: #fff; font-weight: 500; display: none; margin-bottom: 3px; }
+    .calc-opt:hover .fill-tooltip,
+    .calc-opt:focus .fill-tooltip {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Mobile: tap shows tooltip as bottom sheet style */
+    .fill-mobile-popup {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--brown);
+      color: rgba(255,240,210,0.95);
+      padding: 20px 24px 32px;
+      border-radius: 20px 20px 0 0;
+      z-index: 800;
+      font-size: 14px; line-height: 1.6;
+      box-shadow: 0 -8px 32px rgba(0,0,0,0.25);
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+    }
+    .fill-mobile-popup.open { transform: translateY(0); }
+    .fill-mobile-popup strong { color: #fff; font-size: 16px; font-weight: 500; display: block; margin-bottom: 8px; }
+    .fill-mobile-popup-close {
+      position: absolute; top: 14px; right: 18px;
+      background: rgba(255,255,255,0.12); border: none; border-radius: 50%;
+      width: 30px; height: 30px; color: #fff; font-size: 18px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .fill-mobile-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4); z-index: 799;
+    }
+    .fill-mobile-overlay.open { display: block; }    /* ── WEIGHT STEPPER (cart style) ── */
     .calc-weight-stepper {
       display: inline-flex;
       align-items: center;
@@ -2201,26 +2266,35 @@
           <div class="calc-stepper-val" id="calcWeightVal">2 кг</div>
           <button class="calc-stepper-btn" id="calcWeightPlus" onclick="stepWeight(1)" aria-label="Увеличить вес">+</button>
         </div>
+        <div id="guestsPopup" style="
+            margin-top: 8px;
+            font-family: 'Jost', sans-serif;
+            font-size: 9px;
+            font-weight: 300;
+            color: var(--text);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            text-shadow: 0 1px 3px rgba(61,43,31,0.25), 0 2px 8px rgba(201,147,74,0.2);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+          ">Примерно на <span id="guestsCount">10 человек</span></div>
         <input type="hidden" id="calcWeight" value="2" />
       </div>
       <div class="calc-row" id="calcFillRow">
         <label>Начинка</label>
         <div class="calc-options" id="calcFill">
-          <div class="calc-opt selected" data-price="0" data-desc="<strong>Бисквит ваниль</strong> + клубничное конфи + нежный сливочный крем. Лёгкий, ягодный, ненавязчиво сладкий." onclick="selectOpt(this,'calcFill')">Воздушный поцелуй (клубника)</div>
-          <div class="calc-opt" data-price="0" data-desc="<strong>Бисквит ваниль</strong> + вишнёвое конфи + сливочный крем. Классическое сочетание сладкого и лёгкой кислинки." onclick="selectOpt(this,'calcFill')">Ванильная вишня</div>
-          <div class="calc-opt" data-price="0" data-desc="<strong>Бисквит ваниль</strong> + микс малины, вишни и лесных ягод + сливочный крем. Сочная ягодная классика." onclick="selectOpt(this,'calcFill')">Микс ягод <span class='fill-tag hit'>хит</span></div>
-          <div class="calc-opt" data-price="0" data-desc="<strong>Бисквит ваниль</strong> + курд манго-маракуйя + крем чиз. Экзотично, свежо и солнечно." onclick="selectOpt(this,'calcFill')">Ванильные тропики (манго-маракуйя)</div>
-          <div class="calc-opt" data-price="0" data-desc="<strong>Белый шоколадный бисквит</strong> + карамельный крем + хрустящий арахис. Нежная «светлая» версия сникерса." onclick="selectOpt(this,'calcFill')">Белый сникерс (карамель, арахис) <span class='fill-tag nuts'>орехи</span></div>
-          <div class="calc-opt" data-price="0" data-desc="<strong>Ванильный бисквит</strong> + крем чиз. Нежно, идеально для маленьких детей и кормящих мам." onclick="selectOpt(this,'calcFill')">Ванильные облака</div>
-          <div class="calc-opt" data-price="0" data-desc="<strong>Шоколадный бисквит</strong> + вишнёвое конфи + сливочный крем чиз. Интенсивный вишнёво-шоколадный аккорд." onclick="selectOpt(this,'calcFill')">Вишня в шоколаде</div>
-          <div class="calc-opt" data-price="0" data-desc="<strong>Шоколадный бисквит</strong> + микс малины, вишни и лесных ягод + сливочный крем чиз. Насыщенный шоколад с ягодной свежестью." onclick="selectOpt(this,'calcFill')">Шоколадный микс ягод</div>
-          <div class="calc-opt" data-price="0" data-desc="<strong>Шоколадный бисквит</strong> + солёная карамель + арахис + крем чиз. Классический сникерс — любимец всех возрастов." onclick="selectOpt(this,'calcFill')">Сникерс (карамель, арахис)</div>
-          <div class="calc-opt" data-price="0" data-desc="<strong>Шоколадный бисквит</strong> + шоколадный сырный крем + молотый грецкий орех + вафельный хруст. Эффект конфеты Ferrero Rocher." onclick="selectOpt(this,'calcFill')">Ферреро (вафля, шоколад, орех) <span class='fill-tag nuts'>орехи</span></div>
-          <div class="calc-opt" data-price="0" data-desc="<strong>Бисквит «красный бархат»</strong> + нежный сырный крем. Эффектный срез, бархатный вкус." onclick="selectOpt(this,'calcFill')">Красный бархат</div>
-          <div class="calc-opt" data-price="0" data-desc="<strong>Шоколадный бисквит</strong> + шоколадный крем-чиз. Для любителей шоколада на шоколадном." onclick="selectOpt(this,'calcFill')">Супер-Шоколад</div>
-        </div>
-        <div class="fill-desc-panel" id="fillDescPanel">
-          <div class="fill-desc-text" id="fillDescText">Бисквит ваниль + клубничное конфи + нежный сливочный крем. Лёгкий, ягодный, ненавязчиво сладкий.</div>
+          <div class="calc-opt selected" data-price="0" data-desc="Бисквит ваниль + клубничное конфи + нежный сливочный крем. Лёгкий, ягодный, ненавязчиво сладкий." onclick="selectOpt(this,'calcFill')">Воздушный поцелуй<div class="fill-tooltip"><strong>Воздушный поцелуй</strong>Бисквит ваниль + клубничное конфи + сливочный крем. Лёгкий, ягодный.</div></div>
+          <div class="calc-opt" data-price="0" data-desc="Бисквит ваниль + вишнёвое конфи + сливочный крем. Классическое сочетание сладкого и лёгкой кислинки." onclick="selectOpt(this,'calcFill')">Ванильная вишня<div class="fill-tooltip"><strong>Ванильная вишня</strong>Бисквит ваниль + вишнёвое конфи + сливочный крем. Сладкое с лёгкой кислинкой.</div></div>
+          <div class="calc-opt" data-price="0" data-desc="Бисквит ваниль + микс малины, вишни и лесных ягод + сливочный крем. Сочная ягодная классика." onclick="selectOpt(this,'calcFill')">Микс ягод <span class="fill-tag hit">хит</span><div class="fill-tooltip"><strong>Микс ягод</strong>Бисквит ваниль + микс малины, вишни и лесных ягод + сливочный крем. Сочная ягодная классика.</div></div>
+          <div class="calc-opt" data-price="0" data-desc="Бисквит ваниль + курд манго-маракуйя + крем чиз. Экзотично, свежо и солнечно." onclick="selectOpt(this,'calcFill')">Ванильные тропики<div class="fill-tooltip"><strong>Ванильные тропики</strong>Бисквит ваниль + курд манго-маракуйя + крем чиз. Экзотично и солнечно.</div></div>
+          <div class="calc-opt" data-price="0" data-desc="Белый шоколадный бисквит + карамельный крем + хрустящий арахис. Нежная «светлая» версия сникерса." onclick="selectOpt(this,'calcFill')">Белый сникерс <span class="fill-tag nuts">орехи</span><div class="fill-tooltip"><strong>Белый сникерс</strong>Белый шоколадный бисквит + карамельный крем + хрустящий арахис. Нежная светлая версия сникерса.</div></div>
+          <div class="calc-opt" data-price="0" data-desc="Ванильный бисквит + крем чиз. Нежно, идеально для маленьких детей и кормящих мам." onclick="selectOpt(this,'calcFill')">Ванильные облака<div class="fill-tooltip"><strong>Ванильные облака</strong>Ванильный бисквит + крем чиз. Нежно, для детей и кормящих мам.</div></div>
+          <div class="calc-opt" data-price="0" data-desc="Шоколадный бисквит + вишнёвое конфи + сливочный крем чиз. Интенсивный вишнёво-шоколадный аккорд." onclick="selectOpt(this,'calcFill')">Вишня в шоколаде<div class="fill-tooltip"><strong>Вишня в шоколаде</strong>Шоколадный бисквит + вишнёвое конфи + сливочный крем чиз.</div></div>
+          <div class="calc-opt" data-price="0" data-desc="Шоколадный бисквит + микс малины, вишни и лесных ягод + сливочный крем чиз. Насыщенный шоколад с ягодной свежестью." onclick="selectOpt(this,'calcFill')">Шоколадный микс ягод<div class="fill-tooltip"><strong>Шоколадный микс ягод</strong>Шоколадный бисквит + микс малины, вишни и лесных ягод + сливочный крем чиз.</div></div>
+          <div class="calc-opt" data-price="0" data-desc="Шоколадный бисквит + солёная карамель + арахис + крем чиз. Классический сникерс — любимец всех возрастов." onclick="selectOpt(this,'calcFill')">Сникерс <span class="fill-tag nuts">орехи</span><div class="fill-tooltip"><strong>Сникерс</strong>Шоколадный бисквит + солёная карамель + арахис + крем чиз. Любимец всех возрастов.</div></div>
+          <div class="calc-opt" data-price="0" data-desc="Шоколадный бисквит + шоколадный сырный крем + молотый грецкий орех + вафельный хруст. Эффект конфеты Ferrero Rocher." onclick="selectOpt(this,'calcFill')">Ферреро <span class="fill-tag nuts">орехи</span><div class="fill-tooltip"><strong>Ферреро</strong>Шоколадный бисквит + шоколадный сырный крем + молотый грецкий орех + вафельный хруст. Эффект Ferrero Rocher.</div></div>
+          <div class="calc-opt" data-price="0" data-desc="Бисквит «красный бархат» + нежный сырный крем. Эффектный срез, бархатный вкус." onclick="selectOpt(this,'calcFill')">Красный бархат<div class="fill-tooltip"><strong>Красный бархат</strong>Бисквит красный бархат + нежный сырный крем. Эффектный срез, бархатный вкус.</div></div>
+          <div class="calc-opt" data-price="0" data-desc="Шоколадный бисквит + шоколадный крем-чиз. Для любителей шоколада на шоколадном." onclick="selectOpt(this,'calcFill')">Супер-Шоколад<div class="fill-tooltip"><strong>Супер-Шоколад</strong>Шоколадный бисквит + шоколадный крем-чиз. Для истинных любителей шоколада.</div></div>
         </div>
       </div>
       <div class="calc-row">
@@ -3375,29 +3449,44 @@ function wireProductLightbox() {
 
 // ── CALCULATOR ──
 let _calcWeight = 2;
-const WEIGHT_MIN = 1, WEIGHT_MAX = 10, WEIGHT_STEP = 0.5;
+const WEIGHT_MIN = 2, WEIGHT_MAX = 10, WEIGHT_STEP = 0.5;
 
+let _guestsTimer = null;
 function stepWeight(dir) {
   const newVal = Math.round((_calcWeight + dir * WEIGHT_STEP) * 10) / 10;
   if (newVal < WEIGHT_MIN || newVal > WEIGHT_MAX) return;
   _calcWeight = newVal;
   document.getElementById('calcWeight').value = _calcWeight;
   updateCalc();
+  const popup = document.getElementById('guestsPopup');
+  if (popup) popup.style.opacity = '1';
 }
 
 function selectOpt(el, groupId) {
   document.querySelectorAll(`#${groupId} .calc-opt`).forEach(o => o.classList.remove('selected'));
   el.classList.add('selected');
   if (groupId === 'calcType') {
-    const price = +el.dataset.price;
     document.getElementById('calcWeightRow').style.display = 'block';
     document.getElementById('calcFillRow').style.display = 'block';
   }
   if (groupId === 'calcFill') {
-    const desc = el.dataset.desc || '';
-    document.getElementById('fillDescText').innerHTML = desc;
+    // On touch devices show mobile popup
+    if (window.matchMedia('(hover: none)').matches) {
+      const tooltip = el.querySelector('.fill-tooltip');
+      if (tooltip) {
+        document.getElementById('fillPopupTitle').textContent = tooltip.querySelector('strong')?.textContent || '';
+        document.getElementById('fillPopupText').textContent = tooltip.childNodes[tooltip.childNodes.length - 1]?.textContent || el.dataset.desc || '';
+        document.getElementById('fillPopup').classList.add('open');
+        document.getElementById('fillOverlay').classList.add('open');
+      }
+    }
   }
   updateCalc();
+}
+
+function closeFillPopup() {
+  document.getElementById('fillPopup').classList.remove('open');
+  document.getElementById('fillOverlay').classList.remove('open');
 }
 
 function updateCalc() {
@@ -3414,6 +3503,23 @@ function updateCalc() {
   const valEl = document.getElementById('calcWeightVal');
   if (valEl) {
     valEl.textContent = weight % 1 === 0 ? weight + ' кг' : weight.toFixed(1) + ' кг';
+  }
+  const guestsEl = document.getElementById('guestsCount');
+  if (guestsEl) {
+    const n = Math.round(weight / 0.2);
+    const mod10 = n % 10;
+    const mod100 = n % 100;
+    let form;
+    if (mod100 >= 11 && mod100 <= 19) {
+      form = 'человек';
+    } else if (mod10 === 1) {
+      form = 'человек'; // 1, 21, 31 — «на 1 человека» но мы говорим «примерно на N»
+    } else if (mod10 >= 2 && mod10 <= 4) {
+      form = 'человека';
+    } else {
+      form = 'человек';
+    }
+    guestsEl.textContent = n + ' ' + form;
   }
 
   // Update stepper button states
@@ -3491,6 +3597,13 @@ function showBentoWeightToast(text) {
   bentoToastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
 }
 </script>
+
+<div class="fill-mobile-overlay" id="fillOverlay" onclick="closeFillPopup()"></div>
+<div class="fill-mobile-popup" id="fillPopup">
+  <button class="fill-mobile-popup-close" onclick="closeFillPopup()">×</button>
+  <strong id="fillPopupTitle"></strong>
+  <span id="fillPopupText"></span>
+</div>
 
 </body>
 </html>
