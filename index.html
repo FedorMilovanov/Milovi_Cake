@@ -706,6 +706,17 @@
       cursor: pointer;
     }
 
+    /* ── VISUALLY HIDDEN (SEO) ── */
+    .visually-hidden {
+      clip: rect(0 0 0 0);
+      clip-path: inset(50%);
+      height: 1px;
+      overflow: hidden;
+      position: absolute;
+      white-space: nowrap;
+      width: 1px;
+    }
+
     .fill-mobile-popup-close {
       position: absolute; top: 14px; right: 18px;
       background: rgba(255,255,255,0.12); border: none; border-radius: 50%;
@@ -2383,7 +2394,7 @@
 
   <div class="hero-content">
     <div class="hero-text">
-      <h1 class="hero-title"><span class="hero-title-brand">Milovi Cake</span></h1>
+      <h1 class="hero-title"><span class="hero-title-brand">Milovi Cake</span><span class="visually-hidden"> — кондитерская в Санкт-Петербурге, авторские торты на заказ с доставкой по СПб</span></h1>
       <p style="margin-bottom: 28px;">Авторские торты и десерты<br>Свежесть под заказ</p>
 
       <!-- Hero features -->
@@ -2423,7 +2434,7 @@
 
 <section id="catalog">
   <div class="container">
-    <h2 class="section-title reveal">Наши Десерты</h2>
+    <h2 class="section-title reveal">Наши Десерты<span class="visually-hidden"> — торты и десерты на заказ в Санкт-Петербурге, купить с доставкой</span></h2>
     <p class="section-sub reveal">Выберите свой любимый торт или десерт из нашей коллекции</p>
     <div class="catalog-grid" id="catalogGrid">
       <!-- rendered by JS -->
@@ -2434,7 +2445,7 @@
 <!-- ══════════ FILLINGS / CALCULATOR ══════════ -->
 <section id="fillings" class="fillings">
   <div class="container">
-    <h2 class="section-title reveal">Начинки & Стоимость</h2>
+    <h2 class="section-title reveal">Начинки & Стоимость<span class="visually-hidden"> тортов на заказ в СПб — цена, состав, доставка по Санкт-Петербургу</span></h2>
     <p class="section-sub reveal">Выберите начинку и узнайте примерную цену</p>
     <div class="calc-wrap reveal">
       <div class="calc-row">
@@ -2510,7 +2521,7 @@
 
 <section id="why">
   <div class="container">
-    <h2 class="section-title reveal">Почему Выбирают Нас</h2>
+    <h2 class="section-title reveal">Почему Выбирают Нас<span class="visually-hidden"> — кондитерская Milovi Cake в Санкт-Петербурге</span></h2>
     <div class="features-grid">
       <div class="feature reveal">
         <div class="feature-icon">🤍</div>
@@ -2540,7 +2551,7 @@
 <!-- ══════════ REVIEWS ══════════ -->
 <section id="reviews" style="padding:100px 60px;">
   <div class="container">
-    <h2 class="section-title reveal">Отзывы Клиентов</h2>
+    <h2 class="section-title reveal">Отзывы Клиентов<span class="visually-hidden"> о тортах на заказ в СПб — Milovi Cake</span></h2>
     <p class="section-sub reveal">Нам Пишут — Мы Очень Стараемся 🤍</p>
     <div class="reviews-carousel reveal">
       <button class="rev-arrow rev-prev" onclick="shiftReview(-1)" aria-label="Предыдущий">&#8592;</button>
@@ -2652,7 +2663,7 @@
 <!-- ══════════ CONTACTS ══════════ -->
 <section id="contacts">
   <div class="container">
-    <h2 class="section-title reveal">Свяжитесь с Нами</h2>
+    <h2 class="section-title reveal">Свяжитесь с Нами<span class="visually-hidden"> — заказать торт в Санкт-Петербурге, доставка по СПб</span></h2>
     <p class="section-sub reveal">Готовы сделать заказ? Мы всегда на связи!</p>
     <div class="contacts-grid">
       <div class="card reveal">
