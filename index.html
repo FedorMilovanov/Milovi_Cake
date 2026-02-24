@@ -435,6 +435,20 @@
       z-index: 9001;
     }
     .lightbox-close:hover { background: rgba(255,255,255,0.25); border-color: rgba(255,255,255,0.5); }
+
+    .fill-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 500;
+      padding: 2px 7px;
+      border-radius: 20px;
+      margin-left: 5px;
+      vertical-align: middle;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    .fill-tag.hit { background: #e8442a; color: #fff; }
+    .fill-tag.nuts { background: #8b6914; color: #fff; }
     .lightbox-nav {
       position: absolute;
       bottom: 28px; left: 50%; transform: translateX(-50%);
@@ -2342,15 +2356,16 @@
         <div class="calc-options" id="calcFill">
           <div class="calc-opt selected" data-price="0" data-desc="<strong>Бисквит ваниль</strong> + клубничное конфи + нежный сливочный крем. Лёгкий, ягодный, ненавязчиво сладкий." onclick="selectOpt(this,'calcFill')">Воздушный поцелуй (клубника)</div>
           <div class="calc-opt" data-price="0" data-desc="<strong>Бисквит ваниль</strong> + вишнёвое конфи + сливочный крем. Классическое сочетание сладкого и лёгкой кислинки." onclick="selectOpt(this,'calcFill')">Ванильная вишня</div>
-          <div class="calc-opt" data-price="0" data-desc="<strong>Бисквит ваниль</strong> + микс свежих ягодных конфи (клубника, малина, черника) + сливочный крем. Яркий ягодный вкус." onclick="selectOpt(this,'calcFill')">Микс ягод</div>
+          <div class="calc-opt" data-price="0" data-desc="<strong>Бисквит ваниль</strong> + микс малины, вишни и лесных ягод + сливочный крем. Сочная ягодная классика." onclick="selectOpt(this,'calcFill')">Микс ягод <span class='fill-tag hit'>хит</span></div>
           <div class="calc-opt" data-price="0" data-desc="<strong>Бисквит ваниль</strong> + конфи манго-маракуйя + тропический сливочный крем. Экзотично, свежо и солнечно." onclick="selectOpt(this,'calcFill')">Ванильные тропики (манго-маракуйя)</div>
-          <div class="calc-opt" data-price="0" data-desc="<strong>Белый шоколадный бисквит</strong> + карамельный крем + хрустящий арахис. Нежная «светлая» версия сникерса." onclick="selectOpt(this,'calcFill')">Белый сникерс (карамель, арахис)</div>
-          <div class="calc-opt" data-price="0" data-desc="<strong>Бисквит ваниль</strong> + ганаш молочного шоколада + нежный сливочный крем. Мягко, шоколадно, без лишней сладости." onclick="selectOpt(this,'calcFill')">Ваниль в молочном шоколаде</div>
-          <div class="calc-opt" data-price="0" data-desc="<strong>Шоколадный бисквит</strong> + вишнёвое конфи + шоколадный крем. Интенсивный вишнёво-шоколадный аккорд." onclick="selectOpt(this,'calcFill')">Вишня в шоколаде</div>
-          <div class="calc-opt" data-price="0" data-desc="<strong>Шоколадный бисквит</strong> + микс ягодных конфи + шоколадный крем. Насыщенный шоколад с ягодной свежестью." onclick="selectOpt(this,'calcFill')">Шоколадный микс ягод</div>
-          <div class="calc-opt" data-price="0" data-desc="<strong>Шоколадный бисквит</strong> + солёная карамель + арахисовый крем. Классический сникерс — любимец всех возрастов." onclick="selectOpt(this,'calcFill')">Сникерс (карамель, арахис)</div>
-          <div class="calc-opt" data-price="0" data-desc="<strong>Шоколадный бисквит</strong> + ореховый крем + вафельный хруст + шоколадный ганаш. Эффект конфеты Ferrero Rocher." onclick="selectOpt(this,'calcFill')">Ферреро (вафля, шоколад, орех)</div>
-          <div class="calc-opt" data-price="0" data-desc="<strong>Бисквит «красный бархат»</strong> (натуральный краситель) + нежный сырный крем. Эффектный срез, бархатный вкус." onclick="selectOpt(this,'calcFill')">Красный бархат</div>
+          <div class="calc-opt" data-price="0" data-desc="<strong>Белый шоколадный бисквит</strong> + карамельный крем + хрустящий арахис. Нежная «светлая» версия сникерса." onclick="selectOpt(this,'calcFill')">Белый сникерс (карамель, арахис) <span class='fill-tag nuts'>орехи</span></div>
+          <div class="calc-opt" data-price="0" data-desc="<strong>Ванильный бисквит</strong> + крем чиз. Нежно, идеально для маленьких детей и кормящих мам." onclick="selectOpt(this,'calcFill')">Ванильные облака</div>
+          <div class="calc-opt" data-price="0" data-desc="<strong>Шоколадный бисквит</strong> + вишнёвое конфи + сливочный крем чиз. Интенсивный вишнёво-шоколадный аккорд." onclick="selectOpt(this,'calcFill')">Вишня в шоколаде</div>
+          <div class="calc-opt" data-price="0" data-desc="<strong>Шоколадный бисквит</strong> + микс малины, вишни и лесных ягод + сливочный крем чиз. Насыщенный шоколад с ягодной свежестью." onclick="selectOpt(this,'calcFill')">Шоколадный микс ягод</div>
+          <div class="calc-opt" data-price="0" data-desc="<strong>Шоколадный бисквит</strong> + солёная карамель + арахис + крем чиз. Классический сникерс — любимец всех возрастов." onclick="selectOpt(this,'calcFill')">Сникерс (карамель, арахис)</div>
+          <div class="calc-opt" data-price="0" data-desc="<strong>Шоколадный бисквит</strong> + шоколадный сырный крем + молотый грецкий орех + вафельный хруст. Эффект конфеты Ferrero Rocher." onclick="selectOpt(this,'calcFill')">Ферреро (вафля, шоколад, орех) <span class='fill-tag nuts'>орехи</span></div>
+          <div class="calc-opt" data-price="0" data-desc="<strong>Бисквит «красный бархат»</strong> + нежный сырный крем. Эффектный срез, бархатный вкус." onclick="selectOpt(this,'calcFill')">Красный бархат</div>
+          <div class="calc-opt" data-price="0" data-desc="<strong>Шоколадный бисквит</strong> + шоколадный крем-чиз. Для любителей шоколада на шоколадном." onclick="selectOpt(this,'calcFill')">Супер-Шоколад</div>
         </div>
         <div class="fill-desc-panel" id="fillDescPanel">
           <div class="fill-desc-text" id="fillDescText">Бисквит ваниль + клубничное конфи + нежный сливочный крем. Лёгкий, ягодный, ненавязчиво сладкий.</div>
@@ -2612,7 +2627,7 @@ const products = [
       slideScale: [1]
     }
   },
-  { id: 3, name: '3D Торт', desc: 'Уникальный дизайнерский торт с объёмными элементами', min: 'Заказ от 3 кг', price: '5 000 ₽/кг', priceNum: 5000, unit: 'кг', minKg: 3, emoji: '✨',
+  { id: 3, name: '3D Торт', desc: 'Уникальный дизайнерский торт с объёмными элементами', min: 'Заказ от 3 кг', price: '4 000 ₽/кг', priceNum: 4000, unit: 'кг', minKg: 3, emoji: '✨',
     slides: ['img/cake_3d.webp', 'img/cake_3d_2.webp'],
     slidePos: ['center 0%', 'center 0%'],
     slideScale: [1, 1] },
