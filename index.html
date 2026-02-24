@@ -53,7 +53,7 @@
       --brown-light: #6b4c38;
       --text: #2c1a10;
       --text-muted: #9a7a62;
-      --white: #ffffff;
+      --white: #FDFBF7;
       --radius: 16px;
     }
 
@@ -1020,6 +1020,27 @@
     /* ── CATALOG ── */
     #catalog { background: var(--white); }
 
+    /* ── PREMIUM GRAIN TEXTURE on white sections ── */
+    #catalog, #reviews {
+      position: relative;
+      isolation: isolate;
+    }
+    #catalog::before, #reviews::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 180px 180px;
+    }
+    #catalog > *, #reviews > * {
+      position: relative;
+      z-index: 1;
+    }
+
     .catalog-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -1923,7 +1944,7 @@
       margin-bottom: -1px;
     }
     .wave-catalog-why {
-      background: #ffffff;
+      background: #FDFBF7;
       margin-bottom: -1px;
     }
     .wave-stats-calc {
@@ -2351,7 +2372,7 @@
 
 
 <!-- ══════════ REVIEWS ══════════ -->
-<section id="reviews" style="background:var(--white);padding:100px 60px;">
+<section id="reviews" style="padding:100px 60px;">
   <div class="container">
     <h2 class="section-title reveal">Отзывы Клиентов</h2>
     <p class="section-sub reveal">Нам Пишут — Мы Очень Стараемся 🤍</p>
@@ -2462,7 +2483,7 @@
 
 
 <!-- wave between reviews and calculator -->
-<div style="line-height:0;overflow:hidden;background:#ffffff;margin-bottom:-1px;">
+<div style="line-height:0;overflow:hidden;background:#FDFBF7;margin-bottom:-1px;">
   <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;">
     <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="#faf6ef"/>
   </svg>
