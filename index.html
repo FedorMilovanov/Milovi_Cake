@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPCEtLSBEYXJrIGJyb3duIGJhY2tncm91bmQgY2lyY2xlIC0tPgogIDxjaXJjbGUgY3g9IjE2IiBjeT0iMTYiIHI9IjE2IiBmaWxsPSIjMmUxYTBlIi8+CgogIDwhLS0gQ2FrZTogYm90dG9tIHRpZXIgLS0+CiAgPHJlY3QgeD0iNiIgeT0iMjEiIHdpZHRoPSIyMCIgaGVpZ2h0PSI2IiByeD0iMi41IiBmaWxsPSIjYzk5MzRhIi8+CiAgPCEtLSBDcmVhbSBkcmlwIGJvdHRvbSB0aWVyIC0tPgogIDxlbGxpcHNlIGN4PSIxNiIgY3k9IjIxIiByeD0iMTAiIHJ5PSIyLjIiIGZpbGw9IiNmNWUxYWYiLz4KCiAgPCEtLSBDYWtlOiB0b3AgdGllciAtLT4KICA8cmVjdCB4PSIxMCIgeT0iMTUiIHdpZHRoPSIxMiIgaGVpZ2h0PSI3IiByeD0iMiIgZmlsbD0iI2I4ODIzYyIvPgogIDwhLS0gQ3JlYW0gZHJpcCB0b3AgdGllciAtLT4KICA8ZWxsaXBzZSBjeD0iMTYiIGN5PSIxNSIgcng9IjYiIHJ5PSIxLjgiIGZpbGw9IiNmNWUxYWYiLz4KCiAgPCEtLSBCZXJyeSBkZWNvcmF0aW9ucyBvbiB0b3AgdGllciAtLT4KICA8Y2lyY2xlIGN4PSIxMyIgY3k9IjE0LjIiIHI9IjEuMyIgZmlsbD0iIzhiMWExYSIvPgogIDxjaXJjbGUgY3g9IjE2IiBjeT0iMTMuOCIgcj0iMS4zIiBmaWxsPSIjYzAzOTJiIi8+CiAgPGNpcmNsZSBjeD0iMTkiIGN5PSIxNC4yIiByPSIxLjMiIGZpbGw9IiM4YjFhMWEiLz4KCiAgPCEtLSBDYW5kbGUgLS0+CiAgPHJlY3QgeD0iMTUuMiIgeT0iOSIgd2lkdGg9IjEuNiIgaGVpZ2h0PSI1IiByeD0iMC44IiBmaWxsPSIjZjVlMWFmIi8+CgogIDwhLS0gRmxhbWUgb3V0ZXIgLS0+CiAgPGVsbGlwc2UgY3g9IjE2IiBjeT0iOC4yIiByeD0iMS40IiByeT0iMiIgZmlsbD0iI2M5OTM0YSIvPgogIDwhLS0gRmxhbWUgaW5uZXIgZ2xvdyAtLT4KICA8ZWxsaXBzZSBjeD0iMTYiIGN5PSI4LjYiIHJ4PSIwLjY1IiByeT0iMS4xIiBmaWxsPSIjZmZmOGU3Ii8+Cjwvc3ZnPgo=" type="image/svg+xml">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Milovi Cake — Торты и десерты на заказ в Санкт-Петербурге</title>
   <meta name="description" content="Авторские торты на заказ в СПб: свадебный торт, торт на день рождения, детский торт, бенто, 3D-торты, меренговые рулеты. Ручная работа, доставка по СПб." />
@@ -2599,7 +2599,7 @@
           <div class="calc-result-note" id="calcNote">Точная цена согласовывается при заказе</div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
-          <a href="#contacts" class="calc-order-btn">Заказать 🎂</a>
+          <a href="#catalog" class="calc-order-btn" onclick="event.preventDefault(); window.scrollTo({top:0,behavior:'smooth'}); setTimeout(openCart,400);">Заказать 🎂</a>
           <span class="consent-note">Нажимая кнопку, вы даёте согласие на<br><a onclick="openPrivacy()">обработку персональных данных</a></span>
         </div>
       </div>
@@ -2707,7 +2707,7 @@
             <div class="review-quote">❝</div>
             <p class="review-text">Вика, насколько красиво — настолько и вкусно 😋 Клиентов стало больше у Вас ❤️</p>
             <div class="review-img-wrap">
-              <img src="img/review_6.webp" alt="Отзыв клиента Milovi Cake" loading="lazy" />
+              <img src="img/review_8.webp" alt="Отзыв клиента Milovi Cake" loading="lazy" />
             </div>
           </div>
         </div>
@@ -2827,8 +2827,8 @@
           <label for="fname">Как к Вам обращаться?</label>
         </div>
         <div class="form-group float-label">
-          <input type="tel" id="fphone" placeholder=" " />
-          <label for="fphone">Телефон</label>
+          <input type="tel" id="fphone" placeholder=" " required />
+          <label for="fphone">Телефон *</label>
         </div>
         <div class="form-group float-label">
           <textarea id="fcomment" placeholder=" "></textarea>
@@ -2869,7 +2869,7 @@
       <span>Данные</span>
     </div>
     <div class="cart-step-line" id="stepLine2"></div>
-    <div class="cart-step" id="step3" id="step3" style="cursor:default;">
+    <div class="cart-step" id="step3" style="cursor:default;">
       <div class="cart-step-dot">3</div>
       <span>Отправка</span>
     </div>
@@ -2894,8 +2894,8 @@
         <label for="cname">Как к Вам обращаться?</label>
       </div>
       <div class="form-group float-label">
-        <input type="tel" id="cphone" placeholder=" " />
-        <label for="cphone">Телефон</label>
+        <input type="tel" id="cphone" placeholder=" " required />
+        <label for="cphone">Телефон *</label>
       </div>
       <div class="form-group float-label">
         <input type="text" id="cdate" placeholder=" " />
@@ -2980,9 +2980,9 @@ const products = [
       priceNum: 3000,
       unit: 'кг',
       minKg: 1,
-      slides: ['data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAWkPXmowxu5cjsMmmS2W2ksqHfG4XHHJ616bdI5llmG7sBXhCGgDFTy2Ac1gqpcRldpB5OetABF0yzRq2GLYAYHpQTAo575o+VgAQuW7D4oJsI5LAt9jQhstt2YRsh9INYliyEMeck8mq4ZP3hBPB70Qm7/uBjx2NAIhcgQxuB6Q4AIHOajpU0ib1ziJvzg96lJODIC0eR7VOYRlQYe9AH//2Q=='],
-      slidePos: ['center 40%'],
-      slideScale: [1]
+      slides: ['img/bento_1.webp', 'img/bento_2.webp', 'img/bento_4.webp'],
+      slidePos: ['60% 50%', 'center 5%', 'center 40%'],
+      slideScale: [1.4, 1, 1]
     }
   },
   { id: 3, name: '3D Торт', desc: 'Уникальный дизайнерский торт с объёмными элементами', min: 'Заказ от 3 кг', price: '4 000 ₽/кг', priceNum: 4000, unit: 'кг', minKg: 3, emoji: '✨',
@@ -3781,7 +3781,7 @@ function updateCalc() {
     if (mod100 >= 11 && mod100 <= 19) {
       form = 'человек';
     } else if (mod10 === 1) {
-      form = 'человек'; // 1, 21, 31 — «на 1 человека» но мы говорим «примерно на N»
+      form = 'человека';
     } else if (mod10 >= 2 && mod10 <= 4) {
       form = 'человека';
     } else {
@@ -3917,6 +3917,20 @@ function showBentoWeightToast(text) {
 </div>
 
 <script>
+// ── FILL MOBILE POPUP ──
+function closeFillPopup() {
+  document.getElementById('fillPopup').classList.remove('open');
+  document.getElementById('fillOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function openFillPopup(title, text) {
+  document.getElementById('fillPopupTitle').textContent = title;
+  document.getElementById('fillPopupText').textContent = text;
+  document.getElementById('fillPopup').classList.add('open');
+  document.getElementById('fillOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
 // ── Cookie banner ──
 function acceptCookie() {
   localStorage.setItem('cookieAccepted', Date.now() + 365 * 24 * 60 * 60 * 1000);
