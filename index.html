@@ -3248,17 +3248,24 @@ function loadCartFromStorage() {
 
 function addToCart(id) {
   let p = products.find(x => x.id === id);
+  const mode = (p && p.hasMaxi && bentoModes[id] === 'maxi') ? 'maxi' : 'regular';
   // If bento and in maxi mode, use maxi variant data
-  if (p && p.hasMaxi && bentoModes[id] === 'maxi') {
+  if (p && p.hasMaxi && mode === 'maxi') {
     p = { ...p, ...p.maxiVariant };
   }
   if (!cart[id]) {
     // Default: 1 шт or minimum kg
     const defaultQty = p.unit === 'кг' ? (p.minKg || 1) : 1;
-    cart[id] = { qty: defaultQty };
+    cart[id] = { qty: defaultQty, mode };
   } else {
-    const step = p.unit === 'кг' ? 0.5 : 1;
-    cart[id].qty = Math.round((cart[id].qty + step) * 10) / 10;
+    // If mode changed, reset qty for new mode
+    if (cart[id].mode !== mode) {
+      const defaultQty = p.unit === 'кг' ? (p.minKg || 1) : 1;
+      cart[id] = { qty: defaultQty, mode };
+    } else {
+      const step = p.unit === 'кг' ? 0.5 : 1;
+      cart[id].qty = Math.round((cart[id].qty + step) * 10) / 10;
+    }
   }
   updateCartUI();
   saveCartToStorage();
@@ -3271,7 +3278,10 @@ function removeFromCart(id) {
 }
 
 function changeQty(id, delta) {
-  const p = products.find(x => x.id === id);
+  let p = products.find(x => x.id === id);
+  if (p && p.hasMaxi && cart[id] && cart[id].mode === 'maxi') {
+    p = { ...p, ...p.maxiVariant };
+  }
   const step = p.unit === 'кг' ? 0.5 : 1;
   const minQty = p.unit === 'кг' ? (p.minKg || 1) : 1;
   cart[id].qty = Math.round((cart[id].qty + delta * step) * 10) / 10;
@@ -3330,7 +3340,11 @@ function updateCartUI() {
 
   let total = 0;
   body.innerHTML = items.map(([id, entry]) => {
-    const p = products.find(x => x.id === +id);
+    let p = products.find(x => x.id === +id);
+    // Use maxi variant if saved in cart
+    if (p && p.hasMaxi && entry.mode === 'maxi') {
+      p = { ...p, ...p.maxiVariant };
+    }
     const qty = entry.qty;
     const lineTotal = p.priceNum * qty;
     total += lineTotal;
@@ -3582,7 +3596,10 @@ function showToast(msg) {
 const _origAdd = addToCart;
 window.addToCart = function(id) {
   _origAdd(id);
-  const p = products.find(x => x.id === id);
+  let p = products.find(x => x.id === id);
+  if (p && p.hasMaxi && cart[id] && cart[id].mode === 'maxi') {
+    p = { ...p, ...p.maxiVariant };
+  }
   const qty = cart[id] ? cart[id].qty : '';
   const label = p.unit === 'кг' ? `${qty} кг` : '';
   showToast(`🧁 ${p.name}${label ? ' · ' + label : ''} добавлен в корзину`);
