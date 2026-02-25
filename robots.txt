@@ -1,5 +1,5 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://milovecake.ru/sitemap.xml
-Host: milovecake.ru
+Sitemap: https://milovicake.ru/sitemap.xml
+Host: milovicake.ru
