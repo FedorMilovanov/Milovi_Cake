@@ -3875,8 +3875,8 @@ function showToast(msg) {
 
 // Patch addToCart to show toast
 const _origAdd = addToCart;
-window.addToCart = function(id) {
-  _origAdd(id);
+window.addToCart = function(id, e) {
+  _origAdd(id, e);
   let p = products.find(x => x.id === id);
   if (p && p.hasMaxi && cart[id] && cart[id].mode === 'maxi') {
     p = { ...p, ...p.maxiVariant };
