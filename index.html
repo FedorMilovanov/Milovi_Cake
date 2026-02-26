@@ -1349,13 +1349,39 @@
 
     .slider-dots {
       position: absolute;
-      bottom: 12px;
+      bottom: 14px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
       gap: 7px;
       z-index: 10;
     }
+
+    .slider-arrow {
+      position: absolute;
+      bottom: 7px;
+      z-index: 11;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(30, 20, 10, 0.55);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      line-height: 1;
+      padding: 0;
+      user-select: none;
+    }
+    .slider-arrow:hover { background: rgba(201,147,74,0.8); transform: scale(1.1); }
+    .slider-arrow.prev { left: 14px; }
+    .slider-arrow.next { right: 14px; }
 
     .dot {
       width: 7px; height: 7px;
@@ -1391,6 +1417,7 @@
       margin-bottom: 4px;
       line-height: 1.5;
       font-weight: 300;
+      min-height: 42px;
     }
 
     .product-info .min-order {
@@ -1398,6 +1425,7 @@
       color: var(--text-muted);
       margin-bottom: 16px;
       font-weight: 300;
+      min-height: 20px;
     }
 
     .product-footer {
@@ -3039,6 +3067,8 @@ function renderCatalog() {
               onerror="this.style.cssText='display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;font-size:60px;background:linear-gradient(135deg,#e8d8c4,#d4b896);'; this.src=''; this.alt='${p.emoji}'"
               style="object-position:${pos};transform:scale(${scale});transform-origin:${pos};">`;
           }).join('')}
+          ${p.slides.length > 1 ? `<button class="slider-arrow prev" onclick="sliderStep(${p.id}, -1, ${p.slides.length})" aria-label="Назад">&#8249;</button>
+          <button class="slider-arrow next" onclick="sliderStep(${p.id}, 1, ${p.slides.length})" aria-label="Вперёд">&#8250;</button>` : ''}
           <div class="slider-dots">
             ${p.slides.map((s, i) => {
               const isVideo = s && typeof s === 'object' && s.type === 'vk';
@@ -3113,6 +3143,23 @@ function goSlide(pid, idx) {
     }
   });
   wrap.querySelectorAll('.dot').forEach((el, i) => el.classList.toggle('active', i === idx));
+}
+
+const sliderCurrentIdx = {};
+
+function sliderStep(pid, dir, total) {
+  const current = sliderCurrentIdx[pid] || 0;
+  const next = (current + dir + total) % total;
+  sliderCurrentIdx[pid] = next;
+  goSlide(pid, next);
+  // Reset auto-slide timer
+  if (slideTimers[pid]) { clearInterval(slideTimers[pid]); delete slideTimers[pid]; }
+  if (total > 1) {
+    slideTimers[pid] = setInterval(() => {
+      sliderCurrentIdx[pid] = ((sliderCurrentIdx[pid] || 0) + 1) % total;
+      goSlide(pid, sliderCurrentIdx[pid]);
+    }, 3000);
+  }
 }
 
 function activateVkSlide(playBtn) {
@@ -3214,13 +3261,26 @@ function switchBentoTab(pid, mode) {
       ).join('');
     }
 
+    // Update arrow buttons total count
+    const prevBtn = wrap.querySelector('.slider-arrow.prev');
+    const nextBtn = wrap.querySelector('.slider-arrow.next');
+    if (slides.length > 1) {
+      if (prevBtn) { prevBtn.setAttribute('onclick', `sliderStep(${pid}, -1, ${slides.length})`); prevBtn.style.display = 'flex'; }
+      if (nextBtn) { nextBtn.setAttribute('onclick', `sliderStep(${pid}, 1, ${slides.length})`); nextBtn.style.display = 'flex'; }
+    } else {
+      if (prevBtn) prevBtn.style.display = 'none';
+      if (nextBtn) nextBtn.style.display = 'none';
+    }
+
+    // Reset current index
+    sliderCurrentIdx[pid] = 0;
+
     // Restart auto-slide timer
     if (slideTimers[pid]) { clearInterval(slideTimers[pid]); delete slideTimers[pid]; }
     if (slides.length > 1) {
-      let cur = 0;
       slideTimers[pid] = setInterval(() => {
-        cur = (cur + 1) % slides.length;
-        goSlide(pid, cur);
+        sliderCurrentIdx[pid] = ((sliderCurrentIdx[pid] || 0) + 1) % slides.length;
+        goSlide(pid, sliderCurrentIdx[pid]);
       }, 3000);
     }
   }
