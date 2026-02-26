@@ -3290,7 +3290,7 @@ function renderCatalog() {
         <p class="min-order" id="min-${p.id}">${p.min || '\u00a0'}</p>
         <div class="product-footer">
           <span class="price" id="price-${p.id}">${p.price}</span>
-          <button class="btn-add" onclick="addToCart(${p.id})">Добавить в корзину</button>
+          <button class="btn-add" onclick="addToCart(${p.id}, event)">Добавить в корзину</button>
         </div>
       </div>
     </div>`;
@@ -3482,7 +3482,39 @@ function loadCartFromStorage() {
   } catch(e) {}
 }
 
-function addToCart(id) {
+// ── Confetti burst ──
+function confettiBurst(x, y) {
+  const colors = ["#c9934a", "#d4a76a", "#e8c080", "#f5e1c0", "#fff"];
+  for (let i = 0; i < 20; i++) {
+    const particle = document.createElement("div");
+    const size = Math.random() * 6 + 4;
+    particle.style.cssText = `
+      position: fixed;
+      left: ${x}px;
+      top: ${y}px;
+      width: ${size}px;
+      height: ${size}px;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      border-radius: ${Math.random() > 0.5 ? "50%" : "2px"};
+      pointer-events: none;
+      z-index: 100000;
+    `;
+    document.body.appendChild(particle);
+    const angle = Math.random() * Math.PI * 2;
+    const velocity = Math.random() * 100 + 50;
+    const vx = Math.cos(angle) * velocity;
+    const vy = Math.sin(angle) * velocity - 80;
+    particle.animate([
+      { transform: "translate(0, 0) rotate(0deg) scale(1)", opacity: 1 },
+      { transform: `translate(${vx}px, ${vy + 120}px) rotate(${Math.random()*720}deg) scale(0)`, opacity: 0 }
+    ], {
+      duration: 800 + Math.random() * 400,
+      easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+    }).onfinish = () => particle.remove();
+  }
+}
+
+function addToCart(id, e) {
   let p = products.find(x => x.id === id);
   const mode = (p && p.hasMaxi && bentoModes[id] === 'maxi') ? 'maxi' : 'regular';
   // If bento and in maxi mode, use maxi variant data
@@ -3505,6 +3537,7 @@ function addToCart(id) {
   }
   updateCartUI();
   saveCartToStorage();
+  if (e) confettiBurst(e.clientX, e.clientY);
 }
 
 function removeFromCart(id) {
