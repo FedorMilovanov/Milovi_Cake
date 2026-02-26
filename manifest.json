@@ -1,0 +1,58 @@
+{
+  "name": "Milovi Cake — Торты на заказ",
+  "short_name": "Milovi Cake",
+  "description": "Авторские торты и десерты ручной работы с доставкой по СПб и пригородам",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#2e1a0e",
+  "theme_color": "#c9934a",
+  "lang": "ru",
+  "categories": ["food", "shopping"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/img/head.webp",
+      "sizes": "1200x630",
+      "type": "image/webp",
+      "form_factor": "wide",
+      "label": "Milovi Cake — главная страница"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Заказать торт",
+      "short_name": "Заказать",
+      "description": "Перейти к каталогу и оформить заказ",
+      "url": "/#catalog",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Позвонить",
+      "short_name": "Позвонить",
+      "description": "+7 911 903 88 86",
+      "url": "/tel:+79119038886",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
