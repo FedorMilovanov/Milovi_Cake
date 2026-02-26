@@ -500,9 +500,9 @@
     .fill-tag.nuts { background: #8b6914; color: #fff; }
     .lightbox-nav {
       position: absolute;
-      bottom: -56px;
-      left: 50%; transform: translateX(-50%);
-      display: flex; align-items: center; gap: 16px;
+      top: 50%; transform: translateY(-50%);
+      left: -60px; right: -60px;
+      display: flex; align-items: center; justify-content: space-between;
       z-index: 9001;
       pointer-events: none;
     }
@@ -2333,6 +2333,220 @@
       .seo-section .container { padding: 0 24px; }
       .seo-section { padding: 40px 0 36px; }
     }
+
+
+
+    /* ── PREMIUM: Glassmorphism glow на карточках ── */
+    .product-card::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(
+        circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(201,147,74,0.08) 0%, transparent 50%
+      );
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .product-card:hover::before { opacity: 1; }
+    .product-card { --mouse-x: 50%; --mouse-y: 50%; }
+
+    /* ── PREMIUM: Shimmer на кнопках ── */
+    .btn-primary, .btn-wa, .calc-order-btn, .header-order {
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-primary::before, .btn-wa::before, .calc-order-btn::before, .header-order::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%; height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255,255,255,0.15) 40%,
+        rgba(255,255,255,0.3) 50%,
+        rgba(255,255,255,0.15) 60%,
+        transparent 100%
+      );
+      transform: skewX(-20deg);
+      animation: shimmerBtn 3s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes shimmerBtn {
+      0%, 100% { left: -100%; }
+      50% { left: 150%; }
+    }
+
+    /* ── PREMIUM: Pulsating glow на цене ── */
+    .price { animation: priceGlow 2.5s ease-in-out infinite alternate; }
+    @keyframes priceGlow {
+      from { text-shadow: 0 0 8px rgba(201,147,74,0.3); }
+      to   { text-shadow: 0 0 20px rgba(201,147,74,0.6), 0 0 40px rgba(201,147,74,0.15); }
+    }
+    .calc-result-price { animation: calcPriceGlow 2s ease-in-out infinite alternate; }
+    @keyframes calcPriceGlow {
+      from { text-shadow: 0 0 12px rgba(212,167,106,0.4); }
+      to   { text-shadow: 0 0 30px rgba(212,167,106,0.8), 0 0 60px rgba(212,167,106,0.2); }
+    }
+
+    /* ── PREMIUM: Stats ── */
+    .stat-item {
+      position: relative;
+      padding: 32px 20px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(201,147,74,0.12);
+      backdrop-filter: blur(4px);
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+    }
+    .stat-item:hover {
+      transform: translateY(-6px);
+      border-color: rgba(201,147,74,0.35);
+      box-shadow: 0 12px 40px rgba(201,147,74,0.15), inset 0 0 30px rgba(201,147,74,0.05);
+    }
+    .stat-num {
+      background: linear-gradient(135deg, var(--gold-light), #e8c080, var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 2px 8px rgba(201,147,74,0.3));
+    }
+    .stats-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(201,147,74,0.08) 1px, transparent 1px);
+      background-size: 24px 24px;
+      pointer-events: none;
+    }
+    .stats-section { position: relative; overflow: hidden; }
+
+    /* ── PREMIUM: Feature cards ── */
+    .feature {
+      padding: 32px 24px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.5);
+      border: 1px solid rgba(201,147,74,0.1);
+      transition: all 0.35s ease;
+      position: relative;
+    }
+    .feature:hover {
+      background: rgba(255,255,255,0.85);
+      border-color: rgba(201,147,74,0.3);
+      transform: translateY(-8px);
+      box-shadow: 0 20px 50px rgba(201,147,74,0.12), 0 0 0 1px rgba(201,147,74,0.15);
+    }
+    .feature-icon { transition: transform 0.3s, box-shadow 0.3s; }
+    .feature:hover .feature-icon {
+      transform: scale(1.15) rotate(-5deg);
+      box-shadow: 0 8px 24px rgba(201,147,74,0.2);
+    }
+
+    /* ── PREMIUM: Back to top ── */
+    .back-to-top {
+      position: fixed;
+      bottom: 30px; right: 100px;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: rgba(61,43,31,0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(201,147,74,0.2);
+      color: rgba(255,235,185,0.8);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      z-index: 99;
+      opacity: 0;
+      transform: translateY(12px) scale(0.9);
+      pointer-events: none;
+      transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .back-to-top.visible { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
+    .back-to-top:hover {
+      background: var(--gold); color: #fff; border-color: var(--gold);
+      transform: translateY(-3px) scale(1.08);
+      box-shadow: 0 8px 28px rgba(201,147,74,0.4);
+    }
+
+    /* ── PREMIUM: Section separator ── */
+    .section-separator {
+      width: 100%; height: 1px;
+      position: relative; overflow: hidden;
+    }
+    .section-separator::after {
+      content: '';
+      position: absolute; top: 0; left: -100%;
+      width: 100%; height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(201,147,74,0.1) 20%, rgba(201,147,74,0.4) 50%, rgba(201,147,74,0.1) 80%, transparent 100%);
+      animation: separatorSlide 4s ease-in-out infinite;
+    }
+    @keyframes separatorSlide { 0% { left: -100%; } 100% { left: 100%; } }
+
+    /* ── PREMIUM: Review card gradient border ── */
+    .review-card { position: relative; background: var(--cream); border: none; }
+    .review-card::before {
+      content: '';
+      position: absolute; inset: -1px;
+      border-radius: 25px;
+      background: linear-gradient(135deg, rgba(201,147,74,0.3), rgba(201,147,74,0.05), rgba(201,147,74,0.2));
+      z-index: -1;
+    }
+    .review-quote {
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      opacity: 0.6;
+    }
+
+    /* ── PREMIUM: Focus ring ── */
+    .form-group input:focus, .form-group textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201,147,74,0.1), 0 4px 16px rgba(201,147,74,0.08);
+      transition: border-color 0.2s, box-shadow 0.3s;
+    }
+    .calc-opt:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+    /* ── PREMIUM: Enhanced Footer ── */
+    .site-footer {
+      background: var(--brown);
+      padding: 60px 40px 24px;
+      position: relative; overflow: hidden;
+    }
+    .site-footer::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(201,147,74,0.4), transparent);
+    }
+    .footer-grid {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: 2fr 1fr 1fr;
+      gap: 48px; margin-bottom: 48px;
+    }
+    .footer-brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px; color: rgba(255,235,185,0.8);
+      letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 12px;
+    }
+    .footer-desc { font-size: 14px; color: rgba(255,235,185,0.35); line-height: 1.7; font-weight: 300; max-width: 320px; }
+    .footer-col-title { font-family: 'Jost', sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(201,147,74,0.7); margin-bottom: 16px; }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-links a { font-size: 14px; color: rgba(255,235,185,0.5); text-decoration: none; transition: color 0.2s; font-weight: 300; }
+    .footer-links a:hover { color: var(--gold-light); }
+    .footer-bottom {
+      border-top: 1px solid rgba(201,147,74,0.1);
+      padding-top: 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .footer-copy { font-size: 13px; color: rgba(255,235,185,0.25); font-weight: 300; }
+    @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr; gap: 32px; } }
+
   </style>
 
   <script type="application/ld+json">
@@ -3885,9 +4099,34 @@ document.getElementById('reviewsTrack').addEventListener('touchend', e => {
 }, { passive: true });
 </script>
 <!-- ══════════ FOOTER ══════════ -->
-<footer style="background: var(--brown); padding: 18px 40px; text-align: center;">
-  <p style="font-family: 'Cormorant Garamond', serif; font-size: 14px; font-weight: 400; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,235,185,0.35);">© 2026 Milovi Cake</p>
-  <p style="margin-top: 8px;"><a onclick="openPrivacy()" style="font-family:'Jost',sans-serif; font-size:12px; color:rgba(255,235,185,0.3); text-decoration:underline; cursor:pointer; letter-spacing:0.04em;">Политика конфиденциальности</a></p>
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">Milovi Cake</div>
+      <p class="footer-desc">Авторские торты и десерты ручной работы в Санкт-Петербурге. Каждый заказ — это маленький шедевр, созданный с любовью.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Навигация</div>
+      <ul class="footer-links">
+        <li><a href="#catalog">Каталог</a></li>
+        <li><a href="#why">О нас</a></li>
+        <li><a href="#reviews">Отзывы</a></li>
+        <li><a href="#contacts">Контакты</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Связаться</div>
+      <ul class="footer-links">
+        <li><a href="tel:+79119038886">+7 911 903-88-86</a></li>
+        <li><a href="https://t.me/MiloviCake" target="_blank">Telegram</a></li>
+        <li><a href="https://vk.com/milovi_cake" target="_blank">ВКонтакте</a></li>
+        <li><a onclick="openPrivacy()" style="cursor:pointer;">Политика конфиденциальности</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2026 Milovi Cake — Все права защищены</span>
+  </div>
 </footer>
 
 <div class="bento-weight-toast" id="bentoWeightToast"></div>
@@ -4026,5 +4265,44 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closePrivacy
       </div>
     </div>
 </div>
+
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Наверх">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="18 15 12 9 6 15"/>
+  </svg>
+</button>
+
+<script>
+// ── Back to top ──
+window.addEventListener('scroll', () => {
+  document.getElementById('backToTop')
+    .classList.toggle('visible', window.scrollY > 600);
+});
+
+// ── PREMIUM: Mouse-tracking glow на карточках ──
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.product-card').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
+      const y = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
+      card.style.setProperty('--mouse-x', x + '%');
+      card.style.setProperty('--mouse-y', y + '%');
+    });
+  });
+});
+
+// ── PREMIUM: Subtle hero parallax ──
+const heroBg = document.querySelector('.hero-photo-bg img');
+if (heroBg) {
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    if (y < window.innerHeight) {
+      heroBg.style.transform = `translateY(${y * 0.15}px) scale(1.05)`;
+    }
+  }, { passive: true });
+}
+</script>
+
 </body>
 </html>
