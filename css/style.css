@@ -447,7 +447,7 @@ body {
 
 /* ── REVIEWS ── */
 .reviews-carousel { position: relative; display: flex; align-items: center; gap: 16px; }
-.reviews-track { flex: 1; overflow: hidden; position: relative; min-height: 120px; }
+.reviews-track { flex: 1; overflow: hidden; position: relative; }
 .review-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0.5s ease; pointer-events: none; display: flex; justify-content: center; }
 .review-slide.active { opacity: 1; pointer-events: all; position: relative; }
 .review-card { background: var(--cream); border-radius: 24px; padding: 40px; max-width: 580px; width: 100%; box-shadow: 0 8px 40px rgba(61,43,31,0.08); }
@@ -459,20 +459,23 @@ body {
 .review-chat-btn {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
   margin-top: 20px;
-  padding: 8px 16px;
-  border: 1.5px solid var(--gold);
-  border-radius: 20px;
+  padding: 0;
+  border: none;
   background: none;
   color: var(--gold);
   font-size: 13px;
-  font-family: inherit;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  letter-spacing: 0.04em;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  opacity: 0.75;
+  transition: opacity 0.2s;
   -webkit-tap-highlight-color: transparent;
 }
-.review-chat-btn:hover { background: var(--gold); color: #fff; }
+.review-chat-btn:hover { opacity: 1; }
+.review-chat-btn svg { flex-shrink: 0; }
 .rev-arrow { width: 48px; height: 48px; border-radius: 50%; border: 1.5px solid var(--gold); background: none; color: var(--gold); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.2s, color 0.2s; }
 .rev-arrow:hover { background: var(--gold); color: #fff; }
 .rev-dots { display: flex; justify-content: center; gap: 8px; margin-top: 28px; }
