@@ -1474,3 +1474,63 @@ function openChatLightbox(idx) {
   document.body.style.overflow = 'hidden';
   _lbUpdateArrows();
 }
+
+/* ══════════════════════════════════════════
+   REVIEWS MODAL
+══════════════════════════════════════════ */
+function openReviewsModal(tab) {
+  const modal = document.getElementById('reviewsModal');
+  if (!modal) return;
+  document.body.style.overflow = 'hidden';
+  modal.style.display = 'flex';
+  requestAnimationFrame(() => { modal.classList.add('open'); });
+  switchReviewsTab(tab || 'yandex');
+  document.addEventListener('keydown', handleReviewsEscape);
+}
+
+function closeReviewsModal() {
+  const modal = document.getElementById('reviewsModal');
+  if (!modal) return;
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+  document.removeEventListener('keydown', handleReviewsEscape);
+  setTimeout(() => { modal.style.display = 'none'; }, 320);
+}
+
+function handleReviewsEscape(e) {
+  if (e.key === 'Escape') closeReviewsModal();
+}
+
+function switchReviewsTab(tab) {
+  const yList = document.getElementById('reviewsYandex');
+  const gList = document.getElementById('reviewsGoogle');
+  const tY = document.getElementById('tabYandex');
+  const tG = document.getElementById('tabGoogle');
+  const link = document.getElementById('reviewsExternalLink');
+  if (!yList || !gList) return;
+
+  const isYandex = tab === 'yandex';
+  yList.style.display = isYandex ? 'block' : 'none';
+  gList.style.display = isYandex ? 'none' : 'block';
+  tY.classList.toggle('active', isYandex);
+  tG.classList.toggle('active', !isYandex);
+  if (link) {
+    link.href = isYandex
+      ? 'https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/reviews/'
+      : 'https://maps.app.goo.gl/R3mdjxpnebUYMQES6';
+    link.childNodes[link.childNodes.length - 1].textContent =
+      isYandex ? ' Все отзывы на Яндекс Картах →' : ' Все отзывы в Google Maps →';
+  }
+  (isYandex ? yList : gList).scrollTop = 0;
+}
+
+// Mobile swipe-down to close
+(function() {
+  let _sy = 0;
+  const rm = document.querySelector('.reviews-modal');
+  if (!rm) return;
+  rm.addEventListener('touchstart', e => { _sy = e.touches[0].clientY; }, { passive: true });
+  rm.addEventListener('touchend', e => {
+    if (e.changedTouches[0].clientY - _sy > 90) closeReviewsModal();
+  }, { passive: true });
+})();
