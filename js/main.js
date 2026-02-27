@@ -1211,8 +1211,12 @@ function confirmFillSelection() {
   handle.addEventListener('touchmove',  onMove,  { passive: false });
   handle.addEventListener('touchend',   onEnd,   { passive: true });
 
-  // Click overlay to dismiss
-  document.getElementById('fillOverlay')?.addEventListener('click', closeFillPopup);
+  // Click/tap overlay to dismiss (click для десктопа, touchend для мобильного)
+  const overlayEl = document.getElementById('fillOverlay');
+  if (overlayEl) {
+    overlayEl.addEventListener('click', closeFillPopup);
+    overlayEl.addEventListener('touchend', e => { e.preventDefault(); closeFillPopup(); }, { passive: false });
+  }
 })();
 
 document.addEventListener('keydown', e => {
