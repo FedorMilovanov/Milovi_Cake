@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <meta name="format-detection" content="telephone=no" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Торты на заказ в Павловске — Milovi Cake | Доставка из СПб</title>
   <meta name="description" content="Свадебный торт, торт на день рождения, детский торт на заказ в Павловск от частного кондитера. Доставка из СПб. Ручная работа, натуральные ингредиенты." />
@@ -15,6 +16,8 @@
   <meta property="og:url" content="https://milovicake.ru/prigorody/pavlovsk/" />
   <meta property="og:type" content="website" />
     <!-- PWA -->
+  <link rel="preload" as="image" href="../../img/head_desktop.webp" media="(min-width:769px)" fetchpriority="high" />
+  <link rel="preload" as="image" href="../../img/head_mobile.webp" media="(max-width:768px)" fetchpriority="high" />
   <link rel="manifest" href="/manifest.json" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -96,7 +99,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/style.min.css" />
 </head>
 
 <body>
@@ -792,7 +795,7 @@
 <div class="bento-weight-toast" id="bentoWeightToast"></div>
 
 <script>const IMG_BASE = '../..';</script>
-<script src="/js/main.js"></script>
+<script src="/js/main.min.js"></script>
 
 
 <!-- PWA Service Worker -->

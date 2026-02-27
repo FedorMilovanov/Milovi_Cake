@@ -10,8 +10,8 @@ const IMAGE_CACHE  = 'milovi-images-v1';
 /* Ресурсы, кешируемые при установке */
 const PRECACHE_URLS = [
   '/',
-  '/css/style.css',
-  '/js/main.js',
+  '/css/style.min.css',
+  '/js/main.min.js',
   '/manifest.json',
   '/favicon.svg',
   '/icon-192.png',

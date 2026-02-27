@@ -80,7 +80,10 @@ function renderCatalog() {
             }
             const pos = p.slidePos ? p.slidePos[i] : 'center center';
             const scale = p.slideScale ? p.slideScale[i] : 1;
+            const isFirstOfFirst = p.id === products[0].id && i === 0;
             return `<img src="${src}" alt="${p.name}" class="slide-img${active}"
+              loading="${isFirstOfFirst ? 'eager' : 'lazy'}"
+              decoding="${isFirstOfFirst ? 'sync' : 'async'}"
               onerror="this.style.cssText='display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;font-size:60px;background:linear-gradient(135deg,#e8d8c4,#d4b896);'; this.src=''; this.alt='${p.emoji}'"
               style="object-position:${pos};transform:scale(${scale});transform-origin:${pos};">`;
           }).join('')}
@@ -569,15 +572,32 @@ function goBackToCart() {
   updateCartUI();
 }
 
-function openCart() {
-  document.getElementById('cartDrawer').classList.add('open');
-  document.getElementById('cartOverlay').classList.add('open');
-  // iOS-safe scroll lock
+// ── iOS-safe scroll lock ──
+// body.style.overflow = 'hidden' alone doesn't prevent scroll on iOS Safari.
+// position:fixed trick preserves scroll position and truly blocks scrolling.
+function lockBody() {
+  if (document.body.dataset.locked) return;
   const scrollY = window.scrollY;
   document.body.style.position = 'fixed';
   document.body.style.top = `-${scrollY}px`;
   document.body.style.width = '100%';
   document.body.dataset.scrollY = scrollY;
+  document.body.dataset.locked = '1';
+}
+function unlockBody() {
+  if (!document.body.dataset.locked) return;
+  const scrollY = parseInt(document.body.dataset.scrollY || '0');
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.width = '';
+  delete document.body.dataset.locked;
+  window.scrollTo(0, scrollY);
+}
+
+function openCart() {
+  document.getElementById('cartDrawer').classList.add('open');
+  document.getElementById('cartOverlay').classList.add('open');
+  lockBody();
   // Always start at step 1 (showing cart items)
   setCartStep(1);
   // Step advances only via explicit button (goToFormStep)
@@ -586,12 +606,7 @@ function openCart() {
 function closeCart() {
   document.getElementById('cartDrawer').classList.remove('open');
   document.getElementById('cartOverlay').classList.remove('open');
-  // Restore scroll position
-  const scrollY = parseInt(document.body.dataset.scrollY || '0');
-  document.body.style.position = '';
-  document.body.style.top = '';
-  document.body.style.width = '';
-  window.scrollTo(0, scrollY);
+  unlockBody();
 }
 
 // ── PARALLAX ON HERO ORBS ──
@@ -739,7 +754,7 @@ function closeMobileMenu() {
 burgerBtn.addEventListener('click', () => {
   const isOpen = burgerBtn.classList.toggle('open');
   mobileMenu.classList.toggle('open', isOpen);
-  document.body.style.overflow = isOpen ? 'hidden' : '';
+  isOpen ? lockBody() : unlockBody();
 });
 
 // ── FLOATING CTA ──
@@ -1077,7 +1092,7 @@ function openFillPopup(optEl) {
 
   popup.classList.add('open');
   overlay.classList.add('open');
-  document.body.style.overflow = 'hidden';
+  lockBody();
 
   // Focus the select button for a11y
   setTimeout(() => document.getElementById('fillSheetSelect')?.focus(), 80);
@@ -1088,7 +1103,7 @@ function closeFillPopup() {
   const overlay = document.getElementById('fillOverlay');
   if (popup)   popup.classList.remove('open');
   if (overlay) overlay.classList.remove('open');
-  document.body.style.overflow = '';
+  unlockBody();
   _fillSheetPendingEl = null;
   // Reset any drag transform
   if (popup) popup.style.transform = '';
@@ -1220,3 +1235,79 @@ document.querySelectorAll('.btn-primary, .btn-wa, .calc-order-btn, .btn-add, .he
     setTimeout(() => circle.remove(), 600);
   });
 });
+
+// ── MAP REVIEWS ACCORDION ──
+function toggleMapReviews(platform) {
+  const panelId  = platform === 'yandex' ? 'panelYandex' : 'panelGoogle';
+  const btnId    = platform === 'yandex' ? 'btnYandex'   : 'btnGoogle';
+  const otherPanelId = platform === 'yandex' ? 'panelGoogle' : 'panelYandex';
+  const otherBtnId   = platform === 'yandex' ? 'btnGoogle'   : 'btnYandex';
+
+  const panel      = document.getElementById(panelId);
+  const btn        = document.getElementById(btnId);
+  const otherPanel = document.getElementById(otherPanelId);
+  const otherBtn   = document.getElementById(otherBtnId);
+
+  const isOpen = panel.classList.contains('is-open');
+
+  // Close the other panel
+  otherPanel.classList.remove('is-open');
+  otherPanel.addEventListener('transitionend', () => { otherPanel.hidden = !otherPanel.classList.contains('is-open'); }, { once: true });
+  if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
+
+  if (isOpen) {
+    // Close this one
+    panel.classList.remove('is-open');
+    panel.addEventListener('transitionend', () => { panel.hidden = true; }, { once: true });
+    btn.setAttribute('aria-expanded', 'false');
+  } else {
+    // Open this one
+    panel.hidden = false;
+    // Allow display change to take effect before animating
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        panel.classList.add('is-open');
+      });
+    });
+    btn.setAttribute('aria-expanded', 'true');
+
+    // Scroll into view on mobile
+    if (window.innerWidth < 768) {
+      setTimeout(() => {
+        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+  }
+}
+
+// ── MAP REVIEWS: раскрытие длинных текстов ──
+(function initMapTextExpand() {
+  // Запускаем после рендера
+  function wire() {
+    document.querySelectorAll('.map-text-clamp').forEach(el => {
+      if (el._expandWired) return;
+      el._expandWired = true;
+
+      // Проверяем, обрезан ли текст
+      const isClamped = () => el.scrollHeight > el.clientHeight + 2;
+
+      if (!isClamped()) return;
+
+      const btn = document.createElement('button');
+      btn.className = 'map-expand-btn';
+      btn.textContent = 'Читать полностью';
+      btn.addEventListener('click', () => {
+        const expanded = el.classList.toggle('expanded');
+        btn.textContent = expanded ? 'Свернуть' : 'Читать полностью';
+      });
+      el.after(btn);
+    });
+  }
+
+  // Запускаем при открытии панели
+  const origToggle = window.toggleMapReviews;
+  window.toggleMapReviews = function(platform) {
+    origToggle(platform);
+    setTimeout(wire, 460); // после анимации раскрытия
+  };
+})();

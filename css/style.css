@@ -66,6 +66,8 @@ body {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 500;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
   padding: 0 60px;
   height: 72px;
   display: flex;
@@ -202,6 +204,7 @@ body {
   inset: 0;
   background: linear-gradient(160deg, #f5efe4 0%, #ede4d2 100%);
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   z-index: 600;
   flex-direction: column;
   align-items: center;
@@ -406,6 +409,8 @@ body {
 .floating-cta {
   position: fixed;
   bottom: 30px; left: 30px;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
   background: linear-gradient(135deg, var(--gold), var(--gold-light));
   color: #fff;
   padding: 14px 28px;
@@ -628,12 +633,14 @@ body {
   z-index: 800;
   padding: 0 0 max(28px, env(safe-area-inset-bottom));
   box-shadow: 0 -12px 48px rgba(0,0,0,0.45);
+  -webkit-transform: translateY(100%);
   transform: translateY(100%);
-  transition: transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: -webkit-transform 0.38s cubic-bezier(0.32, 0.72, 0, 1), transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
   will-change: transform;
   touch-action: none;
 }
 .fill-mobile-popup.open {
+  -webkit-transform: translateY(0);
   transform: translateY(0);
 }
 .fill-mobile-popup.dragging {
@@ -738,6 +745,8 @@ body {
   position: fixed;
   bottom: 0; left: 0; right: 0;
   z-index: 9000;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
   background: var(--brown);
   color: rgba(255,235,185,0.9);
   font-family: 'Jost', sans-serif;
@@ -776,6 +785,7 @@ body {
   z-index: 9100;
   background: rgba(45,28,18,0.72);
   backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -792,6 +802,8 @@ body {
   width: 100%;
   max-height: 85vh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* iOS smooth scroll */
+  overscroll-behavior: contain;
   padding: 40px 48px;
   position: relative;
   box-shadow: 0 24px 80px rgba(61,43,31,0.25);
@@ -1038,6 +1050,7 @@ h1, h2, h3, h4 { font-family: 'Cormorant Garamond', serif; font-weight: 500; }
 /* ── HERO ── */
 .hero {
   min-height: 100vh;
+  min-height: 100dvh; /* iOS Safari: real viewport height */
   display: flex;
   align-items: center;
   padding: 100px 60px 80px;
@@ -1313,7 +1326,7 @@ section { padding: 100px 60px; }
 .slide-video-play:hover { background: rgba(0,0,0,0.15); }
 .vk-play-btn { display: flex; flex-direction: column; align-items: center; gap: 12px; filter: drop-shadow(0 4px 16px rgba(0,0,0,0.5)); transition: transform 0.2s; }
 .slide-video-play:hover .vk-play-btn { transform: scale(1.07); }
-.vk-play-label { display: flex; align-items: center; background: rgba(0,0,0,0.6); color: white; font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 0.03em; padding: 6px 14px; border-radius: 20px; white-space: nowrap; backdrop-filter: blur(4px); }
+.vk-play-label { display: flex; align-items: center; background: rgba(0,0,0,0.6); color: white; font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 0.03em; padding: 6px 14px; border-radius: 20px; white-space: nowrap; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
 .dot-video::after { content: '▶'; position: absolute; font-size: 6px; top: -1px; right: -8px; color: rgba(255,255,255,0.8); }
 .dot-video { position: relative; }
 .slider-dots { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 7px; z-index: 10; }
@@ -1437,7 +1450,7 @@ section { padding: 100px 60px; }
 /* Form */
 .form-group { margin-bottom: 22px; position: relative; }
 .form-group label { display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 6px; }
-.form-group input, .form-group textarea { width: 100%; padding: 14px 18px; border: 1.5px solid #e8ddd0; border-radius: 12px; font-family: 'Jost', sans-serif; font-size: 15px; background: var(--cream); color: var(--text); outline: none; transition: border-color 0.2s; }
+.form-group input, .form-group textarea { width: 100%; padding: 14px 18px; border: 1.5px solid #e8ddd0; border-radius: 12px; font-family: 'Jost', sans-serif; font-size: 16px; /* iOS: prevents auto-zoom on focus */ background: var(--cream); color: var(--text); outline: none; transition: border-color 0.2s; }
 .form-group input::placeholder, .form-group textarea::placeholder { color: var(--text-muted); }
 .form-group input:focus, .form-group textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,147,74,0.1), 0 4px 16px rgba(201,147,74,0.08); transition: border-color 0.2s, box-shadow 0.3s; }
 .form-group textarea { resize: vertical; min-height: 100px; }
@@ -1461,6 +1474,8 @@ section { padding: 100px 60px; }
 .cart-btn {
   position: fixed;
   bottom: 90px; right: 30px;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
   width: 60px; height: 60px;
   border-radius: 50%;
   background: var(--gold);
@@ -1807,3 +1822,262 @@ img { background: linear-gradient(135deg, #e8d8c4, #d4b896); }
   .cart-progress { padding: 12px 20px; }
   .hero-actions { flex-direction: column; align-items: flex-start; }
 }
+
+/* ══════════════════════════════════════════════
+   MAP REVIEWS — раскрывающиеся отзывы с карт
+   ══════════════════════════════════════════════ */
+
+.map-reviews {
+  margin-top: 48px;
+}
+
+.map-reviews-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.map-reviews-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+.map-reviews-badges {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.map-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 50px;
+  border: 1.5px solid var(--cream-dark);
+  background: var(--white);
+  color: var(--text);
+  font-family: 'Jost', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.map-badge:hover {
+  box-shadow: 0 4px 16px rgba(61,43,31,0.1);
+}
+.map-badge-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.map-badge-rating {
+  color: var(--gold);
+  font-weight: 600;
+  font-size: 13px;
+}
+.map-badge-chevron {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform 0.3s ease;
+}
+
+.map-badge[aria-expanded="true"] .map-badge-chevron {
+  transform: rotate(180deg);
+}
+.map-badge-yandex[aria-expanded="true"] {
+  border-color: #FC3F1D;
+  background: #fff5f3;
+}
+.map-badge-google[aria-expanded="true"] {
+  border-color: #4285F4;
+  background: #f0f4ff;
+}
+
+/* Панели */
+.map-reviews-panel {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.45s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease;
+}
+.map-reviews-panel.is-open {
+  max-height: 900px;
+  opacity: 1;
+}
+
+.map-panel-inner {
+  padding-top: 20px;
+}
+
+.map-panel-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--cream-dark);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.map-panel-score {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.map-score-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--brown);
+  line-height: 1;
+}
+.map-score-stars {
+  color: #f5a623;
+  font-size: 18px;
+  letter-spacing: 1px;
+}
+.map-score-count {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.map-link-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 20px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-family: 'Jost', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  transition: opacity 0.2s, transform 0.15s;
+  white-space: nowrap;
+}
+.map-link-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+.map-link-yandex { background: #FC3F1D; color: #fff; }
+.map-link-google { background: #4285F4; color: #fff; }
+
+/* Список отзывов */
+.map-review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.map-review-item {
+  background: var(--cream);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid var(--cream-dark);
+  transition: box-shadow 0.2s;
+}
+.map-review-item:hover {
+  box-shadow: 0 4px 20px rgba(61,43,31,0.07);
+}
+
+.map-reviewer-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.map-reviewer-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Jost', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.map-reviewer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.map-reviewer-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--brown);
+}
+.map-reviewer-stars {
+  color: #f5a623;
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+.map-reviewer-text {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text);
+  font-style: italic;
+  margin: 0;
+}
+
+/* ── Mobile ── */
+@media (max-width: 600px) {
+  .map-reviews-header { flex-direction: column; align-items: flex-start; }
+  .map-badge { padding: 9px 14px; font-size: 13px; }
+  .map-score-num { font-size: 28px; }
+  .map-panel-top { flex-direction: column; align-items: flex-start; }
+}
+
+/* ── Дата отзыва ── */
+.map-reviewer-date {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ── Схлопывание длинных отзывов ── */
+.map-text-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.map-text-clamp.expanded {
+  display: block;
+  -webkit-line-clamp: unset;
+}
+
+/* ── Кнопка раскрытия ── */
+.map-expand-btn {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--gold);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: 'Jost', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+.map-expand-btn:hover { text-decoration: underline; }
+
+/* ── Ссылка-источник ── */
+.map-review-source {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.map-review-source:hover { color: var(--gold); }
