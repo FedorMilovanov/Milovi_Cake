@@ -3,9 +3,11 @@
    Стратегия: Cache-First для статики, Network-First для страниц
    ══════════════════════════════════════════════ */
 
-const CACHE_NAME = 'milovi-v1';
-const STATIC_CACHE = 'milovi-static-v1';
-const IMAGE_CACHE  = 'milovi-images-v1';
+// Version is updated on each deploy — change this date to bust caches
+const DEPLOY_VERSION = '2026-02-27';
+const CACHE_NAME = `milovi-v1-${DEPLOY_VERSION}`;
+const STATIC_CACHE = `milovi-static-v1-${DEPLOY_VERSION}`;
+const IMAGE_CACHE  = `milovi-images-v1`; /* images versioned separately — large, rarely change */
 
 /* Ресурсы, кешируемые при установке */
 const PRECACHE_URLS = [
@@ -53,7 +55,9 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(
-        keys.filter(k => k !== STATIC_CACHE && k !== IMAGE_CACHE).map(k => caches.delete(k))
+        keys
+          .filter(k => k !== STATIC_CACHE && k !== IMAGE_CACHE && k !== CACHE_NAME)
+          .map(k => caches.delete(k))
       )
     ).then(() => self.clients.claim())
   );

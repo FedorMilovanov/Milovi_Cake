@@ -49,31 +49,27 @@
     ]
   }
   </script>
-  <!-- Yandex.Metrika counter -->
-  <script type="text/javascript">
-    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-    m[i].l=1*new Date();
-    for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-    k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-    (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-
-    ym(106945185, "init", {
-      clickmap: true,
-      trackLinks: true,
-      accurateTrackBounce: true,
-      webvisor: true
-    });
-  </script>
-  <noscript><div><img src="https://mc.yandex.ru/watch/106945185" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-  <!-- /Yandex.Metrika counter -->
+  <!-- Yandex.Metrika — moved to end of body for non-blocking render -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <!-- Non-blocking font load -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" as="style" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/></noscript>
   <link rel="stylesheet" href="/css/style.min.css" />
 </head>
 
 <body>
+
+<!-- ── SKIP LINK (accessibility) ── -->
+<a href="#catalog" class="skip-link">Перейти к содержимому</a>
+
+<!-- ── STICKY MOBILE CTA (WhatsApp) ── -->
+<a href="https://wa.me/79119038886?text=Здравствуйте!%20Хочу%20сделать%20заказ" target="_blank" class="mobile-sticky-cta" id="mobileStickyWa" aria-label="Заказать торт через WhatsApp">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  Заказать в WhatsApp
+</a>
 
 <!-- ── PROGRESS BAR ── -->
 <div id="scroll-progress"></div>
@@ -91,13 +87,13 @@
     <a href="#contacts">Контакты</a>
     <a href="#catalog" class="header-order">Заказать</a>
   </nav>
-  <button class="burger-btn" id="burgerBtn" aria-label="Меню">
+  <button class="burger-btn" id="burgerBtn" aria-label="Меню" aria-expanded="false" aria-controls="mobileMenu">
     <span></span><span></span><span></span>
   </button>
 </header>
 
 <!-- ── MOBILE MENU ── -->
-<div class="mobile-menu" id="mobileMenu">
+<div class="mobile-menu" id="mobileMenu" role="dialog" aria-label="Навигационное меню" aria-modal="false">
   <button class="mobile-menu-close" onclick="closeMobileMenu()">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
     Закрыть
@@ -405,14 +401,14 @@
 
     <!-- ══ КИНОЛЕНТА СКРИНОВ ══ -->
     <div class="review-filmstrip reveal">
-      <button class="review-filmstrip-item" onclick="openChatLightbox(0)" aria-label="Отзыв 1"><img src="img/review_1.webp" alt="" loading="lazy"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(1)" aria-label="Отзыв 2"><img src="img/review_2.webp" alt="" loading="lazy"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(2)" aria-label="Отзыв 3"><img src="img/review_3.webp" alt="" loading="lazy"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(3)" aria-label="Отзыв 4"><img src="img/review_4.webp" alt="" loading="lazy"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(4)" aria-label="Отзыв 5"><img src="img/review_5.webp" alt="" loading="lazy"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(5)" aria-label="Отзыв 6"><img src="img/review_6.webp" alt="" loading="lazy"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(6)" aria-label="Отзыв 7"><img src="img/review_7.webp" alt="" loading="lazy"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(7)" aria-label="Отзыв 8"><img src="img/review_8.webp" alt="" loading="lazy"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(0)" aria-label="Отзыв 1"><img src="img/review_1.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 1" loading="lazy"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(1)" aria-label="Отзыв 2"><img src="img/review_2.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 2" loading="lazy"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(2)" aria-label="Отзыв 3"><img src="img/review_3.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 3" loading="lazy"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(3)" aria-label="Отзыв 4"><img src="img/review_4.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 4" loading="lazy"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(4)" aria-label="Отзыв 5"><img src="img/review_5.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 5" loading="lazy"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(5)" aria-label="Отзыв 6"><img src="img/review_6.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 6" loading="lazy"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(6)" aria-label="Отзыв 7"><img src="img/review_7.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 7" loading="lazy"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(7)" aria-label="Отзыв 8"><img src="img/review_8.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 8" loading="lazy"></button>
     </div>
 
     <!-- ══ ОТЗЫВЫ НА КАРТАХ ══ -->
@@ -758,8 +754,8 @@
         <label for="cphone">Телефон *</label>
       </div>
       <div class="form-group float-label">
-        <input type="text" id="cdate" placeholder=" " />
-        <label for="cdate">Дата получения (дд.мм.гггг)</label>
+        <input type="date" id="cdate" placeholder=" " />
+        <label for="cdate">Дата получения</label>
       </div>
       <div class="form-group float-label">
         <textarea id="ccomment" placeholder=" " style="min-height:52px;"></textarea>
@@ -937,6 +933,22 @@
         .catch(() => {});
     });
   }
+</script><!-- ══════════ YANDEX METRIKA (end of body — non-blocking) ══════════ -->
+<script type="text/javascript">
+  (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+  m[i].l=1*new Date();
+  for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+  k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+  (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+  ym(106945185, "init", {
+    clickmap: true,
+    trackLinks: true,
+    accurateTrackBounce: true,
+    webvisor: true
+  });
 </script>
+<noscript><div><img src="https://mc.yandex.ru/watch/106945185" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+
 </body>
 </html>

@@ -523,6 +523,13 @@ function buildMessage() {
 
   if (!Object.keys(cart).length) { alert('Корзина пуста!'); return null; }
   if (!phone || phone === '—') { alert('Пожалуйста, укажите телефон.'); return null; }
+  // Validate phone digits
+  const phoneDigits = phone.replace(/\D/g, '');
+  if (phoneDigits.length < 10) {
+    showToast('Введите корректный номер телефона');
+    document.getElementById('cphone').focus();
+    return null;
+  }
 
   const items = Object.entries(cart).map(([id, entry]) => {
     const p = products.find(x => x.id === +id);
@@ -564,7 +571,9 @@ function sendFormWA() {
   const name = document.getElementById('fname').value.trim() || '—';
   const phone = document.getElementById('fphone').value.trim();
   const comment = document.getElementById('fcomment').value.trim() || '—';
-  if (!phone) { alert('Пожалуйста, укажите телефон.'); return; }
+  if (!phone) { showToast('Пожалуйста, укажите телефон'); document.getElementById('fphone').focus(); return; }
+  const phoneDigits = phone.replace(/\D/g, '');
+  if (phoneDigits.length < 10) { showToast('Введите корректный номер телефона'); document.getElementById('fphone').focus(); return; }
   const msg = encodeURIComponent(`Привет! 👋\nИмя: ${name}\nТелефон: ${phone}\nКомментарий: ${comment}`);
   window.open(`https://wa.me/79119038886?text=${msg}`, '_blank');
 }
@@ -613,6 +622,7 @@ function unlockBody() {
 function openCart() {
   document.getElementById('cartDrawer').classList.add('open');
   document.getElementById('cartOverlay').classList.add('open');
+  document.body.classList.add('cart-open');
   lockBody();
   // Always start at step 1 (showing cart items)
   setCartStep(1);
@@ -622,6 +632,7 @@ function openCart() {
 function closeCart() {
   document.getElementById('cartDrawer').classList.remove('open');
   document.getElementById('cartOverlay').classList.remove('open');
+  document.body.classList.remove('cart-open');
   unlockBody();
 }
 
@@ -696,6 +707,33 @@ loadCartFromStorage();
 updateCartUI();
 observeReveal(); // picks up static .reveal elements (hero, sections, etc.)
 
+// ── PAUSE SLIDERS WHEN OFF-SCREEN (saves CPU & battery) ──
+setTimeout(() => {
+  const sliderIO = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const match = entry.target.id && entry.target.id.match(/^slider-(\d+)$/);
+      if (!match) return;
+      const pid = parseInt(match[1]);
+      if (!entry.isIntersecting) {
+        if (slideTimers[pid]) { clearInterval(slideTimers[pid]); delete slideTimers[pid]; }
+      } else {
+        if (!slideTimers[pid]) {
+          const p = products.find(x => x.id === pid);
+          if (p && p.slides && p.slides.length > 1) {
+            let cur = sliderCurrentIdx[pid] || 0;
+            slideTimers[pid] = setInterval(() => {
+              cur = (cur + 1) % p.slides.length;
+              sliderCurrentIdx[pid] = cur;
+              goSlide(pid, cur);
+            }, 3000);
+          }
+        }
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('[id^="slider-"]').forEach(el => sliderIO.observe(el));
+}, 300);
+
 // ── PROGRESS BAR ──
 window.addEventListener('scroll', () => {
   const el = document.getElementById('scroll-progress');
@@ -765,22 +803,43 @@ const mobileMenu = document.getElementById('mobileMenu');
 function closeMobileMenu() {
   burgerBtn.classList.remove('open');
   mobileMenu.classList.remove('open');
+  burgerBtn.setAttribute('aria-expanded', 'false');
   document.body.style.overflow = '';
 }
 burgerBtn.addEventListener('click', () => {
   const isOpen = burgerBtn.classList.toggle('open');
   mobileMenu.classList.toggle('open', isOpen);
+  burgerBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
   isOpen ? lockBody() : unlockBody();
+});
+
+// Close menu on tap outside
+document.addEventListener('click', (e) => {
+  if (mobileMenu.classList.contains('open') &&
+      !mobileMenu.contains(e.target) &&
+      !burgerBtn.contains(e.target)) {
+    closeMobileMenu();
+  }
 });
 
 // ── FLOATING CTA ──
 const floatingCta = document.getElementById('floatingCta');
 const contactsSection = document.getElementById('contacts');
+const mobileStickyWa = document.getElementById('mobileStickyWa');
 window.addEventListener('scroll', () => {
   const scrolled = window.scrollY > 300;
   const nearBottom = contactsSection && window.scrollY + window.innerHeight > contactsSection.offsetTop - 100;
   floatingCta.classList.toggle('visible', scrolled && !nearBottom);
-});
+  // Sticky mobile WA: show after 300px scroll, hide near contacts
+  if (mobileStickyWa) {
+    mobileStickyWa.classList.toggle('visible', scrolled);
+    mobileStickyWa.classList.toggle('near-bottom', nearBottom);
+  }
+}, { passive: true });
+
+// Hide sticky WA when cart or bottom-sheet opens
+function _hideStickyWa() { document.body.classList.add('cart-open'); }
+function _showStickyWa() { document.body.classList.remove('cart-open'); }
 
 // ── LIGHTBOX ──
 // ── LIGHTBOX with gallery + swipe ──
@@ -1128,6 +1187,7 @@ function openFillPopup(optEl) {
 
   popup.classList.add('open');
   overlay.classList.add('open');
+  document.body.classList.add('fill-open');
   lockBody();
 
   // Focus the select button for a11y
@@ -1139,6 +1199,7 @@ function closeFillPopup() {
   const overlay = document.getElementById('fillOverlay');
   if (popup)   popup.classList.remove('open');
   if (overlay) overlay.classList.remove('open');
+  document.body.classList.remove('fill-open');
   unlockBody();
   _fillSheetPendingEl = null;
   // Reset any drag transform
@@ -1247,17 +1308,25 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// ── PREMIUM: Subtle hero parallax ──
+// ── PREMIUM: Subtle hero parallax (RAF-throttled) ──
 const heroBg = document.querySelector('.hero-photo-bg img');
 if (heroBg) {
-  window.addEventListener('scroll', () => {
-    const y = window.scrollY;
-    if (y < window.innerHeight) {
-      heroBg.style.transform = `translateY(${y * 0.15}px) scale(1.05)`;
-    }
-  }, { passive: true });
+  // Skip parallax on mobile for perf — motion not visible anyway
+  if (window.matchMedia('(min-width: 769px)').matches) {
+    let _rafPending = false;
+    window.addEventListener('scroll', () => {
+      if (_rafPending) return;
+      _rafPending = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        if (y < window.innerHeight) {
+          heroBg.style.transform = `translateY(${y * 0.15}px) scale(1.05)`;
+        }
+        _rafPending = false;
+      });
+    }, { passive: true });
+  }
 }
-
 
 
 // ── Ripple effect ──

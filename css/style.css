@@ -494,10 +494,11 @@ body {
 }
 
 .review-chat-btn {
+  display: flex; /* FIX: was missing, caused icon+text misalignment */
   align-items: center;
   gap: 6px;
   margin-top: 20px;
-  padding: 0;
+  padding: 4px 0; /* small tap padding */
   border: none;
   background: none;
   color: var(--gold);
@@ -509,6 +510,7 @@ body {
   opacity: 0.75;
   transition: opacity 0.2s;
   -webkit-tap-highlight-color: transparent;
+  min-height: 44px; /* tap target */
 }
 .review-chat-btn:hover { opacity: 1; }
 .review-chat-btn svg { flex-shrink: 0; }
@@ -693,7 +695,7 @@ body {
   transform: translateY(100%);
   transition: -webkit-transform 0.38s cubic-bezier(0.32, 0.72, 0, 1), transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
   will-change: transform;
-  touch-action: none;
+  touch-action: pan-y; /* FIX: was none — now allows scroll inside the sheet */
 }
 .fill-mobile-popup.open {
   -webkit-transform: translateY(0);
@@ -1631,7 +1633,7 @@ section { padding: 100px 60px; }
 .cart-item-info .item-price { font-size: 14px; color: var(--gold); font-weight: 500; }
 .cart-item-info .item-min { font-size: 12px; color: var(--text-muted); }
 .qty-ctrl { display: flex; align-items: center; gap: 10px; }
-.qty-btn { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--gold); background: none; color: var(--gold); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s, color 0.15s; line-height: 1; }
+.qty-btn { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--gold); background: none; color: var(--gold); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s, color 0.15s; line-height: 1; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 .qty-btn:hover { background: var(--gold); color: var(--white); }
 .qty-val { font-size: 15px; font-weight: 500; min-width: 20px; text-align: center; }
 .cart-item-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
@@ -1864,8 +1866,9 @@ img { background: linear-gradient(135deg, #e8d8c4, #d4b896); }
   #calcDecor .calc-opt {
     justify-content: center;
     text-align: center;
-    padding: 9px 10px;
+    padding: 12px 10px; /* FIX: was 9px — bigger tap target */
     font-size: 12px;
+    min-height: 44px; /* tap target */
   }
 
   /* Тип торта и другие — обычный flex */
@@ -2279,5 +2282,112 @@ img { background: linear-gradient(135deg, #e8d8c4, #d4b896); }
 @media (max-width: 480px) {
   .chat-gallery-grid {
     grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ══════════════════════════════════════════════
+   FIXES & IMPROVEMENTS
+   ══════════════════════════════════════════════ */
+
+/* ── Skip link (accessibility) ── */
+.skip-link {
+  position: absolute;
+  top: -60px;
+  left: 16px;
+  background: var(--gold);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 0 0 8px 8px;
+  font-family: 'Jost', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  z-index: 99999;
+  transition: top 0.2s;
+}
+.skip-link:focus {
+  top: 0;
+  outline: 3px solid var(--gold-light);
+  outline-offset: 2px;
+}
+
+/* ── Sticky Mobile WhatsApp CTA ── */
+.mobile-sticky-cta {
+  display: none; /* shown only on mobile via media query below */
+}
+
+@media (max-width: 768px) {
+  .mobile-sticky-cta {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #25D366;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 20px;
+    padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    font-family: 'Jost', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+    z-index: 490;
+    box-shadow: 0 -4px 20px rgba(37,211,102,0.3);
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .mobile-sticky-cta.visible {
+    transform: translateY(0);
+  }
+  /* Push page content up so sticky bar doesn't overlap footer */
+  body {
+    padding-bottom: calc(54px + env(safe-area-inset-bottom, 0px));
+  }
+  /* Hide when cart or bottom-sheet is open */
+  body.cart-open .mobile-sticky-cta,
+  body.fill-open .mobile-sticky-cta {
+    display: none;
+  }
+  /* Also hide near bottom of page (contacts already visible) */
+  .mobile-sticky-cta.near-bottom {
+    transform: translateY(100%);
+  }
+  /* Reduce bottom padding when sticky cta is hidden */
+  body.no-sticky-cta {
+    padding-bottom: 0;
+  }
+}
+
+/* ── Date input native picker fix ── */
+input[type="date"] {
+  -webkit-appearance: none;
+  appearance: none;
+  font-family: 'Jost', sans-serif;
+  font-size: 16px;
+  color: var(--text);
+  background: var(--cream);
+  cursor: pointer;
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+/* ── Float label fix for date input ── */
+.form-group.float-label input[type="date"] + label {
+  top: -9px;
+  font-size: 11px;
+  color: var(--gold);
+}
+
+/* ── Bigger tap targets for calc-opts on mobile ── */
+@media (max-width: 560px) {
+  .calc-opt {
+    min-height: 44px;
   }
 }
