@@ -7,6 +7,10 @@
    Пригороды:  <script>const IMG_BASE = '../..';</script>
 ═══════════════════════════════════════════════════════ */
 
+// ── Fallback for IMG_BASE ──
+if (typeof IMG_BASE === 'undefined') {
+  var IMG_BASE = '';
+}
 
 // ── DATA ──
 const products = [
@@ -701,11 +705,19 @@ function observeReveal() {
   els.forEach(el => io.observe(el));
 }
 
-renderCatalog(); // calls observeReveal() internally for catalog cards
-setTimeout(wireProductLightbox, 200);
-loadCartFromStorage();
-updateCartUI();
-observeReveal(); // picks up static .reveal elements (hero, sections, etc.)
+function initApp() {
+  renderCatalog(); // calls observeReveal() internally for catalog cards
+  setTimeout(wireProductLightbox, 200);
+  loadCartFromStorage();
+  updateCartUI();
+  observeReveal(); // picks up static .reveal elements (hero, sections, etc.)
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
 
 // ── PAUSE SLIDERS WHEN OFF-SCREEN (saves CPU & battery) ──
 setTimeout(() => {
@@ -1086,13 +1098,16 @@ document.addEventListener('visibilitychange', () => {
 
 // Touch swipe support for reviews
 let touchStartX = 0;
-document.getElementById('reviewsTrack').addEventListener('touchstart', e => {
-  touchStartX = e.touches[0].clientX;
-}, { passive: true });
-document.getElementById('reviewsTrack').addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - touchStartX;
-  if (Math.abs(dx) > 40) shiftReview(dx < 0 ? 1 : -1);
-}, { passive: true });
+const reviewsTrack = document.getElementById('reviewsTrack');
+if (reviewsTrack) {
+  reviewsTrack.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+  }, { passive: true });
+  reviewsTrack.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 40) shiftReview(dx < 0 ? 1 : -1);
+  }, { passive: true });
+}
 
 
 
@@ -1308,7 +1323,28 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// ── PREMIUM: Subtle hero parallax (RAF-throttled) ──
+// ── LIGHTBOX SWIPE DOWN TO CLOSE ──
+(function() {
+  const lbWrap = document.getElementById('lightboxWrap');
+  if (!lbWrap) return;
+  let startY = 0;
+  lbWrap.addEventListener('touchstart', e => {
+    startY = e.changedTouches[0].clientY;
+  }, { passive: true });
+  lbWrap.addEventListener('touchend', e => {
+    const dy = e.changedTouches[0].clientY - startY;
+    if (dy > 90) closeLightbox();
+  }, { passive: true });
+})();
+
+// ── UPDATE aria-current ON REV-DOTS ──
+const _origGoReview = goReview;
+window.goReview = function(idx) {
+  _origGoReview(idx);
+  document.querySelectorAll('.rev-dot').forEach((btn, i) => {
+    btn.setAttribute('aria-current', i === idx ? 'true' : 'false');
+  });
+};
 const heroBg = document.querySelector('.hero-photo-bg img');
 if (heroBg) {
   // Skip parallax on mobile for perf — motion not visible anyway
