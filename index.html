@@ -396,6 +396,51 @@
     </div>
     <div class="rev-dots" id="revDots"><span class="rev-dot  rev-dot-active" onclick="goReview(0)"></span><span class="rev-dot" onclick="goReview(1)"></span><span class="rev-dot" onclick="goReview(2)"></span><span class="rev-dot" onclick="goReview(3)"></span><span class="rev-dot" onclick="goReview(4)"></span><span class="rev-dot" onclick="goReview(5)"></span><span class="rev-dot" onclick="goReview(6)"></span><span class="rev-dot" onclick="goReview(7)"></span></div>
 
+    <!-- ══ ГАЛЕРЕЯ СКРИНОВ ПЕРЕПИСКИ ══ -->
+    <div class="chat-gallery reveal" id="chatGallery">
+      <div class="chat-gallery-header">
+        <span class="chat-gallery-label">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#c9934a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Нам пишут напрямую
+        </span>
+        <span class="chat-gallery-hint">нажми чтобы открыть</span>
+      </div>
+      <div class="chat-gallery-grid">
+        <button class="chat-thumb" onclick="openChatLightbox(0)" aria-label="Открыть отзыв 1">
+          <img src="img/review_1.webp" alt="Отзыв в переписке" loading="lazy">
+          <div class="chat-thumb-overlay"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+        </button>
+        <button class="chat-thumb" onclick="openChatLightbox(1)" aria-label="Открыть отзыв 2">
+          <img src="img/review_2.webp" alt="Отзыв в переписке" loading="lazy">
+          <div class="chat-thumb-overlay"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+        </button>
+        <button class="chat-thumb" onclick="openChatLightbox(2)" aria-label="Открыть отзыв 3">
+          <img src="img/review_3.webp" alt="Отзыв в переписке" loading="lazy">
+          <div class="chat-thumb-overlay"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+        </button>
+        <button class="chat-thumb" onclick="openChatLightbox(3)" aria-label="Открыть отзыв 4">
+          <img src="img/review_4.webp" alt="Отзыв в переписке" loading="lazy">
+          <div class="chat-thumb-overlay"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+        </button>
+        <button class="chat-thumb" onclick="openChatLightbox(4)" aria-label="Открыть отзыв 5">
+          <img src="img/review_5.webp" alt="Отзыв в переписке" loading="lazy">
+          <div class="chat-thumb-overlay"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+        </button>
+        <button class="chat-thumb" onclick="openChatLightbox(5)" aria-label="Открыть отзыв 6">
+          <img src="img/review_6.webp" alt="Отзыв в переписке" loading="lazy">
+          <div class="chat-thumb-overlay"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+        </button>
+        <button class="chat-thumb" onclick="openChatLightbox(6)" aria-label="Открыть отзыв 7">
+          <img src="img/review_7.webp" alt="Отзыв в переписке" loading="lazy">
+          <div class="chat-thumb-overlay"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+        </button>
+        <button class="chat-thumb" onclick="openChatLightbox(7)" aria-label="Открыть отзыв 8">
+          <img src="img/review_8.webp" alt="Отзыв в переписке" loading="lazy">
+          <div class="chat-thumb-overlay"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+        </button>
+      </div>
+    </div>
+
     <!-- ══ ОТЗЫВЫ НА КАРТАХ ══ -->
     <div class="map-reviews reveal" id="mapReviews">
       <div class="map-reviews-header">
@@ -404,13 +449,13 @@
           <button class="map-badge map-badge-yandex" onclick="toggleMapReviews('yandex')" aria-expanded="false" id="btnYandex">
             <svg class="map-badge-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#FC3F1D"/><path d="M13.18 7.2h-.92c-1.2 0-1.84.58-1.84 1.54 0 1.1.48 1.62 1.44 2.28l.8.54-2.28 3.44H8.9l2.08-3.12c-1.2-.86-1.88-1.7-1.88-3.06 0-1.76 1.22-2.92 3.16-2.92h2.3V17h-1.38V7.2z" fill="#fff"/></svg>
             <span>Яндекс Карты</span>
-            <span class="map-badge-rating">★ 5.0</span>
+            <span class="map-badge-rating">★ 4.8</span>
             <svg class="map-badge-chevron" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
           <button class="map-badge map-badge-google" onclick="toggleMapReviews('google')" aria-expanded="false" id="btnGoogle">
             <svg class="map-badge-icon" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
             <span>Google Maps</span>
-            <span class="map-badge-rating">★ 5.0</span>
+            <span class="map-badge-rating">★ 4.7</span>
             <svg class="map-badge-chevron" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
         </div>
@@ -421,9 +466,9 @@
         <div class="map-panel-inner">
           <div class="map-panel-top">
             <div class="map-panel-score">
-              <span class="map-score-num">5.0</span>
-              <div class="map-score-stars">★★★★★</div>
-              <span class="map-score-count">на Яндекс Картах</span>
+              <span class="map-score-num">4.8</span>
+              <div class="map-score-stars">★★★★☆</div>
+              <span class="map-score-count">на Яндекс Картах · 18 оценок</span>
             </div>
             <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/reviews/" target="_blank" rel="noopener" class="map-link-btn map-link-yandex">
               Все отзывы →
@@ -492,9 +537,9 @@
         <div class="map-panel-inner">
           <div class="map-panel-top">
             <div class="map-panel-score">
-              <span class="map-score-num">5.0</span>
-              <div class="map-score-stars">★★★★★</div>
-              <span class="map-score-count">в Google Maps</span>
+              <span class="map-score-num">4.7</span>
+              <div class="map-score-stars">★★★★☆</div>
+              <span class="map-score-count">в Google Maps · 14 отзывов</span>
             </div>
             <a href="https://maps.app.goo.gl/R3mdjxpnebUYMQES6" target="_blank" rel="noopener" class="map-link-btn map-link-google">
               Все отзывы →
@@ -687,10 +732,16 @@
 <div class="cart-drawer" id="cartDrawer">
   <div class="cart-header">
     <h3>🛒 Ваш заказ <span class="cart-count-badge" id="cartCountBadge">0</span></h3>
-    <button class="cart-close" onclick="closeCart()" title="Закрыть корзину" aria-label="Закрыть корзину">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      <span style="font-size:11px;display:block;line-height:1;margin-top:2px;color:var(--text-muted);letter-spacing:0.02em">закрыть</span>
-    </button>
+    <div class="cart-header-right">
+      <button class="cart-clear-btn" id="cartClearBtn" onclick="clearCart()" title="Очистить корзину" aria-label="Очистить корзину" style="display:none">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+        Очистить
+      </button>
+      <button class="cart-close" onclick="closeCart()" title="Закрыть корзину" aria-label="Закрыть корзину">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        <span style="font-size:11px;display:block;line-height:1;margin-top:2px;color:var(--text-muted);letter-spacing:0.02em">закрыть</span>
+      </button>
+    </div>
   </div>
   <!-- Progress steps -->
   <div class="cart-progress" id="cartProgress">

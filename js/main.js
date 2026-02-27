@@ -378,6 +378,18 @@ function removeFromCart(id) {
   saveCartToStorage();
 }
 
+function clearCart() {
+  // Подтверждение — защита от случайного нажатия
+  if (!confirm('Очистить корзину? Все позиции будут удалены.')) return;
+  cart = {};
+  updateCartUI();
+  saveCartToStorage();
+  // Возвращаемся на шаг 1 если были на шаге 2
+  setCartStep(1);
+  document.getElementById('cartFooter').style.display = 'none';
+  document.getElementById('cartBody').style.display = '';
+}
+
 function changeQty(id, delta) {
   let p = products.find(x => x.id === id);
   if (p && p.hasMaxi && cart[id] && cart[id].mode === 'maxi') {
@@ -421,6 +433,10 @@ function updateCartUI() {
   badge.textContent = totalItems;
   badge.classList.toggle('visible', totalItems > 0);
   document.getElementById('cartCountBadge').textContent = totalItems;
+
+  // Показываем кнопку очистки только когда есть товары и мы на шаге 1
+  const clearBtn = document.getElementById('cartClearBtn');
+  if (clearBtn) clearBtn.style.display = totalItems > 0 ? 'inline-flex' : 'none';
 
   const body = document.getElementById('cartBody');
   const footer = document.getElementById('cartFooter');
@@ -1311,3 +1327,20 @@ function toggleMapReviews(platform) {
     setTimeout(wire, 460); // после анимации раскрытия
   };
 })();
+
+// ── CHAT GALLERY LIGHTBOX ──
+const CHAT_SRCS = [
+  'img/review_1.webp',
+  'img/review_2.webp',
+  'img/review_3.webp',
+  'img/review_4.webp',
+  'img/review_5.webp',
+  'img/review_6.webp',
+  'img/review_7.webp',
+  'img/review_8.webp',
+];
+
+// Переиспользуем существующий лайтбокс (#lightbox, #lightboxImg, #lbNav)
+function openChatLightbox(idx) {
+  openLightbox(CHAT_SRCS[idx], CHAT_SRCS);
+}
