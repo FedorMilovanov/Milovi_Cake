@@ -1366,5 +1366,11 @@ const CHAT_SRCS = [
 
 // Переиспользуем существующий лайтбокс (#lightbox, #lightboxImg, #lbNav)
 function openChatLightbox(idx) {
-  openLightbox(CHAT_SRCS[idx], CHAT_SRCS);
+  _lbSrcs = CHAT_SRCS;
+  _lbIdx = idx;
+  const lb = document.getElementById('lightbox');
+  document.getElementById('lightboxImg').src = CHAT_SRCS[idx];
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  _lbUpdateArrows();
 }
