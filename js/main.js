@@ -1002,8 +1002,28 @@ function goReview(idx) {
 
 function shiftReview(dir) { goReview(currentReview + dir); }
 
-// Auto-advance reviews every 5s
-setInterval(() => shiftReview(1), 5000);
+// Auto-advance reviews every 5s — пауза при ховере и неактивной вкладке
+let reviewAutoplay = null;
+let reviewPaused = false;
+
+function startReviewAutoplay() {
+  if (reviewAutoplay) clearInterval(reviewAutoplay);
+  reviewAutoplay = setInterval(() => {
+    if (!reviewPaused && !document.hidden) shiftReview(1);
+  }, 5000);
+}
+
+startReviewAutoplay();
+
+const reviewsCarousel = document.querySelector('.reviews-carousel');
+if (reviewsCarousel) {
+  reviewsCarousel.addEventListener('mouseenter', () => { reviewPaused = true; });
+  reviewsCarousel.addEventListener('mouseleave', () => { reviewPaused = false; });
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) startReviewAutoplay();
+});
 
 // Touch swipe support for reviews
 let touchStartX = 0;
