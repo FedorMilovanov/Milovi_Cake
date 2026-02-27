@@ -332,13 +332,13 @@
     <p class="section-sub reveal">Выберите начинку и узнайте примерную цену</p>
     <div class="calc-wrap reveal">
       <div class="calc-row">
-        <label>Тип торта</label>
+        <span class="calc-label">Тип торта</span>
         <div class="calc-options" id="calcType">
           <div class="calc-opt selected" data-price="2800" onclick="selectOpt(this,'calcType')"><span class="opt-inner"><span class="opt-label">Бисквитный</span></span></div>
         </div>
       </div>
       <div class="calc-row" id="calcWeightRow">
-        <label>Вес торта</label>
+        <span class="calc-label">Вес торта</span>
         <div class="calc-weight-stepper">
           <button class="calc-stepper-btn" id="calcWeightMinus" onclick="stepWeight(-1)" aria-label="Уменьшить вес">−</button>
           <div class="calc-stepper-val" id="calcWeightVal">2 кг</div>
@@ -359,7 +359,7 @@
         <input type="hidden" id="calcWeight" value="2" />
       </div>
       <div class="calc-row" id="calcFillRow">
-        <label>Начинка</label>
+        <span class="calc-label">Начинка</span>
         <div class="calc-options" id="calcFill">
           <div class="calc-opt selected" data-price="0" data-desc="Бисквит ваниль + микс малины, вишни и лесных ягод + крем-чиз. Баланс вкуса. Сочная ягодная классика." onclick="selectOpt(this,'calcFill')"><span class="opt-inner"><span class="opt-label">Микс ягод </span><span class="fill-tag hit">хит</span></span><div class="fill-tooltip"><strong>Микс ягод</strong>Бисквит ваниль + микс малины, вишни и лесных ягод + крем-чиз. Баланс вкуса. Сочная ягодная классика.</div></div>
           <div class="calc-opt" data-price="0" data-desc="Ванильный бисквит + соленая карамель + арахис + крем-чиз. Нежная «светлая» версия сникерса." onclick="selectOpt(this,'calcFill')"><span class="opt-inner"><span class="opt-label">Белый сникерс </span><span class="fill-tag nuts">орехи</span></span><div class="fill-tooltip"><strong>Белый сникерс</strong>Ванильный бисквит + соленая карамель + арахис + крем-чиз. Нежная светлая версия сникерса.</div></div>
@@ -376,7 +376,7 @@
         </div>
       </div>
       <div class="calc-row">
-        <label>Декор</label>
+        <span class="calc-label">Декор</span>
         <div class="calc-options" id="calcDecor">
           <div class="calc-opt selected" data-price="0" onclick="selectOpt(this,'calcDecor')"><span class="opt-inner"><span class="opt-label">Без декора</span></span></div>
           <div class="calc-opt" data-price="500" onclick="selectOpt(this,'calcDecor')"><span class="opt-inner"><span class="opt-label">Цветы</span></span></div>
@@ -945,7 +945,7 @@
 
 
 
-<script>const IMG_BASE = 'img';</script>
+<script>var IMG_BASE = 'img';</script>
 <script src="js/main.js" defer></script>
 
 

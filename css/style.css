@@ -617,7 +617,8 @@ body {
   padding: 48px; box-shadow: 0 12px 60px rgba(61,43,31,0.1);
 }
 .calc-row { margin-bottom: 28px; }
-.calc-row label { display: block; font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+.calc-row label,
+.calc-row .calc-label { display: block; font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
 .calc-options { display: flex; flex-wrap: wrap; gap: 7px; }
 .calc-opt {
   position: relative;

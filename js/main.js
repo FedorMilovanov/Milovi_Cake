@@ -3,14 +3,9 @@
    
    В HTML страниц перед подключением этого файла объявите:
    
-   Главная:    <script>const IMG_BASE = '';</script>
-   Пригороды:  <script>const IMG_BASE = '../..';</script>
+   Главная:    <script>var IMG_BASE = 'img';</script>
+   Пригороды:  <script>var IMG_BASE = '../../img';</script>
 ═══════════════════════════════════════════════════════ */
-
-// ── Fallback for IMG_BASE ──
-if (typeof IMG_BASE === 'undefined') {
-  var IMG_BASE = '';
-}
 
 // ── DATA ──
 const products = [
