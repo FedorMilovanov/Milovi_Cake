@@ -1589,12 +1589,12 @@ const REVIEWS = [
 // centered in the gap between the stage edges and the viewport edges.
 const LAYOUTS = [
   { side:'left',  tp:  8, rot: -14 },  // 0 top-left
-  { side:'right', tp:  8, rot:  14 },  // 1 top-right
+  { side:'right', tp: 27, rot:  18 },  // 1 right-high
   { side:'left',  tp: 27, rot: -18 },  // 2 left-high
-  { side:'left',  tp: 50, rot:   8 },  // 3 left-mid
-  { side:'left',  tp: 71, rot: -11 },  // 4 left-low
-  { side:'right', tp: 27, rot:  18 },  // 5 right-high
-  { side:'right', tp: 50, rot:  -8 },  // 6 right-mid
+  { side:'right', tp:  8, rot:  14 },  // 3 top-right
+  { side:'left',  tp: 50, rot:   8 },  // 4 left-mid
+  { side:'right', tp: 50, rot:  -8 },  // 5 right-mid
+  { side:'left',  tp: 71, rot: -11 },  // 6 left-low
   { side:'right', tp: 71, rot:  11 },  // 7 right-low
 ];
 
@@ -1917,6 +1917,7 @@ function goTo(n, skipTypewriter){
   cur   = (n + REVIEWS.length) % REVIEWS.length;
   zoomP = 0;
   STATE = 'typing';
+  ZOOM_IN_SPD_CUR = ZOOM_IN_SPD; // reset speed
 
   thumbs[cur].classList.add('is-active');
   slides[cur].classList.add('active');
@@ -1925,6 +1926,7 @@ function goTo(n, skipTypewriter){
   strips[cur]?.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
 
   if(!skipTypewriter) startTypewriter();
+  else startWaiting(); // if skipping typewriter still need to enter waiting state
 }
 
 document.getElementById('btnPrev').addEventListener('click', ()=> goTo(cur-1));
@@ -1985,10 +1987,13 @@ function loop(ts){
   const stageOff    = offsetRelTo(stageEl, secEl);
   const cardL       = stageOff.left;
   const cardW       = stageEl.offsetWidth;
-  // Центрируем по видимой области трека (не по карточке!)
-  const trackEl2  = stageEl.querySelector('.reviews-track');
-  const trackOff2 = offsetRelTo(trackEl2 || stageEl, secEl);
-  const cardCenterY = trackOff2.top + (trackEl2 || stageEl).offsetHeight / 2 - 60;
+  // Центрируем по .review-card — бежевая карточка с текстом отзыва
+  const trackEl2    = stageEl.querySelector('.reviews-track');
+  const activeSlide = stageEl.querySelector('.review-slide.active') || stageEl.querySelector('.review-slide');
+  const reviewCard  = activeSlide ? activeSlide.querySelector('.review-card') : null;
+  const centerEl    = reviewCard || trackEl2 || stageEl;
+  const centerOff   = offsetRelTo(centerEl, secEl);
+  const cardCenterY = centerOff.top + centerEl.offsetHeight / 2;
 
   thumbs.forEach((th, i)=>{
     const fl  = FLOATS[i];
@@ -2016,11 +2021,11 @@ function loop(ts){
 
     if(isActive && zoomP > 0.001 && (STATE==='zoom_in'||STATE==='waiting'||STATE==='zoom_out')){
       // Park target: left/right edge of card, vertically centered (the "circles" position)
-      const OVERLAP = 30; // thumb slightly overlaps card edge
+      const OVERLAP = 45; // thumb overlaps card edge
       const parkX = lay.side === 'left'
         ? cardL - THUMB_W + OVERLAP   // left side: thumb hangs off left edge
         : cardL + cardW - OVERLAP;    // right side: thumb hangs off right edge
-      const parkY = cardCenterY - THUMB_H / 2; // vertically centered
+      const parkY = cardCenterY - THUMB_H / 2 - 30; // slightly above center
       if(isActive && zoomP > 0.98) console.log('[PARK] side='+lay.side+' cardCenterY='+cardCenterY.toFixed(0)+' parkY='+parkY.toFixed(0)+' baseT='+baseT.toFixed(0)+' py='+py.toFixed(0)+' secH='+(sectionSnapH||secEl.offsetHeight));
 
       // Smooth ease-out
