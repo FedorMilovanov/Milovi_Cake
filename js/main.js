@@ -1972,14 +1972,18 @@ function loop(ts){
   const rightGapCenter = (stgRect.right - secRect.left) + (secRect.right - stgRect.right) / 2;
   const minL = MARGIN;
   const maxL = secEl.offsetWidth - THUMB_W - MARGIN;
-  // Use the actual rendered card for park target
+  // Park target — use offsetTop/offsetLeft chain to stay in same coords as baseT/baseL
+  // Both baseT and parkY must be relative to secEl top (scroll-independent)
   const activeSlide = trackEl.querySelector('.review-slide.active');
   const activeCard  = activeSlide ? activeSlide.querySelector('.review-card') : null;
-  const parkRect    = (activeCard || trackEl).getBoundingClientRect();
-  const cardL       = parkRect.left   - secRect.left;
-  const cardT       = parkRect.top    - secRect.top;
-  const cardCenterY = cardT + parkRect.height / 2;
-  const cardW       = parkRect.width;
+  const cardEl      = activeCard || trackEl;
+  // Walk offsetParent chain to get position relative to secEl
+  let _offT = 0, _offL = 0, _el = cardEl;
+  while(_el && _el !== secEl){ _offT += _el.offsetTop; _offL += _el.offsetLeft; _el = _el.offsetParent; }
+  const cardL       = _offL;
+  const cardT       = _offT;
+  const cardCenterY = cardT + cardEl.offsetHeight / 2;
+  const cardW       = cardEl.offsetWidth;
 
   thumbs.forEach((th, i)=>{
     const fl  = FLOATS[i];
@@ -2080,37 +2084,36 @@ function openLB(triggerEl, src, idx){
   const tw   = maxH * ar;
   const tl   = (vw-tw)/2;
   const tt   = (vh-maxH)/2;
+  // Start image maximally blurred — will focus after landing
+  lbImg.style.transition = 'none';
+  lbImg.style.filter = 'blur(28px) saturate(0) brightness(1.5)';
   setBox(fromRect.left, fromRect.top, fromRect.width, fromRect.height, 8, 0);
   lbBg.classList.add('open');
   lbX.classList.add('show');
   const frames = [
-    { left:fromRect.left,  top:fromRect.top,  w:fromRect.width,  h:fromRect.height, r:8,  blur:3, op:.85 },
-    { left:tl+tw*0.28,     top:tt-maxH*0.18,  w:tw*0.44,         h:maxH*1.22,       r:18, blur:1, op:1   },
+    { left:fromRect.left,  top:fromRect.top,  w:fromRect.width,  h:fromRect.height, r:8,  blur:0, op:.85 },
+    { left:tl+tw*0.28,     top:tt-maxH*0.18,  w:tw*0.44,         h:maxH*1.22,       r:18, blur:0, op:1   },
     { left:tl-tw*0.05,     top:tt+maxH*0.04,  w:tw*1.10,         h:maxH*0.94,       r:26, blur:0, op:1   },
     { left:tl,             top:tt,            w:tw,              h:maxH,            r:16, blur:0, op:1   },
   ];
   animBox(frames, [0, 260, 580, 880], ()=>{
     setBox(tl, tt, tw, maxH, 16, 1);
-    // Blur→focus: image "develops" like a photograph
-    lbImg.style.filter = 'blur(22px) saturate(0.2) brightness(1.35)';
-    lbImg.style.transition = 'none';
-    const FOCUS_DUR = 900;
+    // Image landed — now develop: blur 28→0, saturate 0→1, brightness 1.5→1
+    const FOCUS_DUR = 1100;
     const focusStart = performance.now();
     function focusTick(now){
       const p = Math.min((now - focusStart) / FOCUS_DUR, 1);
-      // ease-out quart — slow lingering focus pull
-      const e = 1 - Math.pow(1 - p, 4);
-      const blurVal = 22 * (1 - e);
-      const satVal  = 0.2 + 0.8 * e;
-      // brightness spike at ~40% then settles to 1
-      const briPulse = p < 0.4 ? 1.35 - 0.35 * (p / 0.4) : 1.0;
-      lbImg.style.filter = `blur(${blurVal.toFixed(2)}px) saturate(${satVal.toFixed(3)}) brightness(${briPulse.toFixed(3)})`;
+      const e = 1 - Math.pow(1 - p, 3); // ease-out cubic
+      const blurVal = 28 * (1 - e);
+      const satVal  = e;
+      const briVal  = 1.5 - 0.5 * e;
+      lbImg.style.filter = `blur(${blurVal.toFixed(1)}px) saturate(${satVal.toFixed(3)}) brightness(${briVal.toFixed(3)})`;
       if(p < 1){
         requestAnimationFrame(focusTick);
       } else {
         lbImg.style.filter = '';
         lbBox.classList.add('clickable');
-        lbBusy=false;
+        lbBusy = false;
       }
     }
     requestAnimationFrame(focusTick);
