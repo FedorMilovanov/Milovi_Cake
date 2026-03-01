@@ -1905,20 +1905,14 @@ function goTo(n, skipTypewriter){
   if(waitTimer){ clearTimeout(waitTimer);  waitTimer=null; }
   hideArrows();
 
-  // always dissolve text before switching
-  dissolveText();
-
   thumbs[cur].classList.remove('is-active');
   slides[cur].classList.remove('active');
   dts[cur].classList.remove('on');
   strips[cur]?.classList.remove('on');
 
-  // reset previous card text after dissolve animation finishes
-  const prevSlideIdx = cur;
-  setTimeout(()=>{
-    const prevTxt = slides[prevSlideIdx]?.querySelector('.review-text');
-    if(prevTxt){ prevTxt.innerHTML=''; }
-  }, 600);
+  // clear previous slide text immediately (slide already hidden via opacity:0)
+  const prevTxt = slides[cur]?.querySelector('.review-text');
+  if(prevTxt){ prevTxt.innerHTML=''; }
 
   cur   = (n + REVIEWS.length) % REVIEWS.length;
   zoomP = 0;
@@ -1994,7 +1988,7 @@ function loop(ts){
   // Центрируем по видимой области трека (не по карточке!)
   const trackEl2  = stageEl.querySelector('.reviews-track');
   const trackOff2 = offsetRelTo(trackEl2 || stageEl, secEl);
-  const cardCenterY = trackOff2.top + (trackEl2 || stageEl).offsetHeight / 2;
+  const cardCenterY = trackOff2.top + (trackEl2 || stageEl).offsetHeight / 2 - 60;
 
   thumbs.forEach((th, i)=>{
     const fl  = FLOATS[i];
