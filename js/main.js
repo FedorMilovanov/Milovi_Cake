@@ -1858,8 +1858,40 @@ function startWaiting(){
   waitTimer = setTimeout(()=>{
     waitTimer = null;
     hideArrows();
+    dissolveText();
     STATE = 'zoom_out';
   }, WAIT_DURATION);
+}
+
+function dissolveText(){
+  // Explode current text letters outward — shatter effect
+  const slides = trackEl.querySelectorAll('.review-slide');
+  const txtEl  = slides[cur].querySelector('.review-text');
+  if(!txtEl) return;
+  const spans = Array.from(txtEl.querySelectorAll('.pl, .pl-emoji'));
+  const SHATTER_DUR = 480;
+  spans.forEach((el, i) => {
+    const angle  = Math.random() * Math.PI * 2;
+    const dist   = 40 + Math.random() * 100;
+    const tx     = Math.cos(angle) * dist;
+    const ty     = Math.sin(angle) * dist - 20; // drift slightly up
+    const rot    = (Math.random() - 0.5) * 90;
+    const delay  = i * 8;
+    const startTs = performance.now();
+    el.style.transition = 'none';
+    function tick(now){
+      const elapsed = now - startTs - delay;
+      if(elapsed < 0){ requestAnimationFrame(tick); return; }
+      const raw = Math.min(elapsed / SHATTER_DUR, 1);
+      const t   = raw * raw; // ease-in — accelerate outward
+      el.style.opacity   = String(Math.max(0, 1 - raw * 2).toFixed(3));
+      el.style.filter    = `blur(${(raw * 4).toFixed(2)}px)`;
+      el.style.transform = `translate(${(tx*t).toFixed(2)}px, ${(ty*t).toFixed(2)}px) rotate(${(rot*t).toFixed(2)}deg) scale(${(1 - raw * 0.5).toFixed(3)})`;
+      if(raw < 1) requestAnimationFrame(tick);
+      else { el.style.opacity = '0'; }
+    }
+    requestAnimationFrame(tick);
+  });
 }
 
 function goTo(n, skipTypewriter){
@@ -1967,13 +1999,15 @@ function loop(ts){
 
     if(isActive && zoomP > 0.001 && (STATE==='zoom_in'||STATE==='waiting'||STATE==='zoom_out')){
       // Park target: left or right edge of the card, slightly overlapping it
-      const stageL = stgRect.left - secRect.left;
-      const stageT = stgRect.top  - secRect.top;
-      const OVERLAP = 28; // px the thumb overlaps the card edge
+      // Use trackEl (the card itself) for accurate vertical centering
+      const trkRect = trackEl.getBoundingClientRect();
+      const cardL = trkRect.left - secRect.left;
+      const cardT = trkRect.top  - secRect.top;
+      const OVERLAP = 32; // px the thumb overlaps the card edge
       const parkX = lay.side === 'left'
-        ? stageL - THUMB_W + OVERLAP        // right part of thumb overlaps card left edge
-        : stageL + stgRect.width - OVERLAP; // left part of thumb overlaps card right edge
-      const parkY = stageT + stgRect.height / 2 - THUMB_H / 2;
+        ? cardL - THUMB_W + OVERLAP        // right part of thumb overlaps card left edge
+        : cardL + trkRect.width - OVERLAP; // left part of thumb overlaps card right edge
+      const parkY = cardT + trkRect.height / 2 - THUMB_H / 2;
 
       // Slow smooth ease-out
       const eased = 1 - Math.pow(1 - Math.min(zoomP, 1), 3);
