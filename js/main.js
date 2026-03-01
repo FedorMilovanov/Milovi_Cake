@@ -1905,17 +1905,20 @@ function goTo(n, skipTypewriter){
   if(waitTimer){ clearTimeout(waitTimer);  waitTimer=null; }
   hideArrows();
 
+  // always dissolve text before switching
+  dissolveText();
+
   thumbs[cur].classList.remove('is-active');
   slides[cur].classList.remove('active');
   dts[cur].classList.remove('on');
   strips[cur]?.classList.remove('on');
 
-  // reset previous card text — delay until slide is hidden (after CSS opacity transition)
+  // reset previous card text after dissolve animation finishes
   const prevSlideIdx = cur;
   setTimeout(()=>{
     const prevTxt = slides[prevSlideIdx]?.querySelector('.review-text');
     if(prevTxt){ prevTxt.innerHTML=''; }
-  }, 500);
+  }, 600);
 
   cur   = (n + REVIEWS.length) % REVIEWS.length;
   zoomP = 0;
@@ -1979,9 +1982,6 @@ function loop(ts){
   const minL = MARGIN;
   const maxL = secEl.offsetWidth - THUMB_W - MARGIN;
   // Park target — scroll-independent coords relative to secEl
-  const activeSlide = trackEl.querySelector('.review-slide.active');
-  const activeCard  = activeSlide ? activeSlide.querySelector('.review-card') : null;
-  const cardEl      = activeCard || trackEl;
   // Use offsetTop chain relative to secEl — scroll-independent, same coordinate system as baseT
   function offsetRelTo(el, ancestor) {
     let top = 0, left = 0, cur = el;
@@ -1991,9 +1991,10 @@ function loop(ts){
   const stageOff    = offsetRelTo(stageEl, secEl);
   const cardL       = stageOff.left;
   const cardW       = stageEl.offsetWidth;
-  // Centre on the reviews-track — fixed height (220px), scroll-independent
-  const trackOff    = offsetRelTo(trackEl, secEl);
-  const cardCenterY = trackOff.top + trackEl.offsetHeight / 2;
+  // Центрируем по видимой области трека (не по карточке!)
+  const trackEl2  = stageEl.querySelector('.reviews-track');
+  const trackOff2 = offsetRelTo(trackEl2 || stageEl, secEl);
+  const cardCenterY = trackOff2.top + (trackEl2 || stageEl).offsetHeight / 2;
 
   thumbs.forEach((th, i)=>{
     const fl  = FLOATS[i];
