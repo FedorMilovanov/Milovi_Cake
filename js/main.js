@@ -1006,11 +1006,12 @@ const totalReviews = document.querySelectorAll('.review-slide').length;
 function goReview(idx) {
   const slides = document.querySelectorAll('.review-slide');
   const dots = document.querySelectorAll('.rev-dot');
-  slides[currentReview].classList.remove('active');
-  dots[currentReview].classList.remove('rev-dot-active');
-  currentReview = (idx + totalReviews) % totalReviews;
-  slides[currentReview].classList.add('active');
-  dots[currentReview].classList.add('rev-dot-active');
+  if (!slides.length || !dots.length) return;
+  if (slides[currentReview]) slides[currentReview].classList.remove('active');
+  if (dots[currentReview]) dots[currentReview].classList.remove('rev-dot-active');
+  currentReview = (idx + slides.length) % slides.length;
+  if (slides[currentReview]) slides[currentReview].classList.add('active');
+  if (dots[currentReview]) dots[currentReview].classList.add('rev-dot-active');
 }
 
 function shiftReview(dir) { goReview(currentReview + dir); }
@@ -1990,6 +1991,8 @@ function loop(ts){
   const rowEl       = stageEl.querySelector('.carousel-row');
   const rowOff      = rowEl ? offsetRelTo(rowEl, secEl) : stageOff;
   const cardCenterY = rowOff.top + (rowEl || stageEl).offsetHeight / 2;
+  // DEBUG: remove after fix confirmed
+  if(Math.random() < 0.005) console.log('[PARK DEBUG] secH='+secEl.offsetHeight+' rowTop='+rowOff.top+' rowH='+(rowEl?rowEl.offsetHeight:0)+' cardCenterY='+cardCenterY.toFixed(1));
 
   thumbs.forEach((th, i)=>{
     const fl  = FLOATS[i];
@@ -2022,7 +2025,7 @@ function loop(ts){
         ? cardL - THUMB_W + OVERLAP   // left side: thumb hangs off left edge
         : cardL + cardW - OVERLAP;    // right side: thumb hangs off right edge
       const parkY = cardCenterY - THUMB_H / 2; // vertically centered
-      if(isActive && zoomP > 0.98) console.log('PARK', lay.side, 'cardL', cardL.toFixed(0), 'cardT', cardT.toFixed(0), 'cardH', cardEl.offsetHeight, 'cardCenterY', cardCenterY.toFixed(0), 'parkX', parkX.toFixed(0), 'parkY', parkY.toFixed(0), 'baseL', baseL.toFixed(0), 'baseT', baseT.toFixed(0), 'finalL', (baseL+px).toFixed(0), 'finalT', (baseT+py).toFixed(0), 'secH', (sectionSnapH||secEl.offsetHeight));
+      if(isActive && zoomP > 0.98) console.log('[PARK] side='+lay.side+' cardCenterY='+cardCenterY.toFixed(0)+' parkY='+parkY.toFixed(0)+' baseT='+baseT.toFixed(0)+' py='+py.toFixed(0)+' secH='+(sectionSnapH||secEl.offsetHeight));
 
       // Smooth ease-out
       const eased = 1 - Math.pow(1 - Math.min(zoomP, 1), 3);
@@ -2079,30 +2082,27 @@ function lerp(a,b,t){ return a+(b-a)*t; }
 
 
 function openLB(triggerEl, src, idx){
-  if(lbBusy) return;
+  // Force-reset if stuck
+  if(lbBusy){ lbBusy=false; lbIsOpen=false; lbOverlay.classList.remove('active'); }
   if(waitTimer){ clearTimeout(waitTimer); waitTimer=null; }
   hideArrows();
   lbBusy=true; lbIsOpen=true;
   lbImg.src = src;
-  fromRect = triggerEl.getBoundingClientRect();
 
-  // Показываем оверлей — CSS transition сам анимирует blur+scale+opacity
   document.body.style.overflow = 'hidden';
   lbOverlay.classList.add('active');
   lbX.style.pointerEvents = 'none';
 
-  // Кнопка закрытия появляется с задержкой 0.6s (как в варианте 6)
   setTimeout(()=>{
     lbX.style.opacity = '1';
-    lbX.style.transform = 'scale(1) rotate(0deg)';
+    lbX.style.transform = 'scale(1)';
     lbX.style.pointerEvents = '';
-  }, 600);
+  }, 500);
 
-  // Разрешаем клик после завершения анимации
   setTimeout(()=>{
     lbBox.classList.add('clickable');
     lbBusy = false;
-  }, 950);
+  }, 700);
 }
 
 function closeLB(){
