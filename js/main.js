@@ -1559,32 +1559,16 @@ function makeScreenshot(opts) {
   return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
 }
 
-/* 8 unique fake screenshots */
+/* Real review screenshots from project assets */
 const SCREENSHOTS = [
-  makeScreenshot({ senderName:'Марина К.', avatarLetter:'М', avatarColor:'#b5a4c8',
-    message:'Все гости в восторге!', secondLine:'Мы тоже 👍 Попросили ваш контакт 😊',
-    time:'15:44', headerBg:'#075e54', bubbleColor:'#dcf8c6' }),
-  makeScreenshot({ senderName:'Светлана О.', avatarLetter:'С', avatarColor:'#f0a070',
-    message:'Огромная благодарность за', secondLine:'самый вкуснейший торт!!! 🎂',
-    time:'12:07', headerBg:'#075e54', bubbleColor:'#dcf8c6', emoji:'❤️' }),
-  makeScreenshot({ senderName:'Катя', avatarLetter:'К', avatarColor:'#7ab8d4',
-    message:'Вы мастер своего дела ✨', secondLine:'Очень классный торт!',
-    time:'18:20', headerBg:'#4a76a8', bgColor:'#e8edf5', bubbleColor:'#fff', appIcon:'V' }),
-  makeScreenshot({ senderName:'Наташа Р.', avatarLetter:'Н', avatarColor:'#c4b28a',
-    message:'Очень очень вкусный 😍', secondLine:'Ещё будем заказывать 🙏',
-    time:'11:33', headerBg:'#075e54', bubbleColor:'#dcf8c6' }),
-  makeScreenshot({ senderName:'Ольга В.', avatarLetter:'О', avatarColor:'#d4a0b0',
-    message:'Видно, что душу вложили —', secondLine:'мы это очень ценим! 🌸',
-    time:'20:15', headerBg:'#4a76a8', bgColor:'#e8edf5', bubbleColor:'#fff', appIcon:'V' }),
-  makeScreenshot({ senderName:'Тамара', avatarLetter:'Т', avatarColor:'#a0c4a0',
-    message:'Спасибо за чудесный тортик!', secondLine:'Все в восторге! Очень вкусно 😍',
-    time:'09:41', headerBg:'#075e54', bubbleColor:'#dcf8c6', emoji:'🎉' }),
-  makeScreenshot({ senderName:'Юлия М.', avatarLetter:'Ю', avatarColor:'#c8a87a',
-    message:'Насколько красиво —', secondLine:'настолько и вкусно 😋 ❤️',
-    time:'16:58', headerBg:'#4a76a8', bgColor:'#e8edf5', bubbleColor:'#fff', appIcon:'V' }),
-  makeScreenshot({ senderName:'Алина С.', avatarLetter:'А', avatarColor:'#9ab4d4',
-    message:'Торт изумителен 🤩', secondLine:'Профессионально. Стильно. ❤️',
-    time:'13:22', headerBg:'#075e54', bubbleColor:'#dcf8c6', emoji:'✨' }),
+  'img/review_1.webp',
+  'img/review_2.webp',
+  'img/review_3.webp',
+  'img/review_4.webp',
+  'img/review_5.webp',
+  'img/review_6.webp',
+  'img/review_7.webp',
+  'img/review_8.webp',
 ];
 
 /* ─── DATA ─── */

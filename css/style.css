@@ -2926,7 +2926,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 1;
+  z-index: 10;
   overflow: visible;
 }
 
@@ -2953,6 +2953,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   filter: brightness(1) saturate(1);
   border-color: var(--gold);
   box-shadow: 0 0 0 2.5px var(--gold-glow), 0 8px 28px rgba(201,147,74,.38);
+  z-index: 20;
+  position: absolute;
 }
 .sc-thumb:hover {
   filter: brightness(.9) saturate(.9);
@@ -2968,6 +2970,17 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   max-width: 520px;
   margin: 0 auto;
   padding: 0 16px;
+}
+
+/* Centered Яндекс / Google buttons below the carousel */
+.map-badges-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 20px auto 0;
+  padding: 0 16px;
+  flex-wrap: wrap;
 }
 .carousel-row {
   display: flex;
