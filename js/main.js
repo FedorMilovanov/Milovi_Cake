@@ -1,3 +1,6 @@
+(function () {
+  'use strict';
+
 /* ═══════════════════════════════════════════════════════
    MILOVI CAKE — Общий JavaScript
    
@@ -61,42 +64,7 @@ function renderCatalog() {
       imgHtml = `
         <div class="slider-wrap" id="slider-${p.id}">
           ${p.slides.map((src, i) => {
-            const active = i === 0 ? ' active' : '';
-            if (src && typeof src === 'object' && src.type === 'vk') {
-              return `<div class="slide-img slide-video${active}" data-vk-embed="${src.embed}">
-                <img src="${src.thumb}" alt="Видео" class="vk-thumb" style="width:100%;height:100%;object-fit:cover;object-position:center 35%;display:block;transition:opacity 0.3s;">
-                <div class="slide-video-play" onclick="activateVkSlide(this)" aria-label="Смотреть видео">
-                  <div class="vk-play-btn">
-                    <svg width="56" height="56" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="28" fill="rgba(0,0,0,0.52)"/><polygon points="23,18 43,28 23,38" fill="white"/></svg>
-                    <span class="vk-play-label">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="white" style="margin-right:5px;flex-shrink:0"><path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.05-1.727-1.033-1.01-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C4.624 10.857 4 8.408 4 7.935c0-.254.102-.491.593-.491h1.744c.441 0 .61.203.78.677.863 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.203.17-.407.44-.407h2.744c.373 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.253-1.406 2.15-3.574 2.15-3.574.119-.254.322-.491.763-.491h1.744c.525 0 .644.27.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.78 1.203 1.253.745.847 1.32 1.558 1.473 2.049.17.491-.085.745-.576.745z"/></svg>
-                      Нажми для просмотра
-                    </span>
-                  </div>
-                </div>
-                <iframe class="vk-iframe" src="" frameborder="0" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0;display:none;"></iframe>
-              </div>`;
-            }
-            const pos = p.slidePos ? p.slidePos[i] : 'center center';
-            const scale = p.slideScale ? p.slideScale[i] : 1;
-            const isFirstOfFirst = p.id === products[0].id && i === 0;
-            return `<img src="${src}" alt="${p.name}" class="slide-img${active}"
-              loading="${isFirstOfFirst ? 'eager' : 'lazy'}"
-              decoding="${isFirstOfFirst ? 'sync' : 'async'}"
-              onerror="this.style.cssText='display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;font-size:60px;background:linear-gradient(135deg,#e8d8c4,#d4b896);'; this.src=''; this.alt='${p.emoji}'"
-              style="object-position:${pos};transform:scale(${scale});transform-origin:${pos};">`;
-          }).join('')}
-
-          <div class="slider-dots">
-            ${p.slides.map((s, i) => {
-              const isVideo = s && typeof s === 'object' && s.type === 'vk';
-              return `<span class="dot${i === 0 ? ' active' : ''}${isVideo ? ' dot-video' : ''}" onclick="goSlide(${p.id},${i})"></span>`;
-            }).join('')}
-          </div>
-        </div>`;
-    } else if (p.img) {
-      imgHtml = `<img src="${p.img}" alt="${p.name}" class="product-img" onerror="this.style.cssText='display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;font-size:60px;background:linear-gradient(135deg,#e8d8c4,#d4b896);'; this.src=''; this.alt=p.emoji" style="object-position:${p.imgPos || 'center center'};">`;
-    } else {
+            const active = i === 0 ? ' active' : ''; {
       imgHtml = `<div class="product-img-ph">${p.emoji}</div>`;
     }
     const titleHtml = p.hasMaxi
@@ -150,15 +118,6 @@ function goSlide(pid, idx) {
   slides.forEach((el, i) => {
     const wasActive = el.classList.contains('active');
     el.classList.toggle('active', i === idx);
-    // Stop video if navigating away
-    if (wasActive && i !== idx && el.classList.contains('slide-video')) {
-      const iframe = el.querySelector('.vk-iframe');
-      const thumb = el.querySelector('.vk-thumb');
-      const playBtn = el.querySelector('.slide-video-play');
-      if (iframe) { iframe.src = ''; iframe.style.display = 'none'; }
-      if (thumb) thumb.style.opacity = '1';
-      if (playBtn) playBtn.style.display = 'flex';
-    }
   });
   wrap.querySelectorAll('.dot').forEach((el, i) => el.classList.toggle('active', i === idx));
 }
@@ -180,15 +139,6 @@ function sliderStep(pid, dir, total) {
   }
 }
 
-function activateVkSlide(playBtn) {
-  const slide = playBtn.closest('.slide-video');
-  if (!slide) return;
-  const iframe = slide.querySelector('.vk-iframe');
-  const thumb = slide.querySelector('.vk-thumb');
-  if (iframe) {
-    iframe.src = slide.dataset.vkEmbed + '&autoplay=1';
-    iframe.style.display = 'block';
-  }
   if (thumb) thumb.style.opacity = '0';
   playBtn.style.display = 'none';
 }
@@ -768,16 +718,6 @@ function showToast(msg) {
 
 // Patch addToCart to show toast
 const _origAdd = addToCart;
-window.addToCart = function(id, e) {
-  _origAdd(id, e);
-  let p = products.find(x => x.id === id);
-  if (p && p.hasMaxi && cart[id] && cart[id].mode === 'maxi') {
-    p = { ...p, ...p.maxiVariant };
-  }
-  const qty = cart[id] ? cart[id].qty : '';
-  const label = p.unit === 'кг' ? `${qty} кг` : '';
-  showToast(`🧁 ${p.name}${label ? ' · ' + label : ''} добавлен в корзину`);
-};
 
 // ── ANIMATED COUNTERS ──
 function animateCounter(el) {
@@ -1334,12 +1274,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ── UPDATE aria-current ON REV-DOTS ──
 const _origGoReview = goReview;
-window.goReview = function(idx) {
-  _origGoReview(idx);
-  document.querySelectorAll('.rev-dot').forEach((btn, i) => {
-    btn.setAttribute('aria-current', i === idx ? 'true' : 'false');
-  });
-};
 const heroBg = document.querySelector('.hero-photo-bg img');
 if (heroBg) {
   // Skip parallax on mobile for perf — motion not visible anyway
@@ -1533,4 +1467,688 @@ function switchReviewsTab(tab) {
   rm.addEventListener('touchend', e => {
     if (e.changedTouches[0].clientY - _sy > 90) closeReviewsModal();
   }, { passive: true });
+})();
+
+
+/* ══════════════════════════════════════
+   NEW REVIEWS SECTION JS
+   ══════════════════════════════════════ */
+/* ─── Generate fake messenger screenshot SVGs as data URIs ─── */
+function makeScreenshot(opts) {
+  const {
+    appColor = '#25D366',
+    appIcon = 'W',
+    senderName = 'Анна',
+    avatarColor = '#a8c5a0',
+    avatarLetter = 'А',
+    message = 'Спасибо!',
+    time = '14:32',
+    bgColor = '#ece5dd',
+    bubbleColor = '#dcf8c6',
+    bubbleTextColor = '#111',
+    headerBg = '#075e54',
+    headerText = '#fff',
+    w = 240, h = 320,
+    emoji = '',
+    secondLine = '',
+  } = opts;
+
+  const msgLines = [message, secondLine].filter(Boolean);
+  const lineHeight = 16;
+  const bubbleH = msgLines.length * lineHeight + 30;
+
+  const svgLines = msgLines.map((line, i) =>
+    `<text x="14" y="${82 + i * lineHeight}" font-size="10.5" fill="${bubbleTextColor}" font-family="system-ui,sans-serif">${escSVG(line)}</text>`
+  ).join('');
+
+  function escSVG(s) {
+    // strip emoji to avoid blue-square fallbacks in SVG renderers
+    s = s.replace(/[🀀-🿿☀-➿⭐⭕⌚-⌛▪-⟿]/gu, '');
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+  <!-- bg -->
+  <rect width="${w}" height="${h}" fill="${bgColor}"/>
+  <!-- subtle bg pattern dots -->
+  <pattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+    <circle cx="10" cy="10" r="1" fill="rgba(0,0,0,0.04)"/>
+  </pattern>
+  <rect width="${w}" height="${h}" fill="url(#dots)"/>
+
+  <!-- top bar -->
+  <rect width="${w}" height="46" fill="${headerBg}"/>
+  <!-- back arrow SVG path -->
+  <path d="M20,23 L12,23 M12,23 L16,19 M12,23 L16,27" stroke="${headerText}" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <!-- avatar circle -->
+  <circle cx="44" cy="23" r="14" fill="${avatarColor}"/>
+  <text x="44" y="28" text-anchor="middle" font-size="13" fill="#fff" font-weight="600" font-family="Arial,sans-serif">${escSVG(avatarLetter)}</text>
+  <!-- name + status -->
+  <text x="64" y="20" font-size="11" font-weight="600" fill="${headerText}" font-family="Arial,sans-serif">${escSVG(senderName)}</text>
+  <text x="64" y="33" font-size="9" fill="rgba(255,255,255,0.75)" font-family="Arial,sans-serif">online</text>
+  <!-- 3-dot menu -->
+  <circle cx="${w-24}" cy="23" r="2" fill="${headerText}" opacity="0.8"/>
+  <circle cx="${w-16}" cy="23" r="2" fill="${headerText}" opacity="0.8"/>
+  <circle cx="${w-8}"  cy="23" r="2" fill="${headerText}" opacity="0.8"/>
+
+  <!-- date chip -->
+  <rect x="${w/2-28}" y="54" width="56" height="16" rx="8" fill="rgba(0,0,0,0.12)"/>
+  <text x="${w/2}" y="66" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.85)" font-family="system-ui">сегодня</text>
+
+  <!-- message bubble -->
+  <rect x="8" y="76" width="${w-24}" height="${bubbleH}" rx="12" fill="${bubbleColor}"
+    filter="drop-shadow(0 1px 3px rgba(0,0,0,0.12))"/>
+  <!-- bubble tail -->
+  <path d="M8,${76+bubbleH-16} Q0,${76+bubbleH} 0,${76+bubbleH} L14,${76+bubbleH-4} Z" fill="${bubbleColor}"/>
+  ${svgLines}
+  ${emoji ? `<text x="${w-28}" y="${76+bubbleH-14}" font-size="14" font-family="system-ui">${escSVG(emoji)}</text>` : ''}
+  <!-- time + ticks (SVG paths) -->
+  <text x="${w-32}" y="${76+bubbleH-6}" text-anchor="end" font-size="8" fill="rgba(0,0,0,0.4)" font-family="Arial,sans-serif">${escSVG(time)}</text>
+  <!-- double checkmark as paths -->
+  <path d="M${w-28},${76+bubbleH-9} l3,3 l5,-6" stroke="#53bdeb" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M${w-24},${76+bubbleH-9} l3,3 l5,-6" stroke="#53bdeb" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+/* 8 unique fake screenshots */
+const SCREENSHOTS = [
+  makeScreenshot({ senderName:'Марина К.', avatarLetter:'М', avatarColor:'#b5a4c8',
+    message:'Все гости в восторге!', secondLine:'Мы тоже 👍 Попросили ваш контакт 😊',
+    time:'15:44', headerBg:'#075e54', bubbleColor:'#dcf8c6' }),
+  makeScreenshot({ senderName:'Светлана О.', avatarLetter:'С', avatarColor:'#f0a070',
+    message:'Огромная благодарность за', secondLine:'самый вкуснейший торт!!! 🎂',
+    time:'12:07', headerBg:'#075e54', bubbleColor:'#dcf8c6', emoji:'❤️' }),
+  makeScreenshot({ senderName:'Катя', avatarLetter:'К', avatarColor:'#7ab8d4',
+    message:'Вы мастер своего дела ✨', secondLine:'Очень классный торт!',
+    time:'18:20', headerBg:'#4a76a8', bgColor:'#e8edf5', bubbleColor:'#fff', appIcon:'V' }),
+  makeScreenshot({ senderName:'Наташа Р.', avatarLetter:'Н', avatarColor:'#c4b28a',
+    message:'Очень очень вкусный 😍', secondLine:'Ещё будем заказывать 🙏',
+    time:'11:33', headerBg:'#075e54', bubbleColor:'#dcf8c6' }),
+  makeScreenshot({ senderName:'Ольга В.', avatarLetter:'О', avatarColor:'#d4a0b0',
+    message:'Видно, что душу вложили —', secondLine:'мы это очень ценим! 🌸',
+    time:'20:15', headerBg:'#4a76a8', bgColor:'#e8edf5', bubbleColor:'#fff', appIcon:'V' }),
+  makeScreenshot({ senderName:'Тамара', avatarLetter:'Т', avatarColor:'#a0c4a0',
+    message:'Спасибо за чудесный тортик!', secondLine:'Все в восторге! Очень вкусно 😍',
+    time:'09:41', headerBg:'#075e54', bubbleColor:'#dcf8c6', emoji:'🎉' }),
+  makeScreenshot({ senderName:'Юлия М.', avatarLetter:'Ю', avatarColor:'#c8a87a',
+    message:'Насколько красиво —', secondLine:'настолько и вкусно 😋 ❤️',
+    time:'16:58', headerBg:'#4a76a8', bgColor:'#e8edf5', bubbleColor:'#fff', appIcon:'V' }),
+  makeScreenshot({ senderName:'Алина С.', avatarLetter:'А', avatarColor:'#9ab4d4',
+    message:'Торт изумителен 🤩', secondLine:'Профессионально. Стильно. ❤️',
+    time:'13:22', headerBg:'#075e54', bubbleColor:'#dcf8c6', emoji:'✨' }),
+];
+
+/* ─── DATA ─── */
+const REVIEWS = [
+  { text:"Все гости в восторге! Мы тоже 👍 Попросили ваш контакт 😊",                                             src: SCREENSHOTS[0] },
+  { text:"Огромное Вам благодарность за самый вкуснейший торт!!! Именинница в восторге и от вида и от вкуса!!!",  src: SCREENSHOTS[1] },
+  { text:"Вы мастер своего дела ✨ Правда очень классный торт. Настроение сразу радостное глядя на него ❤️",       src: SCREENSHOTS[2] },
+  { text:"Очень очень вкусный, понравился. Ещё будем заказывать 🙏",                                              src: SCREENSHOTS[3] },
+  { text:"Всем очень понравился торт, именинница очень довольна. Видно, что душу вложили — мы это очень ценим!",  src: SCREENSHOTS[4] },
+  { text:"Спасибо большое за чудесный тортик! Все в восторге! Очень вкусно 😍",                                    src: SCREENSHOTS[5] },
+  { text:"Вика, насколько красиво — настолько и вкусно 😋 Клиентов стало больше у Вас ❤️",                        src: SCREENSHOTS[6] },
+  { text:"Торт изумителен 🤩 Вкусно. Профессионально. Стильно. Спасибо! ❤️",                                      src: SCREENSHOTS[7] },
+];
+
+// LAYOUTS: side = 'left'|'right', tp = % of section height, rot = tilt
+// Horizontal positions are computed DYNAMICALLY in the loop:
+// centered in the gap between the stage edges and the viewport edges.
+const LAYOUTS = [
+  { side:'left',  tp:  8, rot: -14 },  // 0 top-left
+  { side:'right', tp:  8, rot:  14 },  // 1 top-right
+  { side:'left',  tp: 27, rot: -18 },  // 2 left-high
+  { side:'left',  tp: 50, rot:   8 },  // 3 left-mid
+  { side:'left',  tp: 71, rot: -11 },  // 4 left-low
+  { side:'right', tp: 27, rot:  18 },  // 5 right-high
+  { side:'right', tp: 50, rot:  -8 },  // 6 right-mid
+  { side:'right', tp: 71, rot:  11 },  // 7 right-low
+];
+
+const FLOATS = [
+  { ax:3.5, ay:5.5, fx:.00072, fy:.00105, rA:1.8, rf:.00061, ph: 0.00 },
+  { ax:4.2, ay:3.8, fx:.00091, fy:.00083, rA:2.2, rf:.00079, ph: 0.83 },
+  { ax:2.8, ay:6.2, fx:.00063, fy:.00118, rA:1.5, rf:.00054, ph: 1.57 },
+  { ax:5.0, ay:4.0, fx:.00108, fy:.00072, rA:2.6, rf:.00091, ph: 2.40 },
+  { ax:3.2, ay:5.0, fx:.00079, fy:.00097, rA:1.9, rf:.00068, ph: 3.14 },
+  { ax:4.6, ay:3.2, fx:.00097, fy:.00088, rA:2.3, rf:.00074, ph: 3.97 },
+  { ax:3.0, ay:6.0, fx:.00068, fy:.00112, rA:1.6, rf:.00058, ph: 4.71 },
+  { ax:4.8, ay:4.4, fx:.00085, fy:.00076, rA:2.0, rf:.00083, ph: 5.54 },
+];
+
+let cur   = 0;
+
+/* ── STATE MACHINE ──
+   'typing'  → typewriter runs
+   'zoom_in' → active thumb approaches stage
+   'waiting' → arrows shown, user can click
+   'zoom_out'→ thumb returns, then auto-advance
+*/
+let STATE    = 'typing';
+let zoomP    = 0;        // 0 = home, 1 = fully zoomed in
+let ZOOM_IN_SPD_CUR = 0.014; // dynamic, recalculated per review
+const ZOOM_IN_SPD   = 0.014;
+const ZOOM_OUT_SPD  = 0.028;
+const ZOOM_DIST     = 75;    // px max pull toward stage
+const WAIT_DURATION = 2800;  // ms to wait before auto-advance
+
+let waitTimer   = null;
+let typeTimer   = null;
+
+const scField     = document.getElementById('scField');
+const trackEl     = document.getElementById('track');
+const dotsEl      = document.getElementById('dots');
+const stageEl     = document.getElementById('stage');
+const mobileStrip = document.getElementById('mobileStrip');
+const thumbs = [];
+const arrows = [];
+
+REVIEWS.forEach((rv, i) => {
+  const lay = LAYOUTS[i];
+
+  const th = document.createElement('div');
+  th.className = 'sc-thumb';
+  th.style.left = lay.lp + '%';
+  th.style.top  = lay.tp + '%';
+  th.dataset.i  = i;
+
+  const im = document.createElement('img');
+  im.src = rv.src; im.alt = `Отзыв ${i+1}`; im.loading='lazy';
+  th.appendChild(im);
+
+  const hint = document.createElement('div');
+  hint.className = 'thumb-hint';
+  hint.innerHTML = `<span class="hint-text">кликни на меня</span><span class="hint-emoji">👆</span><span class="hint-text">чтобы увеличить</span>`;
+  th.appendChild(hint);
+
+  th.addEventListener('click', ()=>{
+    if(i !== cur) { goTo(i); return; }
+    if(STATE==='waiting'||STATE==='zoom_in') openLB(th, rv.src, i);
+  });
+  scField.appendChild(th);
+  thumbs.push(th);
+
+  // 4-arrow group: positioned in loop around the thumb, no rotation
+  const ar = document.createElement('div');
+  ar.className = 'sc-arrows';
+  ar.innerHTML = `
+    <div class="sc-arr sc-arr-top"></div>
+    <div class="sc-arr sc-arr-bottom"></div>
+    <div class="sc-arr sc-arr-left"></div>
+    <div class="sc-arr sc-arr-right"></div>
+  `;
+  scField.appendChild(ar);
+  arrows.push(ar);
+
+  const fi = document.createElement('div');
+  fi.className = 'strip-item';
+  const fi2 = document.createElement('img');
+  fi2.src = rv.src; fi2.alt=`Отзыв ${i+1}`; fi2.loading='lazy';
+  fi.appendChild(fi2);
+  fi.addEventListener('click', ()=> openLB(fi, rv.src, i));
+  mobileStrip.appendChild(fi);
+
+  const slide = document.createElement('div');
+  slide.className = 'review-slide' + (i===0?' active':'');
+  const card = document.createElement('div');
+  card.className = 'review-card';
+  const q = document.createElement('div');
+  q.className='review-q'; q.textContent='❝';
+  const txt = document.createElement('p');
+  txt.className='review-text'; txt.dataset.full=rv.text; txt.textContent='';
+  card.append(q, txt);
+  slide.appendChild(card);
+  trackEl.appendChild(slide);
+  // clicks handled by thumb, not card
+
+  const dot = document.createElement('button');
+  dot.className='rev-dot'+(i===0?' on':'');
+  dot.setAttribute('aria-label',`Отзыв ${i+1}`);
+  dot.addEventListener('click',()=> goTo(i));
+  dotsEl.appendChild(dot);
+});
+
+thumbs[0].classList.add('is-active');
+mobileStrip.querySelectorAll('.strip-item')[0].classList.add('on');
+// Kick off the state machine after a short delay
+setTimeout(() => startTypewriter(), 400);
+
+function hideArrows(){
+  arrows.forEach(a => a.classList.remove('show'));
+  thumbs.forEach(t => t.classList.remove('hint-show'));
+}
+function showArrows(){
+  arrows[cur].classList.add('show');
+}
+// positionArrows now handled inline in the loop — no-op here
+function positionArrows(){}
+
+function startTypewriter(){
+  const slides = trackEl.querySelectorAll('.review-slide');
+  const txtEl  = slides[cur].querySelector('.review-text');
+  const full   = txtEl.dataset.full;
+
+  if(typeTimer){ clearTimeout(typeTimer); typeTimer=null; }
+
+  // ── PARTICLE ASSEMBLE — letters fly in from random scatter ──
+  const CHAR_DELAY = 28;   // ms between each letter start
+  const ASSEMBLE_DUR = 600; // ms each letter takes to settle
+
+  // Tokenize: emoji/special chars go plain, regular chars get animated spans
+  // Wrap each word in a nowrap span so line-breaks only happen between words
+  // Use Intl.Segmenter to split by grapheme clusters so multi-codepoint emoji
+  // (e.g. ❤️ = U+2764 + U+FE0F) stay together as a single unit.
+  const emojiGraphemeRegex = /^\p{Emoji}/u;
+
+  function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  // Segment the full text into grapheme clusters
+  const segmenter = new Intl.Segmenter('ru', { granularity: 'grapheme' });
+
+  // Split into word-groups (split on whitespace)
+  const wordGroups = full.split(/( +)/);
+  let html = '';
+  let letterIdx = 0;
+
+  wordGroups.forEach(group => {
+    if(!group) return;
+    if(/^ +$/.test(group)){
+      // spaces — plain, no span
+      html += group;
+      return;
+    }
+    // Word: wrap in inline-block nowrap span so it never breaks mid-word
+    let wordHtml = '';
+    // iterate over grapheme clusters (handles multi-codepoint emoji like ❤️)
+    const clusters = [...segmenter.segment(group)].map(s => s.segment);
+    clusters.forEach(ch => {
+      if(emojiGraphemeRegex.test(ch)){
+        // emoji — hidden span, animated after text finishes
+        wordHtml += `<span class="pl-emoji">${escHtml(ch)}</span>`;
+      } else {
+        const safe = escHtml(ch);
+        wordHtml += `<span class="pl" data-i="${letterIdx}">${safe}</span>`;
+        letterIdx++;
+      }
+    });
+    html += `<span style="display:inline-block;white-space:nowrap">${wordHtml}</span>`;
+  });
+
+  txtEl.innerHTML = html;
+  const totalLetters = letterIdx;
+
+  // Total duration: last letter starts + assemble duration
+  const totalDur = (totalLetters - 1) * CHAR_DELAY + ASSEMBLE_DUR + 100;
+
+  // Animate each letter with rAF — fly from random position to natural place
+  const letterEls = txtEl.querySelectorAll('.pl');
+  letterEls.forEach((el, i) => {
+    // Random scatter origin: spread around center of card
+    const angle  = Math.random() * Math.PI * 2;
+    const dist   = 60 + Math.random() * 120;
+    const fromX  = Math.cos(angle) * dist;
+    const fromY  = Math.sin(angle) * dist;
+    const fromR  = (Math.random() - 0.5) * 60;
+    const fromS  = 0.3 + Math.random() * 0.4;
+
+    el.style.opacity = '0';
+    el.style.transform = `translate(${fromX}px, ${fromY}px) rotate(${fromR}deg) scale(${fromS})`;
+    el.style.filter = `blur(${2 + Math.random()*3}px)`;
+
+    const startAt = i * CHAR_DELAY;
+
+    setTimeout(() => {
+      // Ease: fast approach, gentle settle
+      const startTs = performance.now();
+      function tick(now){
+        const elapsed = now - startTs;
+        const raw = Math.min(elapsed / ASSEMBLE_DUR, 1);
+        // Cubic ease-out with slight overshoot
+        const t = raw < 1 ? 1 - Math.pow(1 - raw, 3) : 1;
+        const bounce = raw < 0.85 ? 0 : Math.sin((raw - 0.85) / 0.15 * Math.PI) * 2.5;
+
+        el.style.opacity  = String(Math.min(raw * 3, 1).toFixed(3));
+        el.style.filter   = `blur(${((1-raw)*3).toFixed(2)}px)`;
+        el.style.transform = `translate(${(fromX*(1-t)).toFixed(2)}px, ${(fromY*(1-t) + bounce*(1-raw)).toFixed(2)}px) rotate(${(fromR*(1-t)).toFixed(2)}deg) scale(${(fromS + (1-fromS)*t).toFixed(3)})`;
+
+        if(raw < 1) requestAnimationFrame(tick);
+        else { el.style.transform='none'; el.style.filter='none'; el.style.opacity='1'; }
+      }
+      requestAnimationFrame(tick);
+    }, startAt);
+  });
+
+  // After all letters assembled — pop in emoji one by one with spring bounce
+  const emojiEls = Array.from(txtEl.querySelectorAll('.pl-emoji'));
+  const EMOJI_START_AFTER = (totalLetters - 1) * CHAR_DELAY + ASSEMBLE_DUR * 0.6;
+  const EMOJI_GAP = 180; // ms between each emoji
+  emojiEls.forEach((em, ei) => {
+    setTimeout(() => {
+      const t0 = performance.now();
+      const DUR = 500;
+      function popTick(now){
+        const p = Math.min((now - t0) / DUR, 1);
+        // Spring: overshoot and settle
+        const scale = p < 0.6
+          ? (p / 0.6) * 1.35
+          : 1.35 - (p - 0.6) / 0.4 * 0.35;
+        const rot = Math.sin(p * Math.PI) * 18 * (1 - p);
+        em.style.opacity = String(Math.min(p * 5, 1).toFixed(3));
+        em.style.transform = `scale(${scale.toFixed(3)}) rotate(${rot.toFixed(1)}deg)`;
+        if(p < 1) requestAnimationFrame(popTick);
+        else { em.style.transform = 'scale(1) rotate(0deg)'; em.style.opacity = '1'; }
+      }
+      requestAnimationFrame(popTick);
+    }, EMOJI_START_AFTER + ei * EMOJI_GAP);
+  });
+
+  // START zoom_in immediately alongside typing — calibrate speed so it
+  // reaches ~1 at the same time the last letter finishes animating.
+  // zoomP approaches 1 exponentially: zoomP ≈ 1 - (1-spd)^frames
+  // frames = totalDur / 16ms. We want (1-spd)^frames ≈ 0.04 → spd ≈ 1 - 0.04^(1/frames)
+  STATE = 'zoom_in';
+  const frames = totalDur / 16;
+  ZOOM_IN_SPD_CUR = 1 - Math.pow(0.04, 1 / frames);
+
+  // After last letter finishes → transition to waiting
+  typeTimer = setTimeout(()=>{
+    typeTimer = null;
+    zoomP = 1;
+    startWaiting();
+  }, totalDur);
+}
+
+function startWaiting(){
+  STATE = 'waiting';
+  showArrows();
+  thumbs[cur].classList.add('hint-show');
+  if(waitTimer) clearTimeout(waitTimer);
+  waitTimer = setTimeout(()=>{
+    waitTimer = null;
+    hideArrows();
+    STATE = 'zoom_out';
+  }, WAIT_DURATION);
+}
+
+function goTo(n, skipTypewriter){
+  const slides = trackEl.querySelectorAll('.review-slide');
+  const dts    = dotsEl.querySelectorAll('.rev-dot');
+  const strips = mobileStrip.querySelectorAll('.strip-item');
+
+  // cancel pending timers
+  if(typeTimer){ clearInterval(typeTimer); typeTimer=null; }
+  if(waitTimer){ clearTimeout(waitTimer);  waitTimer=null; }
+  hideArrows();
+
+  thumbs[cur].classList.remove('is-active');
+  slides[cur].classList.remove('active');
+  dts[cur].classList.remove('on');
+  strips[cur]?.classList.remove('on');
+
+  // reset previous card text
+  const prevTxt = slides[cur].querySelector('.review-text');
+  if(prevTxt){ prevTxt.innerHTML=''; }
+
+  cur   = (n + REVIEWS.length) % REVIEWS.length;
+  zoomP = 0;
+  STATE = 'typing';
+
+  thumbs[cur].classList.add('is-active');
+  slides[cur].classList.add('active');
+  dts[cur].classList.add('on');
+  strips[cur]?.classList.add('on');
+  strips[cur]?.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
+
+  if(!skipTypewriter) startTypewriter();
+}
+
+document.getElementById('btnPrev').addEventListener('click', ()=> goTo(cur-1));
+document.getElementById('btnNext').addEventListener('click', ()=> goTo(cur+1));
+
+let tsX=0, tsY=0;
+trackEl.addEventListener('touchstart', e=>{ tsX=e.touches[0].clientX; tsY=e.touches[0].clientY; },{passive:true});
+trackEl.addEventListener('touchend', e=>{
+  const dx=e.changedTouches[0].clientX-tsX;
+  const dy=e.changedTouches[0].clientY-tsY;
+  if(Math.abs(dx)>Math.abs(dy)*1.4 && Math.abs(dx)>40){ goTo(dx<0 ? cur+1 : cur-1); }
+});
+
+function getStageCenter(){
+  const r=stageEl.getBoundingClientRect();
+  return { x: r.left+r.width/2, y: r.top+r.height/2 };
+}
+let sectionSnapH = 0;
+function snapSectionHeight(){ sectionSnapH = document.getElementById('reviews').offsetHeight; }
+window.addEventListener('resize', snapSectionHeight);
+setTimeout(snapSectionHeight, 100);
+
+let lastT=0;
+function loop(ts){
+  const dt = Math.min(ts-lastT, 40);
+  lastT = ts;
+
+  // ── state machine tick ──
+  if(STATE === 'zoom_in' && !lbIsOpen){
+    zoomP += (1 - zoomP) * ZOOM_IN_SPD_CUR;
+    // startWaiting triggered by typeTimer when text finishes
+  } else if(STATE === 'zoom_out'){
+    zoomP += (0 - zoomP) * ZOOM_OUT_SPD;
+    if(zoomP < 0.02){
+      zoomP=0;
+      // auto-advance to next — don't return, let rAF continue
+      goTo(cur + 1);
+    }
+  }
+
+  const secEl  = document.getElementById('reviews');
+  const secRect = secEl.getBoundingClientRect();
+  const stgRect = stageEl.getBoundingClientRect();
+  const THUMB_W = 80, THUMB_H = 108, MARGIN = 12;
+  const leftGapCenter  = (stgRect.left - secRect.left) / 2;
+  const rightGapCenter = (stgRect.right - secRect.left) + (secRect.right - stgRect.right) / 2;
+  const minL = MARGIN;
+  const maxL = secEl.offsetWidth - THUMB_W - MARGIN;
+
+  thumbs.forEach((th, i)=>{
+    const fl  = FLOATS[i];
+    const lay = LAYOUTS[i];
+    const t   = ts / 1000;
+    const fx = Math.sin(t * fl.fx * 1000 + fl.ph) * fl.ax;
+    const fy = Math.cos(t * fl.fy * 1000 + fl.ph) * fl.ay;
+    const fr = Math.sin(t * fl.rf * 1000 + fl.ph) * fl.rA;
+
+    const rawL = lay.side==='left'
+      ? leftGapCenter  - THUMB_W/2
+      : rightGapCenter - THUMB_W/2;
+    const baseL = Math.max(minL, Math.min(maxL, rawL));
+    const baseT = (lay.tp/100) * (sectionSnapH||secEl.offsetHeight) - THUMB_H/2;
+
+    let px=0, py=0, pr=0;
+    // Fade float OUT as thumb approaches park (straight-line travel)
+    const isActive = (i === cur);
+    const floatScale = isActive ? Math.max(0, 1 - zoomP * 2.5) : 1;
+    th.style.zIndex = isActive ? '50' : '1';
+    arrows[i].style.zIndex = isActive ? '51' : '2';
+    const ffx = fx * floatScale;
+    const ffy = fy * floatScale;
+    const ffr = fr * floatScale;
+
+    if(isActive && zoomP > 0.001 && (STATE==='zoom_in'||STATE==='waiting'||STATE==='zoom_out')){
+      // Park target: flush against the stage edge, vertically centered on stage
+      const GAP = -6;
+      const parkX = lay.side==='left'
+        ? stgRect.left - secRect.left - THUMB_W - GAP
+        : stgRect.right - secRect.left + GAP;
+      const parkY = (stgRect.top - secRect.top) + stgRect.height/2 - THUMB_H/2;
+
+      // Ease: quick start, smooth settle
+      const eased = 1 - Math.pow(1 - Math.min(zoomP, 1), 2.2);
+      px = (parkX - baseL) * eased;
+      py = (parkY - baseT) * eased;
+      // tilt toward carousel as it arrives
+      pr = (lay.side==='left' ? 5 : -5) * eased;
+    }
+
+    // tremble when parked and waiting to be opened
+    let tx=0, ty=0, tr=0;
+    if(isActive && STATE==='waiting'){
+      const vt = ts * 0.001;
+      tx = Math.sin(vt * 23.7) * 2.2 * (0.5 + 0.5*Math.sin(vt*1.3));
+      ty = Math.cos(vt * 17.1) * 1.6 * (0.5 + 0.5*Math.cos(vt*0.9));
+      tr = Math.sin(vt * 28.3) * 1.4;
+    }
+
+    const finalL = baseL + ffx + px + tx;
+    const finalT = baseT + ffy + py + ty;
+    th.style.left      = finalL + 'px';
+    th.style.top       = finalT + 'px';
+    th.style.transform = `rotate(${lay.rot + ffr + pr + tr}deg)`;
+
+    // Position arrow group centered on thumb (no rotation)
+    const ar = arrows[i];
+    ar.style.left   = finalL + 'px';
+    ar.style.top    = finalT + 'px';
+    ar.style.width  = THUMB_W + 'px';
+    ar.style.height = THUMB_H + 'px';
+  });
+
+  // keep arrow overlay following active thumb
+  if(STATE==='waiting' || (STATE==='zoom_in' && zoomP > 0.5)){
+    positionArrows();
+  }
+
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(t=>{ lastT=t; requestAnimationFrame(loop); });
+
+
+const lbBg  = document.getElementById('lbBg');
+const lbBox = document.getElementById('lbBox');
+const lbImg = document.getElementById('lbImg');
+const lbX   = document.getElementById('lbX');
+let lbIsOpen= false;
+let lbBusy  = false;
+let fromRect= null;
+
+function lerp(a,b,t){ return a+(b-a)*t; }
+
+function openLB(triggerEl, src, idx){
+  if(lbBusy) return;
+  // cancel auto-advance
+  if(waitTimer){ clearTimeout(waitTimer); waitTimer=null; }
+  hideArrows();
+  lbBusy=true; lbIsOpen=true;
+  lbImg.src = src;
+  fromRect = triggerEl.getBoundingClientRect();
+  const vw=window.innerWidth, vh=window.innerHeight;
+  const maxH = Math.min(vh*.84, 680);
+  const ar   = fromRect.width / fromRect.height;
+  const tw   = maxH * ar;
+  const tl   = (vw-tw)/2;
+  const tt   = (vh-maxH)/2;
+  setBox(fromRect.left, fromRect.top, fromRect.width, fromRect.height, 8, 0);
+  lbBg.classList.add('open');
+  lbX.classList.add('show');
+  const frames = [
+    { left:fromRect.left,  top:fromRect.top,  w:fromRect.width,  h:fromRect.height, r:8,  blur:3, op:.85 },
+    { left:tl+tw*0.28,     top:tt-maxH*0.18,  w:tw*0.44,         h:maxH*1.22,       r:18, blur:1, op:1   },
+    { left:tl-tw*0.05,     top:tt+maxH*0.04,  w:tw*1.10,         h:maxH*0.94,       r:26, blur:0, op:1   },
+    { left:tl,             top:tt,            w:tw,              h:maxH,            r:16, blur:0, op:1   },
+  ];
+  animBox(frames, [0, 260, 580, 880], ()=>{
+    setBox(tl, tt, tw, maxH, 16, 1);
+    lbBox.classList.add('clickable');
+    lbBusy=false;
+  });
+}
+
+function closeLB(){
+  if(!lbIsOpen || lbBusy) return;
+  lbBusy=true; lbIsOpen=false;
+  lbX.classList.remove('show');
+  lbBg.classList.remove('open');
+  lbBox.classList.remove('clickable');
+  const cur_r = lbBox.getBoundingClientRect();
+  const end   = fromRect || { left: window.innerWidth/2-40, top: window.innerHeight/2-54, width:80, height:108 };
+  const frames = [
+    { left:cur_r.left, top:cur_r.top, w:cur_r.width,  h:cur_r.height,  r:16, blur:0, op:1   },
+    { left:cur_r.left+cur_r.width*.08, top:cur_r.top-cur_r.height*.04, w:cur_r.width*.84, h:cur_r.height*1.06, r:22, blur:0, op:.88 },
+    { left:end.left,   top:end.top,   w:end.width,     h:end.height,    r:8,  blur:3, op:0   },
+  ];
+  animBox(frames, [0, 140, 420], ()=>{
+    lbBox.style.opacity='0';
+    lbImg.src='';
+    lbBusy=false;
+    // After lightbox closes → zoom out then advance
+    hideArrows();
+    STATE = 'zoom_out';
+  });
+}
+
+function setBox(l,t,w,h,r,opacity){
+  lbBox.style.cssText=`left:${l}px;top:${t}px;width:${w}px;height:${h}px;border-radius:${r}px;opacity:${opacity};overflow:hidden;position:fixed;z-index:9001;`;
+}
+
+function animBox(frames, times, done){
+  const start = performance.now();
+  function ease(t){
+    const c4=2*Math.PI/2.8;
+    if(t>=1) return 1;
+    return 1 - Math.pow(2,-9*t)*Math.cos(t*c4*2.5);
+  }
+  function step(now){
+    const elapsed = now - start;
+    if(elapsed>=times[times.length-1]){ done(); return; }
+    let seg=0;
+    for(let i=1;i<times.length;i++){ if(elapsed<=times[i]){ seg=i-1; break; } }
+    const segT = ease(Math.max(0,(elapsed-times[seg])/(times[seg+1]-times[seg])));
+    const a = frames[seg], b = frames[seg+1];
+    lbBox.style.cssText=`left:${lerp(a.left,b.left,segT)}px;top:${lerp(a.top,b.top,segT)}px;width:${lerp(a.w,b.w,segT)}px;height:${lerp(a.h,b.h,segT)}px;border-radius:${lerp(a.r,b.r,segT)}px;opacity:${lerp(a.op,b.op,segT)};filter:blur(${lerp(a.blur,b.blur,segT).toFixed(2)}px);overflow:hidden;position:fixed;z-index:9001;`;
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+lbBg.addEventListener('click', closeLB);
+lbBox.addEventListener('click', closeLB);
+lbX.addEventListener('click',  closeLB);
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeLB(); });
+
+
+  // ── Public API — functions called from HTML via onclick ──
+  window.acceptCookie = typeof acceptCookie !== "undefined" ? acceptCookie : undefined;
+  window.addToCart = typeof addToCart !== "undefined" ? addToCart : undefined;
+  window.buildTG = typeof buildTG !== "undefined" ? buildTG : undefined;
+  window.buildWA = typeof buildWA !== "undefined" ? buildWA : undefined;
+  window.changeQty = typeof changeQty !== "undefined" ? changeQty : undefined;
+  window.clearCart = typeof clearCart !== "undefined" ? clearCart : undefined;
+  window.closeCart = typeof closeCart !== "undefined" ? closeCart : undefined;
+  window.closeFillPopup = typeof closeFillPopup !== "undefined" ? closeFillPopup : undefined;
+  window.closeLightbox = typeof closeLightbox !== "undefined" ? closeLightbox : undefined;
+  window.closeMobileMenu = typeof closeMobileMenu !== "undefined" ? closeMobileMenu : undefined;
+  window.closePrivacy = typeof closePrivacy !== "undefined" ? closePrivacy : undefined;
+  window.closeReviewsModal = typeof closeReviewsModal !== "undefined" ? closeReviewsModal : undefined;
+  window.confirmFillSelection = typeof confirmFillSelection !== "undefined" ? confirmFillSelection : undefined;
+  window.goBackToCart = typeof goBackToCart !== "undefined" ? goBackToCart : undefined;
+  window.goReview = typeof goReview !== "undefined" ? goReview : undefined;
+  window.goSlide = typeof goSlide !== "undefined" ? goSlide : undefined;
+  window.goTo = typeof goTo !== "undefined" ? goTo : undefined;
+  window.lbNavigate = typeof lbNavigate !== "undefined" ? lbNavigate : undefined;
+  window.navigateToStep = typeof navigateToStep !== "undefined" ? navigateToStep : undefined;
+  window.openCart = typeof openCart !== "undefined" ? openCart : undefined;
+  window.openChatLightbox = typeof openChatLightbox !== "undefined" ? openChatLightbox : undefined;
+  window.openLightbox = typeof openLightbox !== "undefined" ? openLightbox : undefined;
+  window.openPrivacy = typeof openPrivacy !== "undefined" ? openPrivacy : undefined;
+  window.openReviewsModal = typeof openReviewsModal !== "undefined" ? openReviewsModal : undefined;
+  window.removeFromCart = typeof removeFromCart !== "undefined" ? removeFromCart : undefined;
+  window.selectOpt = typeof selectOpt !== "undefined" ? selectOpt : undefined;
+  window.sendFormWA = typeof sendFormWA !== "undefined" ? sendFormWA : undefined;
+  window.shiftReview = typeof shiftReview !== "undefined" ? shiftReview : undefined;
+  window.showBentoWeightToast = typeof showBentoWeightToast !== "undefined" ? showBentoWeightToast : undefined;
+  window.sliderStep = typeof sliderStep !== "undefined" ? sliderStep : undefined;
+  window.stepWeight = typeof stepWeight !== "undefined" ? stepWeight : undefined;
+  window.switchBentoTab = typeof switchBentoTab !== "undefined" ? switchBentoTab : undefined;
+  window.switchReviewsTab = typeof switchReviewsTab !== "undefined" ? switchReviewsTab : undefined;
+
 })();

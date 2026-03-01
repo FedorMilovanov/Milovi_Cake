@@ -5,20 +5,19 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta name="format-detection" content="telephone=no" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Milovi Cake — Торты и десерты на заказ в Санкт-Петербурге</title>
-  <meta name="description" content="Авторские торты на заказ в СПб: свадебный торт, торт на день рождения, детский торт, бенто, 3D-торты, меренговые рулеты. Ручная работа, доставка по СПб." />
+  <title>{{title}}</title>
+  <meta name="description" content="{{meta_desc}}" />
   <meta name="robots" content="index, follow" />
-  <meta property="og:title" content="Milovi Cake — Авторские торты на заказ в СПб" />
-  <meta property="og:description" content="Нежнейшие торты и десерты ручной работы. Бисквитные, бенто, 3D-торты, меренговые рулеты, Павлова, капкейки." />
-  <meta property="og:image" content="https://milovicake.ru/img/og-cover.jpg" />
-  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:title" content="{{og_title}}" />
+  <meta property="og:description" content="{{og_desc}}" />
+  <meta property="og:image" content="https://milovicake.ru/img/head.webp" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:url" content="https://milovicake.ru/" />
+  <meta property="og:url" content="{{canonical_url}}" />
   <meta property="og:type" content="website" />
     <!-- PWA -->
-  <link rel="preload" as="image" href="img/head_desktop.webp" media="(min-width:769px)" fetchpriority="high" />
-  <link rel="preload" as="image" href="img/head_mobile.webp" media="(max-width:768px)" fetchpriority="high" />
+  <link rel="preload" as="image" href="../../img/head_desktop.webp" media="(min-width:769px)" fetchpriority="high" />
+  <link rel="preload" as="image" href="../../img/head_mobile.webp" media="(max-width:768px)" fetchpriority="high" />
   <link rel="manifest" href="/manifest.json" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -26,99 +25,51 @@
   <meta name="apple-mobile-web-app-title" content="Milovi Cake" />
   <meta name="theme-color" content="#c9934a" />
   <link rel="apple-touch-icon" href="/icon-192.png" />
-  <link rel="canonical" href="https://milovicake.ru/" />
+  <link rel="canonical" href="{{canonical_url}}" />
   <script type="application/ld+json">
-  [
-    {
-      "@context": "https://schema.org",
-      "@type": "LocalBusiness",
-      "name": "Milovi Cake",
-      "description": "Авторские торты и десерты ручной работы на заказ в Санкт-Петербурге. Бисквитные торты, бенто, 3D-торты, меренговые рулеты, Павлова, капкейки. Доставка по СПб и Ленобласти.",
-      "image": "https://milovicake.ru/img/og-cover.jpg",
-      "url": "https://milovicake.ru/",
-      "telephone": "+79119038886",
-      "address": {
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Главная", "item": "https://milovicake.ru/"},
+        {"@type": "ListItem", "position": 2, "name": "Пригороды СПб", "item": "https://milovicake.ru/prigorody/"},
+        {"@type": "ListItem", "position": 3, {{ld_breadcrumb_name}}, "item": "{{canonical_url}}"}
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Milovi Cake",
+    {{ld_description}}
+    "url": "{{canonical_url}}",
+    "telephone": "+79119038886",
+    "address": {
         "@type": "PostalAddress",
         "streetAddress": "Пулковская ул., 19",
         "addressLocality": "Санкт-Петербург",
         "addressCountry": "RU"
-      },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": 59.8380,
-        "longitude": 30.3230
-      },
-      "openingHours": "Mo-Su 10:00-20:00",
-      "priceRange": "₽₽",
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "reviewCount": "32",
-        "bestRating": "5"
-      },
-      "sameAs": [
+    },
+    "openingHours": "Mo-Su 10:00-20:00",
+    "priceRange": "₽₽",
+    "areaServed": {"@type": "City", {{ld_area_name}}},
+    "sameAs": [
         "https://vk.com/milovi_cake",
         "https://t.me/MiloviCake",
         "https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/"
-      ]
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Сколько стоит торт на заказ в СПб?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Бисквитный торт — от 2 800 ₽/кг (минимум 2 кг). Бенто торт — 1 600 ₽/шт. 3D-торт — от 4 000 ₽/кг. Меренговый рулет — 2 500 ₽/шт. Пирожное Павлова — от 350 ₽/шт. Капкейки — от 350 ₽/шт."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "За сколько дней нужно заказывать торт?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Рекомендуем заказывать за 5–7 дней. В праздничный сезон (Новый год, 8 марта, выпускные) — за 10–14 дней."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Есть ли доставка тортов по СПб?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Да, доставляем по всему Санкт-Петербургу и пригородам — Пушкину, Петергофу, Гатчине, Всеволожску, Колпино и другим. Собственной службой или через Яндекс.Доставку. Самовывоз тоже доступен."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Можно ли сделать торт без глютена?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Да. Меренговые рулеты и пирожные Павлова готовятся по безглютеновым рецептам на основе взбитых белков."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Можно ли заказать детский торт с персонажем?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Да, делаем детские торты с любым тематическим декором и персонажами по пожеланию."
-          }
-        }
-      ]
-    }
-  ]
+    ]
+  }
   </script>
-  <!-- Yandex.Metrika — moved to end of body for non-blocking render -->
+  <!-- Yandex.Metrika counter (inline for prigorody pages) -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <!-- Non-blocking font load -->
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" as="style" />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <!-- noscript fonts -->
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/></noscript>
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="../../css/style.css" />
 </head>
 
 <body>
@@ -139,10 +90,9 @@
 <div class="toast" id="toast"></div>
 
 <!-- ══════════ HEADER ══════════ -->
-<header class="site-header" id="siteHeader">
+<header class="site-header header-city" id="siteHeader">
   <a href="#home" class="header-logo">Milovi Cake<span class="header-logo-sub">частный кондитер · СПб</span></a>
   <nav class="header-nav">
-    <a href="#about">О нас</a>
     <a href="#catalog">Каталог</a>
     <a href="#fillings">Начинки</a>
     <a href="#reviews">Отзывы</a>
@@ -161,16 +111,10 @@
     Закрыть
   </button>
   <div class="mobile-menu-nav">
-    <a href="#about" onclick="closeMobileMenu()">О нас</a>
-    <div class="mobile-menu-divider"></div>
     <a href="#catalog" onclick="closeMobileMenu()">Каталог</a>
-    <div class="mobile-menu-divider"></div>
     <a href="#fillings" onclick="closeMobileMenu()">Начинки</a>
-    <div class="mobile-menu-divider"></div>
     <a href="#reviews" onclick="closeMobileMenu()">Отзывы</a>
-    <div class="mobile-menu-divider"></div>
     <a href="#contacts" onclick="closeMobileMenu()">Контакты</a>
-    <div class="mobile-menu-divider"></div>
     <a href="tel:+79119038886" class="mobile-menu-phone" onclick="closeMobileMenu()">
       <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.07 2.18 2 2 0 012.03 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
       +7 911 903 88 86
@@ -178,37 +122,26 @@
   </div>
 </div>
 
-<!-- ── FLOATING CTA ── -->
-<a href="#catalog" class="floating-cta" id="floatingCta">
-  🎂 Заказать торт
-</a>
 
-<!-- ── LIGHTBOX ── -->
-<div class="lightbox" id="lightbox">
-  <button class="lightbox-close" onclick="closeLightbox()">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-    Закрыть
-  </button>
-  <div class="lightbox-img-wrap" id="lightboxWrap">
-    <img id="lightboxImg" src="" alt="" style="user-select:none; -webkit-user-drag:none;" />
-    <div class="lightbox-nav hidden" id="lbNav">
-      <button class="lightbox-arrow" onclick="lbNavigate(-1)" aria-label="Назад">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-      <button class="lightbox-arrow" onclick="lbNavigate(1)" aria-label="Вперёд">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-    </div>
+<!-- ══════════ BREADCRUMB ══════════ -->
+<div id="scroll-progress"></div>
+<div class="toast" id="toast"></div>
+
+<nav class="breadcrumb-nav" aria-label="Breadcrumb">
+  <div class="breadcrumb-inner">
+    <a href="../../">Главная</a>
+    <span>›</span>
+    <span>{{nav_span_text}}</span>
   </div>
-</div>
+</nav>
 
 <!-- ══════════ HERO ══════════ -->
-<section class="hero" id="home">
+<section class="hero" id="home" style="padding-top:0">
   <div class="hero-photo-bg">
     <picture>
-      <source media="(max-width: 768px)" srcset="img/head_mobile.webp" />
-      <source media="(min-width: 769px)" srcset="img/head_desktop.webp" />
-      <img src="img/head.webp" alt="Авторский торт Milovi Cake — ручная работа, Санкт-Петербург"
+      <source media="(max-width: 768px)" srcset="../../img/head_mobile.webp" />
+      <source media="(min-width: 769px)" srcset="../../img/head_desktop.webp" />
+      <img src="../../img/head.webp" alt="Авторский торт Milovi Cake — ручная работа, Санкт-Петербург"
            fetchpriority="high" decoding="sync" />
     </picture>
   </div>
@@ -216,70 +149,33 @@
   <div class="hero-content">
     <div class="hero-text">
 
-      <!-- Рейтинги + счётчик — социальное доказательство СРАЗУ -->
-      <div class="hero-trust-bar">
-        <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/reviews/"
-           target="_blank" rel="noopener" class="hero-trust-badge">
-          <svg class="hero-trust-icon" viewBox="0 0 24 24" width="18" height="18" fill="none">
-            <circle cx="12" cy="12" r="11" fill="#FC3F1D"/>
-            <path d="M13.18 7.2h-.92c-1.2 0-1.84.58-1.84 1.54 0 1.1.48 1.62 1.44 2.28l.8.54-2.28 3.44H8.9l2-3.13c-1.2-.9-1.76-1.76-1.76-3.16 0-1.86 1.22-2.92 3.16-2.92h2.3V17h-1.38V7.2z" fill="#fff"/>
-          </svg>
-          <span class="hero-trust-stars">★★★★★</span>
-          <span class="hero-trust-rating">4.8</span>
-        </a>
-        <a href="https://maps.app.goo.gl/R3mdjxpnebUYMQES6"
-           target="_blank" rel="noopener" class="hero-trust-badge">
-          <svg class="hero-trust-icon" viewBox="0 0 24 24" width="18" height="18">
-            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-            <path d="M12 23c2.97 0 5.46-1 7.28-2.69l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-          </svg>
-          <span class="hero-trust-stars">★★★★★</span>
-          <span class="hero-trust-rating">4.7</span>
-        </a>
-        <span class="hero-trust-count">500+ тортов создано</span>
-      </div>
+      <div class="hero-geo-label">{{geo_label}}</div>
+      <h1 class="hero-title">{{h1}}<br>от Milovi Cake</h1>
+      <p class="hero-subtitle">{{hero_p}}</p>
 
-      <h1 class="hero-title">
-        <span class="hero-title-brand">Milovi Cake</span>
-        <span class="visually-hidden"> — торты на заказ в СПб: свадебный торт, торт на день рождения, детский торт, бенто, меренговые рулеты с доставкой</span>
-      </h1>
-
-      <!-- Чёткий USP вместо общих фраз -->
-      <p class="hero-subtitle">Авторские торты ручной работы<br>от частного кондитера в Санкт-Петербурге</p>
-
-      <!-- Hero features — без inline styles -->
       <div class="hero-features">
         <div class="hero-feature-item">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,220,150,0.85)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-          </svg>
-          <span>Изготовление от 2 дней</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,220,150,0.85)" stroke-width="1.6" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          <span>{{hero_span}}</span>
         </div>
         <div class="hero-feature-item">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,220,150,0.85)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-          </svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,220,150,0.85)" stroke-width="1.6" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           <span>Доставка по СПб и Ленобласти</span>
         </div>
         <div class="hero-feature-item">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,220,150,0.85)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M2 22 C2 22 6 17 12 17 C18 17 22 12 22 2 C22 2 12 2 7 7 C2 12 2 22 2 22z"/><path d="M2 22 L12 12"/>
-          </svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,220,150,0.85)" stroke-width="1.6" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
           <span>Только натуральные продукты</span>
         </div>
       </div>
 
-      <!-- Главный CTA + WA вторичный -->
-      <div class="hero-actions">
+      <div class="hero-cta-row">
         <a href="#catalog" class="btn-primary btn-primary--hero">
           Выбрать торт
           <span class="btn-price-hint">от 2 800 ₽/кг</span>
         </a>
-        <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D1%8C%20%D1%82%D0%BE%D1%80%D1%82"
+        <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D1%81%D0%B4%D0%B5%D0%BB%D0%B0%D1%82%D1%8C%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7"
            target="_blank" rel="noopener" class="btn-hero-wa">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.47-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           Написать в WhatsApp
         </a>
       </div>
@@ -288,37 +184,14 @@
   </div>
 </section>
 
-<!-- ══════════ ABOUT ══════════ -->
-<section id="about" class="about-section">
-  <div class="container">
-    <h2 class="section-title reveal">О Milovi Cake</h2>
-    <p class="section-sub reveal">Частный кондитер в Санкт-Петербурге — с вниманием к каждой детали</p>
-    <div class="about-compact reveal">
-      <div class="about-compact-block">
-        <div class="about-emoji" aria-hidden="true">👩‍🍳</div>
-        <h3>Виктория Милованова</h3>
-        <p>Частный кондитер с&nbsp;5-летним опытом. Семейное производство в&nbsp;частной мастерской&nbsp;— каждый торт создаётся вручную, без шаблонов и&nbsp;полуфабрикатов.</p>
-      </div>
-      <div class="about-compact-block">
-        <div class="about-emoji" aria-hidden="true">📝</div>
-        <h3>Авторские рецепты</h3>
-        <p>11&nbsp;уникальных начинок по&nbsp;индивидуальным рецептам: от ванильной классики до тропического манго-маракуйи. Натуральные ингредиенты, бельгийский шоколад, без пальмового масла.</p>
-      </div>
-      <div class="about-compact-block">
-        <div class="about-emoji" aria-hidden="true">🎨</div>
-        <h3>Ручная работа</h3>
-        <p>Каждый декор продумываю лично под ваш праздник&nbsp;— от эскиза до последнего лепестка. Торты и&nbsp;десерты изготавливаются только под заказ, гарантируя свежесть к&nbsp;вашему событию.</p>
-      </div>
-    </div>
-  </div>
-</section>
+
 
 <!-- ══════════ CATALOG ══════════ -->
 
 <section id="catalog">
   <div class="container">
-    <h2 class="section-title reveal">Наши Десерты<span class="visually-hidden"> — торты и десерты на заказ в Санкт-Петербурге, купить с доставкой</span></h2>
-    <p class="section-sub reveal">Выберите свой любимый торт или десерт из нашей коллекции</p>
+    <h2 class="section-title reveal">{{catalog_h2}}</h2>
+    <p class="section-sub reveal">{{section_sub}} 🤍</p>
     <div class="catalog-grid" id="catalogGrid">
       <!-- rendered by JS -->
     </div>
@@ -453,14 +326,14 @@
 
     <!-- ══ КИНОЛЕНТА СКРИНОВ ══ -->
     <div class="review-filmstrip reveal">
-      <button class="review-filmstrip-item" onclick="openChatLightbox(0)" aria-label="Отзыв 1"><img src="img/review_1.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 1" loading="lazy"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(1)" aria-label="Отзыв 2"><img src="img/review_2.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 2" loading="lazy"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(2)" aria-label="Отзыв 3"><img src="img/review_3.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 3" loading="lazy"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(3)" aria-label="Отзыв 4"><img src="img/review_4.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 4" loading="lazy"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(4)" aria-label="Отзыв 5"><img src="img/review_5.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 5" loading="lazy"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(5)" aria-label="Отзыв 6"><img src="img/review_6.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 6" loading="lazy"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(6)" aria-label="Отзыв 7"><img src="img/review_7.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 7" loading="lazy"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(7)" aria-label="Отзыв 8"><img src="img/review_8.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 8" loading="lazy"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(0)" aria-label="Отзыв 1"><img src="../../img/review_1.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 1" loading="lazy"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(1)" aria-label="Отзыв 2"><img src="../../img/review_2.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 2" loading="lazy"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(2)" aria-label="Отзыв 3"><img src="../../img/review_3.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 3" loading="lazy"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(3)" aria-label="Отзыв 4"><img src="../../img/review_4.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 4" loading="lazy"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(4)" aria-label="Отзыв 5"><img src="../../img/review_5.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 5" loading="lazy"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(5)" aria-label="Отзыв 6"><img src="../../img/review_6.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 6" loading="lazy"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(6)" aria-label="Отзыв 7"><img src="../../img/review_7.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 7" loading="lazy"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(7)" aria-label="Отзыв 8"><img src="../../img/review_8.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 8" loading="lazy"></button>
     </div>
 
     <!-- ══ ОТЗЫВЫ НА КАРТАХ ══ -->
@@ -743,6 +616,30 @@
   </div>
 </section>
 
+<!-- ══════════ GEO / SEO ══════════ -->
+<section class="geo-section">
+  <div class="container">
+    <h2>{{main_seo_h2}}</h2>
+    <p>{{main_seo_p}}</p>
+    <div class="geo-tags">
+{{first_geo_tags}}
+    </div>
+  </div>
+</section>
+
+<section class="seo-section">
+  <div class="container">
+    <h2>{{seo_h2}}</h2>
+    <p>{{seo_p1}}</p>
+    <p>{{seo_p2}}</p>
+    <p>{{seo_p3}}</p>
+    <div class="geo-tags">
+{{seo_geo_tags}}
+    </div>
+  </div>
+</section>
+
+
 <!-- ══════════ CART BUTTON ══════════ -->
 <button class="cart-btn" onclick="openCart()" aria-label="Корзина">
   🛒
@@ -871,8 +768,8 @@
 
 
 
-<script>var IMG_BASE = 'img';</script>
-<script src="js/main.js" defer></script>
+<script>var IMG_BASE = '../../img';</script>
+<script src="../../js/main.js" defer></script>
 
 
 
@@ -976,8 +873,7 @@
       <div class="footer-col">
         <h4>Навигация</h4>
         <nav aria-label="Нижняя навигация">
-          <a href="#about">О нас</a>
-          <a href="#catalog">Каталог</a>
+                <a href="#catalog">Каталог</a>
           <a href="#fillings">Начинки</a>
           <a href="#reviews">Отзывы</a>
           <a href="#contacts">Контакты</a>
