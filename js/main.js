@@ -1722,6 +1722,7 @@ function startTypewriter(){
   const slides = trackEl.querySelectorAll('.review-slide');
   const txtEl  = slides[cur].querySelector('.review-text');
   const full   = txtEl.dataset.full;
+  console.log('[TW START] cur='+cur+' gen='+typeGen+' full='+full?.slice(0,20));
 
   const myGen = typeGen; // stale check
   if(typeTimer){ clearTimeout(typeTimer); typeTimer=null; }
@@ -1852,11 +1853,14 @@ function startTypewriter(){
   typeTimer = setTimeout(()=>{
     typeTimer = null;
     zoomP = 1;
+    console.log('[TW DONE] cur='+cur+' gen='+typeGen+' myGen='+myGen);
+    if(typeGen !== myGen){ console.log('[TW DONE] STALE — skipping startWaiting'); return; }
     startWaiting();
   }, totalDur);
 }
 
 function startWaiting(){
+  console.log('[WAITING] cur='+cur+' gen='+typeGen);
   STATE = 'waiting';
   showArrows();
   thumbs[cur].classList.add('hint-show');
@@ -1864,14 +1868,9 @@ function startWaiting(){
   waitTimer = setTimeout(()=>{
     waitTimer = null;
     hideArrows();
-    // Wait for arrows fade-out animation, then dissolve text, then start zoom_out
-    setTimeout(()=>{
-      dissolveText();
-      setTimeout(()=>{
-        dissolved = true; // already dissolved, don't fire again in loop
-        STATE = 'zoom_out';
-      }, 500); // wait for dissolve animation to finish
-    }, 350); // wait for arrows to fade out
+    dissolved = false;
+    console.log('[ZOOM_OUT START] cur='+cur);
+    STATE = 'zoom_out';
   }, WAIT_DURATION);
 }
 
@@ -1911,6 +1910,7 @@ function goTo(n, skipTypewriter){
   const dts    = dotsEl.querySelectorAll('.rev-dot');
   const strips = mobileStrip.querySelectorAll('.strip-item');
 
+  console.log('[GOTO] n='+n+' cur='+cur+' STATE='+STATE+' typeGen='+typeGen);
   // cancel all pending timers immediately
   if(typeTimer){ clearTimeout(typeTimer); typeTimer=null; }
   if(waitTimer){ clearTimeout(waitTimer);  waitTimer=null; }
@@ -1973,7 +1973,7 @@ function loop(ts){
     zoomP += (1 - zoomP) * ZOOM_IN_SPD_CUR;
     // startWaiting triggered by typeTimer when text finishes
   } else if(STATE === 'zoom_out'){
-    if(zoomP > 0.98 && !dissolved){ dissolved = true; dissolveText(); } // fire once
+    if(zoomP > 0.01 && !dissolved){ dissolved = true; dissolveText(); } // fire at zoom_out start
     zoomP += (0 - zoomP) * ZOOM_OUT_SPD;
     if(zoomP < 0.02){
       zoomP=0;

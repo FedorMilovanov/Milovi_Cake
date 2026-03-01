@@ -3312,7 +3312,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 /* TOP arrow: points downward ↓ at thumb */
 .sc-arr-top {
-  top: -38px; left: 50%;
+  top: -22px; left: 50%;
   transform: translateX(-50%);
   flex-direction: column;
   gap: 0;
@@ -3326,7 +3326,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 /* BOTTOM arrow: points upward ↑ at thumb */
 .sc-arr-bottom {
-  bottom: -38px; left: 50%;
+  bottom: -22px; left: 50%;
   transform: translateX(-50%);
   animation: arrInBot .9s ease-in-out infinite;
   animation-delay: .22s;
@@ -3338,7 +3338,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 /* LEFT arrow: points rightward → at thumb */
 .sc-arr-left {
-  left: -38px; top: 50%;
+  left: -22px; top: 50%;
   transform: translateY(-50%);
   animation: arrInLeft .9s ease-in-out infinite;
   animation-delay: .11s;
@@ -3350,7 +3350,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 /* RIGHT arrow: points leftward ← at thumb */
 .sc-arr-right {
-  right: -38px; top: 50%;
+  right: -22px; top: 50%;
   transform: translateY(-50%);
   animation: arrInRight .9s ease-in-out infinite;
   animation-delay: .33s;
