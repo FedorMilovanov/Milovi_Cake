@@ -2059,6 +2059,7 @@ function loop(ts){
 requestAnimationFrame(t=>{ lastT=t; requestAnimationFrame(loop); });
 
 
+const lbOverlay = document.getElementById('lbOverlay');
 const lbBg  = document.getElementById('lbBg');
 const lbBox = document.getElementById('lbBox');
 const lbImg = document.getElementById('lbImg');
@@ -2073,80 +2074,62 @@ function lerp(a,b,t){ return a+(b-a)*t; }
 
 function openLB(triggerEl, src, idx){
   if(lbBusy) return;
-  // cancel auto-advance
   if(waitTimer){ clearTimeout(waitTimer); waitTimer=null; }
   hideArrows();
   lbBusy=true; lbIsOpen=true;
   lbImg.src = src;
   fromRect = triggerEl.getBoundingClientRect();
-  const vw=window.innerWidth, vh=window.innerHeight;
-  const maxH = Math.min(vh*.84, 680);
-  const ar   = fromRect.width / fromRect.height;
-  const tw   = maxH * ar;
-  const tl   = (vw-tw)/2;
-  const tt   = (vh-maxH)/2;
-  // Step 1: blur the whole page (everything behind the overlay)
-  lbImg.style.filter = '';
-  lbImg.style.transition = 'none';
-  document.body.classList.add('lb-world-blur');
 
-  // Step 2: show dark overlay + lightbox immediately at final position (no flight)
-  setBox(tl, tt, tw, maxH, 16, 0);
-  lbBg.classList.add('open');
-  lbX.classList.add('show');
+  // Показываем оверлей — CSS transition сам анимирует blur+scale+opacity
+  document.body.style.overflow = 'hidden';
+  lbOverlay.classList.add('active');
+  lbX.style.pointerEvents = 'none';
 
-  // Step 3: fade in the lightbox image on top while world is blurred
-  const APPEAR_DUR = 180;
-  const FOCUS_DUR  = 900;
-  const t0 = performance.now();
+  // Кнопка закрытия появляется с задержкой 0.6s (как в варианте 6)
+  setTimeout(()=>{
+    lbX.style.opacity = '1';
+    lbX.style.transform = 'scale(1)';
+    lbX.style.pointerEvents = '';
+  }, 600);
 
-  function appearTick(now){
-    const p = Math.min((now - t0) / APPEAR_DUR, 1);
-    const e = 1 - Math.pow(1 - p, 2);
-    lbBox.style.cssText = `left:${tl}px;top:${tt}px;width:${tw}px;height:${maxH}px;border-radius:16px;opacity:${e.toFixed(3)};overflow:hidden;position:fixed;z-index:9001;`;
-    if(p < 1){ requestAnimationFrame(appearTick); return; }
-    // Image fully visible — now focus the world back in
+  // Разрешаем клик после завершения анимации
+  setTimeout(()=>{
     lbBox.classList.add('clickable');
     lbBusy = false;
-    const t1 = performance.now();
-    function focusTick(now2){
-      const p2 = Math.min((now2 - t1) / FOCUS_DUR, 1);
-      const e2  = 1 - Math.pow(1 - p2, 3);
-      const blurVal = 18 * (1 - e2);
-      document.body.style.setProperty('--lb-world-blur', blurVal.toFixed(1) + 'px');
-      if(p2 < 1){ requestAnimationFrame(focusTick); }
-      else { document.body.classList.remove('lb-world-blur'); document.body.style.removeProperty('--lb-world-blur'); }
-    }
-    requestAnimationFrame(focusTick);
-  }
-  requestAnimationFrame(appearTick);
+  }, 950);
 }
 
 function closeLB(){
   if(!lbIsOpen || lbBusy) return;
   lbBusy=true; lbIsOpen=false;
-  lbX.classList.remove('show');
-  lbBg.classList.remove('open');
   lbBox.classList.remove('clickable');
-  const cur_r = lbBox.getBoundingClientRect();
-  const end   = fromRect || { left: window.innerWidth/2-40, top: window.innerHeight/2-54, width:80, height:108 };
-  const frames = [
-    { left:cur_r.left, top:cur_r.top, w:cur_r.width,  h:cur_r.height,  r:16, blur:0, op:1   },
-    { left:cur_r.left+cur_r.width*.08, top:cur_r.top-cur_r.height*.04, w:cur_r.width*.84, h:cur_r.height*1.06, r:22, blur:0, op:.88 },
-    { left:end.left,   top:end.top,   w:end.width,     h:end.height,    r:8,  blur:3, op:0   },
-  ];
-  animBox(frames, [0, 140, 420], ()=>{
-    lbBox.style.opacity='0';
-    lbImg.src='';
-    lbBusy=false;
-    // After lightbox closes → zoom out then advance
+  lbX.style.opacity = '0';
+  lbX.style.transform = 'scale(0.5)';
+  lbX.style.pointerEvents = 'none';
+
+  // Убираем класс active — CSS transition анимирует обратно
+  lbOverlay.classList.remove('active');
+  document.body.style.overflow = '';
+
+  setTimeout(()=>{
+    lbImg.src = '';
+    lbBusy = false;
     hideArrows();
     STATE = 'zoom_out';
-  });
+  }, 600);
 }
 
 function setBox(l,t,w,h,r,opacity){
-  lbBox.style.cssText=`left:${l}px;top:${t}px;width:${w}px;height:${h}px;border-radius:${r}px;opacity:${opacity};overflow:hidden;position:fixed;z-index:9001;`;
+  // Use individual style props to avoid wiping filter/transition set elsewhere
+  lbBox.style.left         = l+'px';
+  lbBox.style.top          = t+'px';
+  lbBox.style.width        = w+'px';
+  lbBox.style.height       = h+'px';
+  lbBox.style.borderRadius = r+'px';
+  lbBox.style.opacity      = opacity;
+  lbBox.style.overflow     = 'hidden';
+  lbBox.style.position     = 'fixed';
+  lbBox.style.zIndex       = '9001';
 }
 
 function animBox(frames, times, done){
@@ -2162,7 +2145,13 @@ function animBox(frames, times, done){
     for(let i=1;i<times.length;i++){ if(elapsed<=times[i]){ seg=i-1; break; } }
     const segT = ease(Math.max(0,(elapsed-times[seg])/(times[seg+1]-times[seg])));
     const a = frames[seg], b = frames[seg+1];
-    lbBox.style.cssText=`left:${lerp(a.left,b.left,segT)}px;top:${lerp(a.top,b.top,segT)}px;width:${lerp(a.w,b.w,segT)}px;height:${lerp(a.h,b.h,segT)}px;border-radius:${lerp(a.r,b.r,segT)}px;opacity:${lerp(a.op,b.op,segT)};filter:blur(${lerp(a.blur,b.blur,segT).toFixed(2)}px);overflow:hidden;position:fixed;z-index:9001;`;
+    lbBox.style.left=''+lerp(a.left,b.left,segT).toFixed(1)+'px';
+      lbBox.style.top=''+lerp(a.top,b.top,segT).toFixed(1)+'px';
+      lbBox.style.width=''+lerp(a.w,b.w,segT).toFixed(1)+'px';
+      lbBox.style.height=''+lerp(a.h,b.h,segT).toFixed(1)+'px';
+      lbBox.style.borderRadius=''+lerp(a.r,b.r,segT).toFixed(1)+'px';
+      lbBox.style.opacity=''+lerp(a.op,b.op,segT).toFixed(3);
+      // do NOT touch filter here — managed separately
     requestAnimationFrame(step);
   }
   requestAnimationFrame(step);
@@ -2171,6 +2160,7 @@ function animBox(frames, times, done){
 lbBg.addEventListener('click', closeLB);
 lbBox.addEventListener('click', closeLB);
 lbX.addEventListener('click',  closeLB);
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && lbIsOpen) closeLB(); });
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeLB(); });
 
 

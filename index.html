@@ -1178,9 +1178,13 @@
 </div>
 
 <!-- lightbox for new reviews section -->
-<div class="lb-bg" id="lbBg"></div>
-<div class="lb-box" id="lbBox"><img id="lbImg" src="" alt=""></div>
-<button class="lb-x" id="lbX" aria-label="Закрыть">✕</button>
+<div class="lb-overlay" id="lbOverlay">
+  <div class="lb-backdrop" id="lbBg"></div>
+  <button class="lb-x" id="lbX" aria-label="Закрыть">✕</button>
+  <div class="lb-box" id="lbBox">
+    <img id="lbImg" src="" alt="">
+  </div>
+</div>
 
 </body>
 </html>
