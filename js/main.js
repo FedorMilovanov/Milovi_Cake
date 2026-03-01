@@ -66,7 +66,7 @@ function renderCatalog() {
           ${p.slides.map((src, i) => {
             const active = i === 0 ? ' active' : '';
             return `<div class="slide-img${active}">
-              <img src="${IMG_BASE}/${src}" alt="${p.name}" loading="${i === 0 ? 'eager' : 'lazy'}" />
+              <img src="${src}" alt="${p.name}" loading="${i === 0 ? 'eager' : 'lazy'}" onerror="this.style.display='none'" />
             </div>`;
           }).join('')}
           ${totalSlides > 1 ? `
@@ -1618,12 +1618,13 @@ let cur   = 0;
    'zoom_out'→ thumb returns, then auto-advance
 */
 let STATE    = 'typing';
+let typeGen  = 0; // cancel stale rAF animations on slide change
 let zoomP    = 0;        // 0 = home, 1 = fully zoomed in
 let ZOOM_IN_SPD_CUR = 0.006; // dynamic, recalculated per review
 const ZOOM_IN_SPD   = 0.006;
 const ZOOM_OUT_SPD  = 0.07;
 const ZOOM_DIST     = 75;    // px max pull toward stage
-const WAIT_DURATION = 2800;  // ms to wait before auto-advance
+const WAIT_DURATION = 4000;  // ms to wait before auto-advance
 
 let waitTimer   = null;
 let typeTimer   = null;
@@ -1721,6 +1722,7 @@ function startTypewriter(){
   const txtEl  = slides[cur].querySelector('.review-text');
   const full   = txtEl.dataset.full;
 
+  const myGen = typeGen; // stale check
   if(typeTimer){ clearTimeout(typeTimer); typeTimer=null; }
 
   // ── PARTICLE ASSEMBLE — letters fly in from random scatter ──
@@ -1791,9 +1793,10 @@ function startTypewriter(){
     const startAt = i * CHAR_DELAY;
 
     setTimeout(() => {
-      // Ease: fast approach, gentle settle
+      if(typeGen !== myGen) return; // stale — new slide started
       const startTs = performance.now();
       function tick(now){
+        if(typeGen !== myGen) return; // cancelled mid-animation
         const elapsed = now - startTs;
         const raw = Math.min(elapsed / ASSEMBLE_DUR, 1);
         // Cubic ease-out with slight overshoot
@@ -1832,6 +1835,7 @@ function startTypewriter(){
         else { em.style.transform = 'scale(1) rotate(0deg)'; em.style.opacity = '1'; }
       }
       requestAnimationFrame(popTick);
+    if(typeGen !== myGen) return;
     }, EMOJI_START_AFTER + ei * EMOJI_GAP);
   });
 
@@ -1901,7 +1905,7 @@ function goTo(n, skipTypewriter){
   const strips = mobileStrip.querySelectorAll('.strip-item');
 
   // cancel pending timers
-  if(typeTimer){ clearInterval(typeTimer); typeTimer=null; }
+  if(typeTimer){ clearTimeout(typeTimer); typeTimer=null; }
   if(waitTimer){ clearTimeout(waitTimer);  waitTimer=null; }
   hideArrows();
 
@@ -1918,6 +1922,7 @@ function goTo(n, skipTypewriter){
   zoomP = 0;
   STATE = 'typing';
   ZOOM_IN_SPD_CUR = ZOOM_IN_SPD; // reset speed
+  typeGen++; // invalidate stale rAF
 
   thumbs[cur].classList.add('is-active');
   slides[cur].classList.add('active');
@@ -1987,13 +1992,10 @@ function loop(ts){
   const stageOff    = offsetRelTo(stageEl, secEl);
   const cardL       = stageOff.left;
   const cardW       = stageEl.offsetWidth;
-  // Центрируем по .review-card — бежевая карточка с текстом отзыва
-  const trackEl2    = stageEl.querySelector('.reviews-track');
-  const activeSlide = stageEl.querySelector('.review-slide.active') || stageEl.querySelector('.review-slide');
-  const reviewCard  = activeSlide ? activeSlide.querySelector('.review-card') : null;
-  const centerEl    = reviewCard || trackEl2 || stageEl;
-  const centerOff   = offsetRelTo(centerEl, secEl);
-  const cardCenterY = centerOff.top + centerEl.offsetHeight / 2;
+  // Центр блока .reviews-track относительно секции — прямой расчёт
+  const trackEl2   = stageEl.querySelector('.reviews-track') || trackEl;
+  const trackOff2  = offsetRelTo(trackEl2, secEl);
+  const cardCenterY = trackOff2.top + trackEl2.offsetHeight / 2;
 
   thumbs.forEach((th, i)=>{
     const fl  = FLOATS[i];
@@ -2025,8 +2027,8 @@ function loop(ts){
       const parkX = lay.side === 'left'
         ? cardL - THUMB_W + OVERLAP   // left side: thumb hangs off left edge
         : cardL + cardW - OVERLAP;    // right side: thumb hangs off right edge
-      const parkY = cardCenterY - THUMB_H / 2 - 30; // slightly above center
-      if(isActive && zoomP > 0.98) console.log('[PARK] side='+lay.side+' cardCenterY='+cardCenterY.toFixed(0)+' parkY='+parkY.toFixed(0)+' baseT='+baseT.toFixed(0)+' py='+py.toFixed(0)+' secH='+(sectionSnapH||secEl.offsetHeight));
+      const parkY = cardCenterY - THUMB_H / 2; // vertically centered on track
+      if(isActive && zoomP > 0.98) console.log('[PARK] trackTop='+trackOff2.top+' trackH='+trackEl2.offsetHeight+' cardCenterY='+cardCenterY.toFixed(0)+' parkY='+parkY.toFixed(0)+' baseT='+baseT.toFixed(0)+' secH='+(sectionSnapH||secEl.offsetHeight));
 
       // Smooth ease-out
       const eased = 1 - Math.pow(1 - Math.min(zoomP, 1), 3);
