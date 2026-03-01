@@ -3229,6 +3229,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   max-width: 300px; width: 75%;
   max-height: 68vh;
   border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   transform: translateY(28px) scale(0.92);
   opacity: 0;
   transition:
@@ -3237,44 +3239,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: zoom-out;
 }
 
-/* Золотое свечение вокруг */
-.lb-box::before {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  border-radius: 21px;
-  background: linear-gradient(135deg,
-    rgba(201,147,74,0.7) 0%,
-    rgba(255,210,130,0.4) 30%,
-    rgba(201,147,74,0.2) 60%,
-    rgba(255,210,130,0.5) 100%);
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.5s ease 0.3s;
-}
-
-/* Внешнее свечение */
-.lb-box::after {
-  content: '';
-  position: absolute;
-  inset: -12px;
-  border-radius: 28px;
-  background: transparent;
-  box-shadow:
-    0 0 40px rgba(201,147,74,0.22),
-    0 0 80px rgba(201,147,74,0.12),
-    0 32px 80px rgba(0,0,0,0.7);
-  z-index: -2;
-  opacity: 0;
-  transition: opacity 0.5s ease 0.3s;
-}
-
 .lb-overlay.active .lb-box {
   transform: translateY(0) scale(1);
-  opacity: 1;
-}
-.lb-overlay.active .lb-box::before,
-.lb-overlay.active .lb-box::after {
   opacity: 1;
 }
 
@@ -3286,7 +3252,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   max-height: 68vh;
   object-fit: contain;
   display: block;
-  border-radius: 16px;
   user-select: none;
   -webkit-user-drag: none;
 }

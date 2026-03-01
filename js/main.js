@@ -1986,9 +1986,10 @@ function loop(ts){
   }
   const stageOff    = offsetRelTo(stageEl, secEl);
   const cardL       = stageOff.left;
-  const cardT       = stageOff.top;
-  const cardCenterY = cardT + stageEl.offsetHeight / 2;
   const cardW       = stageEl.offsetWidth;
+  const rowEl       = stageEl.querySelector('.carousel-row');
+  const rowOff      = rowEl ? offsetRelTo(rowEl, secEl) : stageOff;
+  const cardCenterY = rowOff.top + (rowEl || stageEl).offsetHeight / 2;
 
   thumbs.forEach((th, i)=>{
     const fl  = FLOATS[i];
