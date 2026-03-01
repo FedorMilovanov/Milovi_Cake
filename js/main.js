@@ -1980,9 +1980,11 @@ function loop(ts){
   // subtract secEl page top to get coords relative to section (same as baseT)
   const _cRect  = cardEl.getBoundingClientRect();
   const _sRect  = secEl.getBoundingClientRect();
+  // Use stageEl for vertical centering — it reflects the visible card area
+  const _stageRect  = stageEl.getBoundingClientRect();
   const cardL       = _cRect.left - _sRect.left;
-  const cardT       = _cRect.top  - _sRect.top;
-  const cardCenterY = cardT + _cRect.height / 2;
+  const cardT       = _stageRect.top  - _sRect.top;
+  const cardCenterY = cardT + _stageRect.height / 2;
   const cardW       = _cRect.width;
 
   thumbs.forEach((th, i)=>{

@@ -543,7 +543,7 @@ body {
 }
 .lightbox.open { opacity: 1; pointer-events: all; }
 .lightbox-img-wrap img {
-  max-width: 90vw; max-height: 90vh;
+  max-width: 65vw; max-height: 70vh;
   border-radius: 16px;
   box-shadow: 0 30px 80px rgba(0,0,0,0.6);
   object-fit: contain;
@@ -557,8 +557,8 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  max-width: 90vw;
-  max-height: 90vh;
+  max-width: 65vw;
+  max-height: 70vh;
 }
 .lightbox-close {
   position: absolute; top: 20px; right: 20px;
