@@ -1619,6 +1619,7 @@ let cur   = 0;
 */
 let STATE    = 'typing';
 let typeGen  = 0; // cancel stale rAF animations on slide change
+let dissolved = false; // ensure dissolveText fires only once per zoom_out
 let zoomP    = 0;        // 0 = home, 1 = fully zoomed in
 let ZOOM_IN_SPD_CUR = 0.006; // dynamic, recalculated per review
 const ZOOM_IN_SPD   = 0.006;
@@ -1820,11 +1821,12 @@ function startTypewriter(){
   const EMOJI_GAP = 180; // ms between each emoji
   emojiEls.forEach((em, ei) => {
     setTimeout(() => {
+      if(typeGen !== myGen) return; // stale — cancelled
       const t0 = performance.now();
       const DUR = 500;
       function popTick(now){
+        if(typeGen !== myGen) return; // cancelled mid-animation
         const p = Math.min((now - t0) / DUR, 1);
-        // Spring: overshoot and settle
         const scale = p < 0.6
           ? (p / 0.6) * 1.35
           : 1.35 - (p - 0.6) / 0.4 * 0.35;
@@ -1835,7 +1837,6 @@ function startTypewriter(){
         else { em.style.transform = 'scale(1) rotate(0deg)'; em.style.opacity = '1'; }
       }
       requestAnimationFrame(popTick);
-    if(typeGen !== myGen) return;
     }, EMOJI_START_AFTER + ei * EMOJI_GAP);
   });
 
@@ -1863,8 +1864,8 @@ function startWaiting(){
   waitTimer = setTimeout(()=>{
     waitTimer = null;
     hideArrows();
-    dissolveText();
-    STATE = 'zoom_out';
+    dissolved = false;
+    STATE = 'zoom_out'; // dissolveText fires in loop when zoom_out starts
   }, WAIT_DURATION);
 }
 
@@ -1909,14 +1910,22 @@ function goTo(n, skipTypewriter){
   if(waitTimer){ clearTimeout(waitTimer);  waitTimer=null; }
   hideArrows();
 
+  // dissolve text if it's visible, otherwise just clear
+  if(STATE === 'waiting' || STATE === 'zoom_in') {
+    dissolveText();
+    setTimeout(()=>{
+      const prevTxt = slides[cur]?.querySelector('.review-text');
+      if(prevTxt) prevTxt.innerHTML='';
+    }, 500);
+  } else {
+    const prevTxt = slides[cur]?.querySelector('.review-text');
+    if(prevTxt) prevTxt.innerHTML='';
+  }
+
   thumbs[cur].classList.remove('is-active');
   slides[cur].classList.remove('active');
   dts[cur].classList.remove('on');
   strips[cur]?.classList.remove('on');
-
-  // clear previous slide text immediately (slide already hidden via opacity:0)
-  const prevTxt = slides[cur]?.querySelector('.review-text');
-  if(prevTxt){ prevTxt.innerHTML=''; }
 
   cur   = (n + REVIEWS.length) % REVIEWS.length;
   zoomP = 0;
@@ -1964,6 +1973,7 @@ function loop(ts){
     zoomP += (1 - zoomP) * ZOOM_IN_SPD_CUR;
     // startWaiting triggered by typeTimer when text finishes
   } else if(STATE === 'zoom_out'){
+    if(zoomP > 0.98 && !dissolved){ dissolved = true; dissolveText(); } // fire once
     zoomP += (0 - zoomP) * ZOOM_OUT_SPD;
     if(zoomP < 0.02){
       zoomP=0;
@@ -2027,7 +2037,7 @@ function loop(ts){
       const parkX = lay.side === 'left'
         ? cardL - THUMB_W + OVERLAP   // left side: thumb hangs off left edge
         : cardL + cardW - OVERLAP;    // right side: thumb hangs off right edge
-      const parkY = cardCenterY - THUMB_H / 2; // vertically centered on track
+      const parkY = cardCenterY - THUMB_H / 2 - 60; // vertically centered on track
       if(isActive && zoomP > 0.98) console.log('[PARK] trackTop='+trackOff2.top+' trackH='+trackEl2.offsetHeight+' cardCenterY='+cardCenterY.toFixed(0)+' parkY='+parkY.toFixed(0)+' baseT='+baseT.toFixed(0)+' secH='+(sectionSnapH||secEl.offsetHeight));
 
       // Smooth ease-out
