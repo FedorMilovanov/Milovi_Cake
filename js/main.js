@@ -1864,12 +1864,14 @@ function startWaiting(){
     waitTimer = null;
     hideArrows();
     // dissolveText fires slightly after zoom_out starts (arrows need time to fade)
-    setTimeout(()=>{
-      if(STATE !== 'zoom_out') return; // guard: state may have changed
-      dissolveText();
-    }, 300);
-    dissolved = true; // mark as handled so loop doesn't fire again
     STATE = 'zoom_out';
+    setTimeout(()=>{
+      if(STATE !== 'zoom_out') return;
+      if(!dissolved){
+        dissolved = true;
+        dissolveText();
+      }
+    }, 300);
   }, WAIT_DURATION);
 }
 
@@ -1942,6 +1944,7 @@ function goTo(n, skipTypewriter){
   zoomP = 0;
   STATE = 'typing';
   ZOOM_IN_SPD_CUR = ZOOM_IN_SPD;
+  dissolved = false;
 
   thumbs[cur].classList.add('is-active');
   slides[cur].classList.add('active');
@@ -1987,7 +1990,7 @@ function loop(ts){
     zoomP += (0 - zoomP) * ZOOM_OUT_SPD;
     if(zoomP < 0.02){
       zoomP=0;
-      // auto-advance to next — don't return, let rAF continue
+      STATE = 'idle'; // prevent loop re-entry before goTo completes
       goTo(cur + 1);
     }
   }
@@ -2048,7 +2051,7 @@ function loop(ts){
         ? cardL - THUMB_W + OVERLAP   // left side: thumb hangs off left edge
         : cardL + cardW - OVERLAP;    // right side: thumb hangs off right edge
       const parkY = cardCenterY - THUMB_H / 2 - 80; // vertically centered on track
-      if(isActive && zoomP > 0.98) console.log('[PARK] trackTop='+trackOff2.top+' trackH='+trackEl2.offsetHeight+' cardCenterY='+cardCenterY.toFixed(0)+' parkY='+parkY.toFixed(0)+' baseT='+baseT.toFixed(0)+' secH='+(sectionSnapH||secEl.offsetHeight));
+
 
       // Smooth ease-out
       const eased = 1 - Math.pow(1 - Math.min(zoomP, 1), 3);
