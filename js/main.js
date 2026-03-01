@@ -1620,7 +1620,7 @@ let STATE    = 'typing';
 let zoomP    = 0;        // 0 = home, 1 = fully zoomed in
 let ZOOM_IN_SPD_CUR = 0.006; // dynamic, recalculated per review
 const ZOOM_IN_SPD   = 0.006;
-const ZOOM_OUT_SPD  = 0.016;
+const ZOOM_OUT_SPD  = 0.07;
 const ZOOM_DIST     = 75;    // px max pull toward stage
 const WAIT_DURATION = 2800;  // ms to wait before auto-advance
 
@@ -1972,6 +1972,11 @@ function loop(ts){
   const rightGapCenter = (stgRect.right - secRect.left) + (secRect.right - stgRect.right) / 2;
   const minL = MARGIN;
   const maxL = secEl.offsetWidth - THUMB_W - MARGIN;
+  // Track rect for accurate park target — computed once per frame outside forEach
+  const trkRect = trackEl.getBoundingClientRect();
+  const cardL = trkRect.left - secRect.left;
+  const cardT = trkRect.top  - secRect.top;
+  const cardCenterY = cardT + trkRect.height / 2;
 
   thumbs.forEach((th, i)=>{
     const fl  = FLOATS[i];
@@ -1998,16 +2003,12 @@ function loop(ts){
     const ffr = fr * floatScale;
 
     if(isActive && zoomP > 0.001 && (STATE==='zoom_in'||STATE==='waiting'||STATE==='zoom_out')){
-      // Park target: left or right edge of the card, slightly overlapping it
-      // Use trackEl (the card itself) for accurate vertical centering
-      const trkRect = trackEl.getBoundingClientRect();
-      const cardL = trkRect.left - secRect.left;
-      const cardT = trkRect.top  - secRect.top;
+      // Park target: left or right edge of the card, vertically centered
       const OVERLAP = 32; // px the thumb overlaps the card edge
       const parkX = lay.side === 'left'
-        ? cardL - THUMB_W + OVERLAP        // right part of thumb overlaps card left edge
-        : cardL + trkRect.width - OVERLAP; // left part of thumb overlaps card right edge
-      const parkY = cardT + trkRect.height / 2 - THUMB_H / 2;
+        ? cardL - THUMB_W + OVERLAP         // right part of thumb overlaps card left edge
+        : cardL + trkRect.width - OVERLAP;  // left part of thumb overlaps card right edge
+      const parkY = cardCenterY - THUMB_H / 2;
 
       // Slow smooth ease-out
       const eased = 1 - Math.pow(1 - Math.min(zoomP, 1), 3);
