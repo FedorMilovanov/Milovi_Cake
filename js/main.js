@@ -1618,7 +1618,8 @@ let cur   = 0;
    'zoom_out'→ thumb returns, then auto-advance
 */
 let STATE    = 'typing';
-let typeGen  = 0; // cancel stale rAF animations on slide change
+let typeGen    = 0; // cancel stale rAF animations on slide change
+let dissolveGen = 0; // cancel stale dissolve rAF animations
 let dissolved = false; // ensure dissolveText fires only once per zoom_out
 let zoomP    = 0;        // 0 = home, 1 = fully zoomed in
 let ZOOM_IN_SPD_CUR = 0.006; // dynamic, recalculated per review
@@ -1777,69 +1778,66 @@ function startTypewriter(){
   // Total duration: last letter starts + assemble duration
   const totalDur = (totalLetters - 1) * CHAR_DELAY + ASSEMBLE_DUR + 100;
 
-  // Animate each letter with rAF — fly from random position to natural place
+  // Build letterData array — scatter positions for single rAF loop
   const letterEls = txtEl.querySelectorAll('.pl');
+  const letterData = [];
   letterEls.forEach((el, i) => {
-    // Random scatter origin: spread around center of card
     const angle  = Math.random() * Math.PI * 2;
     const dist   = 60 + Math.random() * 120;
     const fromX  = Math.cos(angle) * dist;
     const fromY  = Math.sin(angle) * dist;
     const fromR  = (Math.random() - 0.5) * 60;
     const fromS  = 0.3 + Math.random() * 0.4;
-
+    const startAt = i * CHAR_DELAY;
     el.style.opacity = '0';
     el.style.transform = `translate(${fromX}px, ${fromY}px) rotate(${fromR}deg) scale(${fromS})`;
     el.style.filter = `blur(${2 + Math.random()*3}px)`;
-
-    const startAt = i * CHAR_DELAY;
-
-    setTimeout(() => {
-      if(typeGen !== myGen) return; // stale — new slide started
-      const startTs = performance.now();
-      function tick(now){
-        if(typeGen !== myGen) return; // cancelled mid-animation
-        const elapsed = now - startTs;
-        const raw = Math.min(elapsed / ASSEMBLE_DUR, 1);
-        // Cubic ease-out with slight overshoot
-        const t = raw < 1 ? 1 - Math.pow(1 - raw, 3) : 1;
-        const bounce = raw < 0.85 ? 0 : Math.sin((raw - 0.85) / 0.15 * Math.PI) * 2.5;
-
-        el.style.opacity  = String(Math.min(raw * 3, 1).toFixed(3));
-        el.style.filter   = `blur(${((1-raw)*3).toFixed(2)}px)`;
-        el.style.transform = `translate(${(fromX*(1-t)).toFixed(2)}px, ${(fromY*(1-t) + bounce*(1-raw)).toFixed(2)}px) rotate(${(fromR*(1-t)).toFixed(2)}deg) scale(${(fromS + (1-fromS)*t).toFixed(3)})`;
-
-        if(raw < 1) requestAnimationFrame(tick);
-        else { el.style.transform='none'; el.style.filter='none'; el.style.opacity='1'; }
-      }
-      requestAnimationFrame(tick);
-    }, startAt);
+    letterData.push({ el, fromX, fromY, fromR, fromS, startAt });
   });
 
-  // After all letters assembled — pop in emoji one by one with spring bounce
-  const emojiEls = Array.from(txtEl.querySelectorAll('.pl-emoji'));
+  // Single rAF loop for ALL letters — no per-letter setTimeout/rAF accumulation
   const EMOJI_START_AFTER = (totalLetters - 1) * CHAR_DELAY + ASSEMBLE_DUR * 0.6;
-  const EMOJI_GAP = 180; // ms between each emoji
-  emojiEls.forEach((em, ei) => {
-    setTimeout(() => {
-      if(typeGen !== myGen) return; // stale — cancelled
-      const t0 = performance.now();
+  const EMOJI_GAP = 180;
+  const emojiEls = Array.from(txtEl.querySelectorAll('.pl-emoji'));
+  const animStart = performance.now();
+
+  function animTick(now){
+    if(typeGen !== myGen) return; // cancelled — stop entire animation
+    const elapsed = now - animStart;
+
+    // Animate letters
+    letterData.forEach(({ el, fromX, fromY, fromR, fromS, startAt }) => {
+      const t = elapsed - startAt;
+      if(t < 0) return; // not started yet
+      const raw = Math.min(t / ASSEMBLE_DUR, 1);
+      const ease = raw < 1 ? 1 - Math.pow(1 - raw, 3) : 1;
+      const bounce = raw < 0.85 ? 0 : Math.sin((raw - 0.85) / 0.15 * Math.PI) * 2.5;
+      el.style.opacity   = String(Math.min(raw * 3, 1).toFixed(3));
+      el.style.filter    = `blur(${((1-raw)*3).toFixed(2)}px)`;
+      el.style.transform = raw >= 1
+        ? 'none'
+        : `translate(${(fromX*(1-ease)).toFixed(2)}px, ${(fromY*(1-ease)+bounce*(1-raw)).toFixed(2)}px) rotate(${(fromR*(1-ease)).toFixed(2)}deg) scale(${(fromS+(1-fromS)*ease).toFixed(3)})`;
+      if(raw >= 1){ el.style.filter='none'; el.style.opacity='1'; }
+    });
+
+    // Animate emoji
+    emojiEls.forEach((em, ei) => {
+      const t = elapsed - (EMOJI_START_AFTER + ei * EMOJI_GAP);
+      if(t < 0) return;
       const DUR = 500;
-      function popTick(now){
-        if(typeGen !== myGen) return; // cancelled mid-animation
-        const p = Math.min((now - t0) / DUR, 1);
-        const scale = p < 0.6
-          ? (p / 0.6) * 1.35
-          : 1.35 - (p - 0.6) / 0.4 * 0.35;
-        const rot = Math.sin(p * Math.PI) * 18 * (1 - p);
-        em.style.opacity = String(Math.min(p * 5, 1).toFixed(3));
-        em.style.transform = `scale(${scale.toFixed(3)}) rotate(${rot.toFixed(1)}deg)`;
-        if(p < 1) requestAnimationFrame(popTick);
-        else { em.style.transform = 'scale(1) rotate(0deg)'; em.style.opacity = '1'; }
-      }
-      requestAnimationFrame(popTick);
-    }, EMOJI_START_AFTER + ei * EMOJI_GAP);
-  });
+      const p = Math.min(t / DUR, 1);
+      const scale = p < 0.6 ? (p/0.6)*1.35 : 1.35-(p-0.6)/0.4*0.35;
+      const rot = Math.sin(p * Math.PI) * 18 * (1 - p);
+      em.style.opacity   = String(Math.min(p * 5, 1).toFixed(3));
+      em.style.transform = p >= 1 ? 'scale(1) rotate(0deg)' : `scale(${scale.toFixed(3)}) rotate(${rot.toFixed(1)}deg)`;
+    });
+
+    // Continue until all done
+    const lastEmojiEnd = EMOJI_START_AFTER + (emojiEls.length - 1) * EMOJI_GAP + 500;
+    const allDone = elapsed >= Math.max(totalDur, lastEmojiEnd || 0);
+    if(!allDone) requestAnimationFrame(animTick);
+  }
+  requestAnimationFrame(animTick);
 
   // START zoom_in immediately alongside typing — calibrate speed so it
   // reaches ~1 at the same time the last letter finishes animating.
@@ -1880,21 +1878,24 @@ function dissolveText(){
   const txtEl  = slides[cur].querySelector('.review-text');
   if(!txtEl) return;
   const spans = Array.from(txtEl.querySelectorAll('.pl, .pl-emoji'));
+  if(!spans.length) return;
   const SHATTER_DUR = 480;
+  const myDGen = ++dissolveGen; // capture — cancel if goTo called mid-dissolve
   spans.forEach((el, i) => {
     const angle  = Math.random() * Math.PI * 2;
     const dist   = 40 + Math.random() * 100;
     const tx     = Math.cos(angle) * dist;
-    const ty     = Math.sin(angle) * dist - 20; // drift slightly up
+    const ty     = Math.sin(angle) * dist - 20;
     const rot    = (Math.random() - 0.5) * 90;
     const delay  = i * 8;
     const startTs = performance.now();
     el.style.transition = 'none';
     function tick(now){
+      if(dissolveGen !== myDGen) return; // cancelled
       const elapsed = now - startTs - delay;
       if(elapsed < 0){ requestAnimationFrame(tick); return; }
       const raw = Math.min(elapsed / SHATTER_DUR, 1);
-      const t   = raw * raw; // ease-in — accelerate outward
+      const t   = raw * raw;
       el.style.opacity   = String(Math.max(0, 1 - raw * 2).toFixed(3));
       el.style.filter    = `blur(${(raw * 4).toFixed(2)}px)`;
       el.style.transform = `translate(${(tx*t).toFixed(2)}px, ${(ty*t).toFixed(2)}px) rotate(${(rot*t).toFixed(2)}deg) scale(${(1 - raw * 0.5).toFixed(3)})`;
@@ -1916,12 +1917,21 @@ function goTo(n, skipTypewriter){
   if(waitTimer){ clearTimeout(waitTimer);  waitTimer=null; }
   hideArrows();
 
-  // invalidate stale rAF letter animations BEFORE clearing text
+  // invalidate stale letter rAF animations
   typeGen++;
 
-  // clear previous slide text immediately (slide is about to be hidden)
+  // dissolve text if visible (before dissolveGen increments so it can run)
   const prevTxt = slides[cur]?.querySelector('.review-text');
-  if(prevTxt) prevTxt.innerHTML = '';
+  if(prevTxt){
+    const hasSpans = prevTxt.querySelectorAll('.pl, .pl-emoji').length > 0;
+    if(hasSpans && (STATE === 'waiting' || STATE === 'zoom_in')) {
+      dissolveText();
+    }
+    prevTxt.innerHTML = ''; // clear immediately — slide is about to hide
+  }
+
+  // now invalidate any dissolve rAF that was just started (it'll stop at next frame)
+  dissolveGen++;
 
   thumbs[cur].classList.remove('is-active');
   slides[cur].classList.remove('active');
