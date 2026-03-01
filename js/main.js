@@ -825,6 +825,8 @@ function lbNavigate(dir) {
 function _lbUpdateArrows() {
   const show = _lbSrcs.length > 1;
   document.getElementById('lbNav').classList.toggle('hidden', !show);
+  const counter = document.getElementById('lbCounter');
+  if (counter) counter.textContent = (_lbIdx + 1) + ' / ' + _lbSrcs.length;
 }
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
@@ -1865,66 +1867,61 @@ function startWaiting(){
   waitTimer = setTimeout(()=>{
     waitTimer = null;
     hideArrows();
-    // dissolveText fires slightly after zoom_out starts (arrows need time to fade)
     STATE = 'zoom_out';
-    setTimeout(()=>{
-      if(STATE !== 'zoom_out') return;
-      if(!dissolved){
-        dissolved = true;
-        dissolveText();
-      }
-    }, 300);
+    // dissolveText запускается из loop() когда zoomP < 0.72 — не по таймеру
   }, WAIT_DURATION);
 }
 
 function dissolveText(){
-  // Explode current text letters outward — shatter effect
-  // ЕДИНЫЙ rAF-цикл на все буквы (не отдельный на каждую — это вызывало фризы на длинных отзывах)
   const slides = trackEl.querySelectorAll('.review-slide');
-  const txtEl  = slides[cur].querySelector('.review-text');
+  const txtEl  = slides[cur]?.querySelector('.review-text');
   if(!txtEl) return;
+
   const spans = Array.from(txtEl.querySelectorAll('.pl, .pl-emoji'));
   if(!spans.length) return;
-  const SHATTER_DUR = 480;
-  const myDGen = ++dissolveGen; // capture — cancel if goTo called mid-dissolve
 
-  // Предрасчитываем данные для каждого символа
-  const spanData = spans.map((el, i) => {
+  const SHATTER_DUR = 480;
+  const myGen = ++dissolveGen;
+
+  const data = spans.map((el, i) => {
     const angle = Math.random() * Math.PI * 2;
     const dist  = 40 + Math.random() * 100;
-    el.style.transition = 'none';
     return {
       el,
-      tx:    Math.cos(angle) * dist,
-      ty:    Math.sin(angle) * dist - 20,
-      rot:   (Math.random() - 0.5) * 90,
       delay: i * 8,
+      tx: Math.cos(angle) * dist,
+      ty: Math.sin(angle) * dist - 20,
+      rot: (Math.random() - 0.5) * 90
     };
   });
 
-  const startTs = performance.now();
+  const start = performance.now();
 
   function tick(now){
-    if(dissolveGen !== myDGen) return; // cancelled — весь dissolve остановлен
-    const elapsed = now - startTs;
-    let allDone = true;
+    if (dissolveGen !== myGen) return;
 
-    spanData.forEach(({ el, tx, ty, rot, delay }) => {
-      const t = elapsed - delay;
-      if(t < 0){ allDone = false; return; } // ещё не начал
-      const raw = Math.min(t / SHATTER_DUR, 1);
-      if(raw < 1) allDone = false;
-      const sq = raw * raw;
-      el.style.opacity   = String(Math.max(0, 1 - raw * 2).toFixed(3));
-      el.style.filter    = `blur(${(raw * 4).toFixed(2)}px)`;
-      el.style.transform = raw >= 1
-        ? `translate(${tx.toFixed(2)}px, ${ty.toFixed(2)}px) rotate(${rot.toFixed(2)}deg) scale(0.5)`
-        : `translate(${(tx*sq).toFixed(2)}px, ${(ty*sq).toFixed(2)}px) rotate(${(rot*sq).toFixed(2)}deg) scale(${(1 - raw * 0.5).toFixed(3)})`;
-      if(raw >= 1) el.style.opacity = '0';
-    });
+    const t = now - start;
+    let done = true;
 
-    if(!allDone) requestAnimationFrame(tick);
+    for (const d of data){
+      const local = t - d.delay;
+      if (local < 0) { done = false; continue; }
+
+      const raw = Math.min(local / SHATTER_DUR, 1);
+      if (raw < 1) done = false;
+
+      const p = raw * raw;
+
+      d.el.style.opacity   = String(Math.max(0, 1 - raw * 2));
+      d.el.style.filter    = `blur(${(raw * 4).toFixed(2)}px)`;
+      d.el.style.transform =
+        `translate(${(d.tx*p).toFixed(2)}px, ${(d.ty*p).toFixed(2)}px) ` +
+        `rotate(${(d.rot*p).toFixed(2)}deg) scale(${(1 - raw*0.5).toFixed(3)})`;
+    }
+
+    if (!done) requestAnimationFrame(tick);
   }
+
   requestAnimationFrame(tick);
 }
 
@@ -1941,18 +1938,11 @@ function goTo(n, skipTypewriter){
   // invalidate stale letter rAF animations
   typeGen++;
 
-  // dissolve text if visible (before dissolveGen increments so it can run)
+  // Сбрасываем текст и отменяем любой активный dissolve.
+  // dissolveText() здесь НЕ вызываем — он запускается только из loop() при zoom_out.
   const prevTxt = slides[cur]?.querySelector('.review-text');
-  if(prevTxt){
-    const hasSpans = prevTxt.querySelectorAll('.pl, .pl-emoji').length > 0;
-    if(hasSpans && (STATE === 'waiting' || STATE === 'zoom_in')) {
-      dissolveText();
-    }
-    prevTxt.innerHTML = ''; // clear immediately — slide is about to hide
-  }
-
-  // now invalidate any dissolve rAF that was just started (it'll stop at next frame)
-  dissolveGen++;
+  if (prevTxt) prevTxt.innerHTML = '';
+  dissolveGen++; // отменить любой dissolve, который мог идти
 
   thumbs[cur].classList.remove('is-active');
   slides[cur].classList.remove('active');
@@ -2005,8 +1995,12 @@ function loop(ts){
     zoomP += (1 - zoomP) * ZOOM_IN_SPD_CUR;
     // startWaiting triggered by typeTimer when text finishes
   } else if(STATE === 'zoom_out'){
-    // dissolveText is called from startWaiting with delay — not from loop
     zoomP += (0 - zoomP) * ZOOM_OUT_SPD;
+    // Запускаем dissolve когда thumb отъехал на ~28% — привязка к анимации, не к таймеру
+    if (!dissolved && zoomP < 0.72) {
+      dissolved = true;
+      dissolveText();
+    }
     if(zoomP < 0.02){
       zoomP=0;
       STATE = 'idle'; // prevent loop re-entry before goTo completes
