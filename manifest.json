@@ -9,7 +9,10 @@
   "background_color": "#2e1a0e",
   "theme_color": "#c9934a",
   "lang": "ru",
-  "categories": ["food", "shopping"],
+  "categories": [
+    "food",
+    "shopping"
+  ],
   "icons": [
     {
       "src": "/icon-192.png",
@@ -45,14 +48,24 @@
       "short_name": "Заказать",
       "description": "Перейти к каталогу и оформить заказ",
       "url": "/#catalog",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "Позвонить",
       "short_name": "Позвонить",
       "description": "+7 911 903 88 86",
       "url": "tel:+79119038886",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }

@@ -458,7 +458,7 @@ body {
 .review-img-wrap:hover img { transform: scale(1.02); }
 /* ── Кинолента скринов ── */
 .review-filmstrip {
-  display: flex;
+  display: none; /* скрыт на десктопе — показывается только на мобиле */
   justify-content: center;
   gap: 6px;
   margin-top: 28px;
@@ -494,6 +494,7 @@ body {
 
 @media (max-width: 600px) {
   .review-filmstrip {
+    display: flex; /* на мобиле показываем */
     gap: 4px;
     padding: 0 8px 2px;
     margin-top: 20px;

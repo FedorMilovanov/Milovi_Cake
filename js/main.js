@@ -1634,9 +1634,9 @@ let cur   = 0;
 */
 let STATE    = 'typing';
 let zoomP    = 0;        // 0 = home, 1 = fully zoomed in
-let ZOOM_IN_SPD_CUR = 0.014; // dynamic, recalculated per review
-const ZOOM_IN_SPD   = 0.014;
-const ZOOM_OUT_SPD  = 0.028;
+let ZOOM_IN_SPD_CUR = 0.006; // dynamic, recalculated per review
+const ZOOM_IN_SPD   = 0.006;
+const ZOOM_OUT_SPD  = 0.016;
 const ZOOM_DIST     = 75;    // px max pull toward stage
 const WAIT_DURATION = 2800;  // ms to wait before auto-advance
 
@@ -1982,19 +1982,21 @@ function loop(ts){
     const ffr = fr * floatScale;
 
     if(isActive && zoomP > 0.001 && (STATE==='zoom_in'||STATE==='waiting'||STATE==='zoom_out')){
-      // Park target: flush against the stage edge, vertically centered on stage
-      const GAP = -6;
-      const parkX = lay.side==='left'
-        ? stgRect.left - secRect.left - THUMB_W - GAP
-        : stgRect.right - secRect.left + GAP;
-      const parkY = (stgRect.top - secRect.top) + stgRect.height/2 - THUMB_H/2;
+      // Park target: centered on the stage, slightly to the active side
+      const stageCX = stgRect.left - secRect.left + stgRect.width / 2;
+      const stageCY = stgRect.top  - secRect.top  + stgRect.height / 2;
+      const SIDE_OFFSET = stgRect.width * 0.38; // how far left/right of center
+      const parkX = lay.side === 'left'
+        ? stageCX - SIDE_OFFSET - THUMB_W / 2
+        : stageCX + SIDE_OFFSET - THUMB_W / 2;
+      const parkY = stageCY - THUMB_H / 2;
 
-      // Ease: quick start, smooth settle
-      const eased = 1 - Math.pow(1 - Math.min(zoomP, 1), 2.2);
+      // Slow smooth ease-out
+      const eased = 1 - Math.pow(1 - Math.min(zoomP, 1), 3);
       px = (parkX - baseL) * eased;
       py = (parkY - baseT) * eased;
-      // tilt toward carousel as it arrives
-      pr = (lay.side==='left' ? 5 : -5) * eased;
+      // gentle tilt toward carousel
+      pr = (lay.side==='left' ? 4 : -4) * eased;
     }
 
     // tremble when parked and waiting to be opened
@@ -2100,9 +2102,8 @@ function setBox(l,t,w,h,r,opacity){
 function animBox(frames, times, done){
   const start = performance.now();
   function ease(t){
-    const c4=2*Math.PI/2.8;
-    if(t>=1) return 1;
-    return 1 - Math.pow(2,-9*t)*Math.cos(t*c4*2.5);
+    // Smooth cubic ease-out — no overshoot, no elastic bounce
+    return 1 - Math.pow(1 - Math.min(t, 1), 3);
   }
   function step(now){
     const elapsed = now - start;
