@@ -3278,6 +3278,55 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   color: #fff;
 }
 
+/* ── lb arrows (reviews lightbox) ── */
+.lb-arrows {
+  position: fixed;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  z-index: 9100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s 0.5s;
+}
+.lb-overlay.active .lb-arrows {
+  opacity: 1;
+  pointer-events: all;
+}
+.lb-arr-btn {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.10);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(255,255,255,0.22);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, border-color 0.2s;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.35);
+  flex-shrink: 0;
+}
+.lb-arr-btn:hover  { background: rgba(201,147,74,0.80); border-color: rgba(201,147,74,0.9); transform: scale(1.08); }
+.lb-arr-btn:active { transform: scale(0.94); }
+.lb-arr-counter {
+  color: rgba(255,255,255,0.70);
+  font-family: 'Jost', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  min-width: 48px;
+  text-align: center;
+  user-select: none;
+}
+@media (max-width: 600px) {
+  .lb-arr-btn { width: 46px; height: 46px; }
+  .lb-arrows  { bottom: 24px; gap: 16px; }
+}
+
 /* ── particle assemble per letter ── */
 .review-text .pl {
   display: inline-block;
