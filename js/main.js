@@ -1910,9 +1910,12 @@ function goTo(n, skipTypewriter){
   dts[cur].classList.remove('on');
   strips[cur]?.classList.remove('on');
 
-  // reset previous card text
-  const prevTxt = slides[cur].querySelector('.review-text');
-  if(prevTxt){ prevTxt.innerHTML=''; }
+  // reset previous card text — delay until slide is hidden (after CSS opacity transition)
+  const prevSlideIdx = cur;
+  setTimeout(()=>{
+    const prevTxt = slides[prevSlideIdx]?.querySelector('.review-text');
+    if(prevTxt){ prevTxt.innerHTML=''; }
+  }, 500);
 
   cur   = (n + REVIEWS.length) % REVIEWS.length;
   zoomP = 0;
@@ -1988,11 +1991,9 @@ function loop(ts){
   const stageOff    = offsetRelTo(stageEl, secEl);
   const cardL       = stageOff.left;
   const cardW       = stageEl.offsetWidth;
-  const rowEl       = stageEl.querySelector('.carousel-row');
-  const rowOff      = rowEl ? offsetRelTo(rowEl, secEl) : stageOff;
-  const cardCenterY = rowOff.top + (rowEl || stageEl).offsetHeight / 2;
-  // DEBUG: remove after fix confirmed
-  if(Math.random() < 0.005) console.log('[PARK DEBUG] secH='+secEl.offsetHeight+' rowTop='+rowOff.top+' rowH='+(rowEl?rowEl.offsetHeight:0)+' cardCenterY='+cardCenterY.toFixed(1));
+  // Centre on the reviews-track — fixed height (220px), scroll-independent
+  const trackOff    = offsetRelTo(trackEl, secEl);
+  const cardCenterY = trackOff.top + trackEl.offsetHeight / 2;
 
   thumbs.forEach((th, i)=>{
     const fl  = FLOATS[i];
@@ -2097,12 +2098,12 @@ function openLB(triggerEl, src, idx){
     lbX.style.opacity = '1';
     lbX.style.transform = 'scale(1)';
     lbX.style.pointerEvents = '';
-  }, 500);
+  }, 600);
 
   setTimeout(()=>{
     lbBox.classList.add('clickable');
     lbBusy = false;
-  }, 700);
+  }, 950);
 }
 
 function closeLB(){
@@ -2110,7 +2111,7 @@ function closeLB(){
   lbBusy=true; lbIsOpen=false;
   lbBox.classList.remove('clickable');
   lbX.style.opacity = '0';
-  lbX.style.transform = 'scale(0.6) rotate(-45deg)';
+  lbX.style.transform = 'scale(0.5)';
   lbX.style.pointerEvents = 'none';
 
   // Убираем класс active — CSS transition анимирует обратно
