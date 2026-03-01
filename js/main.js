@@ -1655,7 +1655,7 @@ REVIEWS.forEach((rv, i) => {
 
   th.addEventListener('click', ()=>{
     if(i !== cur) { goTo(i); return; }
-    if(STATE==='waiting'||STATE==='zoom_in') focusAndOpen(th, rv.src, i);
+    if(STATE==='waiting'||STATE==='zoom_in') openLB(th, rv.src, i);
   });
   scField.appendChild(th);
   thumbs.push(th);
@@ -2006,17 +2006,19 @@ function loop(ts){
     const ffr = fr * floatScale;
 
     if(isActive && zoomP > 0.001 && (STATE==='zoom_in'||STATE==='waiting'||STATE==='zoom_out')){
-      // Park target: center of the card, both horizontally and vertically
-      const cardCenterX = cardL + cardW / 2;
-      const parkX = cardCenterX - THUMB_W / 2;
-      const parkY = cardCenterY - THUMB_H / 2;
+      // Park target: left/right edge of card, vertically centered (the "circles" position)
+      const OVERLAP = 30; // thumb slightly overlaps card edge
+      const parkX = lay.side === 'left'
+        ? cardL - THUMB_W + OVERLAP   // left side: thumb hangs off left edge
+        : cardL + cardW - OVERLAP;    // right side: thumb hangs off right edge
+      const parkY = cardCenterY - THUMB_H / 2; // vertically centered
 
       // Smooth ease-out
       const eased = 1 - Math.pow(1 - Math.min(zoomP, 1), 3);
       px = (parkX - baseL) * eased;
       py = (parkY - baseT) * eased;
-      // slight tilt
-      pr = (lay.side==='left' ? 4 : -4) * eased;
+      // tilt inward toward card
+      pr = (lay.side==='left' ? 6 : -6) * eased;
     }
 
     // tremble when parked and waiting to be opened
@@ -2063,50 +2065,6 @@ let fromRect= null;
 function lerp(a,b,t){ return a+(b-a)*t; }
 
 
-function focusAndOpen(triggerEl, src, idx){
-  if(lbBusy) return;
-  // Phase 1: blur up (100ms) — like camera going out of focus
-  const BLUR_IN  = 100;
-  // Phase 2: sharp focus snapping in (220ms) — photo developing
-  const FOCUS_IN = 220;
-  const TOTAL    = BLUR_IN + FOCUS_IN;
-  const startTs  = performance.now();
-
-  const img = triggerEl.querySelector('img');
-  if(!img) { openLB(triggerEl, src, idx); return; }
-
-  // Save original filter so we can restore it if needed
-  const origFilter = triggerEl.style.filter || '';
-
-  function tick(now){
-    const elapsed = now - startTs;
-    const raw     = Math.min(elapsed / TOTAL, 1);
-
-    if(elapsed < BLUR_IN){
-      // Phase 1: ramp blur up 0 → 12px, desaturate and dim slightly
-      const p   = elapsed / BLUR_IN;
-      const eP  = p * p; // ease-in
-      triggerEl.style.filter = `blur(${(eP * 12).toFixed(1)}px) brightness(${1 - eP * 0.15}) saturate(${1 - eP * 0.4})`;
-      requestAnimationFrame(tick);
-    } else if(elapsed < TOTAL){
-      // Phase 2: snap focus — blur collapses fast with overshoot feel
-      const p   = (elapsed - BLUR_IN) / FOCUS_IN;
-      const eP  = 1 - Math.pow(1 - p, 3); // ease-out cubic
-      const blurVal = 12 * (1 - eP);
-      const briVal  = 1 - 0.15 * (1 - p);
-      const satVal  = 1 - 0.4  * (1 - p);
-      // slight brightness pulse at the moment of focus
-      const pulse   = p > 0.6 ? Math.sin((p - 0.6) / 0.4 * Math.PI) * 0.18 : 0;
-      triggerEl.style.filter = `blur(${blurVal.toFixed(1)}px) brightness(${(briVal + pulse).toFixed(3)}) saturate(${satVal.toFixed(3)})`;
-      requestAnimationFrame(tick);
-    } else {
-      // Done — restore and open lightbox
-      triggerEl.style.filter = origFilter;
-      openLB(triggerEl, src, idx);
-    }
-  }
-  requestAnimationFrame(tick);
-}
 
 function openLB(triggerEl, src, idx){
   if(lbBusy) return;
@@ -2133,8 +2091,29 @@ function openLB(triggerEl, src, idx){
   ];
   animBox(frames, [0, 260, 580, 880], ()=>{
     setBox(tl, tt, tw, maxH, 16, 1);
-    lbBox.classList.add('clickable');
-    lbBusy=false;
+    // Blur→focus: image "develops" like a photograph
+    lbImg.style.filter = 'blur(22px) saturate(0.2) brightness(1.35)';
+    lbImg.style.transition = 'none';
+    const FOCUS_DUR = 900;
+    const focusStart = performance.now();
+    function focusTick(now){
+      const p = Math.min((now - focusStart) / FOCUS_DUR, 1);
+      // ease-out quart — slow lingering focus pull
+      const e = 1 - Math.pow(1 - p, 4);
+      const blurVal = 22 * (1 - e);
+      const satVal  = 0.2 + 0.8 * e;
+      // brightness spike at ~40% then settles to 1
+      const briPulse = p < 0.4 ? 1.35 - 0.35 * (p / 0.4) : 1.0;
+      lbImg.style.filter = `blur(${blurVal.toFixed(2)}px) saturate(${satVal.toFixed(3)}) brightness(${briPulse.toFixed(3)})`;
+      if(p < 1){
+        requestAnimationFrame(focusTick);
+      } else {
+        lbImg.style.filter = '';
+        lbBox.classList.add('clickable');
+        lbBusy=false;
+      }
+    }
+    requestAnimationFrame(focusTick);
   });
 }
 
