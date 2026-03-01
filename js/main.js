@@ -64,7 +64,18 @@ function renderCatalog() {
       imgHtml = `
         <div class="slider-wrap" id="slider-${p.id}">
           ${p.slides.map((src, i) => {
-            const active = i === 0 ? ' active' : ''; {
+            const active = i === 0 ? ' active' : '';
+            return `<div class="slide-img${active}">
+              <img src="${IMG_BASE}/${src}" alt="${p.name}" loading="${i === 0 ? 'eager' : 'lazy'}" />
+            </div>`;
+          }).join('')}
+          ${totalSlides > 1 ? `
+            <button class="slide-btn slide-prev" onclick="sliderStep('${p.id}',-1,${totalSlides})" aria-label="Назад">&#8249;</button>
+            <button class="slide-btn slide-next" onclick="sliderStep('${p.id}',1,${totalSlides})" aria-label="Вперёд">&#8250;</button>
+            <div class="slide-dots">${p.slides.map((_,i) => `<span class="dot${i===0?' active':''}" onclick="goSlide('${p.id}',${i})"></span>`).join('')}</div>
+          ` : ''}
+        </div>`;
+    } else {
       imgHtml = `<div class="product-img-ph">${p.emoji}</div>`;
     }
     const titleHtml = p.hasMaxi
@@ -137,10 +148,6 @@ function sliderStep(pid, dir, total) {
       goSlide(pid, sliderCurrentIdx[pid]);
     }, 3000);
   }
-}
-
-  if (thumb) thumb.style.opacity = '0';
-  playBtn.style.display = 'none';
 }
 
 // ── PRODUCT SLIDER TOUCH SWIPE ──
