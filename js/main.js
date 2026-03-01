@@ -2112,9 +2112,31 @@ const lbBg  = document.getElementById('lbBg');
 const lbBox = document.getElementById('lbBox');
 const lbImg = document.getElementById('lbImg');
 const lbX   = document.getElementById('lbX');
+const lbArrows  = document.getElementById('lbArrows');
+const lbPrevBtn = document.getElementById('lbPrev');
+const lbNextBtn = document.getElementById('lbNext');
+const lbArrCounter = document.getElementById('lbArrCounter');
 let lbIsOpen= false;
 let lbBusy  = false;
 let fromRect= null;
+let _lbReviewIdx = 0; // текущий индекс в лайтбоксе отзывов
+
+function _lbReviewNav(dir) {
+  _lbReviewIdx = (_lbReviewIdx + dir + REVIEWS.length) % REVIEWS.length;
+  lbImg.style.opacity = '0';
+  lbImg.style.transform = 'scale(0.95)';
+  setTimeout(() => {
+    lbImg.src = REVIEWS[_lbReviewIdx].src;
+    lbImg.onload = () => {
+      lbImg.style.opacity = '1';
+      lbImg.style.transform = 'scale(1)';
+    };
+  }, 150);
+  lbArrCounter.textContent = (_lbReviewIdx + 1) + ' / ' + REVIEWS.length;
+}
+
+if (lbPrevBtn) lbPrevBtn.addEventListener('click', () => _lbReviewNav(-1));
+if (lbNextBtn) lbNextBtn.addEventListener('click', () => _lbReviewNav(1));
 
 function lerp(a,b,t){ return a+(b-a)*t; }
 
@@ -2127,6 +2149,12 @@ function openLB(triggerEl, src, idx){
   hideArrows();
   lbBusy=true; lbIsOpen=true;
   lbImg.src = src;
+  // Инициализируем счётчик стрелок
+  _lbReviewIdx = typeof idx === 'number' ? idx : 0;
+  lbImg.style.opacity = '1';
+  lbImg.style.transform = 'scale(1)';
+  lbImg.style.transition = 'opacity 0.2s, transform 0.2s';
+  if (lbArrCounter) lbArrCounter.textContent = (_lbReviewIdx + 1) + ' / ' + REVIEWS.length;
 
   document.body.style.overflow = 'hidden';
   lbOverlay.classList.add('active');
