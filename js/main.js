@@ -2037,7 +2037,7 @@ function loop(ts){
       const parkX = lay.side === 'left'
         ? cardL - THUMB_W + OVERLAP   // left side: thumb hangs off left edge
         : cardL + cardW - OVERLAP;    // right side: thumb hangs off right edge
-      const parkY = cardCenterY - THUMB_H / 2 - 60; // vertically centered on track
+      const parkY = cardCenterY - THUMB_H / 2 - 90; // vertically centered on track
       if(isActive && zoomP > 0.98) console.log('[PARK] trackTop='+trackOff2.top+' trackH='+trackEl2.offsetHeight+' cardCenterY='+cardCenterY.toFixed(0)+' parkY='+parkY.toFixed(0)+' baseT='+baseT.toFixed(0)+' secH='+(sectionSnapH||secEl.offsetHeight));
 
       // Smooth ease-out
