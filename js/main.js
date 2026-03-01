@@ -1905,22 +1905,17 @@ function goTo(n, skipTypewriter){
   const dts    = dotsEl.querySelectorAll('.rev-dot');
   const strips = mobileStrip.querySelectorAll('.strip-item');
 
-  // cancel pending timers
+  // cancel all pending timers immediately
   if(typeTimer){ clearTimeout(typeTimer); typeTimer=null; }
   if(waitTimer){ clearTimeout(waitTimer);  waitTimer=null; }
   hideArrows();
 
-  // dissolve text if it's visible, otherwise just clear
-  if(STATE === 'waiting' || STATE === 'zoom_in') {
-    dissolveText();
-    setTimeout(()=>{
-      const prevTxt = slides[cur]?.querySelector('.review-text');
-      if(prevTxt) prevTxt.innerHTML='';
-    }, 500);
-  } else {
-    const prevTxt = slides[cur]?.querySelector('.review-text');
-    if(prevTxt) prevTxt.innerHTML='';
-  }
+  // invalidate stale rAF letter animations BEFORE clearing text
+  typeGen++;
+
+  // clear previous slide text immediately (slide is about to be hidden)
+  const prevTxt = slides[cur]?.querySelector('.review-text');
+  if(prevTxt) prevTxt.innerHTML = '';
 
   thumbs[cur].classList.remove('is-active');
   slides[cur].classList.remove('active');
@@ -1930,8 +1925,7 @@ function goTo(n, skipTypewriter){
   cur   = (n + REVIEWS.length) % REVIEWS.length;
   zoomP = 0;
   STATE = 'typing';
-  ZOOM_IN_SPD_CUR = ZOOM_IN_SPD; // reset speed
-  typeGen++; // invalidate stale rAF
+  ZOOM_IN_SPD_CUR = ZOOM_IN_SPD;
 
   thumbs[cur].classList.add('is-active');
   slides[cur].classList.add('active');
@@ -1940,7 +1934,7 @@ function goTo(n, skipTypewriter){
   strips[cur]?.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
 
   if(!skipTypewriter) startTypewriter();
-  else startWaiting(); // if skipping typewriter still need to enter waiting state
+  else startWaiting();
 }
 
 document.getElementById('btnPrev').addEventListener('click', ()=> goTo(cur-1));
@@ -2037,7 +2031,7 @@ function loop(ts){
       const parkX = lay.side === 'left'
         ? cardL - THUMB_W + OVERLAP   // left side: thumb hangs off left edge
         : cardL + cardW - OVERLAP;    // right side: thumb hangs off right edge
-      const parkY = cardCenterY - THUMB_H / 2 - 90; // vertically centered on track
+      const parkY = cardCenterY - THUMB_H / 2 - 80; // vertically centered on track
       if(isActive && zoomP > 0.98) console.log('[PARK] trackTop='+trackOff2.top+' trackH='+trackEl2.offsetHeight+' cardCenterY='+cardCenterY.toFixed(0)+' parkY='+parkY.toFixed(0)+' baseT='+baseT.toFixed(0)+' secH='+(sectionSnapH||secEl.offsetHeight));
 
       // Smooth ease-out
