@@ -1723,7 +1723,6 @@ function startTypewriter(){
   const slides = trackEl.querySelectorAll('.review-slide');
   const txtEl  = slides[cur].querySelector('.review-text');
   const full   = txtEl.dataset.full;
-  console.log('[TW START] cur='+cur+' gen='+typeGen+' full='+full?.slice(0,20));
 
   const myGen = typeGen; // stale check
   if(typeTimer){ clearTimeout(typeTimer); typeTimer=null; }
@@ -1851,14 +1850,12 @@ function startTypewriter(){
   typeTimer = setTimeout(()=>{
     typeTimer = null;
     zoomP = 1;
-    console.log('[TW DONE] cur='+cur+' gen='+typeGen+' myGen='+myGen);
-    if(typeGen !== myGen){ console.log('[TW DONE] STALE — skipping startWaiting'); return; }
+    if(typeGen !== myGen) return; // stale — slide changed
     startWaiting();
   }, totalDur);
 }
 
 function startWaiting(){
-  console.log('[WAITING] cur='+cur+' gen='+typeGen);
   STATE = 'waiting';
   showArrows();
   thumbs[cur].classList.add('hint-show');
@@ -1866,8 +1863,12 @@ function startWaiting(){
   waitTimer = setTimeout(()=>{
     waitTimer = null;
     hideArrows();
-    dissolved = false;
-    console.log('[ZOOM_OUT START] cur='+cur);
+    // dissolveText fires slightly after zoom_out starts (arrows need time to fade)
+    setTimeout(()=>{
+      if(STATE !== 'zoom_out') return; // guard: state may have changed
+      dissolveText();
+    }, 300);
+    dissolved = true; // mark as handled so loop doesn't fire again
     STATE = 'zoom_out';
   }, WAIT_DURATION);
 }
@@ -1911,7 +1912,6 @@ function goTo(n, skipTypewriter){
   const dts    = dotsEl.querySelectorAll('.rev-dot');
   const strips = mobileStrip.querySelectorAll('.strip-item');
 
-  console.log('[GOTO] n='+n+' cur='+cur+' STATE='+STATE+' typeGen='+typeGen);
   // cancel all pending timers immediately
   if(typeTimer){ clearTimeout(typeTimer); typeTimer=null; }
   if(waitTimer){ clearTimeout(waitTimer);  waitTimer=null; }
@@ -1983,7 +1983,7 @@ function loop(ts){
     zoomP += (1 - zoomP) * ZOOM_IN_SPD_CUR;
     // startWaiting triggered by typeTimer when text finishes
   } else if(STATE === 'zoom_out'){
-    if(zoomP > 0.01 && !dissolved){ dissolved = true; dissolveText(); } // fire at zoom_out start
+    // dissolveText is called from startWaiting with delay — not from loop
     zoomP += (0 - zoomP) * ZOOM_OUT_SPD;
     if(zoomP < 0.02){
       zoomP=0;
