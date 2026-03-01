@@ -1966,14 +1966,14 @@ function loop(ts){
     const ffr = fr * floatScale;
 
     if(isActive && zoomP > 0.001 && (STATE==='zoom_in'||STATE==='waiting'||STATE==='zoom_out')){
-      // Park target: centered on the stage, slightly to the active side
-      const stageCX = stgRect.left - secRect.left + stgRect.width / 2;
-      const stageCY = stgRect.top  - secRect.top  + stgRect.height / 2;
-      const SIDE_OFFSET = stgRect.width * 0.38; // how far left/right of center
+      // Park target: left or right edge of the card, slightly overlapping it
+      const stageL = stgRect.left - secRect.left;
+      const stageT = stgRect.top  - secRect.top;
+      const OVERLAP = 28; // px the thumb overlaps the card edge
       const parkX = lay.side === 'left'
-        ? stageCX - SIDE_OFFSET - THUMB_W / 2
-        : stageCX + SIDE_OFFSET - THUMB_W / 2;
-      const parkY = stageCY - THUMB_H / 2;
+        ? stageL - THUMB_W + OVERLAP        // right part of thumb overlaps card left edge
+        : stageL + stgRect.width - OVERLAP; // left part of thumb overlaps card right edge
+      const parkY = stageT + stgRect.height / 2 - THUMB_H / 2;
 
       // Slow smooth ease-out
       const eased = 1 - Math.pow(1 - Math.min(zoomP, 1), 3);
