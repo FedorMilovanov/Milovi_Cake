@@ -2987,9 +2987,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .carousel-row {
   display: block;
 }
-.reviews-track { width: 100%; overflow: hidden; border-radius: 20px; height: 200px; }
-.review-slide { display: none; height: 100%; }
-.review-slide.active { display: block; height: 100%; }
+.reviews-track { width: 100%; overflow: visible; border-radius: 20px; }
+.review-slide { display: none; }
+.review-slide.active { display: block; }
 
 .review-card {
   background: linear-gradient(152deg, #fdf7ee 0%, #f8edde 45%, #f2e4cf 100%);
