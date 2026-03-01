@@ -1864,8 +1864,14 @@ function startWaiting(){
   waitTimer = setTimeout(()=>{
     waitTimer = null;
     hideArrows();
-    dissolved = false;
-    STATE = 'zoom_out'; // dissolveText fires in loop when zoom_out starts
+    // Wait for arrows fade-out animation, then dissolve text, then start zoom_out
+    setTimeout(()=>{
+      dissolveText();
+      setTimeout(()=>{
+        dissolved = true; // already dissolved, don't fire again in loop
+        STATE = 'zoom_out';
+      }, 500); // wait for dissolve animation to finish
+    }, 350); // wait for arrows to fade out
   }, WAIT_DURATION);
 }
 
