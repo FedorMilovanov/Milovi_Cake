@@ -1744,7 +1744,15 @@ function startTypewriter(){
   function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
   // Segment the full text into grapheme clusters
-  const segmenter = new Intl.Segmenter('ru', { granularity: 'grapheme' });
+  // Fallback for iOS Safari < 15.4 which lacks Intl.Segmenter
+  const hasSegmenter = typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function';
+  const segmenter = hasSegmenter ? new Intl.Segmenter('ru', { granularity: 'grapheme' }) : null;
+
+  function segmentText(str) {
+    if (segmenter) return [...segmenter.segment(str)].map(s => s.segment);
+    // Fallback: split by surrogate pairs + variation selectors for basic emoji support
+    return [...str]; // Array.from handles surrogate pairs in all modern JS engines
+  }
 
   // Split into word-groups (split on whitespace)
   const wordGroups = full.split(/( +)/);
@@ -1761,7 +1769,7 @@ function startTypewriter(){
     // Word: wrap in inline-block nowrap span so it never breaks mid-word
     let wordHtml = '';
     // iterate over grapheme clusters (handles multi-codepoint emoji like ❤️)
-    const clusters = [...segmenter.segment(group)].map(s => s.segment);
+    const clusters = segmentText(group);
     clusters.forEach(ch => {
       if(emojiGraphemeRegex.test(ch)){
         // emoji — hidden span, animated after text finishes
@@ -2138,6 +2146,18 @@ function _lbReviewNav(dir) {
 if (lbPrevBtn) lbPrevBtn.addEventListener('click', () => _lbReviewNav(-1));
 if (lbNextBtn) lbNextBtn.addEventListener('click', () => _lbReviewNav(1));
 
+// iOS Safari: свайп по overlay для навигации (дополнительно к стрелкам)
+(function(){
+  let _sx = 0;
+  lbOverlay.addEventListener('touchstart', e => {
+    _sx = e.touches[0].clientX;
+  }, { passive: true });
+  lbOverlay.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - _sx;
+    if (Math.abs(dx) > 50) _lbReviewNav(dx < 0 ? 1 : -1);
+  }, { passive: true });
+})();
+
 function lerp(a,b,t){ return a+(b-a)*t; }
 
 
@@ -2157,6 +2177,7 @@ function openLB(triggerEl, src, idx){
   if (lbArrCounter) lbArrCounter.textContent = (_lbReviewIdx + 1) + ' / ' + REVIEWS.length;
 
   document.body.style.overflow = 'hidden';
+  document.documentElement.style.overflow = 'hidden'; /* iOS Safari fix */
   lbOverlay.classList.add('active');
   lbX.style.pointerEvents = 'none';
 
@@ -2183,6 +2204,8 @@ function closeLB(){
   // Убираем класс active — CSS transition анимирует обратно
   lbOverlay.classList.remove('active');
   document.body.style.overflow = '';
+  // iOS Safari иногда застревает — форсируем сброс scroll lock
+  document.documentElement.style.overflow = '';
 
   setTimeout(()=>{
     lbImg.src = '';
