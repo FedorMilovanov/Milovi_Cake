@@ -1000,57 +1000,61 @@ function updateCalc() {
 
 
 
-let currentReview = 0;
-const totalReviews = document.querySelectorAll('.review-slide').length;
+// ===== Legacy reviews carousel (старый) =====
+// Запускается ТОЛЬКО если на странице есть старый #reviewsTrack.
+// Без этой защиты старый setInterval конфликтует с новой логикой goTo/STATE/dissolveText.
+(function initLegacyReviewsCarousel() {
+  const legacyTrack = document.getElementById('reviewsTrack');
+  if (!legacyTrack) return; // нет старого трека — ничего не запускаем
 
-function goReview(idx) {
-  const slides = document.querySelectorAll('.review-slide');
-  const dots = document.querySelectorAll('.rev-dot');
-  if (!slides.length || !dots.length) return;
-  if (slides[currentReview]) slides[currentReview].classList.remove('active');
-  if (dots[currentReview]) dots[currentReview].classList.remove('rev-dot-active');
-  currentReview = (idx + slides.length) % slides.length;
-  if (slides[currentReview]) slides[currentReview].classList.add('active');
-  if (dots[currentReview]) dots[currentReview].classList.add('rev-dot-active');
-}
+  let currentReview = 0;
 
-function shiftReview(dir) { goReview(currentReview + dir); }
+  function goReview(idx) {
+    const slides = legacyTrack.querySelectorAll('.review-slide');
+    const dots = document.querySelectorAll('.rev-dot');
+    if (!slides.length || !dots.length) return;
+    if (slides[currentReview]) slides[currentReview].classList.remove('active');
+    if (dots[currentReview]) dots[currentReview].classList.remove('rev-dot-active');
+    currentReview = (idx + slides.length) % slides.length;
+    if (slides[currentReview]) slides[currentReview].classList.add('active');
+    if (dots[currentReview]) dots[currentReview].classList.add('rev-dot-active');
+  }
 
-// Auto-advance reviews every 5s — пауза при ховере и неактивной вкладке
-let reviewAutoplay = null;
-let reviewPaused = false;
+  function shiftReview(dir) { goReview(currentReview + dir); }
 
-function startReviewAutoplay() {
-  if (reviewAutoplay) clearInterval(reviewAutoplay);
-  reviewAutoplay = setInterval(() => {
-    if (!reviewPaused && !document.hidden) shiftReview(1);
-  }, 5000);
-}
+  // Auto-advance reviews every 5s — пауза при ховере и неактивной вкладке
+  let reviewAutoplay = null;
+  let reviewPaused = false;
 
-startReviewAutoplay();
+  function startReviewAutoplay() {
+    if (reviewAutoplay) clearInterval(reviewAutoplay);
+    reviewAutoplay = setInterval(() => {
+      if (!reviewPaused && !document.hidden) shiftReview(1);
+    }, 5000);
+  }
 
-const reviewsCarousel = document.querySelector('.reviews-carousel');
-if (reviewsCarousel) {
-  reviewsCarousel.addEventListener('mouseenter', () => { reviewPaused = true; });
-  reviewsCarousel.addEventListener('mouseleave', () => { reviewPaused = false; });
-}
+  startReviewAutoplay();
 
-document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) startReviewAutoplay();
-});
+  const reviewsCarousel = document.querySelector('.reviews-carousel');
+  if (reviewsCarousel) {
+    reviewsCarousel.addEventListener('mouseenter', () => { reviewPaused = true; });
+    reviewsCarousel.addEventListener('mouseleave', () => { reviewPaused = false; });
+  }
 
-// Touch swipe support for reviews
-let touchStartX = 0;
-const reviewsTrack = document.getElementById('reviewsTrack');
-if (reviewsTrack) {
-  reviewsTrack.addEventListener('touchstart', e => {
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) startReviewAutoplay();
+  });
+
+  // Touch swipe support for reviews
+  let touchStartX = 0;
+  legacyTrack.addEventListener('touchstart', e => {
     touchStartX = e.touches[0].clientX;
   }, { passive: true });
-  reviewsTrack.addEventListener('touchend', e => {
+  legacyTrack.addEventListener('touchend', e => {
     const dx = e.changedTouches[0].clientX - touchStartX;
     if (Math.abs(dx) > 40) shiftReview(dx < 0 ? 1 : -1);
   }, { passive: true });
-}
+})();
 
 
 
@@ -1280,8 +1284,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }, { passive: true });
 })();
 
-// ── UPDATE aria-current ON REV-DOTS ──
-const _origGoReview = goReview;
 const heroBg = document.querySelector('.hero-photo-bg img');
 if (heroBg) {
   // Skip parallax on mobile for perf — motion not visible anyway
@@ -1877,6 +1879,7 @@ function startWaiting(){
 
 function dissolveText(){
   // Explode current text letters outward — shatter effect
+  // ЕДИНЫЙ rAF-цикл на все буквы (не отдельный на каждую — это вызывало фризы на длинных отзывах)
   const slides = trackEl.querySelectorAll('.review-slide');
   const txtEl  = slides[cur].querySelector('.review-text');
   if(!txtEl) return;
@@ -1884,29 +1887,45 @@ function dissolveText(){
   if(!spans.length) return;
   const SHATTER_DUR = 480;
   const myDGen = ++dissolveGen; // capture — cancel if goTo called mid-dissolve
-  spans.forEach((el, i) => {
-    const angle  = Math.random() * Math.PI * 2;
-    const dist   = 40 + Math.random() * 100;
-    const tx     = Math.cos(angle) * dist;
-    const ty     = Math.sin(angle) * dist - 20;
-    const rot    = (Math.random() - 0.5) * 90;
-    const delay  = i * 8;
-    const startTs = performance.now();
+
+  // Предрасчитываем данные для каждого символа
+  const spanData = spans.map((el, i) => {
+    const angle = Math.random() * Math.PI * 2;
+    const dist  = 40 + Math.random() * 100;
     el.style.transition = 'none';
-    function tick(now){
-      if(dissolveGen !== myDGen) return; // cancelled
-      const elapsed = now - startTs - delay;
-      if(elapsed < 0){ requestAnimationFrame(tick); return; }
-      const raw = Math.min(elapsed / SHATTER_DUR, 1);
-      const t   = raw * raw;
+    return {
+      el,
+      tx:    Math.cos(angle) * dist,
+      ty:    Math.sin(angle) * dist - 20,
+      rot:   (Math.random() - 0.5) * 90,
+      delay: i * 8,
+    };
+  });
+
+  const startTs = performance.now();
+
+  function tick(now){
+    if(dissolveGen !== myDGen) return; // cancelled — весь dissolve остановлен
+    const elapsed = now - startTs;
+    let allDone = true;
+
+    spanData.forEach(({ el, tx, ty, rot, delay }) => {
+      const t = elapsed - delay;
+      if(t < 0){ allDone = false; return; } // ещё не начал
+      const raw = Math.min(t / SHATTER_DUR, 1);
+      if(raw < 1) allDone = false;
+      const sq = raw * raw;
       el.style.opacity   = String(Math.max(0, 1 - raw * 2).toFixed(3));
       el.style.filter    = `blur(${(raw * 4).toFixed(2)}px)`;
-      el.style.transform = `translate(${(tx*t).toFixed(2)}px, ${(ty*t).toFixed(2)}px) rotate(${(rot*t).toFixed(2)}deg) scale(${(1 - raw * 0.5).toFixed(3)})`;
-      if(raw < 1) requestAnimationFrame(tick);
-      else { el.style.opacity = '0'; }
-    }
-    requestAnimationFrame(tick);
-  });
+      el.style.transform = raw >= 1
+        ? `translate(${tx.toFixed(2)}px, ${ty.toFixed(2)}px) rotate(${rot.toFixed(2)}deg) scale(0.5)`
+        : `translate(${(tx*sq).toFixed(2)}px, ${(ty*sq).toFixed(2)}px) rotate(${(rot*sq).toFixed(2)}deg) scale(${(1 - raw * 0.5).toFixed(3)})`;
+      if(raw >= 1) el.style.opacity = '0';
+    });
+
+    if(!allDone) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
 }
 
 function goTo(n, skipTypewriter){
