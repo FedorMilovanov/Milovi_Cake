@@ -29,8 +29,6 @@
   <meta name="theme-color" content="#c9934a" />
   <link rel="apple-touch-icon" href="/icon-192.png" />
   <link rel="canonical" href="https://milovicake.ru/" />
-  <!-- View Transitions -->
-  <meta name="view-transition" content="same-origin" />
   <script type="application/ld+json">
   [
     {
@@ -145,42 +143,6 @@
 
 <!-- ── SKIP LINK (accessibility) ── -->
 <a href="#catalog" class="skip-link">Перейти к содержимому</a>
-
-<!-- ══════════ BOTTOM NAVIGATION BAR (мобильная) ══════════ -->
-<nav class="bottom-nav" id="bottomNav" aria-label="Мобильная навигация">
-  <a href="#home" class="bottom-nav-item active" data-section="home" aria-label="Главная">
-    <svg class="bnav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
-    </svg>
-    <span class="bnav-label">Главная</span>
-  </a>
-  <a href="#catalog" class="bottom-nav-item" data-section="catalog" aria-label="Каталог">
-    <svg class="bnav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-    </svg>
-    <span class="bnav-label">Каталог</span>
-  </a>
-  <button class="bottom-nav-item bottom-nav-item--order" onclick="openCart()" aria-label="Заказать торт">
-    <div class="bnav-icon-wrap">
-      <svg class="bnav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
-      </svg>
-    </div>
-    <span class="bnav-label" style="color:var(--gold)">Заказать</span>
-  </button>
-  <a href="#reviews" class="bottom-nav-item" data-section="reviews" aria-label="Отзывы">
-    <svg class="bnav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-    </svg>
-    <span class="bnav-label">Отзывы</span>
-  </a>
-  <a href="#contacts" class="bottom-nav-item" data-section="contacts" aria-label="Контакты">
-    <svg class="bnav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.07 2.18 2 2 0 012.03 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
-    </svg>
-    <span class="bnav-label">Контакты</span>
-  </a>
-</nav>
 
 <!-- ── STICKY MOBILE CTA (WhatsApp) ── -->
 <a href="https://wa.me/79119038886?text=Здравствуйте!%20Хочу%20сделать%20заказ" target="_blank" class="mobile-sticky-cta" id="mobileStickyWa" aria-label="Заказать торт через WhatsApp">
@@ -510,7 +472,7 @@
     <div class="rev-dots" id="dots" style="display:none"></div>
   </div>
 
-
+  <div class="mobile-strip" id="mobileStrip"></div>
 
     <!-- ══ КИНОЛЕНТА СКРИНОВ ══ -->
     <div class="review-filmstrip reveal">
@@ -1021,117 +983,6 @@
 </button>
 
 
-
-<!-- ── APP-LIKE MOBILE JS ── -->
-<script>
-(function() {
-  'use strict';
-
-  /* ── PAGE LOAD ANIMATION ── */
-  window.addEventListener('load', function() {
-    document.body.classList.add('page-loaded');
-  });
-
-  /* ── HEADER HIDE ON SCROLL (только мобильная) ── */
-  var header = document.getElementById('siteHeader');
-  var lastScrollY = 0;
-  var ticking = false;
-  var SCROLL_THRESHOLD = 80;
-  var scrollDelta = 0;
-
-  function updateHeader() {
-    var currentY = window.scrollY;
-    var isMobile = window.innerWidth <= 768;
-    if (isMobile && header) {
-      if (currentY < 60) {
-        header.classList.remove('header-hidden');
-        scrollDelta = 0;
-      } else if (currentY > lastScrollY + 3) {
-        scrollDelta += (currentY - lastScrollY);
-        if (scrollDelta > SCROLL_THRESHOLD) {
-          header.classList.add('header-hidden');
-        }
-      } else if (currentY < lastScrollY - 3) {
-        scrollDelta = 0;
-        header.classList.remove('header-hidden');
-      }
-    } else if (header) {
-      header.classList.remove('header-hidden');
-    }
-    lastScrollY = currentY;
-    ticking = false;
-  }
-  window.addEventListener('scroll', function() {
-    if (!ticking) { requestAnimationFrame(updateHeader); ticking = true; }
-  }, { passive: true });
-
-  /* ── BOTTOM NAV: активная вкладка ── */
-  var bottomNav = document.getElementById('bottomNav');
-  if (bottomNav) {
-    var sections = ['home', 'catalog', 'fillings', 'reviews', 'contacts'];
-    var navItems = bottomNav.querySelectorAll('.bottom-nav-item[data-section]');
-
-    function getActiveSection() {
-      var scrollY = window.scrollY + window.innerHeight * 0.4;
-      var current = 'home';
-      sections.forEach(function(id) {
-        var el = document.getElementById(id);
-        if (el && el.offsetTop <= scrollY) current = id;
-      });
-      return current;
-    }
-    function updateBNav() {
-      var active = getActiveSection();
-      navItems.forEach(function(item) {
-        item.classList.toggle('active', item.dataset.section === active);
-      });
-      // Скрываем при открытой клавиатуре
-      var keyboardOpen = window.innerHeight < screen.height * 0.75;
-      bottomNav.classList.toggle('hidden', keyboardOpen);
-    }
-    var bTick = false;
-    window.addEventListener('scroll', function() {
-      if (!bTick) { requestAnimationFrame(function(){ updateBNav(); bTick=false; }); bTick=true; }
-    }, { passive: true });
-    window.addEventListener('resize', updateBNav);
-    updateBNav();
-  }
-
-  /* ── SKELETON SCREENS ── */
-  function showSkeletons() {
-    var grid = document.getElementById('catalogGrid');
-    if (!grid || grid.children.length > 0) return;
-    var h = '';
-    for (var i = 0; i < 6; i++) {
-      h += '<div class="skeleton-card"><div class="skeleton-img"></div>' +
-           '<div class="skeleton-line"></div><div class="skeleton-line short"></div></div>';
-    }
-    grid.innerHTML = h;
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', showSkeletons);
-  } else { showSkeletons(); }
-
-  /* ── WEB SHARE API ── */
-  window.sharePage = function(title, text, url) {
-    if (navigator.share) {
-      navigator.share({ title: title || document.title, text: text || 'Посмотри какие торты!', url: url || location.href }).catch(function(){});
-    } else if (navigator.clipboard) {
-      navigator.clipboard.writeText(url || location.href).then(function() {
-        if (window.showToast) showToast('Ссылка скопирована!');
-      });
-    }
-  };
-
-  /* ── VIBRATE при заказе ── */
-  document.addEventListener('click', function(e) {
-    if (e.target.closest('.btn-primary, .btn-wa, .bottom-nav-item--order') && navigator.vibrate) {
-      navigator.vibrate(8);
-    }
-  });
-
-})();
-</script>
 
 <!-- PWA Service Worker -->
 <script>

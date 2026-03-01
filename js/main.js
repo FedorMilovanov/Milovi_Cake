@@ -580,10 +580,9 @@ function openCart() {
   document.getElementById('cartOverlay').classList.add('open');
   document.body.classList.add('cart-open');
   lockBody();
+  // Always start at step 1 (showing cart items)
   setCartStep(1);
-  // Скрыть bottom nav при открытой корзине
-  var bn = document.getElementById('bottomNav');
-  if (bn) bn.classList.add('hidden');
+  // Step advances only via explicit button (goToFormStep)
 }
 
 function closeCart() {
@@ -591,9 +590,6 @@ function closeCart() {
   document.getElementById('cartOverlay').classList.remove('open');
   document.body.classList.remove('cart-open');
   unlockBody();
-  // Показать bottom nav
-  var bn = document.getElementById('bottomNav');
-  if (bn) bn.classList.remove('hidden');
 }
 
 // ── PARALLAX ON HERO ORBS ──
@@ -1643,6 +1639,7 @@ const scField     = document.getElementById('scField');
 const trackEl     = document.getElementById('track');
 const dotsEl      = document.getElementById('dots');
 const stageEl     = document.getElementById('stage');
+const mobileStrip = document.getElementById('mobileStrip');
 const thumbs = [];
 const arrows = [];
 
@@ -1683,6 +1680,14 @@ REVIEWS.forEach((rv, i) => {
   scField.appendChild(ar);
   arrows.push(ar);
 
+  const fi = document.createElement('div');
+  fi.className = 'strip-item';
+  const fi2 = document.createElement('img');
+  fi2.src = rv.src; fi2.alt=`Отзыв ${i+1}`; fi2.loading='lazy';
+  fi.appendChild(fi2);
+  fi.addEventListener('click', ()=> openLB(fi, rv.src, i));
+  mobileStrip.appendChild(fi);
+
   const slide = document.createElement('div');
   slide.className = 'review-slide' + (i===0?' active':'');
   const card = document.createElement('div');
@@ -1704,6 +1709,7 @@ REVIEWS.forEach((rv, i) => {
 });
 
 thumbs[0].classList.add('is-active');
+mobileStrip.querySelectorAll('.strip-item')[0].classList.add('on');
 // Kick off the state machine after a short delay
 setTimeout(() => startTypewriter(), 400);
 
@@ -1930,6 +1936,7 @@ function dissolveText(){
 function goTo(n, skipTypewriter){
   const slides = trackEl.querySelectorAll('.review-slide');
   const dts    = dotsEl.querySelectorAll('.rev-dot');
+  const strips = mobileStrip.querySelectorAll('.strip-item');
 
   // cancel all pending timers immediately
   if(typeTimer){ clearTimeout(typeTimer); typeTimer=null; }
@@ -1939,13 +1946,16 @@ function goTo(n, skipTypewriter){
   // invalidate stale letter rAF animations
   typeGen++;
 
+  // Сбрасываем текст и отменяем любой активный dissolve.
+  // dissolveText() здесь НЕ вызываем — он запускается только из loop() при zoom_out.
   const prevTxt = slides[cur]?.querySelector('.review-text');
   if (prevTxt) prevTxt.innerHTML = '';
-  dissolveGen++;
+  dissolveGen++; // отменить любой dissolve, который мог идти
 
   thumbs[cur].classList.remove('is-active');
   slides[cur].classList.remove('active');
   dts[cur].classList.remove('on');
+  strips[cur]?.classList.remove('on');
 
   cur   = (n + REVIEWS.length) % REVIEWS.length;
   zoomP = 0;
@@ -1956,6 +1966,17 @@ function goTo(n, skipTypewriter){
   thumbs[cur].classList.add('is-active');
   slides[cur].classList.add('active');
   dts[cur].classList.add('on');
+  strips[cur]?.classList.add('on');
+  // Прокручиваем миниатюру только внутри самой полоски, не всю страницу
+  const stripItem = strips[cur];
+  if (stripItem && stripItem.scrollIntoView) {
+    const stripParent = mobileStrip;
+    if (stripParent) {
+      const itemLeft = stripItem.offsetLeft - stripParent.offsetLeft;
+      const itemCenter = itemLeft + stripItem.offsetWidth / 2;
+      stripParent.scrollTo({ left: itemCenter - stripParent.offsetWidth / 2, behavior: 'smooth' });
+    }
+  }
 
   if(!skipTypewriter) startTypewriter();
   else startWaiting();
