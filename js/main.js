@@ -1965,27 +1965,30 @@ function loop(ts){
   }
 
   const secEl  = document.getElementById('reviews');
-  const secRect = secEl.getBoundingClientRect();
-  const stgRect = stageEl.getBoundingClientRect();
   const THUMB_W = 80, THUMB_H = 108, MARGIN = 12;
-  const leftGapCenter  = (stgRect.left - secRect.left) / 2;
-  const rightGapCenter = (stgRect.right - secRect.left) + (secRect.right - stgRect.right) / 2;
+  // Use offsetLeft (scroll-independent) for horizontal gap centers
+  const stgOffLeft  = stageEl.offsetLeft;
+  const stgOffRight = stageEl.offsetLeft + stageEl.offsetWidth;
+  const secW        = secEl.offsetWidth;
+  const leftGapCenter  = stgOffLeft / 2;
+  const rightGapCenter = stgOffRight + (secW - stgOffRight) / 2;
   const minL = MARGIN;
   const maxL = secEl.offsetWidth - THUMB_W - MARGIN;
   // Park target — scroll-independent coords relative to secEl
   const activeSlide = trackEl.querySelector('.review-slide.active');
   const activeCard  = activeSlide ? activeSlide.querySelector('.review-card') : null;
   const cardEl      = activeCard || trackEl;
-  // getBoundingClientRect gives viewport coords; add scrollY to get page coords;
-  // subtract secEl page top to get coords relative to section (same as baseT)
-  const _cRect  = cardEl.getBoundingClientRect();
-  const _sRect  = secEl.getBoundingClientRect();
-  // Use stageEl for vertical centering — it reflects the visible card area
-  const _stageRect  = stageEl.getBoundingClientRect();
-  const cardL       = _cRect.left - _sRect.left;
-  const cardT       = _stageRect.top  - _sRect.top;
-  const cardCenterY = cardT + _stageRect.height / 2;
-  const cardW       = _cRect.width;
+  // Use offsetTop chain relative to secEl — scroll-independent, same coordinate system as baseT
+  function offsetRelTo(el, ancestor) {
+    let top = 0, left = 0, cur = el;
+    while (cur && cur !== ancestor) { top += cur.offsetTop; left += cur.offsetLeft; cur = cur.offsetParent; }
+    return { top, left };
+  }
+  const stageOff    = offsetRelTo(stageEl, secEl);
+  const cardL       = stageOff.left;
+  const cardT       = stageOff.top;
+  const cardCenterY = cardT + stageEl.offsetHeight / 2;
+  const cardW       = stageEl.offsetWidth;
 
   thumbs.forEach((th, i)=>{
     const fl  = FLOATS[i];
@@ -2090,7 +2093,7 @@ function openLB(triggerEl, src, idx){
   // Кнопка закрытия появляется с задержкой 0.6s (как в варианте 6)
   setTimeout(()=>{
     lbX.style.opacity = '1';
-    lbX.style.transform = 'scale(1)';
+    lbX.style.transform = 'scale(1) rotate(0deg)';
     lbX.style.pointerEvents = '';
   }, 600);
 
@@ -2106,7 +2109,7 @@ function closeLB(){
   lbBusy=true; lbIsOpen=false;
   lbBox.classList.remove('clickable');
   lbX.style.opacity = '0';
-  lbX.style.transform = 'scale(0.5)';
+  lbX.style.transform = 'scale(0.6) rotate(-45deg)';
   lbX.style.pointerEvents = 'none';
 
   // Убираем класс active — CSS transition анимирует обратно
