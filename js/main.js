@@ -39,10 +39,10 @@ const products = [
   { id: 4, name: 'Меренговый рулет', desc: 'Хрустящая меренга с нежным кремом — наш фирменный десерт', min: '', price: '2 500 ₽/шт', priceNum: 2500, unit: 'шт', emoji: '🥐',
     slides: [IMG_BASE + '/meringue_roll.webp', IMG_BASE + '/meringue_roll_2.webp', IMG_BASE + '/meringue_roll_3.webp'],
     slidePos: ['center 35%', 'center 40%', 'center 35%'] },
-  { id: 5, name: 'Пирожное "Павлова"', desc: 'Воздушная меренга с кремом и начинкой из ягод', min: 'Заказ от 2 шт', price: '350 ₽/шт', priceNum: 350, unit: 'шт', emoji: '🍓',
+  { id: 5, name: 'Пирожное "Павлова"', minQty: 2, desc: 'Воздушная меренга с кремом и начинкой из ягод', min: 'Заказ от 2 шт', price: '350 ₽/шт', priceNum: 350, unit: 'шт', emoji: '🍓',
     slides: [IMG_BASE + '/pavlova.webp', IMG_BASE + '/pavlova_2.webp', IMG_BASE + '/pavlova_3.webp'],
     slidePos: ['center 55%', 'center 45%', 'center 50%'] },
-  { id: 6, name: 'Капкейки', desc: 'Набор изящных капкейков с разными вкусами', min: 'Заказ от 6 шт одного вкуса', price: '350 ₽/шт', priceNum: 350, unit: 'шт', emoji: '🧁',
+  { id: 6, name: 'Капкейки', minQty: 6, desc: 'Набор изящных капкейков с разными вкусами', min: 'Заказ от 6 шт одного вкуса', price: '350 ₽/шт', priceNum: 350, unit: 'шт', emoji: '🧁',
     slides: [IMG_BASE + '/cupcakes.webp', IMG_BASE + '/cupcakes_2.webp'],
     slidePos: ['center 35%', 'center 40%', 'center 35%'] },
 ];
@@ -266,6 +266,10 @@ function loadCartFromStorage() {
       Object.keys(parsed).forEach(id => {
         if (products.find(p => p.id === +id)) {
           cart[id] = parsed[id];
+          // ✅ Баг 1: восстановить bento mode чтобы UI таб подсвечивался правильно
+          if (parsed[id].mode) {
+            bentoModes[+id] = parsed[id].mode;
+          }
         }
       });
     }
@@ -340,12 +344,13 @@ function clearCart() {
   // Подтверждение — защита от случайного нажатия
   if (!confirm('Очистить корзину? Все позиции будут удалены.')) return;
   cart = {};
-  updateCartUI();
   saveCartToStorage();
   // Возвращаемся на шаг 1 если были на шаге 2
   setCartStep(1);
   document.getElementById('cartFooter').style.display = 'none';
   document.getElementById('cartBody').style.display = '';
+  // ✅ Баг 5: updateCartUI вызываем последним — он скроет кнопку очистки
+  updateCartUI();
 }
 
 function changeQty(id, delta) {
@@ -354,7 +359,8 @@ function changeQty(id, delta) {
     p = { ...p, ...p.maxiVariant };
   }
   const step = p.unit === 'кг' ? 0.5 : 1;
-  const minQty = p.unit === 'кг' ? (p.minKg || 1) : 1;
+  // ✅ Баг 3: используем minQty из продукта (Павлова=2, Капкейки=6)
+  const minQty = p.minQty || (p.unit === 'кг' ? (p.minKg || 1) : 1);
   cart[id].qty = Math.round((cart[id].qty + delta * step) * 10) / 10;
   if (cart[id].qty < minQty) {
     delete cart[id];
@@ -457,7 +463,7 @@ function updateCartUI() {
     <div id="cartStep1Footer" style="margin-top:16px;padding-top:14px;border-top:1px solid var(--cream-dark);">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
         <span style="font-size:15px;color:var(--brown);">Итого:</span>
-        <span style="font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--gold);">${totalFmt}</span>
+        <span class="cart-inline-total">${totalFmt}</span>
       </div>
       <button onclick="goToFormStep()" style="width:100%;background:var(--gold);color:#fff;border:none;border-radius:50px;padding:14px 24px;font-size:15px;font-family:'Jost',sans-serif;font-weight:500;cursor:pointer;box-shadow:0 6px 20px rgba(201,147,74,0.35);">
         Далее →
@@ -489,15 +495,35 @@ function buildMessage() {
     return null;
   }
 
+  // ✅ Баг 4: валидация даты — нельзя выбрать прошедшую дату
+  if (date !== '—') {
+    const selectedDate = new Date(date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (selectedDate < today) {
+      showToast('Выберите дату не раньше сегодняшнего дня');
+      document.getElementById('cdate').focus();
+      return null;
+    }
+  }
+
   const items = Object.entries(cart).map(([id, entry]) => {
-    const p = products.find(x => x.id === +id);
+    // ✅ Баг 2: учитываем maxi вариант для правильного названия и цены
+    let p = products.find(x => x.id === +id);
+    if (p && p.hasMaxi && entry.mode === 'maxi') {
+      p = { ...p, ...p.maxiVariant };
+    }
     const qty = entry.qty;
     const label = p.unit === 'кг' ? `${qty} кг` : `${qty} шт.`;
     return `• ${p.name} — ${label} (${p.price})`;
   }).join('\n');
 
   const total = Object.entries(cart).reduce((s, [id, entry]) => {
-    const p = products.find(x => x.id === +id);
+    // ✅ Баг 2: учитываем maxi цену (3000 вместо 1600)
+    let p = products.find(x => x.id === +id);
+    if (p && p.hasMaxi && entry.mode === 'maxi') {
+      p = { ...p, ...p.maxiVariant };
+    }
     return s + p.priceNum * entry.qty;
   }, 0);
 
@@ -640,6 +666,12 @@ document.querySelectorAll('img').forEach(img => {
   const drawer = document.getElementById('cartDrawer');
   let startX = 0, startY = 0, dragging = false;
   drawer.addEventListener('touchstart', e => {
+    // ✅ Баг 6: не начинать drag если пользователь в поле ввода
+    const tag = document.activeElement?.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') {
+      dragging = false;
+      return;
+    }
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
     dragging = true;
@@ -666,7 +698,206 @@ document.querySelectorAll('img').forEach(img => {
   }, { passive: true });
 })();
 
-// ── REVEAL ON SCROLL ──
+// ══════════════════════════════════════════════
+// DRAGGABLE CART BUTTON
+// ══════════════════════════════════════════════
+
+(function initDraggableCart() {
+  const btn = document.querySelector('.cart-btn');
+  if (!btn) return;
+
+  const EDGE_PADDING = 12;
+  const SNAP_TO_EDGE = true;
+  const STORAGE_KEY = 'milovicake_cart_pos';
+  const HINT_KEY = 'milovicake_cart_hint_shown';
+
+  let isDragging = false;
+  let wasDragged = false;
+  let startX = 0, startY = 0;
+  let startLeft = 0, startTop = 0;
+  let currentX = 0, currentY = 0;
+
+  function getDefaultPosition() {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const bottomNavHeight = window.innerWidth <= 768 ? 80 : 0;
+    return {
+      left: vw - 60 - EDGE_PADDING - 16,
+      top: vh - 60 - EDGE_PADDING - bottomNavHeight - 16
+    };
+  }
+
+  function loadPosition() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const pos = JSON.parse(saved);
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        if (pos.left >= 0 && pos.left <= vw - 40 &&
+            pos.top >= 0 && pos.top <= vh - 40) {
+          return pos;
+        }
+      }
+    } catch(e) {}
+    return getDefaultPosition();
+  }
+
+  function savePosition(left, top) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ left, top }));
+    } catch(e) {}
+  }
+
+  function setPosition(left, top, animate) {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const btnW = btn.offsetWidth || 60;
+    const btnH = btn.offsetHeight || 60;
+
+    left = Math.max(EDGE_PADDING, Math.min(left, vw - btnW - EDGE_PADDING));
+    top = Math.max(EDGE_PADDING, Math.min(top, vh - btnH - EDGE_PADDING));
+
+    if (animate) {
+      btn.classList.add('snapping');
+      btn.addEventListener('transitionend', () => {
+        btn.classList.remove('snapping');
+      }, { once: true });
+    }
+
+    btn.style.left = left + 'px';
+    btn.style.top = top + 'px';
+    btn.style.right = 'auto';
+    btn.style.bottom = 'auto';
+
+    currentX = left;
+    currentY = top;
+  }
+
+  function snapToEdge(left, top) {
+    if (!SNAP_TO_EDGE) return { left, top };
+    const vw = window.innerWidth;
+    const btnW = btn.offsetWidth || 60;
+    const centerX = left + btnW / 2;
+    const snapLeft = centerX < vw / 2
+      ? EDGE_PADDING
+      : vw - btnW - EDGE_PADDING;
+    return { left: snapLeft, top };
+  }
+
+  function onPointerDown(e) {
+    if (document.getElementById('cartDrawer')?.classList.contains('open')) return;
+    isDragging = false;
+    wasDragged = false;
+    const point = e.touches ? e.touches[0] : e;
+    startX = point.clientX;
+    startY = point.clientY;
+    startLeft = currentX;
+    startTop = currentY;
+    document.addEventListener('touchmove', onPointerMove, { passive: false });
+    document.addEventListener('touchend', onPointerUp, { passive: true });
+    document.addEventListener('mousemove', onPointerMove);
+    document.addEventListener('mouseup', onPointerUp);
+  }
+
+  function onPointerMove(e) {
+    const point = e.touches ? e.touches[0] : e;
+    const dx = point.clientX - startX;
+    const dy = point.clientY - startY;
+    if (!isDragging && Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+    if (!isDragging) {
+      isDragging = true;
+      wasDragged = true;
+      btn.classList.add('dragging');
+      hideHint();
+    }
+    if (e.cancelable) e.preventDefault();
+    setPosition(startLeft + dx, startTop + dy, false);
+  }
+
+  function onPointerUp(e) {
+    document.removeEventListener('touchmove', onPointerMove);
+    document.removeEventListener('touchend', onPointerUp);
+    document.removeEventListener('mousemove', onPointerMove);
+    document.removeEventListener('mouseup', onPointerUp);
+    btn.classList.remove('dragging');
+    if (isDragging) {
+      const snapped = snapToEdge(currentX, currentY);
+      setPosition(snapped.left, snapped.top, true);
+      savePosition(snapped.left, snapped.top);
+      isDragging = false;
+      e.preventDefault?.();
+    }
+  }
+
+  // Перехватываем click в capture фазе — до onclick="openCart()"
+  btn.addEventListener('click', (e) => {
+    if (wasDragged) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      wasDragged = false;
+      return false;
+    }
+  }, true);
+
+  btn.addEventListener('touchstart', onPointerDown, { passive: true });
+  btn.addEventListener('mousedown', onPointerDown);
+
+  // Инициализация позиции
+  const pos = loadPosition();
+  btn.style.position = 'fixed';
+  btn.style.right = 'auto';
+  btn.style.bottom = 'auto';
+  setPosition(pos.left, pos.top, false);
+
+  // Корректировка при resize / повороте экрана
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      const snapped = snapToEdge(currentX, currentY);
+      setPosition(snapped.left, snapped.top, true);
+      savePosition(snapped.left, snapped.top);
+    }, 200);
+  });
+
+  // Подсказка при первом визите
+  function showHint() {
+    try {
+      if (localStorage.getItem(HINT_KEY)) return;
+    } catch(e) {}
+    const hint = document.createElement('div');
+    hint.className = 'cart-drag-hint';
+    hint.textContent = '← Перетащи меня';
+    hint.id = 'cartDragHint';
+    document.body.appendChild(hint);
+    function positionHint() {
+      const r = btn.getBoundingClientRect();
+      hint.style.left = (r.left - hint.offsetWidth - 10) + 'px';
+      hint.style.top = (r.top + r.height / 2 - hint.offsetHeight / 2) + 'px';
+      if (r.left - hint.offsetWidth - 10 < 10) {
+        hint.style.left = (r.left + r.width / 2 - hint.offsetWidth / 2) + 'px';
+        hint.style.top = (r.top - hint.offsetHeight - 10) + 'px';
+      }
+    }
+    setTimeout(() => { positionHint(); hint.classList.add('show'); }, 3000);
+    setTimeout(() => {
+      hideHint();
+      try { localStorage.setItem(HINT_KEY, '1'); } catch(e) {}
+    }, 8000);
+  }
+
+  function hideHint() {
+    const hint = document.getElementById('cartDragHint');
+    if (hint) {
+      hint.classList.remove('show');
+      setTimeout(() => hint.remove(), 300);
+    }
+  }
+
+  setTimeout(showHint, 2000);
+})();
 function observeReveal() {
   const els = document.querySelectorAll('.reveal:not(.visible)');
   const io = new IntersectionObserver((entries) => {
@@ -1813,7 +2044,7 @@ thumbs[0].classList.add('is-active');
 // Подсветить первый элемент filmstrip
 const firstFilmItem = document.querySelector('.review-filmstrip-item');
 if (firstFilmItem) firstFilmItem.classList.add('active');
-setTimeout(() => startTypewriter(), 400);
+// startTypewriter() вызовется когда секция станет видна
 
 function hideArrows(){
   arrows.forEach(a => a.classList.remove('show'));
@@ -2119,7 +2350,29 @@ const _loopVisibilityObs = new IntersectionObserver(entries => {
   const visible = entries[0].isIntersecting;
   if (visible && !loopActive) {
     loopActive = true;
-    requestAnimationFrame(t => { lastT = t; requestAnimationFrame(loop); });
+    // ── LAZY START: loop + typewriter только когда секция видна ──
+let loopRunning = false;
+
+const _revObserver = new IntersectionObserver(function(entries) {
+  if (entries[0].isIntersecting) {
+    if (!loopRunning) {
+      loopRunning = true;
+      // Первый запуск — начать typewriter
+      if (STATE === 'typing' && !typeTimer) {
+        setTimeout(function() { startTypewriter(); }, 400);
+      }
+      requestAnimationFrame(function(t) { lastT = t; requestAnimationFrame(loop); });
+    }
+  } else {
+    loopRunning = false;
+  }
+}, {
+  rootMargin: '300px 0px 300px 0px',
+  threshold: 0
+});
+
+var _revSection = document.getElementById('reviews');
+if (_revSection) _revObserver.observe(_revSection);
   } else if (!visible) {
     loopActive = false;
   }
@@ -2137,6 +2390,7 @@ setTimeout(() => {
 
 let lastT=0;
 function loop(ts){
+  if (!loopRunning) return;          // пауза когда секция вне зоны видимости
   if (!loopActive) return; // пауза когда секция вне экрана
 
   const secEl = document.getElementById('reviews');
@@ -2258,7 +2512,7 @@ function loop(ts){
     positionArrows();
   }
 
-  if (loopActive) requestAnimationFrame(loop);
+  if (loopActive && loopRunning) requestAnimationFrame(loop);
 }
 // loop запускается через IntersectionObserver когда секция видна
 

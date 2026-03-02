@@ -1581,7 +1581,7 @@ section { padding: 100px 60px; }
 /* ── CART ── */
 .cart-btn {
   position: fixed;
-  bottom: 90px; right: 30px;
+  /* позиция управляется через JS */
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
   width: 60px; height: 60px;
@@ -1595,9 +1595,49 @@ section { padding: 100px 60px; }
   font-size: 24px;
   box-shadow: 0 8px 24px rgba(201,147,74,0.4);
   z-index: 100;
-  transition: transform 0.2s, box-shadow 0.2s;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: box-shadow 0.2s, transform 0.2s;
 }
 .cart-btn:hover { transform: scale(1.1); box-shadow: 0 12px 32px rgba(201,147,74,0.5); }
+.cart-btn.dragging {
+  transform: scale(1.15) !important;
+  box-shadow: 0 12px 40px rgba(201,147,74,0.55);
+  opacity: 0.92;
+  transition: none;
+}
+.cart-btn.snapping {
+  transition: left 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+              top 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+              transform 0.2s ease,
+              box-shadow 0.2s ease;
+}
+.cart-drag-hint {
+  position: fixed;
+  z-index: 99;
+  background: var(--brown);
+  color: rgba(255,235,185,0.9);
+  font-family: 'Jost', sans-serif;
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.3s, transform 0.3s;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+.cart-drag-hint.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+.cart-inline-total {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  color: var(--gold);
+}
 .cart-badge {
   position: absolute;
   top: -4px; right: -4px;
@@ -3811,10 +3851,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     opacity: 0;
     pointer-events: none;
   }
-  /* Корзина кнопка тоже сдвигается */
-  .cart-btn {
-    bottom: calc(76px + env(safe-area-inset-bottom));
-  }
+  /* Корзина кнопка — позиция через JS (draggable) */
   /* Кнопка "наверх" */
   .back-to-top {
     bottom: calc(76px + env(safe-area-inset-bottom));
