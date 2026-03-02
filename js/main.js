@@ -606,9 +606,11 @@ function closeCart() {
   if (bn) bn.classList.remove('hidden');
 }
 
-// ── PARALLAX ON HERO ORBS ──
+// ── PARALLAX ON HERO ORBS (только десктоп) ──
 (function() {
+  if (window.innerWidth < 769) return; // на мобиле не нужно — экономим батарею
   const orbs = document.querySelectorAll('.hero-orb-1, .hero-orb-2, .hero-orb-3');
+  if (!orbs.length) return;
   let ticking = false;
   window.addEventListener('scroll', () => {
     if (ticking) return;
@@ -712,20 +714,41 @@ setTimeout(() => {
   document.querySelectorAll('[id^="slider-"]').forEach(el => sliderIO.observe(el));
 }, 300);
 
-// ── PROGRESS BAR ──
-window.addEventListener('scroll', () => {
-  const el = document.getElementById('scroll-progress');
-  const scrolled = window.scrollY;
-  const total = document.body.scrollHeight - window.innerHeight;
-  el.style.width = (scrolled / total * 100) + '%';
-});
-
-// ── HEADER ON SCROLL ──
+// ── ОБЪЕДИНЁННЫЙ SCROLL HANDLER (один rAF на все) ──
+const _scrollEl = document.getElementById('scroll-progress');
 const header = document.getElementById('siteHeader');
-window.addEventListener('scroll', () => {
-  header.classList.toggle('scrolled', window.scrollY > 60);
-});
+const floatingCta = document.getElementById('floatingCta');
+const contactsSection = document.getElementById('contacts');
+const backToTopEl = document.getElementById('backToTop');
+let _scrollTicking = false;
 
+function _onScroll() {
+  if (_scrollTicking) return;
+  _scrollTicking = true;
+  requestAnimationFrame(() => {
+    const y = window.scrollY;
+    const total = document.body.scrollHeight - window.innerHeight;
+
+    // Progress bar
+    if (_scrollEl) _scrollEl.style.width = (y / total * 100) + '%';
+
+    // Header scrolled state
+    if (header) header.classList.toggle('scrolled', y > 60);
+
+    // Floating CTA (десктоп)
+    if (floatingCta) {
+      const nearBottom = contactsSection && y + window.innerHeight > contactsSection.offsetTop - 100;
+      floatingCta.classList.toggle('visible', y > 300 && !nearBottom);
+    }
+
+    // Back to top
+    if (backToTopEl) backToTopEl.classList.toggle('visible', y > 600);
+
+    _scrollTicking = false;
+  });
+}
+
+window.addEventListener('scroll', _onScroll, { passive: true });
 
 
 // ── TOAST ──
@@ -789,25 +812,6 @@ document.addEventListener('click', (e) => {
     closeMobileMenu();
   }
 });
-
-// ── FLOATING CTA ──
-const floatingCta = document.getElementById('floatingCta');
-const contactsSection = document.getElementById('contacts');
-const mobileStickyWa = document.getElementById('mobileStickyWa');
-window.addEventListener('scroll', () => {
-  const scrolled = window.scrollY > 300;
-  const nearBottom = contactsSection && window.scrollY + window.innerHeight > contactsSection.offsetTop - 100;
-  floatingCta.classList.toggle('visible', scrolled && !nearBottom);
-  // Sticky mobile WA: show after 300px scroll, hide near contacts
-  if (mobileStickyWa) {
-    mobileStickyWa.classList.toggle('visible', scrolled);
-    mobileStickyWa.classList.toggle('near-bottom', nearBottom);
-  }
-}, { passive: true });
-
-// Hide sticky WA when cart or bottom-sheet opens
-function _hideStickyWa() { document.body.classList.add('cart-open'); }
-function _showStickyWa() { document.body.classList.remove('cart-open'); }
 
 // ── LIGHTBOX ──
 // ── LIGHTBOX with gallery + swipe ──
@@ -1266,12 +1270,6 @@ document.addEventListener('keydown', e => {
   }
 });
 
-
-// ── Back to top ──
-window.addEventListener('scroll', () => {
-  document.getElementById('backToTop')
-    .classList.toggle('visible', window.scrollY > 600);
-});
 
 // ── PREMIUM: Mouse-tracking glow на карточках ──
 document.addEventListener('DOMContentLoaded', () => {
