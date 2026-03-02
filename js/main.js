@@ -675,12 +675,93 @@ function observeReveal() {
   els.forEach(el => io.observe(el));
 }
 
+// ══════════════════════════════════════════════
+// CATALOG NAV — мобильная навигация по десертам
+// ══════════════════════════════════════════════
+
+function renderCatalogNav() {
+  const nav = document.getElementById('catalogNav');
+  if (!nav) return;
+
+  // Короткие названия для компактных кнопок
+  const shortNames = {
+    'Бисквитный торт': 'Бисквит',
+    'Бенто торт': 'Бенто',
+    '3D Торт': '3D Торт',
+    'Меренговый рулет': 'Рулет',
+    'Пирожное "Павлова"': 'Павлова',
+    'Пирожное «Павлова»': 'Павлова',
+    'Капкейки': 'Капкейки',
+  };
+
+  nav.innerHTML = products.map(p => {
+    const thumbSrc = (p.slides && p.slides.length) ? p.slides[0] : '';
+    const thumbHtml = thumbSrc
+      ? `<div class="catalog-nav-thumb"><img src="${thumbSrc}" alt="" loading="lazy"></div>`
+      : `<div class="catalog-nav-emoji">${p.emoji}</div>`;
+
+    const shortName = shortNames[p.name] || p.name;
+    const shortPrice = p.price.replace('от ', '').replace(' ₽/кг', '₽/кг').replace(' ₽/шт', '₽');
+
+    return `<button class="catalog-nav-item" data-target="card-${p.id}" onclick="scrollToProduct(${p.id})" type="button" aria-label="Перейти к ${p.name}">
+        ${thumbHtml}
+        <span class="catalog-nav-label">${shortName}</span>
+        <span class="catalog-nav-price">${shortPrice}</span>
+      </button>`;
+  }).join('');
+}
+
+function scrollToProduct(id) {
+  const card = document.getElementById('card-' + id);
+  if (!card) return;
+
+  const headerHeight = 72;
+  const nav = document.getElementById('catalogNav');
+  const navHeight = (nav && window.innerWidth <= 768) ? nav.offsetHeight + 16 : 0;
+  const offset = headerHeight + navHeight + 16;
+
+  const top = card.getBoundingClientRect().top + window.scrollY - offset;
+  window.scrollTo({ top, behavior: 'smooth' });
+
+  // Подсветить активный
+  document.querySelectorAll('.catalog-nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.target === 'card-' + id);
+  });
+  setTimeout(() => {
+    document.querySelectorAll('.catalog-nav-item.active').forEach(el => el.classList.remove('active'));
+  }, 2000);
+}
+
+function initCatalogNavScroll() {
+  if (window.innerWidth > 768) return;
+  const nav = document.getElementById('catalogNav');
+  if (!nav) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id; // "card-1", "card-2", etc
+        document.querySelectorAll('.catalog-nav-item').forEach(el => {
+          el.classList.toggle('active', el.dataset.target === id);
+        });
+      }
+    });
+  }, { threshold: 0.5, rootMargin: '-30% 0px -30% 0px' });
+
+  products.forEach(p => {
+    const card = document.getElementById('card-' + p.id);
+    if (card) observer.observe(card);
+  });
+}
+
 function initApp() {
+  renderCatalogNav();
   renderCatalog(); // calls observeReveal() internally for catalog cards
   setTimeout(wireProductLightbox, 200);
   loadCartFromStorage();
   updateCartUI();
   observeReveal(); // picks up static .reveal elements (hero, sections, etc.)
+  setTimeout(initCatalogNavScroll, 500);
 }
 
 if (document.readyState === 'loading') {
@@ -2082,7 +2163,6 @@ function loop(ts){
     }
   }
 
-  const secEl  = document.getElementById('reviews');
   const THUMB_W = 80, THUMB_H = 108, MARGIN = 12;
   // Use offsetLeft (scroll-independent) for horizontal gap centers
   const stgOffLeft  = stageEl.offsetLeft;
@@ -2346,6 +2426,7 @@ document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeLB(); });
   window.goReview = typeof goReview !== "undefined" ? goReview : undefined;
   window.goSlide = typeof goSlide !== "undefined" ? goSlide : undefined;
   window.goTo = typeof goTo !== "undefined" ? goTo : undefined;
+  window.scrollToProduct = typeof scrollToProduct !== "undefined" ? scrollToProduct : undefined;
   window.lbNavigate = typeof lbNavigate !== "undefined" ? lbNavigate : undefined;
   window.navigateToStep = typeof navigateToStep !== "undefined" ? navigateToStep : undefined;
   window.openCart = typeof openCart !== "undefined" ? openCart : undefined;

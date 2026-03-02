@@ -3871,3 +3871,109 @@ a, button {
   .price { animation: none; }
   .calc-result-price { animation: none; }
 }
+
+/* ══════════════════════════════════════════════
+   CATALOG NAV — мобильная навигация по десертам
+   Показывается только на мобиле (≤768px)
+   3 в ряд, grid, тап → скролл к карточке
+══════════════════════════════════════════════ */
+
+.catalog-nav {
+  display: none; /* скрыто на десктопе */
+}
+
+@media (max-width: 768px) {
+  .catalog-nav {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 28px;
+    padding: 0 4px;
+  }
+
+  .catalog-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 6px;
+    border-radius: 14px;
+    background: var(--white);
+    border: 1.5px solid var(--cream-dark);
+    text-decoration: none;
+    color: var(--brown);
+    font-family: 'Jost', sans-serif;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.12s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .catalog-nav-item:active {
+    transform: scale(0.95);
+  }
+
+  .catalog-nav-item.active {
+    border-color: var(--gold);
+    box-shadow: 0 2px 12px rgba(201,147,74,0.2);
+    background: rgba(201,147,74,0.06);
+  }
+
+  .catalog-nav-thumb {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--cream-dark);
+    flex-shrink: 0;
+  }
+
+  .catalog-nav-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .catalog-nav-emoji {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(201,147,74,0.08), rgba(201,147,74,0.15));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+
+  .catalog-nav-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-align: center;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+    color: var(--brown);
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .catalog-nav-item.active .catalog-nav-label {
+    color: var(--gold);
+  }
+
+  .catalog-nav-price {
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+  }
+
+  .catalog-nav-item.active .catalog-nav-price {
+    color: var(--gold);
+  }
+}
