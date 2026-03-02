@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#c9934a" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <title>Позвонить — Milovi Cake</title>
   <meta name="robots" content="noindex, nofollow" />
   <style>
@@ -33,23 +35,20 @@
       border-radius: 16px;
       padding: 18px 32px;
       box-shadow: 0 4px 20px rgba(61,43,31,0.08);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .phone-link:hover {
+      border-color: #c9934a;
+      box-shadow: 0 6px 28px rgba(201,147,74,0.15);
     }
     .back { margin-top: 28px; font-size: 14px; color: #9e8070; }
     .back a { color: #c9934a; text-decoration: none; }
   </style>
-  <script>
-    // Immediately trigger call on mobile; on desktop just show the number
-    window.addEventListener('DOMContentLoaded', () => {
-      if (/Mobi|Android/i.test(navigator.userAgent)) {
-        window.location.href = 'tel:+79119038886';
-      }
-    });
-  </script>
 </head>
 <body>
   <div class="logo">Milovi Cake</div>
   <a class="phone-link" href="tel:+79119038886">
-    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true">
       <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.01 3.18 2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
     </svg>
     +7 911 903-88-86

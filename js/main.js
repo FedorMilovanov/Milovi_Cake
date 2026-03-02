@@ -111,6 +111,7 @@ function renderCatalog() {
     if (p.slides && p.slides.length > 1) {
       let cur = 0;
       slideTimers[p.id] = setInterval(() => {
+        if (document.hidden) return; // не крутим когда вкладка неактивна
         cur = (cur + 1) % p.slides.length;
         goSlide(p.id, cur);
       }, 3000);
@@ -144,6 +145,7 @@ function sliderStep(pid, dir, total) {
   if (slideTimers[pid]) { clearInterval(slideTimers[pid]); delete slideTimers[pid]; }
   if (total > 1) {
     slideTimers[pid] = setInterval(() => {
+      if (document.hidden) return;
       sliderCurrentIdx[pid] = ((sliderCurrentIdx[pid] || 0) + 1) % total;
       goSlide(pid, sliderCurrentIdx[pid]);
     }, 3000);
@@ -172,7 +174,7 @@ function addSliderTouch(pid, total) {
     if (slideTimers[pid]) {
       clearInterval(slideTimers[pid]);
       let c = next;
-      slideTimers[pid] = setInterval(() => { c = (c + 1) % total; goSlide(pid, c); }, 3000);
+      slideTimers[pid] = setInterval(() => { if (document.hidden) return; c = (c + 1) % total; goSlide(pid, c); }, 3000);
     }
     // Reset swipe flag after click event fires
     setTimeout(() => { wrap._wasSwiped = false; }, 300);
@@ -1271,6 +1273,16 @@ document.addEventListener('keydown', e => {
 });
 
 
+// ── Динамический минимум даты (сегодня + 2 дня) ──
+(function() {
+  const dateInput = document.getElementById('cdate');
+  if (dateInput) {
+    const minDate = new Date();
+    minDate.setDate(minDate.getDate() + 2);
+    dateInput.min = minDate.toISOString().split('T')[0];
+  }
+})();
+
 // ── PREMIUM: Mouse-tracking glow на карточках ──
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.product-card').forEach(card => {
@@ -1868,10 +1880,11 @@ function startTypewriter(){
   ZOOM_IN_SPD_CUR = 1 - Math.pow(0.04, 1 / frames);
 
   // After last letter finishes → transition to waiting
+  const capturedTypeGen = typeGen; // захватить ДО setTimeout
   typeTimer = setTimeout(()=>{
+    if(typeGen !== capturedTypeGen) { typeTimer = null; return; } // stale check FIRST
     typeTimer = null;
     zoomP = 1;
-    if(typeGen !== myGen) return; // stale — slide changed
     startWaiting();
   }, totalDur);
 }
@@ -1881,7 +1894,9 @@ function startWaiting(){
   showArrows();
   thumbs[cur].classList.add('hint-show');
   if(waitTimer) clearTimeout(waitTimer);
+  const capturedWaitGen = typeGen; // захватить текущее поколение
   waitTimer = setTimeout(()=>{
+    if(typeGen !== capturedWaitGen) { waitTimer = null; return; } // stale check FIRST
     waitTimer = null;
     hideArrows();
     STATE = 'zoom_out';
@@ -2004,8 +2019,48 @@ function snapSectionHeight(){ sectionSnapH = document.getElementById('reviews').
 window.addEventListener('resize', snapSectionHeight);
 setTimeout(snapSectionHeight, 100);
 
+// ── CACHE для loop() — избегаем DOM-запросы каждый кадр ──
+let cachedTrackEl = null;
+let cachedSectionWidth = 0;
+let cachedSectionHeight = 0;
+
+// ResizeObserver кэширует размер секции — избегаем forced reflow в loop
+const _sectionResizeObs = new ResizeObserver(entries => {
+  const rect = entries[0].contentRect;
+  cachedSectionWidth = rect.width;
+  cachedSectionHeight = rect.height;
+  snapSectionHeight();
+});
+
+// loop() работает только когда секция отзывов видна — экономит CPU/battery
+let loopActive = false;
+const _loopVisibilityObs = new IntersectionObserver(entries => {
+  const visible = entries[0].isIntersecting;
+  if (visible && !loopActive) {
+    loopActive = true;
+    requestAnimationFrame(t => { lastT = t; requestAnimationFrame(loop); });
+  } else if (!visible) {
+    loopActive = false;
+  }
+}, { threshold: 0.05 });
+
+setTimeout(() => {
+  const secEl = document.getElementById('reviews');
+  if (secEl) {
+    _sectionResizeObs.observe(secEl);
+    _loopVisibilityObs.observe(secEl);
+    cachedSectionWidth = secEl.offsetWidth;
+    cachedSectionHeight = secEl.offsetHeight;
+  }
+}, 100);
+
 let lastT=0;
 function loop(ts){
+  if (!loopActive) return; // пауза когда секция вне экрана
+
+  const secEl = document.getElementById('reviews');
+  if (!secEl) { if (loopActive) requestAnimationFrame(loop); return; }
+
   const dt = Math.min(ts-lastT, 40);
   lastT = ts;
 
@@ -2032,11 +2087,11 @@ function loop(ts){
   // Use offsetLeft (scroll-independent) for horizontal gap centers
   const stgOffLeft  = stageEl.offsetLeft;
   const stgOffRight = stageEl.offsetLeft + stageEl.offsetWidth;
-  const secW        = secEl.offsetWidth;
+  const secW        = cachedSectionWidth || secEl.offsetWidth; // используем кэш
   const leftGapCenter  = stgOffLeft / 2;
   const rightGapCenter = stgOffRight + (secW - stgOffRight) / 2;
   const minL = MARGIN;
-  const maxL = secEl.offsetWidth - THUMB_W - MARGIN;
+  const maxL = (cachedSectionWidth || secEl.offsetWidth) - THUMB_W - MARGIN;
   // Park target — scroll-independent coords relative to secEl
   // Use offsetTop chain relative to secEl — scroll-independent, same coordinate system as baseT
   function offsetRelTo(el, ancestor) {
@@ -2048,7 +2103,9 @@ function loop(ts){
   const cardL       = stageOff.left;
   const cardW       = stageEl.offsetWidth;
   // Центр блока .reviews-track относительно секции — прямой расчёт
-  const trackEl2   = stageEl.querySelector('.reviews-track') || trackEl;
+  // Lazy init кэш элемента — не делаем querySelector каждый кадр
+  if (!cachedTrackEl) cachedTrackEl = stageEl.querySelector('.reviews-track') || trackEl;
+  const trackEl2   = cachedTrackEl;
   const trackOff2  = offsetRelTo(trackEl2, secEl);
   const cardCenterY = trackOff2.top + trackEl2.offsetHeight / 2;
 
@@ -2121,9 +2178,9 @@ function loop(ts){
     positionArrows();
   }
 
-  requestAnimationFrame(loop);
+  if (loopActive) requestAnimationFrame(loop);
 }
-requestAnimationFrame(t=>{ lastT=t; requestAnimationFrame(loop); });
+// loop запускается через IntersectionObserver когда секция видна
 
 
 const lbOverlay = document.getElementById('lbOverlay');
