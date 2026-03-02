@@ -1442,10 +1442,20 @@ function openReviewsModal(tab) {
   const modal = document.getElementById('reviewsModal');
   if (!modal) return;
   document.body.style.overflow = 'hidden';
+  // Сначала делаем display:flex через inline (нужно для transition)
+  // но убираем класс open чтобы начать с opacity:0 / translateY
+  modal.classList.remove('open');
   modal.style.display = 'flex';
-  requestAnimationFrame(() => { modal.classList.add('open'); });
+  // Двойной rAF — гарантируем что браузер успел отрисовать начальное состояние
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      modal.classList.add('open');
+    });
+  });
   switchReviewsTab(tab || 'yandex');
   document.addEventListener('keydown', handleReviewsEscape);
+  var bn = document.getElementById('bottomNav');
+  if (bn) bn.classList.add('hidden');
 }
 
 function closeReviewsModal() {
@@ -1455,6 +1465,9 @@ function closeReviewsModal() {
   document.body.style.overflow = '';
   document.removeEventListener('keydown', handleReviewsEscape);
   setTimeout(() => { modal.style.display = 'none'; }, 320);
+  // Показать bottom nav
+  var bn = document.getElementById('bottomNav');
+  if (bn) bn.classList.remove('hidden');
 }
 
 function handleReviewsEscape(e) {
