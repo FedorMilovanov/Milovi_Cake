@@ -1442,15 +1442,9 @@ function openReviewsModal(tab) {
   const modal = document.getElementById('reviewsModal');
   if (!modal) return;
   document.body.style.overflow = 'hidden';
-  // Сначала делаем display:flex через inline (нужно для transition)
-  // но убираем класс open чтобы начать с opacity:0 / translateY
-  modal.classList.remove('open');
-  modal.style.display = 'flex';
-  // Двойной rAF — гарантируем что браузер успел отрисовать начальное состояние
+  // visibility:hidden→visible через CSS transition, display не трогаем
   requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      modal.classList.add('open');
-    });
+    modal.classList.add('open');
   });
   switchReviewsTab(tab || 'yandex');
   document.addEventListener('keydown', handleReviewsEscape);
@@ -1464,8 +1458,6 @@ function closeReviewsModal() {
   modal.classList.remove('open');
   document.body.style.overflow = '';
   document.removeEventListener('keydown', handleReviewsEscape);
-  setTimeout(() => { modal.style.display = 'none'; }, 320);
-  // Показать bottom nav
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.remove('hidden');
 }
@@ -1727,7 +1719,9 @@ REVIEWS.forEach((rv, i) => {
 });
 
 thumbs[0].classList.add('is-active');
-// Kick off the state machine after a short delay
+// Подсветить первый элемент filmstrip
+const firstFilmItem = document.querySelector('.review-filmstrip-item');
+if (firstFilmItem) firstFilmItem.classList.add('active');
 setTimeout(() => startTypewriter(), 400);
 
 function hideArrows(){
@@ -1953,6 +1947,7 @@ function dissolveText(){
 function goTo(n, skipTypewriter){
   const slides = trackEl.querySelectorAll('.review-slide');
   const dts    = dotsEl.querySelectorAll('.rev-dot');
+  const filmItems = document.querySelectorAll('.review-filmstrip-item');
 
   // cancel all pending timers immediately
   if(typeTimer){ clearTimeout(typeTimer); typeTimer=null; }
@@ -1969,6 +1964,7 @@ function goTo(n, skipTypewriter){
   thumbs[cur].classList.remove('is-active');
   slides[cur].classList.remove('active');
   dts[cur].classList.remove('on');
+  if (filmItems[cur]) filmItems[cur].classList.remove('active');
 
   cur   = (n + REVIEWS.length) % REVIEWS.length;
   zoomP = 0;
@@ -1979,6 +1975,12 @@ function goTo(n, skipTypewriter){
   thumbs[cur].classList.add('is-active');
   slides[cur].classList.add('active');
   dts[cur].classList.add('on');
+
+  // Подсвечиваем и прокручиваем filmstrip к активному элементу
+  if (filmItems[cur]) {
+    filmItems[cur].classList.add('active');
+    filmItems[cur].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
 
   if(!skipTypewriter) startTypewriter();
   else startWaiting();

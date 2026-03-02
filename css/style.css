@@ -515,6 +515,12 @@ body {
     opacity: 0.75;
   }
   .review-filmstrip-item:active { opacity: 1; transform: scale(0.96); }
+  .review-filmstrip-item.active {
+    opacity: 1;
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
 }
 
 .review-chat-btn {
@@ -1906,31 +1912,37 @@ section { padding: 100px 60px; }
   }
   #calcFill .calc-opt,
   #calcDecor .calc-opt {
-    justify-content: center;
-    text-align: center;
-    padding: 10px 8px;
+    justify-content: flex-start;
+    text-align: left;
+    padding: 8px 8px;
     font-size: 12px;
     min-height: 44px;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0;
+    position: relative;
   }
   #calcFill .opt-inner,
   #calcDecor .opt-inner {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+    gap: 4px;
   }
   #calcFill .opt-label,
   #calcDecor .opt-label {
-    line-height: 1.2;
+    line-height: 1.25;
+    flex: 1;
   }
   #calcFill .fill-tag,
   #calcDecor .fill-tag {
-    font-size: 9px;
-    padding: 2px 6px;
+    font-size: 8px;
+    padding: 2px 5px;
     letter-spacing: 0.04em;
+    flex-shrink: 0;
+    margin-top: 1px;
   }
 
   /* Тип торта и другие — обычный flex */
@@ -2412,10 +2424,6 @@ section { padding: 100px 60px; }
   .mobile-sticky-cta.visible {
     transform: translateY(0);
   }
-  /* Push page content up so sticky bar doesn't overlap footer */
-  body {
-    padding-bottom: calc(54px + env(safe-area-inset-bottom, 0px));
-  }
   /* Hide when cart or bottom-sheet is open */
   body.cart-open .mobile-sticky-cta,
   body.fill-open .mobile-sticky-cta {
@@ -2424,10 +2432,6 @@ section { padding: 100px 60px; }
   /* Also hide near bottom of page (contacts already visible) */
   .mobile-sticky-cta.near-bottom {
     transform: translateY(100%);
-  }
-  /* Reduce bottom padding when sticky cta is hidden */
-  body.no-sticky-cta {
-    padding-bottom: 0;
   }
 }
 
@@ -2815,16 +2819,19 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   z-index: 10000;
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 .reviews-modal-overlay.open {
-  display: flex;
   opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 .reviews-modal {
   background: var(--card-bg, #faf7f3);
@@ -2836,10 +2843,15 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   flex-direction: column;
   overflow: hidden;
   transform: translateY(24px);
-  transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94);
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94),
+              opacity 0.25s ease;
   box-shadow: 0 24px 80px rgba(0,0,0,0.28);
 }
-.reviews-modal-overlay.open .reviews-modal { transform: translateY(0); }
+.reviews-modal-overlay.open .reviews-modal {
+  transform: translateY(0);
+  opacity: 1;
+}
 
 .reviews-modal-header {
   display: flex;
@@ -2958,8 +2970,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     max-height: 90vh;
     border-radius: 20px 20px 0 0;
     transform: translateY(100%);
+    opacity: 1; /* на мобиле opacity не нужен — въезжает снизу */
   }
-  .reviews-modal-overlay.open .reviews-modal { transform: translateY(0); }
+  .reviews-modal-overlay.open .reviews-modal { transform: translateY(0); opacity: 1; }
   .reviews-modal-header { padding: 16px 18px 12px; }
   .reviews-modal-title { font-size: 19px; }
   .reviews-modal-tabs { padding: 10px 18px; }
