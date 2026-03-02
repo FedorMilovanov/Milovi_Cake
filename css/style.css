@@ -684,6 +684,15 @@ body {
 }
 
 /* ── MOBILE FILL POPUP ── */
+/* Блокируем скролл фона без lockBody (избегаем прыжка страницы) */
+body.fill-open {
+  overflow: hidden;
+  touch-action: none;
+}
+body.menu-open {
+  overflow: hidden;
+  touch-action: none;
+}
 /* ── BOTTOM SHEET: Fill info ── */
 .fill-mobile-overlay {
   position: fixed; inset: 0;

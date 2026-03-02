@@ -557,22 +557,32 @@ function goBackToCart() {
 // body.style.overflow = 'hidden' alone doesn't prevent scroll on iOS Safari.
 // position:fixed trick preserves scroll position and truly blocks scrolling.
 function lockBody() {
-  if (document.body.dataset.locked) return;
-  const scrollY = window.scrollY;
-  document.body.style.position = 'fixed';
-  document.body.style.top = `-${scrollY}px`;
-  document.body.style.width = '100%';
-  document.body.dataset.scrollY = scrollY;
-  document.body.dataset.locked = '1';
+  const count = parseInt(document.body.dataset.lockCount || '0');
+  if (count === 0) {
+    // Первый лок — сохраняем позицию и фиксируем
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    document.body.dataset.scrollY = scrollY;
+  }
+  document.body.dataset.lockCount = count + 1;
 }
 function unlockBody() {
-  if (!document.body.dataset.locked) return;
-  const scrollY = parseInt(document.body.dataset.scrollY || '0');
-  document.body.style.position = '';
-  document.body.style.top = '';
-  document.body.style.width = '';
-  delete document.body.dataset.locked;
-  window.scrollTo(0, scrollY);
+  const count = parseInt(document.body.dataset.lockCount || '0');
+  if (count <= 0) return;
+  const newCount = count - 1;
+  document.body.dataset.lockCount = newCount;
+  if (newCount === 0) {
+    // Последний разлок — восстанавливаем позицию
+    const scrollY = parseInt(document.body.dataset.scrollY || '0');
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    document.body.style.overflow = '';
+    delete document.body.dataset.scrollY;
+    window.scrollTo(0, scrollY);
+  }
 }
 
 function openCart() {
@@ -762,13 +772,13 @@ function closeMobileMenu() {
   burgerBtn.classList.remove('open');
   mobileMenu.classList.remove('open');
   burgerBtn.setAttribute('aria-expanded', 'false');
-  document.body.style.overflow = '';
+  document.body.classList.remove('menu-open');
 }
 burgerBtn.addEventListener('click', () => {
   const isOpen = burgerBtn.classList.toggle('open');
   mobileMenu.classList.toggle('open', isOpen);
   burgerBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-  isOpen ? lockBody() : unlockBody();
+  document.body.classList.toggle('menu-open', isOpen);
 });
 
 // Close menu on tap outside
@@ -1156,7 +1166,8 @@ function openFillPopup(optEl) {
   popup.classList.add('open');
   overlay.classList.add('open');
   document.body.classList.add('fill-open');
-  lockBody();
+  // Не используем lockBody() — он сохраняет scrollY и при unlockBody()
+  // прыгает страница наверх. Фон блокируется через CSS body.fill-open
 
   // Focus the select button for a11y
   setTimeout(() => document.getElementById('fillSheetSelect')?.focus(), 80);
@@ -1168,9 +1179,8 @@ function closeFillPopup() {
   if (popup)   popup.classList.remove('open');
   if (overlay) overlay.classList.remove('open');
   document.body.classList.remove('fill-open');
-  unlockBody();
+  // Не вызываем unlockBody() — lockBody() не вызывался
   _fillSheetPendingEl = null;
-  // Reset any drag transform
   if (popup) popup.style.transform = '';
 }
 
