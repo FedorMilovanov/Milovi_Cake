@@ -4013,8 +4013,8 @@ a, button {
   }
 
   .cart-drawer {
-    top: auto;
-    bottom: 24px;
+    top: 80px;
+    bottom: auto;
     right: 24px;
     left: auto;
 
@@ -4028,8 +4028,6 @@ a, button {
     opacity: 0;
     pointer-events: none;
     transform: translateY(14px) scale(0.985);
-    /* Сбрасываем мобильный right:-420px */
-    right: auto;
   }
 
   .cart-drawer.open {

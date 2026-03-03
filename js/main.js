@@ -753,9 +753,6 @@ function openCart() {
 
   setCartStep(1);
 
-  // Позиционируем окно рядом с кнопкой (только десктоп)
-  requestAnimationFrame(() => positionCartWindowNearButton());
-
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.add('hidden');
 }
@@ -2295,35 +2292,28 @@ let loopRunning = false;
 
 const _revObserver = new IntersectionObserver(function(entries) {
   if (entries[0].isIntersecting) {
+    loopActive = true;
     if (!loopRunning) {
       loopRunning = true;
       if (STATE === 'typing' && !typeTimer) {
         setTimeout(function() { startTypewriter(); }, 400);
       }
-      requestAnimationFrame(function(t) { lastT = t; requestAnimationFrame(loop); });
     }
+    // Всегда перезапускаем loop — он мог умереть пока секция была вне экрана
+    requestAnimationFrame(function(t) { lastT = t; requestAnimationFrame(loop); });
   } else {
     loopRunning = false;
+    loopActive = false;
   }
 }, {
   rootMargin: '300px 0px 300px 0px',
   threshold: 0
 });
 
-const _loopVisibilityObs = new IntersectionObserver(entries => {
-  const visible = entries[0].isIntersecting;
-  if (visible && !loopActive) {
-    loopActive = true;
-  } else if (!visible) {
-    loopActive = false;
-  }
-}, { threshold: 0.05 });
-
 setTimeout(() => {
   const secEl = document.getElementById('reviews');
   if (secEl) {
     _sectionResizeObs.observe(secEl);
-    _loopVisibilityObs.observe(secEl);
     _revObserver.observe(secEl);
     cachedSectionWidth = secEl.offsetWidth;
     cachedSectionHeight = secEl.offsetHeight;

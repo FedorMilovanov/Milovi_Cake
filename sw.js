@@ -4,7 +4,7 @@
    ══════════════════════════════════════════════ */
 
 // Version is updated on each deploy — change this date to bust caches
-const DEPLOY_VERSION = '2026-03-03b';
+const DEPLOY_VERSION = '2026-03-03c';
 const STATIC_CACHE = `milovi-static-v1-${DEPLOY_VERSION}`;
 const IMAGE_CACHE  = `milovi-images-v1`;
 
