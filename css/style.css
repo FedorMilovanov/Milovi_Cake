@@ -1346,6 +1346,8 @@ section { padding: 100px 60px; }
   margin-top: 48px;
   margin-bottom: 64px;
   font-weight: 300;
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 .container { max-width: 1300px; margin: 0 auto; }
 
