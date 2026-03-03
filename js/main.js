@@ -410,10 +410,10 @@ function clearCart() {
     </div>
   `;
 
-  // Позиционируем относительно cartBody
-  const wrapper = body.parentElement;
-  wrapper.style.position = 'relative';
-  wrapper.appendChild(confirm);
+  // Вставляем попап прямо в cartDrawer (он уже position:fixed — absolute дети позиционируются внутри него)
+  const drawer = document.getElementById('cartDrawer');
+  if (!drawer) return;
+  drawer.appendChild(confirm);
 
   document.getElementById('cartClearNo').onclick = () => {
     confirm.style.animation = 'fadeOutDown 0.18s ease forwards';
