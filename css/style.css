@@ -1582,8 +1582,6 @@ section { padding: 100px 60px; }
 .cart-btn {
   position: fixed;
   /* позиция управляется через JS */
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
   width: 60px; height: 60px;
   border-radius: 50%;
   background: var(--gold);
@@ -1598,9 +1596,21 @@ section { padding: 100px 60px; }
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
-  transition: box-shadow 0.2s, transform 0.2s;
+  /* По умолчанию скрыта — появляется когда добавлен первый товар */
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.5);
+  transition: opacity 0.4s ease, transform 0.4s ease, box-shadow 0.2s;
 }
-.cart-btn:hover { transform: scale(1.1); box-shadow: 0 12px 32px rgba(201,147,74,0.5); }
+.cart-btn.cart-btn-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+}
+.cart-btn.cart-btn-visible:hover {
+  transform: scale(1.1);
+  box-shadow: 0 12px 32px rgba(201,147,74,0.5);
+}
 .cart-btn.dragging {
   transform: scale(1.15) !important;
   box-shadow: 0 12px 40px rgba(201,147,74,0.55);
@@ -1608,10 +1618,7 @@ section { padding: 100px 60px; }
   transition: none;
 }
 .cart-btn.snapping {
-  transition: left 0.35s cubic-bezier(0.25, 1, 0.5, 1),
-              top 0.35s cubic-bezier(0.25, 1, 0.5, 1),
-              transform 0.2s ease,
-              box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .cart-drag-hint {
   position: fixed;
@@ -4049,4 +4056,19 @@ a, button {
     pointer-events: auto;
     transform: none;
   }
+}
+
+/* ── Cart clear confirm popup animations ── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeOutDown {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(10px); }
+}
+
+/* Плавное удаление cart-item */
+.cart-item {
+  overflow: hidden;
 }

@@ -335,22 +335,110 @@ function addToCart(id, e) {
 }
 
 function removeFromCart(id) {
-  delete cart[id];
-  updateCartUI();
-  saveCartToStorage();
+  // Анимируем удаление одного элемента
+  const items = document.querySelectorAll('.cart-item');
+  // Находим нужный по data или порядку — ищем по onclick
+  let targetEl = null;
+  items.forEach(el => {
+    if (el.querySelector(`[onclick="removeFromCart(${id})"]`)) targetEl = el;
+  });
+  if (targetEl) {
+    targetEl.style.transition = 'opacity 0.25s ease, transform 0.25s ease, max-height 0.3s ease 0.1s, margin 0.3s ease 0.1s, padding 0.3s ease 0.1s';
+    targetEl.style.opacity = '0';
+    targetEl.style.transform = 'translateX(30px)';
+    targetEl.style.maxHeight = targetEl.offsetHeight + 'px';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        targetEl.style.maxHeight = '0';
+        targetEl.style.marginBottom = '0';
+        targetEl.style.paddingTop = '0';
+        targetEl.style.paddingBottom = '0';
+      });
+    });
+    setTimeout(() => {
+      delete cart[id];
+      updateCartUI();
+      saveCartToStorage();
+    }, 350);
+  } else {
+    delete cart[id];
+    updateCartUI();
+    saveCartToStorage();
+  }
 }
 
 function clearCart() {
-  // Подтверждение — защита от случайного нажатия
-  if (!confirm('Очистить корзину? Все позиции будут удалены.')) return;
-  cart = {};
-  saveCartToStorage();
-  // Возвращаемся на шаг 1 если были на шаге 2
-  setCartStep(1);
-  document.getElementById('cartFooter').style.display = 'none';
-  document.getElementById('cartBody').style.display = '';
-  // ✅ Баг 5: updateCartUI вызываем последним — он скроет кнопку очистки
-  updateCartUI();
+  // Показываем inline-подтверждение вместо системного confirm()
+  const body = document.getElementById('cartBody');
+  if (!body) return;
+
+  // Если уже показан попап — не дублировать
+  if (document.getElementById('cartClearConfirm')) return;
+
+  const confirm = document.createElement('div');
+  confirm.id = 'cartClearConfirm';
+  confirm.style.cssText = `
+    position: absolute; inset: 0;
+    background: rgba(245,240,232,0.96);
+    backdrop-filter: blur(4px);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 20px; z-index: 10;
+    border-radius: inherit;
+    animation: fadeInUp 0.2s ease;
+  `;
+  confirm.innerHTML = `
+    <div style="font-size:36px">🗑️</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--brown);text-align:center">
+      Очистить корзину?
+    </div>
+    <div style="display:flex;gap:12px">
+      <button id="cartClearNo" style="
+        background: none; border: 1.5px solid var(--cream-dark);
+        border-radius: 50px; padding: 10px 28px;
+        font-family: 'Jost',sans-serif; font-size: 14px;
+        color: var(--text-muted); cursor: pointer;
+        transition: border-color 0.2s, color 0.2s;
+      ">Нет</button>
+      <button id="cartClearYes" style="
+        background: var(--brown); border: none;
+        border-radius: 50px; padding: 10px 28px;
+        font-family: 'Jost',sans-serif; font-size: 14px;
+        color: #fff; cursor: pointer;
+        transition: background 0.2s;
+      ">Да, очистить</button>
+    </div>
+  `;
+
+  // Позиционируем относительно cartBody
+  const wrapper = body.parentElement;
+  wrapper.style.position = 'relative';
+  wrapper.appendChild(confirm);
+
+  document.getElementById('cartClearNo').onclick = () => {
+    confirm.style.animation = 'fadeOutDown 0.18s ease forwards';
+    setTimeout(() => confirm.remove(), 180);
+  };
+
+  document.getElementById('cartClearYes').onclick = () => {
+    // Анимируем исчезновение всех элементов
+    const cartItems = body.querySelectorAll('.cart-item');
+    cartItems.forEach((el, i) => {
+      el.style.transition = `opacity 0.2s ease ${i * 50}ms, transform 0.2s ease ${i * 50}ms`;
+      el.style.opacity = '0';
+      el.style.transform = 'translateX(30px)';
+    });
+
+    setTimeout(() => {
+      confirm.remove();
+      cart = {};
+      saveCartToStorage();
+      setCartStep(1);
+      document.getElementById('cartFooter').style.display = 'none';
+      document.getElementById('cartBody').style.display = '';
+      updateCartUI();
+    }, cartItems.length * 50 + 200);
+  };
 }
 
 function changeQty(id, delta) {
@@ -397,6 +485,11 @@ function updateCartUI() {
   badge.textContent = totalItems;
   badge.classList.toggle('visible', totalItems > 0);
   document.getElementById('cartCountBadge').textContent = totalItems;
+
+  // Показываем кнопку корзины при первом добавлении товара
+  if (totalItems > 0 && typeof window.showCartBtn === 'function') {
+    window.showCartBtn();
+  }
 
   // Показываем кнопку очистки только когда есть товары и мы на шаге 1
   const clearBtn = document.getElementById('cartClearBtn');
@@ -623,11 +716,14 @@ function positionCartWindowNearButton() {
 
   const MARGIN = 12;
   const GAP = 12;
+  const HEADER_HEIGHT = 80; // хедер 72px + небольшой зазор
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
   const dW = 440;
-  const dH = Math.min(vh * 0.78, 720);
+  // Ограничиваем высоту так, чтобы окно влезло между хедером и низом экрана
+  const maxH = vh - HEADER_HEIGHT - MARGIN * 2;
+  const dH = Math.min(vh * 0.78, 720, maxH);
 
   const b = btn.getBoundingClientRect();
   const btnCenterX = b.left + b.width / 2;
@@ -637,15 +733,16 @@ function positionCartWindowNearButton() {
     ? b.left
     : (b.right - dW);
 
-  // Вертикально: ниже кнопки, если не влезает — выше
+  // Вертикально: предпочтительно ниже кнопки
   let top = b.bottom + GAP;
+  // Если не влезает снизу — прижимаем к низу экрана (не выше хедера)
   if (top + dH > vh - MARGIN) {
-    top = b.top - dH - GAP;
+    top = vh - dH - MARGIN;
   }
 
-  // Clamp внутрь экрана
+  // Clamp — минимум HEADER_HEIGHT, чтобы не залезть под хедер
   left = Math.max(MARGIN, Math.min(left, vw - dW - MARGIN));
-  top  = Math.max(MARGIN, Math.min(top,  vh - dH - MARGIN));
+  top  = Math.max(HEADER_HEIGHT, Math.min(top, vh - dH - MARGIN));
 
   drawer.style.left   = left + 'px';
   drawer.style.top    = top + 'px';
@@ -754,9 +851,10 @@ document.querySelectorAll('img').forEach(img => {
   if (!btn) return;
 
   const EDGE_PADDING = 12;
-  const SNAP_TO_EDGE = true;
+  const FLOAT_PADDING = 24; // отступ от края в позиции по умолчанию (не прилипшая)
   const STORAGE_KEY = 'milovicake_cart_pos';
   const HINT_KEY = 'milovicake_cart_hint_shown';
+  const SEEN_KEY = 'milovicake_cart_seen'; // ключ "пользователь уже добавлял товар"
 
   let isDragging = false;
   let wasDragged = false;
@@ -764,13 +862,38 @@ document.querySelectorAll('img').forEach(img => {
   let startLeft = 0, startTop = 0;
   let currentX = 0, currentY = 0;
 
+  // ── Скрываем кнопку при первом визите (пока нет товаров) ──
+  function isFirstVisit() {
+    try { return !localStorage.getItem(SEEN_KEY); } catch(e) { return false; }
+  }
+
+  function markSeen() {
+    try { localStorage.setItem(SEEN_KEY, '1'); } catch(e) {}
+  }
+
+  // Показать кнопку с анимацией (вызывается когда добавлен первый товар)
+  window.showCartBtn = function() {
+    if (btn.classList.contains('cart-btn-visible')) return;
+    btn.classList.add('cart-btn-visible');
+    markSeen();
+    // Показать hint после появления кнопки
+    setTimeout(showHint, 1500);
+  };
+
+  // На старте: если первый визит и корзина пуста — кнопка скрыта (управляется CSS)
+  // Если были товары раньше — показываем сразу
+  if (!isFirstVisit() || Object.keys(cart || {}).length > 0) {
+    btn.classList.add('cart-btn-visible');
+  }
+
   function getDefaultPosition() {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     const bottomNavHeight = window.innerWidth <= 768 ? 80 : 0;
     return {
-      left: vw - 60 - EDGE_PADDING - 16,
-      top: vh - 60 - EDGE_PADDING - bottomNavHeight - 16
+      // Отступ FLOAT_PADDING от края — не прилипшая к краю позиция
+      left: vw - 60 - FLOAT_PADDING - 16,
+      top: vh - 60 - FLOAT_PADDING - bottomNavHeight - 16
     };
   }
 
@@ -802,8 +925,9 @@ document.querySelectorAll('img').forEach(img => {
     const btnW = btn.offsetWidth || 60;
     const btnH = btn.offsetHeight || 60;
 
+    // Только удерживаем в границах экрана — без snap к краям
     left = Math.max(EDGE_PADDING, Math.min(left, vw - btnW - EDGE_PADDING));
-    top = Math.max(EDGE_PADDING, Math.min(top, vh - btnH - EDGE_PADDING));
+    top  = Math.max(EDGE_PADDING, Math.min(top,  vh - btnH - EDGE_PADDING));
 
     if (animate) {
       btn.classList.add('snapping');
@@ -821,17 +945,6 @@ document.querySelectorAll('img').forEach(img => {
     currentY = top;
   }
 
-  function snapToEdge(left, top) {
-    if (!SNAP_TO_EDGE) return { left, top };
-    const vw = window.innerWidth;
-    const btnW = btn.offsetWidth || 60;
-    const centerX = left + btnW / 2;
-    const snapLeft = centerX < vw / 2
-      ? EDGE_PADDING
-      : vw - btnW - EDGE_PADDING;
-    return { left: snapLeft, top };
-  }
-
   function onPointerDown(e) {
     if (document.getElementById('cartDrawer')?.classList.contains('open')) return;
     isDragging = false;
@@ -839,7 +952,7 @@ document.querySelectorAll('img').forEach(img => {
     const point = e.touches ? e.touches[0] : e;
     startX = point.clientX;
     startY = point.clientY;
-    // Читаем реальную позицию кнопки — на случай если currentX/currentY не синхронизированы
+    // Читаем реальную позицию кнопки
     const rect = btn.getBoundingClientRect();
     startLeft = rect.left;
     startTop = rect.top;
@@ -873,13 +986,12 @@ document.querySelectorAll('img').forEach(img => {
     document.removeEventListener('mouseup', onPointerUp);
     btn.classList.remove('dragging');
     if (isDragging) {
-      const snapped = snapToEdge(currentX, currentY);
-      setPosition(snapped.left, snapped.top, true);
-      savePosition(snapped.left, snapped.top);
+      // Просто сохраняем позицию где бросили — без snap
+      savePosition(currentX, currentY);
       isDragging = false;
       e.preventDefault?.();
 
-      // Если корзина открыта — перепозиционировать окно под новое место кнопки
+      // Если корзина открыта — перепозиционировать окно
       if (document.getElementById('cartDrawer')?.classList.contains('open')) {
         requestAnimationFrame(() => positionCartWindowNearButton());
       }
@@ -907,14 +1019,13 @@ document.querySelectorAll('img').forEach(img => {
   btn.style.bottom = 'auto';
   setPosition(pos.left, pos.top, false);
 
-  // Корректировка при resize / повороте экрана
+  // При resize — только clamp в границы, без snap к краям
   let resizeTimer = null;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
-      const snapped = snapToEdge(currentX, currentY);
-      setPosition(snapped.left, snapped.top, true);
-      savePosition(snapped.left, snapped.top);
+      setPosition(currentX, currentY, true);
+      savePosition(currentX, currentY);
     }, 200);
   });
 
@@ -925,7 +1036,7 @@ document.querySelectorAll('img').forEach(img => {
     } catch(e) {}
     const hint = document.createElement('div');
     hint.className = 'cart-drag-hint';
-    hint.textContent = '← Перетащи меня';
+    hint.textContent = '✥ Перетащи меня куда удобно';
     hint.id = 'cartDragHint';
     document.body.appendChild(hint);
     function positionHint() {
@@ -2412,18 +2523,12 @@ const _sectionResizeObs = new ResizeObserver(entries => {
 
 // loop() работает только когда секция отзывов видна — экономит CPU/battery
 let loopActive = false;
-const _loopVisibilityObs = new IntersectionObserver(entries => {
-  const visible = entries[0].isIntersecting;
-  if (visible && !loopActive) {
-    loopActive = true;
-    // ── LAZY START: loop + typewriter только когда секция видна ──
 let loopRunning = false;
 
 const _revObserver = new IntersectionObserver(function(entries) {
   if (entries[0].isIntersecting) {
     if (!loopRunning) {
       loopRunning = true;
-      // Первый запуск — начать typewriter
       if (STATE === 'typing' && !typeTimer) {
         setTimeout(function() { startTypewriter(); }, 400);
       }
@@ -2437,8 +2542,10 @@ const _revObserver = new IntersectionObserver(function(entries) {
   threshold: 0
 });
 
-var _revSection = document.getElementById('reviews');
-if (_revSection) _revObserver.observe(_revSection);
+const _loopVisibilityObs = new IntersectionObserver(entries => {
+  const visible = entries[0].isIntersecting;
+  if (visible && !loopActive) {
+    loopActive = true;
   } else if (!visible) {
     loopActive = false;
   }
@@ -2449,6 +2556,7 @@ setTimeout(() => {
   if (secEl) {
     _sectionResizeObs.observe(secEl);
     _loopVisibilityObs.observe(secEl);
+    _revObserver.observe(secEl);
     cachedSectionWidth = secEl.offsetWidth;
     cachedSectionHeight = secEl.offsetHeight;
   }
