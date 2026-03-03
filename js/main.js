@@ -486,11 +486,6 @@ function updateCartUI() {
   badge.classList.toggle('visible', totalItems > 0);
   document.getElementById('cartCountBadge').textContent = totalItems;
 
-  // Показываем кнопку корзины при первом добавлении товара
-  if (totalItems > 0 && typeof window.showCartBtn === 'function') {
-    window.showCartBtn();
-  }
-
   // Показываем кнопку очистки только когда есть товары и мы на шаге 1
   const clearBtn = document.getElementById('cartClearBtn');
   if (clearBtn) clearBtn.style.display = totalItems > 0 ? 'inline-flex' : 'none';
@@ -681,13 +676,6 @@ function lockBody() {
   const count = parseInt(document.body.dataset.lockCount || '0');
   if (count === 0) {
     const scrollY = window.scrollY;
-    // Перед фиксацией body — сдвигаем cart-btn так, чтобы она осталась на месте
-    const cartBtn = document.getElementById('cartBtn');
-    if (cartBtn) {
-      const rect = cartBtn.getBoundingClientRect();
-      cartBtn.style.top = rect.top + 'px';
-      cartBtn.style.left = rect.left + 'px';
-    }
     document.body.style.position = 'fixed';
     document.body.style.top = `-${scrollY}px`;
     document.body.style.width = '100%';
@@ -845,248 +833,6 @@ document.querySelectorAll('img').forEach(img => {
       drawer.style.transform = '';
     }
   }, { passive: true });
-})();
-
-// ══════════════════════════════════════════════
-// DRAGGABLE CART BUTTON
-// ══════════════════════════════════════════════
-
-(function initDraggableCart() {
-  const btn = document.querySelector('.cart-btn');
-  if (!btn) return;
-
-  const EDGE_PADDING = 12;
-  const FLOAT_PADDING = 24; // отступ от края в позиции по умолчанию (не прилипшая)
-  const STORAGE_KEY = 'milovicake_cart_pos';
-  const HINT_KEY = 'milovicake_cart_hint_shown';
-  const SEEN_KEY = 'milovicake_cart_seen'; // ключ "пользователь уже добавлял товар"
-
-  let isDragging = false;
-  let wasDragged = false;
-  let startX = 0, startY = 0;
-  let startLeft = 0, startTop = 0;
-  let currentX = 0, currentY = 0;
-
-  // ── Скрываем кнопку при первом визите (пока нет товаров) ──
-  function isFirstVisit() {
-    try { return !localStorage.getItem(SEEN_KEY); } catch(e) { return false; }
-  }
-
-  function markSeen() {
-    try { localStorage.setItem(SEEN_KEY, '1'); } catch(e) {}
-  }
-
-  // Показать кнопку с анимацией (вызывается когда добавлен первый товар)
-  window.showCartBtn = function() {
-    if (btn.classList.contains('cart-btn-visible')) return;
-    btn.classList.add('cart-btn-visible');
-    markSeen();
-    // Показать hint после появления кнопки
-    setTimeout(showHint, 1500);
-  };
-
-  // На старте: если первый визит и корзина пуста — кнопка скрыта (управляется CSS)
-  // Если были товары раньше — показываем сразу
-  if (!isFirstVisit() || Object.keys(cart || {}).length > 0) {
-    btn.classList.add('cart-btn-visible');
-  }
-
-  function getDefaultPosition() {
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    const bottomNavHeight = window.innerWidth <= 768 ? 80 : 0;
-    return {
-      // Отступ FLOAT_PADDING от края — не прилипшая к краю позиция
-      left: vw - 60 - FLOAT_PADDING - 16,
-      top: vh - 60 - FLOAT_PADDING - bottomNavHeight - 16
-    };
-  }
-
-  function loadPosition() {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const pos = JSON.parse(saved);
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-        if (pos.left >= 0 && pos.left <= vw - 40 &&
-            pos.top >= 0 && pos.top <= vh - 40) {
-          return pos;
-        }
-      }
-    } catch(e) {}
-    return getDefaultPosition();
-  }
-
-  function savePosition(left, top) {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ left, top }));
-    } catch(e) {}
-  }
-
-  function setPosition(left, top, animate) {
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    const btnW = btn.offsetWidth || 60;
-    const btnH = btn.offsetHeight || 60;
-
-    // Только удерживаем в границах экрана — без snap к краям
-    left = Math.max(EDGE_PADDING, Math.min(left, vw - btnW - EDGE_PADDING));
-    top  = Math.max(EDGE_PADDING, Math.min(top,  vh - btnH - EDGE_PADDING));
-
-    if (animate) {
-      btn.classList.add('snapping');
-      btn.addEventListener('transitionend', () => {
-        btn.classList.remove('snapping');
-      }, { once: true });
-    }
-
-    btn.style.left = left + 'px';
-    btn.style.top = top + 'px';
-    btn.style.right = 'auto';
-    btn.style.bottom = 'auto';
-
-    currentX = left;
-    currentY = top;
-  }
-
-  function onPointerDown(e) {
-    if (document.getElementById('cartDrawer')?.classList.contains('open')) return;
-    isDragging = false;
-    wasDragged = false;
-    const point = e.touches ? e.touches[0] : e;
-    startX = point.clientX;
-    startY = point.clientY;
-    // Читаем реальную позицию кнопки
-    const rect = btn.getBoundingClientRect();
-    startLeft = rect.left;
-    startTop = rect.top;
-    currentX = rect.left;
-    currentY = rect.top;
-
-    // ⚠️ Важно: на touchstart НЕ вешаем passive:false на document —
-    // это блокирует скролл всей страницы даже когда пользователь просто тапает.
-    // Вместо этого: слушаем move на самой кнопке (passive) для определения drag-начала.
-    // Как только drag подтверждён (8px) — переключаемся на document с passive:false.
-    btn.addEventListener('touchmove', onTouchMoveDetect, { passive: true });
-    document.addEventListener('touchend', onPointerUp, { passive: true });
-    document.addEventListener('mousemove', onPointerMove);
-    document.addEventListener('mouseup', onPointerUp);
-  }
-
-  // Первичный детектор движения — passive, не блокирует скролл
-  function onTouchMoveDetect(e) {
-    const point = e.touches[0];
-    const dx = point.clientX - startX;
-    const dy = point.clientY - startY;
-    // Пока не достигли порога — не делаем ничего
-    if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
-
-    // Порог достигнут: убираем passive-детектор с кнопки,
-    // вешаем non-passive на document для блокировки скролла во время drag
-    btn.removeEventListener('touchmove', onTouchMoveDetect);
-    document.addEventListener('touchmove', onPointerMove, { passive: false });
-
-    // Сразу обрабатываем это событие как начало drag
-    isDragging = true;
-    wasDragged = true;
-    btn.classList.add('dragging');
-    hideHint();
-    setPosition(startLeft + dx, startTop + dy, false);
-  }
-
-  function onPointerMove(e) {
-    if (!isDragging) return;
-    const point = e.touches ? e.touches[0] : e;
-    const dx = point.clientX - startX;
-    const dy = point.clientY - startY;
-    if (e.cancelable) e.preventDefault();
-    setPosition(startLeft + dx, startTop + dy, false);
-  }
-
-  function onPointerUp(e) {
-    btn.removeEventListener('touchmove', onTouchMoveDetect);
-    document.removeEventListener('touchmove', onPointerMove);
-    document.removeEventListener('touchend', onPointerUp);
-    document.removeEventListener('mousemove', onPointerMove);
-    document.removeEventListener('mouseup', onPointerUp);
-    btn.classList.remove('dragging');
-    if (isDragging) {
-      savePosition(currentX, currentY);
-      isDragging = false;
-      e.preventDefault?.();
-      if (document.getElementById('cartDrawer')?.classList.contains('open')) {
-        requestAnimationFrame(() => positionCartWindowNearButton());
-      }
-    }
-  }
-
-  // Перехватываем click в capture фазе — до onclick="openCart()"
-  btn.addEventListener('click', (e) => {
-    if (wasDragged) {
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      wasDragged = false;
-      return false;
-    }
-  }, true);
-
-  btn.addEventListener('touchstart', onPointerDown, { passive: true });
-  btn.addEventListener('mousedown', onPointerDown);
-
-  // Инициализация позиции
-  const pos = loadPosition();
-  btn.style.position = 'fixed';
-  btn.style.right = 'auto';
-  btn.style.bottom = 'auto';
-  setPosition(pos.left, pos.top, false);
-
-  // При resize — только clamp в границы, без snap к краям
-  let resizeTimer = null;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      setPosition(currentX, currentY, true);
-      savePosition(currentX, currentY);
-    }, 200);
-  });
-
-  // Подсказка при первом визите
-  function showHint() {
-    try {
-      if (localStorage.getItem(HINT_KEY)) return;
-    } catch(e) {}
-    const hint = document.createElement('div');
-    hint.className = 'cart-drag-hint';
-    hint.textContent = '✥ Перетащи меня куда удобно';
-    hint.id = 'cartDragHint';
-    document.body.appendChild(hint);
-    function positionHint() {
-      const r = btn.getBoundingClientRect();
-      hint.style.left = (r.left - hint.offsetWidth - 10) + 'px';
-      hint.style.top = (r.top + r.height / 2 - hint.offsetHeight / 2) + 'px';
-      if (r.left - hint.offsetWidth - 10 < 10) {
-        hint.style.left = (r.left + r.width / 2 - hint.offsetWidth / 2) + 'px';
-        hint.style.top = (r.top - hint.offsetHeight - 10) + 'px';
-      }
-    }
-    setTimeout(() => { positionHint(); hint.classList.add('show'); }, 3000);
-    setTimeout(() => {
-      hideHint();
-      try { localStorage.setItem(HINT_KEY, '1'); } catch(e) {}
-    }, 8000);
-  }
-
-  function hideHint() {
-    const hint = document.getElementById('cartDragHint');
-    if (hint) {
-      hint.classList.remove('show');
-      setTimeout(() => hint.remove(), 300);
-    }
-  }
-
-  setTimeout(showHint, 2000);
 })();
 function observeReveal() {
   const els = document.querySelectorAll('.reveal:not(.visible)');
@@ -1339,7 +1085,7 @@ function openLightbox(src, srcs) {
   const lb = document.getElementById('lightbox');
   document.getElementById('lightboxImg').src = _lbSrcs[_lbIdx];
   lb.classList.add('open');
-  document.body.style.overflow = 'hidden';
+  lockBody();
   _lbUpdateArrows();
 }
 function lbNavigate(dir) {
@@ -1362,7 +1108,7 @@ function _lbUpdateArrows() {
 }
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
-  document.body.style.overflow = '';
+  unlockBody();
   _lbSrcs = []; _lbIdx = 0;
 }
 document.addEventListener('keydown', e => {
@@ -1644,14 +1390,14 @@ function openPrivacy() {
     el.style.display = 'flex';
   }
   el.classList.add('open');
-  document.body.style.overflow = 'hidden';
+  lockBody();
 }
 function closePrivacy() {
   const el = document.getElementById('privacyOverlay');
   if (!el) return;
   el.classList.remove('open');
   el.style.display = '';
-  document.body.style.overflow = '';
+  unlockBody();
 }
 
 // ══════════════════════════════════════════
@@ -1748,7 +1494,6 @@ function confirmFillSelection() {
     // Dim overlay as we drag down
     const overlay = document.getElementById('fillOverlay');
     if (overlay) overlay.style.opacity = Math.max(0, 1 - currentY / 220);
-    if (e.cancelable) e.preventDefault();
   }
   function onEnd() {
     if (!dragging) return;
@@ -1765,14 +1510,14 @@ function confirmFillSelection() {
   }
 
   handle.addEventListener('touchstart', onStart, { passive: true });
-  handle.addEventListener('touchmove',  onMove,  { passive: false });
+  handle.addEventListener('touchmove',  onMove,  { passive: true });
   handle.addEventListener('touchend',   onEnd,   { passive: true });
 
-  // Click/tap overlay to dismiss (click для десктопа, touchend для мобильного)
+  // Click/tap overlay to dismiss
   const overlayEl = document.getElementById('fillOverlay');
   if (overlayEl) {
     overlayEl.addEventListener('click', closeFillPopup);
-    overlayEl.addEventListener('touchend', e => { e.preventDefault(); closeFillPopup(); }, { passive: false });
+    overlayEl.addEventListener('touchend', () => { closeFillPopup(); }, { passive: true });
   }
 })();
 
@@ -1953,7 +1698,7 @@ function openChatLightbox(idx) {
   const lb = document.getElementById('lightbox');
   document.getElementById('lightboxImg').src = CHAT_SRCS[idx];
   lb.classList.add('open');
-  document.body.style.overflow = 'hidden';
+  lockBody();
   _lbUpdateArrows();
 }
 
@@ -1963,7 +1708,7 @@ function openChatLightbox(idx) {
 function openReviewsModal(tab) {
   const modal = document.getElementById('reviewsModal');
   if (!modal) return;
-  document.body.style.overflow = 'hidden';
+  lockBody();
   // visibility:hidden→visible через CSS transition, display не трогаем
   requestAnimationFrame(() => {
     modal.classList.add('open');
@@ -1978,7 +1723,7 @@ function closeReviewsModal() {
   const modal = document.getElementById('reviewsModal');
   if (!modal) return;
   modal.classList.remove('open');
-  document.body.style.overflow = '';
+  unlockBody();
   document.removeEventListener('keydown', handleReviewsEscape);
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.remove('hidden');
@@ -2587,8 +2332,7 @@ setTimeout(() => {
 
 let lastT=0;
 function loop(ts){
-  if (!loopRunning) return;          // пауза когда секция вне зоны видимости
-  if (!loopActive) return; // пауза когда секция вне экрана
+  if (!loopRunning || !loopActive) return; // пауза когда секция вне зоны видимости
 
   const secEl = document.getElementById('reviews');
   if (!secEl) { if (loopActive) requestAnimationFrame(loop); return; }
@@ -2597,6 +2341,7 @@ function loop(ts){
   lastT = ts;
 
   // ── state machine tick ──
+  if(STATE === 'idle'){ requestAnimationFrame(loop); return; } // пауза между слайдами
   if(STATE === 'zoom_in' && !lbIsOpen){
     zoomP += (1 - zoomP) * ZOOM_IN_SPD_CUR;
     // startWaiting triggered by typeTimer when text finishes
@@ -2775,8 +2520,7 @@ function openLB(triggerEl, src, idx){
   lbImg.style.transition = 'opacity 0.2s, transform 0.2s';
   if (lbArrCounter) lbArrCounter.textContent = (_lbReviewIdx + 1) + ' / ' + REVIEWS.length;
 
-  document.body.style.overflow = 'hidden';
-  document.documentElement.style.overflow = 'hidden'; /* iOS Safari fix */
+  lockBody();
   lbOverlay.classList.add('active');
   lbX.style.pointerEvents = 'none';
 
@@ -2802,9 +2546,7 @@ function closeLB(){
 
   // Убираем класс active — CSS transition анимирует обратно
   lbOverlay.classList.remove('active');
-  document.body.style.overflow = '';
-  // iOS Safari иногда застревает — форсируем сброс scroll lock
-  document.documentElement.style.overflow = '';
+  unlockBody();
 
   setTimeout(()=>{
     lbImg.src = '';
@@ -2856,7 +2598,13 @@ lbBg.addEventListener('click', closeLB);
 lbBox.addEventListener('click', closeLB);
 lbX.addEventListener('click',  closeLB);
 document.addEventListener('keydown', e=>{ if(e.key==='Escape' && lbIsOpen) closeLB(); });
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeLB(); });
+
+// Сброс lbBusy если пользователь переключил вкладку во время анимации
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && lbBusy) {
+    lbBusy = false;
+  }
+});
 
 
   // ── Public API — functions called from HTML via onclick ──

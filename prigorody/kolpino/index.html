@@ -87,12 +87,16 @@
 #pageLoader.hidden{opacity:0;visibility:hidden;pointer-events:none}
 </style>
 <script>
-window.addEventListener('load',function(){
-  setTimeout(function(){
-    var l=document.getElementById('pageLoader');
-    if(l){l.classList.add('hidden');setTimeout(function(){l.remove()},500);}
-  },400);
-});
+function _hideLoader(){
+  var l=document.getElementById('pageLoader');
+  if(l){
+    l.classList.add('hidden');
+    l.style.pointerEvents='none';
+    setTimeout(function(){if(l.parentNode)l.parentNode.removeChild(l);},700);
+  }
+}
+window.addEventListener('load',function(){ setTimeout(_hideLoader, 400); });
+setTimeout(_hideLoader, 5000);
 </script>
 
 <!-- ── SKIP LINK (accessibility) ── -->

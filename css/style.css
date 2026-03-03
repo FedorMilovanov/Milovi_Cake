@@ -41,11 +41,13 @@ h1, h2 {
   letter-spacing: -0.02em;
 }
 
+html {
+  overflow-x: hidden;
+}
 body {
   font-family: 'Jost', sans-serif;
   background: var(--cream);
   color: var(--text);
-  overflow-x: hidden;
 }
 
 /* ── PROGRESS BAR ── */
@@ -172,6 +174,39 @@ body {
   transition: background 0.2s, transform 0.15s !important;
 }
 .header-order:hover { background: var(--gold-light) !important; transform: translateY(-1px); }
+
+.header-cart-btn {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 4px 6px;
+  margin-left: 4px;
+  display: flex;
+  align-items: center;
+  line-height: 1;
+  opacity: 0.85;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.header-cart-btn:hover { opacity: 1; transform: scale(1.1); }
+.header-cart-btn .cart-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--gold);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Jost', sans-serif;
+}
+.header-cart-btn .cart-badge.visible { display: flex; }
 
 /* ── BURGER MENU ── */
 .burger-btn {
@@ -710,9 +745,12 @@ body.fill-open {
 body.menu-open {
   overflow: hidden;
 }
-/* touch-action: none только на оверлее, не на всём body — иначе скролл внутри попапа не работает */
+/* touch-action: none только на оверлее когда попап открыт */
 body.fill-open .fill-mobile-overlay {
   touch-action: none;
+}
+body:not(.fill-open) .fill-mobile-overlay {
+  touch-action: auto;
 }
 /* ── BOTTOM SHEET: Fill info ── */
 .fill-mobile-overlay {
@@ -1581,72 +1619,6 @@ section { padding: 100px 60px; }
 .cart-form .form-group.float-label textarea:focus + label { background: var(--white); }
 
 /* ── CART ── */
-.cart-btn {
-  position: fixed;
-  /* позиция управляется через JS */
-  width: 60px; height: 60px;
-  border-radius: 50%;
-  background: var(--gold);
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  box-shadow: 0 8px 24px rgba(201,147,74,0.4);
-  z-index: 100;
-  touch-action: none;
-  user-select: none;
-  -webkit-user-select: none;
-  /* GPU-слой — критично для position:fixed на iOS Safari и мобильных браузерах */
-  -webkit-transform: translateZ(0);
-  will-change: transform;
-  /* По умолчанию скрыта — появляется когда добавлен первый товар */
-  opacity: 0;
-  pointer-events: none;
-  transform: translateZ(0) scale(0.5);
-  transition: opacity 0.4s ease, transform 0.4s ease, box-shadow 0.2s;
-}
-.cart-btn.cart-btn-visible {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateZ(0) scale(1);
-}
-.cart-btn.cart-btn-visible:hover {
-  transform: translateZ(0) scale(1.1);
-  box-shadow: 0 12px 32px rgba(201,147,74,0.5);
-}
-.cart-btn.dragging {
-  transform: translateZ(0) scale(1.15) !important;
-  box-shadow: 0 12px 40px rgba(201,147,74,0.55);
-  opacity: 0.92;
-  transition: none;
-}
-.cart-btn.snapping {
-  transition: left 0.35s cubic-bezier(0.25,1,0.5,1),
-              top 0.35s cubic-bezier(0.25,1,0.5,1),
-              transform 0.2s ease, box-shadow 0.2s ease;
-}
-.cart-drag-hint {
-  position: fixed;
-  z-index: 99;
-  background: var(--brown);
-  color: rgba(255,235,185,0.9);
-  font-family: 'Jost', sans-serif;
-  font-size: 12px;
-  padding: 6px 14px;
-  border-radius: 20px;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(4px);
-  transition: opacity 0.3s, transform 0.3s;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-}
-.cart-drag-hint.show {
-  opacity: 1;
-  transform: translateY(0);
-}
 .cart-inline-total {
   font-family: 'Cormorant Garamond', serif;
   font-size: 24px;
@@ -3045,6 +3017,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   pointer-events: none;
   z-index: 10;
   overflow: visible;
+  touch-action: pan-y; /* пропускать вертикальный скролл */
 }
 
 .sc-thumb {
@@ -3057,6 +3030,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   box-shadow: 0 5px 20px rgba(61,43,31,.18);
   cursor: pointer;
   pointer-events: all;
+  touch-action: manipulation; /* тап без задержки, скролл не блокируем */
   transition: border-color .35s ease, box-shadow .35s ease;
 }
 .sc-thumb img {
