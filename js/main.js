@@ -680,8 +680,14 @@ function goBackToCart() {
 function lockBody() {
   const count = parseInt(document.body.dataset.lockCount || '0');
   if (count === 0) {
-    // Первый лок — сохраняем позицию и фиксируем
     const scrollY = window.scrollY;
+    // Перед фиксацией body — сдвигаем cart-btn так, чтобы она осталась на месте
+    const cartBtn = document.getElementById('cartBtn');
+    if (cartBtn) {
+      const rect = cartBtn.getBoundingClientRect();
+      cartBtn.style.top = rect.top + 'px';
+      cartBtn.style.left = rect.left + 'px';
+    }
     document.body.style.position = 'fixed';
     document.body.style.top = `-${scrollY}px`;
     document.body.style.width = '100%';
@@ -695,7 +701,6 @@ function unlockBody() {
   const newCount = count - 1;
   document.body.dataset.lockCount = newCount;
   if (newCount === 0) {
-    // Последний разлок — восстанавливаем позицию
     const scrollY = parseInt(document.body.dataset.scrollY || '0');
     document.body.style.position = '';
     document.body.style.top = '';
@@ -958,40 +963,58 @@ document.querySelectorAll('img').forEach(img => {
     startTop = rect.top;
     currentX = rect.left;
     currentY = rect.top;
-    document.addEventListener('touchmove', onPointerMove, { passive: false });
+
+    // ⚠️ Важно: на touchstart НЕ вешаем passive:false на document —
+    // это блокирует скролл всей страницы даже когда пользователь просто тапает.
+    // Вместо этого: слушаем move на самой кнопке (passive) для определения drag-начала.
+    // Как только drag подтверждён (8px) — переключаемся на document с passive:false.
+    btn.addEventListener('touchmove', onTouchMoveDetect, { passive: true });
     document.addEventListener('touchend', onPointerUp, { passive: true });
     document.addEventListener('mousemove', onPointerMove);
     document.addEventListener('mouseup', onPointerUp);
   }
 
+  // Первичный детектор движения — passive, не блокирует скролл
+  function onTouchMoveDetect(e) {
+    const point = e.touches[0];
+    const dx = point.clientX - startX;
+    const dy = point.clientY - startY;
+    // Пока не достигли порога — не делаем ничего
+    if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+
+    // Порог достигнут: убираем passive-детектор с кнопки,
+    // вешаем non-passive на document для блокировки скролла во время drag
+    btn.removeEventListener('touchmove', onTouchMoveDetect);
+    document.addEventListener('touchmove', onPointerMove, { passive: false });
+
+    // Сразу обрабатываем это событие как начало drag
+    isDragging = true;
+    wasDragged = true;
+    btn.classList.add('dragging');
+    hideHint();
+    setPosition(startLeft + dx, startTop + dy, false);
+  }
+
   function onPointerMove(e) {
+    if (!isDragging) return;
     const point = e.touches ? e.touches[0] : e;
     const dx = point.clientX - startX;
     const dy = point.clientY - startY;
-    if (!isDragging && Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
-    if (!isDragging) {
-      isDragging = true;
-      wasDragged = true;
-      btn.classList.add('dragging');
-      hideHint();
-    }
     if (e.cancelable) e.preventDefault();
     setPosition(startLeft + dx, startTop + dy, false);
   }
 
   function onPointerUp(e) {
+    btn.removeEventListener('touchmove', onTouchMoveDetect);
     document.removeEventListener('touchmove', onPointerMove);
     document.removeEventListener('touchend', onPointerUp);
     document.removeEventListener('mousemove', onPointerMove);
     document.removeEventListener('mouseup', onPointerUp);
     btn.classList.remove('dragging');
     if (isDragging) {
-      // Просто сохраняем позицию где бросили — без snap
       savePosition(currentX, currentY);
       isDragging = false;
       e.preventDefault?.();
-
-      // Если корзина открыта — перепозиционировать окно
       if (document.getElementById('cartDrawer')?.classList.contains('open')) {
         requestAnimationFrame(() => positionCartWindowNearButton());
       }

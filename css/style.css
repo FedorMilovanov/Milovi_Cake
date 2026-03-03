@@ -1596,29 +1596,34 @@ section { padding: 100px 60px; }
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
+  /* GPU-слой — критично для position:fixed на iOS Safari и мобильных браузерах */
+  -webkit-transform: translateZ(0);
+  will-change: transform;
   /* По умолчанию скрыта — появляется когда добавлен первый товар */
   opacity: 0;
   pointer-events: none;
-  transform: scale(0.5);
+  transform: translateZ(0) scale(0.5);
   transition: opacity 0.4s ease, transform 0.4s ease, box-shadow 0.2s;
 }
 .cart-btn.cart-btn-visible {
   opacity: 1;
   pointer-events: auto;
-  transform: scale(1);
+  transform: translateZ(0) scale(1);
 }
 .cart-btn.cart-btn-visible:hover {
-  transform: scale(1.1);
+  transform: translateZ(0) scale(1.1);
   box-shadow: 0 12px 32px rgba(201,147,74,0.5);
 }
 .cart-btn.dragging {
-  transform: scale(1.15) !important;
+  transform: translateZ(0) scale(1.15) !important;
   box-shadow: 0 12px 40px rgba(201,147,74,0.55);
   opacity: 0.92;
   transition: none;
 }
 .cart-btn.snapping {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: left 0.35s cubic-bezier(0.25,1,0.5,1),
+              top 0.35s cubic-bezier(0.25,1,0.5,1),
+              transform 0.2s ease, box-shadow 0.2s ease;
 }
 .cart-drag-hint {
   position: fixed;
