@@ -37,7 +37,7 @@ const products = [
     slidePos: ['center 30%', 'center 10%'],
     slideScale: [1, 1] },
   { id: 4, name: 'Меренговый рулет', desc: 'Хрустящая меренга с нежным кремом — наш фирменный десерт', min: '', price: '2 500 ₽/шт', priceNum: 2500, unit: 'шт', emoji: '🥐',
-    slides: [IMG_BASE + '/meringue_roll.webp', IMG_BASE + '/meringue_roll_2.webp', IMG_BASE + '/meringue_roll_3.webp'],
+    slides: [IMG_BASE + '/meringue_roll.webp', IMG_BASE + '/meringue_roll_2.webp', IMG_BASE + '/meringue_roll_3.webp', IMG_BASE + '/meringue_roll_4.webp', IMG_BASE + '/meringue_roll_5.webp', IMG_BASE + '/meringue_roll_6.webp'],
     slidePos: ['center 35%', 'center 40%', 'center 35%'] },
   { id: 5, name: 'Пирожное "Павлова"', minQty: 2, desc: 'Воздушная меренга с кремом и начинкой из ягод', min: 'Заказ от 2 шт', price: '350 ₽/шт', priceNum: 350, unit: 'шт', emoji: '🍓',
     slides: [IMG_BASE + '/pavlova.webp', IMG_BASE + '/pavlova_2.webp', IMG_BASE + '/pavlova_3.webp'],
@@ -837,7 +837,7 @@ document.querySelectorAll('img').forEach(img => {
   }, { passive: true });
 })();
 function observeReveal() {
-  const els = document.querySelectorAll('.reveal:not(.visible)');
+  const els = document.querySelectorAll('.reveal:not(.visible), .reveal-photo:not(.visible)');
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
   }, { threshold: 0.15 });
@@ -1087,10 +1087,8 @@ function openLightbox(src, srcs) {
   const lb = document.getElementById('lightbox');
   document.getElementById('lightboxImg').src = _lbSrcs[_lbIdx];
   lb.classList.add('open');
-  lockBody();
+  document.documentElement.style.overflow = 'hidden';
   _lbUpdateArrows();
-}
-function lbNavigate(dir) {
   if (_lbSrcs.length < 2) return;
   _lbIdx = (_lbIdx + dir + _lbSrcs.length) % _lbSrcs.length;
   const img = document.getElementById('lightboxImg');
@@ -1110,7 +1108,7 @@ function _lbUpdateArrows() {
 }
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
-  unlockBody();
+  document.documentElement.style.overflow = '';
   _lbSrcs = []; _lbIdx = 0;
 }
 document.addEventListener('keydown', e => {
@@ -2515,7 +2513,7 @@ function openLB(triggerEl, src, idx){
   lbImg.style.transition = 'opacity 0.2s, transform 0.2s';
   if (lbArrCounter) lbArrCounter.textContent = (_lbReviewIdx + 1) + ' / ' + REVIEWS.length;
 
-  lockBody();
+  document.documentElement.style.overflow = 'hidden';
   lbOverlay.classList.add('active');
   lbX.style.pointerEvents = 'none';
 
@@ -2541,7 +2539,7 @@ function closeLB(){
 
   // Убираем класс active — CSS transition анимирует обратно
   lbOverlay.classList.remove('active');
-  unlockBody();
+  document.documentElement.style.overflow = '';
 
   setTimeout(()=>{
     lbImg.src = '';

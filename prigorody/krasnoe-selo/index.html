@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.svg?v=20260303" type="image/svg+xml">
   <meta name="format-detection" content="telephone=no" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Торты на заказ в Красном Селе — Milovi Cake | Доставка из СПб</title>
@@ -27,7 +27,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Milovi Cake" />
   <meta name="theme-color" content="#c9934a" />
-  <link rel="apple-touch-icon" href="/icon-apple.png" />
+  <link rel="apple-touch-icon" href="/icon-apple.png?v=20260303" />
   <link rel="canonical" href="https://milovicake.ru/prigorody/krasnoe-selo/" />
   <script type="application/ld+json">
   {
@@ -78,7 +78,7 @@
 <body>
 
 <!-- ══════════ LOADING SCREEN ══════════ -->
-<div id="pageLoader" style="position:fixed;inset:0;z-index:99999;background:#181818;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.6s ease,visibility 0.6s ease;">
+<div id="pageLoader" style="position:fixed;inset:0;z-index:99999;background:#f5f0e8;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.6s ease,visibility 0.6s ease;">
   <img src="/img/icon-loading.webp" alt="Milovi Cake" style="width:min(60vw,280px);height:min(60vw,280px);object-fit:contain;animation:loaderPulse 1.8s ease-in-out infinite;" />
   <p style="margin-top:24px;color:#c9934a;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:0.25em;text-transform:uppercase;opacity:1;">MILOVI CAKE</p>
 </div>
@@ -123,6 +123,10 @@ setTimeout(_hideLoader, 5000);
     <a href="#reviews">Отзывы</a>
     <a href="#contacts">Контакты</a>
     <a href="#catalog" class="header-order">Заказать</a>
+    <button class="header-cart-btn" id="cartBtn" onclick="openCart()" aria-label="Корзина">
+      🛒
+      <span class="cart-badge" id="cartBadge">0</span>
+    </button>
   </nav>
   <button class="burger-btn" id="burgerBtn" aria-label="Меню" aria-expanded="false" aria-controls="mobileMenu">
     <span></span><span></span><span></span>
@@ -711,12 +715,6 @@ setTimeout(_hideLoader, 5000);
 </section>
 
 
-<!-- ══════════ CART BUTTON ══════════ -->
-<button class="cart-btn" onclick="openCart()" aria-label="Корзина">
-  🛒
-  <span class="cart-badge" id="cartBadge">0</span>
-</button>
-
 <!-- ══════════ CART DRAWER ══════════ -->
 <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
 <div class="cart-drawer" id="cartDrawer">
@@ -1128,9 +1126,22 @@ setTimeout(_hideLoader, 5000);
 </div>
 
 <!-- lightbox for new reviews section -->
-<div class="lb-bg" id="lbBg"></div>
-<div class="lb-box" id="lbBox"><img id="lbImg" src="" alt=""></div>
-<button class="lb-x" id="lbX" aria-label="Закрыть">✕</button>
+<div class="lb-overlay" id="lbOverlay">
+  <div class="lb-backdrop" id="lbBg"></div>
+  <button class="lb-x" id="lbX" aria-label="Закрыть">✕</button>
+  <div class="lb-box" id="lbBox">
+    <img id="lbImg" src="" alt="">
+  </div>
+  <div class="lb-arrows" id="lbArrows">
+    <button class="lb-arr-btn" id="lbPrev" aria-label="Назад">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <span class="lb-arr-counter" id="lbArrCounter">1 / 8</span>
+    <button class="lb-arr-btn" id="lbNext" aria-label="Вперёд">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+</div>
 
 </body>
 </html>
