@@ -749,7 +749,12 @@ function openCart() {
   document.body.classList.add('cart-open');
 
   // lockBody только на мобиле — на десктопе страница скроллится под окном
-  if (window.innerWidth <= 900) lockBody();
+  if (window.innerWidth <= 900) {
+    lockBody();
+  } else {
+    // На десктопе скроллим наверх чтобы корзина была видна
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   setCartStep(1);
 

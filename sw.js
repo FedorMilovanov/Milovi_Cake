@@ -4,9 +4,9 @@
    ══════════════════════════════════════════════ */
 
 // Version is updated on each deploy — change this date to bust caches
-const DEPLOY_VERSION = '2026-03-03c';
+const DEPLOY_VERSION = '2026-03-03d';
 const STATIC_CACHE = `milovi-static-v1-${DEPLOY_VERSION}`;
-const IMAGE_CACHE  = `milovi-images-v1`;
+const IMAGE_CACHE  = `milovi-images-v2`;
 
 /* Только критичные ресурсы — пригороды кешируются по запросу */
 const PRECACHE_URLS = [
@@ -16,6 +16,11 @@ const PRECACHE_URLS = [
   '/manifest.json',
   '/favicon.svg',
   '/icon-192.png',
+  '/icon-384.png',
+  '/icon-512.png',
+  '/icon-maskable.png',
+  '/icon-apple.png',
+  '/img/icon-loading.webp',
   '/img/head_desktop.webp',
   '/img/head_mobile.webp',
 ];
