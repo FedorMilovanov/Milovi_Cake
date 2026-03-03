@@ -613,13 +613,59 @@ function unlockBody() {
   }
 }
 
+// ── DESKTOP: позиционировать окно корзины рядом с кнопкой ──
+function positionCartWindowNearButton() {
+  if (window.innerWidth < 901) return;
+
+  const btn = document.getElementById('cartBtn');
+  const drawer = document.getElementById('cartDrawer');
+  if (!btn || !drawer) return;
+
+  const MARGIN = 12;
+  const GAP = 12;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+
+  const dW = 440;
+  const dH = Math.min(vh * 0.78, 720);
+
+  const b = btn.getBoundingClientRect();
+  const btnCenterX = b.left + b.width / 2;
+
+  // Горизонтально: открываем внутрь экрана
+  let left = (btnCenterX < vw / 2)
+    ? b.left
+    : (b.right - dW);
+
+  // Вертикально: ниже кнопки, если не влезает — выше
+  let top = b.bottom + GAP;
+  if (top + dH > vh - MARGIN) {
+    top = b.top - dH - GAP;
+  }
+
+  // Clamp внутрь экрана
+  left = Math.max(MARGIN, Math.min(left, vw - dW - MARGIN));
+  top  = Math.max(MARGIN, Math.min(top,  vh - dH - MARGIN));
+
+  drawer.style.left   = left + 'px';
+  drawer.style.top    = top + 'px';
+  drawer.style.right  = 'auto';
+  drawer.style.bottom = 'auto';
+}
+
 function openCart() {
   document.getElementById('cartDrawer').classList.add('open');
   document.getElementById('cartOverlay').classList.add('open');
   document.body.classList.add('cart-open');
-  lockBody();
+
+  // lockBody только на мобиле — на десктопе страница скроллится под окном
+  if (window.innerWidth <= 900) lockBody();
+
   setCartStep(1);
-  // Скрыть bottom nav при открытой корзине
+
+  // Позиционируем окно рядом с кнопкой (только десктоп)
+  requestAnimationFrame(() => positionCartWindowNearButton());
+
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.add('hidden');
 }
@@ -628,8 +674,9 @@ function closeCart() {
   document.getElementById('cartDrawer').classList.remove('open');
   document.getElementById('cartOverlay').classList.remove('open');
   document.body.classList.remove('cart-open');
-  unlockBody();
-  // Показать bottom nav
+
+  if (window.innerWidth <= 900) unlockBody();
+
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.remove('hidden');
 }
@@ -792,8 +839,12 @@ document.querySelectorAll('img').forEach(img => {
     const point = e.touches ? e.touches[0] : e;
     startX = point.clientX;
     startY = point.clientY;
-    startLeft = currentX;
-    startTop = currentY;
+    // Читаем реальную позицию кнопки — на случай если currentX/currentY не синхронизированы
+    const rect = btn.getBoundingClientRect();
+    startLeft = rect.left;
+    startTop = rect.top;
+    currentX = rect.left;
+    currentY = rect.top;
     document.addEventListener('touchmove', onPointerMove, { passive: false });
     document.addEventListener('touchend', onPointerUp, { passive: true });
     document.addEventListener('mousemove', onPointerMove);
@@ -827,6 +878,11 @@ document.querySelectorAll('img').forEach(img => {
       savePosition(snapped.left, snapped.top);
       isDragging = false;
       e.preventDefault?.();
+
+      // Если корзина открыта — перепозиционировать окно под новое место кнопки
+      if (document.getElementById('cartDrawer')?.classList.contains('open')) {
+        requestAnimationFrame(() => positionCartWindowNearButton());
+      }
     }
   }
 
@@ -993,6 +1049,16 @@ function initApp() {
   updateCartUI();
   observeReveal(); // picks up static .reveal elements (hero, sections, etc.)
   setTimeout(initCatalogNavScroll, 500);
+
+  // Fix 3: устанавливаем min для даты динамически (не хардкодим в HTML)
+  const dateInput = document.getElementById('cdate');
+  if (dateInput) {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    dateInput.min = `${yyyy}-${mm}-${dd}`;
+  }
 }
 
 if (document.readyState === 'loading') {
