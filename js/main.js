@@ -1397,8 +1397,6 @@ function closePrivacy() {
   el.classList.remove('open');
   unlockBody();
 }
-  unlockBody();
-}
 
 // ══════════════════════════════════════════
 // ── BOTTOM SHEET: Fill info ──
