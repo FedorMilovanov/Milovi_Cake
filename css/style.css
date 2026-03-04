@@ -13,6 +13,12 @@
 button, a, [onclick] {
   outline: none;
 }
+button:focus-visible,
+a:focus-visible,
+[onclick]:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
 
 :root {
   --cream: #f5f0e8;
@@ -981,7 +987,6 @@ body:not(.fill-open) .fill-mobile-overlay {
 
 /* ── VISUALLY HIDDEN (SEO) ── */
 .visually-hidden {
-  clip-path: inset(50%);
   clip-path: inset(50%);
   height: 1px;
   overflow: hidden;
