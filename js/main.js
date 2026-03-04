@@ -220,7 +220,7 @@ function switchBentoTab(pid, mode) {
     // Clear current slides
     const existingSlides = wrap.querySelectorAll('.slide-img');
     existingSlides.forEach(el => el.remove());
-    const dotsEl = wrap.querySelector('.slider-dots');
+    const dotsEl = wrap.querySelector('.slide-dots');
 
     // Build new slides
     let newSlidesHtml = '';
@@ -1089,6 +1089,9 @@ function openLightbox(src, srcs) {
   lb.classList.add('open');
   document.documentElement.style.overflow = 'hidden';
   _lbUpdateArrows();
+}
+
+function lbNavigate(dir) {
   if (_lbSrcs.length < 2) return;
   _lbIdx = (_lbIdx + dir + _lbSrcs.length) % _lbSrcs.length;
   const img = document.getElementById('lightboxImg');
@@ -1385,10 +1388,6 @@ initCookieBanner();
 function openPrivacy() {
   const el = document.getElementById('privacyOverlay');
   if (!el) return;
-  // Support both CSS-class (main) and inline style (city)
-  if (getComputedStyle(el).display === 'none' || el.style.display === 'none') {
-    el.style.display = 'flex';
-  }
   el.classList.add('open');
   lockBody();
 }
@@ -1396,7 +1395,8 @@ function closePrivacy() {
   const el = document.getElementById('privacyOverlay');
   if (!el) return;
   el.classList.remove('open');
-  el.style.display = '';
+  unlockBody();
+}
   unlockBody();
 }
 
@@ -1933,8 +1933,10 @@ REVIEWS.forEach((rv, i) => {
 
   const th = document.createElement('div');
   th.className = 'sc-thumb';
-  th.style.left = lay.lp + '%';
-  th.style.top  = lay.tp + '%';
+  th.style.left = '0';
+  th.style.top  = '0';
+  th.style.willChange = 'transform';
+  th.style.transform = `translate(${lay.lp}%, ${lay.tp}%)`;
   th.dataset.i  = i;
 
   const im = document.createElement('img');
@@ -1956,6 +1958,9 @@ REVIEWS.forEach((rv, i) => {
   // 4-arrow group: positioned in loop around the thumb, no rotation
   const ar = document.createElement('div');
   ar.className = 'sc-arrows';
+  ar.style.left = '0';
+  ar.style.top  = '0';
+  ar.style.willChange = 'transform';
   ar.innerHTML = `
     <div class="sc-arr sc-arr-top"></div>
     <div class="sc-arr sc-arr-bottom"></div>
@@ -2430,14 +2435,11 @@ function loop(ts){
 
     const finalL = baseL + ffx + px + tx;
     const finalT = baseT + ffy + py + ty;
-    th.style.left      = finalL + 'px';
-    th.style.top       = finalT + 'px';
-    th.style.transform = `rotate(${lay.rot + ffr + pr + tr}deg)`;
+    th.style.transform = `translate(${finalL}px, ${finalT}px) rotate(${lay.rot + ffr + pr + tr}deg)`;
 
     // Position arrow group centered on thumb (no rotation)
     const ar = arrows[i];
-    ar.style.left   = finalL + 'px';
-    ar.style.top    = finalT + 'px';
+    ar.style.transform = `translate(${finalL}px, ${finalT}px)`;
     ar.style.width  = THUMB_W + 'px';
     ar.style.height = THUMB_H + 'px';
   });

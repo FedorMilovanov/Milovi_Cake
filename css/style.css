@@ -4,12 +4,11 @@
    Мобильные начинки: 2 в ряд через CSS Grid
 ═══════════════════════════════════════════════════════ */
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* ── УБИРАЕМ синюю подсветку тапа на мобиле ── */
 *, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
   -webkit-tap-highlight-color: transparent;
-  tap-highlight-color: transparent;
 }
 button, a, [onclick] {
   outline: none;
@@ -20,6 +19,7 @@ button, a, [onclick] {
   --cream-dark: #ede5d5;
   --gold: #c9934a;
   --gold-light: #d4a76a;
+  --gold-glow: rgba(201, 147, 74, 0.5);
   --brown: #3d2b1f;
   --brown-light: #6b4c38;
   --text: #2c1a10;
@@ -927,7 +927,7 @@ body:not(.fill-open) .fill-mobile-overlay {
   background: rgba(45,28,18,0.72);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   padding: 20px;
@@ -935,7 +935,7 @@ body:not(.fill-open) .fill-mobile-overlay {
   pointer-events: none;
   transition: opacity 0.3s;
 }
-#privacyOverlay.open { opacity: 1; pointer-events: all; }
+#privacyOverlay.open { display: flex; opacity: 1; pointer-events: all; }
 #privacyModal {
   background: var(--cream);
   border-radius: 20px;
@@ -1451,7 +1451,7 @@ section { padding: 100px 60px; }
   width: 100%;
   height: 100%;
   opacity: 0;
-  transition: opacity 0.9s ease;
+  transition: opacity 0.5s ease;
   display: block;
   cursor: zoom-in;
   overflow: hidden;
@@ -4144,4 +4144,65 @@ a, button {
 }
 .photo-strip-item--featured:hover::before {
   opacity: 1;
+}
+
+
+/* ══════════════════════════════════════════════
+   MOBILE PERFORMANCE FIXES
+   ══════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  /* 0. Контейнер — отступы чтобы контент не заезжал за края */
+  .container {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  /* 1. Убираем blur, поднимаем opacity */
+  .site-header.scrolled {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(245, 240, 232, 0.98);
+  }
+
+  .bottom-nav {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(253, 251, 247, 0.99);
+  }
+
+  .breadcrumb-nav {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(61, 43, 31, 0.95);
+  }
+
+  /* 2. Отключаем shimmer-блик на кнопках */
+  .btn-primary::before,
+  .btn-wa::before,
+  .calc-order-btn::before,
+  .header-order::before {
+    animation: none;
+  }
+
+  /* 3. Отключаем декоративные анимации */
+  .hero-orb-1,
+  .hero-orb-2,
+  .hero-orb-3 {
+    animation: none;
+  }
+
+  .hint-emoji {
+    animation: none;
+  }
+
+  /* 4. Сокращаем тяжёлую blur-анимацию лайтбокса */
+  .lb-box {
+    transition-duration: 0.5s;
+  }
+
+  /* 5. Отключаем mouse-tracking gradient (не работает на тачскрине) */
+  .product-card::before {
+    display: none;
+  }
 }
