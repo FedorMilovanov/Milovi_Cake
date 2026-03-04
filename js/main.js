@@ -126,6 +126,7 @@ function renderCatalog() {
 function goSlide(pid, idx) {
   const wrap = document.getElementById('slider-' + pid);
   if (!wrap) return;
+  sliderCurrentIdx[pid] = idx;
   const slides = wrap.querySelectorAll('.slide-img');
   slides.forEach((el, i) => {
     const wasActive = el.classList.contains('active');
@@ -315,12 +316,12 @@ function addToCart(id, e) {
   }
   if (!cart[id]) {
     // Default: 1 шт or minimum kg
-    const defaultQty = p.unit === 'кг' ? (p.minKg || 1) : 1;
+    const defaultQty = p.unit === 'кг' ? (p.minKg || 1) : (p.minQty || 1);
     cart[id] = { qty: defaultQty, mode };
   } else {
     // If mode changed, reset qty for new mode
     if (cart[id].mode !== mode) {
-      const defaultQty = p.unit === 'кг' ? (p.minKg || 1) : 1;
+      const defaultQty = p.unit === 'кг' ? (p.minKg || 1) : (p.minQty || 1);
       cart[id] = { qty: defaultQty, mode };
     } else {
       const step = p.unit === 'кг' ? 0.5 : 1;
@@ -1358,10 +1359,6 @@ function acceptCookie() {
   // Support both main (classList) and city (style.transform) implementations
   const banner = document.getElementById('cookieBanner');
   if (banner) {
-    if (banner.classList.contains('visible') !== undefined && banner.style.transform !== undefined) {
-      banner.classList.remove('visible');
-      banner.style.transform = 'translateY(100%)';
-    }
     banner.classList.remove('visible');
     banner.style.transform = 'translateY(100%)';
   }
