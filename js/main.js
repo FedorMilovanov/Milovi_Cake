@@ -226,9 +226,7 @@ function switchBentoTab(pid, mode) {
     let newSlidesHtml = '';
     slides.forEach((src, i) => {
       const active = i === 0 ? ' active' : '';
-      newSlidesHtml += `<img src="${src}" alt="${variant.name}" class="slide-img${active}"
-        onerror="this.style.cssText='display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;font-size:60px;background:linear-gradient(135deg,#e8d8c4,#d4b896);'; this.src=''; this.alt='🎂'"
-        style="object-position:${positions[i]};transform:scale(${scales[i]});transform-origin:${positions[i]};">`;
+      newSlidesHtml += `<div class="slide-img${active}"><img src="${src}" alt="${variant.name}" loading="lazy" onerror="this.style.display='none'" style="object-position:${positions[i]};transform:scale(${scales[i]});transform-origin:${positions[i]};"></div>`;
     });
     if (dotsEl) {
       dotsEl.insertAdjacentHTML('beforebegin', newSlidesHtml);
@@ -1721,10 +1719,13 @@ function closeReviewsModal() {
   const modal = document.getElementById('reviewsModal');
   if (!modal) return;
   modal.classList.remove('open');
-  unlockBody();
   document.removeEventListener('keydown', handleReviewsEscape);
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.remove('hidden');
+  modal.addEventListener('transitionend', function handler() {
+    modal.removeEventListener('transitionend', handler);
+    unlockBody();
+  });
 }
 
 function handleReviewsEscape(e) {
