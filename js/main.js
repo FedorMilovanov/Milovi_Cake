@@ -1356,12 +1356,11 @@ function showBentoWeightToast(text) {
 // ── Cookie banner ──
 function acceptCookie() {
   localStorage.setItem('cookieAccepted', Date.now() + 365 * 24 * 60 * 60 * 1000);
-  // Support both main (classList) and city (style.transform) implementations
   const banner = document.getElementById('cookieBanner');
-  if (banner) {
-    banner.classList.remove('visible');
-    banner.style.transform = 'translateY(100%)';
-  }
+  if (!banner) return;
+  banner.classList.remove('visible');
+  banner.style.transform = 'translateY(100%)';
+  banner.addEventListener('transitionend', () => banner.remove(), { once: true });
 }
 function initCookieBanner() {
   const stored = localStorage.getItem('cookieAccepted');
@@ -1383,13 +1382,20 @@ initCookieBanner();
 function openPrivacy() {
   const el = document.getElementById('privacyOverlay');
   if (!el) return;
-  el.classList.add('open');
+  el.style.display = 'flex';
+  requestAnimationFrame(() => {
+    el.classList.add('open');
+  });
   lockBody();
 }
 function closePrivacy() {
   const el = document.getElementById('privacyOverlay');
   if (!el) return;
   el.classList.remove('open');
+  el.addEventListener('transitionend', function h() {
+    el.removeEventListener('transitionend', h);
+    if (!el.classList.contains('open')) el.style.display = '';
+  });
   unlockBody();
 }
 
@@ -1426,8 +1432,9 @@ function openFillPopup(optEl) {
   // Не используем lockBody() — он сохраняет scrollY и при unlockBody()
   // прыгает страница наверх. Фон блокируется через CSS body.fill-open
 
+
   // Focus the select button for a11y
-  setTimeout(() => document.getElementById('fillSheetSelect')?.focus(), 80);
+  setTimeout(() => document.getElementById('fillSheetSelect')?.focus({ preventScroll: true }), 80);
 }
 
 function closeFillPopup() {
@@ -1437,6 +1444,7 @@ function closeFillPopup() {
   if (overlay) overlay.classList.remove('open');
   document.body.classList.remove('fill-open');
   // Не вызываем unlockBody() — lockBody() не вызывался
+
   _fillSheetPendingEl = null;
   if (popup) popup.style.transform = '';
 }
