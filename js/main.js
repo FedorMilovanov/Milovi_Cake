@@ -931,15 +931,7 @@ function initApp() {
   observeReveal(); // picks up static .reveal elements (hero, sections, etc.)
   setTimeout(initCatalogNavScroll, 500);
 
-  // Fix 3: устанавливаем min для даты динамически (не хардкодим в HTML)
-  const dateInput = document.getElementById('cdate');
-  if (dateInput) {
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    dateInput.min = `${yyyy}-${mm}-${dd}`;
-  }
+  // Date min is set below (today+2) in the dedicated IIFE
 }
 
 if (document.readyState === 'loading') {
@@ -1086,7 +1078,7 @@ function openLightbox(src, srcs) {
   const lb = document.getElementById('lightbox');
   document.getElementById('lightboxImg').src = _lbSrcs[_lbIdx];
   lb.classList.add('open');
-  document.documentElement.style.overflow = 'hidden';
+  lockBody(); // iOS-safe scroll lock
   _lbUpdateArrows();
 }
 
@@ -1111,6 +1103,7 @@ function _lbUpdateArrows() {
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
   document.documentElement.style.overflow = '';
+  unlockBody(); // paired with openChatLightbox's lockBody()
   _lbSrcs = []; _lbIdx = 0;
 }
 document.addEventListener('keydown', e => {
@@ -1604,81 +1597,7 @@ document.querySelectorAll('.btn-primary, .btn-wa, .calc-order-btn, .btn-add, .he
   });
 });
 
-// ── MAP REVIEWS ACCORDION ──
-function toggleMapReviews(platform) {
-  const panelId  = platform === 'yandex' ? 'panelYandex' : 'panelGoogle';
-  const btnId    = platform === 'yandex' ? 'btnYandex'   : 'btnGoogle';
-  const otherPanelId = platform === 'yandex' ? 'panelGoogle' : 'panelYandex';
-  const otherBtnId   = platform === 'yandex' ? 'btnGoogle'   : 'btnYandex';
-
-  const panel      = document.getElementById(panelId);
-  const btn        = document.getElementById(btnId);
-  const otherPanel = document.getElementById(otherPanelId);
-  const otherBtn   = document.getElementById(otherBtnId);
-
-  const isOpen = panel.classList.contains('is-open');
-
-  // Close the other panel
-  otherPanel.classList.remove('is-open');
-  otherPanel.addEventListener('transitionend', () => { otherPanel.hidden = !otherPanel.classList.contains('is-open'); }, { once: true });
-  if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
-
-  if (isOpen) {
-    // Close this one
-    panel.classList.remove('is-open');
-    panel.addEventListener('transitionend', () => { panel.hidden = true; }, { once: true });
-    btn.setAttribute('aria-expanded', 'false');
-  } else {
-    // Open this one
-    panel.hidden = false;
-    // Allow display change to take effect before animating
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        panel.classList.add('is-open');
-      });
-    });
-    btn.setAttribute('aria-expanded', 'true');
-
-    // Scroll into view on mobile
-    if (window.innerWidth < 768) {
-      setTimeout(() => {
-        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }, 100);
-    }
-  }
-}
-
-// ── MAP REVIEWS: раскрытие длинных текстов ──
-(function initMapTextExpand() {
-  // Запускаем после рендера
-  function wire() {
-    document.querySelectorAll('.map-text-clamp').forEach(el => {
-      if (el._expandWired) return;
-      el._expandWired = true;
-
-      // Проверяем, обрезан ли текст
-      const isClamped = () => el.scrollHeight > el.clientHeight + 2;
-
-      if (!isClamped()) return;
-
-      const btn = document.createElement('button');
-      btn.className = 'map-expand-btn';
-      btn.textContent = 'Читать полностью';
-      btn.addEventListener('click', () => {
-        const expanded = el.classList.toggle('expanded');
-        btn.textContent = expanded ? 'Свернуть' : 'Читать полностью';
-      });
-      el.after(btn);
-    });
-  }
-
-  // Запускаем при открытии панели
-  const origToggle = window.toggleMapReviews;
-  window.toggleMapReviews = function(platform) {
-    origToggle(platform);
-    setTimeout(wire, 460); // после анимации раскрытия
-  };
-})();
+// (map reviews accordion removed — elements not present in HTML)
 
 // ── CHAT GALLERY LIGHTBOX ──
 const CHAT_SRCS = [
