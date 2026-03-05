@@ -656,13 +656,7 @@ function sendFormWA() {
   const phoneDigits = phone.replace(/\D/g, '');
   if (phoneDigits.length < 10) { showToast('Введите корректный номер телефона'); document.getElementById('fphone').focus(); return; }
   const msg = encodeURIComponent(`Привет! 👋\nИмя: ${name}\nТелефон: ${phone}\nКомментарий: ${comment}`);
-  // Loading state
-  const btn = document.querySelector('#contacts .btn-wa[onclick], #contacts button[type="submit"]');
-  if (btn) btn.classList.add('loading');
-  setTimeout(() => {
-    window.open(`https://wa.me/79119038886?text=${msg}`, '_blank');
-    if (btn) { btn.classList.remove('loading'); }
-  }, 300);
+  window.open(`https://wa.me/79119038886?text=${msg}`, '_blank');
 }
 
 function navigateToStep(step) {
@@ -853,7 +847,6 @@ document.querySelectorAll('img').forEach(img => {
 })();
 function observeReveal() {
   const els = document.querySelectorAll('.reveal:not(.visible), .reveal-photo:not(.visible)');
-  // Меньший threshold на мобиле — элементы меньше, порог 0.15 срабатывает слишком поздно
   const threshold = window.innerWidth <= 768 ? 0.05 : 0.15;
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
@@ -940,8 +933,7 @@ function initCatalogNavScroll() {
   });
 }
 
-
-unction initApp() {
+function initApp() {
   renderCatalogNav();
   renderCatalog(); // calls observeReveal() internally for catalog cards
   setTimeout(wireProductLightbox, 200);
