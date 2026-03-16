@@ -387,6 +387,32 @@
     }
     .gallery-item:hover .gallery-item-overlay { background: rgba(11,8,6,0.15); }
 
+    /* ─── BLOCK TRANSITIONS ─── */
+    .gallery-strip {
+      position: relative;
+    }
+    .gallery-strip::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 120px;
+      background: linear-gradient(to bottom, transparent, var(--dark));
+      pointer-events: none;
+      z-index: 2;
+    }
+    .features-section {
+      position: relative;
+    }
+    .features-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 120px;
+      background: linear-gradient(to bottom, var(--surface), transparent);
+      pointer-events: none;
+      z-index: 1;
+    }
+
     /* ─── SPLIT SECTION ─── */
     .split {
       display: grid;
@@ -452,9 +478,14 @@
       background: var(--dark);
       padding: 48px 36px;
       text-align: center;
-      transition: background 0.3s;
+      transition: background 0.3s, transform 0.4s cubic-bezier(.16,1,.3,1), box-shadow 0.4s;
+      cursor: default;
     }
-    .feature-card:hover { background: var(--surface); }
+    .feature-card:hover {
+      background: var(--surface);
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,147,74,0.15);
+    }
     .feature-icon {
       width: 48px; height: 48px; margin: 0 auto 24px;
       border-radius: 50%;
@@ -647,9 +678,15 @@
       background: rgba(255,255,255,0.02);
       padding: 40px 36px;
       border: 1px solid rgba(201,147,74,0.06);
-      transition: border-color 0.3s, background 0.3s;
+      transition: border-color 0.3s, background 0.3s, transform 0.4s cubic-bezier(.16,1,.3,1), box-shadow 0.4s;
+      cursor: default;
     }
-    .review-card:hover { border-color: rgba(201,147,74,0.18); background: rgba(255,255,255,0.035); }
+    .review-card:hover {
+      border-color: rgba(201,147,74,0.18);
+      background: rgba(255,255,255,0.035);
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,147,74,0.12);
+    }
     .review-stars { color: var(--gold); font-size: 14px; letter-spacing: 2px; margin-bottom: 18px; }
     .review-text { font-size: 14px; line-height: 1.8; color: var(--muted); margin-bottom: 24px; font-style: italic; }
     .review-author { display: flex; align-items: center; gap: 12px; }
@@ -684,16 +721,21 @@
       backdrop-filter: blur(8px);
       padding: 44px 36px;
       border: 1px solid rgba(201,147,74,0.1);
-      transition: border-color 0.3s, background 0.3s;
+      transition: border-color 0.3s, background 0.3s, transform 0.4s cubic-bezier(.16,1,.3,1), box-shadow 0.4s;
+      cursor: default;
     }
-    .dc:hover { border-color: rgba(201,147,74,0.3); background: rgba(11,8,6,0.92); }
+    .dc:hover {
+      border-color: rgba(201,147,74,0.3);
+      background: rgba(28,18,12,0.95);
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,147,74,0.18);
+    }
     .dc-icon {
       width: 48px; height: 48px;
-      border: 1px solid rgba(201,147,74,0.2);
-      border-radius: 12px;
+      background: rgba(201,147,74,0.12);
+      border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
       margin-bottom: 20px;
-      font-size: 22px;
     }
     .dc-title { font-family: var(--serif); font-size: 21px; margin-bottom: 10px; color: var(--cream); }
     .dc-text { font-size: 13px; line-height: 1.75; color: var(--muted); }
@@ -970,20 +1012,17 @@
   </div>
 </div>
 
-<!-- VIDEO BAND -->
-<div class="video-band">
-  <video
-    class="video-bg"
-    src="../video/meringue_roll.mp4"
-    autoplay muted loop playsinline
-    preload="none"
-    poster="../img/meringue_roll_3.webp"
-    aria-hidden="true"
-  ></video>
-  <div class="video-overlay"></div>
-  <div class="video-label">
-    <div class="video-quote">Нежное, воздушное,<br>тает во рту</div>
-    <div class="video-sub">Каждый рулет собирается в день заказа</div>
+<!-- QUOTE BAND -->
+<div class="style-band">
+  <div class="style-band-photo"></div>
+  <div class="style-band-grid"></div>
+  <div class="style-band-vignette"></div>
+  <div class="style-band-fade-t"></div>
+  <div class="style-band-fade-b"></div>
+  <div class="style-band-content">
+    <div class="style-band-line"></div>
+    <div class="style-band-quote" style="text-shadow:0 2px 20px rgba(0,0,0,0.8),0 4px 60px rgba(0,0,0,0.6);">Нежный, <em>воздушный,</em><br>тает во рту</div>
+    <div class="style-band-line" style="margin-top:24px;margin-bottom:0;"></div>
   </div>
 </div>
 
@@ -1137,7 +1176,8 @@
         MAX
       </a>
       <a href="tel:+79119038886" class="btn-ghost">
-        📞 +7 911 903 88 86
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c9934a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.07 2.18 2 2 0 012.03 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        +7 911 903 88 86
       </a>
     </div>
     <p style="margin-top:20px;font-size:12px;color:var(--muted);text-align:center;" class="reveal">
@@ -1150,23 +1190,35 @@
 <section class="delivery-section">
   <div class="delivery-bg"></div>
   <div class="delivery-inner">
-    <span class="sec-label reveal">Доставка и самовывоз</span>
-    <h2 class="sec-title reveal rd1">Самовывоз<br>и <em>доставка</em></h2>
+    <span class="sec-label reveal" style="text-align:center;display:block;">Доставка и самовывоз</span>
+    <h2 class="sec-title reveal rd1" style="text-align:center;">Самовывоз<br>и <em>доставка</em></h2>
     <div class="delivery-grid">
       <div class="dc reveal">
-        <div class="dc-icon">🚗</div>
+        <div class="dc-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c9934a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+          </svg>
+        </div>
         <div class="dc-title">Яндекс Курьер</div>
-        <div class="dc-text">Можем оформить доставку через Яндекс Курьер — быстро и удобно. Стоимость зависит от адреса.</div>
+        <div class="dc-text">Можем оформить доставку через Яндекс Курьер — быстро и удобно. Стоимость зависит от адреса</div>
       </div>
       <div class="dc reveal rd1">
-        <div class="dc-icon">🏘️</div>
+        <div class="dc-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c9934a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </div>
         <div class="dc-title">Наша доставка</div>
-        <div class="dc-text">При необходимости доставим сами — по СПб и ближайшим пригородам. Стоимость обсуждается индивидуально.</div>
+        <div class="dc-text">При необходимости доставим сами — по СПб и ближайшим пригородам. Стоимость обсуждается индивидуально</div>
       </div>
       <div class="dc reveal rd2">
-        <div class="dc-icon">📍</div>
+        <div class="dc-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c9934a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
         <div class="dc-title">Самовывоз</div>
-        <div class="dc-text">Пулковская ул., 19 — рядом с м. Звёздная. Удобное время согласуем при заказе.</div>
+        <div class="dc-text">Пулковская ул., 19 — рядом с м. Звёздная. Удобное время согласуем при заказе</div>
       </div>
     </div>
   </div>

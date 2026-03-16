@@ -520,7 +520,7 @@ function updateCartUI() {
     const isKg = p.unit === 'кг';
     const qtyLabel = isKg ? `${qty} кг` : `${qty} шт.`;
     const lineTotalFmt = lineTotal.toLocaleString('ru') + ' ₽';
-    const minQty = isKg ? (p.minKg || 1) : 1;
+    const minQty = isKg ? (p.minKg || 1) : (p.minQty || 1);
     const atMin = qty <= minQty;
 
     return `
@@ -1024,9 +1024,6 @@ function showToast(msg) {
   t._timer = setTimeout(() => t.classList.remove('show'), 2800);
 }
 
-// Patch addToCart to show toast
-const _origAdd = addToCart;
-
 // ── ANIMATED COUNTERS ──
 function animateCounter(el) {
   const target = +el.dataset.target;
@@ -1118,7 +1115,6 @@ function closeLightbox() {
   _lbSrcs = []; _lbIdx = 0;
 }
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeLightbox();
   if (e.key === 'ArrowRight') lbNavigate(1);
   if (e.key === 'ArrowLeft') lbNavigate(-1);
 });
@@ -1265,7 +1261,7 @@ function updateCalc() {
   if (minusBtn) minusBtn.disabled = weight <= WEIGHT_MIN;
   if (plusBtn) plusBtn.disabled = weight >= WEIGHT_MAX;
 
-  let total = basePrice * weight + decorPrice;
+  let total = basePrice * weight + fillPrice + decorPrice;
 
   const decorIsNonStandard = decorPrice > 0;
   const isApprox = decorIsNonStandard;
@@ -1612,14 +1608,14 @@ document.querySelectorAll('.btn-primary, .btn-wa, .calc-order-btn, .btn-add, .he
 
 // ── CHAT GALLERY LIGHTBOX ──
 const CHAT_SRCS = [
-  'img/review_1.webp',
-  'img/review_2.webp',
-  'img/review_3.webp',
-  'img/review_4.webp',
-  'img/review_5.webp',
-  'img/review_6.webp',
-  'img/review_7.webp',
-  'img/review_8.webp',
+  IMG_BASE + '/review_1.webp',
+  IMG_BASE + '/review_2.webp',
+  IMG_BASE + '/review_3.webp',
+  IMG_BASE + '/review_4.webp',
+  IMG_BASE + '/review_5.webp',
+  IMG_BASE + '/review_6.webp',
+  IMG_BASE + '/review_7.webp',
+  IMG_BASE + '/review_8.webp',
 ];
 
 // Переиспользуем существующий лайтбокс (#lightbox, #lightboxImg, #lbNav)
@@ -1786,14 +1782,14 @@ function makeScreenshot(opts) {
 
 /* Real review screenshots from project assets */
 const SCREENSHOTS = [
-  'img/review_1.webp',
-  'img/review_2.webp',
-  'img/review_3.webp',
-  'img/review_4.webp',
-  'img/review_5.webp',
-  'img/review_6.webp',
-  'img/review_7.webp',
-  'img/review_8.webp',
+  IMG_BASE + '/review_1.webp',
+  IMG_BASE + '/review_2.webp',
+  IMG_BASE + '/review_3.webp',
+  IMG_BASE + '/review_4.webp',
+  IMG_BASE + '/review_5.webp',
+  IMG_BASE + '/review_6.webp',
+  IMG_BASE + '/review_7.webp',
+  IMG_BASE + '/review_8.webp',
 ];
 
 /* ─── DATA ─── */
@@ -2551,7 +2547,6 @@ document.addEventListener('visibilitychange', () => {
   window.closeReviewsModal = typeof closeReviewsModal !== "undefined" ? closeReviewsModal : undefined;
   window.confirmFillSelection = typeof confirmFillSelection !== "undefined" ? confirmFillSelection : undefined;
   window.goBackToCart = typeof goBackToCart !== "undefined" ? goBackToCart : undefined;
-  window.goReview = typeof goReview !== "undefined" ? goReview : undefined;
   window.goSlide = typeof goSlide !== "undefined" ? goSlide : undefined;
   window.goTo = typeof goTo !== "undefined" ? goTo : undefined;
   window.scrollToProduct = typeof scrollToProduct !== "undefined" ? scrollToProduct : undefined;
@@ -2565,7 +2560,6 @@ document.addEventListener('visibilitychange', () => {
   window.removeFromCart = typeof removeFromCart !== "undefined" ? removeFromCart : undefined;
   window.selectOpt = typeof selectOpt !== "undefined" ? selectOpt : undefined;
   window.sendFormWA = typeof sendFormWA !== "undefined" ? sendFormWA : undefined;
-  window.shiftReview = typeof shiftReview !== "undefined" ? shiftReview : undefined;
   window.showBentoWeightToast = typeof showBentoWeightToast !== "undefined" ? showBentoWeightToast : undefined;
   window.sliderStep = typeof sliderStep !== "undefined" ? sliderStep : undefined;
   window.stepWeight = typeof stepWeight !== "undefined" ? stepWeight : undefined;

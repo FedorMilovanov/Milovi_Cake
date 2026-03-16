@@ -13,7 +13,7 @@
 ├── css/
 │   └── style.css       # Основные стили (style.min.css генерируется при деплое)
 ├── js/
-│   └── main.js         # Основной JS, завёрнут в IIFE (main.min.js — при деплое)
+│   └── main.js         # Основной JS, завёрнут в IIFE (минификация не используется)
 ├── img/                # Изображения (WebP + og-cover.jpg для OG-превью)
 └── prigorody/          # Лендинги по пригородам СПб
     ├── _template.html  # Единый шаблон с {{плейсхолдерами}}
@@ -63,7 +63,6 @@ python3 -m http.server 8080
 
 ```bash
 npx cleancss -o css/style.min.css css/style.css
-npx terser js/main.js -o js/main.min.js --compress --mangle
 ```
 
 > **Примечание:** `.min`-файлы не хранятся в репозитории (см. `.gitignore`).
