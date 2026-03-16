@@ -194,8 +194,8 @@
 
     /* ─── BREADCRUMB ─── */
     .breadcrumb {
-      position: relative; z-index: 10;
-      padding: 84px 56px 0;
+      position: absolute; z-index: 10;
+      top: 84px; left: 56px;
       display: flex; align-items: center; gap: 8px;
       font-family: var(--sans); font-size: 11px; font-weight: 400;
       letter-spacing: 0.1em; text-transform: uppercase;
@@ -402,15 +402,33 @@
     }
     .features-section {
       position: relative;
+      background: #0d0905;
+      overflow: hidden;
+    }
+    .features-section::after {
+      content: '';
+      position: absolute;
+      inset: -15%;
+      background-image:
+        linear-gradient(rgba(201,147,74,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,147,74,0.07) 1px, transparent 1px);
+      background-size: 48px 48px;
+      transform: rotate(-8deg) scale(1.4);
+      pointer-events: none;
+      z-index: 0;
     }
     .features-section::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 120px;
-      background: linear-gradient(to bottom, var(--surface), transparent);
+      inset: 0;
+      background: radial-gradient(ellipse 80% 80% at 50% 50%, transparent 35%, rgba(13,9,5,0.88) 100%);
       pointer-events: none;
       z-index: 1;
+    }
+    .features-header,
+    .features-grid {
+      position: relative;
+      z-index: 2;
     }
 
     /* ─── SPLIT SECTION ─── */
@@ -480,6 +498,8 @@
       text-align: center;
       transition: background 0.3s, transform 0.4s cubic-bezier(.16,1,.3,1), box-shadow 0.4s;
       cursor: default;
+      position: relative;
+      overflow: hidden;
     }
     .feature-card:hover {
       background: var(--surface);
@@ -499,6 +519,45 @@
       margin-bottom: 12px; color: var(--cream);
     }
     .feature-text { font-size: 13px; line-height: 1.7; color: var(--muted); }
+
+    /* ── Анимации иконок ── */
+    @keyframes heartbeat {
+      0%,100%{transform:scale(1)} 15%{transform:scale(1.4)} 30%{transform:scale(1)} 45%{transform:scale(1.2)} 60%{transform:scale(1)}
+    }
+    @keyframes spinMin { to { transform: rotate(360deg); } }
+    @keyframes spinHour { to { transform: rotate(360deg); } }
+    @keyframes flyHeart {
+      0%   { opacity:1; transform:translate(0,0) scale(1); }
+      100% { opacity:0; transform:translate(var(--tx),var(--ty)) scale(.3); }
+    }
+    @keyframes lidOpen {
+      0%   { transform: rotateX(0deg); }
+      100% { transform: rotateX(-60deg) translateY(-2px); }
+    }
+
+    .card-heart:hover .heart-svg { animation: heartbeat .7s ease infinite; }
+
+    @keyframes spinMin  { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes spinHour { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .clock-min-g  { transform-origin: 0 0; }
+    .clock-hour-g { transform-origin: 0 0; }
+    .card-clock:hover .clock-min-g  { animation: spinMin  2s  linear infinite; }
+    .card-clock:hover .clock-hour-g { animation: spinHour 12s linear infinite; }
+
+    .box-lid { transform-origin: center bottom; transform-style: preserve-3d; }
+    .card-box:hover .box-lid { animation: lidOpen .4s cubic-bezier(.16,1,.3,1) forwards; }
+    .feature-icon { perspective: 120px; }
+
+    .heart-particle {
+      position: absolute; pointer-events: none;
+      font-size: 11px; color: var(--gold); opacity: 0;
+    }
+    .card-taste:hover .heart-particle { animation: flyHeart .9s ease forwards; }
+    .heart-particle:nth-child(1){left:28%;top:42%;--tx:-20px;--ty:-28px;animation-delay:.00s}
+    .heart-particle:nth-child(2){left:62%;top:38%;--tx: 22px;--ty:-32px;animation-delay:.10s}
+    .heart-particle:nth-child(3){left:45%;top:46%;--tx: -6px;--ty:-36px;animation-delay:.20s}
+    .heart-particle:nth-child(4){left:22%;top:50%;--tx:-28px;--ty:-20px;animation-delay:.05s}
+    .heart-particle:nth-child(5){left:72%;top:48%;--tx: 28px;--ty:-22px;animation-delay:.15s}
 
 
     /* ─── STYLE BAND ─── */
@@ -843,7 +902,7 @@
     @media (max-width: 768px) {
       .site-hdr { padding: 0 20px; height: 60px; }
       .hdr-back { display: none; }
-      .breadcrumb { padding: 70px 20px 0; }
+      .breadcrumb { top: 70px; left: 20px; }
       .hero-title { font-size: clamp(40px, 10vw, 64px); }
       .hero-content { padding: 28px 20px 60px; }
       .gallery-strip { grid-template-columns: 1fr; grid-template-rows: 260px 200px 200px 200px 200px; height: auto; }
@@ -881,15 +940,15 @@
   </div>
 </header>
 
-<!-- BREADCRUMB -->
-<nav class="breadcrumb" aria-label="Breadcrumb">
-  <a href="https://milovicake.ru/">Главная</a>
-  <span>›</span>
-  <span class="breadcrumb-current">Меренговый рулет</span>
-</nav>
-
 <!-- HERO -->
 <section class="hero" id="home">
+  <!-- Breadcrumb inside hero -->
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="https://milovicake.ru/">Главная</a>
+    <span>›</span>
+    <span class="breadcrumb-current">Меренговый рулет</span>
+  </nav>
+
   <!-- Photo side -->
   <div class="hero-photo">
     <img src="../img/meringue_roll.webp"
@@ -1068,37 +1127,55 @@
 <!-- FEATURES -->
 <section class="features-section">
   <div class="features-header">
-    <span class="sec-label reveal" style="text-align:center;display:block;">Преимущества</span>
     <h2 class="sec-title reveal rd1" style="text-align:center;">Почему выбирают <em>Milovi Cake</em></h2>
   </div>
   <div class="features-grid">
-    <div class="feature-card reveal">
+    <!-- Ручная работа — пульсирующее сердце -->
+    <div class="feature-card card-heart reveal">
       <div class="feature-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        <svg class="heart-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
       </div>
       <div class="feature-title">Ручная работа</div>
       <div class="feature-text">Каждый рулет создаётся вручную — никакого конвейера и полуфабрикатов</div>
     </div>
-    <div class="feature-card reveal rd1">
+    <!-- Фирменная упаковка — открывается крышка -->
+    <div class="feature-card card-box reveal rd1">
       <div class="feature-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9934a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <g class="box-lid"><rect x="2" y="3" width="20" height="5" rx="1"/></g>
+          <rect x="3" y="8" width="18" height="13" rx="1"/>
+          <line x1="12" y1="8" x2="12" y2="21"/>
+        </svg>
       </div>
-      <div class="feature-title">Без глютена</div>
-      <div class="feature-text">Безглютеновый рецепт на основе взбитых белков — подходит при непереносимости</div>
+      <div class="feature-title">Фирменная упаковка</div>
+      <div class="feature-text">Рулет приедет в красивой коробке — готовый подарок, ничего не нужно дополнительно оформлять</div>
     </div>
-    <div class="feature-card reveal rd2">
+    <!-- Тот самый вкус — разлетаются сердечки -->
+    <div class="feature-card card-taste reveal rd2">
+      <span class="heart-particle">♥</span>
+      <span class="heart-particle">♥</span>
+      <span class="heart-particle">♥</span>
+      <span class="heart-particle">♥</span>
+      <span class="heart-particle">♥</span>
       <div class="feature-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      </div>
+      <div class="feature-title">Тот самый вкус</div>
+      <div class="feature-text">Такую нежную меренгу с малиной сложно найти даже в хорошем кафе</div>
+    </div>
+    <!-- Свежесть — тикают часы -->
+    <div class="feature-card card-clock reveal rd3">
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9934a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <g transform="translate(12,12)">
+            <g class="clock-min-g"><line x1="0" y1="0" x2="0" y2="-5.5" stroke-width="1.8"/></g>
+            <g class="clock-hour-g"><line x1="0" y1="0" x2="3.5" y2="0" stroke-width="1.8"/></g>
+          </g>
+        </svg>
       </div>
       <div class="feature-title">Свежесть</div>
       <div class="feature-text">Готовим в день доставки — всегда свежий десерт прямо к вашему столу</div>
-    </div>
-    <div class="feature-card reveal rd3">
-      <div class="feature-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-      </div>
-      <div class="feature-title">Доставка по СПб</div>
-      <div class="feature-text">Собственная доставка или через Яндекс по всему Санкт-Петербургу и пригородам</div>
     </div>
   </div>
 </section>
