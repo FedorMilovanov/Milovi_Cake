@@ -10,11 +10,11 @@
   <meta name="theme-color" content="#f5ede0" media="(prefers-color-scheme: light)" />
 
   <title>Меренговый рулет на заказ в СПб — Milovi Cake | Доставка по СПб и ЛО</title>
-  <meta name="description" content="Меренговый рулет с малиной и сливочным кремом чиз на заказ в Санкт-Петербурге. Хрустящее безе, нежный крем, свежие ягоды. 1100 г — 2500 ₽. Безглютеновый. Доставка по СПб и Ленобласти." />
+  <meta name="description" content="Меренговый рулет с малиной и нежным кремом чиз на заказ в Санкт-Петербурге. Воздушная меренга, как облако — тает во рту. 1100 г — 2500 ₽. Безглютеновый. Доставка по СПб и Ленобласти." />
   <meta name="robots" content="index, follow" />
 
   <meta property="og:title" content="Меренговый рулет на заказ — Milovi Cake, СПб" />
-  <meta property="og:description" content="Хрустящее безе, малина, нежный крем чиз. 1100 г — 2500 ₽. Безглютеновый рецепт. Доставка по СПб и ЛО." />
+  <meta property="og:description" content="Воздушная меренга, малина, нежный крем чиз. 1100 г — 2500 ₽. Безглютеновый рецепт. Доставка по СПб и ЛО." />
   <meta property="og:image" content="https://milovicake.ru/img/og-cover.jpg" />
   <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:width" content="1200" />
@@ -37,7 +37,7 @@
     "@context": "https://schema.org",
     "@type": "Product",
     "name": "Меренговый рулет",
-    "description": "Меренговый рулет с малиной и нежным сливочным кремом чиз. Хрустящее безе, безглютеновый рецепт, свежие ягоды.",
+    "description": "Меренговый рулет с малиной и нежным сливочным кремом чиз. Воздушная меренга, безглютеновый рецепт, свежие ягоды.",
     "brand": { "@type": "Brand", "name": "Milovi Cake" },
     "offers": {
       "@type": "Offer",
@@ -429,6 +429,59 @@
     }
     .feature-text { font-size: 13px; line-height: 1.7; color: var(--muted); }
 
+
+    /* ─── STYLE BAND ─── */
+    .style-band {
+      position: relative;
+      height: 50vh; min-height: 320px;
+      overflow: hidden;
+      background: #0d0905;
+    }
+    .style-band-grid {
+      position: absolute; inset: -15%;
+      background-image:
+        linear-gradient(rgba(201,147,74,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,147,74,0.07) 1px, transparent 1px);
+      background-size: 48px 48px;
+      transform: rotate(-8deg) scale(1.4);
+    }
+    .style-band-vignette {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 80% at 50% 50%, transparent 35%, rgba(13,9,5,0.88) 100%);
+    }
+    .style-band-fade-t {
+      position: absolute; top: 0; left: 0; right: 0; height: 80px;
+      background: linear-gradient(to bottom, var(--dark), transparent);
+    }
+    .style-band-fade-b {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
+      background: linear-gradient(to top, var(--surface), transparent);
+    }
+    .style-band-content {
+      position: absolute; inset: 0; z-index: 2;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 0 24px;
+    }
+    .style-band-line {
+      width: 40px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      margin-bottom: 24px;
+    }
+    .style-band-quote {
+      font-family: var(--serif); font-style: italic; font-weight: 300;
+      font-size: clamp(28px, 4vw, 58px);
+      color: rgba(245,237,224,0.9);
+      letter-spacing: 0.03em; line-height: 1.15;
+      margin-bottom: 18px;
+      text-shadow: 0 4px 40px rgba(0,0,0,0.4);
+    }
+    .style-band-quote em { font-style: italic; color: var(--gold2); }
+    .style-band-sub {
+      font-family: var(--sans); font-size: 10px; font-weight: 500;
+      letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+      opacity: 0.85;
+    }
+
     /* ─── PARALLAX BAND ─── */
     .parallax-band {
       position: relative;
@@ -751,7 +804,7 @@
     </h1>
     <div class="hero-divider"></div>
     <p class="hero-desc">
-      Хрустящее безе, нежный крем чиз и свежая малина — ручная работа без лишних добавок. Безглютеновый рецепт, доставка по всему СПб и Ленобласти.
+      Воздушная меренга, нежный крем чиз и свежая малина — тает во рту, как облако. Ручная работа, безглютеновый рецепт, доставка по всему СПб и Ленобласти.
     </p>
 
     <div class="hero-price-block">
@@ -815,7 +868,7 @@
       Малина<br>и <em>крем чиз</em>
     </h2>
     <p class="sec-body reveal rd2">
-      Каждый рулет — это сочетание хрустящего безе снаружи, мягкой меренги внутри, нежного сливочного крема чиз и свежей малины. Никакой лишней сладости — только чистый вкус.
+      Каждый рулет — это нежная, почти невесомая меренга, тающая во рту, с лёгким сливочным кремом чиз и свежей малиной. Никакой лишней сладости — только чистый, воздушный вкус.
     </p>
     <div class="ingredients reveal rd3">
       <div class="ingredient">
@@ -855,7 +908,7 @@
 <div class="parallax-band">
   <div class="parallax-img" id="parallax1" style="background-image: url('../img/meringue_roll_3.webp')"></div>
   <div class="parallax-label">
-    <div class="parallax-quote">Хрустящее снаружи,<br>нежное внутри</div>
+    <div class="parallax-quote">Нежное, воздушное,<br>тает во рту</div>
     <div class="parallax-sub">Каждый рулет собирается в день заказа</div>
   </div>
 </div>
@@ -1015,22 +1068,22 @@
   <div class="delivery-bg"></div>
   <div class="delivery-inner">
     <span class="sec-label reveal">Доставка и самовывоз</span>
-    <h2 class="sec-title reveal rd1">Привезём <em>куда нужно</em></h2>
+    <h2 class="sec-title reveal rd1">Самовывоз<br>и <em>доставка</em></h2>
     <div class="delivery-grid">
       <div class="dc reveal">
         <div class="dc-icon">🚗</div>
-        <div class="dc-title">Доставка по СПб</div>
-        <div class="dc-text">Собственная доставка по Санкт-Петербургу или через Яндекс.Доставку. Стоимость уточняется при заказе.</div>
+        <div class="dc-title">Яндекс Курьер</div>
+        <div class="dc-text">Можем оформить доставку через Яндекс Курьер — быстро и удобно. Стоимость зависит от адреса.</div>
       </div>
       <div class="dc reveal rd1">
         <div class="dc-icon">🏘️</div>
-        <div class="dc-title">Доставка в пригороды</div>
-        <div class="dc-text">Доставляем в Пушкин, Гатчину, Петергоф, Мурино, Кудрово, Всеволожск, Павловск и другие города ЛО.</div>
+        <div class="dc-title">Наша доставка</div>
+        <div class="dc-text">При необходимости доставим сами — по СПб и ближайшим пригородам. Стоимость обсуждается индивидуально.</div>
       </div>
       <div class="dc reveal rd2">
         <div class="dc-icon">📍</div>
         <div class="dc-title">Самовывоз</div>
-        <div class="dc-text">Можно забрать самостоятельно. Пулковская ул., 19, СПб. Адрес и время согласуем при заказе.</div>
+        <div class="dc-text">Пулковская ул., 19 — рядом с м. Звёздная. Удобное время согласуем при заказе.</div>
       </div>
     </div>
   </div>
@@ -1075,6 +1128,9 @@
         </a>
         <a href="https://vk.com/milovi_cake" target="_blank" rel="noopener noreferrer" class="footer-social" aria-label="ВКонтакте">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.05-1.727-1.033-1-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C5.044 10.8 4.06 8.494 4.06 8.087c0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.677.863 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.203.17-.407.44-.407h2.744c.373 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.253-1.406 2.151-3.574 2.151-3.574.119-.254.322-.491.762-.491h1.744c.525 0 .644.27.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.779 1.203 1.253.745.847 1.32 1.558 1.473 2.05.17.49-.085.745-.576.745z"/></svg>
+        </a>
+        <a href="https://www.youtube.com/@milovi_cake" target="_blank" rel="noopener noreferrer" class="footer-social" aria-label="YouTube">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
         </a>
       </div>
     </div>
