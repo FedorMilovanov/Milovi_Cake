@@ -10,8 +10,16 @@
   padding: 0;
   -webkit-tap-highlight-color: transparent;
 }
+html {
+  -webkit-text-size-adjust: 100%; /* текст не масштабируется при повороте на iOS */
+  text-size-adjust: 100%;
+}
 button, a, [onclick] {
   outline: none;
+  touch-action: manipulation; /* убирает 300ms задержку клика на iOS/Android */
+}
+img, video {
+  -webkit-touch-callout: none; /* нет меню при долгом нажатии на iOS */
 }
 button:focus-visible,
 a:focus-visible,
@@ -696,6 +704,8 @@ body {
 .calc-row label,
 .calc-row .calc-label { display: block; font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
 .calc-options { display: flex; flex-wrap: wrap; gap: 7px; }
+#calcFill.calc-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+#calcFill .calc-opt { justify-content: flex-start; }
 .calc-opt {
   position: relative;
   padding: 7px 14px; border-radius: 50px;
@@ -8784,3 +8794,54 @@ body.menu-open {
 
 /* ── "Узнать цену" кнопка на карточках продуктов ── */
 
+
+/* ══════════════════════════════════════════
+   MOBILE / iOS / ANDROID — глобальные фиксы
+   ══════════════════════════════════════════ */
+
+/* Hero — iOS Safari не считает 100vh правильно из-за адресной строки */
+.hero {
+  min-height: 100svh;
+}
+@supports (-webkit-touch-callout: none) {
+  .hero {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* Touch-устройства: убираем hover-эффекты чтобы не залипали */
+@media (hover: none) {
+  .product-card:hover,
+  .feature:hover,
+  .card:hover { box-shadow: none; transform: none; }
+  .btn-primary:hover,
+  .btn-hero-wa:hover,
+  .btn-wa:hover,
+  .header-order:hover { transform: none; box-shadow: none; }
+  .gallery-item:hover img { transform: none; }
+  .calc-opt:hover { transform: none; }
+  .geo-tag:hover { transform: none; }
+}
+
+/* Reduced motion — отключаем анимации по запросу ОС */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Кнопки — минимальный touch target 44px */
+@media (max-width: 768px) {
+  .btn-primary,
+  .btn-wa,
+  .btn-hero-wa,
+  .bottom-nav-item,
+  .header-order,
+  .cart-close,
+  .qty-btn {
+    min-height: 44px;
+  }
+}

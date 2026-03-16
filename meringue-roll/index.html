@@ -449,30 +449,36 @@
     }
     .roll-float {
       position: absolute;
-      width: 125%;
-      bottom: -6%;
-      left: -12%;
-      opacity: 0.95;
+      width: 85%;
+      top: -8%;
+      right: -10%;
+      opacity: 0.18;
       pointer-events: none;
-      transition: transform 6s ease, opacity 0.5s;
+      transition: opacity 0.5s;
+      z-index: 0;
     }
     .box-float {
       position: absolute;
-      width: 55%;
+      width: 38%;
       bottom: -4%;
       right: -4%;
-      opacity: 0.95;
+      opacity: 0.22;
       pointer-events: none;
-      transition: transform 6s ease, opacity 0.5s;
+      transition: opacity 0.5s;
+      z-index: 0;
       mix-blend-mode: screen;
     }
-    .split:hover .box-float {
-      transform: translateY(-6px);
-      opacity: 1;
-    }
+    .split:hover .box-float,
     .split:hover .roll-float {
-      transform: translateY(-8px) scale(1.02);
-      opacity: 1;
+      opacity: 0.3;
+    }
+    /* Текст поверх PNG */
+    .split-text .sec-label,
+    .split-text .sec-title,
+    .split-text .sec-body,
+    .split-text .ingredients {
+      position: relative;
+      z-index: 1;
     }
 
     /* ─── SPLIT SECTION ─── */
@@ -1277,11 +1283,13 @@
 
 <!-- SPLIT: DETAILS -->
 <div class="split">
-  <div class="split-right-rolls">
-    <img class="roll-float" src="../img/meringue_rolls_cut.png" alt="Меренговые рулеты Milovi Cake" />
-    <img class="box-float" src="../img/meringue_box_nobg.png" alt="Фирменная коробка Milovi Cake" />
+  <div class="split-photo">
+    <img src="../img/meringue_roll_6.webp" alt="Меренговый рулет в фирменной коробке" loading="lazy" />
+    <div class="split-overlay"></div>
   </div>
-  <div class="split-text split-text--light">
+  <div class="split-text split-text--light" style="position:relative;overflow:hidden;">
+    <img class="roll-float" src="../img/meringue_rolls_cut.webp" alt="" aria-hidden="true" />
+    <img class="box-float" src="../img/meringue_box_nobg.webp" alt="" aria-hidden="true" />
     <span class="sec-label reveal">Детали заказа</span>
     <h2 class="sec-title reveal rd1">
       Вес<br>и <em>стоимость</em>
