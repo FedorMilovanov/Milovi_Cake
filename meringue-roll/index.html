@@ -2,46 +2,77 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#1a0e07" />
   <link rel="icon" href="/favicon.svg?v=20260303" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/icon-apple.png?v=20260303" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0e0806" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#f5ede0" media="(prefers-color-scheme: light)" />
+
   <title>Меренговый рулет на заказ в СПб — Milovi Cake | Доставка по СПб и ЛО</title>
-  <meta name="description" content="Меренговый рулет с малиной и сливочным кремом чиз на заказ в Санкт-Петербурге. Хрустящее безе, нежный крем, свежие ягоды. 1100 г — 2500 ₽. Доставка по СПб и Ленобласти." />
+  <meta name="description" content="Меренговый рулет с малиной и сливочным кремом чиз на заказ в Санкт-Петербурге. Хрустящее безе, нежный крем, свежие ягоды. 1100 г — 2500 ₽. Безглютеновый. Доставка по СПб и Ленобласти." />
   <meta name="robots" content="index, follow" />
+
   <meta property="og:title" content="Меренговый рулет на заказ — Milovi Cake, СПб" />
-  <meta property="og:description" content="Хрустящее безе, малина, нежный крем чиз. 1100 г — 2500 ₽. Доставка по СПб и ЛО." />
+  <meta property="og:description" content="Хрустящее безе, малина, нежный крем чиз. 1100 г — 2500 ₽. Безглютеновый рецепт. Доставка по СПб и ЛО." />
   <meta property="og:image" content="https://milovicake.ru/img/og-cover.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:url" content="https://milovicake.ru/meringue-roll/" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="ru_RU" />
+  <meta property="og:site_name" content="Milovi Cake" />
+
   <link rel="canonical" href="https://milovicake.ru/meringue-roll/" />
   <link rel="manifest" href="/manifest.json" />
-  <link rel="apple-touch-icon" href="/icon-apple.png?v=20260303" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Milovi Cake" />
+  <meta name="view-transition" content="same-origin" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "Меренговый рулет",
+    "description": "Меренговый рулет с малиной и нежным сливочным кремом чиз. Хрустящее безе, безглютеновый рецепт, свежие ягоды.",
+    "brand": { "@type": "Brand", "name": "Milovi Cake" },
+    "offers": {
+      "@type": "Offer",
+      "price": "2500",
+      "priceCurrency": "RUB",
+      "availability": "https://schema.org/InStock"
+    },
+    "image": "https://milovicake.ru/img/meringue_roll.webp"
+  }
+  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,600&family=Mulish:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,600&family=Mulish:wght@300;400;500&display=swap" rel="stylesheet"/></noscript>
+  <link rel="dns-prefetch" href="https://wa.me" />
+  <link rel="dns-prefetch" href="https://mc.yandex.ru" />
+  <link rel="preload" as="image" href="../img/meringue_roll.webp" fetchpriority="high" />
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/></noscript>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --ink:    #0e0806;
-      --dark:   #1a0e07;
-      --cream:  #f5ede0;
-      --warm:   #e8d5b8;
-      --gold:   #c9934a;
-      --gold2:  #e8b87a;
-      --text:   #f0e4d0;
-      --muted:  rgba(240,228,208,0.55);
-      --serif:  'Playfair Display', Georgia, serif;
-      --sans:   'Mulish', system-ui, sans-serif;
+      --ink:     #0b0806;
+      --dark:    #130c07;
+      --surface: #1c1108;
+      --cream:   #f5ede0;
+      --warm:    #e8d5b8;
+      --gold:    #c9934a;
+      --gold2:   #e8b87a;
+      --gold3:   #f0c98a;
+      --text:    #ede0cc;
+      --muted:   rgba(237,224,204,0.5);
+      --serif:   'Cormorant Garamond', Georgia, serif;
+      --sans:    'Jost', system-ui, sans-serif;
     }
 
     html { scroll-behavior: smooth; overflow-x: hidden; }
@@ -51,622 +82,981 @@
       font-family: var(--sans);
       font-weight: 300;
       overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* ── LOADING ── */
+    /* ─── LOADER ─── */
     #loader {
       position: fixed; inset: 0; z-index: 9999;
       background: var(--ink);
-      display: flex; align-items: center; justify-content: center;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 20px;
       transition: opacity 0.7s ease, visibility 0.7s ease;
     }
     #loader.gone { opacity: 0; visibility: hidden; pointer-events: none; }
-    .loader-ring {
-      width: 48px; height: 48px;
-      border: 2px solid rgba(201,147,74,0.2);
-      border-top-color: var(--gold);
-      border-radius: 50%;
-      animation: spin 0.9s linear infinite;
+    .loader-logo { font-family: var(--serif); font-size: 22px; letter-spacing: 0.18em; color: var(--gold); text-transform: uppercase; }
+    .loader-line {
+      width: 80px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      animation: loaderLine 1.4s ease-in-out infinite;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes loaderLine { 0%,100%{transform:scaleX(0.3);opacity:0.4} 50%{transform:scaleX(1);opacity:1} }
 
-    /* ── HEADER ── */
-    header {
-      position: fixed; top: 0; left: 0; right: 0;
-      z-index: 100;
-      padding: 20px 48px;
+    /* ─── HEADER ─── */
+    .site-hdr {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      padding: 0 56px;
+      height: 68px;
       display: flex; align-items: center; justify-content: space-between;
-      transition: background 0.4s, backdrop-filter 0.4s;
+      transition: background 0.4s, backdrop-filter 0.4s, box-shadow 0.4s;
     }
-    header.scrolled {
-      background: rgba(14,8,6,0.88);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+    .site-hdr.scrolled {
+      background: rgba(11,8,6,0.9);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 1px 0 rgba(201,147,74,0.12);
     }
-    .h-logo {
+    .hdr-logo {
       font-family: var(--serif);
-      font-size: 18px;
-      letter-spacing: 0.12em;
+      font-size: 19px;
+      letter-spacing: 0.14em;
       color: var(--gold);
       text-decoration: none;
       text-transform: uppercase;
+      display: flex; flex-direction: column;
+      line-height: 1;
     }
-    .h-logo span { display: block; font-family: var(--sans); font-size: 10px; font-weight: 300; letter-spacing: 0.18em; color: var(--muted); text-transform: uppercase; margin-top: 2px; }
-    .h-order {
-      background: var(--gold);
-      color: var(--ink);
-      border: none; cursor: pointer;
-      font-family: var(--sans); font-size: 13px; font-weight: 500;
-      letter-spacing: 0.12em; text-transform: uppercase;
-      padding: 11px 28px;
+    .hdr-logo-sub {
+      font-family: var(--sans); font-size: 9px; font-weight: 400;
+      letter-spacing: 0.22em; color: var(--muted);
+      text-transform: uppercase; margin-top: 4px;
+    }
+    .hdr-right { display: flex; align-items: center; gap: 20px; }
+    .hdr-back {
+      font-family: var(--sans); font-size: 11px; font-weight: 400;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .hdr-back:hover { color: var(--gold); }
+    .hdr-order {
+      background: transparent;
+      border: 1px solid rgba(201,147,74,0.5);
+      color: var(--gold);
+      font-family: var(--sans); font-size: 11px; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      padding: 10px 24px;
       border-radius: 40px;
       text-decoration: none;
-      transition: background 0.2s, transform 0.2s;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
     }
-    .h-order:hover { background: var(--gold2); transform: translateY(-1px); }
+    .hdr-order:hover { background: var(--gold); border-color: var(--gold); color: var(--ink); }
 
-    /* ── HERO ── */
+    /* ─── BREADCRUMB ─── */
+    .breadcrumb {
+      position: relative; z-index: 10;
+      padding: 84px 56px 0;
+      display: flex; align-items: center; gap: 8px;
+      font-family: var(--sans); font-size: 11px; font-weight: 400;
+      letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    .breadcrumb a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .breadcrumb a:hover { color: var(--gold); }
+    .breadcrumb span { color: rgba(201,147,74,0.4); }
+    .breadcrumb-current { color: var(--gold); }
+
+    /* ─── HERO ─── */
     .hero {
       position: relative;
-      height: 100vh; min-height: 600px;
-      display: flex; align-items: flex-end;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       overflow: hidden;
     }
-    .hero-bg {
+
+    /* Left: photo */
+    .hero-photo {
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-photo img {
       position: absolute; inset: 0;
-      background: url('../../img/meringue_roll_6.webp') center/cover no-repeat;
+      width: 100%; height: 100%;
+      object-fit: cover;
       transform: scale(1.08);
-      animation: heroZoom 8s ease-out forwards;
+      animation: heroPhotoIn 1.4s cubic-bezier(0.22,1,0.36,1) forwards;
     }
-    @keyframes heroZoom { to { transform: scale(1); } }
-    .hero-bg::after {
-      content: '';
+    @keyframes heroPhotoIn { to { transform: scale(1); } }
+    .hero-photo-overlay {
       position: absolute; inset: 0;
-      background: linear-gradient(
-        to bottom,
-        rgba(14,8,6,0.2) 0%,
-        rgba(14,8,6,0.1) 40%,
-        rgba(14,8,6,0.75) 75%,
-        rgba(14,8,6,0.97) 100%
-      );
+      background: linear-gradient(to right, rgba(11,8,6,0) 60%, var(--ink) 100%),
+                  linear-gradient(to bottom, rgba(11,8,6,0.2) 0%, rgba(11,8,6,0) 60%);
+      z-index: 1;
     }
+
+    /* Right: content */
     .hero-content {
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 120px 72px 80px 56px;
       position: relative; z-index: 2;
-      padding: 0 72px 80px;
-      max-width: 680px;
     }
-    .hero-label {
-      font-family: var(--sans); font-size: 11px; font-weight: 500;
-      letter-spacing: 0.28em; text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 20px;
-      opacity: 0; transform: translateY(16px);
-      animation: fadeUp 0.7s ease 0.4s forwards;
+    .hero-eyebrow {
+      font-family: var(--sans); font-size: 10px; font-weight: 500;
+      letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+      margin-bottom: 28px;
+      opacity: 0; transform: translateY(12px);
+      animation: fadeUp 0.6s ease 0.3s forwards;
     }
     .hero-title {
       font-family: var(--serif);
-      font-size: clamp(42px, 6vw, 76px);
-      font-weight: 400;
-      line-height: 1.08;
-      margin-bottom: 24px;
+      font-size: clamp(52px, 5.5vw, 88px);
+      font-weight: 300;
+      line-height: 1.02;
+      letter-spacing: -0.01em;
+      margin-bottom: 32px;
       opacity: 0; transform: translateY(20px);
-      animation: fadeUp 0.8s ease 0.6s forwards;
+      animation: fadeUp 0.8s ease 0.5s forwards;
     }
-    .hero-title em { font-style: italic; color: var(--gold2); }
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold2);
+      font-weight: 400;
+    }
+    .hero-divider {
+      width: 40px; height: 1px;
+      background: linear-gradient(to right, var(--gold), transparent);
+      margin-bottom: 28px;
+      opacity: 0; animation: fadeUp 0.5s ease 0.7s forwards;
+    }
     .hero-desc {
-      font-size: 16px; line-height: 1.7;
+      font-size: 15px; line-height: 1.8; font-weight: 300;
       color: var(--muted);
-      margin-bottom: 40px;
-      opacity: 0; transform: translateY(16px);
-      animation: fadeUp 0.7s ease 0.85s forwards;
+      margin-bottom: 48px; max-width: 400px;
+      opacity: 0; transform: translateY(12px);
+      animation: fadeUp 0.7s ease 0.8s forwards;
     }
-    .hero-price {
-      display: inline-flex; align-items: baseline; gap: 12px;
-      margin-bottom: 36px;
-      opacity: 0; animation: fadeUp 0.7s ease 1s forwards;
+    .hero-price-block {
+      display: flex; align-items: baseline; gap: 16px;
+      margin-bottom: 44px;
+      opacity: 0; animation: fadeUp 0.6s ease 1s forwards;
     }
     .hero-price-num {
-      font-family: var(--serif); font-size: 48px; font-weight: 700; color: var(--gold);
+      font-family: var(--serif); font-size: 60px; font-weight: 600; color: var(--gold);
+      line-height: 1;
     }
-    .hero-price-info { font-size: 13px; color: var(--muted); line-height: 1.5; }
-    .hero-cta {
-      display: inline-flex; align-items: center; gap: 12px;
+    .hero-price-meta { display: flex; flex-direction: column; gap: 3px; }
+    .hero-price-weight { font-size: 12px; letter-spacing: 0.12em; color: var(--muted); }
+    .hero-price-portions { font-size: 11px; letter-spacing: 0.1em; color: var(--gold3); opacity: 0.7; }
+
+    .hero-tags {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin-bottom: 44px;
+      opacity: 0; animation: fadeUp 0.6s ease 1.05s forwards;
+    }
+    .hero-tag {
+      font-family: var(--sans); font-size: 10px; font-weight: 500;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 40px;
+      border: 1px solid rgba(201,147,74,0.3);
+      color: var(--gold2);
+    }
+
+    .hero-cta-group {
+      display: flex; gap: 14px; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp 0.6s ease 1.15s forwards;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 10px;
       background: var(--gold); color: var(--ink);
-      font-family: var(--sans); font-size: 14px; font-weight: 500;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      padding: 16px 36px; border-radius: 50px;
+      font-family: var(--sans); font-size: 12px; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      padding: 15px 34px; border-radius: 50px;
       text-decoration: none; border: none; cursor: pointer;
       transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
-      opacity: 0; animation: fadeUp 0.7s ease 1.15s forwards;
     }
-    .hero-cta:hover { background: var(--gold2); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(201,147,74,0.3); }
-    .hero-scroll {
-      position: absolute; bottom: 32px; right: 72px;
-      display: flex; flex-direction: column; align-items: center; gap: 8px;
-      opacity: 0; animation: fadeUp 0.7s ease 1.4s forwards;
+    .btn-primary:hover { background: var(--gold2); transform: translateY(-2px); box-shadow: 0 12px 36px rgba(201,147,74,0.25); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: transparent;
+      border: 1px solid rgba(201,147,74,0.35);
+      color: var(--gold);
+      font-family: var(--sans); font-size: 12px; font-weight: 500;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      padding: 15px 34px; border-radius: 50px;
+      text-decoration: none; cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s;
     }
-    .hero-scroll span { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
-    .hero-scroll-line {
-      width: 1px; height: 48px;
-      background: linear-gradient(to bottom, var(--gold), transparent);
-      animation: scrollLine 2s ease-in-out infinite;
+    .btn-ghost:hover { background: rgba(201,147,74,0.08); border-color: var(--gold); transform: translateY(-2px); }
+    .btn-wa-green {
+      background: #25D366; color: #fff;
+      border: none;
     }
-    @keyframes scrollLine { 0%,100%{opacity:0.3;transform:scaleY(0.5)} 50%{opacity:1;transform:scaleY(1)} }
+    .btn-wa-green:hover { background: #1ebc5a; }
 
-    @keyframes fadeUp {
-      to { opacity: 1; transform: translateY(0); }
+    /* ─── SECTION COMMON ─── */
+    section { position: relative; }
+    .reveal {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity 0.8s cubic-bezier(0.22,1,0.36,1), transform 0.8s cubic-bezier(0.22,1,0.36,1);
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+    .rd1 { transition-delay: 0.1s; }
+    .rd2 { transition-delay: 0.2s; }
+    .rd3 { transition-delay: 0.3s; }
+    .rd4 { transition-delay: 0.4s; }
+
+    .sec-label {
+      font-family: var(--sans); font-size: 10px; font-weight: 500;
+      letter-spacing: 0.34em; text-transform: uppercase; color: var(--gold);
+      display: block; margin-bottom: 18px;
+    }
+    .sec-title {
+      font-family: var(--serif); font-weight: 300; line-height: 1.1;
+      font-size: clamp(30px, 3.5vw, 52px);
+      margin-bottom: 20px;
+    }
+    .sec-title em { font-style: italic; color: var(--gold2); font-weight: 400; }
+    .sec-body {
+      font-size: 14px; line-height: 1.85; color: var(--muted); font-weight: 300;
     }
 
-    /* ── DIVIDER ── */
-    .gold-divider {
-      width: 48px; height: 1px;
-      background: linear-gradient(to right, transparent, var(--gold), transparent);
-      margin: 0 auto;
+    /* ─── GALLERY STRIP ─── */
+    .gallery-strip {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: 320px 320px;
+      gap: 3px;
+      height: 643px;
     }
+    .gallery-item {
+      position: relative; overflow: hidden; cursor: zoom-in;
+    }
+    .gallery-item:first-child {
+      grid-row: 1 / 3;
+    }
+    .gallery-item img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform 5s ease;
+    }
+    .gallery-item:hover img { transform: scale(1.05); }
+    .gallery-item-overlay {
+      position: absolute; inset: 0;
+      background: rgba(11,8,6,0);
+      transition: background 0.3s;
+    }
+    .gallery-item:hover .gallery-item-overlay { background: rgba(11,8,6,0.15); }
 
-    /* ── PHOTO SECTION 1 — full bleed left image ── */
-    .split-section {
+    /* ─── SPLIT SECTION ─── */
+    .split {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      min-height: 70vh;
+      min-height: 60vh;
     }
     .split-photo {
-      position: relative;
-      overflow: hidden;
+      position: relative; overflow: hidden;
     }
     .split-photo img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      display: block;
+      width: 100%; height: 100%; object-fit: cover; display: block;
       transition: transform 6s ease;
     }
-    .split-section:hover .split-photo img { transform: scale(1.04); }
-    .split-photo-overlay {
+    .split:hover .split-photo img { transform: scale(1.03); }
+    .split-overlay {
       position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(14,8,6,0.15), rgba(14,8,6,0.4));
+      background: linear-gradient(135deg, rgba(11,8,6,0.1), rgba(11,8,6,0.35));
     }
     .split-text {
       background: var(--dark);
       display: flex; flex-direction: column; justify-content: center;
       padding: 80px 72px;
     }
-    .split-tag {
-      font-size: 10px; font-weight: 500; letter-spacing: 0.3em;
-      text-transform: uppercase; color: var(--gold);
-      margin-bottom: 24px;
-    }
-    .split-title {
-      font-family: var(--serif);
-      font-size: clamp(28px, 3vw, 44px);
-      font-weight: 400; line-height: 1.2;
-      margin-bottom: 24px;
-    }
-    .split-title em { font-style: italic; color: var(--gold2); }
-    .split-body {
-      font-size: 15px; line-height: 1.85;
-      color: var(--muted);
-      margin-bottom: 40px;
-    }
-    .split-features {
-      display: flex; flex-direction: column; gap: 14px;
-    }
-    .split-feature {
-      display: flex; align-items: flex-start; gap: 14px;
-    }
-    .sf-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--gold); flex-shrink: 0;
-      margin-top: 8px;
-    }
-    .sf-text { font-size: 14px; line-height: 1.6; color: var(--warm); }
+    .split-text--light { background: var(--surface); }
 
-    /* ── PHOTO BAND — полноэкранная фото-полоса ── */
-    .photo-band {
+    /* Ingredient list */
+    .ingredients {
+      display: flex; flex-direction: column; gap: 0;
+      margin-top: 32px;
+    }
+    .ingredient {
+      display: flex; align-items: center; gap: 20px;
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(201,147,74,0.1);
+    }
+    .ingredient:last-child { border-bottom: none; }
+    .ingredient-num {
+      font-family: var(--serif); font-size: 26px; font-weight: 300;
+      color: rgba(201,147,74,0.25); flex-shrink: 0; width: 32px;
+      line-height: 1;
+    }
+    .ingredient-name {
+      font-family: var(--serif); font-size: 18px; font-weight: 400;
+      color: var(--cream); flex: 1;
+    }
+    .ingredient-desc {
+      font-size: 11px; letter-spacing: 0.08em; color: var(--gold); text-align: right;
+    }
+
+    /* ─── FEATURES CARDS ─── */
+    .features-section {
+      background: var(--surface);
+      padding: 100px 72px;
+    }
+    .features-header { text-align: center; margin-bottom: 72px; }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      border: 1px solid rgba(201,147,74,0.1);
+    }
+    .feature-card {
+      background: var(--dark);
+      padding: 48px 36px;
+      text-align: center;
+      transition: background 0.3s;
+    }
+    .feature-card:hover { background: var(--surface); }
+    .feature-icon {
+      width: 48px; height: 48px; margin: 0 auto 24px;
+      border-radius: 50%;
+      border: 1px solid rgba(201,147,74,0.2);
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(201,147,74,0.05);
+    }
+    .feature-icon svg { stroke: var(--gold); }
+    .feature-title {
+      font-family: var(--serif); font-size: 19px; font-weight: 400;
+      margin-bottom: 12px; color: var(--cream);
+    }
+    .feature-text { font-size: 13px; line-height: 1.7; color: var(--muted); }
+
+    /* ─── PARALLAX BAND ─── */
+    .parallax-band {
       position: relative;
-      height: 55vh; min-height: 360px;
+      height: 50vh; min-height: 340px;
       overflow: hidden;
     }
-    .photo-band-img {
-      position: absolute; inset: 0;
-      background-attachment: fixed;
-      background-size: cover;
-      background-position: center;
-      transform: scale(1.05);
-      transition: transform 0.1s linear;
+    .parallax-img {
+      position: absolute; inset: -20%;
+      background-size: cover; background-position: center;
+      will-change: transform;
     }
-    .photo-band::after {
+    .parallax-band::after {
       content: '';
       position: absolute; inset: 0;
-      background: linear-gradient(to bottom,
-        rgba(14,8,6,0.6) 0%,
-        rgba(14,8,6,0.25) 50%,
-        rgba(14,8,6,0.6) 100%
-      );
+      background: linear-gradient(to bottom, rgba(11,8,6,0.55) 0%, rgba(11,8,6,0.2) 50%, rgba(11,8,6,0.55) 100%);
+      z-index: 1;
     }
-    .photo-band-label {
-      position: absolute; z-index: 2;
-      top: 50%; left: 50%; transform: translate(-50%, -50%);
-      text-align: center;
+    .parallax-label {
+      position: absolute; inset: 0; z-index: 2;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 0 24px;
     }
-    .photo-band-label span {
-      display: block;
-      font-family: var(--serif);
-      font-size: clamp(36px, 5vw, 72px);
-      font-style: italic;
-      color: rgba(245,237,224,0.88);
-      letter-spacing: 0.04em;
-      text-shadow: 0 4px 32px rgba(0,0,0,0.5);
-    }
-    .photo-band-label small {
-      display: block;
-      font-size: 11px; font-weight: 500; letter-spacing: 0.3em;
-      text-transform: uppercase; color: var(--gold);
-      margin-top: 12px;
-    }
-
-    /* ── ORDER SECTION ── */
-    .order-section {
-      background: var(--dark);
-      padding: 120px 48px;
-      text-align: center;
-    }
-    .order-section .gold-divider { margin-bottom: 40px; }
-    .order-tag {
-      font-size: 10px; font-weight: 500; letter-spacing: 0.3em;
-      text-transform: uppercase; color: var(--gold);
-      margin-bottom: 20px;
-    }
-    .order-title {
-      font-family: var(--serif);
-      font-size: clamp(32px, 4vw, 56px);
-      font-weight: 400; line-height: 1.2;
+    .parallax-quote {
+      font-family: var(--serif); font-style: italic;
+      font-size: clamp(28px, 4vw, 58px); font-weight: 300;
+      color: rgba(245,237,224,0.9);
+      letter-spacing: 0.03em;
+      text-shadow: 0 4px 40px rgba(0,0,0,0.4);
       margin-bottom: 16px;
     }
-    .order-title em { font-style: italic; color: var(--gold2); }
-    .order-sub {
-      font-size: 15px; color: var(--muted);
-      margin-bottom: 64px; max-width: 480px; margin-left: auto; margin-right: auto;
-      line-height: 1.7;
+    .parallax-sub {
+      font-family: var(--sans); font-size: 10px; font-weight: 500;
+      letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold);
     }
 
-    /* price card */
+    /* ─── ORDER SECTION ─── */
+    .order-section {
+      background: var(--ink);
+      padding: 120px 72px;
+    }
+    .order-inner {
+      max-width: 760px; margin: 0 auto; text-align: center;
+    }
+    .order-divider {
+      width: 1px; height: 60px;
+      background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+      margin: 0 auto 48px;
+    }
     .price-card {
-      display: inline-flex; flex-direction: column; align-items: center;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(201,147,74,0.25);
-      border-radius: 20px;
-      padding: 48px 64px;
-      margin-bottom: 56px;
       position: relative;
+      display: inline-flex; flex-direction: column; align-items: center;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(201,147,74,0.2);
+      border-radius: 24px;
+      padding: 56px 80px;
+      margin: 40px 0 56px;
       overflow: hidden;
     }
     .price-card::before {
       content: '';
+      position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
+      width: 60%; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+    }
+    .price-card::after {
+      content: '';
       position: absolute; inset: 0;
-      background: radial-gradient(ellipse at 50% 0%, rgba(201,147,74,0.08), transparent 70%);
+      background: radial-gradient(ellipse at 50% 0%, rgba(201,147,74,0.06), transparent 65%);
     }
-    .price-card-weight {
-      font-size: 12px; font-weight: 500; letter-spacing: 0.2em;
+    .price-card-label {
+      font-size: 10px; font-weight: 500; letter-spacing: 0.28em;
       text-transform: uppercase; color: var(--gold);
-      margin-bottom: 12px;
+      margin-bottom: 16px; position: relative; z-index: 1;
     }
-    .price-card-big {
-      font-family: var(--serif); font-size: 72px; font-weight: 700;
-      color: var(--gold); line-height: 1;
-      margin-bottom: 8px;
+    .price-card-num {
+      font-family: var(--serif); font-size: 80px; font-weight: 600;
+      color: var(--gold); line-height: 1; position: relative; z-index: 1;
     }
-    .price-card-currency { font-size: 32px; vertical-align: super; margin-right: 4px; }
-    .price-card-note {
-      font-size: 13px; color: var(--muted);
-      margin-top: 8px;
+    .price-card-rub { font-size: 40px; vertical-align: super; }
+    .price-card-note { font-size: 13px; color: var(--muted); margin-top: 12px; position: relative; z-index: 1; }
+    .price-card-tags {
+      display: flex; gap: 8px; margin-top: 20px; position: relative; z-index: 1;
     }
+    .pct { font-size: 10px; letter-spacing: 0.14em; color: var(--gold2); padding: 4px 12px; border: 1px solid rgba(201,147,74,0.25); border-radius: 20px; }
 
     .order-btns {
-      display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+      display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
     }
-    .btn-wa {
-      display: inline-flex; align-items: center; gap: 10px;
-      background: #25D366; color: #fff;
-      font-family: var(--sans); font-size: 14px; font-weight: 500;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      padding: 16px 36px; border-radius: 50px;
-      text-decoration: none; border: none; cursor: pointer;
-      transition: filter 0.2s, transform 0.2s;
-    }
-    .btn-wa:hover { filter: brightness(1.1); transform: translateY(-2px); }
-    .btn-tg {
-      display: inline-flex; align-items: center; gap: 10px;
-      background: transparent;
-      border: 1px solid rgba(201,147,74,0.5);
-      color: var(--gold);
-      font-family: var(--sans); font-size: 14px; font-weight: 500;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      padding: 16px 36px; border-radius: 50px;
-      text-decoration: none; cursor: pointer;
-      transition: background 0.2s, border-color 0.2s, transform 0.2s;
-    }
-    .btn-tg:hover { background: rgba(201,147,74,0.1); border-color: var(--gold); transform: translateY(-2px); }
 
-    /* ── DELIVERY SECTION ── */
+    /* ─── REVIEWS ─── */
+    .reviews-section {
+      background: var(--dark);
+      padding: 100px 72px;
+    }
+    .reviews-header { text-align: center; margin-bottom: 64px; }
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+    }
+    .review-card {
+      background: rgba(255,255,255,0.02);
+      padding: 40px 36px;
+      border: 1px solid rgba(201,147,74,0.06);
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .review-card:hover { border-color: rgba(201,147,74,0.18); background: rgba(255,255,255,0.035); }
+    .review-stars { color: var(--gold); font-size: 14px; letter-spacing: 2px; margin-bottom: 18px; }
+    .review-text { font-size: 14px; line-height: 1.8; color: var(--muted); margin-bottom: 24px; font-style: italic; }
+    .review-author { display: flex; align-items: center; gap: 12px; }
+    .review-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--serif); font-size: 17px; color: #fff; flex-shrink: 0;
+    }
+    .review-name { font-family: var(--serif); font-size: 16px; font-weight: 400; color: var(--cream); }
+    .review-date { font-size: 11px; letter-spacing: 0.08em; color: var(--muted); }
+
+    /* ─── DELIVERY ─── */
     .delivery-section {
-      position: relative; overflow: hidden;
+      position: relative;
+      padding: 100px 72px;
+      overflow: hidden;
     }
     .delivery-bg {
       position: absolute; inset: 0;
-      background: url('../../img/meringue_roll_4.webp') center 30%/cover no-repeat;
-      filter: brightness(0.25) saturate(0.7);
+      background: url('../img/meringue_roll_4.webp') center / cover no-repeat;
+      filter: brightness(0.12) saturate(0.5);
     }
-    .delivery-content {
-      position: relative; z-index: 2;
-      padding: 100px 72px;
-      max-width: 1100px; margin: 0 auto;
-    }
-    .delivery-tag {
-      font-size: 10px; font-weight: 500; letter-spacing: 0.3em;
-      text-transform: uppercase; color: var(--gold);
-      margin-bottom: 20px;
-    }
-    .delivery-title {
-      font-family: var(--serif);
-      font-size: clamp(28px, 3.5vw, 48px);
-      font-weight: 400; margin-bottom: 56px;
-    }
+    .delivery-inner { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; }
     .delivery-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 2px;
+      margin-top: 56px;
     }
-    .delivery-card {
-      background: rgba(14,8,6,0.75);
+    .dc {
+      background: rgba(11,8,6,0.8);
       backdrop-filter: blur(8px);
-      padding: 40px 36px;
-      border: 1px solid rgba(201,147,74,0.12);
+      padding: 44px 36px;
+      border: 1px solid rgba(201,147,74,0.1);
       transition: border-color 0.3s, background 0.3s;
     }
-    .delivery-card:hover {
-      border-color: rgba(201,147,74,0.35);
-      background: rgba(14,8,6,0.9);
+    .dc:hover { border-color: rgba(201,147,74,0.3); background: rgba(11,8,6,0.92); }
+    .dc-icon {
+      width: 48px; height: 48px;
+      border: 1px solid rgba(201,147,74,0.2);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
+      font-size: 22px;
     }
-    .dc-icon { font-size: 28px; margin-bottom: 20px; }
-    .dc-title { font-family: var(--serif); font-size: 20px; margin-bottom: 10px; }
-    .dc-text { font-size: 13px; line-height: 1.7; color: var(--muted); }
+    .dc-title { font-family: var(--serif); font-size: 21px; margin-bottom: 10px; color: var(--cream); }
+    .dc-text { font-size: 13px; line-height: 1.75; color: var(--muted); }
 
-    /* ── CITIES ── */
+    /* ─── CITIES ─── */
     .cities-section {
       background: var(--ink);
-      padding: 100px 72px;
+      padding: 80px 72px;
     }
-    .cities-header { text-align: center; margin-bottom: 64px; }
-    .cities-tag {
-      font-size: 10px; font-weight: 500; letter-spacing: 0.3em;
-      text-transform: uppercase; color: var(--gold);
-      margin-bottom: 16px;
-    }
-    .cities-title {
-      font-family: var(--serif);
-      font-size: clamp(28px, 3vw, 44px);
-      font-weight: 400;
-    }
-    .cities-title em { font-style: italic; color: var(--gold2); }
+    .cities-header { text-align: center; margin-bottom: 56px; }
     .cities-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1px;
-      border: 1px solid rgba(201,147,74,0.12);
+      grid-template-columns: repeat(7, 1fr);
+      border: 1px solid rgba(201,147,74,0.1);
+      gap: 0;
     }
     .city-item {
-      padding: 28px 24px;
-      background: rgba(255,255,255,0.02);
+      padding: 24px 20px;
+      background: rgba(255,255,255,0.015);
       border: 1px solid transparent;
       transition: background 0.2s, border-color 0.2s;
-      cursor: default;
     }
-    .city-item:hover { background: rgba(201,147,74,0.06); border-color: rgba(201,147,74,0.2); }
-    .city-name { font-family: var(--serif); font-size: 17px; margin-bottom: 4px; }
-    .city-dist { font-size: 11px; color: var(--gold); letter-spacing: 0.1em; }
+    .city-item:hover { background: rgba(201,147,74,0.05); border-color: rgba(201,147,74,0.18); }
+    .city-name { font-family: var(--serif); font-size: 16px; margin-bottom: 4px; color: var(--cream); }
+    .city-dist { font-size: 10px; color: var(--gold); letter-spacing: 0.1em; }
 
-    /* ── FOOTER ── */
-    footer {
-      background: var(--ink);
-      border-top: 1px solid rgba(201,147,74,0.12);
-      padding: 48px 72px;
+    /* ─── FOOTER ─── */
+    .site-footer {
+      background: var(--dark);
+      border-top: 1px solid rgba(201,147,74,0.1);
+      padding: 56px 72px;
+    }
+    .footer-inner {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+    .footer-brand-name { font-family: var(--serif); font-size: 20px; letter-spacing: 0.12em; color: var(--gold); margin-bottom: 10px; }
+    .footer-brand-desc { font-size: 13px; line-height: 1.7; color: var(--muted); }
+    .footer-socials { display: flex; gap: 14px; margin-top: 24px; }
+    .footer-social {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 1px solid rgba(201,147,74,0.2);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted); text-decoration: none;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    .footer-social:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,147,74,0.08); }
+    .footer-col-title { font-family: var(--serif); font-size: 15px; letter-spacing: 0.06em; color: var(--cream); margin-bottom: 18px; }
+    .footer-col a, .footer-col p {
+      display: block; font-size: 13px; color: var(--muted); text-decoration: none;
+      margin-bottom: 10px; line-height: 1.5;
+      transition: color 0.2s;
+    }
+    .footer-col a:hover { color: var(--gold); }
+    .footer-bottom {
       display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: 24px;
+      padding-top: 28px;
+      border-top: 1px solid rgba(201,147,74,0.08);
+      font-size: 12px; letter-spacing: 0.08em; color: rgba(237,224,204,0.3);
     }
-    .footer-brand { font-family: var(--serif); font-size: 16px; letter-spacing: 0.1em; color: var(--gold); }
-    .footer-brand span { display: block; font-family: var(--sans); font-size: 11px; font-weight: 300; letter-spacing: 0.15em; color: var(--muted); margin-top: 4px; }
-    .footer-link { font-size: 13px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
-    .footer-link:hover { color: var(--gold); }
+    .footer-bottom a { color: rgba(237,224,204,0.3); text-decoration: none; transition: color 0.2s; }
+    .footer-bottom a:hover { color: var(--gold); }
 
-    /* ── REVEAL ── */
-    .reveal {
-      opacity: 0; transform: translateY(28px);
-      transition: opacity 0.8s ease, transform 0.8s ease;
+    /* ─── BACK TO TOP ─── */
+    .back-top {
+      position: fixed; bottom: 32px; right: 32px;
+      width: 48px; height: 48px; border-radius: 50%;
+      background: rgba(201,147,74,0.12);
+      border: 1px solid rgba(201,147,74,0.3);
+      color: var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 100;
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s, background 0.2s, transform 0.2s;
     }
-    .reveal.visible { opacity: 1; transform: none; }
-    .reveal-delay-1 { transition-delay: 0.1s; }
-    .reveal-delay-2 { transition-delay: 0.2s; }
-    .reveal-delay-3 { transition-delay: 0.3s; }
+    .back-top.show { opacity: 1; visibility: visible; }
+    .back-top:hover { background: rgba(201,147,74,0.25); transform: translateY(-3px); }
 
-    /* ── MOBILE ── */
-    @media (max-width: 768px) {
-      header { padding: 18px 24px; }
-      .hero-content { padding: 0 24px 64px; }
-      .hero-scroll { right: 24px; }
-      .split-section { grid-template-columns: 1fr; }
-      .split-photo { height: 50vw; min-height: 240px; }
-      .split-text { padding: 56px 28px; }
-      .photo-band-img { background-attachment: scroll; }
-      .order-section { padding: 80px 24px; }
-      .price-card { padding: 36px 32px; }
-      .delivery-content { padding: 72px 24px; }
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── MOBILE ─── */
+    @media (max-width: 1024px) {
+      .hero { grid-template-columns: 1fr; min-height: auto; }
+      .hero-photo { height: 55vw; min-height: 320px; }
+      .hero-photo img { position: static; width: 100%; height: 100%; }
+      .hero-photo-overlay { background: linear-gradient(to bottom, rgba(11,8,6,0) 40%, var(--ink) 100%); }
+      .hero-content { padding: 40px 32px 72px; }
+      .gallery-strip { grid-template-columns: 1fr 1fr; grid-template-rows: 200px 200px 200px; height: auto; }
+      .gallery-item:first-child { grid-column: 1 / 3; grid-row: 1 / 2; }
+      .split { grid-template-columns: 1fr; }
+      .split-photo { height: 60vw; min-height: 260px; }
+      .split-text { padding: 56px 32px; }
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .reviews-grid { grid-template-columns: 1fr; }
       .delivery-grid { grid-template-columns: 1fr; }
-      .cities-section { padding: 72px 24px; }
+      .cities-grid { grid-template-columns: repeat(4, 1fr); }
+      .footer-inner { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .site-hdr { padding: 0 20px; height: 60px; }
+      .hdr-back { display: none; }
+      .breadcrumb { padding: 70px 20px 0; }
+      .hero-title { font-size: clamp(40px, 10vw, 64px); }
+      .hero-content { padding: 28px 20px 60px; }
+      .gallery-strip { grid-template-columns: 1fr; grid-template-rows: 260px 200px 200px 200px 200px; height: auto; }
+      .gallery-item:first-child { grid-column: 1; grid-row: 1; }
+      .features-section, .reviews-section, .order-section,
+      .delivery-section, .cities-section { padding: 72px 20px; }
+      .features-grid { grid-template-columns: 1fr; }
       .cities-grid { grid-template-columns: repeat(2, 1fr); }
-      footer { padding: 36px 24px; flex-direction: column; text-align: center; }
+      .footer-inner { grid-template-columns: 1fr; }
+      .site-footer { padding: 48px 20px; }
+      .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+      .price-card { padding: 40px 32px; }
+      .back-top { bottom: 20px; right: 20px; }
     }
   </style>
 </head>
 <body>
 
 <!-- LOADER -->
-<div id="loader"><div class="loader-ring"></div></div>
+<div id="loader">
+  <div class="loader-logo">Milovi Cake</div>
+  <div class="loader-line"></div>
+</div>
 
 <!-- HEADER -->
-<header id="hdr">
-  <a href="https://milovicake.ru/" class="h-logo">
+<header class="site-hdr" id="siteHdr">
+  <a href="https://milovicake.ru/" class="hdr-logo">
     Milovi Cake
-    <span>Частный кондитер · СПб</span>
+    <span class="hdr-logo-sub">Частный кондитер · СПб</span>
   </a>
-  <a href="#order" class="h-order">Заказать</a>
+  <div class="hdr-right">
+    <a href="https://milovicake.ru/" class="hdr-back">← На главную</a>
+    <a href="#order" class="hdr-order">Заказать</a>
+  </div>
 </header>
 
+<!-- BREADCRUMB -->
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <a href="https://milovicake.ru/">Главная</a>
+  <span>›</span>
+  <span class="breadcrumb-current">Меренговый рулет</span>
+</nav>
+
 <!-- HERO -->
-<section class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-content">
-    <div class="hero-label">Milovi Cake · Санкт-Петербург</div>
-    <h1 class="hero-title">Меренговый<br><em>рулет</em><br>на заказ</h1>
-    <p class="hero-desc">Хрустящее безе, нежный крем чиз и свежая малина — ручная работа без лишних добавок. Доставка по СПб и всей Ленобласти.</p>
-    <div class="hero-price">
-      <span class="hero-price-num">2 500 ₽</span>
-      <span class="hero-price-info">1 100 г<br>один рулет</span>
-    </div>
-    <a href="#order" class="hero-cta">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.63a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .84h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-      Заказать сейчас
-    </a>
+<section class="hero" id="home">
+  <!-- Photo side -->
+  <div class="hero-photo">
+    <img src="../img/meringue_roll.webp"
+         alt="Меренговый рулет с малиной от Milovi Cake — Санкт-Петербург"
+         fetchpriority="high" decoding="sync" width="960" height="1080" />
+    <div class="hero-photo-overlay"></div>
   </div>
-  <div class="hero-scroll">
-    <div class="hero-scroll-line"></div>
-    <span>Листать</span>
+
+  <!-- Content side -->
+  <div class="hero-content">
+    <div class="hero-eyebrow">Milovi Cake · Санкт-Петербург</div>
+    <h1 class="hero-title">
+      Меренговый<br>
+      <em>рулет</em><br>
+      на заказ
+    </h1>
+    <div class="hero-divider"></div>
+    <p class="hero-desc">
+      Хрустящее безе, нежный крем чиз и свежая малина — ручная работа без лишних добавок. Безглютеновый рецепт, доставка по всему СПб и Ленобласти.
+    </p>
+
+    <div class="hero-price-block">
+      <div class="hero-price-num">2 500 ₽</div>
+      <div class="hero-price-meta">
+        <span class="hero-price-weight">1 100 г · один рулет</span>
+        <span class="hero-price-portions">≈ 6–8 порций</span>
+      </div>
+    </div>
+
+    <div class="hero-tags">
+      <span class="hero-tag">Безглютеновый</span>
+      <span class="hero-tag">Ручная работа</span>
+      <span class="hero-tag">Свежие ягоды</span>
+      <span class="hero-tag">Заказ за 1–2 дня</span>
+    </div>
+
+    <div class="hero-cta-group">
+      <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D1%8C%20%D0%BC%D0%B5%D1%80%D0%B5%D0%BD%D0%B3%D0%BE%D0%B2%D1%8B%D0%B9%20%D1%80%D1%83%D0%BB%D0%B5%D1%82%20%F0%9F%8D%B0"
+         target="_blank" rel="noopener noreferrer" class="btn-primary btn-wa-green">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp
+      </a>
+      <a href="https://t.me/MiloviCake" target="_blank" rel="noopener noreferrer" class="btn-ghost">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        Telegram
+      </a>
+    </div>
   </div>
 </section>
 
-<!-- SPLIT: photo left, text right -->
-<div class="split-section">
-  <div class="split-photo">
-    <img src="../../img/meringue_roll_5.webp" alt="Меренговый рулет — текстура безе крупным планом" loading="lazy">
-    <div class="split-photo-overlay"></div>
+<!-- PHOTO GALLERY -->
+<div class="gallery-strip">
+  <div class="gallery-item">
+    <img src="../img/meringue_roll_2.webp" alt="Меренговый рулет — срез с малиной" loading="lazy" />
+    <div class="gallery-item-overlay"></div>
   </div>
+  <div class="gallery-item">
+    <img src="../img/meringue_roll_3.webp" alt="Меренговый рулет — текстура безе" loading="lazy" />
+    <div class="gallery-item-overlay"></div>
+  </div>
+  <div class="gallery-item">
+    <img src="../img/meringue_roll_5.webp" alt="Меренговый рулет — крупный план" loading="lazy" />
+    <div class="gallery-item-overlay"></div>
+  </div>
+  <div class="gallery-item">
+    <img src="../img/meringue_roll_4.webp" alt="Меренговый рулет — готов к подаче" loading="lazy" />
+    <div class="gallery-item-overlay"></div>
+  </div>
+  <div class="gallery-item">
+    <img src="../img/meringue_roll_6.webp" alt="Меренговый рулет в упаковке" loading="lazy" />
+    <div class="gallery-item-overlay"></div>
+  </div>
+</div>
+
+<!-- SPLIT: COMPOSITION -->
+<div class="split">
   <div class="split-text">
-    <div class="split-tag reveal">Состав</div>
-    <h2 class="split-title reveal reveal-delay-1">
+    <span class="sec-label reveal">Состав</span>
+    <h2 class="sec-title reveal rd1">
       Малина<br>и <em>крем чиз</em>
     </h2>
-    <p class="split-body reveal reveal-delay-2">
-      Меренговый рулет с малиной и нежным сливочным кремом чиз — десерт, который исчезает со стола первым. Готовится по безглютеновому рецепту на основе взбитых белков.
+    <p class="sec-body reveal rd2">
+      Каждый рулет — это сочетание хрустящего безе снаружи, мягкой меренги внутри, нежного сливочного крема чиз и свежей малины. Никакой лишней сладости — только чистый вкус.
     </p>
-    <div class="split-features">
-      <div class="split-feature reveal reveal-delay-2">
-        <div class="sf-dot"></div>
-        <div class="sf-text">Хрустящая меренга снаружи, мягкая и нежная внутри</div>
+    <div class="ingredients reveal rd3">
+      <div class="ingredient">
+        <div class="ingredient-num">01</div>
+        <div class="ingredient-name">Меренга</div>
+        <div class="ingredient-desc">взбитые белки · сахарная пудра</div>
       </div>
-      <div class="split-feature reveal reveal-delay-3">
-        <div class="sf-dot"></div>
-        <div class="sf-text">Крем чиз на основе сливочного сыра — без лишней сладости</div>
+      <div class="ingredient">
+        <div class="ingredient-num">02</div>
+        <div class="ingredient-name">Крем чиз</div>
+        <div class="ingredient-desc">сливочный сыр · сливки</div>
       </div>
-      <div class="split-feature reveal reveal-delay-3">
-        <div class="sf-dot"></div>
-        <div class="sf-text">Свежая малина, фисташки, шоколадные жемчужины</div>
+      <div class="ingredient">
+        <div class="ingredient-num">03</div>
+        <div class="ingredient-name">Малина</div>
+        <div class="ingredient-desc">свежая ягода</div>
       </div>
-      <div class="split-feature reveal reveal-delay-3">
-        <div class="sf-dot"></div>
-        <div class="sf-text">Безглютеновый рецепт — подходит при непереносимости глютена</div>
+      <div class="ingredient">
+        <div class="ingredient-num">04</div>
+        <div class="ingredient-name">Фисташки</div>
+        <div class="ingredient-desc">декор</div>
       </div>
-    </div>
-  </div>
-</div>
-
-<!-- PHOTO BAND 1 -->
-<div class="photo-band">
-  <div class="photo-band-img" style="background-image: url('../../img/meringue_roll_4.webp')"></div>
-  <div class="photo-band-label">
-    <span>Ручная работа</span>
-    <small>Каждый рулет собираем в день заказа</small>
-  </div>
-</div>
-
-<!-- SPLIT: text left, photo right -->
-<div class="split-section">
-  <div class="split-text" style="background: #120a04;">
-    <div class="split-tag reveal">Детали заказа</div>
-    <h2 class="split-title reveal reveal-delay-1">
-      Вес и <em>стоимость</em>
-    </h2>
-    <p class="split-body reveal reveal-delay-2">
-      Один меренговый рулет весит 1 100 г — этого хватит на 6–8 порций. Идеально для семейного чаепития, дня рождения или подарка.
-    </p>
-    <div class="split-features">
-      <div class="split-feature reveal reveal-delay-2">
-        <div class="sf-dot"></div>
-        <div class="sf-text"><strong style="color:var(--gold)">1 рулет — 2 500 ₽</strong> · 1 100 г</div>
-      </div>
-      <div class="split-feature reveal reveal-delay-3">
-        <div class="sf-dot"></div>
-        <div class="sf-text">Упакован в фирменную коробку с окошком</div>
-      </div>
-      <div class="split-feature reveal reveal-delay-3">
-        <div class="sf-dot"></div>
-        <div class="sf-text">Срок хранения 48 часов в холодильнике</div>
-      </div>
-      <div class="split-feature reveal reveal-delay-3">
-        <div class="sf-dot"></div>
-        <div class="sf-text">Принимаем заказы за 1–2 дня</div>
+      <div class="ingredient">
+        <div class="ingredient-num">05</div>
+        <div class="ingredient-name">Шоколадные жемчужины</div>
+        <div class="ingredient-desc">décor final</div>
       </div>
     </div>
   </div>
   <div class="split-photo">
-    <img src="../../img/meringue_roll_6.webp" alt="Меренговый рулет с фисташками, готовый к отправке" loading="lazy">
-    <div class="split-photo-overlay"></div>
+    <img src="../img/meringue_roll_5.webp" alt="Меренговый рулет — состав и текстура" loading="lazy" />
+    <div class="split-overlay"></div>
   </div>
 </div>
 
-<!-- ORDER -->
-<section id="order" class="order-section">
-  <div class="gold-divider"></div>
-  <br><br>
-  <div class="order-tag reveal">Оформить заказ</div>
-  <h2 class="order-title reveal reveal-delay-1">Готовы <em>заказать?</em></h2>
-  <p class="order-sub reveal reveal-delay-2">Напишите нам удобным способом — ответим быстро и согласуем дату и время доставки.</p>
-  <div class="price-card reveal reveal-delay-2">
-    <div class="price-card-weight">Меренговый рулет · 1 100 г</div>
-    <div class="price-card-big"><span class="price-card-currency">₽</span>2 500</div>
-    <div class="price-card-note">Малина · Крем чиз · Безглютеновый</div>
+<!-- PARALLAX BAND 1 -->
+<div class="parallax-band">
+  <div class="parallax-img" id="parallax1" style="background-image: url('../img/meringue_roll_3.webp')"></div>
+  <div class="parallax-label">
+    <div class="parallax-quote">Хрустящее снаружи,<br>нежное внутри</div>
+    <div class="parallax-sub">Каждый рулет собирается в день заказа</div>
   </div>
-  <div class="order-btns reveal reveal-delay-3">
-    <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D1%8C%20%D0%BC%D0%B5%D1%80%D0%B5%D0%BD%D0%B3%D0%BE%D0%B2%D1%8B%D0%B9%20%D1%80%D1%83%D0%BB%D0%B5%D1%82%20%F0%9F%8D%B0" target="_blank" class="btn-wa">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-      WhatsApp
+</div>
+
+<!-- SPLIT: DETAILS -->
+<div class="split">
+  <div class="split-photo">
+    <img src="../img/meringue_roll_6.webp" alt="Меренговый рулет в фирменной коробке" loading="lazy" />
+    <div class="split-overlay"></div>
+  </div>
+  <div class="split-text split-text--light">
+    <span class="sec-label reveal">Детали заказа</span>
+    <h2 class="sec-title reveal rd1">
+      Вес<br>и <em>стоимость</em>
+    </h2>
+    <p class="sec-body reveal rd2">
+      Один рулет весит 1 100 г — этого хватит на 6–8 порций. Идеален для семейного чаепития, дня рождения или в качестве подарка.
+    </p>
+    <div class="ingredients reveal rd3">
+      <div class="ingredient">
+        <div class="ingredient-num" style="font-size:18px">₽</div>
+        <div class="ingredient-name" style="color:var(--gold)">2 500 ₽ — один рулет</div>
+        <div class="ingredient-desc">1 100 г</div>
+      </div>
+      <div class="ingredient">
+        <div class="ingredient-num">📦</div>
+        <div class="ingredient-name">Фирменная коробка</div>
+        <div class="ingredient-desc">с окошком</div>
+      </div>
+      <div class="ingredient">
+        <div class="ingredient-num">⏱</div>
+        <div class="ingredient-name">Срок хранения</div>
+        <div class="ingredient-desc">48 часов · холодильник</div>
+      </div>
+      <div class="ingredient">
+        <div class="ingredient-num">📅</div>
+        <div class="ingredient-name">Принимаем заказы</div>
+        <div class="ingredient-desc">за 1–2 дня</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="features-section">
+  <div class="features-header">
+    <span class="sec-label reveal" style="text-align:center;display:block;">Преимущества</span>
+    <h2 class="sec-title reveal rd1" style="text-align:center;">Почему выбирают <em>Milovi Cake</em></h2>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card reveal">
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      </div>
+      <div class="feature-title">Ручная работа</div>
+      <div class="feature-text">Каждый рулет создаётся вручную — никакого конвейера и полуфабрикатов</div>
+    </div>
+    <div class="feature-card reveal rd1">
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="feature-title">Без глютена</div>
+      <div class="feature-text">Безглютеновый рецепт на основе взбитых белков — подходит при непереносимости</div>
+    </div>
+    <div class="feature-card reveal rd2">
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <div class="feature-title">Свежесть</div>
+      <div class="feature-text">Готовим в день доставки — всегда свежий десерт прямо к вашему столу</div>
+    </div>
+    <div class="feature-card reveal rd3">
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      </div>
+      <div class="feature-title">Доставка по СПб</div>
+      <div class="feature-text">Собственная доставка или через Яндекс по всему Санкт-Петербургу и пригородам</div>
+    </div>
+  </div>
+</section>
+
+<!-- PARALLAX BAND 2 -->
+<div class="parallax-band">
+  <div class="parallax-img" id="parallax2" style="background-image: url('../img/meringue_roll_2.webp')"></div>
+  <div class="parallax-label">
+    <div class="parallax-quote">Создано<br><em style="font-style:italic;color:var(--gold2)">с любовью</em></div>
+    <div class="parallax-sub">5 лет опыта · 300+ довольных клиентов</div>
+  </div>
+</div>
+
+<!-- REVIEWS -->
+<section class="reviews-section">
+  <div class="reviews-header">
+    <span class="sec-label reveal" style="text-align:center;display:block;">Отзывы</span>
+    <h2 class="sec-title reveal rd1" style="text-align:center;">Нам пишут <em>клиенты</em></h2>
+  </div>
+  <div class="reviews-grid">
+    <div class="review-card reveal">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">«Заказывала меренговый рулет на день рождения — все гости были в восторге. Безе хрустит идеально, крем нежный, малина свежая. Это просто шедевр!»</p>
+      <div class="review-author">
+        <div class="review-avatar" style="background:#c0604a;">Е</div>
+        <div>
+          <div class="review-name">Евгения Монтихо</div>
+          <div class="review-date">20 декабря 2025 · Яндекс Карты</div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card reveal rd1">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">«Брала меренговый рулет для подруги на юбилей. Красота неописуемая, вкус потрясающий. Упаковка тоже очень нарядная — как настоящий подарок.»</p>
+      <div class="review-author">
+        <div class="review-avatar" style="background:#6a7fc8;">Е</div>
+        <div>
+          <div class="review-name">Екатерина Г.</div>
+          <div class="review-date">24 ноября 2025 · Яндекс Карты</div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card reveal rd2">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">«Заказываем у Виктории постоянно — рулеты исчезают со стола первыми. Очень вкусно!! Оформление и дизайн отличные, мастер всегда выполняет заказы в срок.»</p>
+      <div class="review-author">
+        <div class="review-avatar" style="background:#72b58a;">Е</div>
+        <div>
+          <div class="review-name">Евгения Е.</div>
+          <div class="review-date">29 ноября 2025 · Яндекс Карты</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:40px;" class="reveal">
+    <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/reviews/"
+       target="_blank" rel="noopener noreferrer" class="btn-ghost" style="display:inline-flex;">
+      Все отзывы на Яндекс Картах →
     </a>
-    <a href="https://t.me/MiloviCake" target="_blank" class="btn-tg">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-      Telegram
-    </a>
+  </div>
+</section>
+
+<!-- ORDER -->
+<section class="order-section" id="order">
+  <div class="order-inner">
+    <div class="order-divider reveal"></div>
+    <span class="sec-label reveal" style="text-align:center;display:block;">Оформить заказ</span>
+    <h2 class="sec-title reveal rd1" style="text-align:center;">Готовы <em>заказать?</em></h2>
+    <p class="sec-body reveal rd2" style="text-align:center;max-width:440px;margin:0 auto 0;">
+      Напишите нам удобным способом — ответим в течение 10 минут и согласуем дату и время доставки.
+    </p>
+
+    <div class="price-card reveal rd2">
+      <div class="price-card-label">Меренговый рулет · 1 100 г</div>
+      <div class="price-card-num"><span class="price-card-rub">₽</span>2 500</div>
+      <div class="price-card-note">Малина · Крем чиз · Фисташки</div>
+      <div class="price-card-tags">
+        <span class="pct">Безглютеновый</span>
+        <span class="pct">6–8 порций</span>
+        <span class="pct">48 ч хранения</span>
+      </div>
+    </div>
+
+    <div class="order-btns reveal rd3">
+      <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D1%8C%20%D0%BC%D0%B5%D1%80%D0%B5%D0%BD%D0%B3%D0%BE%D0%B2%D1%8B%D0%B9%20%D1%80%D1%83%D0%BB%D0%B5%D1%82%20%F0%9F%8D%B0"
+         target="_blank" rel="noopener noreferrer" class="btn-primary btn-wa-green">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp
+      </a>
+      <a href="https://t.me/MiloviCake" target="_blank" rel="noopener noreferrer" class="btn-ghost">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        Telegram
+      </a>
+      <a href="tel:+79119038886" class="btn-ghost">
+        📞 +7 911 903 88 86
+      </a>
+    </div>
+    <p style="margin-top:20px;font-size:12px;color:var(--muted);text-align:center;" class="reveal">
+      Принимаем заказы за 1–2 дня · Ежедневно 10:00–20:00
+    </p>
   </div>
 </section>
 
 <!-- DELIVERY -->
 <section class="delivery-section">
   <div class="delivery-bg"></div>
-  <div class="delivery-content">
-    <div class="delivery-tag reveal">Доставка и самовывоз</div>
-    <h2 class="delivery-title reveal reveal-delay-1">Привезём <em>куда нужно</em></h2>
+  <div class="delivery-inner">
+    <span class="sec-label reveal">Доставка и самовывоз</span>
+    <h2 class="sec-title reveal rd1">Привезём <em>куда нужно</em></h2>
     <div class="delivery-grid">
-      <div class="delivery-card reveal">
+      <div class="dc reveal">
         <div class="dc-icon">🚗</div>
         <div class="dc-title">Доставка по СПб</div>
         <div class="dc-text">Собственная доставка по Санкт-Петербургу или через Яндекс.Доставку. Стоимость уточняется при заказе.</div>
       </div>
-      <div class="delivery-card reveal reveal-delay-1">
+      <div class="dc reveal rd1">
         <div class="dc-icon">🏘️</div>
         <div class="dc-title">Доставка в пригороды</div>
-        <div class="dc-text">Доставляем в Пушкин, Гатчину, Петергоф, Мурино, Кудрово, Всеволожск и другие города ЛО. Уточняйте зону при заказе.</div>
+        <div class="dc-text">Доставляем в Пушкин, Гатчину, Петергоф, Мурино, Кудрово, Всеволожск, Павловск и другие города ЛО.</div>
       </div>
-      <div class="delivery-card reveal reveal-delay-2">
+      <div class="dc reveal rd2">
         <div class="dc-icon">📍</div>
         <div class="dc-title">Самовывоз</div>
-        <div class="dc-text">Можно забрать самостоятельно в удобное время. Адрес и точку передачи согласуем при оформлении заказа.</div>
+        <div class="dc-text">Можно забрать самостоятельно. Пулковская ул., 19, СПб. Адрес и время согласуем при заказе.</div>
       </div>
     </div>
   </div>
@@ -675,66 +1065,113 @@
 <!-- CITIES -->
 <section class="cities-section">
   <div class="cities-header">
-    <div class="cities-tag reveal">География доставки</div>
-    <h2 class="cities-title reveal reveal-delay-1">Пригороды <em>Санкт-Петербурга</em></h2>
+    <span class="sec-label reveal" style="text-align:center;display:block;">Пригороды Санкт-Петербурга</span>
+    <h2 class="sec-title reveal rd1" style="text-align:center;">Доставляем <em>везде</em></h2>
   </div>
   <div class="cities-grid">
     <div class="city-item reveal"><div class="city-name">Пушкин</div><div class="city-dist">~28 км</div></div>
-    <div class="city-item reveal reveal-delay-1"><div class="city-name">Петергоф</div><div class="city-dist">~30 км</div></div>
-    <div class="city-item reveal reveal-delay-2"><div class="city-name">Гатчина</div><div class="city-dist">~45 км</div></div>
-    <div class="city-item reveal reveal-delay-3"><div class="city-name">Мурино</div><div class="city-dist">~10 км</div></div>
-    <div class="city-item reveal"><div class="city-name">Кудрово</div><div class="city-dist">~15 км</div></div>
-    <div class="city-item reveal reveal-delay-1"><div class="city-name">Всеволожск</div><div class="city-dist">~25 км</div></div>
-    <div class="city-item reveal reveal-delay-2"><div class="city-name">Павловск</div><div class="city-dist">~30 км</div></div>
-    <div class="city-item reveal reveal-delay-3"><div class="city-name">Колпино</div><div class="city-dist">~22 км</div></div>
-    <div class="city-item reveal"><div class="city-name">Кронштадт</div><div class="city-dist">~45 км</div></div>
-    <div class="city-item reveal reveal-delay-1"><div class="city-name">Сестрорецк</div><div class="city-dist">~35 км</div></div>
-    <div class="city-item reveal reveal-delay-2"><div class="city-name">Ломоносов</div><div class="city-dist">~42 км</div></div>
-    <div class="city-item reveal reveal-delay-3"><div class="city-name">Тосно</div><div class="city-dist">~55 км</div></div>
-    <div class="city-item reveal"><div class="city-name">Красное Село</div><div class="city-dist">~28 км</div></div>
-    <div class="city-item reveal reveal-delay-1"><div class="city-name">Шушары</div><div class="city-dist">~18 км</div></div>
+    <div class="city-item reveal rd1"><div class="city-name">Петергоф</div><div class="city-dist">~30 км</div></div>
+    <div class="city-item reveal rd2"><div class="city-name">Гатчина</div><div class="city-dist">~45 км</div></div>
+    <div class="city-item reveal rd3"><div class="city-name">Мурино</div><div class="city-dist">~10 км</div></div>
+    <div class="city-item reveal rd4"><div class="city-name">Кудрово</div><div class="city-dist">~15 км</div></div>
+    <div class="city-item reveal"><div class="city-name">Всеволожск</div><div class="city-dist">~25 км</div></div>
+    <div class="city-item reveal rd1"><div class="city-name">Павловск</div><div class="city-dist">~30 км</div></div>
+    <div class="city-item reveal rd2"><div class="city-name">Колпино</div><div class="city-dist">~22 км</div></div>
+    <div class="city-item reveal rd3"><div class="city-name">Кронштадт</div><div class="city-dist">~45 км</div></div>
+    <div class="city-item reveal rd4"><div class="city-name">Сестрорецк</div><div class="city-dist">~35 км</div></div>
+    <div class="city-item reveal"><div class="city-name">Ломоносов</div><div class="city-dist">~42 км</div></div>
+    <div class="city-item reveal rd1"><div class="city-name">Тосно</div><div class="city-dist">~55 км</div></div>
+    <div class="city-item reveal rd2"><div class="city-name">Красное Село</div><div class="city-dist">~28 км</div></div>
+    <div class="city-item reveal rd3"><div class="city-name">Шушары</div><div class="city-dist">~18 км</div></div>
   </div>
 </section>
 
 <!-- FOOTER -->
-<footer>
-  <div class="footer-brand">
-    Milovi Cake
-    <span>Меренговые рулеты на заказ · СПб</span>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand-name">Milovi Cake</div>
+      <p class="footer-brand-desc">Авторские торты и десерты ручной работы в Санкт-Петербурге. Доставка по СПб и Ленобласти.</p>
+      <div class="footer-socials">
+        <a href="https://wa.me/79119038886" target="_blank" rel="noopener noreferrer" class="footer-social" aria-label="WhatsApp">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </a>
+        <a href="https://t.me/MiloviCake" target="_blank" rel="noopener noreferrer" class="footer-social" aria-label="Telegram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        </a>
+        <a href="https://vk.com/milovi_cake" target="_blank" rel="noopener noreferrer" class="footer-social" aria-label="ВКонтакте">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.05-1.727-1.033-1-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C5.044 10.8 4.06 8.494 4.06 8.087c0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.677.863 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.203.17-.407.44-.407h2.744c.373 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.253-1.406 2.151-3.574 2.151-3.574.119-.254.322-.491.762-.491h1.744c.525 0 .644.27.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.779 1.203 1.253.745.847 1.32 1.558 1.473 2.05.17.49-.085.745-.576.745z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Навигация</div>
+      <a href="https://milovicake.ru/">Главная</a>
+      <a href="https://milovicake.ru/#catalog">Каталог тортов</a>
+      <a href="https://milovicake.ru/#fillings">Начинки и цены</a>
+      <a href="https://milovicake.ru/#reviews">Отзывы</a>
+      <a href="https://milovicake.ru/#contacts">Контакты</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Контакты</div>
+      <a href="tel:+79119038886">+7 911 903 88 86</a>
+      <a href="https://wa.me/79119038886" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+      <a href="https://t.me/MiloviCake" target="_blank" rel="noopener noreferrer">Telegram</a>
+      <p>Пн–Вс, 10:00–20:00</p>
+      <p style="margin-top:4px">Пулковская ул., 19, СПб</p>
+    </div>
   </div>
-  <a href="tel:+79119038886" class="footer-link">+7 911 903-88-86</a>
-  <a href="https://milovicake.ru/" class="footer-link">← Главный сайт</a>
+  <div class="footer-bottom">
+    <span>© 2020–2026 Milovi Cake. Все права защищены.</span>
+    <a href="https://milovicake.ru/">milovicake.ru</a>
+  </div>
 </footer>
+
+<!-- BACK TO TOP -->
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Наверх">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
 
 <script>
   // Loader
   window.addEventListener('load', () => {
-    setTimeout(() => document.getElementById('loader').classList.add('gone'), 300);
+    setTimeout(() => document.getElementById('loader').classList.add('gone'), 350);
   });
+  setTimeout(() => document.getElementById('loader').classList.add('gone'), 4000);
 
   // Header scroll
-  const hdr = document.getElementById('hdr');
+  const hdr = document.getElementById('siteHdr');
   window.addEventListener('scroll', () => {
-    hdr.classList.toggle('scrolled', window.scrollY > 40);
+    hdr.classList.toggle('scrolled', window.scrollY > 48);
   }, { passive: true });
 
-  // Parallax photo band
-  const bands = document.querySelectorAll('.photo-band-img');
-  window.addEventListener('scroll', () => {
+  // Parallax
+  function updateParallax() {
+    const bands = document.querySelectorAll('.parallax-img');
     bands.forEach(b => {
-      const rect = b.parentElement.getBoundingClientRect();
+      const rect = b.closest('.parallax-band').getBoundingClientRect();
       const pct = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
-      b.style.transform = `translateY(${(pct - 0.5) * 60}px) scale(1.15)`;
+      b.style.transform = `translateY(${(pct - 0.5) * 50}px)`;
     });
-  }, { passive: true });
+  }
+  window.addEventListener('scroll', updateParallax, { passive: true });
+  updateParallax();
 
   // Reveal on scroll
-  const revealEls = document.querySelectorAll('.reveal');
-  const revealObs = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); } });
-  }, { threshold: 0.12 });
-  revealEls.forEach(el => revealObs.observe(el));
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // Back to top
+  const btn = document.getElementById('backTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('show', window.scrollY > 400);
+  }, { passive: true });
 </script>
+
 <!-- PWA Service Worker -->
 <script>
   if ('serviceWorker' in navigator) {
@@ -743,5 +1180,17 @@
     });
   }
 </script>
+
+<!-- YANDEX METRIKA -->
+<script type="text/javascript">
+  (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+  m[i].l=1*new Date();
+  for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}
+  k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+  (window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+  ym(106945185,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/106945185" style="position:absolute;left:-9999px;" alt="" /></div></noscript>
+
 </body>
 </html>

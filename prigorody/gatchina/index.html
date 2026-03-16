@@ -28,6 +28,7 @@
   <meta name="apple-mobile-web-app-title" content="Milovi Cake" />
   <meta name="theme-color" content="#c9934a" />
   <link rel="apple-touch-icon" href="/icon-apple.png?v=20260303" />
+  <meta name="view-transition" content="same-origin" />
   <link rel="canonical" href="https://milovicake.ru/prigorody/gatchina/" />
   <script type="application/ld+json">
   {
@@ -36,8 +37,7 @@
     "itemListElement": [
       {"@type": "ListItem", "position": 1, "name": "Главная", "item": "https://milovicake.ru/"},
       {"@type": "ListItem", "position": 2, "name": "Пригороды СПб", "item": "https://milovicake.ru/prigorody/"},
-      {"@type": "ListItem", "position": 3, "name": "Пригороды СПб", "item": "https://milovicake.ru/prigorody/"},
-        {"@type": "ListItem", "position": 3, "name": "Торты в Гатчине", "item": "https://milovicake.ru/prigorody/gatchina/"}
+      {"@type": "ListItem", "position": 3, "name": "Торты в Гатчине", "item": "https://milovicake.ru/prigorody/gatchina/"}
     ]
   }
   </script>
@@ -136,7 +136,7 @@ setTimeout(_hideLoader, 5000);
 </header>
 
 <!-- ── MOBILE MENU ── -->
-<div class="mobile-menu" id="mobileMenu" role="dialog" aria-label="Навигационное меню" aria-modal="false">
+<div class="mobile-menu" id="mobileMenu" role="dialog" aria-label="Навигационное меню" aria-modal="true">
   <button class="mobile-menu-close" onclick="closeMobileMenu()">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
     Закрыть
@@ -155,8 +155,6 @@ setTimeout(_hideLoader, 5000);
 
 
 <!-- ══════════ BREADCRUMB ══════════ -->
-<div id="scroll-progress"></div>
-<div class="toast" id="toast"></div>
 
 <nav class="breadcrumb-nav" aria-label="Breadcrumb">
   <div class="breadcrumb-inner">
@@ -168,6 +166,7 @@ setTimeout(_hideLoader, 5000);
   </div>
 </nav>
 
+<main id="main-content">
 <!-- ══════════ HERO ══════════ -->
 <section class="hero" id="home" style="padding-top:0">
   <div class="hero-photo-bg">
@@ -231,43 +230,6 @@ setTimeout(_hideLoader, 5000);
   </div>
 </section>
 
-<section id="why">
-  <div class="container">
-    <h2 class="section-title reveal">Почему Выбирают Нас</h2>
-    <div class="features-grid">
-      <div class="feature reveal">
-        <div class="feature-icon">🤍</div>
-        <h4>Ручная Работа</h4>
-        <p>Каждый десерт создаётся с любовью и заботой вручную</p>
-      </div>
-      <div class="feature reveal">
-        <div class="feature-icon">🌿</div>
-        <h4>Натуральные Ингредиенты</h4>
-        <p>Только качественные продукты без искусственных добавок</p>
-      </div>
-      <div class="feature reveal">
-        <div class="feature-icon">🎯</div>
-        <h4>Свежесть Под Заказ</h4>
-        <p>Готовим специально для вас, всегда свежее</p>
-      </div>
-      <div class="feature reveal">
-        <div class="feature-icon">📦</div>
-        <h4>Доставка По СПб</h4>
-        <p>Аккуратная доставка в красивой упаковке</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="reviews" style="background:var(--white);padding:100px 60px;">
-  <div class="container">
-    <h2 class="section-title reveal">Отзывы Клиентов</h2>
-    <p class="section-sub reveal">Доставляем радость в СПб и Гатчину 🤍</p>
-    <div class="catalog-grid" id="catalogGrid">
-      <!-- rendered by JS -->
-    </div>
-  </div>
-</section>
 
 <!-- ══════════ FILLINGS / CALCULATOR ══════════ -->
 <section id="fillings" class="fillings">
@@ -668,12 +630,13 @@ setTimeout(_hideLoader, 5000);
       <div class="card reveal">
         <h3>Форма заказа</h3>
         <p class="hours" style="opacity:0"> </p>
+        <form onsubmit="event.preventDefault(); sendFormWA();" novalidate>
         <div class="form-group float-label">
           <input type="text" id="fname" placeholder=" " />
           <label for="fname">Как к Вам обращаться?</label>
         </div>
         <div class="form-group float-label">
-          <input type="tel" id="fphone" placeholder=" " required />
+          <input type="tel" id="fphone" placeholder=" " required autocomplete="tel" inputmode="tel" />
           <label for="fphone">Телефон *</label>
         </div>
         <div class="form-group float-label">
@@ -681,7 +644,8 @@ setTimeout(_hideLoader, 5000);
           <label for="fcomment">Комментарий — вес, декор, дата…</label>
         </div>
         <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
-        <button class="btn-wa" onclick="sendFormWA()">Отправить Заказ</button>
+        <button type="submit" class="btn-wa">Отправить Заказ</button>
+        </form>
       </div>
     </div>
   </div>
@@ -925,6 +889,7 @@ setTimeout(_hideLoader, 5000);
     });
   }
 </script><!-- ══════════ FOOTER ══════════ -->
+</main>
 <footer class="site-footer">
   <div class="container">
     <div class="footer-grid">
