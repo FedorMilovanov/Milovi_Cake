@@ -589,17 +589,17 @@
       pointer-events: auto;
       z-index: 0;
       transition: opacity .6s ease, filter .6s ease, transform .6s ease;
-      filter: brightness(1.0) saturate(0.75);
+      filter: brightness(1.0);
       cursor: default;
       animation: rollShimmer 4.5s ease-in-out infinite;
     }
     @keyframes rollShimmer {
-      0%,100% { filter: brightness(1.0) saturate(0.75); opacity: 0.6; }
-      50%      { filter: brightness(1.05) saturate(0.8); opacity: 0.68; }
+      0%,100% { filter: brightness(1.0); opacity: 0.6; }
+      50%      { filter: brightness(1.05); opacity: 0.68; }
     }
     .roll-float:hover {
       opacity: 0.9;
-      filter: brightness(1.05) saturate(0.75);
+      filter: brightness(1.05);
       transform: translateX(-50%) translateY(-8px) scale(1.04);
       animation: none;
     }
