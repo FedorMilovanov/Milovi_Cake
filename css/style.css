@@ -9426,15 +9426,15 @@ footer .wave-text .w.near {
   box-shadow: 0 6px 20px rgba(37,211,102,0.15);
 }
 .btn-hero-tg {
-  background: rgba(41,182,246,0.1);
-  border: 1px solid rgba(41,182,246,0.25);
-  color: #64c8f5;
+  background: rgba(25,75,200,0.2);
+  border: 1px solid rgba(25,75,200,0.5);
+  color: #4278d0;
 }
 .btn-hero-tg:hover {
-  background: rgba(41,182,246,0.2);
-  border-color: rgba(41,182,246,0.5);
+  background: rgba(25,75,200,0.32);
+  border-color: rgba(25,75,200,0.75);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(41,182,246,0.15);
+  box-shadow: 0 6px 20px rgba(24,80,190,0.25);
 }
 .btn-hero-max {
   background: rgba(201,147,74,0.1);
