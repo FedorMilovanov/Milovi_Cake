@@ -57,6 +57,7 @@ function renderCatalog() {
   Object.keys(slideTimers).forEach(k => delete slideTimers[k]);
 
   const grid = document.getElementById('catalogGrid');
+  if (!grid) return;
   grid.innerHTML = products.map(p => {
     let imgHtml;
     if (p.slides && p.slides.length) {
