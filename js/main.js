@@ -2612,3 +2612,294 @@ document.addEventListener('visibilitychange', () => {
     el.style.cursor = 'default';
   });
 })();
+
+// ── Messenger button ring → flat-label animation ──
+(function() {
+  var items = [
+    { btnClass: 'btn-hero-wa',  ringId: 'ring-text-wa',  flatId: 'flat-text-wa'  },
+    { btnClass: 'btn-hero-tg',  ringId: 'ring-text-tg',  flatId: 'flat-text-tg'  },
+    { btnClass: 'btn-hero-max', ringId: 'ring-text-max', flatId: 'flat-text-max' }
+  ];
+
+  function easeOut(t)   { return 1 - Math.pow(1 - t, 3); }
+  function easeInOut(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2; }
+
+  function runAnim(state, toHover, dur) {
+    if (state.raf) { cancelAnimationFrame(state.raf); state.raf = null; }
+    var from = { ringOp: state.ringOp, ringY: state.ringY, flatOp: state.flatOp, flatY: state.flatY };
+    var to = toHover
+      ? { ringOp: 0, ringY: -18, flatOp: 1, flatY: -14 }
+      : { ringOp: 1, ringY: 0,   flatOp: 0, flatY: 8   };
+    var startTs = null;
+    function step(ts) {
+      if (!startTs) startTs = ts;
+      var p = Math.min((ts - startTs) / dur, 1);
+      var e = toHover ? easeOut(p) : easeInOut(p);
+      state.ringOp = from.ringOp + (to.ringOp - from.ringOp) * e;
+      state.ringY  = from.ringY  + (to.ringY  - from.ringY)  * e;
+      state.flatOp = from.flatOp + (to.flatOp - from.flatOp) * e;
+      state.flatY  = from.flatY  + (to.flatY  - from.flatY)  * e;
+      state.ringEl.setAttribute('opacity', state.ringOp);
+      state.ringEl.setAttribute('transform', 'translate(0,' + state.ringY + ')');
+      state.flatEl.setAttribute('opacity', state.flatOp);
+      state.flatEl.setAttribute('y', state.flatY);
+      if (p < 1) { state.raf = requestAnimationFrame(step); }
+      else { Object.assign(state, to); state.raf = null; }
+    }
+    state.raf = requestAnimationFrame(step);
+  }
+
+  function init() {
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    items.forEach(function(item) {
+      var btn    = document.querySelector('.' + item.btnClass);
+      var ringEl = document.getElementById(item.ringId);
+      var flatEl = document.getElementById(item.flatId);
+      if (!btn || !ringEl || !flatEl) return;
+      var state = { ringEl: ringEl, flatEl: flatEl, ringOp: 0.5, ringY: 0, flatOp: 0, flatY: 8, raf: null };
+      btn.addEventListener('mouseenter', function() { runAnim(state, true,  650); });
+      btn.addEventListener('mouseleave', function() { runAnim(state, false, 650); });
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+
+// ══════════════════════════════════════════════
+// MOBILE ENHANCEMENTS
+// ══════════════════════════════════════════════
+(function() {
+  var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  var isTouch  = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+  if (!isTouch) return;
+
+  // ── 1. HAPTIC FEEDBACK ──────────────────────
+  // Different vibration patterns per element type
+  function vibe(pattern) {
+    if (navigator.vibrate) navigator.vibrate(pattern);
+  }
+
+  document.addEventListener('touchstart', function(e) {
+    var t = e.target;
+
+    // Primary CTA buttons — satisfying pulse
+    if (t.closest('.btn-primary, .btn-primary--hero')) {
+      vibe([8, 30, 10]);
+      return;
+    }
+    // Messenger buttons — light single tap
+    if (t.closest('.btn-hero-messenger')) {
+      vibe(7);
+      return;
+    }
+    // Bottom nav items — ultra light
+    if (t.closest('.bottom-nav-item')) {
+      vibe(5);
+      return;
+    }
+    // Order button in bottom nav — stronger
+    if (t.closest('.bottom-nav-item--order')) {
+      vibe([8, 25, 8]);
+      return;
+    }
+    // Product cards — gentle tap
+    if (t.closest('.product-card, .catalog-nav-item')) {
+      vibe(6);
+      return;
+    }
+    // Filling / decor options — minimal
+    if (t.closest('.calc-opt')) {
+      vibe(5);
+      return;
+    }
+    // Cart add / confirm buttons
+    if (t.closest('.cart-add-btn, .cart-confirm-btn, [onclick*="addToCart"], [onclick*="openCart"]')) {
+      vibe([8, 40, 8]);
+      return;
+    }
+    // Review cards
+    if (t.closest('.review-card, .map-review-item')) {
+      vibe(4);
+      return;
+    }
+    // Accordion / toggle elements
+    if (t.closest('.faq-question, .about-compact summary, details summary')) {
+      vibe(6);
+      return;
+    }
+    // Lightbox open
+    if (t.closest('.slide-img img, .gallery-img, .photo-thumb')) {
+      vibe([5, 20, 5]);
+      return;
+    }
+    // Send order — celebratory triple pulse
+    if (t.closest('[onclick*="buildWA"], [onclick*="buildTG"], .btn-wa, .send-order')) {
+      vibe([8, 30, 10, 30, 15]);
+      return;
+    }
+  }, { passive: true });
+
+
+  // ── 2. GYROSCOPE PARALLAX on hero photo ─────
+  var heroBg = document.getElementById('heroPhotoBg');
+  if (heroBg && window.DeviceOrientationEvent) {
+    var baseGamma = null, baseBeta = null;
+    var curX = 0, curY = 0;
+    var targetX = 0, targetY = 0;
+    var rafId = null;
+    var MAX_SHIFT = 14; // px max shift
+
+    function lerp(a, b, t) { return a + (b - a) * t; }
+
+    function animateParallax() {
+      curX = lerp(curX, targetX, 0.06);
+      curY = lerp(curY, targetY, 0.06);
+      heroBg.style.transform = 'translate(' + curX.toFixed(2) + 'px,' + curY.toFixed(2) + 'px) scale(1.06)';
+      rafId = requestAnimationFrame(animateParallax);
+    }
+
+    function onOrientation(e) {
+      // Calibrate on first reading
+      if (baseGamma === null) { baseGamma = e.gamma || 0; baseBeta = e.beta || 0; }
+
+      var dg = Math.max(-25, Math.min(25, (e.gamma  || 0) - baseGamma));
+      var db = Math.max(-20, Math.min(20, (e.beta   || 0) - baseBeta));
+
+      targetX = -(dg / 25) * MAX_SHIFT;
+      targetY = -(db / 20) * (MAX_SHIFT * 0.6);
+    }
+
+    // Request permission on iOS 13+
+    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+      // Attach to first user gesture on the hero
+      var heroSection = document.getElementById('home');
+      if (heroSection) {
+        heroSection.addEventListener('touchstart', function startGyro() {
+          DeviceOrientationEvent.requestPermission().then(function(state) {
+            if (state === 'granted') {
+              window.addEventListener('deviceorientation', onOrientation, { passive: true });
+              animateParallax();
+            }
+          }).catch(function(){});
+          heroSection.removeEventListener('touchstart', startGyro);
+        }, { once: true, passive: true });
+      }
+    } else {
+      window.addEventListener('deviceorientation', onOrientation, { passive: true });
+      animateParallax();
+    }
+
+    // Pause when hero is not visible
+    var heroObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          if (!rafId) animateParallax();
+        } else {
+          if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+          heroBg.style.transform = '';
+        }
+      });
+    }, { threshold: 0.1 });
+    heroObserver.observe(document.getElementById('home'));
+  }
+
+
+  // ── 3. PULL-TO-REFRESH ──────────────────────
+  var PTR_THRESHOLD = 65;
+  var PTR_MAX       = 80;
+  var ptrActive     = false;
+  var ptrStartY     = 0;
+  var ptrCurrent    = 0;
+  var ptrBusy       = false;
+
+  // Create indicator element
+  var ptrIndicator = document.createElement('div');
+  ptrIndicator.id = 'ptrIndicator';
+  ptrIndicator.style.cssText = [
+    'position:fixed',
+    'top:0', 'left:0', 'right:0',
+    'height:56px',
+    'display:flex', 'align-items:center', 'justify-content:center', 'gap:8px',
+    'transform:translateY(-56px)',
+    'transition:none',
+    'z-index:9998',
+    'pointer-events:none',
+    'will-change:transform'
+  ].join(';');
+
+  ptrIndicator.innerHTML = [
+    '<div id="ptrSpinner" style="width:22px;height:22px;border-radius:50%;border:2px solid rgba(201,147,74,0.25);border-top-color:#c9934a;flex-shrink:0"></div>',
+    '<span id="ptrLabel" style="font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:0.06em;font-family:Jost,sans-serif;text-transform:uppercase">Потяни ещё</span>'
+  ].join('');
+
+  document.body.appendChild(ptrIndicator);
+
+  var ptrSpinner = document.getElementById('ptrSpinner');
+  var ptrLabel   = document.getElementById('ptrLabel');
+  var spinStyle  = document.createElement('style');
+  spinStyle.textContent = '@keyframes ptrSpin{to{transform:rotate(360deg)}} .ptr-spinning{animation:ptrSpin 0.65s linear infinite!important}';
+  document.head.appendChild(spinStyle);
+
+  function setPtrPos(dy) {
+    var d = Math.min(dy, PTR_MAX);
+    var progress = d / PTR_THRESHOLD;
+    ptrIndicator.style.transform = 'translateY(' + (d - 56) + 'px)';
+    ptrIndicator.style.background = 'rgba(28,20,16,' + Math.min(progress * 0.85, 0.85) + ')';
+    ptrLabel.textContent = d >= PTR_THRESHOLD ? 'Отпусти' : 'Потяни ещё';
+    ptrSpinner.style.opacity = Math.min(progress, 1);
+    if (d >= PTR_THRESHOLD) ptrSpinner.classList.add('ptr-spinning');
+    else ptrSpinner.classList.remove('ptr-spinning');
+  }
+
+  function ptrRelease(dy) {
+    ptrActive = false;
+    if (dy >= PTR_THRESHOLD && !ptrBusy) {
+      ptrBusy = true;
+      setPtrPos(PTR_MAX);
+      ptrSpinner.classList.add('ptr-spinning');
+      ptrLabel.textContent = 'Обновляем...';
+      vibe([8, 40, 8]);
+
+      setTimeout(function() {
+        ptrSpinner.classList.remove('ptr-spinning');
+        ptrLabel.textContent = '✓ Обновлено';
+        ptrIndicator.style.transition = 'transform 0.4s ease, background 0.4s ease';
+        ptrIndicator.style.transform = 'translateY(-56px)';
+        ptrIndicator.style.background = 'transparent';
+        setTimeout(function() {
+          ptrIndicator.style.transition = 'none';
+          ptrBusy = false;
+          window.location.reload();
+        }, 500);
+      }, 1000);
+    } else {
+      ptrIndicator.style.transition = 'transform 0.3s ease, background 0.3s ease';
+      ptrIndicator.style.transform = 'translateY(-56px)';
+      ptrIndicator.style.background = 'transparent';
+      setTimeout(function() { ptrIndicator.style.transition = 'none'; }, 350);
+    }
+  }
+
+  document.addEventListener('touchstart', function(e) {
+    if (ptrBusy) return;
+    if (window.scrollY > 4) return;
+    ptrStartY  = e.touches[0].clientY;
+    ptrCurrent = 0;
+    ptrActive  = true;
+  }, { passive: true });
+
+  document.addEventListener('touchmove', function(e) {
+    if (!ptrActive) return;
+    var dy = e.touches[0].clientY - ptrStartY;
+    if (dy < 0) { ptrActive = false; return; }
+    ptrCurrent = dy;
+    setPtrPos(dy * 0.55); // resistance factor
+  }, { passive: true });
+
+  document.addEventListener('touchend', function() {
+    if (!ptrActive) return;
+    ptrRelease(ptrCurrent * 0.55);
+  }, { passive: true });
+
+})();
