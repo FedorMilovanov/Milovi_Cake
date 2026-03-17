@@ -705,7 +705,7 @@ function unlockBody() {
     document.body.style.width = '';
     document.body.style.overflow = '';
     delete document.body.dataset.scrollY;
-    window.scrollTo(0, scrollY);
+    window.scrollTo({ top: scrollY, behavior: 'instant' });
   }
 }
 
@@ -1111,8 +1111,7 @@ function _lbUpdateArrows() {
 }
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
-  document.documentElement.style.overflow = '';
-  unlockBody(); // paired with openChatLightbox's lockBody()
+  unlockBody();
   _lbSrcs = []; _lbIdx = 0;
 }
 document.addEventListener('keydown', e => {
