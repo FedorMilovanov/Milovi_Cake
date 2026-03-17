@@ -172,20 +172,41 @@
       text-transform: uppercase;
       display: flex; flex-direction: column;
       line-height: 1;
+      transition: letter-spacing 0.5s ease, filter 0.5s ease;
+      position: relative;
+    }
+    .hdr-logo:hover {
+      letter-spacing: 0.2em;
+      filter: drop-shadow(0 0 10px rgba(201,147,74,0.3));
+      animation: brandPremium 1.8s ease forwards;
     }
     .hdr-logo-sub {
       font-family: var(--sans); font-size: 9px; font-weight: 400;
       letter-spacing: 0.22em; color: var(--muted);
       text-transform: uppercase; margin-top: 4px;
+      display: flex; gap: 0.3em;
+    }
+    .hdr-logo-sub .sub-w {
+      transition: color 0.3s ease, letter-spacing 0.3s ease;
+      cursor: default;
+    }
+    .hdr-logo-sub .sub-w:hover {
+      color: rgba(201,147,74,0.7);
+      letter-spacing: 0.28em;
     }
     .hdr-right { display: flex; align-items: center; gap: 20px; }
     .hdr-back {
       font-family: var(--sans); font-size: 11px; font-weight: 400;
       letter-spacing: 0.18em; text-transform: uppercase;
       color: var(--muted); text-decoration: none;
-      transition: color 0.2s;
+      transition: color 0.3s, letter-spacing 0.3s, text-shadow 0.3s;
+      position: relative;
     }
-    .hdr-back:hover { color: var(--gold); }
+    .hdr-back:hover {
+      color: var(--gold2);
+      letter-spacing: 0.22em;
+      text-shadow: 0 0 12px rgba(201,147,74,0.15);
+    }
     .hdr-order {
       background: transparent;
       border: 1px solid rgba(201,147,74,0.5);
@@ -195,9 +216,18 @@
       padding: 10px 24px;
       border-radius: 40px;
       text-decoration: none;
-      transition: background 0.2s, border-color 0.2s, color 0.2s;
+      transition: background 0.5s ease, border-color 0.5s ease, color 0.5s ease, transform 0.7s cubic-bezier(.16,1,.3,1);
+      position: relative;
+      overflow: hidden;
+      animation: btnHint 6s ease-in-out infinite;
     }
-    .hdr-order:hover { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+    @keyframes btnHint {
+      0%   { box-shadow: 0 0 0px rgba(201,147,74,0); }
+      12%  { box-shadow: 0 0 10px rgba(201,147,74,0.25), inset 0 0 8px rgba(201,147,74,0.08); }
+      24%  { box-shadow: 0 0 0px rgba(201,147,74,0); }
+      100% { box-shadow: 0 0 0px rgba(201,147,74,0); }
+    }
+    .hdr-order:hover { background: var(--gold); border-color: var(--gold); color: var(--ink); transform: scale(1.06); }
 
     /* ─── BREADCRUMB ─── */
     .breadcrumb {
@@ -207,10 +237,20 @@
       font-family: var(--sans); font-size: 11px; font-weight: 400;
       letter-spacing: 0.1em; text-transform: uppercase;
     }
-    .breadcrumb a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
-    .breadcrumb a:hover { color: var(--gold); }
+    .breadcrumb a { color: var(--muted); text-decoration: none; transition: color 0.3s, letter-spacing 0.3s; }
+    .breadcrumb a:hover { color: var(--gold2); letter-spacing: 0.16em; }
     .breadcrumb span { color: rgba(201,147,74,0.4); }
-    .breadcrumb-current { color: var(--gold); }
+    .breadcrumb-current {
+      color: var(--gold);
+      cursor: default;
+      display: inline-block;
+      transition: color 0.4s ease, letter-spacing 0.4s ease, text-shadow 0.4s ease;
+    }
+    .breadcrumb-current:hover {
+      color: var(--gold2);
+      letter-spacing: 0.14em;
+      text-shadow: 0 0 12px rgba(201,147,74,0.25);
+    }
 
     /* ─── HERO ─── */
     .hero {
@@ -253,6 +293,7 @@
       margin-bottom: 28px;
       opacity: 0; transform: translateY(12px);
       animation: fadeUp 0.6s ease 0.3s forwards;
+      display: block;
     }
     .hero-title {
       font-family: var(--serif);
@@ -268,6 +309,38 @@
       font-style: italic;
       color: var(--gold2);
       font-weight: 400;
+    }
+    .ht-word {
+      display: inline-block;
+      transition: color 0.35s ease, text-shadow 0.35s ease, letter-spacing 0.35s ease;
+      cursor: default;
+    }
+    .ht-word:hover {
+      color: rgba(245,237,224,0.95);
+      text-shadow: 0 0 40px rgba(245,237,224,0.15);
+      letter-spacing: 0.01em;
+    }
+    .ht-word-wide:hover {
+      color: rgba(245,237,224,0.95);
+      text-shadow: 0 0 40px rgba(245,237,224,0.15);
+      letter-spacing: 0.03em;
+    }
+    .ht-em {
+      font-style: italic;
+      color: var(--gold2);
+      font-weight: 400;
+      display: inline-block;
+      cursor: default;
+      transition: color 0.4s ease, text-shadow 0.4s ease, letter-spacing 0.35s ease;
+    }
+    .ht-em:hover {
+      color: #f5dba0;
+      text-shadow: 0 0 20px rgba(201,147,74,0.3);
+      letter-spacing: 0.02em;
+    }
+    @keyframes htShimmer {
+      0%   { background-position: 100% center; }
+      100% { background-position: 0% center; }
     }
     .hero-divider {
       width: 40px; height: 1px;
@@ -286,14 +359,40 @@
       display: flex; align-items: baseline; gap: 16px;
       margin-bottom: 44px;
       opacity: 0; animation: fadeUp 0.6s ease 1s forwards;
+      cursor: default;
     }
     .hero-price-num {
       font-family: var(--serif); font-size: 60px; font-weight: 600; color: var(--gold);
       line-height: 1;
+      display: inline-block;
+      background: linear-gradient(90deg, #c9934a 0%, #e8b87a 38%, #f5dba0 52%, #e8b87a 65%, #c9934a 100%);
+      background-size: 300% auto;
+      -webkit-background-clip: text; background-clip: text;
+      transition: filter 0.4s ease, transform 0.4s cubic-bezier(.16,1,.3,1);
+    }
+    .hero-price-num:hover {
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 6px rgba(201,147,74,0.2));
+      transform: scale(1.04);
+      animation: priceShimmer 1.4s ease forwards;
+    }
+    @keyframes priceShimmer {
+      0%   { background-position: 100% center; }
+      100% { background-position: 0% center; }
     }
     .hero-price-meta { display: flex; flex-direction: column; gap: 3px; }
-    .hero-price-weight { font-size: 12px; letter-spacing: 0.12em; color: var(--muted); }
-    .hero-price-portions { font-size: 11px; letter-spacing: 0.1em; color: var(--gold3); opacity: 0.7; }
+    .hero-price-weight {
+      font-size: 12px; letter-spacing: 0.12em; color: var(--muted);
+      transition: color 0.3s ease, letter-spacing 0.3s ease;
+      cursor: default;
+    }
+    .hero-price-weight:hover { color: rgba(237,224,204,0.85); letter-spacing: 0.16em; }
+    .hero-price-portions {
+      font-size: 11px; letter-spacing: 0.1em; color: var(--gold3); opacity: 0.7;
+      transition: color 0.3s ease, opacity 0.3s ease, transform 0.3s cubic-bezier(.16,1,.3,1), letter-spacing 0.3s ease;
+      cursor: default; display: inline-block;
+    }
+    .hero-price-portions:hover { opacity: 1; color: var(--gold2); transform: translateY(-2px); letter-spacing: 0.14em; }
 
     .hero-tags {
       display: flex; flex-wrap: wrap; gap: 8px;
@@ -307,6 +406,44 @@
       border-radius: 40px;
       border: 1px solid rgba(201,147,74,0.3);
       color: var(--gold2);
+      transition: border-color 0.3s, color 0.3s, background 0.3s,
+                  transform 0.3s cubic-bezier(.16,1,.3,1), box-shadow 0.3s;
+      cursor: default;
+      will-change: transform;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .hero-tag:hover {
+      transform: translateY(-3px);
+      border-color: rgba(201,147,74,0.65);
+      color: var(--gold3);
+      background: rgba(201,147,74,0.08);
+      box-shadow: 0 4px 14px rgba(201,147,74,0.12);
+    }
+
+    .wave-text .w {
+      display: inline-block;
+      transition: color 0.3s ease, transform 0.3s cubic-bezier(.16,1,.3,1), text-shadow 0.3s ease;
+      cursor: default;
+      will-change: transform;
+    }
+    .wave-text .w:hover {
+      color: rgba(245,237,224,0.9);
+      text-shadow: 0 0 14px rgba(240,201,138,0.2);
+      transform: translateY(-2px);
+    }
+    .wave-text .w.near {
+      color: rgba(237,224,204,0.7);
+      transform: translateY(-1px);
+    }
+    .wave-gold .w:hover {
+      color: var(--gold2);
+      text-shadow: 0 0 12px rgba(201,147,74,0.2);
+      transform: translateY(-2px);
+    }
+    .wave-gold .w.near {
+      color: var(--gold);
+      transform: translateY(-1px);
     }
 
     .hero-cta-group {
@@ -433,27 +570,54 @@
     .roll-float {
       position: absolute;
       width: 55%;
-      top: 5%;
+      top: 2%;
       left: 50%;
       transform: translateX(-50%);
       opacity: 0.2;
-      pointer-events: none;
-      transition: opacity 0.5s;
+      pointer-events: auto;
       z-index: 0;
+      transition: opacity .6s ease, filter .6s ease, transform .6s ease;
+      filter: brightness(0.8) saturate(0.9);
+      cursor: default;
+      animation: rollShimmer 4.5s ease-in-out infinite;
+    }
+    @keyframes rollShimmer {
+      0%,100% { filter: brightness(0.8) saturate(0.9); opacity: 0.2; }
+      50%      { filter: brightness(1.0) saturate(1.1); opacity: 0.3; }
+    }
+    .roll-float:hover {
+      opacity: 0.85;
+      filter: brightness(1.1) saturate(1.2);
+      transform: translateX(-50%) translateY(-8px) scale(1.03);
+      animation: none;
+    }
+    .split:hover .roll-float {
+      opacity: 0.28;
     }
     .box-float {
       position: absolute;
-      width: 28%;
+      width: 48%;
       bottom: 4%;
       left: 50%;
       transform: translateX(-50%);
-      opacity: 0.22;
-      pointer-events: none;
-      transition: opacity 0.5s;
-      z-index: 0;
+      opacity: 0.35;
+      pointer-events: auto;
+      z-index: 1;
+      transition: opacity .6s ease, filter .6s ease, transform .6s ease;
+      filter: brightness(0.75) saturate(0.9);
+      cursor: default;
+      animation: boxShimmer 4s ease-in-out infinite;
     }
-    .split:hover .box-float,
-    .split:hover .roll-float { opacity: 0.35; }
+    @keyframes boxShimmer {
+      0%,100% { filter: brightness(0.75) saturate(0.9); opacity: 0.35; }
+      50%      { filter: brightness(0.95) saturate(1.1); opacity: 0.45; }
+    }
+    .box-float:hover {
+      opacity: 0.92;
+      filter: brightness(1.15) saturate(1.2);
+      transform: translateX(-50%) translateY(-6px) scale(1.04);
+      animation: none;
+    }
     .split-text .sec-label,
     .split-text .sec-title,
     .split-text .sec-body,
@@ -505,19 +669,40 @@
       display: flex; align-items: center; gap: 20px;
       padding: 16px 0;
       border-bottom: 1px solid rgba(201,147,74,0.1);
+      transition: border-color 0.3s ease, padding-left 0.35s cubic-bezier(.16,1,.3,1);
+      cursor: default;
+    }
+    .ingredient:hover {
+      border-color: rgba(201,147,74,0.25);
+      padding-left: 6px;
     }
     .ingredient:last-child { border-bottom: none; }
     .ingredient-num {
       font-family: var(--serif); font-size: 26px; font-weight: 300;
       color: rgba(201,147,74,0.25); flex-shrink: 0; width: 32px;
       line-height: 1;
+      transition: color 0.35s ease;
+    }
+    .ingredient:hover .ingredient-num {
+      color: rgba(201,147,74,0.55);
     }
     .ingredient-name {
       font-family: var(--serif); font-size: 18px; font-weight: 400;
       color: var(--cream); flex: 1;
+      transition: color 0.35s ease, text-shadow 0.35s ease;
+    }
+    .ingredient:hover .ingredient-name {
+      color: rgba(245,237,224,0.97);
+      text-shadow: 0 0 20px rgba(245,237,224,0.08);
     }
     .ingredient-desc {
       font-size: 11px; letter-spacing: 0.08em; color: var(--gold); text-align: right;
+      transition: color 0.35s ease, opacity 0.35s ease;
+      opacity: 0.6;
+    }
+    .ingredient:hover .ingredient-desc {
+      color: var(--gold2);
+      opacity: 1;
     }
 
     /* ─── FEATURES CARDS ─── */
@@ -526,14 +711,44 @@
       padding: 100px 72px;
     }
     .features-header { text-align: center; margin-bottom: 72px; }
+    .features-grid-wrap {
+      position: relative;
+      padding: 1px;
+      border-radius: 2px;
+    }
+    .features-grid-wrap::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 2px;
+      background: linear-gradient(
+        135deg,
+        rgba(201,147,74,0.0),
+        rgba(201,147,74,0.3),
+        rgba(240,201,138,0.45),
+        rgba(201,147,74,0.05),
+        rgba(201,147,74,0.0),
+        rgba(201,147,74,0.28),
+        rgba(240,201,138,0.38),
+        rgba(201,147,74,0.0)
+      );
+      background-size: 300% 300%;
+      animation: borderShimmer 10s ease-in-out infinite;
+    }
+    @keyframes borderShimmer {
+      0%   { background-position: 0% 0%;     filter: brightness(0.85); }
+      25%  { background-position: 100% 0%;   filter: brightness(1.1); }
+      50%  { background-position: 100% 100%; filter: brightness(0.8); }
+      75%  { background-position: 0% 100%;   filter: brightness(1.05); }
+      100% { background-position: 0% 0%;     filter: brightness(0.85); }
+    }
     .features-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 1px;
-      border: 1px solid rgba(201,147,74,0.1);
+      position: relative;
+      z-index: 1;
       overflow: visible;
-      padding: 12px;
-      margin: -12px;
     }
     .feature-card {
       background: var(--dark);
@@ -560,6 +775,11 @@
     .feature-title {
       font-family: var(--serif); font-size: 19px; font-weight: 400;
       margin-bottom: 12px; color: var(--cream);
+      transition: color 0.3s, text-shadow 0.3s; cursor: default;
+    }
+    .feature-card:hover .feature-title {
+      color: rgba(245,237,224,0.97);
+      text-shadow: 0 0 20px rgba(245,237,224,0.1);
     }
     .feature-text { font-size: 13px; line-height: 1.7; color: var(--muted); }
 
@@ -575,10 +795,12 @@
     }
     @keyframes lidOpen {
       0%   { transform: rotateX(0deg); }
-      100% { transform: rotateX(-60deg) translateY(-2px); }
+      100% { transform: rotateX(-75deg); }
     }
 
     .card-heart:hover .heart-svg { animation: heartbeat .7s ease infinite; }
+    .card-heart:hover img.heart-svg { animation: heartbeat .7s ease infinite; opacity: 1; transform: scale(1.08); }
+    .card-taste:hover .heart-svg { animation: heartbeat .7s ease infinite; }
 
     @keyframes spinMin  { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     @keyframes spinHour { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -587,7 +809,7 @@
     .card-clock:hover .clock-min-g  { animation: spinMin  2s  linear infinite; }
     .card-clock:hover .clock-hour-g { animation: spinHour 12s linear infinite; }
 
-    .box-lid { transform-origin: center bottom; transform-style: preserve-3d; }
+    .box-lid { transform-origin: center top; transform-style: preserve-3d; transform-box: fill-box; }
     .card-box:hover .box-lid { animation: lidOpen .4s cubic-bezier(.16,1,.3,1) forwards; }
     .feature-icon { perspective: 120px; }
 
@@ -657,8 +879,10 @@
     .style-band-sub {
       font-family: var(--sans); font-size: 10px; font-weight: 500;
       letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
-      opacity: 0.85;
+      opacity: 0.85; cursor: default; display: inline-block;
+      transition: letter-spacing 0.4s, color 0.4s, opacity 0.4s;
     }
+    .style-band-sub:hover { letter-spacing: 0.4em; color: var(--gold2); opacity: 1; }
 
     /* ─── PARALLAX BAND ─── */
     .parallax-band {
@@ -711,17 +935,6 @@
       pointer-events: none;
       z-index: 2;
     }
-    .order-section::after {
-      content: '';
-      position: absolute;
-      top: 50%; right: -60px;
-      transform: translateY(-50%) rotate(4deg);
-      width: 420px; height: 280px;
-      background: url('../img/meringue_roll_box.webp') center/cover no-repeat;
-      opacity: 0.09;
-      border-radius: 12px;
-      pointer-events: none;
-    }
     @media (max-width: 1024px) {
       .order-section::after { display: none; }
     }
@@ -742,36 +955,147 @@
       padding: 56px 80px;
       margin: 40px 0 56px;
       overflow: hidden;
+      transition: border-color 0.5s ease, background 0.5s ease, box-shadow 0.5s ease;
+      cursor: default;
+    }
+    .price-card:hover {
+      border-color: rgba(201,147,74,0.45);
+      background: rgba(255,255,255,0.04);
+      box-shadow:
+        0 0 28px rgba(201,147,74,0.05),
+        0 0 55px rgba(201,147,74,0.025),
+        inset 0 0 40px rgba(201,147,74,0.025);
     }
     .price-card::before {
       content: '';
       position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
       width: 60%; height: 1px;
       background: linear-gradient(to right, transparent, var(--gold), transparent);
+      transition: width 0.5s ease, opacity 0.5s ease;
+    }
+    .price-card:hover::before {
+      width: 85%;
+      opacity: 1;
+      filter: brightness(1.4);
     }
     .price-card::after {
       content: '';
       position: absolute; inset: 0;
       background: radial-gradient(ellipse at 50% 0%, rgba(201,147,74,0.06), transparent 65%);
+      transition: opacity 0.5s ease;
+    }
+    .price-card:hover::after {
+      opacity: 2;
     }
     .price-card-label {
       font-size: 10px; font-weight: 500; letter-spacing: 0.28em;
       text-transform: uppercase; color: var(--gold);
       margin-bottom: 16px; position: relative; z-index: 1;
+      transition: letter-spacing 0.4s ease, color 0.4s ease;
+    }
+    .price-card:hover .price-card-label {
+      letter-spacing: 0.36em;
+      color: var(--gold2);
     }
     .price-card-num {
       font-family: var(--serif); font-size: 80px; font-weight: 600;
       color: var(--gold); line-height: 1; position: relative; z-index: 1;
+      transition: transform 0.4s cubic-bezier(.16,1,.3,1), color 0.4s ease, text-shadow 0.4s ease;
+    }
+    .price-card:hover .price-card-num {
+      transform: scale(1.06);
+      color: var(--gold3);
+      text-shadow: 0 0 30px rgba(201,147,74,0.35);
     }
     .price-card-rub { font-size: 40px; vertical-align: super; }
-    .price-card-note { font-size: 13px; color: var(--muted); margin-top: 12px; position: relative; z-index: 1; }
+    .price-card-note {
+      font-size: 13px; color: var(--muted); margin-top: 12px; position: relative; z-index: 1;
+      transition: transform 0.4s cubic-bezier(.16,1,.3,1) 0.05s, color 0.4s ease, letter-spacing 0.4s ease;
+    }
+    .price-card:hover .price-card-note {
+      transform: scale(1.04);
+      color: rgba(237,224,204,0.75);
+      letter-spacing: 0.04em;
+    }
     .price-card-tags {
       display: flex; gap: 8px; margin-top: 20px; position: relative; z-index: 1;
+      transition: transform 0.4s cubic-bezier(.16,1,.3,1) 0.1s;
     }
-    .pct { font-size: 10px; letter-spacing: 0.14em; color: var(--gold2); padding: 4px 12px; border: 1px solid rgba(201,147,74,0.25); border-radius: 20px; }
+    .price-card:hover .price-card-tags {
+      transform: scale(1.04);
+    }
+    .pct {
+      font-size: 10px; letter-spacing: 0.14em; color: var(--gold2);
+      padding: 4px 12px; border: 1px solid rgba(201,147,74,0.25); border-radius: 20px;
+      transition: border-color 0.3s ease, color 0.3s ease, background 0.3s ease,
+                  transform 0.3s cubic-bezier(.16,1,.3,1), box-shadow 0.3s ease, letter-spacing 0.3s ease;
+      cursor: default;
+      position: relative;
+    }
+    .price-card:hover .pct {
+      border-color: rgba(201,147,74,0.5);
+      color: var(--gold3);
+      background: rgba(201,147,74,0.06);
+    }
+    .pct:hover {
+      transform: translateY(-3px) scale(1.08);
+      border-color: rgba(201,147,74,0.75) !important;
+      color: var(--gold3) !important;
+      background: rgba(201,147,74,0.12) !important;
+      box-shadow: 0 4px 16px rgba(201,147,74,0.15), 0 0 12px rgba(201,147,74,0.08);
+      letter-spacing: 0.18em;
+    }
+    .pc-ingredient {
+      transition: color 0.25s ease, text-shadow 0.25s ease;
+      cursor: default;
+    }
+    .pc-ingredient:hover {
+      color: rgba(245,237,224,0.95);
+      text-shadow: 0 0 12px rgba(245,237,224,0.3);
+    }
 
-    .order-btns {
-      display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+    .brand-premium {
+      font-style: italic;
+      color: var(--gold2);
+      display: inline-block;
+      cursor: default;
+      position: relative;
+      transition: letter-spacing 0.5s ease, filter 0.5s ease;
+    }
+    .brand-premium::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: -3px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(201,147,74,0.6), transparent);
+      transform: scaleX(0);
+      transition: transform 0.5s cubic-bezier(.16,1,.3,1);
+    }
+    .brand-premium::before {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; top: -3px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(201,147,74,0.6), transparent);
+      transform: scaleX(0);
+      transition: transform 0.5s cubic-bezier(.16,1,.3,1) 0.08s;
+    }
+    .brand-premium:hover::before {
+      transform: scaleX(1);
+    }
+    .brand-premium:hover {
+      letter-spacing: 0.06em;
+      filter: drop-shadow(0 0 12px rgba(201,147,74,0.35)) drop-shadow(0 0 28px rgba(201,147,74,0.15));
+      animation: brandPremium 1.8s ease forwards;
+    }
+    .brand-premium:hover::after {
+      transform: scaleX(1);
+    }
+    @keyframes brandPremium {
+      0%   { color: var(--gold2); }
+      30%  { color: #f5dba0; }
+      60%  { color: var(--gold3); }
+      100% { color: #f5dba0; }
     }
 
     /* ─── REVIEWS ─── */
@@ -815,9 +1139,16 @@
       width: 40px; height: 40px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       font-family: var(--serif); font-size: 17px; color: #fff; flex-shrink: 0;
+      transition: transform 0.3s cubic-bezier(.16,1,.3,1), box-shadow 0.3s;
     }
-    .review-name { font-family: var(--serif); font-size: 16px; font-weight: 400; color: var(--cream); }
-    .review-date { font-size: 11px; letter-spacing: 0.08em; color: var(--muted); }
+    .review-card:hover .review-avatar { transform: scale(1.08); box-shadow: 0 0 12px rgba(201,147,74,0.2); }
+    .review-name {
+      font-family: var(--serif); font-size: 16px; font-weight: 400; color: var(--cream);
+      transition: color 0.3s, text-shadow 0.3s; cursor: default;
+    }
+    .review-card:hover .review-name { color: rgba(245,237,224,0.97); text-shadow: 0 0 16px rgba(245,237,224,0.1); }
+    .review-date { font-size: 11px; letter-spacing: 0.08em; color: var(--muted); transition: color 0.3s, letter-spacing 0.3s; cursor: default; }
+    .review-card:hover .review-date { color: var(--gold2); letter-spacing: 0.12em; }
 
     /* ─── DELIVERY ─── */
     .delivery-section {
@@ -876,7 +1207,11 @@
       display: flex; align-items: center; justify-content: center;
       margin-bottom: 20px;
     }
-    .dc-title { font-family: var(--serif); font-size: 21px; margin-bottom: 10px; color: var(--cream); }
+    .dc-title {
+      font-family: var(--serif); font-size: 21px; margin-bottom: 10px; color: var(--cream);
+      transition: color 0.3s, text-shadow 0.3s; cursor: default;
+    }
+    .dc:hover .dc-title { color: rgba(245,237,224,0.97); text-shadow: 0 0 20px rgba(245,237,224,0.08); }
     .dc-text { font-size: 13px; line-height: 1.75; color: var(--muted); }
 
     /* ─── CITIES ─── */
@@ -905,11 +1240,25 @@
       padding: 24px 20px;
       background: rgba(255,255,255,0.015);
       border: 1px solid transparent;
-      transition: background 0.2s, border-color 0.2s;
+      transition: background 0.3s, border-color 0.3s;
     }
     .city-item:hover { background: rgba(201,147,74,0.05); border-color: rgba(201,147,74,0.18); }
-    .city-name { font-family: var(--serif); font-size: 16px; margin-bottom: 4px; color: var(--cream); }
-    .city-dist { font-size: 10px; color: var(--gold); letter-spacing: 0.1em; }
+    .city-name {
+      font-family: var(--serif); font-size: 16px; margin-bottom: 4px; color: var(--cream);
+      transition: color 0.3s ease, letter-spacing 0.3s ease;
+    }
+    .city-item:hover .city-name {
+      color: #fff;
+      letter-spacing: 0.03em;
+    }
+    .city-dist {
+      font-size: 10px; color: var(--gold); letter-spacing: 0.1em;
+      transition: color 0.3s ease, letter-spacing 0.3s ease;
+    }
+    .city-item:hover .city-dist {
+      color: var(--gold3);
+      letter-spacing: 0.14em;
+    }
 
     /* ─── FOOTER ─── */
     .site-footer {
@@ -923,7 +1272,26 @@
       gap: 48px;
       margin-bottom: 48px;
     }
-    .footer-brand-name { font-family: var(--serif); font-size: 20px; letter-spacing: 0.12em; color: var(--gold); margin-bottom: 10px; }
+    .footer-brand-name {
+      font-family: var(--serif); font-size: 20px; letter-spacing: 0.12em; color: var(--gold);
+      margin-bottom: 10px; cursor: default; display: inline-block;
+      transition: text-shadow 0.4s ease, letter-spacing 0.4s ease;
+      background: linear-gradient(90deg, #c9934a 0%, #e8b87a 40%, #f5dba0 55%, #e8b87a 65%, #c9934a 100%);
+      background-size: 300% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .footer-brand-name:hover {
+      letter-spacing: 0.18em;
+      text-shadow: none;
+      animation: brandShimmer 1.6s ease forwards;
+      filter: drop-shadow(0 0 8px rgba(201,147,74,0.4));
+    }
+    @keyframes brandShimmer {
+      0%   { background-position: 100% center; }
+      100% { background-position: 0% center; }
+    }
     .footer-brand-desc { font-size: 13px; line-height: 1.7; color: var(--muted); }
     .footer-socials { display: flex; gap: 14px; margin-top: 24px; }
     .footer-social {
@@ -934,21 +1302,30 @@
       transition: border-color 0.2s, color 0.2s, background 0.2s;
     }
     .footer-social:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,147,74,0.08); }
-    .footer-col-title { font-family: var(--serif); font-size: 15px; letter-spacing: 0.06em; color: var(--cream); margin-bottom: 18px; }
+    .footer-col-title {
+      font-family: var(--serif); font-size: 15px; letter-spacing: 0.06em; color: var(--cream);
+      margin-bottom: 18px; cursor: default; display: inline-block;
+      transition: color 0.35s, letter-spacing 0.35s, text-shadow 0.35s;
+    }
+    .footer-col-title:hover {
+      color: var(--gold2);
+      letter-spacing: 0.1em;
+      text-shadow: 0 0 14px rgba(201,147,74,0.2);
+    }
     .footer-col a, .footer-col p {
       display: block; font-size: 13px; color: var(--muted); text-decoration: none;
       margin-bottom: 10px; line-height: 1.5;
-      transition: color 0.2s;
+      transition: color 0.25s ease, padding-left 0.25s ease;
     }
-    .footer-col a:hover { color: var(--gold); }
+    .footer-col a:hover { color: var(--gold2); padding-left: 4px; }
     .footer-bottom {
       display: flex; align-items: center; justify-content: space-between;
       padding-top: 28px;
       border-top: 1px solid rgba(201,147,74,0.08);
       font-size: 12px; letter-spacing: 0.08em; color: rgba(237,224,204,0.3);
     }
-    .footer-bottom a { color: rgba(237,224,204,0.3); text-decoration: none; transition: color 0.2s; }
-    .footer-bottom a:hover { color: var(--gold); }
+    .footer-bottom a { color: rgba(237,224,204,0.3); text-decoration: none; transition: color 0.4s, letter-spacing 0.4s; }
+    .footer-bottom a:hover { color: var(--gold2); letter-spacing: 0.06em; }
 
     /* ─── BACK TO TOP ─── */
     .back-top {
@@ -964,6 +1341,10 @@
     }
     .back-top.show { opacity: 1; visibility: visible; }
     .back-top:hover { background: rgba(201,147,74,0.25); transform: translateY(-3px); }
+
+    .order-btns {
+      display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+    }
 
     /* ─── ANIMATIONS ─── */
     @keyframes fadeUp {
@@ -1109,7 +1490,7 @@
 <header class="site-hdr" id="siteHdr">
   <a href="https://milovicake.ru/" class="hdr-logo">
     Milovi Cake
-    <span class="hdr-logo-sub">Частный кондитер · СПб</span>
+    <span class="hdr-logo-sub"><span class="sub-w">Частный кондитер</span> <span class="sub-w">·</span> <span class="sub-w">СПб</span></span>
   </a>
   <div class="hdr-right">
     <a href="https://milovicake.ru/" class="hdr-back">← На главную</a>
@@ -1136,14 +1517,14 @@
 
   <!-- Content side -->
   <div class="hero-content">
-    <div class="hero-eyebrow">Milovi Cake · Санкт-Петербург</div>
+    <div class="hero-eyebrow"><span class="ht-word" style="transition:color 0.4s,letter-spacing 0.4s,text-shadow 0.4s;cursor:default;" onmouseenter="this.style.color='#e8b87a';this.style.letterSpacing='0.38em';this.style.textShadow='0 0 14px rgba(201,147,74,0.2)'" onmouseleave="this.style.color='';this.style.letterSpacing='';this.style.textShadow=''">Milovi Cake</span> · <span class="ht-word" style="transition:color 0.4s,letter-spacing 0.4s,text-shadow 0.4s;cursor:default;" onmouseenter="this.style.color='#e8b87a';this.style.letterSpacing='0.38em';this.style.textShadow='0 0 14px rgba(201,147,74,0.2)'" onmouseleave="this.style.color='';this.style.letterSpacing='';this.style.textShadow=''">Санкт-Петербург</span></div>
     <h1 class="hero-title">
-      Меренговый<br>
-      <em>рулет</em><br>
-      на заказ
+      <span class="ht-word">Меренговый</span><br>
+      <em class="ht-em">рулет</em><br>
+      <span class="ht-word">на заказ</span>
     </h1>
     <div class="hero-divider"></div>
-    <p class="hero-desc">
+    <p class="hero-desc wave-text" id="heroDesc">
       Воздушная меренга, нежный крем чиз и свежая малина — тает во рту, как облако. Ручная работа, безглютеновый рецепт, доставка по всему СПб и Ленобласти.
     </p>
 
@@ -1207,11 +1588,11 @@
 <!-- SPLIT: COMPOSITION -->
 <div class="split">
   <div class="split-text">
-    <span class="sec-label reveal">Состав</span>
+    <span class="sec-label reveal" style="display:inline-block;transition:color 0.4s,letter-spacing 0.4s,text-shadow 0.4s;cursor:default;" onmouseenter="this.style.color='#e8b87a';this.style.letterSpacing='0.4em';this.style.textShadow='0 0 16px rgba(201,147,74,0.2)'" onmouseleave="this.style.color='';this.style.letterSpacing='';this.style.textShadow=''">Состав</span>
     <h2 class="sec-title reveal rd1">
-      Малина<br>и <em>крем чиз</em>
+      <span class="ht-word">Малина</span><br>и <em class="ht-em">крем чиз</em>
     </h2>
-    <p class="sec-body reveal rd2">
+    <p class="sec-body wave-text reveal rd2">
       Каждый рулет — это нежная, почти невесомая меренга, тающая во рту, с лёгким сливочным кремом чиз и свежей малиной. Никакой лишней сладости — только чистый, воздушный вкус.
     </p>
     <div class="ingredients reveal rd3">
@@ -1257,7 +1638,7 @@
   <div class="style-band-fade-b"></div>
   <div class="style-band-content">
     <div class="style-band-line"></div>
-    <div class="style-band-quote" style="text-shadow:0 2px 20px rgba(0,0,0,0.8),0 4px 60px rgba(0,0,0,0.6);">Нежный, <em>воздушный,</em><br>тает во рту</div>
+    <div class="style-band-quote" style="text-shadow:0 2px 20px rgba(0,0,0,0.8),0 4px 60px rgba(0,0,0,0.6);"><span class="ht-word">Нежный,</span> <em class="ht-em">воздушный,</em><br><span class="ht-word">тает во рту</span></div>
     <div class="style-band-line" style="margin-top:24px;margin-bottom:0;"></div>
   </div>
 </div>
@@ -1271,11 +1652,11 @@
   <div class="split-text split-text--light" style="position:relative;overflow:hidden;">
     <img class="roll-float" src="../img/meringue_rolls_cut.webp" alt="" aria-hidden="true" />
     <img class="box-float" src="../img/meringue_box_nobg.webp" alt="" aria-hidden="true" />
-    <span class="sec-label reveal">Детали заказа</span>
+    <span class="sec-label reveal" style="display:inline-block;transition:color 0.4s,letter-spacing 0.4s,text-shadow 0.4s;cursor:default;" onmouseenter="this.style.color='#e8b87a';this.style.letterSpacing='0.4em';this.style.textShadow='0 0 16px rgba(201,147,74,0.2)'" onmouseleave="this.style.color='';this.style.letterSpacing='';this.style.textShadow=''">Детали заказа</span>
     <h2 class="sec-title reveal rd1">
-      Вес<br>и <em>стоимость</em>
+      <span class="ht-word ht-word-wide">Вес</span><br>и <em class="ht-em">стоимость</em>
     </h2>
-    <p class="sec-body reveal rd2">
+    <p class="sec-body wave-text reveal rd2">
       Один рулет весит 1 100 г — этого хватит на 6–8 порций. Идеален для семейного чаепития, дня рождения или в качестве подарка.
     </p>
     <div class="ingredients reveal rd3">
@@ -1306,16 +1687,16 @@
 <!-- FEATURES -->
 <section class="features-section">
   <div class="features-header">
-    <h2 class="sec-title reveal rd1" style="text-align:center;">Почему выбирают <em>Milovi Cake</em></h2>
+    <h2 class="sec-title reveal rd1" style="text-align:center;"><span class="ht-word">Почему выбирают</span> <span class="brand-premium">Milovi Cake</span></h2>
   </div>
-  <div class="features-grid">
-    <!-- Ручная работа — пульсирующее сердце -->
+  <div class="features-grid-wrap"><div class="features-grid">
+    <!-- Ручная работа — тортик -->
     <div class="feature-card card-heart reveal">
-      <div class="feature-icon">
-        <svg class="heart-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      <div class="feature-icon" style="overflow:hidden;">
+        <img src="../img/icon-loading.webp" alt="" width="30" height="30" style="width:30px;height:30px;object-fit:cover;border-radius:50%;opacity:0.85;transition:opacity 0.3s,transform 0.3s;" class="heart-svg"/>
       </div>
       <div class="feature-title">Ручная работа</div>
-      <div class="feature-text">Каждый рулет создаётся вручную — никакого конвейера и полуфабрикатов</div>
+      <div class="feature-text wave-text">Каждый рулет создаётся вручную — никакого конвейера и полуфабрикатов</div>
     </div>
     <!-- Фирменная упаковка — открывается крышка -->
     <div class="feature-card card-box reveal rd1">
@@ -1327,7 +1708,7 @@
         </svg>
       </div>
       <div class="feature-title">Фирменная упаковка</div>
-      <div class="feature-text">Рулет приедет в красивой коробке — готовый подарок, ничего не нужно дополнительно оформлять</div>
+      <div class="feature-text wave-text">Рулет приедет в красивой коробке — готовый подарок, ничего не нужно дополнительно оформлять</div>
     </div>
     <!-- Тот самый вкус — разлетаются сердечки -->
     <div class="feature-card card-taste reveal rd2">
@@ -1337,10 +1718,10 @@
       <span class="heart-particle">♥</span>
       <span class="heart-particle">♥</span>
       <div class="feature-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        <svg class="heart-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9934a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
       </div>
       <div class="feature-title">Тот самый вкус</div>
-      <div class="feature-text">Такую нежную меренгу с малиной сложно найти даже в хорошем кафе</div>
+      <div class="feature-text wave-text">Такую нежную меренгу с малиной сложно найти даже в хорошем кафе</div>
     </div>
     <!-- Свежесть — тикают часы -->
     <div class="feature-card card-clock reveal rd3">
@@ -1354,9 +1735,9 @@
         </svg>
       </div>
       <div class="feature-title">Свежесть</div>
-      <div class="feature-text">Готовим в день доставки — всегда свежий десерт прямо к вашему столу</div>
+      <div class="feature-text wave-text">Готовим в день доставки — всегда свежий десерт прямо к вашему столу</div>
     </div>
-  </div>
+  </div></div>
 </section>
 
 <!-- STYLE BAND -->
@@ -1368,7 +1749,7 @@
   <div class="style-band-fade-b"></div>
   <div class="style-band-content">
     <div class="style-band-line"></div>
-    <div class="style-band-quote">Создано<br><em>с любовью</em></div>
+    <div class="style-band-quote"><span class="ht-word">Создано</span><br><em class="ht-em">с любовью</em></div>
     <div class="style-band-sub">5 лет опыта · 300+ довольных клиентов</div>
   </div>
 </div>
@@ -1376,9 +1757,9 @@
 <!-- REVIEWS -->
 <section class="reviews-section">
   <div class="reviews-header">
-    <span class="sec-label reveal" style="text-align:center;display:block;">Отзывы</span>
-    <h2 class="sec-title reveal rd1" style="text-align:center;">Читайте отзывы<br><em>на картах</em></h2>
-    <p class="sec-body reveal rd2" style="text-align:center;max-width:420px;margin:16px auto 0;">
+    <span class="sec-label reveal" style="text-align:center;display:inline-block;transition:color 0.4s,letter-spacing 0.4s,text-shadow 0.4s;cursor:default;" onmouseenter="this.style.color='#e8b87a';this.style.letterSpacing='0.4em';this.style.textShadow='0 0 16px rgba(201,147,74,0.2)'" onmouseleave="this.style.color='';this.style.letterSpacing='';this.style.textShadow=''">Отзывы</span>
+    <h2 class="sec-title reveal rd1" style="text-align:center;"><span class="ht-word">Читайте отзывы</span><br><em class="ht-em">на картах</em></h2>
+    <p class="sec-body wave-text reveal rd2" style="text-align:center;max-width:420px;margin:16px auto 0;">
       Все отзывы о наших десертах — на Яндекс Картах и Google Maps.
     </p>
   </div>
@@ -1400,16 +1781,16 @@
 <section class="order-section" id="order">
   <div class="order-inner">
     <div class="order-divider reveal"></div>
-    <span class="sec-label reveal" style="text-align:center;display:block;">Оформить заказ</span>
-    <h2 class="sec-title reveal rd1" style="text-align:center;">Готовы <em>заказать?</em></h2>
-    <p class="sec-body reveal rd2" style="text-align:center;max-width:440px;margin:0 auto 0;">
+    <span class="sec-label reveal" style="text-align:center;display:inline-block;transition:color 0.4s,letter-spacing 0.4s,text-shadow 0.4s;cursor:default;" onmouseenter="this.style.color='#e8b87a';this.style.letterSpacing='0.4em';this.style.textShadow='0 0 16px rgba(201,147,74,0.2)'" onmouseleave="this.style.color='';this.style.letterSpacing='';this.style.textShadow=''">Оформить заказ</span>
+    <h2 class="sec-title reveal rd1" style="text-align:center;"><span class="ht-word">Готовы</span> <em class="ht-em">заказать?</em></h2>
+    <p class="sec-body wave-text reveal rd2" style="text-align:center;max-width:440px;margin:0 auto 0;">
       Напишите нам удобным способом — ответим в течение 10 минут и согласуем дату и время доставки.
     </p>
 
     <div class="price-card reveal rd2">
       <div class="price-card-label">Меренговый рулет · 1 100 г</div>
       <div class="price-card-num"><span class="price-card-rub">₽</span>2 500</div>
-      <div class="price-card-note">Малина · Крем чиз · Фисташки</div>
+      <div class="price-card-note"><span class="pc-ingredient">Малина</span> · <span class="pc-ingredient">Крем чиз</span> · <span class="pc-ingredient">Фисташки</span></div>
       <div class="price-card-tags">
         <span class="pct">Безглютеновый</span>
         <span class="pct">6–8 порций</span>
@@ -1436,7 +1817,7 @@
         +7 911 903 88 86
       </a>
     </div>
-    <p style="margin-top:20px;font-size:12px;color:var(--muted);text-align:center;" class="reveal">
+    <p style="margin-top:20px;font-size:12px;color:var(--muted);text-align:center;" class="wave-text reveal">
       Принимаем заказы за 1–2 дня · Ежедневно 10:00–20:00
     </p>
   </div>
@@ -1446,8 +1827,7 @@
 <section class="delivery-section">
   <div class="delivery-bg"></div>
   <div class="delivery-inner">
-    <span class="sec-label reveal" style="text-align:center;display:block;">Доставка и самовывоз</span>
-    <h2 class="sec-title reveal rd1" style="text-align:center;">Самовывоз<br>и <em>доставка</em></h2>
+    <h2 class="sec-title reveal rd1" style="text-align:center;"><span class="ht-word">Самовывоз</span><br>и <em class="ht-em">доставка</em></h2>
     <div class="delivery-grid">
       <div class="dc reveal">
         <div class="dc-icon">
@@ -1456,7 +1836,7 @@
           </svg>
         </div>
         <div class="dc-title">Яндекс Курьер</div>
-        <div class="dc-text">Можем оформить доставку через Яндекс Курьер — быстро и удобно. Стоимость зависит от адреса</div>
+        <div class="dc-text wave-text">Можем оформить доставку через Яндекс Курьер — быстро и удобно. Стоимость зависит от адреса</div>
       </div>
       <div class="dc reveal rd1">
         <div class="dc-icon">
@@ -1465,7 +1845,7 @@
           </svg>
         </div>
         <div class="dc-title">Наша доставка</div>
-        <div class="dc-text">При необходимости доставим сами — по СПб и ближайшим пригородам. Стоимость обсуждается индивидуально</div>
+        <div class="dc-text wave-text">При необходимости доставим сами — по СПб и ближайшим пригородам. Стоимость обсуждается индивидуально</div>
       </div>
       <div class="dc reveal rd2">
         <div class="dc-icon">
@@ -1474,7 +1854,7 @@
           </svg>
         </div>
         <div class="dc-title">Самовывоз</div>
-        <div class="dc-text">Пулковская ул., 19 — рядом с м. Звёздная. Удобное время согласуем при заказе</div>
+        <div class="dc-text wave-text">Пулковская ул., 19 — рядом с м. Звёздная. Удобное время согласуем при заказе</div>
       </div>
     </div>
   </div>
@@ -1483,11 +1863,13 @@
 <!-- CITIES -->
 <section class="cities-section">
   <div class="cities-header">
-    <span class="sec-label reveal" style="text-align:center;display:block;">Пригороды Санкт-Петербурга</span>
-    <h2 class="sec-title reveal rd1" style="text-align:center;">Доставляем <em>везде</em></h2>
+    <span class="sec-label reveal" style="text-align:center;display:inline-block;transition:color 0.4s,letter-spacing 0.4s,text-shadow 0.4s;cursor:default;" onmouseenter="this.style.color='#e8b87a';this.style.letterSpacing='0.4em';this.style.textShadow='0 0 16px rgba(201,147,74,0.2)'" onmouseleave="this.style.color='';this.style.letterSpacing='';this.style.textShadow=''">Принимаем заказы</span>
+    <h2 class="sec-title reveal rd1" style="text-align:center;"><span class="ht-word">Заказать можно</span> <em class="ht-em">отсюда</em></h2>
+    <p class="sec-body wave-text reveal rd2" style="text-align:center;max-width:480px;margin:16px auto 0;">Привезём сами или организуем доставку — обсудим удобный способ при оформлении заказа.</p>
   </div>
   <div class="cities-grid">
-    <div class="city-item reveal"><div class="city-name">Пушкин</div><div class="city-dist">~28 км</div></div>
+    <div class="city-item reveal"><div class="city-name">Санкт-Петербург</div><div class="city-dist">весь город</div></div>
+    <div class="city-item reveal rd1"><div class="city-name">Пушкин</div><div class="city-dist">~28 км</div></div>
     <div class="city-item reveal rd1"><div class="city-name">Петергоф</div><div class="city-dist">~30 км</div></div>
     <div class="city-item reveal rd2"><div class="city-name">Гатчина</div><div class="city-dist">~45 км</div></div>
     <div class="city-item reveal rd3"><div class="city-name">Мурино</div><div class="city-dist">~10 км</div></div>
@@ -1509,7 +1891,7 @@
   <div class="footer-inner">
     <div>
       <div class="footer-brand-name">Milovi Cake</div>
-      <p class="footer-brand-desc">Авторские торты и десерты ручной работы в Санкт-Петербурге. Доставка по СПб и Ленобласти</p>
+      <p class="footer-brand-desc wave-text">Авторские торты и десерты ручной работы в Санкт-Петербурге. Доставка по СПб и Ленобласти</p>
       <div class="footer-socials">
         <a href="https://wa.me/79119038886" target="_blank" rel="noopener noreferrer" class="footer-social" aria-label="WhatsApp">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
@@ -1547,7 +1929,7 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <span>© 2020–2026 Milovi Cake. Все права защищены.</span>
+    <span class="wave-text wave-gold">© 2020–2026 Milovi Cake. Все права защищены.</span>
     <a href="https://milovicake.ru/">milovicake.ru</a>
   </div>
 </footer>
@@ -1590,11 +1972,56 @@
   }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
-  // Back to top
+  // Price card mouse parallax
+  const priceCard = document.querySelector('.price-card');
+  if (priceCard) {
+    const pcLabel = priceCard.querySelector('.price-card-label');
+    const pcNum   = priceCard.querySelector('.price-card-num');
+    const pcNote  = priceCard.querySelector('.price-card-note');
+    const pcTags  = priceCard.querySelector('.price-card-tags');
+
+    priceCard.addEventListener('mousemove', e => {
+      const r = priceCard.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width  - 0.5; // -0.5 .. 0.5
+      const y = (e.clientY - r.top)  / r.height - 0.5;
+      if (pcLabel) pcLabel.style.transform = `translate(${x * 6}px, ${y * 4}px)`;
+      if (pcNum)   pcNum.style.transform   = `scale(1.06) translate(${x * 10}px, ${y * 7}px)`;
+      if (pcNote)  pcNote.style.transform  = `scale(1.04) translate(${x * 5}px, ${y * 3}px)`;
+      if (pcTags)  pcTags.style.transform  = `scale(1.04) translate(${x * 3}px, ${y * 2}px)`;
+    });
+
+    priceCard.addEventListener('mouseleave', () => {
+      [pcLabel, pcNum, pcNote, pcTags].forEach(el => {
+        if (el) el.style.transform = '';
+      });
+    });
+  }
   const btn = document.getElementById('backTop');
   window.addEventListener('scroll', () => {
     btn.classList.toggle('show', window.scrollY > 400);
   }, { passive: true });
+
+  // Wave text — all .wave-text paragraphs
+  (function() {
+    document.querySelectorAll('.wave-text').forEach(function(el) {
+      var words = el.textContent.trim().split(/(\s+)/);
+      el.innerHTML = words.map(function(w) {
+        if (/^\s+$/.test(w)) return w;
+        return '<span class="w">' + w + '</span>';
+      }).join('');
+      var spans = el.querySelectorAll('.w');
+      spans.forEach(function(span, i) {
+        span.addEventListener('mouseenter', function() {
+          if (spans[i-1]) spans[i-1].classList.add('near');
+          if (spans[i+1]) spans[i+1].classList.add('near');
+        });
+        span.addEventListener('mouseleave', function() {
+          if (spans[i-1]) spans[i-1].classList.remove('near');
+          if (spans[i+1]) spans[i+1].classList.remove('near');
+        });
+      });
+    });
+  })();
 </script>
 
 <!-- PWA Service Worker -->
@@ -1616,6 +2043,24 @@
   ym(106945185,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/106945185" style="position:absolute;left:-9999px;" alt="" /></div></noscript>
+<!-- Gallery lightbox HTML -->
+<div class="lb-overlay" id="lbOverlay">
+  <div class="lb-backdrop" id="lbBg"></div>
+  <button class="lb-x" id="lbX" aria-label="Закрыть">✕</button>
+  <div class="lb-box" id="lbBox">
+    <img id="lbImg" src="" alt="">
+  </div>
+  <div class="lb-arrows" id="lbArrows">
+    <button class="lb-arr-btn" id="lbPrev" aria-label="Назад">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <span class="lb-arr-counter" id="lbArrCounter">1 / 5</span>
+    <button class="lb-arr-btn" id="lbNext" aria-label="Вперёд">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+</div>
+
 <!-- Gallery lightbox -->
 <script>
 (function() {
