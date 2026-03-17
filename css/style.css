@@ -1305,7 +1305,7 @@ h1, h2, h3, h4 { font-family: 'Cormorant Garamond', serif; font-weight: 500; }
 }
 .btn-primary {
   background: var(--gold);
-  color: var(--white);
+  color: #f0e6cc;
   border: none;
   padding: 16px 36px;
   border-radius: 50px;
@@ -1610,6 +1610,7 @@ section { padding: 100px 60px; }
 .social-link.yt     { background: #FF000018; color: #cc0000; border: 1px solid #FF000025; }
 .social-link.ya     { background: #FC3F1D18; color: #cc2200; border: 1px solid #FC3F1D25; }
 .social-link.google { background: #4285F418; color: #2a6dd9; border: 1px solid #4285F425; }
+.social-link.max    { background: rgba(201,147,74,0.1); color: #a0692a; border: 1px solid rgba(201,147,74,0.28); }
 
 /* Form */
 .form-group { margin-bottom: 22px; position: relative; }
@@ -1622,17 +1623,14 @@ section { padding: 100px 60px; }
 .form-note a { color: var(--gold); }
 
 /* Floating label */
-.form-group.float-label label { position: absolute; top: 15px; left: 18px; font-size: 14px; color: var(--text-muted); pointer-events: none; transition: top 0.22s ease, font-size 0.22s ease, color 0.22s ease; background: var(--cream); padding: 0 4px; border-radius: 3px; z-index: 1; margin-bottom: 0; }
+.form-group.float-label label { position: absolute; top: 15px; left: 18px; font-size: 14px; color: var(--text-muted); pointer-events: none; transition: top 0.25s cubic-bezier(.16,1,.3,1), font-size 0.25s cubic-bezier(.16,1,.3,1), color 0.25s ease, opacity 0.25s ease, letter-spacing 0.25s ease; z-index: 1; margin-bottom: 0; }
 .form-group.float-label input:focus + label,
 .form-group.float-label input:not(:placeholder-shown) + label,
 .form-group.float-label textarea:focus + label,
-.form-group.float-label textarea:not(:placeholder-shown) + label { top: -9px; font-size: 12px; color: var(--gold); background: var(--white); letter-spacing: 0.03em; }
-.form-group.float-label input, .form-group.float-label textarea { padding-top: 16px; }
-.cart-form .form-group.float-label label { background: var(--white); }
-.cart-form .form-group.float-label input:not(:placeholder-shown) + label,
-.cart-form .form-group.float-label input:focus + label,
-.cart-form .form-group.float-label textarea:not(:placeholder-shown) + label,
-.cart-form .form-group.float-label textarea:focus + label { background: var(--white); }
+.form-group.float-label textarea:not(:placeholder-shown) + label { top: -20px; font-size: 11px; color: var(--gold); letter-spacing: 0.06em; opacity: 0.85; }
+.form-group.float-label input, .form-group.float-label textarea { padding-top: 16px; } .form-group.float-label { padding-top: 14px; }
+
+
 
 /* ── CART ── */
 .cart-inline-total {
@@ -5701,7 +5699,7 @@ h1, h2, h3, h4 { font-family: 'Cormorant Garamond', serif; font-weight: 500; }
 }
 .btn-primary {
   background: var(--gold);
-  color: var(--white);
+  color: #f0e6cc;
   border: none;
   padding: 16px 36px;
   border-radius: 50px;
@@ -6006,6 +6004,7 @@ section { padding: 100px 60px; }
 .social-link.yt     { background: #FF000018; color: #cc0000; border: 1px solid #FF000025; }
 .social-link.ya     { background: #FC3F1D18; color: #cc2200; border: 1px solid #FC3F1D25; }
 .social-link.google { background: #4285F418; color: #2a6dd9; border: 1px solid #4285F425; }
+.social-link.max    { background: rgba(201,147,74,0.1); color: #a0692a; border: 1px solid rgba(201,147,74,0.28); }
 
 /* Form */
 .form-group { margin-bottom: 22px; position: relative; }
@@ -6018,17 +6017,14 @@ section { padding: 100px 60px; }
 .form-note a { color: var(--gold); }
 
 /* Floating label */
-.form-group.float-label label { position: absolute; top: 15px; left: 18px; font-size: 14px; color: var(--text-muted); pointer-events: none; transition: top 0.22s ease, font-size 0.22s ease, color 0.22s ease; background: var(--cream); padding: 0 4px; border-radius: 3px; z-index: 1; margin-bottom: 0; }
+.form-group.float-label label { position: absolute; top: 15px; left: 18px; font-size: 14px; color: var(--text-muted); pointer-events: none; transition: top 0.25s cubic-bezier(.16,1,.3,1), font-size 0.25s cubic-bezier(.16,1,.3,1), color 0.25s ease, opacity 0.25s ease, letter-spacing 0.25s ease; z-index: 1; margin-bottom: 0; }
 .form-group.float-label input:focus + label,
 .form-group.float-label input:not(:placeholder-shown) + label,
 .form-group.float-label textarea:focus + label,
-.form-group.float-label textarea:not(:placeholder-shown) + label { top: -9px; font-size: 12px; color: var(--gold); background: var(--white); letter-spacing: 0.03em; }
-.form-group.float-label input, .form-group.float-label textarea { padding-top: 16px; }
-.cart-form .form-group.float-label label { background: var(--white); }
-.cart-form .form-group.float-label input:not(:placeholder-shown) + label,
-.cart-form .form-group.float-label input:focus + label,
-.cart-form .form-group.float-label textarea:not(:placeholder-shown) + label,
-.cart-form .form-group.float-label textarea:focus + label { background: var(--white); }
+.form-group.float-label textarea:not(:placeholder-shown) + label { top: -20px; font-size: 11px; color: var(--gold); letter-spacing: 0.06em; opacity: 0.85; }
+.form-group.float-label input, .form-group.float-label textarea { padding-top: 16px; } .form-group.float-label { padding-top: 14px; }
+
+
 
 /* ── CART ── */
 .cart-inline-total {
@@ -9025,23 +9021,21 @@ body.menu-open {
 /* ── footer-col-title hover ── */
 .footer-col-title {
   cursor: default;
-  transition: color 0.3s ease, letter-spacing 0.3s ease;
+  transition: color 0.4s ease;
 }
 .footer-col-title:hover {
   color: rgba(201,147,74,0.9);
-  letter-spacing: 0.14em;
 }
 
 /* ── footer-col links — enhanced hover ── */
 .footer-col nav a,
 .footer-col > a {
-  transition: color 0.3s ease, letter-spacing 0.3s ease, padding-left 0.3s ease;
+  transition: color 0.4s ease, opacity 0.4s ease;
 }
 .footer-col nav a:hover,
 .footer-col > a:hover {
   color: #e8b87a;
-  letter-spacing: 0.04em;
-  padding-left: 4px;
+  opacity: 0.9;
 }
 
 /* ── Disable heavy hover on mobile ── */
@@ -9353,14 +9347,14 @@ footer .wave-text .w.near {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  transition: transform 0.9s cubic-bezier(.16,1,.3,1), filter 0.6s ease, letter-spacing 1.1s cubic-bezier(.16,1,.3,1);
+  transition: transform 1.4s cubic-bezier(.07,1,.3,1), filter 1s ease, letter-spacing 1.8s cubic-bezier(.07,1,.3,1);
   cursor: default;
 }
 .hero-title-brand:hover {
-  transform: scale(1.03);
-  letter-spacing: 0.025em;
-  filter: drop-shadow(0 0 10px rgba(201,147,74,0.2));
-  animation: heroBrandShimmer 2.2s ease forwards;
+  transform: scale(1.02);
+  letter-spacing: 0.015em;
+  filter: drop-shadow(0 0 8px rgba(201,147,74,0.15));
+  animation: heroBrandShimmer 3s ease forwards;
 }
 @keyframes heroBrandShimmer {
   0%   { background-position: 100% center; }
@@ -9603,55 +9597,4 @@ footer .wave-text .w.near {
 
 /* Ring text animation handled by JS (main.js messenger animation block) */
 
-/* ── Desktop Tooltips ── */
-@media (hover: hover) and (pointer: fine) {
-  .btn-hero-messenger[data-tooltip] {
-    position: relative;
-  }
-
-  /* Tooltip bubble */
-  .btn-hero-messenger[data-tooltip]::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: calc(100% + 11px);
-    left: 50%;
-    transform: translateX(-50%) translateY(5px);
-    background: rgba(15, 9, 5, 0.93);
-    color: #f0d090;
-    font-size: 10px;
-    font-family: 'Jost', sans-serif;
-    font-weight: 400;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    padding: 5px 11px 4px;
-    border-radius: 7px;
-    border: 1px solid rgba(201, 147, 74, 0.4);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.35);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.18s ease, transform 0.18s ease;
-    z-index: 20;
-  }
-
-  /* Tooltip arrow */
-  .btn-hero-messenger[data-tooltip]::before {
-    content: '';
-    position: absolute;
-    bottom: calc(100% + 3px);
-    left: 50%;
-    transform: translateX(-50%) translateY(5px);
-    border: 5px solid transparent;
-    border-top: 6px solid rgba(201, 147, 74, 0.4);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.18s ease, transform 0.18s ease;
-    z-index: 20;
-  }
-
-  .btn-hero-messenger[data-tooltip]:hover::after,
-  .btn-hero-messenger[data-tooltip]:hover::before {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-}
+/* Tooltips removed — ring text animation handles labels */
