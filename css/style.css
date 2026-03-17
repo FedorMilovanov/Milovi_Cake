@@ -8845,3 +8845,427 @@ body.menu-open {
     min-height: 44px;
   }
 }
+
+/* ═══════════════════════════════════════════════════
+   UI UPGRADE — Interactive text styles (meringue-parity)
+   ═══════════════════════════════════════════════════ */
+
+/* ── Shimmer keyframe (shared) ── */
+@keyframes goldShimmer {
+  0%   { background-position: 100% center; }
+  100% { background-position: 0% center; }
+}
+
+/* ── header-logo hover: letter-spacing expansion + shimmer ── */
+.header-logo {
+  background: linear-gradient(90deg, #c9934a 0%, #e8b87a 38%, #f5dba0 52%, #e8b87a 65%, #c9934a 100%);
+  background-size: 300% auto;
+  -webkit-background-clip: text; background-clip: text;
+  transition: letter-spacing 0.5s ease, filter 0.5s ease, -webkit-text-fill-color 0.3s;
+}
+.header-logo:hover {
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.24em;
+  filter: drop-shadow(0 0 10px rgba(201,147,74,0.3));
+  animation: goldShimmer 1.8s ease forwards;
+}
+
+/* ── section-title: word hover ── */
+.section-title .ht-word {
+  display: inline-block;
+  transition: color 0.35s ease, text-shadow 0.35s ease, letter-spacing 0.35s ease;
+  cursor: default;
+}
+.section-title .ht-word:hover {
+  color: var(--brown);
+  text-shadow: 0 0 28px rgba(201,147,74,0.18);
+  letter-spacing: 0.01em;
+}
+.section-title .ht-em {
+  font-style: italic;
+  color: var(--gold);
+  font-weight: 400;
+  display: inline-block;
+  cursor: default;
+  transition: color 0.4s ease, text-shadow 0.4s ease;
+}
+.section-title .ht-em:hover {
+  color: #e8b87a;
+  text-shadow: 0 0 16px rgba(201,147,74,0.25);
+}
+
+/* ── section-sub hover ── */
+.section-sub {
+  transition: color 0.3s ease;
+  cursor: default;
+}
+.section-sub:hover {
+  color: var(--text-muted);
+}
+
+/* ── hero-subtitle hover ── */
+.hero-subtitle {
+  transition: color 0.4s ease;
+  cursor: default;
+}
+.hero-subtitle:hover {
+  color: rgba(255,235,185,0.9);
+}
+
+/* ── hero-title words ── */
+.hero-title .ht-word {
+  display: inline-block;
+  cursor: default;
+  transition: color 0.35s ease, text-shadow 0.35s ease;
+}
+.hero-title .ht-word:hover {
+  color: rgba(255,245,220,1);
+  text-shadow: 0 0 30px rgba(245,225,175,0.2);
+}
+
+/* ── product card h3 (name) hover ── */
+.product-card h3 {
+  transition: color 0.3s ease, letter-spacing 0.3s ease;
+  cursor: default;
+}
+.product-card:hover h3 {
+  color: var(--gold);
+  letter-spacing: 0.01em;
+}
+
+/* ── price shimmer on hover ── */
+.price {
+  display: inline-block;
+  background: linear-gradient(90deg, #c9934a 0%, #e8b87a 38%, #f5dba0 52%, #e8b87a 65%, #c9934a 100%);
+  background-size: 300% auto;
+  -webkit-background-clip: text; background-clip: text;
+  transition: filter 0.3s ease, transform 0.3s cubic-bezier(.16,1,.3,1);
+}
+.price:hover {
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 6px rgba(201,147,74,0.2));
+  transform: scale(1.04);
+  animation: goldShimmer 1.4s ease forwards;
+}
+
+/* ── stat-num shimmer on hover ── */
+.stat-num {
+  cursor: default;
+  transition: filter 0.4s ease, transform 0.4s cubic-bezier(.16,1,.3,1);
+}
+.stat-num:hover {
+  filter: drop-shadow(0 0 12px rgba(201,147,74,0.4));
+  transform: scale(1.06);
+  animation: goldShimmer 1.4s ease forwards;
+}
+.stat-label {
+  cursor: default;
+  transition: color 0.3s ease, letter-spacing 0.3s ease;
+}
+.stat-item:hover .stat-label {
+  color: rgba(255,235,185,0.8);
+  letter-spacing: 0.08em;
+}
+
+/* ── feature h4 hover ── */
+.feature h4 {
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+  cursor: default;
+}
+.feature:hover h4 {
+  color: var(--gold);
+  text-shadow: 0 0 16px rgba(201,147,74,0.15);
+}
+
+/* ── about-compact-block h3 hover ── */
+.about-compact-block h3 {
+  transition: color 0.3s ease, letter-spacing 0.3s ease;
+  cursor: default;
+}
+.about-compact-block:hover h3 {
+  color: var(--gold, #c9934a);
+  letter-spacing: 0.02em;
+}
+
+/* ── geo-tag hover ── */
+.geo-tag {
+  transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.3s cubic-bezier(.16,1,.3,1);
+}
+.geo-tag:hover {
+  background: rgba(201,147,74,0.14);
+  border-color: rgba(201,147,74,0.45);
+  color: var(--gold, #c9934a);
+  transform: translateY(-2px);
+}
+
+/* ── footer-brand hover ── */
+.footer-brand {
+  display: inline-block;
+  background: linear-gradient(90deg, #c9934a 0%, #e8b87a 38%, #f5dba0 52%, #e8b87a 65%, #c9934a 100%);
+  background-size: 300% auto;
+  -webkit-background-clip: text; background-clip: text;
+  cursor: default;
+  transition: letter-spacing 0.5s ease, filter 0.5s ease;
+}
+.footer-brand:hover {
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.22em;
+  filter: drop-shadow(0 0 8px rgba(201,147,74,0.35));
+  animation: goldShimmer 1.6s ease forwards;
+}
+
+/* ── footer-col-title hover ── */
+.footer-col-title {
+  cursor: default;
+  transition: color 0.3s ease, letter-spacing 0.3s ease;
+}
+.footer-col-title:hover {
+  color: rgba(201,147,74,0.9);
+  letter-spacing: 0.14em;
+}
+
+/* ── footer-col links — enhanced hover ── */
+.footer-col nav a,
+.footer-col > a {
+  transition: color 0.3s ease, letter-spacing 0.3s ease, padding-left 0.3s ease;
+}
+.footer-col nav a:hover,
+.footer-col > a:hover {
+  color: #e8b87a;
+  letter-spacing: 0.04em;
+  padding-left: 4px;
+}
+
+/* ── Disable heavy hover on mobile ── */
+@media (max-width: 768px) {
+  .price:hover,
+  .stat-num:hover { transform: none; animation: none; -webkit-text-fill-color: inherit; }
+  .geo-tag:hover { transform: none; }
+  .header-logo:hover { letter-spacing: 0.18em; animation: none; -webkit-text-fill-color: inherit; }
+}
+
+/* ── Wave-text word hover (main page — light theme) ── */
+.wave-text .w {
+  display: inline-block;
+  transition: color 0.3s ease, transform 0.3s cubic-bezier(.16,1,.3,1), text-shadow 0.3s ease;
+  cursor: default;
+  will-change: transform;
+}
+.wave-text .w:hover {
+  color: var(--brown, #3d2b1f);
+  text-shadow: 0 0 12px rgba(201,147,74,0.15);
+  transform: translateY(-2px);
+}
+.wave-text .w.near {
+  color: rgba(61,43,31,0.75);
+  transform: translateY(-1px);
+}
+/* Dark bg context (stats, contacts, footer sections) */
+.stats-section .wave-text .w:hover,
+.contact-section .wave-text .w:hover,
+footer .wave-text .w:hover {
+  color: rgba(255,235,185,0.9);
+  text-shadow: 0 0 12px rgba(201,147,74,0.18);
+}
+.stats-section .wave-text .w.near,
+.contact-section .wave-text .w.near,
+footer .wave-text .w.near {
+  color: rgba(255,235,185,0.65);
+}
+
+
+/* ══════════════════════════════════════════
+   UI UPGRADE — Meringue-style hover effects
+   ══════════════════════════════════════════ */
+
+/* ── Header logo hover: letter-spacing + shimmer ── */
+.header-logo {
+  transition: letter-spacing 0.5s ease, filter 0.5s ease, color 0.3s;
+  background: linear-gradient(90deg, #c9934a 0%, #e8b87a 38%, #f5dba0 52%, #e8b87a 65%, #c9934a 100%);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+.header-logo:hover {
+  letter-spacing: 0.26em;
+  -webkit-text-fill-color: transparent;
+  animation: mainLogoShimmer 1.6s ease forwards;
+  filter: drop-shadow(0 0 10px rgba(201,147,74,0.25));
+}
+.site-header.scrolled .header-logo:hover { -webkit-text-fill-color: transparent; }
+@keyframes mainLogoShimmer {
+  0%   { background-position: 100% center; }
+  100% { background-position: 0% center; }
+}
+.header-logo-sub { transition: color 0.3s, letter-spacing 0.4s; }
+.header-logo:hover .header-logo-sub { letter-spacing: 0.2em; color: rgba(201,147,74,0.6); }
+
+/* ── Section titles: word hover ── */
+.section-title .ht-w {
+  display: inline-block;
+  cursor: default;
+  transition: color 0.35s ease, transform 0.35s cubic-bezier(.16,1,.3,1), text-shadow 0.35s ease, letter-spacing 0.35s ease;
+}
+.section-title .ht-w:hover {
+  color: var(--brown);
+  text-shadow: 0 0 24px rgba(61,43,31,0.12);
+  transform: translateY(-2px);
+  letter-spacing: 0.01em;
+}
+.section-title .ht-em-w {
+  display: inline-block;
+  cursor: default;
+  font-style: italic;
+  color: var(--gold);
+  transition: color 0.4s ease, text-shadow 0.4s ease, letter-spacing 0.35s ease;
+}
+.section-title .ht-em-w:hover {
+  color: #e8b87a;
+  text-shadow: 0 0 16px rgba(201,147,74,0.25);
+  letter-spacing: 0.02em;
+}
+
+/* ── Section sub: gentle hover ── */
+.section-sub {
+  transition: color 0.3s ease;
+  cursor: default;
+}
+.section-sub:hover { color: var(--text-muted); }
+
+/* ── Hero subtitle hover ── */
+.hero-subtitle {
+  transition: color 0.4s ease;
+  cursor: default;
+}
+.hero-subtitle:hover { color: rgba(255,235,185,0.9); }
+
+/* ── Product card h3: subtle golden hover ── */
+.product-card h3 {
+  transition: color 0.35s ease, letter-spacing 0.35s ease, text-shadow 0.35s ease;
+  cursor: default;
+}
+.product-card:hover h3 {
+  color: var(--gold, #c9934a);
+  letter-spacing: 0.01em;
+  text-shadow: 0 0 16px rgba(201,147,74,0.15);
+}
+
+/* ── Price shimmer on hover ── */
+.price {
+  background: linear-gradient(90deg, #c9934a 0%, #e8b87a 38%, #f5dba0 52%, #e8b87a 65%, #c9934a 100%);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  transition: filter 0.4s ease, transform 0.4s cubic-bezier(.16,1,.3,1);
+}
+.price:hover, .product-card:hover .price {
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 6px rgba(201,147,74,0.2));
+  transform: scale(1.04);
+  animation: mainPriceShimmer 1.4s ease forwards;
+}
+@keyframes mainPriceShimmer {
+  0%   { background-position: 100% center; }
+  100% { background-position: 0% center; }
+}
+
+/* ── Stat numbers: shimmer on hover ── */
+.stat-num {
+  cursor: default;
+  transition: filter 0.4s ease, transform 0.4s cubic-bezier(.16,1,.3,1);
+}
+.stat-item:hover .stat-num {
+  filter: drop-shadow(0 0 8px rgba(201,147,74,0.35));
+  transform: scale(1.06);
+  animation: mainPriceShimmer 1.4s ease forwards;
+}
+.stat-label {
+  transition: color 0.3s, letter-spacing 0.3s;
+  cursor: default;
+}
+.stat-item:hover .stat-label {
+  color: rgba(255,255,255,0.85);
+  letter-spacing: 0.08em;
+}
+
+/* ── Feature h4: hover color + lift ── */
+.feature h4 {
+  transition: color 0.35s ease, text-shadow 0.35s ease;
+  cursor: default;
+}
+.feature:hover h4 {
+  color: var(--gold, #c9934a);
+  text-shadow: 0 0 12px rgba(201,147,74,0.2);
+}
+.feature p {
+  transition: color 0.35s ease;
+}
+.feature:hover p { color: var(--text-muted); }
+
+/* ── About compact block h3 hover ── */
+.about-compact-block h3 {
+  transition: color 0.35s ease, letter-spacing 0.35s ease;
+  cursor: default;
+}
+.about-compact-block:hover h3 {
+  color: var(--gold, #c9934a);
+  letter-spacing: 0.01em;
+}
+.about-compact-block p {
+  transition: color 0.3s ease;
+}
+.about-compact-block:hover p { color: var(--text, #2c1a10); }
+
+/* ── Footer col title hover ── */
+.footer-col-title {
+  transition: color 0.3s, letter-spacing 0.3s;
+  cursor: default;
+}
+.footer-col-title:hover {
+  color: var(--gold, #c9934a);
+  letter-spacing: 0.14em;
+}
+
+/* ── City-item name hover ── */
+.city-item .city-name {
+  transition: color 0.3s, letter-spacing 0.3s;
+  cursor: default;
+}
+.city-item:hover .city-name {
+  color: var(--gold, #c9934a);
+  letter-spacing: 0.01em;
+}
+.city-item .city-dist {
+  transition: color 0.3s;
+}
+.city-item:hover .city-dist { color: rgba(201,147,74,0.6); }
+
+/* ── Delivery card title hover ── */
+.dc-title {
+  transition: color 0.35s, text-shadow 0.35s;
+  cursor: default;
+}
+.dc:hover .dc-title {
+  color: var(--gold, #c9934a);
+  text-shadow: 0 0 14px rgba(201,147,74,0.15);
+}
+
+/* ── Wave text for desc paragraphs ── */
+.section-sub .ww, .hero-subtitle .ww, .feature p .ww {
+  display: inline-block;
+  transition: color 0.3s ease, transform 0.3s cubic-bezier(.16,1,.3,1);
+  cursor: default;
+}
+.section-sub .ww:hover, .hero-subtitle .ww:hover { transform: translateY(-1px); }
+
+/* ── Disable heavy effects on mobile/reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .header-logo:hover,
+  .price:hover,
+  .product-card:hover .price,
+  .stat-item:hover .stat-num { animation: none; }
+}
+@media (max-width: 768px) {
+  .header-logo:hover { letter-spacing: 0.18em; }
+  .product-card:hover h3 { letter-spacing: 0; }
+}

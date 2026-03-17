@@ -2070,16 +2070,7 @@
   }
 </script>
 
-<!-- YANDEX METRIKA -->
-<script type="text/javascript">
-  (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-  m[i].l=1*new Date();
-  for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}
-  k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-  (window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
-  ym(106945185,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/106945185" style="position:absolute;left:-9999px;" alt="" /></div></noscript>
+<!-- Yandex Metrika loads after cookie consent (see main.js) -->
 <!-- Gallery lightbox HTML -->
 <div class="lb-overlay" id="lbOverlay" style="display:none">
   <div class="lb-backdrop" id="lbBg"></div>
@@ -2172,6 +2163,101 @@
       var dx = e.changedTouches[0].clientX - sx;
       if (Math.abs(dx) > 50) navGallery(dx < 0 ? 1 : -1);
     }, { passive: true });
+  }
+})();
+</script>
+
+
+<!-- COOKIE BANNER -->
+<div id="cookieBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:rgba(19,12,7,0.97);backdrop-filter:blur(12px);border-top:1px solid rgba(201,147,74,0.2);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'Jost',sans-serif;font-size:13px;color:rgba(237,224,204,0.75);transform:translateY(100%);transition:transform 0.4s cubic-bezier(.16,1,.3,1);">
+  <span>Мы используем файлы cookie для аналитики и улучшения сайта.&nbsp;
+    <a href="#" onclick="openCookiePrivacy(); return false;" style="color:#c9934a;text-decoration:underline;cursor:pointer;">Политика конфиденциальности</a>
+  </span>
+  <div style="display:flex;gap:10px;flex-shrink:0;">
+    <button onclick="declineCookie()" style="background:transparent;border:1px solid rgba(201,147,74,0.3);color:rgba(237,224,204,0.5);padding:7px 18px;border-radius:30px;cursor:pointer;font-size:12px;font-family:'Jost',sans-serif;letter-spacing:0.1em;transition:border-color 0.3s,color 0.3s;">Отказаться</button>
+    <button onclick="acceptCookie()" style="background:#c9934a;border:none;color:#0b0806;padding:7px 22px;border-radius:30px;cursor:pointer;font-size:12px;font-weight:600;font-family:'Jost',sans-serif;letter-spacing:0.1em;transition:background 0.3s;">Принять</button>
+  </div>
+</div>
+
+<!-- PRIVACY MODAL (meringue) -->
+<div id="cookiePrivacyOverlay" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(11,8,6,0.92);overflow-y:auto;" onclick="if(event.target===this)closeCookiePrivacy()">
+  <div style="max-width:600px;margin:60px auto;background:#1c1108;border:1px solid rgba(201,147,74,0.2);border-radius:16px;padding:48px 40px;color:rgba(237,224,204,0.8);font-family:'Jost',sans-serif;font-size:14px;line-height:1.7;position:relative;">
+    <button onclick="closeCookiePrivacy()" aria-label="Закрыть" style="position:absolute;top:20px;right:20px;background:transparent;border:none;color:rgba(237,224,204,0.4);font-size:22px;cursor:pointer;transition:color 0.3s;" onmouseover="this.style.color='#c9934a'" onmouseout="this.style.color='rgba(237,224,204,0.4)'">×</button>
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:26px;color:#e8b87a;margin-bottom:24px;">Политика конфиденциальности</h2>
+    <h3 style="font-size:14px;color:#c9934a;margin:20px 0 8px;">1. Общие положения</h3>
+    <p>Настоящая Политика конфиденциальности определяет порядок обработки и защиты персональных данных пользователей сайта milovicake.ru, осуществляемой частным кондитером Milovi Cake. Политика разработана в соответствии с требованиями ФЗ от 27.07.2006 № 152-ФЗ «О персональных данных».</p>
+    <h3 style="font-size:14px;color:#c9934a;margin:20px 0 8px;">2. Какие данные мы собираем</h3>
+    <p>При оформлении заказа через формы или мессенджеры: имя, номер телефона, адрес и дата доставки, комментарии к заказу.</p>
+    <h3 style="font-size:14px;color:#c9934a;margin:20px 0 8px;">3. Цели обработки</h3>
+    <p>Данные обрабатываются исключительно для оформления и выполнения заказа, связи с клиентом и уведомлений о доставке.</p>
+    <h3 style="font-size:14px;color:#c9934a;margin:20px 0 8px;">4. Хранение и защита</h3>
+    <p>Данные не передаются третьим лицам, за исключением случаев, предусмотренных законодательством РФ.</p>
+    <h3 style="font-size:14px;color:#c9934a;margin:20px 0 8px;">5. Cookies</h3>
+    <p>Сайт использует cookie для аналитики (Яндекс.Метрика) и улучшения работы сайта. Cookie не содержат персональных данных. Вы можете отказаться от cookie, нажав «Отказаться» в баннере.</p>
+    <h3 style="font-size:14px;color:#c9934a;margin:20px 0 8px;">6. Контакты</h3>
+    <p>Телефон: +7 911 903 88 86 · Telegram: @MiloviCake</p>
+    <button onclick="closeCookiePrivacy()" style="margin-top:24px;background:#c9934a;border:none;color:#0b0806;padding:10px 28px;border-radius:30px;cursor:pointer;font-size:13px;font-weight:600;font-family:'Jost',sans-serif;">Закрыть</button>
+  </div>
+</div>
+
+<script>
+(function() {
+  var COOKIE_KEY = 'cookieAccepted';
+  var COOKIE_DECLINE = 'cookieDeclined';
+
+  function showBanner() {
+    var b = document.getElementById('cookieBanner');
+    if (!b) return;
+    b.style.display = 'flex';
+    setTimeout(function() { b.style.transform = 'translateY(0)'; }, 100);
+  }
+
+  function hideBanner() {
+    var b = document.getElementById('cookieBanner');
+    if (!b) return;
+    b.style.transform = 'translateY(100%)';
+    b.addEventListener('transitionend', function() { b.style.display = 'none'; }, { once: true });
+  }
+
+  window.acceptCookie = function() {
+    localStorage.setItem(COOKIE_KEY, Date.now() + 365 * 24 * 60 * 60 * 1000);
+    localStorage.removeItem(COOKIE_DECLINE);
+    hideBanner();
+    loadMetrika();
+  };
+
+  window.declineCookie = function() {
+    localStorage.setItem(COOKIE_DECLINE, '1');
+    hideBanner();
+  };
+
+  window.openCookiePrivacy = function() {
+    var o = document.getElementById('cookiePrivacyOverlay');
+    if (o) { o.style.display = 'block'; document.documentElement.style.overflow = 'hidden'; }
+  };
+
+  window.closeCookiePrivacy = function() {
+    var o = document.getElementById('cookiePrivacyOverlay');
+    if (o) { o.style.display = 'none'; document.documentElement.style.overflow = ''; }
+  };
+
+  function loadMetrika() {
+    if (window._metrikaLoaded) return;
+    window._metrikaLoaded = true;
+    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+    m[i].l=1*new Date();
+    k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+    (window,document,'script','https://mc.yandex.ru/metrika/tag.js','ym');
+    ym(106945185,'init',{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
+  }
+
+  // Init
+  var stored = localStorage.getItem(COOKIE_KEY);
+  var declined = localStorage.getItem(COOKIE_DECLINE);
+  if (stored && Date.now() < parseInt(stored)) {
+    loadMetrika(); // already accepted
+  } else if (!declined) {
+    setTimeout(showBanner, 800);
   }
 })();
 </script>

@@ -2568,3 +2568,48 @@ document.addEventListener('visibilitychange', () => {
   window.switchReviewsTab = typeof switchReviewsTab !== "undefined" ? switchReviewsTab : undefined;
 
 })();
+
+/* ── Wave-text: word-by-word hover ripple ── */
+(function() {
+  document.querySelectorAll('.wave-text').forEach(function(el) {
+    var words = el.textContent.trim().split(/(\s+)/);
+    el.innerHTML = words.map(function(w) {
+      if (/^\s+$/.test(w)) return w;
+      return '<span class="w">' + w + '</span>';
+    }).join('');
+    var spans = el.querySelectorAll('.w');
+    spans.forEach(function(span, i) {
+      span.addEventListener('mouseenter', function() {
+        if (spans[i-1]) spans[i-1].classList.add('near');
+        if (spans[i+1]) spans[i+1].classList.add('near');
+      });
+      span.addEventListener('mouseleave', function() {
+        if (spans[i-1]) spans[i-1].classList.remove('near');
+        if (spans[i+1]) spans[i+1].classList.remove('near');
+      });
+    });
+  });
+})();
+
+/* ── Section title word hover (meringue-style) ── */
+(function() {
+  document.querySelectorAll('.section-title').forEach(function(el) {
+    // Skip if already processed
+    if (el.querySelector('.ht-w')) return;
+    // Process only direct text nodes and simple em/span children
+    var html = el.innerHTML;
+    // Wrap words in plain text nodes, preserve existing tags
+    el.innerHTML = html.replace(/(<[^>]+>)|([^<]+)/g, function(match, tag, text) {
+      if (tag) return tag;
+      if (!text || !text.trim()) return text;
+      return text.replace(/(\S+)/g, function(word) {
+        return '<span class="ht-w">' + word + '</span>';
+      });
+    });
+  });
+
+  // Section-sub gentle cursor
+  document.querySelectorAll('.section-sub').forEach(function(el) {
+    el.style.cursor = 'default';
+  });
+})();

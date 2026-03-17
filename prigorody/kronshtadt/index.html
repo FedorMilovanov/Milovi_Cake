@@ -957,7 +957,8 @@ setTimeout(_hideLoader, 5000);
   <span>Мы используем файлы cookie для улучшения работы сайта.&nbsp;
     <a href="#" role="button" onclick="openPrivacy(); return false;">Политика конфиденциальности</a>
   </span>
-  <button id="cookieAccept" onclick="acceptCookie()">Хорошо</button>
+  <button id="cookieDecline" onclick="declineCookie()">Отказаться</button>
+  <button id="cookieAccept" onclick="acceptCookie()">Принять</button>
 </div>
 
 <!-- ══════════ PRIVACY MODAL ══════════ -->
@@ -1058,22 +1059,7 @@ setTimeout(_hideLoader, 5000);
   </div>
 </footer>
 
-<!-- ══════════ YANDEX METRIKA (end of body — non-blocking) ══════════ -->
-<script type="text/javascript">
-  (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-  m[i].l=1*new Date();
-  for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-  k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-  (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-
-  ym(106945185, "init", {
-    clickmap: true,
-    trackLinks: true,
-    accurateTrackBounce: true,
-    webvisor: true
-  });
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/106945185" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- Yandex Metrika loads after cookie consent (see main.js) -->
 
 <!-- ══════════════════════════════════════════
      REVIEWS MODAL
@@ -1238,5 +1224,46 @@ setTimeout(_hideLoader, 5000);
   </div>
 </div>
 
+<script>
+/* ── Cookie: decline + deferred Metrika ── */
+(function() {
+  var COOKIE_KEY = 'cookieAccepted';
+  var COOKIE_DECLINE = 'cookieDeclined';
+
+  function _loadMetrika() {
+    if (window._metrikaLoaded) return;
+    window._metrikaLoaded = true;
+    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+    m[i].l=1*new Date();
+    k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+    (window,document,'script','https://mc.yandex.ru/metrika/tag.js','ym');
+    ym(106945185,'init',{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
+  }
+
+  // Override acceptCookie to also load Metrika
+  var _origAccept = window.acceptCookie;
+  window.acceptCookie = function() {
+    localStorage.removeItem(COOKIE_DECLINE);
+    if (_origAccept) _origAccept();
+    _loadMetrika();
+  };
+
+  // Add declineCookie
+  window.declineCookie = function() {
+    localStorage.setItem(COOKIE_DECLINE, '1');
+    var banner = document.getElementById('cookieBanner');
+    if (!banner) return;
+    banner.classList.remove('visible');
+    if (banner.style.transform !== undefined) banner.style.transform = 'translateY(100%)';
+    banner.addEventListener('transitionend', function() { banner.style.display = 'none'; }, { once: true });
+  };
+
+  // If previously accepted — load Metrika immediately
+  var stored = localStorage.getItem(COOKIE_KEY);
+  if (stored && Date.now() < parseInt(stored)) {
+    _loadMetrika();
+  }
+})();
+</script>
 </body>
 </html>
