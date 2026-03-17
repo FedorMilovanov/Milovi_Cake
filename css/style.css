@@ -1372,6 +1372,7 @@ section { padding: 100px 60px; }
 .section-title {
   text-align: center;
   font-size: clamp(42px, 5vw, 72px);
+  font-weight: 400;
   color: var(--gold);
   margin-bottom: 0;
   text-shadow: 2px 2px 4px rgba(90, 60, 40, 0.15);
@@ -5765,6 +5766,7 @@ section { padding: 100px 60px; }
 .section-title {
   text-align: center;
   font-size: clamp(42px, 5vw, 72px);
+  font-weight: 400;
   color: var(--gold);
   margin-bottom: 0;
   text-shadow: 2px 2px 4px rgba(90, 60, 40, 0.15);
