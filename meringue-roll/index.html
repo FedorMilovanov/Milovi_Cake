@@ -586,17 +586,17 @@
       top: 2%;
       left: 50%;
       transform: translateX(-50%);
-      opacity: 0.2;
+      opacity: 0.45;
       pointer-events: auto;
       z-index: 0;
       transition: opacity .6s ease, filter .6s ease, transform .6s ease;
-      filter: brightness(0.8) saturate(0.9);
+      filter: brightness(1.0) saturate(1.0);
       cursor: default;
       animation: rollShimmer 4.5s ease-in-out infinite;
     }
     @keyframes rollShimmer {
-      0%,100% { filter: brightness(0.8) saturate(0.9); opacity: 0.2; }
-      50%      { filter: brightness(1.0) saturate(1.1); opacity: 0.3; }
+      0%,100% { filter: brightness(1.0) saturate(1.0); opacity: 0.45; }
+      50%      { filter: brightness(1.15) saturate(1.1); opacity: 0.55; }
     }
     .roll-float:hover {
       opacity: 0.95;
@@ -609,9 +609,9 @@
     }
     .box-float {
       position: absolute;
-      width: 48%;
+      width: 52%;
       top: 72%;
-      left: 50%;
+      left: 44%;
       transform: translate(-50%, -50%);
       opacity: 0.35;
       pointer-events: auto;
