@@ -115,7 +115,7 @@
       --sans:    'Jost', system-ui, sans-serif;
     }
 
-    html { scroll-behavior: smooth; overflow-x: hidden; }
+    html { scroll-behavior: smooth; }
     body {
       background: var(--ink);
       color: var(--text);
@@ -333,10 +333,22 @@
       cursor: default;
       transition: color 0.4s ease, text-shadow 0.4s ease, letter-spacing 0.35s ease;
     }
+    .ht-em {
+      font-style: italic;
+      font-weight: 400;
+      display: inline-block;
+      cursor: default;
+      padding: 0.1em 0.15em;
+      background: linear-gradient(90deg, #c9934a 0%, #e8b87a 38%, #f5dba0 52%, #e8b87a 65%, #c9934a 100%);
+      background-size: 300% auto;
+      background-position: 80% center;
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      transition: text-shadow 0.4s ease, letter-spacing 0.35s ease;
+    }
     .ht-em:hover {
-      color: #f5dba0;
-      text-shadow: 0 0 20px rgba(201,147,74,0.3);
       letter-spacing: 0.02em;
+      animation: priceShimmer 1.4s ease forwards;
     }
     @keyframes htShimmer {
       0%   { background-position: 100% center; }
@@ -368,6 +380,7 @@
       background: linear-gradient(90deg, #c9934a 0%, #e8b87a 38%, #f5dba0 52%, #e8b87a 65%, #c9934a 100%);
       background-size: 300% auto;
       -webkit-background-clip: text; background-clip: text;
+      padding: 0.1em 0.15em;
       transition: filter 0.4s ease, transform 0.4s cubic-bezier(.16,1,.3,1);
     }
     .hero-price-num:hover {
@@ -586,9 +599,9 @@
       50%      { filter: brightness(1.0) saturate(1.1); opacity: 0.3; }
     }
     .roll-float:hover {
-      opacity: 0.85;
-      filter: brightness(1.1) saturate(1.2);
-      transform: translateX(-50%) translateY(-8px) scale(1.03);
+      opacity: 0.95;
+      filter: brightness(1.35) saturate(1.3) drop-shadow(0 0 18px rgba(201,147,74,0.18));
+      transform: translateX(-50%) translateY(-8px) scale(1.04);
       animation: none;
     }
     .split:hover .roll-float {
@@ -597,9 +610,9 @@
     .box-float {
       position: absolute;
       width: 48%;
-      bottom: 4%;
+      top: 72%;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translate(-50%, -50%);
       opacity: 0.35;
       pointer-events: auto;
       z-index: 1;
@@ -615,7 +628,7 @@
     .box-float:hover {
       opacity: 0.92;
       filter: brightness(1.15) saturate(1.2);
-      transform: translateX(-50%) translateY(-6px) scale(1.04);
+      transform: translate(-50%, -50%) translateY(-6px) scale(1.04);
       animation: none;
     }
     .split-text .sec-label,
@@ -733,14 +746,12 @@
         rgba(201,147,74,0.0)
       );
       background-size: 300% 300%;
-      animation: borderShimmer 10s ease-in-out infinite;
+      animation: borderShimmer 8s linear infinite;
     }
     @keyframes borderShimmer {
-      0%   { background-position: 0% 0%;     filter: brightness(0.85); }
-      25%  { background-position: 100% 0%;   filter: brightness(1.1); }
-      50%  { background-position: 100% 100%; filter: brightness(0.8); }
-      75%  { background-position: 0% 100%;   filter: brightness(1.05); }
-      100% { background-position: 0% 0%;     filter: brightness(0.85); }
+      0%   { background-position: 0% 0%;     filter: brightness(0.9); }
+      50%  { background-position: 100% 100%; filter: brightness(1.1); }
+      100% { background-position: 0% 0%;     filter: brightness(0.9); }
     }
     .features-grid {
       display: grid;
@@ -754,14 +765,16 @@
       background: var(--dark);
       padding: 48px 36px;
       text-align: center;
-      transition: background 0.3s, transform 0.4s cubic-bezier(.16,1,.3,1), box-shadow 0.4s;
+      border: 1px solid transparent;
+      transition: background 0.3s, transform 0.4s cubic-bezier(.16,1,.3,1), box-shadow 0.4s, border-color 0.3s;
       cursor: default;
       position: relative;
     }
     .feature-card:hover {
       background: var(--surface);
-      transform: translateY(-8px) scale(1.02);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,147,74,0.2);
+      transform: scale(1.03);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      border-color: rgba(201,147,74,0.35);
       z-index: 3;
     }
     .feature-icon {
@@ -770,6 +783,7 @@
       border: 1px solid rgba(201,147,74,0.2);
       display: flex; align-items: center; justify-content: center;
       background: rgba(201,147,74,0.05);
+      transform-origin: center center;
     }
     .feature-icon svg { stroke: var(--gold); }
     .feature-title {
@@ -795,11 +809,17 @@
     }
     @keyframes lidOpen {
       0%   { transform: rotateX(0deg); }
-      100% { transform: rotateX(-75deg); }
+      100% { transform: rotateX(-62deg); }
     }
 
-    .card-heart:hover .heart-svg { animation: heartbeat .7s ease infinite; }
-    .card-heart:hover img.heart-svg { animation: heartbeat .7s ease infinite; opacity: 1; transform: scale(1.08); }
+    .card-heart:hover .feature-icon {
+      transform: scale(2);
+      transform-origin: center center;
+      border-color: rgba(201,147,74,0.5);
+      box-shadow: 0 0 20px rgba(201,147,74,0.15);
+    }
+    .card-heart:hover .heart-svg { animation: none; }
+    .card-heart:hover img.heart-svg { animation: none; opacity: 1; transform: scale(1); }
     .card-taste:hover .heart-svg { animation: heartbeat .7s ease infinite; }
 
     @keyframes spinMin  { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -809,7 +829,7 @@
     .card-clock:hover .clock-min-g  { animation: spinMin  2s  linear infinite; }
     .card-clock:hover .clock-hour-g { animation: spinHour 12s linear infinite; }
 
-    .box-lid { transform-origin: center top; transform-style: preserve-3d; transform-box: fill-box; }
+    .box-lid { transform-origin: center top; transform-style: preserve-3d; transform-box: fill-box; backface-visibility: visible; -webkit-backface-visibility: visible; }
     .card-box:hover .box-lid { animation: lidOpen .4s cubic-bezier(.16,1,.3,1) forwards; }
     .feature-icon { perspective: 120px; }
 
@@ -960,11 +980,8 @@
     }
     .price-card:hover {
       border-color: rgba(201,147,74,0.45);
-      background: rgba(255,255,255,0.04);
-      box-shadow:
-        0 0 28px rgba(201,147,74,0.05),
-        0 0 55px rgba(201,147,74,0.025),
-        inset 0 0 40px rgba(201,147,74,0.025);
+      background: rgba(255,255,255,0.02);
+      box-shadow: none;
     }
     .price-card::before {
       content: '';
@@ -975,8 +992,8 @@
     }
     .price-card:hover::before {
       width: 85%;
-      opacity: 1;
-      filter: brightness(1.4);
+      opacity: 0.6;
+      filter: brightness(1.0);
     }
     .price-card::after {
       content: '';
@@ -985,7 +1002,7 @@
       transition: opacity 0.5s ease;
     }
     .price-card:hover::after {
-      opacity: 2;
+      opacity: 0.15;
     }
     .price-card-label {
       font-size: 10px; font-weight: 500; letter-spacing: 0.28em;
@@ -1183,7 +1200,7 @@
     .delivery-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 2px;
+      gap: 12px;
       margin-top: 56px;
     }
     .dc {
@@ -1273,17 +1290,18 @@
       margin-bottom: 48px;
     }
     .footer-brand-name {
-      font-family: var(--serif); font-size: 20px; letter-spacing: 0.12em; color: var(--gold);
-      margin-bottom: 10px; cursor: default; display: inline-block;
+      font-family: var(--serif); font-size: 20px; letter-spacing: 0.18em; color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 4px; cursor: default; display: inline-block;
       transition: text-shadow 0.4s ease, letter-spacing 0.4s ease;
-      background: linear-gradient(90deg, #c9934a 0%, #e8b87a 40%, #f5dba0 55%, #e8b87a 65%, #c9934a 100%);
+      background: linear-gradient(90deg, #a07030 0%, #c9934a 40%, #d9a45a 55%, #c9934a 65%, #a07030 100%);
       background-size: 300% auto;
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
     }
     .footer-brand-name:hover {
-      letter-spacing: 0.18em;
+      letter-spacing: 0.26em;
       text-shadow: none;
       animation: brandShimmer 1.6s ease forwards;
       filter: drop-shadow(0 0 8px rgba(201,147,74,0.4));
@@ -1393,7 +1411,7 @@
       /* ── PNG рулеты — мобильная версия ── */
       .split-right-rolls { min-height: 55vw; }
       .roll-float { width: 120%; left: -10%; bottom: -4%; }
-      .box-float { width: 48%; right: -2%; bottom: -2%; }
+      .box-float { width: 48%; left: 50%; top: 72%; transform: translate(-50%, -50%); right: auto; bottom: auto; }
 
       /* ── Секции — отступы ── */
       .features-section { padding: 60px 20px; }
@@ -1475,6 +1493,16 @@
         transition-duration: 0.01ms !important;
       }
     }
+    .lb-overlay { display: none; position: fixed; inset: 0; z-index: 9000; }
+    .lb-overlay.active { display: block; }
+    .lb-backdrop { position: absolute; inset: 0; background: rgba(11,8,6,0.96); cursor: pointer; }
+    .lb-x { position: absolute; top: 24px; right: 28px; z-index: 2; background: transparent; border: none; color: rgba(237,224,204,0.5); font-size: 22px; cursor: pointer; }
+    .lb-x:hover { color: #c9934a; }
+    .lb-box { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 80px 120px; pointer-events: none; }
+    .lb-box img { max-width: 100%; max-height: 100%; object-fit: contain; pointer-events: none; }
+    .lb-arrows { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 20px; z-index: 2; }
+    .lb-arr-btn { background: rgba(201,147,74,0.1); border: 1px solid rgba(201,147,74,0.2); color: #c9934a; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .lb-arr-counter { font-size: 12px; letter-spacing: 0.12em; color: rgba(237,224,204,0.5); }
   </style>
 </head>
 <body>
@@ -1692,10 +1720,10 @@
   <div class="features-grid-wrap"><div class="features-grid">
     <!-- Ручная работа — тортик -->
     <div class="feature-card card-heart reveal">
-      <div class="feature-icon" style="overflow:hidden;">
-        <img src="../img/icon-loading.webp" alt="" width="30" height="30" style="width:30px;height:30px;object-fit:cover;border-radius:50%;opacity:0.85;transition:opacity 0.3s,transform 0.3s;" class="heart-svg"/>
+      <div class="feature-icon" style="transition: transform 0.5s cubic-bezier(.16,1,.3,1), border-color 0.5s, box-shadow 0.5s;">
+        <img src="../img/icon-loading.webp" alt="" width="30" height="30" style="width:30px;height:30px;object-fit:cover;border-radius:50%;opacity:0.85;transition:opacity 0.5s,transform 0.5s cubic-bezier(.16,1,.3,1);" class="heart-svg"/>
       </div>
-      <div class="feature-title">Ручная работа</div>
+      <div class="feature-title"><span class="ht-word">Ручная работа</span></div>
       <div class="feature-text wave-text">Каждый рулет создаётся вручную — никакого конвейера и полуфабрикатов</div>
     </div>
     <!-- Фирменная упаковка — открывается крышка -->
@@ -1707,7 +1735,7 @@
           <line x1="12" y1="8" x2="12" y2="21"/>
         </svg>
       </div>
-      <div class="feature-title">Фирменная упаковка</div>
+      <div class="feature-title"><span class="ht-word">Фирменная упаковка</span></div>
       <div class="feature-text wave-text">Рулет приедет в красивой коробке — готовый подарок, ничего не нужно дополнительно оформлять</div>
     </div>
     <!-- Тот самый вкус — разлетаются сердечки -->
@@ -1720,7 +1748,7 @@
       <div class="feature-icon">
         <svg class="heart-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9934a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
       </div>
-      <div class="feature-title">Тот самый вкус</div>
+      <div class="feature-title"><span class="ht-word">Тот самый вкус</span></div>
       <div class="feature-text wave-text">Такую нежную меренгу с малиной сложно найти даже в хорошем кафе</div>
     </div>
     <!-- Свежесть — тикают часы -->
@@ -1734,7 +1762,7 @@
           </g>
         </svg>
       </div>
-      <div class="feature-title">Свежесть</div>
+      <div class="feature-title"><span class="ht-word">Свежесть</span></div>
       <div class="feature-text wave-text">Готовим в день доставки — всегда свежий десерт прямо к вашему столу</div>
     </div>
   </div></div>
@@ -2044,7 +2072,7 @@
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/106945185" style="position:absolute;left:-9999px;" alt="" /></div></noscript>
 <!-- Gallery lightbox HTML -->
-<div class="lb-overlay" id="lbOverlay">
+<div class="lb-overlay" id="lbOverlay" style="display:none">
   <div class="lb-backdrop" id="lbBg"></div>
   <button class="lb-x" id="lbX" aria-label="Закрыть">✕</button>
   <div class="lb-box" id="lbBox">
@@ -2086,13 +2114,14 @@
     if (counter) counter.textContent = (curIdx + 1) + ' / ' + GALLERY_SRCS.length;
     if (lbX) { lbX.style.opacity = '1'; lbX.style.transform = 'scale(1)'; lbX.style.pointerEvents = ''; }
     overlay.classList.add('active');
+    overlay.style.display = 'block';
     document.documentElement.style.overflow = 'hidden';
     window._galleryLbActive = true;
   }
 
   function closeGallery() {
     var overlay = document.getElementById('lbOverlay');
-    if (overlay) overlay.classList.remove('active');
+    if (overlay) { overlay.classList.remove('active'); overlay.style.display = 'none'; }
     document.documentElement.style.overflow = '';
     window._galleryLbActive = false;
   }
@@ -2121,7 +2150,7 @@
   var lbBg = document.getElementById('lbBg');
   var lbBox = document.getElementById('lbBox');
   var lbX2 = document.getElementById('lbX');
-  [lbBg, lbBox, lbX2].forEach(function(el) { if (el) el.addEventListener('click', function() { if (window._galleryLbActive) closeGallery(); }); });
+  [lbBg, lbX2].forEach(function(el) { if (el) el.addEventListener('click', function() { if (window._galleryLbActive) closeGallery(); }); });
   document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && window._galleryLbActive) closeGallery(); });
 
   // Swipe on mobile
