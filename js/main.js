@@ -2612,3 +2612,56 @@ document.addEventListener('visibilitychange', () => {
     el.style.cursor = 'default';
   });
 })();
+
+// ── Messenger button ring → flat-label animation ──
+(function() {
+  var items = [
+    { btnClass: 'btn-hero-wa',  ringId: 'ring-text-wa',  flatId: 'flat-text-wa'  },
+    { btnClass: 'btn-hero-tg',  ringId: 'ring-text-tg',  flatId: 'flat-text-tg'  },
+    { btnClass: 'btn-hero-max', ringId: 'ring-text-max', flatId: 'flat-text-max' }
+  ];
+
+  function easeOut(t)   { return 1 - Math.pow(1 - t, 3); }
+  function easeInOut(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2; }
+
+  function runAnim(state, toHover, dur) {
+    if (state.raf) { cancelAnimationFrame(state.raf); state.raf = null; }
+    var from = { ringOp: state.ringOp, ringY: state.ringY, flatOp: state.flatOp, flatY: state.flatY };
+    var to = toHover
+      ? { ringOp: 0, ringY: -18, flatOp: 1, flatY: -14 }
+      : { ringOp: 1, ringY: 0,   flatOp: 0, flatY: 8   };
+    var startTs = null;
+    function step(ts) {
+      if (!startTs) startTs = ts;
+      var p = Math.min((ts - startTs) / dur, 1);
+      var e = toHover ? easeOut(p) : easeInOut(p);
+      state.ringOp = from.ringOp + (to.ringOp - from.ringOp) * e;
+      state.ringY  = from.ringY  + (to.ringY  - from.ringY)  * e;
+      state.flatOp = from.flatOp + (to.flatOp - from.flatOp) * e;
+      state.flatY  = from.flatY  + (to.flatY  - from.flatY)  * e;
+      state.ringEl.setAttribute('opacity', state.ringOp);
+      state.ringEl.setAttribute('transform', 'translate(0,' + state.ringY + ')');
+      state.flatEl.setAttribute('opacity', state.flatOp);
+      state.flatEl.setAttribute('y', state.flatY);
+      if (p < 1) { state.raf = requestAnimationFrame(step); }
+      else { Object.assign(state, to); state.raf = null; }
+    }
+    state.raf = requestAnimationFrame(step);
+  }
+
+  function init() {
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    items.forEach(function(item) {
+      var btn    = document.querySelector('.' + item.btnClass);
+      var ringEl = document.getElementById(item.ringId);
+      var flatEl = document.getElementById(item.flatId);
+      if (!btn || !ringEl || !flatEl) return;
+      var state = { ringEl: ringEl, flatEl: flatEl, ringOp: 0.5, ringY: 0, flatOp: 0, flatY: 8, raf: null };
+      btn.addEventListener('mouseenter', function() { runAnim(state, true,  650); });
+      btn.addEventListener('mouseleave', function() { runAnim(state, false, 650); });
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
