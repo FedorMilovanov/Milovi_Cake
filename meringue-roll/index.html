@@ -589,17 +589,17 @@
       pointer-events: auto;
       z-index: 0;
       transition: opacity .6s ease, filter .6s ease, transform .6s ease;
-      filter: brightness(1.0) hue-rotate(5deg) saturate(1.2);
+      filter: brightness(1.0) hue-rotate(12deg) saturate(1.3);
       cursor: default;
       animation: rollShimmer 4.5s ease-in-out infinite;
     }
     @keyframes rollShimmer {
-      0%,100% { filter: brightness(1.0) hue-rotate(5deg) saturate(1.2); opacity: 0.6; }
-      50%      { filter: brightness(1.05) hue-rotate(5deg) saturate(1.2); opacity: 0.68; }
+      0%,100% { filter: brightness(1.0) hue-rotate(12deg) saturate(1.3); opacity: 0.6; }
+      50%      { filter: brightness(1.05) hue-rotate(12deg) saturate(1.3); opacity: 0.68; }
     }
     .roll-float:hover {
       opacity: 0.9;
-      filter: brightness(1.05) hue-rotate(5deg) saturate(1.3);
+      filter: brightness(1.05) hue-rotate(12deg) saturate(1.4);
       transform: translateX(-50%) translateY(-8px) scale(1.04);
       animation: none;
     }
@@ -1246,7 +1246,7 @@
     .cities-header { text-align: center; margin-bottom: 56px; }
     .cities-grid {
       display: grid;
-      grid-template-columns: repeat(7, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       border: 1px solid rgba(201,147,74,0.1);
       gap: 0;
     }
