@@ -2262,19 +2262,5 @@
 })();
 </script>
 
-<script>
-(function() {
-  document.addEventListener('click', function(e) {
-    var a = e.target.closest('a');
-    if (!a) return;
-    var href = a.getAttribute('href') || '';
-    var isMain = href === 'https://milovicake.ru/' || href === '/' || href === '../' || href === '../index.html';
-    if (isMain) {
-      try { sessionStorage.setItem('fromMeringue', '1'); } catch(err) {}
-    }
-  });
-})();
-</script>
-
 </body>
 </html>

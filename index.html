@@ -63,7 +63,7 @@
         "latitude": 59.8380,
         "longitude": 30.3230
       },
-      "openingHours": "Mo-Sa 10:00-22:00",
+      "openingHours": "Mo-Su 10:00-20:00",
       "priceRange": "₽₽",
       "aggregateRating": {
         "@type": "AggregateRating",
@@ -156,8 +156,8 @@
     body{font-family:'Jost',sans-serif;background:#f5f0e8;color:var(--text);overflow-x:hidden}
     .site-header{position:fixed;top:0;left:0;right:0;z-index:500;transform:translateZ(0);padding:0 60px;height:72px;display:flex;align-items:center;justify-content:space-between;background:transparent;transition:background .35s,box-shadow .35s}
     .hero{min-height:100vh;min-height:100svh;display:flex;align-items:center;padding:100px 60px 80px;position:relative;overflow:hidden}
-    .hero-photo-bg{position:absolute;inset:0;z-index:0;overflow:hidden;will-change:transform}
-    .hero-photo-bg img{width:106%;height:106%;object-fit:cover;object-position:68% center;display:block;margin:-3%}
+    .hero-photo-bg{position:absolute;inset:0;z-index:0}
+    .hero-photo-bg img{width:100%;height:100%;object-fit:cover;object-position:68% center;display:block}
     .skip-link{position:absolute;top:-60px;left:16px;background:var(--gold);color:#fff;padding:10px 20px;border-radius:0 0 8px 8px;font-size:14px;font-weight:500;text-decoration:none;z-index:99999;transition:top .2s}
     .skip-link:focus{top:0}
     #scroll-progress{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--gold),#d4a76a);z-index:9999;border-radius:0 2px 2px 0}
@@ -325,7 +325,7 @@ setTimeout(_hideLoader, 5000);
 
 <main id="main-content">
 <section class="hero" id="home">
-  <div class="hero-photo-bg" id="heroPhotoBg">
+  <div class="hero-photo-bg">
     <picture>
       <source media="(max-width: 768px)" srcset="img/head_mobile.webp" />
       <source media="(min-width: 769px)" srcset="img/head_desktop.webp" />
@@ -339,7 +339,7 @@ setTimeout(_hideLoader, 5000);
 
       <!-- Рейтинги + счётчик — социальное доказательство СРАЗУ -->
       <h1 class="hero-title">
-        <span class="hero-title-brand ht-word" id="heroTitleBrand">Milovi Cake</span>
+        <span class="hero-title-brand ht-word">Milovi Cake</span>
         <span class="visually-hidden"> — торты на заказ в СПб: свадебный торт, торт на день рождения, детский торт, бенто, меренговые рулеты с доставкой</span>
       </h1>
 
@@ -374,35 +374,31 @@ setTimeout(_hideLoader, 5000);
           Выбрать торт
           <span class="btn-price-hint">от 1 600 ₽</span>
         </a>
-        <div class="messenger-group" style="display:flex;gap:12px;align-items:center;">
         <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D1%8C%20%D1%82%D0%BE%D1%80%D1%82"
            target="_blank" rel="noopener noreferrer" class="btn-hero-messenger btn-hero-wa" aria-label="WhatsApp" data-tooltip="WhatsApp">
-          <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="display:block;overflow:visible">
+          <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="display:block">
             <defs><path id="ring-wa" d="M 24,24 m -17,0 a 17,17 0 1,1 34,0 a 17,17 0 1,1 -34,0"/></defs>
-            <text id="ring-text-wa" font-size="6.5" font-family="Jost,sans-serif" fill="currentColor" opacity="0.5" letter-spacing="1.4" font-weight="300" text-anchor="middle">
+            <text font-size="6.5" font-family="Jost,sans-serif" fill="currentColor" opacity="0.5" letter-spacing="1.4" font-weight="300" text-anchor="middle">
               <textPath href="#ring-wa" startOffset="25%">WhatsApp</textPath>
             </text>
-            <text id="flat-text-wa" font-size="6.5" font-family="Jost,sans-serif" fill="currentColor" opacity="0" letter-spacing="0.2em" font-weight="300" text-anchor="middle" x="24" y="8" transform="translateY(0)">WhatsApp</text>
             <path transform="translate(14,14) scale(0.833)" fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
           </svg>
         </a>
         <a href="https://t.me/MiloviCake" target="_blank" rel="noopener noreferrer" class="btn-hero-messenger btn-hero-tg" aria-label="Telegram" data-tooltip="Telegram">
-          <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="display:block;overflow:visible">
+          <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="display:block">
             <defs><path id="ring-tg" d="M 24,24 m -15,0 a 15,15 0 1,1 30,0 a 15,15 0 1,1 -30,0"/></defs>
-            <text id="ring-text-tg" font-size="6.5" font-family="Jost,sans-serif" fill="currentColor" opacity="0.5" letter-spacing="1.4" font-weight="300" text-anchor="middle">
+            <text font-size="6.5" font-family="Jost,sans-serif" fill="currentColor" opacity="0.5" letter-spacing="1.4" font-weight="300" text-anchor="middle">
               <textPath href="#ring-tg" startOffset="25%">Telegram</textPath>
             </text>
-            <text id="flat-text-tg" font-size="6.5" font-family="Jost,sans-serif" fill="currentColor" opacity="0" letter-spacing="0.2em" font-weight="300" text-anchor="middle" x="24" y="8">Telegram</text>
             <path transform="translate(14,14) scale(0.833)" fill="currentColor" d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
           </svg>
         </a>
-        <a href="https://max.ru/u/f9LHodD0cOJ_EahMweU6J1_opEIpaKjhJ8ZQ9cNsc9Y49OHoM3IQBq_Na7c" target="_blank" rel="noopener noreferrer" class="btn-hero-messenger btn-hero-max" aria-label="MAX" data-tooltip="MAX">
-          <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="display:block;overflow:visible">
+        <a href="https://max.ru/+79119038886" target="_blank" rel="noopener noreferrer" class="btn-hero-messenger btn-hero-max" aria-label="MAX" data-tooltip="MAX">
+          <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="display:block">
             <defs><path id="ring-max" d="M 24,24 m -15,0 a 15,15 0 1,1 30,0 a 15,15 0 1,1 -30,0"/></defs>
-            <text id="ring-text-max" font-size="6.5" font-family="Jost,sans-serif" fill="currentColor" opacity="0.5" letter-spacing="2.5" font-weight="300" text-anchor="middle">
+            <text font-size="6.5" font-family="Jost,sans-serif" fill="currentColor" opacity="0.5" letter-spacing="2.5" font-weight="300" text-anchor="middle">
               <textPath href="#ring-max" startOffset="23.5%">MAX</textPath>
             </text>
-            <text id="flat-text-max" font-size="6.5" font-family="Jost,sans-serif" fill="currentColor" opacity="0" letter-spacing="0.2em" font-weight="300" text-anchor="middle" x="24" y="8">MAX</text>
             <g transform="translate(11.5, 10) scale(0.185)">
               <g transform="translate(0,151) scale(0.1,-0.1)">
                 <path fill="currentColor" d="M635 1183 c-113 -15 -227 -81 -295 -172 -94 -125 -112 -270 -61 -487 17 -72 31 -147 31 -166 0 -19 5 -39 12 -46 26 -26 111 -7 161 36 15 14 22 13 70 -14 48 -27 60 -29 153 -29 96 0 103 2 177 38 183 90 282 277 249 468 -42 244 -255 404 -497 372z m126 -225 c52 -15 117 -73 140 -122 11 -24 19 -64 19 -96 0 -154 -164 -262 -310 -204 -38 15 -42 15 -60 -1 -53 -48 -84 20 -78 170 3 77 9 109 25 140 54 103 155 146 264 113z"/>
@@ -410,7 +406,6 @@ setTimeout(_hideLoader, 5000);
             </g>
           </svg>
         </a>
-        </div>
       </div>
 
     </div>
@@ -644,7 +639,7 @@ setTimeout(_hideLoader, 5000);
     <div class="contacts-grid">
       <div class="card reveal">
         <h3>Контакты</h3>
-        <p class="hours">Отвечаем обычно за 5–10 минут · Пн–Сб, 10:00–22:00</p>
+        <p class="hours">Отвечаем обычно за 5–10 минут · Ежедневно 10:00–20:00</p>
 
         <!-- Основные контакты -->
         <div class="contact-primary">
@@ -688,7 +683,7 @@ setTimeout(_hideLoader, 5000);
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.96 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
             Telegram
           </a>
-          <a href="https://max.ru/u/f9LHodD0cOJ_EahMweU6J1_opEIpaKjhJ8ZQ9cNsc9Y49OHoM3IQBq_Na7c" target="_blank" rel="noopener noreferrer" class="social-link max" aria-label="MAX">
+          <a href="https://max.ru/+79119038886" target="_blank" rel="noopener noreferrer" class="social-link" style="display:inline-flex;align-items:center;gap:6px;" aria-label="MAX">
             <svg width="18" height="18" viewBox="0 0 135 151" fill="currentColor" aria-hidden="true"><g transform="translate(0,151) scale(0.1,-0.1)"><path d="M635 1183 c-113 -15 -227 -81 -295 -172 -94 -125 -112 -270 -61 -487 17 -72 31 -147 31 -166 0 -19 5 -39 12 -46 26 -26 111 -7 161 36 15 14 22 13 70 -14 48 -27 60 -29 153 -29 96 0 103 2 177 38 183 90 282 277 249 468 -42 244 -255 404 -497 372z m126 -225 c52 -15 117 -73 140 -122 11 -24 19 -64 19 -96 0 -154 -164 -262 -310 -204 -38 15 -42 15 -60 -1 -53 -48 -84 20 -78 170 3 77 9 109 25 140 54 103 155 146 264 113z"/></g></svg>
             MAX
           </a>
@@ -719,7 +714,7 @@ setTimeout(_hideLoader, 5000);
         </div>
         <div class="form-group float-label">
           <input type="tel" id="fphone" placeholder=" " required autocomplete="tel" inputmode="tel" />
-          <label for="fphone">Телефон</label>
+          <label for="fphone">Телефон *</label>
         </div>
         <div class="form-group float-label">
           <textarea id="fcomment" placeholder=" "></textarea>
@@ -791,7 +786,7 @@ setTimeout(_hideLoader, 5000);
       </div>
       <div class="form-group float-label">
         <input type="tel" id="cphone" placeholder=" " required autocomplete="tel" inputmode="tel" />
-        <label for="cphone">Телефон</label>
+        <label for="cphone">Телефон *</label>
       </div>
       <div class="form-group float-label">
         <input type="date" id="cdate" placeholder=" " />
@@ -1119,7 +1114,7 @@ setTimeout(_hideLoader, 5000);
         <a href="tel:+79119038886">+7 911 903 88 86</a>
         <a href="https://wa.me/79119038886" target="_blank" rel="noopener noreferrer">WhatsApp</a>
         <a href="https://t.me/MiloviCake" target="_blank" rel="noopener noreferrer">Telegram</a>
-        <p class="footer-hours">Пн–Сб, 10:00–22:00</p>
+        <p class="footer-hours">Пн–Вс, 10:00–20:00</p>
       </div>
     </div>
     <div class="footer-bottom">
@@ -1296,13 +1291,10 @@ setTimeout(_hideLoader, 5000);
 
 <script>
   (function() {
-    var fromFlag = sessionStorage.getItem('fromMeringue') === '1';
-    var fromRef  = document.referrer.indexOf('/meringue-roll') !== -1;
-    if (fromFlag || fromRef) {
+    if (sessionStorage.getItem('fromMeringue') === '1') {
       var btn = document.getElementById('meringueReturnBtn');
       if (btn) btn.style.display = '';
     }
-    sessionStorage.removeItem('fromMeringue');
   })();
 </script>
 </body>
