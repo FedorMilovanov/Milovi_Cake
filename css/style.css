@@ -62,6 +62,7 @@ body {
   font-family: 'Jost', sans-serif;
   background: var(--cream);
   color: var(--text);
+  overflow-x: hidden;
 }
 
 /* ── PROGRESS BAR ── */
@@ -2666,33 +2667,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   letter-spacing: 0.03em;
   font-family: 'Jost', sans-serif;
 }
-.btn-hero-wa {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  background: rgba(37,211,102,0.12);
-  border: 1px solid rgba(37,211,102,0.3);
-  color: #5de89e;
-  padding: 14px 22px;
-  border-radius: 50px;
-  font-family: 'Jost', sans-serif;
-  font-size: 15px;
-  font-weight: 400;
-  text-decoration: none;
-  transition: background 0.2s, border-color 0.2s;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-.btn-hero-wa:hover {
-  background: rgba(37,211,102,0.2);
-  border-color: rgba(37,211,102,0.5);
-}
 
 @media (max-width: 480px) {
   .hero-trust-bar { gap: 8px; }
   .hero-trust-badge { font-size: 12px; padding: 5px 10px; }
   .hero-trust-count { width: 100%; font-size: 11px; padding-left: 0; }
-  .btn-hero-wa { font-size: 14px; padding: 13px 18px; }
 }
 
 /* ══════════════════════════════════════════════
@@ -4643,6 +4622,12 @@ footer .wave-text .w.near {
 .header-logo:hover .header-logo-sub { color: rgba(201,147,74,0.6); }
 
 /* ── Section titles: word hover ── */
+.section-title .ht-em {
+  /* Italic gold container — must be inline so words flow inline */
+  display: inline;
+  font-style: italic;
+  color: var(--gold);
+}
 .section-title .ht-w {
   display: inline-block;
   color: var(--gold);
@@ -4660,12 +4645,13 @@ footer .wave-text .w.near {
   cursor: default;
   color: var(--gold);
   font-style: italic;
-  transition: color 0.4s ease, text-shadow 0.4s ease, letter-spacing 0.35s ease;
+  transition: color 0.4s ease, text-shadow 0.4s ease, letter-spacing 0.35s ease, transform 0.35s cubic-bezier(.16,1,.3,1);
 }
 .section-title .ht-em-w:hover {
   color: #111111;
   text-shadow: none;
   letter-spacing: 0.02em;
+  transform: translateY(-2px);
 }
 
 /* ── Section sub: gentle hover ── */

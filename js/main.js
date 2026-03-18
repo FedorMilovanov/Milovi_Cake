@@ -702,16 +702,10 @@ function goBackToCart() {
 }
 
 // ── iOS-safe scroll lock ──
-// body.style.overflow = 'hidden' alone doesn't prevent scroll on iOS Safari.
-// position:fixed trick preserves scroll position and truly blocks scrolling.
 var _isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 function lockBody() {
   var count = parseInt(document.body.dataset.lockCount || '0');
   if (count === 0) {
-    var sy = window.scrollY;
-    document.body.dataset.scrollY = sy;
-    // Never use position:fixed — it breaks position:fixed children (cart, modals)
-    // Instead use overflow:hidden + padding to prevent layout shift
     var scrollbarW = window.innerWidth - document.documentElement.clientWidth;
     document.body.style.overflow = 'hidden';
     document.body.style.touchAction = 'none';
@@ -721,7 +715,13 @@ function lockBody() {
 }
 function unlockBody() {
   var count = parseInt(document.body.dataset.lockCount || '0');
-  if (count <= 0) return;
+  if (count <= 0) {
+    // Safety: always ensure clean state even if count is already 0
+    document.body.style.overflow = '';
+    document.body.style.touchAction = '';
+    document.body.style.paddingRight = '';
+    return;
+  }
   var newCount = count - 1;
   document.body.dataset.lockCount = newCount;
   if (newCount === 0) {
@@ -731,14 +731,22 @@ function unlockBody() {
     delete document.body.dataset.scrollY;
   }
 }
+// Emergency cleanup: if user navigates back (bfcache), ensure body is unlocked
+window.addEventListener('pageshow', function(e) {
+  if (e.persisted) {
+    document.body.dataset.lockCount = '0';
+    document.body.style.overflow = '';
+    document.body.style.touchAction = '';
+    document.body.style.paddingRight = '';
+  }
+});
 
 // ── DESKTOP: позиционировать окно корзины рядом с кнопкой ──
 function positionCartWindowNearButton() {
   if (window.innerWidth < 901) return;
 
-  const btn = document.getElementById('cartBtn');
   const drawer = document.getElementById('cartDrawer');
-  if (!btn || !drawer) return;
+  if (!drawer) return;
 
   const MARGIN = 16;
   const GAP = 10;
@@ -746,52 +754,49 @@ function positionCartWindowNearButton() {
   const vh = window.innerHeight;
   const dW = 440;
 
-  // Get actual rendered header height dynamically
-  const header = document.querySelector('header, .site-header, nav') || { getBoundingClientRect: () => ({ bottom: 72 }) };
-  const headerBottom = header.getBoundingClientRect ? header.getBoundingClientRect().bottom : 72;
-  const HEADER_HEIGHT = Math.max(headerBottom, 64);
+  // Get header height dynamically
+  const header = document.querySelector('header, .site-header, #siteHeader');
+  const headerBottom = (header && header.getBoundingClientRect)
+    ? Math.max(header.getBoundingClientRect().bottom, 64)
+    : 72;
+  const HEADER_HEIGHT = headerBottom;
 
-  // Max height: from below header to bottom of viewport
   const availableH = vh - HEADER_HEIGHT - MARGIN * 2;
   const dH = Math.min(vh * 0.78, 720, availableH);
 
-  const b = btn.getBoundingClientRect();
-  const btnRight = b.right;
-  const btnBottom = b.bottom;
-  const btnCenterX = b.left + b.width / 2;
+  // Try to position near cart button — but gracefully fall back to top-right corner
+  const btn = document.getElementById('cartBtn');
+  let left, top, originX;
 
-  // Horizontal: prefer aligning right edge of drawer to right edge of button
-  // If button is on the right half, anchor drawer's right to button's right
-  let left;
-  if (btnCenterX > vw / 2) {
-    // Right-side button: right-align drawer
-    left = btnRight - dW;
-  } else {
-    // Left-side button: left-align drawer
-    left = b.left;
-  }
+  if (btn) {
+    const b = btn.getBoundingClientRect();
+    const btnCenterX = b.left + b.width / 2;
 
-  // Vertical: open below button, clamp to viewport
-  let top = btnBottom + GAP;
-  if (top + dH > vh - MARGIN) {
-    // Not enough space below — try above
-    const topAbove = b.top - GAP - dH;
-    if (topAbove > HEADER_HEIGHT) {
-      top = topAbove;
+    if (btnCenterX > vw / 2) {
+      left = b.right - dW;
+      originX = 'right';
     } else {
-      // Neither fits perfectly — pin to bottom of viewport
-      top = vh - dH - MARGIN;
+      left = b.left;
+      originX = 'left';
     }
+
+    top = b.bottom + GAP;
+    if (top + dH > vh - MARGIN) {
+      const topAbove = b.top - GAP - dH;
+      top = (topAbove > HEADER_HEIGHT) ? topAbove : (vh - dH - MARGIN);
+    }
+  } else {
+    // Fallback: top-right corner below header
+    left = vw - dW - MARGIN;
+    top  = HEADER_HEIGHT + MARGIN;
+    originX = 'right';
   }
 
-  // Final clamp
+  // Final clamp — never go off-screen
   left = Math.max(MARGIN, Math.min(left, vw - dW - MARGIN));
   top  = Math.max(HEADER_HEIGHT + MARGIN, Math.min(top, vh - dH - MARGIN));
 
-  // Set transform-origin based on which corner the drawer opens from
-  const originX = (btnCenterX > vw / 2) ? 'right' : 'left';
   drawer.style.transformOrigin = `top ${originX}`;
-
   drawer.style.left   = left + 'px';
   drawer.style.top    = top + 'px';
   drawer.style.right  = 'auto';
@@ -806,16 +811,22 @@ function openCart() {
   if (!drawer || !overlay) return;
 
   // Cancel any in-progress close so re-open is instant
-  if (drawer._closeTimer) { clearTimeout(drawer._closeTimer); drawer._closeTimer = null; }
+  if (drawer._closeTimer) {
+    clearTimeout(drawer._closeTimer);
+    drawer._closeTimer = null;
+    drawer.classList.remove('closing');
+  }
 
-  // Remove any leftover closing state immediately
+  // Already open — do nothing
+  if (drawer.classList.contains('open')) return;
+
+  // Remove leftover closing state
   drawer.classList.remove('closing');
 
   if (window.innerWidth > 900) {
-    // Position first (before classes added) so transform-origin is set
+    // Position first so transform-origin is set, then force reflow
     positionCartWindowNearButton();
-    // Force reflow so transition fires from initial state
-    drawer.getBoundingClientRect();
+    drawer.getBoundingClientRect(); // force reflow
   }
 
   drawer.classList.add('open');
@@ -827,6 +838,7 @@ function openCart() {
   }
 
   setCartStep(1);
+  updateCartUI();
 
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.add('hidden');
@@ -2769,16 +2781,46 @@ document.addEventListener('visibilitychange', () => {
 (function() {
   document.querySelectorAll('.section-title').forEach(function(el) {
     // Skip if already processed
-    if (el.querySelector('.ht-w')) return;
-    // Process only direct text nodes and simple em/span children
-    var html = el.innerHTML;
-    // Wrap words in plain text nodes, preserve existing tags
-    el.innerHTML = html.replace(/(<[^>]+>)|([^<]+)/g, function(match, tag, text) {
-      if (tag) return tag;
-      if (!text || !text.trim()) return text;
-      return text.replace(/(\S+)/g, function(word) {
-        return '<span class="ht-w">' + word + '</span>';
-      });
+    if (el.dataset.htProcessed) return;
+    el.dataset.htProcessed = '1';
+
+    // Walk child nodes — wraps bare text in hover spans
+    // insideHtEm = true → use ht-em-w (italic gold), false → use ht-w (gold)
+    function wrapTextNode(node, insideHtEm) {
+      if (node.nodeType === 3) { // Text node
+        var text = node.nodeValue;
+        if (!text || !text.trim()) return;
+        var cls = insideHtEm ? 'ht-em-w' : 'ht-w';
+        var frag = document.createDocumentFragment();
+        text.split(/(\s+)/).forEach(function(part) {
+          if (!part) return;
+          if (/^\s+$/.test(part)) {
+            frag.appendChild(document.createTextNode(part));
+          } else {
+            var span = document.createElement('span');
+            span.className = cls;
+            span.textContent = part;
+            frag.appendChild(span);
+          }
+        });
+        node.parentNode.replaceChild(frag, node);
+      } else if (node.nodeType === 1) { // Element node
+        var cls = node.classList;
+        // .ht-em and <em> = italic gold container
+        var isHtEm = (cls && cls.contains('ht-em')) || node.tagName === 'EM';
+        // .ht-word = regular (non-italic) gold word — treated same as plain text
+        // visually-hidden = skip entirely
+        if (cls && cls.contains('visually-hidden')) return;
+        // Clone children list before iterating (DOM mutates during walk)
+        var children = Array.from(node.childNodes);
+        children.forEach(function(child) {
+          wrapTextNode(child, insideHtEm || isHtEm);
+        });
+      }
+    }
+
+    Array.from(el.childNodes).forEach(function(child) {
+      wrapTextNode(child, false);
     });
   });
 
