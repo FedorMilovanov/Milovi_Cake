@@ -1390,20 +1390,23 @@ function openPrivacy() {
   const el = document.getElementById('privacyOverlay');
   if (!el) return;
   el.style.display = 'flex';
+  el.style.opacity = '0';
   requestAnimationFrame(() => {
-    el.classList.add('open');
+    requestAnimationFrame(() => {
+      el.classList.add('open');
+      el.style.opacity = '';
+    });
   });
-  lockBody();
+  if (window.innerWidth <= 900) lockBody();
 }
 function closePrivacy() {
   const el = document.getElementById('privacyOverlay');
   if (!el) return;
   el.classList.remove('open');
-  el.addEventListener('transitionend', function h() {
-    el.removeEventListener('transitionend', h);
-    if (!el.classList.contains('open')) el.style.display = '';
-  });
-  unlockBody();
+  setTimeout(function() {
+    if (!el.classList.contains('open')) el.style.display = 'none';
+  }, 320);
+  if (window.innerWidth <= 900) unlockBody();
 }
 
 // ══════════════════════════════════════════
@@ -2667,10 +2670,10 @@ document.addEventListener('visibilitychange', () => {
 
   function runAnim(state, toHover, dur) {
     if (state.raf) { cancelAnimationFrame(state.raf); state.raf = null; }
-    var from = { ringOp: state.ringOp, ringY: state.ringY, flatOp: state.flatOp, flatY: state.flatY, flatSize: state.flatSize };
+    var from = { ringOp: state.ringOp, ringY: state.ringY, flatOp: state.flatOp, flatY: state.flatY, flatSize: state.flatSize, flatGlow: state.flatGlow };
     var to = toHover
-      ? { ringOp: 0, ringY: -18, flatOp: 1, flatY: -30, flatSize: 11 }
-      : { ringOp: 1, ringY: 0,   flatOp: 0, flatY: 8,   flatSize: 6.5 };
+      ? { ringOp: 0, ringY: -18, flatOp: 1, flatY: -18, flatSize: 12, flatGlow: 1 }
+      : { ringOp: 1, ringY: 0,   flatOp: 0, flatY: 8,   flatSize: 6.5, flatGlow: 0 };
     var startTs = null;
     function step(ts) {
       if (!startTs) startTs = ts;
@@ -2681,11 +2684,14 @@ document.addEventListener('visibilitychange', () => {
       state.flatOp = from.flatOp + (to.flatOp - from.flatOp) * e;
       state.flatY  = from.flatY  + (to.flatY  - from.flatY)  * e;
       state.flatSize = from.flatSize + (to.flatSize - from.flatSize) * e;
+      state.flatGlow = from.flatGlow + (to.flatGlow - from.flatGlow) * e;
       state.ringEl.setAttribute('opacity', state.ringOp);
       state.ringEl.setAttribute('transform', 'translate(0,' + state.ringY + ')');
       state.flatEl.setAttribute('opacity', state.flatOp);
       state.flatEl.setAttribute('y', state.flatY);
       state.flatEl.setAttribute('font-size', state.flatSize);
+      var glow = state.flatGlow * 4;
+      state.flatEl.setAttribute('filter', glow > 0.3 ? 'drop-shadow(0 0 ' + glow.toFixed(1) + 'px currentColor)' : '');
       if (p < 1) { state.raf = requestAnimationFrame(step); }
       else { Object.assign(state, to); state.raf = null; }
     }
@@ -2699,7 +2705,7 @@ document.addEventListener('visibilitychange', () => {
       var ringEl = document.getElementById(item.ringId);
       var flatEl = document.getElementById(item.flatId);
       if (!btn || !ringEl || !flatEl) return;
-      var state = { ringEl: ringEl, flatEl: flatEl, ringOp: 0.5, ringY: 0, flatOp: 0, flatY: 8, flatSize: 6.5, raf: null };
+      var state = { ringEl: ringEl, flatEl: flatEl, ringOp: 0.5, ringY: 0, flatOp: 0, flatY: 8, flatSize: 6.5, flatGlow: 0, raf: null };
       btn.addEventListener('mouseenter', function() { runAnim(state, true,  650); });
       btn.addEventListener('mouseleave', function() { runAnim(state, false, 650); });
     });
