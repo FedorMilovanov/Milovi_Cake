@@ -1,90 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://milovicake.ru/</loc>
     <changefreq>weekly</changefreq>
     <lastmod>2026-03-17</lastmod>
     <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://milovicake.ru/prigorody/</loc>
-    <lastmod>2026-03-17</lastmod>
-    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/head.webp</image:loc>
+      <image:title>Авторские торты на заказ в Санкт-Петербурге — Milovi Cake</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/cake_biscuit_0.webp</image:loc>
+      <image:title>Бисквитный торт на заказ СПб — ручная работа Milovi Cake</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/cake_biscuit_1.webp</image:loc>
+      <image:title>Торт на день рождения на заказ в СПб</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/cake_biscuit_2.webp</image:loc>
+      <image:title>Авторский торт с декором СПб — Milovi Cake</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/cake_biscuit_3.webp</image:loc>
+      <image:title>Свадебный торт на заказ Санкт-Петербург</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/cake_3d.webp</image:loc>
+      <image:title>3D торт на заказ СПб — фигурный торт Milovi Cake</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/cake_3d_2.webp</image:loc>
+      <image:title>3D торт с фигурками на заказ в Санкт-Петербурге</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/bento_1.webp</image:loc>
+      <image:title>Бенто торт на заказ СПб от 1600 ₽ — Milovi Cake</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/bento_2.webp</image:loc>
+      <image:title>Мини торт бенто на заказ Санкт-Петербург</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/bento_4.webp</image:loc>
+      <image:title>Бенто торт с надписью на заказ СПб</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/bento_maxi.webp</image:loc>
+      <image:title>Бенто макси торт на заказ в СПб</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/meringue_roll.webp</image:loc>
+      <image:title>Меренговый рулет на заказ СПб — малина крем-чиз Milovi Cake</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/meringue_roll_2.webp</image:loc>
+      <image:title>Меренговый рулет фисташка малина СПб на заказ</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/pavlova.webp</image:loc>
+      <image:title>Пирожное Павлова на заказ СПб — безглютеновое Milovi Cake</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/pavlova_2.webp</image:loc>
+      <image:title>Безглютеновое пирожное Павлова СПб от 350 ₽</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/cupcakes.webp</image:loc>
+      <image:title>Капкейки на заказ СПб — авторские Milovi Cake от 350 ₽</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://milovicake.ru/meringue-roll/</loc>
     <changefreq>monthly</changefreq>
     <lastmod>2026-03-17</lastmod>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/meringue_roll.webp</image:loc>
+      <image:title>Меренговый рулет на заказ СПб — Milovi Cake</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/meringue_roll_box.webp</image:loc>
+      <image:title>Меренговый рулет в подарочной коробке СПб</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/meringue_rolls_cut.webp</image:loc>
+      <image:title>Срез меренгового рулета — малина крем-чиз СПб</image:title>
+    </image:image>
   </url>
   <url>
-    <loc>https://milovicake.ru/prigorody/pushkin/</loc>
+    <loc>https://milovicake.ru/prigorody/</loc>
     <lastmod>2026-03-17</lastmod>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
-  <url>
-    <loc>https://milovicake.ru/prigorody/peterhof/</loc>
-    <lastmod>2026-03-17</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://milovicake.ru/prigorody/gatchina/</loc>
-    <lastmod>2026-03-17</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://milovicake.ru/prigorody/kolpino/</loc>
-    <lastmod>2026-03-17</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://milovicake.ru/prigorody/vsevolozhsk/</loc>
-    <lastmod>2026-03-17</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://milovicake.ru/prigorody/krasnoe-selo/</loc>
-    <lastmod>2026-03-17</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://milovicake.ru/prigorody/pavlovsk/</loc>
-    <lastmod>2026-03-17</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://milovicake.ru/prigorody/sestroretsk/</loc>
-    <lastmod>2026-03-17</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://milovicake.ru/prigorody/lomonosov/</loc>
-    <lastmod>2026-03-17</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://milovicake.ru/prigorody/kronshtadt/</loc>
-    <lastmod>2026-03-17</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://milovicake.ru/prigorody/tosno/</loc>
-    <lastmod>2026-03-17</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://milovicake.ru/prigorody/murino/</loc>
-    <lastmod>2026-03-17</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://milovicake.ru/prigorody/kudrovo/</loc>
-    <lastmod>2026-03-17</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://milovicake.ru/prigorody/shushary/</loc>
-    <lastmod>2026-03-17</lastmod>
-    <priority>0.7</priority>
-  </url>
+  <url><loc>https://milovicake.ru/prigorody/vsevolozhsk/</loc><lastmod>2026-03-17</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/murino/</loc><lastmod>2026-03-17</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/kudrovo/</loc><lastmod>2026-03-17</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/gatchina/</loc><lastmod>2026-03-17</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/pushkin/</loc><lastmod>2026-03-17</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/peterhof/</loc><lastmod>2026-03-17</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/kolpino/</loc><lastmod>2026-03-17</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/kronshtadt/</loc><lastmod>2026-03-17</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/lomonosov/</loc><lastmod>2026-03-17</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/pavlovsk/</loc><lastmod>2026-03-17</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/sestroretsk/</loc><lastmod>2026-03-17</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/shushary/</loc><lastmod>2026-03-17</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/tosno/</loc><lastmod>2026-03-17</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/krasnoe-selo/</loc><lastmod>2026-03-17</lastmod><priority>0.7</priority></url>
 </urlset>

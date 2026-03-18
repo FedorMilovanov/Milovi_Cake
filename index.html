@@ -46,7 +46,7 @@
   [
     {
       "@context": "https://schema.org",
-      "@type": "LocalBusiness",
+      "@type": ["LocalBusiness", "Bakery"],
       "name": "Milovi Cake",
       "description": "Авторские торты и десерты ручной работы на заказ в Санкт-Петербурге. Бисквитные торты, бенто, 3D-торты, меренговые рулеты, Павлова, капкейки. Доставка по СПб и Ленобласти.",
       "image": "https://milovicake.ru/img/hero.jpg",
@@ -140,6 +140,65 @@
   </script>
   <!-- Yandex.Metrika — moved to end of body for non-blocking render -->
 
+  <script type="application/ld+json">
+  [
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Главная", "item": "https://milovicake.ru/"},
+        {"@type": "ListItem", "position": 2, "name": "Каталог тортов", "item": "https://milovicake.ru/#catalog"},
+        {"@type": "ListItem", "position": 3, "name": "Меренговый рулет", "item": "https://milovicake.ru/meringue-roll/"}
+      ]
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Review",
+      "itemReviewed": {"@type": "Bakery", "name": "Milovi Cake", "url": "https://milovicake.ru/"},
+      "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5"},
+      "author": {"@type": "Person", "name": "Евгения Монтихо"},
+      "datePublished": "2025-12-20",
+      "reviewBody": "Дважды заказывали торты. Первый раз нам сделали в стиле Острова с ярким вкусом тропических фруктов, а второй торт в выдержанном стиле с начинкой «вишня в шоколаде». Оба торта просто шикарные, очень рада, что нашла вас — ваше творчество дарит и эстетическое, и гастрономическое удовольствие."
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Review",
+      "itemReviewed": {"@type": "Bakery", "name": "Milovi Cake", "url": "https://milovicake.ru/"},
+      "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5"},
+      "author": {"@type": "Person", "name": "Екатерина Гарсес Еникеева"},
+      "datePublished": "2025-11-24",
+      "reviewBody": "Являюсь постоянным клиентом Виктории. Все торты на детские дни рождения берём у неё. Ценю индивидуальный подход, всегда всё вовремя, воплощаем любые идеи. Всегда очень вкусно, красиво и качественно."
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Review",
+      "itemReviewed": {"@type": "Bakery", "name": "Milovi Cake", "url": "https://milovicake.ru/"},
+      "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5"},
+      "author": {"@type": "Person", "name": "Жанель"},
+      "datePublished": "2026-02-02",
+      "reviewBody": "Огромное спасибо, Виктория! За оперативность, внимательный подход, рекомендации по вкусам и за вашу работу! Торт получился отличным, именинница довольна."
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Review",
+      "itemReviewed": {"@type": "Bakery", "name": "Milovi Cake", "url": "https://milovicake.ru/"},
+      "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5"},
+      "author": {"@type": "Person", "name": "Ирина Силантьева"},
+      "datePublished": "2025-06-15",
+      "reviewBody": "Спасибо за прекрасно выполненную работу к 40-летию свадьбы! Всё на высшем уровне — и вкусовые качества, и шикарный дизайн, и внешнее оформление коробочки. Мы и гости были в восторге."
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Review",
+      "itemReviewed": {"@type": "Bakery", "name": "Milovi Cake", "url": "https://milovicake.ru/"},
+      "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5"},
+      "author": {"@type": "Person", "name": "Елена Кузнецова"},
+      "datePublished": "2025-04-10",
+      "reviewBody": "Спасибо за такой классный тортик! Всё очень понравилось. Всё от заказа до доставки на 5+! Красиво, вкусно. Именинник доволен и родители тоже. Обязательно обратимся ещё!"
+    }
+  ]
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="dns-prefetch" href="https://wa.me" />
   <link rel="dns-prefetch" href="https://mc.yandex.ru" />
@@ -163,7 +222,7 @@
     #scroll-progress{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--gold),#d4a76a);z-index:9999;border-radius:0 2px 2px 0}
     @media(max-width:768px){.site-header{padding:0 24px}}
   </style>
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/style.min.css" />
 </head>
 
 <body>
@@ -308,7 +367,7 @@ setTimeout(_hideLoader, 5000);
     Закрыть
   </button>
   <div class="lightbox-img-wrap" id="lightboxWrap">
-    <img id="lightboxImg" src="" alt="" style="user-select:none; -webkit-user-drag:none;" />
+    <img id="lightboxImg" src="" alt="Фото торта Milovi Cake" style="user-select:none; -webkit-user-drag:none;" />
     <div class="lightbox-nav hidden" id="lbNav">
       <button class="lightbox-arrow" onclick="lbNavigate(-1)" aria-label="Назад">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -324,6 +383,19 @@ setTimeout(_hideLoader, 5000);
 <!-- ══════════ HERO ══════════ -->
 
 <main id="main-content">
+<nav aria-label="Хлебные крошки" style="display:none" itemscope itemtype="https://schema.org/BreadcrumbList">
+  <ol>
+    <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      <a itemprop="item" href="https://milovicake.ru/"><span itemprop="name">Главная</span></a>
+      <meta itemprop="position" content="1" />
+    </li>
+    <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      <a itemprop="item" href="https://milovicake.ru/#catalog"><span itemprop="name">Каталог тортов</span></a>
+      <meta itemprop="position" content="2" />
+    </li>
+  </ol>
+</nav>
+
 <section class="hero" id="home">
   <div class="hero-photo-bg" id="heroPhotoBg">
     <picture>
@@ -863,7 +935,7 @@ setTimeout(_hideLoader, 5000);
 
 
 <script>var IMG_BASE = 'img';</script>
-<script src="js/main.js" defer></script>
+<script src="js/main.min.js" defer></script>
 
 
 
@@ -1281,7 +1353,7 @@ setTimeout(_hideLoader, 5000);
   <div class="lb-backdrop" id="lbBg"></div>
   <button class="lb-x" id="lbX" aria-label="Закрыть">✕</button>
   <div class="lb-box" id="lbBox">
-    <img id="lbImg" src="" alt="">
+    <img id="lbImg" src="" alt="Отзыв клиента Milovi Cake">
   </div>
   <div class="lb-arrows" id="lbArrows">
     <button class="lb-arr-btn" id="lbPrev" aria-label="Назад">

@@ -754,17 +754,16 @@ function positionCartWindowNearButton() {
 }
 
 function openCart() {
-  document.getElementById('cartDrawer').classList.add('open');
-  document.getElementById('cartOverlay').classList.add('open');
+  var drawer = document.getElementById('cartDrawer');
+  var overlay = document.getElementById('cartOverlay');
+  drawer.classList.add('open');
+  overlay.classList.add('open');
   document.body.classList.add('cart-open');
 
-  // lockBody только на мобиле — на десктопе страница скроллится под окном
   if (window.innerWidth <= 900) {
     lockBody();
-  } else {
-    // На десктопе скроллим наверх чтобы корзина была видна
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+  // Убрали scrollTo(0) — страница остаётся на месте
 
   setCartStep(1);
 
@@ -773,9 +772,17 @@ function openCart() {
 }
 
 function closeCart() {
-  document.getElementById('cartDrawer').classList.remove('open');
-  document.getElementById('cartOverlay').classList.remove('open');
+  var drawer = document.getElementById('cartDrawer');
+  var overlay = document.getElementById('cartOverlay');
+
+  drawer.classList.remove('open');
+  drawer.classList.add('closing');
+  overlay.classList.remove('open');
   document.body.classList.remove('cart-open');
+
+  setTimeout(function() {
+    drawer.classList.remove('closing');
+  }, 450);
 
   if (window.innerWidth <= 900) unlockBody();
 
@@ -2626,10 +2633,10 @@ document.addEventListener('visibilitychange', () => {
 
   function runAnim(state, toHover, dur) {
     if (state.raf) { cancelAnimationFrame(state.raf); state.raf = null; }
-    var from = { ringOp: state.ringOp, ringY: state.ringY, flatOp: state.flatOp, flatY: state.flatY };
+    var from = { ringOp: state.ringOp, ringY: state.ringY, flatOp: state.flatOp, flatY: state.flatY, flatSize: state.flatSize };
     var to = toHover
-      ? { ringOp: 0, ringY: -18, flatOp: 1, flatY: -14 }
-      : { ringOp: 1, ringY: 0,   flatOp: 0, flatY: 8   };
+      ? { ringOp: 0, ringY: -18, flatOp: 1, flatY: -22, flatSize: 9 }
+      : { ringOp: 1, ringY: 0,   flatOp: 0, flatY: 8,   flatSize: 6.5 };
     var startTs = null;
     function step(ts) {
       if (!startTs) startTs = ts;
@@ -2639,10 +2646,12 @@ document.addEventListener('visibilitychange', () => {
       state.ringY  = from.ringY  + (to.ringY  - from.ringY)  * e;
       state.flatOp = from.flatOp + (to.flatOp - from.flatOp) * e;
       state.flatY  = from.flatY  + (to.flatY  - from.flatY)  * e;
+      state.flatSize = from.flatSize + (to.flatSize - from.flatSize) * e;
       state.ringEl.setAttribute('opacity', state.ringOp);
       state.ringEl.setAttribute('transform', 'translate(0,' + state.ringY + ')');
       state.flatEl.setAttribute('opacity', state.flatOp);
       state.flatEl.setAttribute('y', state.flatY);
+      state.flatEl.setAttribute('font-size', state.flatSize);
       if (p < 1) { state.raf = requestAnimationFrame(step); }
       else { Object.assign(state, to); state.raf = null; }
     }
@@ -2656,7 +2665,7 @@ document.addEventListener('visibilitychange', () => {
       var ringEl = document.getElementById(item.ringId);
       var flatEl = document.getElementById(item.flatId);
       if (!btn || !ringEl || !flatEl) return;
-      var state = { ringEl: ringEl, flatEl: flatEl, ringOp: 0.5, ringY: 0, flatOp: 0, flatY: 8, raf: null };
+      var state = { ringEl: ringEl, flatEl: flatEl, ringOp: 0.5, ringY: 0, flatOp: 0, flatY: 8, flatSize: 6.5, raf: null };
       btn.addEventListener('mouseenter', function() { runAnim(state, true,  650); });
       btn.addEventListener('mouseleave', function() { runAnim(state, false, 650); });
     });
