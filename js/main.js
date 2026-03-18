@@ -130,7 +130,6 @@ function goSlide(pid, idx) {
   sliderCurrentIdx[pid] = idx;
   const slides = wrap.querySelectorAll('.slide-img');
   slides.forEach((el, i) => {
-    const wasActive = el.classList.contains('active');
     el.classList.toggle('active', i === idx);
   });
   wrap.querySelectorAll('.dot').forEach((el, i) => el.classList.toggle('active', i === idx));
@@ -586,10 +585,11 @@ function buildMessage() {
   // ✅ Баг 4: валидация даты — нельзя выбрать прошедшую дату
   if (date !== '—') {
     const selectedDate = new Date(date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (selectedDate < today) {
-      showToast('Выберите дату не раньше сегодняшнего дня');
+    const minDate = new Date();
+    minDate.setDate(minDate.getDate() + 2);
+    minDate.setHours(0, 0, 0, 0);
+    if (selectedDate < minDate) {
+      showToast('Дата должна быть не ранее чем через 2 дня');
       document.getElementById('cdate').focus();
       return null;
     }
@@ -622,10 +622,10 @@ function buildMessage() {
 }
 
 function buildWA(e) {
-  setCartStep(3);
   e.preventDefault();
   const msg = buildMessage();
   if (!msg) return;
+  setCartStep(3);
   const btn = document.getElementById('btnWA');
   if (btn) btn.classList.add('loading');
   setTimeout(() => {
@@ -638,6 +638,7 @@ function buildTG(e) {
   e.preventDefault();
   const msg = buildMessage();
   if (!msg) return;
+  setCartStep(3);
   const btn = document.getElementById('btnTG');
   if (btn) btn.classList.add('loading');
   navigator.clipboard.writeText(msg).then(() => {
@@ -688,13 +689,12 @@ function lockBody() {
   if (count === 0) {
     var sy = window.scrollY;
     document.body.dataset.scrollY = sy;
-    if (_isIOS) {
-      document.body.style.position = 'fixed';
-      document.body.style.top = '-' + sy + 'px';
-      document.body.style.width = '100%';
-    } else {
-      document.body.style.overflow = 'hidden';
-    }
+    // Never use position:fixed — it breaks position:fixed children (cart, modals)
+    // Instead use overflow:hidden + padding to prevent layout shift
+    var scrollbarW = window.innerWidth - document.documentElement.clientWidth;
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+    if (scrollbarW > 0) document.body.style.paddingRight = scrollbarW + 'px';
   }
   document.body.dataset.lockCount = count + 1;
 }
@@ -704,15 +704,9 @@ function unlockBody() {
   var newCount = count - 1;
   document.body.dataset.lockCount = newCount;
   if (newCount === 0) {
-    var sy = parseInt(document.body.dataset.scrollY || '0');
-    if (_isIOS) {
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      window.scrollTo(0, sy);
-    } else {
-      document.body.style.overflow = '';
-    }
+    document.body.style.overflow = '';
+    document.body.style.touchAction = '';
+    document.body.style.paddingRight = '';
     delete document.body.dataset.scrollY;
   }
 }
@@ -773,6 +767,7 @@ function openCart() {
   }
   // Убрали scrollTo(0) — страница остаётся на месте
 
+  if (window.innerWidth > 900) { positionCartWindowNearButton(); }
   setCartStep(1);
 
   var bn = document.getElementById('bottomNav');
@@ -790,7 +785,7 @@ function closeCart() {
 
   setTimeout(function() {
     drawer.classList.remove('closing');
-  }, 450);
+  }, 250);
 
   if (window.innerWidth <= 900) unlockBody();
 
@@ -1254,7 +1249,7 @@ function updateCalc() {
     if (mod100 >= 11 && mod100 <= 19) {
       form = 'человек';
     } else if (mod10 === 1) {
-      form = 'человека';
+      form = 'человек';
     } else if (mod10 >= 2 && mod10 <= 4) {
       form = 'человека';
     } else {
@@ -1368,7 +1363,14 @@ function acceptCookie() {
   if (!banner) return;
   banner.classList.remove('visible');
   banner.style.transform = 'translateY(100%)';
+  banner.addEventListener('transitionend', () => banner.remove(), { once: true }
+function declineCookie() {
+  const banner = document.getElementById('cookieBanner');
+  if (!banner) return;
+  banner.classList.remove('visible');
+  banner.style.transform = 'translateY(100%)';
   banner.addEventListener('transitionend', () => banner.remove(), { once: true });
+});
 }
 function initCookieBanner() {
   const stored = localStorage.getItem('cookieAccepted');
@@ -1390,23 +1392,13 @@ initCookieBanner();
 function openPrivacy() {
   const el = document.getElementById('privacyOverlay');
   if (!el) return;
-  el.style.display = 'flex';
-  el.style.opacity = '0';
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      el.classList.add('open');
-      el.style.opacity = '';
-    });
-  });
+  el.classList.add('open');
   if (window.innerWidth <= 900) lockBody();
 }
 function closePrivacy() {
   const el = document.getElementById('privacyOverlay');
   if (!el) return;
   el.classList.remove('open');
-  setTimeout(function() {
-    if (!el.classList.contains('open')) el.style.display = 'none';
-  }, 320);
   if (window.innerWidth <= 900) unlockBody();
 }
 
@@ -1543,38 +1535,8 @@ document.addEventListener('keydown', e => {
 });
 
 // Свайп влево по корзине — закрыть
-(function() {
-  var drawer = document.getElementById('cartDrawer');
-  if (!drawer) return;
-  var sx = 0, sy = 0, dragging = false;
+/* duplicate swipe-to-close handler removed (Bug 4 fix) */
 
-  drawer.addEventListener('touchstart', function(e) {
-    sx = e.touches[0].clientX;
-    sy = e.touches[0].clientY;
-    dragging = true;
-  }, { passive: true });
-
-  drawer.addEventListener('touchmove', function(e) {
-    if (!dragging) return;
-    var dx = e.touches[0].clientX - sx;
-    var dy = Math.abs(e.touches[0].clientY - sy);
-    if (dx > 10 && dy < 60) {
-      drawer.style.transform = 'perspective(1000px) translateX(' + Math.min(dx, 200) + 'px)';
-      drawer.style.opacity = Math.max(0, 1 - dx / 280);
-      drawer.style.transition = 'none';
-    }
-  }, { passive: true });
-
-  drawer.addEventListener('touchend', function(e) {
-    if (!dragging) return;
-    dragging = false;
-    var dx = e.changedTouches[0].clientX - sx;
-    drawer.style.transition = '';
-    drawer.style.transform = '';
-    drawer.style.opacity = '';
-    if (dx > 80) closeCart();
-  }, { passive: true });
-})();
 
 // ── Динамический минимум даты (сегодня + 2 дня) ──
 (function() {
@@ -1911,7 +1873,7 @@ REVIEWS.forEach((rv, i) => {
   th.style.left = '0';
   th.style.top  = '0';
   th.style.willChange = 'transform';
-  th.style.transform = `translate(${lay.lp}%, ${lay.tp}%)`;
+  th.style.transform = `translate(${lay.side==='left' ? 5 : 75}%, ${lay.tp}%)`;
   th.dataset.i  = i;
 
   const im = document.createElement('img');
@@ -2707,6 +2669,14 @@ document.addEventListener('visibilitychange', () => {
       var flatEl = document.getElementById(item.flatId);
       if (!btn || !ringEl || !flatEl) return;
       var state = { ringEl: ringEl, flatEl: flatEl, ringOp: 0.5, ringY: 0, flatOp: 0, flatY: 8, flatSize: 6.5, flatGlow: 0, raf: null };
+
+      // Reset visual state to default
+      ringEl.setAttribute('opacity', 0.5);
+      ringEl.setAttribute('transform', 'translate(0,0)');
+      flatEl.setAttribute('opacity', 0);
+      flatEl.setAttribute('y', 8);
+      flatEl.setAttribute('font-size', 6.5);
+
       btn.addEventListener('mouseenter', function() { runAnim(state, true,  380); });
       btn.addEventListener('mouseleave', function() { runAnim(state, false, 420); });
     });
@@ -2714,6 +2684,11 @@ document.addEventListener('visibilitychange', () => {
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
+
+  // Reinitialize after bfcache restore (back/forward navigation)
+  window.addEventListener('pageshow', function(e) {
+    if (e.persisted) init();
+  });
 })();
 
 // ══════════════════════════════════════════════

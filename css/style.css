@@ -581,7 +581,7 @@ body {
 }
 .lightbox.open { opacity: 1; pointer-events: all; }
 .lightbox-img-wrap img {
-  max-width: 65vw; max-height: 70vh;
+  max-width: 65vw; max-height: 50vh;
   border-radius: 16px;
   box-shadow: 0 30px 80px rgba(0,0,0,0.6);
   object-fit: contain;
@@ -945,15 +945,16 @@ body:not(.fill-open) .fill-mobile-overlay {
   background: rgba(45,28,18,0.72);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.3s;
+  transition: opacity 0.3s, visibility 0.3s;
 }
-#privacyOverlay.open { display: flex; opacity: 1; pointer-events: all; }
+#privacyOverlay.open { opacity: 1; visibility: visible; pointer-events: all; }
 #privacyModal {
   background: var(--cream);
   border-radius: 20px;
@@ -1285,7 +1286,7 @@ h1, h2, h3, h4 { font-family: 'Cormorant Garamond', serif; font-weight: 500; }
   font-family: 'Cormorant Garamond', serif;
   font-weight: 400;
 }
-.hero-title .hero-title-brand { display: block; }
+.hero-title .hero-title-brand { display: inline-block; }
 .hero-title .hero-title-seo {
   display: block;
   font-size: clamp(16px, 1.6vw, 22px);
@@ -1631,18 +1632,50 @@ section { padding: 100px 60px; }
 .form-note a { color: var(--gold); }
 
 /* Floating label */
-.form-group.float-label label { position: absolute; top: 15px; left: 18px; font-size: 14px; color: var(--text-muted); pointer-events: none; transition: top 0.25s cubic-bezier(.16,1,.3,1), font-size 0.25s cubic-bezier(.16,1,.3,1), color 0.25s ease, opacity 0.25s ease, letter-spacing 0.25s ease; z-index: 1; margin-bottom: 0; }
+.form-group.float-label { position: relative; margin-bottom: 22px; }
+.form-group.float-label {
+  position: relative;
+  margin-top: 6px;
+}
+.form-group.float-label label {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: var(--text-muted);
+  pointer-events: none;
+  transition: top 0.2s ease, transform 0.2s ease, font-size 0.2s ease, color 0.2s ease, padding 0.2s ease;
+  z-index: 1;
+  background: transparent;
+  padding: 0 4px;
+  line-height: 1;
+  white-space: nowrap;
+}
+.form-group.float-label textarea ~ label {
+  top: 18px;
+  transform: none;
+}
 .form-group.float-label input:focus + label,
 .form-group.float-label input:not(:placeholder-shown) + label,
 .form-group.float-label textarea:focus + label,
-.form-group.float-label input:focus + label,
-.form-group.float-label input:not(:placeholder-shown) + label,
-.form-group.float-label textarea:focus + label,
-.form-group.float-label textarea:not(:placeholder-shown) + label { top: -8px; font-size: 11px; color: var(--gold); letter-spacing: 0.06em; opacity: 0.9; background: var(--white, #fff); padding: 0 5px; border-radius: 2px; }
-.form-group.float-label input, .form-group.float-label textarea { padding-top: 16px; } .form-group.float-label { padding-top: 14px; }
-
-
-
+.form-group.float-label textarea:not(:placeholder-shown) + label {
+  top: 0;
+  transform: translateY(-50%);
+  font-size: 11px;
+  color: var(--gold);
+  background: var(--cream);
+  padding: 0 5px;
+  letter-spacing: 0.05em;
+}
+.cart-form .form-group.float-label input:focus + label,
+.cart-form .form-group.float-label input:not(:placeholder-shown) + label,
+.cart-form .form-group.float-label textarea:focus + label,
+.cart-form .form-group.float-label textarea:not(:placeholder-shown) + label {
+  background: var(--white);
+}
+.form-group.float-label input,
+.form-group.float-label textarea { padding: 14px 16px; }
 /* ── CART ── */
 .cart-inline-total {
   font-family: 'Cormorant Garamond', serif;
@@ -1774,7 +1807,7 @@ section { padding: 100px 60px; }
 .del-btn { background: none; border: none; color: #e07070; font-size: 18px; cursor: pointer; padding: 4px; transition: color 0.15s; }
 .del-btn:hover { color: #c04040; }
 .cart-empty { text-align: center; color: var(--text-muted); padding: 60px 0; font-size: 16px; }
-.cart-footer { padding: 14px 28px; padding-bottom: max(18px, calc(14px + env(safe-area-inset-bottom))); border-top: 1px solid var(--cream-dark); overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; max-height: 70vh; }
+.cart-footer { padding: 14px 28px; padding-bottom: max(18px, calc(14px + env(safe-area-inset-bottom))); border-top: 1px solid var(--cream-dark); overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; max-height: 50vh; }
 .cart-total { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
 .cart-total span:first-child { font-size: 15px; color: var(--brown); }
 .cart-total .total-val { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--gold); }
@@ -2591,6 +2624,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   line-height: 1.7;
   margin-bottom: 24px;
   max-width: 320px;
+}
+.hero-subtitle .w {
+  display: inline !important;
+  transform: none !important;
 }
 
 /* Hero features — from inline styles to CSS */
@@ -4079,17 +4116,22 @@ a, button {
    CART — Desktop floating window
    ───────────────────────────────────────────── */
 @media (min-width: 901px) {
-  /* Оверлей на десктопе не нужен — корзина это окно, не модалка */
+  /* BUG 3 FIX: Keep overlay transparent so click-outside-to-close works */
   .cart-overlay {
-    display: none !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+  }
+  .cart-overlay.open {
+    pointer-events: all;
   }
 
   .cart-drawer {
     right: 24px !important;
     top: 72px;
-    bottom: 24px;
+    bottom: auto; /* BUG 2 FIX: removed bottom:24px that stretched drawer full height */
     left: auto;
     height: auto;
+    max-height: calc(100vh - 72px - 24px); /* BUG 2 FIX: constrain height properly */
     width: 440px;
     border-radius: 22px;
     box-shadow: 0 24px 80px rgba(0,0,0,0.22), 0 4px 16px rgba(61,43,31,0.12);
@@ -4097,7 +4139,7 @@ a, button {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s ease;
-    animation: none !important;
+    /* BUG 4 FIX: removed animation:none so closing transition works */
     will-change: opacity;
   }
 
@@ -4110,7 +4152,7 @@ a, button {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s ease;
-    animation: none !important;
+    /* BUG 4 FIX: removed animation:none !important */
   }
 }
 
@@ -4375,8 +4417,6 @@ a, button {
 /* ── UX: Убираем скачок страницы при открытии мобильного меню ── */
 body.menu-open {
   overflow: hidden;
-  position: fixed;
-  width: 100%;
 }
 
 /* ── PERFORMANCE: Hint для браузера об анимируемых элементах ── */
@@ -4613,13 +4653,12 @@ footer .wave-text .w.near {
 
 /* ── Product card h3: subtle golden hover ── */
 .product-card h3 {
-  transition: color 0.35s ease, letter-spacing 0.35s ease, text-shadow 0.35s ease;
+  transition: color 0.35s ease, letter-spacing 0.35s ease;
   cursor: default;
 }
 .product-card:hover h3 {
-  color: var(--gold, #c9934a);
+  color: #3d1f0a;
   letter-spacing: 0.01em;
-  text-shadow: 0 0 16px rgba(201,147,74,0.15);
 }
 
 /* ── Price shimmer on hover ── */
@@ -4678,7 +4717,7 @@ footer .wave-text .w.near {
 .about-compact-block h3 {
   cursor: default;
   display: inline-block;
-  background: linear-gradient(90deg, #8b5e2a 0%, #c9934a 30%, #e8b87a 48%, #f5dba0 52%, #e8b87a 56%, #c9934a 70%, #8b5e2a 100%);
+  background: linear-gradient(90deg, #3d1f0a 0%, #7a4010 30%, #c9934a 50%, #7a4010 70%, #3d1f0a 100%);
   background-size: 400% auto;
   background-position: 100% center;
   -webkit-background-clip: text;
@@ -4687,7 +4726,7 @@ footer .wave-text .w.near {
   transition: filter 0.4s ease;
 }
 .about-compact-block:hover h3 {
-  filter: drop-shadow(0 0 8px rgba(201,147,74,0.2));
+  filter: drop-shadow(0 0 6px rgba(100,50,10,0.12));
   animation: aboutTitleShimmer 1.8s ease forwards;
 }
 @keyframes aboutTitleShimmer {
