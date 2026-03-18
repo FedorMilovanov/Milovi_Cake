@@ -524,7 +524,7 @@ function updateCartUI() {
     const atMin = qty <= minQty;
 
     return `
-      <div class="cart-item">
+      <div class="cart-item" data-cart-id="${id}">
         <div class="cart-item-info">
           <h4>${p.name}</h4>
           <div class="item-price">${p.price}</div>
@@ -719,45 +719,80 @@ function positionCartWindowNearButton() {
   const drawer = document.getElementById('cartDrawer');
   if (!btn || !drawer) return;
 
-  const MARGIN = 12;
-  const GAP = 12;
-  const HEADER_HEIGHT = 80; // хедер 72px + небольшой зазор
+  const MARGIN = 16;
+  const GAP = 10;
   const vw = window.innerWidth;
   const vh = window.innerHeight;
-
   const dW = 440;
-  // Ограничиваем высоту так, чтобы окно влезло между хедером и низом экрана
-  const maxH = vh - HEADER_HEIGHT - MARGIN * 2;
-  const dH = Math.min(vh * 0.78, 720, maxH);
+
+  // Get actual rendered header height dynamically
+  const header = document.querySelector('header, .site-header, nav') || { getBoundingClientRect: () => ({ bottom: 72 }) };
+  const headerBottom = header.getBoundingClientRect ? header.getBoundingClientRect().bottom : 72;
+  const HEADER_HEIGHT = Math.max(headerBottom, 64);
+
+  // Max height: from below header to bottom of viewport
+  const availableH = vh - HEADER_HEIGHT - MARGIN * 2;
+  const dH = Math.min(vh * 0.78, 720, availableH);
 
   const b = btn.getBoundingClientRect();
+  const btnRight = b.right;
+  const btnBottom = b.bottom;
   const btnCenterX = b.left + b.width / 2;
 
-  // Горизонтально: открываем внутрь экрана
-  let left = (btnCenterX < vw / 2)
-    ? b.left
-    : (b.right - dW);
-
-  // Вертикально: предпочтительно ниже кнопки
-  let top = b.bottom + GAP;
-  // Если не влезает снизу — прижимаем к низу экрана (не выше хедера)
-  if (top + dH > vh - MARGIN) {
-    top = vh - dH - MARGIN;
+  // Horizontal: prefer aligning right edge of drawer to right edge of button
+  // If button is on the right half, anchor drawer's right to button's right
+  let left;
+  if (btnCenterX > vw / 2) {
+    // Right-side button: right-align drawer
+    left = btnRight - dW;
+  } else {
+    // Left-side button: left-align drawer
+    left = b.left;
   }
 
-  // Clamp — минимум HEADER_HEIGHT, чтобы не залезть под хедер
+  // Vertical: open below button, clamp to viewport
+  let top = btnBottom + GAP;
+  if (top + dH > vh - MARGIN) {
+    // Not enough space below — try above
+    const topAbove = b.top - GAP - dH;
+    if (topAbove > HEADER_HEIGHT) {
+      top = topAbove;
+    } else {
+      // Neither fits perfectly — pin to bottom of viewport
+      top = vh - dH - MARGIN;
+    }
+  }
+
+  // Final clamp
   left = Math.max(MARGIN, Math.min(left, vw - dW - MARGIN));
-  top  = Math.max(HEADER_HEIGHT, Math.min(top, vh - dH - MARGIN));
+  top  = Math.max(HEADER_HEIGHT + MARGIN, Math.min(top, vh - dH - MARGIN));
+
+  // Set transform-origin based on which corner the drawer opens from
+  const originX = (btnCenterX > vw / 2) ? 'right' : 'left';
+  drawer.style.transformOrigin = `top ${originX}`;
 
   drawer.style.left   = left + 'px';
   drawer.style.top    = top + 'px';
   drawer.style.right  = 'auto';
   drawer.style.bottom = 'auto';
+  drawer.style.width  = dW + 'px';
+  drawer.style.maxHeight = dH + 'px';
 }
 
 function openCart() {
   var drawer = document.getElementById('cartDrawer');
   var overlay = document.getElementById('cartOverlay');
+
+  // Remove any leftover closing state immediately
+  drawer.classList.remove('closing');
+
+  if (window.innerWidth > 900) {
+    // Position first (before classes added) so transform-origin is set
+    positionCartWindowNearButton();
+    // Force reflow so transition fires from initial state
+    drawer.getBoundingClientRect();
+  }
+
   drawer.classList.add('open');
   overlay.classList.add('open');
   document.body.classList.add('cart-open');
@@ -765,9 +800,7 @@ function openCart() {
   if (window.innerWidth <= 900) {
     lockBody();
   }
-  // Убрали scrollTo(0) — страница остаётся на месте
 
-  if (window.innerWidth > 900) { positionCartWindowNearButton(); }
   setCartStep(1);
 
   var bn = document.getElementById('bottomNav');
@@ -783,9 +816,18 @@ function closeCart() {
   overlay.classList.remove('open');
   document.body.classList.remove('cart-open');
 
+  var delay = window.innerWidth > 900 ? 220 : 350;
   setTimeout(function() {
     drawer.classList.remove('closing');
-  }, 250);
+    // Reset inline position/size on desktop so next open recalculates fresh
+    if (window.innerWidth > 900) {
+      drawer.style.left = '';
+      drawer.style.top = '';
+      drawer.style.width = '';
+      drawer.style.maxHeight = '';
+      drawer.style.transformOrigin = '';
+    }
+  }, delay);
 
   if (window.innerWidth <= 900) unlockBody();
 
@@ -856,6 +898,41 @@ document.querySelectorAll('img').forEach(img => {
     }
   }, { passive: true });
 })();
+
+// ── CART DESKTOP: REPOSITION ON RESIZE ──
+(function() {
+  let resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      const drawer = document.getElementById('cartDrawer');
+      if (!drawer) return;
+      if (drawer.classList.contains('open') && window.innerWidth > 900) {
+        positionCartWindowNearButton();
+      }
+    }, 80);
+  });
+})();
+
+// ── CART ESCAPE KEY TO CLOSE ──
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const drawer = document.getElementById('cartDrawer');
+    if (drawer && drawer.classList.contains('open')) closeCart();
+  }
+});
+
+// ── CART OVERLAY CLICK-OUTSIDE (desktop: transparent overlay) ──
+(function() {
+  const overlay = document.getElementById('cartOverlay');
+  if (!overlay) return;
+  overlay.addEventListener('click', function(e) {
+    const drawer = document.getElementById('cartDrawer');
+    if (!drawer || drawer.contains(e.target)) return;
+    if (drawer.classList.contains('open')) closeCart();
+  });
+})();
+
 function observeReveal() {
   const els = document.querySelectorAll('.reveal:not(.visible), .reveal-photo:not(.visible)');
   const threshold = window.innerWidth <= 768 ? 0.05 : 0.15;
@@ -1022,6 +1099,7 @@ window.addEventListener('scroll', _onScroll, { passive: true });
 // ── TOAST ──
 function showToast(msg) {
   const t = document.getElementById('toast');
+  if (!t) return;
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(t._timer);
