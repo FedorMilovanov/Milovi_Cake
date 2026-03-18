@@ -336,10 +336,12 @@ function addToCart(id, e) {
 function removeFromCart(id) {
   // Анимируем удаление одного элемента
   const items = document.querySelectorAll('.cart-item');
-  // Находим нужный по data или порядку — ищем по onclick
+  // Primary: find by data-cart-id attribute (fast, reliable)
   let targetEl = null;
   items.forEach(el => {
-    if (el.querySelector(`[onclick="removeFromCart(${id})"]`)) targetEl = el;
+    if (el.dataset.cartId == id) { targetEl = el; return; }
+    // Fallback: legacy onclick-based lookup
+    if (!targetEl && el.querySelector(`[onclick="removeFromCart(${id})"]`)) targetEl = el;
   });
   if (targetEl) {
     targetEl.style.transition = 'opacity 0.25s ease, transform 0.25s ease, max-height 0.3s ease 0.1s, margin 0.3s ease 0.1s, padding 0.3s ease 0.1s';
@@ -433,8 +435,10 @@ function clearCart() {
       cart = {};
       saveCartToStorage();
       setCartStep(1);
-      document.getElementById('cartFooter').style.display = 'none';
-      document.getElementById('cartBody').style.display = '';
+      const _cFooter = document.getElementById('cartFooter');
+      const _cBody = document.getElementById('cartBody');
+      if (_cFooter) _cFooter.style.display = 'none';
+      if (_cBody) _cBody.style.display = '';
       updateCartUI();
     }, cartItems.length * 50 + 200);
   };
@@ -469,21 +473,25 @@ function setCartStep(step) {
   ];
   if (!steps[0]) return;
   steps.forEach((s, i) => {
+    if (!s) return;
     s.classList.remove('active', 'done');
     if (i + 1 < step) s.classList.add('done');
     else if (i + 1 === step) s.classList.add('active');
   });
   lines.forEach((l, i) => {
-    l.classList.toggle('done', i + 1 < step);
+    if (l) l.classList.toggle('done', i + 1 < step);
   });
 }
 
 function updateCartUI() {
   const totalItems = Object.keys(cart).length;
   const badge = document.getElementById('cartBadge');
-  badge.textContent = totalItems;
-  badge.classList.toggle('visible', totalItems > 0);
-  document.getElementById('cartCountBadge').textContent = totalItems;
+  if (badge) {
+    badge.textContent = totalItems;
+    badge.classList.toggle('visible', totalItems > 0);
+  }
+  const countBadge = document.getElementById('cartCountBadge');
+  if (countBadge) countBadge.textContent = totalItems;
 
   // Показываем кнопку очистки только когда есть товары и мы на шаге 1
   const clearBtn = document.getElementById('cartClearBtn');
@@ -491,6 +499,7 @@ function updateCartUI() {
 
   const body = document.getElementById('cartBody');
   const footer = document.getElementById('cartFooter');
+  if (!body) return; // корзина не в DOM на этой странице
 
   const items = Object.entries(cart);
   if (!items.length) {
@@ -543,7 +552,8 @@ function updateCartUI() {
   }).join('');
 
   const totalFmt = total.toLocaleString('ru') + ' ₽';
-  document.getElementById('cartTotal').textContent = totalFmt;
+  const cartTotalEl = document.getElementById('cartTotal');
+  if (cartTotalEl) cartTotalEl.textContent = totalFmt;
 
   // Step 1: add summary + next button at bottom of cart-body
   body.innerHTML += `
@@ -561,16 +571,24 @@ function updateCartUI() {
 }
 
 function goToFormStep() {
+  const cartFooter = document.getElementById('cartFooter');
+  const cartBody = document.getElementById('cartBody');
+  if (!cartFooter || !cartBody) return;
   setCartStep(2);
-  document.getElementById('cartFooter').style.display = 'block';
-  document.getElementById('cartBody').style.display = 'none';
+  cartFooter.style.display = 'block';
+  cartBody.style.display = 'none';
 }
 
 function buildMessage() {
-  const name = document.getElementById('cname').value.trim() || '—';
-  const phone = document.getElementById('cphone').value.trim() || '—';
-  const date = document.getElementById('cdate').value.trim() || '—';
-  const comment = document.getElementById('ccomment').value.trim() || '—';
+  const cnameEl   = document.getElementById('cname');
+  const cphoneEl  = document.getElementById('cphone');
+  const cdateEl   = document.getElementById('cdate');
+  const ccommentEl = document.getElementById('ccomment');
+
+  const name    = cnameEl?.value.trim()    || '—';
+  const phone   = cphoneEl?.value.trim()   || '—';
+  const date    = cdateEl?.value.trim()    || '—';
+  const comment = ccommentEl?.value.trim() || '—';
 
   if (!Object.keys(cart).length) { showToast('Корзина пуста — добавьте товар'); return null; }
   if (!phone || phone === '—') { showToast('Пожалуйста, укажите телефон'); return null; }
@@ -578,7 +596,7 @@ function buildMessage() {
   const phoneDigits = phone.replace(/\D/g, '');
   if (phoneDigits.length < 10) {
     showToast('Введите корректный номер телефона');
-    document.getElementById('cphone').focus();
+    if (cphoneEl) cphoneEl.focus();
     return null;
   }
 
@@ -590,7 +608,7 @@ function buildMessage() {
     minDate.setHours(0, 0, 0, 0);
     if (selectedDate < minDate) {
       showToast('Дата должна быть не ранее чем через 2 дня');
-      document.getElementById('cdate').focus();
+      if (cdateEl) cdateEl.focus();
       return null;
     }
   }
@@ -674,9 +692,12 @@ function navigateToStep(step) {
 }
 
 function goBackToCart() {
+  const cartFooter = document.getElementById('cartFooter');
+  const cartBody = document.getElementById('cartBody');
+  if (!cartFooter || !cartBody) return;
   setCartStep(1);
-  document.getElementById('cartFooter').style.display = 'none';
-  document.getElementById('cartBody').style.display = '';
+  cartFooter.style.display = 'none';
+  cartBody.style.display = '';
   updateCartUI();
 }
 
@@ -782,6 +803,10 @@ function positionCartWindowNearButton() {
 function openCart() {
   var drawer = document.getElementById('cartDrawer');
   var overlay = document.getElementById('cartOverlay');
+  if (!drawer || !overlay) return;
+
+  // Cancel any in-progress close so re-open is instant
+  if (drawer._closeTimer) { clearTimeout(drawer._closeTimer); drawer._closeTimer = null; }
 
   // Remove any leftover closing state immediately
   drawer.classList.remove('closing');
@@ -810,6 +835,10 @@ function openCart() {
 function closeCart() {
   var drawer = document.getElementById('cartDrawer');
   var overlay = document.getElementById('cartOverlay');
+  if (!drawer || !overlay) return;
+
+  // Guard: ignore if already closed
+  if (!drawer.classList.contains('open') && !drawer.classList.contains('closing')) return;
 
   drawer.classList.remove('open');
   drawer.classList.add('closing');
@@ -817,7 +846,8 @@ function closeCart() {
   document.body.classList.remove('cart-open');
 
   var delay = window.innerWidth > 900 ? 220 : 350;
-  setTimeout(function() {
+  drawer._closeTimer = setTimeout(function() {
+    drawer._closeTimer = null;
     drawer.classList.remove('closing');
     // Reset inline position/size on desktop so next open recalculates fresh
     if (window.innerWidth > 900) {
@@ -865,6 +895,7 @@ document.querySelectorAll('img').forEach(img => {
 // ── CART SWIPE-RIGHT TO CLOSE ──
 (function() {
   const drawer = document.getElementById('cartDrawer');
+  if (!drawer) return;
   let startX = 0, startY = 0, dragging = false;
   drawer.addEventListener('touchstart', e => {
     // ✅ Баг 6: не начинать drag если пользователь в поле ввода
@@ -1135,38 +1166,43 @@ document.querySelectorAll('.stat-num').forEach(el => counterObserver.observe(el)
 const burgerBtn = document.getElementById('burgerBtn');
 const mobileMenu = document.getElementById('mobileMenu');
 function closeMobileMenu() {
+  if (!burgerBtn || !mobileMenu) return;
   burgerBtn.classList.remove('open');
   mobileMenu.classList.remove('open');
   burgerBtn.setAttribute('aria-expanded', 'false');
   document.body.classList.remove('menu-open');
 }
-burgerBtn.addEventListener('click', () => {
-  const isOpen = burgerBtn.classList.toggle('open');
-  mobileMenu.classList.toggle('open', isOpen);
-  burgerBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-  document.body.classList.toggle('menu-open', isOpen);
-});
+if (burgerBtn && mobileMenu) {
+  burgerBtn.addEventListener('click', () => {
+    const isOpen = burgerBtn.classList.toggle('open');
+    mobileMenu.classList.toggle('open', isOpen);
+    burgerBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    document.body.classList.toggle('menu-open', isOpen);
+  });
 
-// Close menu on tap outside
-document.addEventListener('click', (e) => {
-  if (mobileMenu.classList.contains('open') &&
-      !mobileMenu.contains(e.target) &&
-      !burgerBtn.contains(e.target)) {
-    closeMobileMenu();
-  }
-});
+  // Close menu on tap outside
+  document.addEventListener('click', (e) => {
+    if (mobileMenu.classList.contains('open') &&
+        !mobileMenu.contains(e.target) &&
+        !burgerBtn.contains(e.target)) {
+      closeMobileMenu();
+    }
+  });
+}
 
 // ── LIGHTBOX ──
 // ── LIGHTBOX with gallery + swipe ──
 let _lbSrcs = [], _lbIdx = 0;
 
 function openLightbox(src, srcs) {
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lightboxImg');
+  if (!lb || !lbImg) return;
   _lbSrcs = srcs || [src];
   // Normalize: find index by matching end of path
   _lbIdx = _lbSrcs.findIndex(s => src.endsWith(s) || s.endsWith(src) || src === s);
   if (_lbIdx < 0) _lbIdx = 0;
-  const lb = document.getElementById('lightbox');
-  document.getElementById('lightboxImg').src = _lbSrcs[_lbIdx];
+  lbImg.src = _lbSrcs[_lbIdx];
   lb.classList.add('open');
   lockBody(); // iOS-safe scroll lock
   _lbUpdateArrows();
@@ -1176,6 +1212,7 @@ function lbNavigate(dir) {
   if (_lbSrcs.length < 2) return;
   _lbIdx = (_lbIdx + dir + _lbSrcs.length) % _lbSrcs.length;
   const img = document.getElementById('lightboxImg');
+  if (!img) return;
   img.style.opacity = '0';
   img.style.transition = 'opacity 0.15s';
   setTimeout(() => {
@@ -1185,13 +1222,17 @@ function lbNavigate(dir) {
   _lbUpdateArrows();
 }
 function _lbUpdateArrows() {
+  const lbNav = document.getElementById('lbNav');
+  if (!lbNav) return;
   const show = _lbSrcs.length > 1;
-  document.getElementById('lbNav').classList.toggle('hidden', !show);
+  lbNav.classList.toggle('hidden', !show);
   const counter = document.getElementById('lbCounter');
   if (counter) counter.textContent = (_lbIdx + 1) + ' / ' + _lbSrcs.length;
 }
 function closeLightbox() {
-  document.getElementById('lightbox').classList.remove('open');
+  const lb = document.getElementById('lightbox');
+  if (!lb) return;
+  lb.classList.remove('open');
   unlockBody();
   _lbSrcs = []; _lbIdx = 0;
 }
@@ -1201,13 +1242,17 @@ document.addEventListener('keydown', e => {
 });
 
 // Click on backdrop closes lightbox
-document.getElementById('lightbox').addEventListener('click', function(e) {
-  if (e.target === this) closeLightbox();
-});
+(function() {
+  const _lbEl = document.getElementById('lightbox');
+  if (_lbEl) _lbEl.addEventListener('click', function(e) {
+    if (e.target === this) closeLightbox();
+  });
+})();
 
 // Swipe on lightbox
 (function() {
   const lb = document.getElementById('lightbox');
+  if (!lb) return;
   let sx = 0;
   lb.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
   lb.addEventListener('touchend', e => {
@@ -1263,7 +1308,8 @@ function stepWeight(dir) {
   const newVal = Math.round((_calcWeight + dir * WEIGHT_STEP) * 10) / 10;
   if (newVal < WEIGHT_MIN || newVal > WEIGHT_MAX) return;
   _calcWeight = newVal;
-  document.getElementById('calcWeight').value = _calcWeight;
+  const _cwEl = document.getElementById('calcWeight');
+  if (_cwEl) _cwEl.value = _calcWeight;
   updateCalc();
   const popup = document.getElementById('guestsPopup');
   if (popup) popup.style.opacity = '1';
@@ -1297,8 +1343,10 @@ function selectOpt(el, groupId) {
     label.addEventListener('animationend', () => label.classList.remove('opt-label-shake'), { once: true });
   }
   if (groupId === 'calcType') {
-    document.getElementById('calcWeightRow').style.display = 'block';
-    document.getElementById('calcFillRow').style.display = 'block';
+    const _wRow = document.getElementById('calcWeightRow');
+    const _fRow = document.getElementById('calcFillRow');
+    if (_wRow) _wRow.style.display = 'block';
+    if (_fRow) _fRow.style.display = 'block';
   }
   updateCalc();
 }
@@ -1347,16 +1395,18 @@ function updateCalc() {
   const decorIsNonStandard = decorPrice > 0;
   const isApprox = decorIsNonStandard;
   const prefix = isApprox ? '~ ' : '';
-  document.getElementById('calcResult').textContent = prefix + total.toLocaleString('ru') + ' ₽';
+  const calcResultEl = document.getElementById('calcResult');
+  if (calcResultEl) calcResultEl.textContent = prefix + total.toLocaleString('ru') + ' ₽';
 
   const badge = document.getElementById('calcApproxBadge');
-  badge.classList.toggle('visible', isApprox);
+  if (badge) badge.classList.toggle('visible', isApprox);
 
   let noteText = 'Точная цена согласовывается при заказе';
   const notes = [];
   if (decorIsNonStandard) notes.push('декор рассчитывается отдельно');
   if (notes.length) noteText = '* ' + notes.map(n => n[0].toUpperCase() + n.slice(1)).join(', ');
-  document.getElementById('calcNote').textContent = noteText;
+  const calcNoteEl = document.getElementById('calcNote');
+  if (calcNoteEl) calcNoteEl.textContent = noteText;
 }
 
 
@@ -1441,14 +1491,14 @@ function acceptCookie() {
   if (!banner) return;
   banner.classList.remove('visible');
   banner.style.transform = 'translateY(100%)';
-  banner.addEventListener('transitionend', () => banner.remove(), { once: true }
+  banner.addEventListener('transitionend', () => banner.remove(), { once: true });
+}
 function declineCookie() {
   const banner = document.getElementById('cookieBanner');
   if (!banner) return;
   banner.classList.remove('visible');
   banner.style.transform = 'translateY(100%)';
   banner.addEventListener('transitionend', () => banner.remove(), { once: true });
-});
 }
 function initCookieBanner() {
   const stored = localStorage.getItem('cookieAccepted');
@@ -1487,6 +1537,7 @@ function closePrivacy() {
 let _fillSheetPendingEl = null; // calc-opt element waiting to be confirmed
 
 function openFillPopup(optEl) {
+  if (!optEl) return;
   const title = optEl.querySelector('.opt-label')?.textContent?.trim() || '';
   const desc  = optEl.dataset.desc || '';
 
@@ -1498,14 +1549,18 @@ function openFillPopup(optEl) {
     return `<span class="fill-sheet-tag ${cls}">${t.textContent.trim()}</span>`;
   }).join('');
 
-  document.getElementById('fillSheetTags').innerHTML = tagsHTML;
-  document.getElementById('fillPopupTitle').textContent = title;
-  document.getElementById('fillPopupText').textContent  = desc;
+  const _fillSheetTagsEl = document.getElementById('fillSheetTags');
+  const _fillPopupTitleEl = document.getElementById('fillPopupTitle');
+  const _fillPopupTextEl  = document.getElementById('fillPopupText');
+  if (_fillSheetTagsEl)  _fillSheetTagsEl.innerHTML   = tagsHTML;
+  if (_fillPopupTitleEl) _fillPopupTitleEl.textContent = title;
+  if (_fillPopupTextEl)  _fillPopupTextEl.textContent  = desc;
 
   _fillSheetPendingEl = optEl;
 
   const popup   = document.getElementById('fillPopup');
   const overlay = document.getElementById('fillOverlay');
+  if (!popup || !overlay) return;
 
   popup.classList.add('open');
   overlay.classList.add('open');
@@ -1608,7 +1663,8 @@ document.addEventListener('keydown', e => {
     if (typeof closeLightbox === 'function') closeLightbox();
     closePrivacy();
     closeFillPopup();
-    if (document.getElementById('cartDrawer').classList.contains('open')) closeCart();
+    const _cartDr = document.getElementById('cartDrawer');
+    if (_cartDr && _cartDr.classList.contains('open')) closeCart();
   }
 });
 
@@ -1629,6 +1685,8 @@ document.addEventListener('keydown', e => {
 // ── PREMIUM: Mouse-tracking glow на карточках ──
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.product-card').forEach(card => {
+    if (card._glowBound) return;
+    card._glowBound = true;
     card.addEventListener('mousemove', (e) => {
       const rect = card.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
@@ -1675,6 +1733,8 @@ if (heroBg) {
 
 // ── Ripple effect ──
 document.querySelectorAll('.btn-primary, .btn-wa, .calc-order-btn, .btn-add, .header-order').forEach(btn => {
+  if (btn._rippleBound) return;
+  btn._rippleBound = true;
   btn.classList.add('ripple-wrap');
   btn.addEventListener('click', function(e) {
     const circle = document.createElement('span');
@@ -1705,10 +1765,12 @@ const CHAT_SRCS = [
 
 // Переиспользуем существующий лайтбокс (#lightbox, #lightboxImg, #lbNav)
 function openChatLightbox(idx) {
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lightboxImg');
+  if (!lb || !lbImg) return;
   _lbSrcs = CHAT_SRCS;
   _lbIdx = idx;
-  const lb = document.getElementById('lightbox');
-  document.getElementById('lightboxImg').src = CHAT_SRCS[idx];
+  lbImg.src = CHAT_SRCS[idx];
   lb.classList.add('open');
   lockBody();
   _lbUpdateArrows();
@@ -1738,9 +1800,14 @@ function closeReviewsModal() {
   document.removeEventListener('keydown', handleReviewsEscape);
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.remove('hidden');
+  // Fallback timeout ensures unlockBody() fires even if transitionend doesn't
+  var _unlocked = false;
+  var _unlockFallback = setTimeout(function() {
+    if (!_unlocked) { _unlocked = true; unlockBody(); }
+  }, 500);
   modal.addEventListener('transitionend', function handler() {
     modal.removeEventListener('transitionend', handler);
-    unlockBody();
+    if (!_unlocked) { _unlocked = true; clearTimeout(_unlockFallback); unlockBody(); }
   });
 }
 
@@ -1759,8 +1826,8 @@ function switchReviewsTab(tab) {
   const isYandex = tab === 'yandex';
   yList.style.display = isYandex ? 'block' : 'none';
   gList.style.display = isYandex ? 'none' : 'block';
-  tY.classList.toggle('active', isYandex);
-  tG.classList.toggle('active', !isYandex);
+  if (tY) tY.classList.toggle('active', isYandex);
+  if (tG) tG.classList.toggle('active', !isYandex);
   if (link) {
     link.href = isYandex
       ? 'https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/reviews/'
@@ -1943,6 +2010,9 @@ const stageEl     = document.getElementById('stage');
 const thumbs = [];
 const arrows = [];
 
+// ── Guard: skip reviews DOM setup on pages without reviews section ──
+if (scField && trackEl && dotsEl && stageEl) {
+
 REVIEWS.forEach((rv, i) => {
   const lay = LAYOUTS[i];
 
@@ -2005,7 +2075,7 @@ REVIEWS.forEach((rv, i) => {
   dotsEl.appendChild(dot);
 });
 
-thumbs[0].classList.add('is-active');
+if (thumbs.length) thumbs[0].classList.add('is-active');
 // Подсветить первый элемент filmstrip
 const firstFilmItem = document.querySelector('.review-filmstrip-item');
 if (firstFilmItem) firstFilmItem.classList.add('active');
@@ -2022,6 +2092,7 @@ function showArrows(){
 function positionArrows(){}
 
 function startTypewriter(){
+  if (!trackEl) return; // not on reviews page
   const slides = trackEl.querySelectorAll('.review-slide');
   const txtEl  = slides[cur].querySelector('.review-text');
   const full   = txtEl.dataset.full;
@@ -2235,6 +2306,7 @@ function dissolveText(){
 }
 
 function goTo(n, skipTypewriter){
+  if (!scField || !trackEl || !dotsEl || !stageEl) return; // not on reviews page
   const slides = trackEl.querySelectorAll('.review-slide');
   const dts    = dotsEl.querySelectorAll('.rev-dot');
   const filmItems = document.querySelectorAll('.review-filmstrip-item');
@@ -2276,18 +2348,23 @@ function goTo(n, skipTypewriter){
   else startWaiting();
 }
 
-document.getElementById('btnPrev').addEventListener('click', ()=> goTo(cur-1));
-document.getElementById('btnNext').addEventListener('click', ()=> goTo(cur+1));
+const _btnPrev = document.getElementById('btnPrev');
+const _btnNext = document.getElementById('btnNext');
+if (_btnPrev) _btnPrev.addEventListener('click', ()=> goTo(cur-1));
+if (_btnNext) _btnNext.addEventListener('click', ()=> goTo(cur+1));
 
 let tsX=0, tsY=0;
-trackEl.addEventListener('touchstart', e=>{ tsX=e.touches[0].clientX; tsY=e.touches[0].clientY; },{passive:true});
-trackEl.addEventListener('touchend', e=>{
-  const dx=e.changedTouches[0].clientX-tsX;
-  const dy=e.changedTouches[0].clientY-tsY;
-  if(Math.abs(dx)>Math.abs(dy)*1.4 && Math.abs(dx)>40){ goTo(dx<0 ? cur+1 : cur-1); }
-});
+if (trackEl) {
+  trackEl.addEventListener('touchstart', e=>{ tsX=e.touches[0].clientX; tsY=e.touches[0].clientY; },{passive:true});
+  trackEl.addEventListener('touchend', e=>{
+    const dx=e.changedTouches[0].clientX-tsX;
+    const dy=e.changedTouches[0].clientY-tsY;
+    if(Math.abs(dx)>Math.abs(dy)*1.4 && Math.abs(dx)>40){ goTo(dx<0 ? cur+1 : cur-1); }
+  });
+}
 
 function getStageCenter(){
+  if (!stageEl) return { x: 0, y: 0 };
   const r=stageEl.getBoundingClientRect();
   return { x: r.left+r.width/2, y: r.top+r.height/2 };
 }
@@ -2485,6 +2562,7 @@ let _lbReviewIdx = 0; // текущий индекс в лайтбоксе от�
 
 function _lbReviewNav(dir) {
   _lbReviewIdx = (_lbReviewIdx + dir + REVIEWS.length) % REVIEWS.length;
+  if (!lbImg) return;
   lbImg.style.opacity = '0';
   lbImg.style.transform = 'scale(0.95)';
   setTimeout(() => {
@@ -2494,23 +2572,25 @@ function _lbReviewNav(dir) {
       lbImg.style.transform = 'scale(1)';
     };
   }, 150);
-  lbArrCounter.textContent = (_lbReviewIdx + 1) + ' / ' + REVIEWS.length;
+  if (lbArrCounter) lbArrCounter.textContent = (_lbReviewIdx + 1) + ' / ' + REVIEWS.length;
 }
 
 if (lbPrevBtn) lbPrevBtn.addEventListener('click', () => _lbReviewNav(-1));
 if (lbNextBtn) lbNextBtn.addEventListener('click', () => _lbReviewNav(1));
 
 // iOS Safari: свайп по overlay для навигации (дополнительно к стрелкам)
-(function(){
-  let _sx = 0;
-  lbOverlay.addEventListener('touchstart', e => {
-    _sx = e.touches[0].clientX;
-  }, { passive: true });
-  lbOverlay.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - _sx;
-    if (Math.abs(dx) > 50) _lbReviewNav(dx < 0 ? 1 : -1);
-  }, { passive: true });
-})();
+if (lbOverlay) {
+  (function(){
+    let _sx = 0;
+    lbOverlay.addEventListener('touchstart', e => {
+      _sx = e.touches[0].clientX;
+    }, { passive: true });
+    lbOverlay.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - _sx;
+      if (Math.abs(dx) > 50) _lbReviewNav(dx < 0 ? 1 : -1);
+    }, { passive: true });
+  })();
+}
 
 function lerp(a,b,t){ return a+(b-a)*t; }
 
@@ -2530,18 +2610,21 @@ function openLB(triggerEl, src, idx){
   lbImg.style.transition = 'opacity 0.2s, transform 0.2s';
   if (lbArrCounter) lbArrCounter.textContent = (_lbReviewIdx + 1) + ' / ' + REVIEWS.length;
 
-  document.documentElement.style.overflow = 'hidden';
+  // Use counting lock so it coexists safely with other scroll locks
+  lockBody();
   lbOverlay.classList.add('active');
-  lbX.style.pointerEvents = 'none';
+  if (lbX) lbX.style.pointerEvents = 'none';
 
   setTimeout(()=>{
-    lbX.style.opacity = '1';
-    lbX.style.transform = 'scale(1)';
-    lbX.style.pointerEvents = '';
+    if (lbX) {
+      lbX.style.opacity = '1';
+      lbX.style.transform = 'scale(1)';
+      lbX.style.pointerEvents = '';
+    }
   }, 600);
 
   setTimeout(()=>{
-    lbBox.classList.add('clickable');
+    if (lbBox) lbBox.classList.add('clickable');
     lbBusy = false;
   }, 950);
 }
@@ -2549,17 +2632,20 @@ function openLB(triggerEl, src, idx){
 function closeLB(){
   if(!lbIsOpen || lbBusy) return;
   lbBusy=true; lbIsOpen=false;
-  lbBox.classList.remove('clickable');
-  lbX.style.opacity = '0';
-  lbX.style.transform = 'scale(0.5)';
-  lbX.style.pointerEvents = 'none';
+  if (lbBox) lbBox.classList.remove('clickable');
+  if (lbX) {
+    lbX.style.opacity = '0';
+    lbX.style.transform = 'scale(0.5)';
+    lbX.style.pointerEvents = 'none';
+  }
 
   // Убираем класс active — CSS transition анимирует обратно
-  lbOverlay.classList.remove('active');
-  document.documentElement.style.overflow = '';
+  if (lbOverlay) lbOverlay.classList.remove('active');
+  // Pair with lockBody() called in openLB
+  unlockBody();
 
   setTimeout(()=>{
-    lbImg.src = '';
+    if (lbImg) lbImg.src = '';
     lbBusy = false;
     hideArrows();
     STATE = 'zoom_out';
@@ -2604,9 +2690,9 @@ function animBox(frames, times, done){
   requestAnimationFrame(step);
 }
 
-lbBg.addEventListener('click', closeLB);
-lbBox.addEventListener('click', closeLB);
-lbX.addEventListener('click',  closeLB);
+if (lbBg)  lbBg.addEventListener('click', closeLB);
+if (lbBox) lbBox.addEventListener('click', closeLB);
+if (lbX)   lbX.addEventListener('click',  closeLB);
 document.addEventListener('keydown', e=>{ if(e.key==='Escape' && lbIsOpen) closeLB(); });
 
 // Сброс lbBusy если пользователь переключил вкладку во время анимации
@@ -2615,6 +2701,8 @@ document.addEventListener('visibilitychange', () => {
     lbBusy = false;
   }
 });
+
+} // end reviews section guard
 
 
   // ── Public API — functions called from HTML via onclick ──
@@ -2656,6 +2744,8 @@ document.addEventListener('visibilitychange', () => {
 /* ── Wave-text: word-by-word hover ripple ── */
 (function() {
   document.querySelectorAll('.wave-text').forEach(function(el) {
+    if (el._waveBound) return;
+    el._waveBound = true;
     var words = el.textContent.trim().split(/(\s+)/);
     el.innerHTML = words.map(function(w) {
       if (/^\s+$/.test(w)) return w;
@@ -2987,6 +3077,16 @@ document.addEventListener('visibilitychange', () => {
   document.addEventListener('touchstart', function(e) {
     if (ptrBusy) return;
     if (window.scrollY > 4) return;
+    // Don't trigger PTR when any overlay / modal / drawer is open
+    if (document.body.classList.contains('cart-open') ||
+        document.body.classList.contains('fill-open') ||
+        document.body.classList.contains('menu-open')) return;
+    var _lbEl = document.getElementById('lightbox');
+    if (_lbEl && _lbEl.classList.contains('open')) return;
+    var _rmEl = document.getElementById('reviewsModal');
+    if (_rmEl && _rmEl.classList.contains('open')) return;
+    var _prEl = document.getElementById('privacyOverlay');
+    if (_prEl && _prEl.classList.contains('open')) return;
     ptrStartY  = e.touches[0].clientY;
     ptrCurrent = 0;
     ptrActive  = true;
