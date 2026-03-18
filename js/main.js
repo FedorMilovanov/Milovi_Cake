@@ -685,11 +685,9 @@ function goBackToCart() {
 function lockBody() {
   const count = parseInt(document.body.dataset.lockCount || '0');
   if (count === 0) {
-    const scrollY = window.scrollY;
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = '100%';
-    document.body.dataset.scrollY = scrollY;
+    document.body.dataset.scrollY = window.scrollY;
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
   }
   document.body.dataset.lockCount = count + 1;
 }
@@ -699,13 +697,9 @@ function unlockBody() {
   const newCount = count - 1;
   document.body.dataset.lockCount = newCount;
   if (newCount === 0) {
-    const scrollY = parseInt(document.body.dataset.scrollY || '0');
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.width = '';
     document.body.style.overflow = '';
+    document.body.style.touchAction = '';
     delete document.body.dataset.scrollY;
-    window.scrollTo({ top: scrollY, behavior: 'instant' });
   }
 }
 
@@ -989,7 +983,6 @@ setTimeout(() => {
 // ── ОБЪЕДИНЁННЫЙ SCROLL HANDLER (один rAF на все) ──
 const _scrollEl = document.getElementById('scroll-progress');
 const header = document.getElementById('siteHeader');
-const floatingCta = document.getElementById('floatingCta');
 const contactsSection = document.getElementById('contacts');
 const backToTopEl = document.getElementById('backToTop');
 let _scrollTicking = false;
@@ -1006,12 +999,6 @@ function _onScroll() {
 
     // Header scrolled state
     if (header) header.classList.toggle('scrolled', y > 60);
-
-    // Floating CTA (десктоп)
-    if (floatingCta) {
-      const nearBottom = contactsSection && y + window.innerHeight > contactsSection.offsetTop - 100;
-      floatingCta.classList.toggle('visible', y > 300 && !nearBottom);
-    }
 
     // Back to top
     if (backToTopEl) backToTopEl.classList.toggle('visible', y > 600);
@@ -2672,7 +2659,7 @@ document.addEventListener('visibilitychange', () => {
     if (state.raf) { cancelAnimationFrame(state.raf); state.raf = null; }
     var from = { ringOp: state.ringOp, ringY: state.ringY, flatOp: state.flatOp, flatY: state.flatY, flatSize: state.flatSize, flatGlow: state.flatGlow };
     var to = toHover
-      ? { ringOp: 0, ringY: -18, flatOp: 1, flatY: -18, flatSize: 12, flatGlow: 1 }
+      ? { ringOp: 0, ringY: -18, flatOp: 1, flatY: -12, flatSize: 12, flatGlow: 0.5 }
       : { ringOp: 1, ringY: 0,   flatOp: 0, flatY: 8,   flatSize: 6.5, flatGlow: 0 };
     var startTs = null;
     function step(ts) {
@@ -2706,8 +2693,8 @@ document.addEventListener('visibilitychange', () => {
       var flatEl = document.getElementById(item.flatId);
       if (!btn || !ringEl || !flatEl) return;
       var state = { ringEl: ringEl, flatEl: flatEl, ringOp: 0.5, ringY: 0, flatOp: 0, flatY: 8, flatSize: 6.5, flatGlow: 0, raf: null };
-      btn.addEventListener('mouseenter', function() { runAnim(state, true,  650); });
-      btn.addEventListener('mouseleave', function() { runAnim(state, false, 650); });
+      btn.addEventListener('mouseenter', function() { runAnim(state, true,  380); });
+      btn.addEventListener('mouseleave', function() { runAnim(state, false, 420); });
     });
   }
 
