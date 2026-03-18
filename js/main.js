@@ -785,6 +785,13 @@ function openCart() {
   _cartClearTimer();
   _cartState = 'opening';
 
+  // На десктопе корзина фиксирована в top-right (top:80px).
+  // Если страница прокручена вниз — скроллим наверх, иначе корзина
+  // открывается за пределами экрана и пользователь её не видит.
+  if (window.innerWidth > 900 && window.scrollY > 60) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   // Clear ALL inline styles — CSS handles positioning entirely
   drawer.classList.remove('closing');
   drawer.style.cssText = '';
@@ -1484,12 +1491,8 @@ function initCookieBanner() {
   const banner = document.getElementById('cookieBanner');
   if (!banner) return;
   setTimeout(() => {
-    // Main uses classList, city uses style.transform
-    if (banner.getAttribute('style') && banner.getAttribute('style').includes('transform')) {
-      banner.style.transform = 'translateY(0)';
-    } else {
-      banner.classList.add('visible');
-    }
+    banner.style.transform = 'translateY(0)';
+    banner.classList.add('visible');
   }, 800);
 }
 initCookieBanner();
@@ -2685,6 +2688,7 @@ document.addEventListener('visibilitychange', () => {
 
   // ── Public API — functions called from HTML via onclick ──
   window.acceptCookie = typeof acceptCookie !== "undefined" ? acceptCookie : undefined;
+  window.declineCookie = typeof declineCookie !== "undefined" ? declineCookie : undefined;
   window.addToCart = typeof addToCart !== "undefined" ? addToCart : undefined;
   window.buildTG = typeof buildTG !== "undefined" ? buildTG : undefined;
   window.buildWA = typeof buildWA !== "undefined" ? buildWA : undefined;
