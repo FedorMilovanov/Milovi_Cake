@@ -741,102 +741,65 @@ window.addEventListener('pageshow', function(e) {
   }
 });
 
-// ── DESKTOP: позиционировать окно корзины рядом с кнопкой ──
-function positionCartWindowNearButton() {
-  if (window.innerWidth < 901) return;
+// ═══════════════════════════════════════════════════════════════
+// CART — Production-ready state machine
+// States: 'closed' | 'opening' | 'open' | 'closing'
+// Desktop: CSS-only position (fixed top-right, scroll-independent)
+// Mobile: full-width right drawer + lockBody
+// ═══════════════════════════════════════════════════════════════
+var _cartState = 'closed';
+var _cartTimer = null;
 
-  const drawer = document.getElementById('cartDrawer');
-  if (!drawer) return;
+function _cartClearTimer() {
+  if (_cartTimer) { clearTimeout(_cartTimer); _cartTimer = null; }
+}
 
-  const MARGIN = 16;
-  const GAP = 10;
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  const dW = 440;
-
-  // Get header height dynamically
-  const header = document.querySelector('header, .site-header, #siteHeader');
-  const headerBottom = (header && header.getBoundingClientRect)
-    ? Math.max(header.getBoundingClientRect().bottom, 64)
-    : 72;
-  const HEADER_HEIGHT = headerBottom;
-
-  const availableH = vh - HEADER_HEIGHT - MARGIN * 2;
-  const dH = Math.min(vh * 0.78, 720, availableH);
-
-  // Try to position near cart button — but gracefully fall back to top-right corner
-  const btn = document.getElementById('cartBtn');
-  let left, top, originX;
-
-  if (btn) {
-    const b = btn.getBoundingClientRect();
-    const btnCenterX = b.left + b.width / 2;
-
-    if (btnCenterX > vw / 2) {
-      left = b.right - dW;
-      originX = 'right';
-    } else {
-      left = b.left;
-      originX = 'left';
-    }
-
-    top = b.bottom + GAP;
-    if (top + dH > vh - MARGIN) {
-      const topAbove = b.top - GAP - dH;
-      top = (topAbove > HEADER_HEIGHT) ? topAbove : (vh - dH - MARGIN);
-    }
-  } else {
-    // Fallback: top-right corner below header
-    left = vw - dW - MARGIN;
-    top  = HEADER_HEIGHT + MARGIN;
-    originX = 'right';
-  }
-
-  // Final clamp — never go off-screen
-  left = Math.max(MARGIN, Math.min(left, vw - dW - MARGIN));
-  top  = Math.max(HEADER_HEIGHT + MARGIN, Math.min(top, vh - dH - MARGIN));
-
-  drawer.style.transformOrigin = `top ${originX}`;
-  drawer.style.left   = left + 'px';
-  drawer.style.top    = top + 'px';
-  drawer.style.right  = 'auto';
-  drawer.style.bottom = 'auto';
-  drawer.style.width  = dW + 'px';
-  drawer.style.maxHeight = dH + 'px';
+// Emergency reset — force cart to clean closed state
+function _cartForceClose() {
+  _cartClearTimer();
+  var drawer  = document.getElementById('cartDrawer');
+  var overlay = document.getElementById('cartOverlay');
+  if (drawer)  { drawer.classList.remove('open', 'closing'); drawer.style.cssText = ''; }
+  if (overlay) { overlay.classList.remove('open'); }
+  document.body.classList.remove('cart-open');
+  document.body.style.overflow    = '';
+  document.body.style.touchAction = '';
+  document.body.style.paddingRight = '';
+  document.body.dataset.lockCount = '0';
+  _cartState = 'closed';
+  var bn = document.getElementById('bottomNav');
+  if (bn) bn.classList.remove('hidden');
 }
 
 function openCart() {
-  var drawer = document.getElementById('cartDrawer');
+  var drawer  = document.getElementById('cartDrawer');
   var overlay = document.getElementById('cartOverlay');
   if (!drawer || !overlay) return;
 
-  // Cancel any in-progress close so re-open is instant
-  if (drawer._closeTimer) {
-    clearTimeout(drawer._closeTimer);
-    drawer._closeTimer = null;
-    drawer.classList.remove('closing');
-  }
+  // If mid-close, snap to closed then open fresh
+  if (_cartState === 'closing') _cartForceClose();
 
-  // Already open — do nothing
-  if (drawer.classList.contains('open')) return;
+  // Already open — nothing to do
+  if (_cartState === 'open' || _cartState === 'opening') return;
 
-  // Remove leftover closing state
+  _cartClearTimer();
+  _cartState = 'opening';
+
+  // Clear ALL inline styles — CSS handles positioning entirely
   drawer.classList.remove('closing');
+  drawer.style.cssText = '';
 
-  if (window.innerWidth > 900) {
-    // Position first so transform-origin is set, then force reflow
-    positionCartWindowNearButton();
-    drawer.getBoundingClientRect(); // force reflow
-  }
+  // Force reflow so browser registers initial transform/opacity
+  // before .open class is added (required for CSS transition to fire)
+  void drawer.offsetWidth;
 
   drawer.classList.add('open');
   overlay.classList.add('open');
   document.body.classList.add('cart-open');
 
-  if (window.innerWidth <= 900) {
-    lockBody();
-  }
+  if (window.innerWidth <= 900) lockBody();
 
+  _cartState = 'open';
   setCartStep(1);
   updateCartUI();
 
@@ -845,37 +808,55 @@ function openCart() {
 }
 
 function closeCart() {
-  var drawer = document.getElementById('cartDrawer');
+  var drawer  = document.getElementById('cartDrawer');
   var overlay = document.getElementById('cartOverlay');
   if (!drawer || !overlay) return;
 
-  // Guard: ignore if already closed
-  if (!drawer.classList.contains('open') && !drawer.classList.contains('closing')) return;
+  // Nothing to close
+  if (_cartState === 'closed' || _cartState === 'closing') return;
+
+  _cartClearTimer();
+  _cartState = 'closing';
 
   drawer.classList.remove('open');
   drawer.classList.add('closing');
   overlay.classList.remove('open');
   document.body.classList.remove('cart-open');
 
-  var delay = window.innerWidth > 900 ? 220 : 350;
-  drawer._closeTimer = setTimeout(function() {
-    drawer._closeTimer = null;
-    drawer.classList.remove('closing');
-    // Reset inline position/size on desktop so next open recalculates fresh
-    if (window.innerWidth > 900) {
-      drawer.style.left = '';
-      drawer.style.top = '';
-      drawer.style.width = '';
-      drawer.style.maxHeight = '';
-      drawer.style.transformOrigin = '';
-    }
-  }, delay);
-
   if (window.innerWidth <= 900) unlockBody();
+
+  // Delay matches CSS transition durations
+  var delay = window.innerWidth > 900 ? 220 : 350;
+  _cartTimer = setTimeout(function() {
+    _cartTimer = null;
+    drawer.classList.remove('closing');
+    drawer.style.cssText = '';
+    _cartState = 'closed';
+  }, delay);
 
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.remove('hidden');
 }
+
+function toggleCart() {
+  if (_cartState === 'open' || _cartState === 'opening') closeCart();
+  else openCart();
+}
+
+// Orientation change — re-evaluate lock state
+window.addEventListener('orientationchange', function() {
+  setTimeout(function() {
+    if (_cartState === 'open') {
+      if (window.innerWidth <= 900) lockBody();
+      else unlockBody();
+    }
+  }, 300);
+});
+
+// bfcache restore — ensure clean state
+window.addEventListener('pageshow', function(e) {
+  if (e.persisted) _cartForceClose();
+});
 
 // ── PARALLAX ON HERO ORBS (только десктоп) ──
 (function() {
@@ -940,21 +921,6 @@ document.querySelectorAll('img').forEach(img => {
       drawer.style.transform = '';
     }
   }, { passive: true });
-})();
-
-// ── CART DESKTOP: REPOSITION ON RESIZE ──
-(function() {
-  let resizeTimer;
-  window.addEventListener('resize', function() {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function() {
-      const drawer = document.getElementById('cartDrawer');
-      if (!drawer) return;
-      if (drawer.classList.contains('open') && window.innerWidth > 900) {
-        positionCartWindowNearButton();
-      }
-    }, 80);
-  });
 })();
 
 // ── CART ESCAPE KEY TO CLOSE ──
