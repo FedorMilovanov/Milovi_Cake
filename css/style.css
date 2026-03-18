@@ -3931,7 +3931,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   /* Кнопка "наверх" */
   .back-to-top {
     bottom: calc(76px + env(safe-area-inset-bottom));
-    right: max(16px, env(safe-area-inset-right, 16px));
   }
 }
 
@@ -4649,9 +4648,6 @@ footer .wave-text .w.near {
   letter-spacing: 0.02em;
   transform: translateY(-3px);
 }
-.section-title .ht-word {
-  color: var(--gold);
-}
 
 /* ── Section sub: gentle hover ── */
 .section-sub {
@@ -5059,9 +5055,9 @@ footer .wave-text .w.near {
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 .site-header.scrolled .header-trust {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
 }
 .header-trust-badge {
   display: inline-flex;
