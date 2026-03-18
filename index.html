@@ -475,10 +475,12 @@ setTimeout(_hideLoader, 5000);
               <textPath href="#ring-max" startOffset="23.5%">MAX</textPath>
             </text>
             <text id="flat-text-max" font-size="6.5" font-family="Jost,sans-serif" fill="currentColor" opacity="0" letter-spacing="0.18em" font-weight="400" text-anchor="middle" x="24" y="8">MAX</text>
-            <g transform="translate(6.7, 4.2) scale(0.2151)">
-              <g transform="translate(0,151) scale(0.1,-0.1)">
-                <path fill="currentColor" d="M635 1183 c-113 -15 -227 -81 -295 -172 -94 -125 -112 -270 -61 -487 17 -72 31 -147 31 -166 0 -19 5 -39 12 -46 26 -26 111 -7 161 36 15 14 22 13 70 -14 48 -27 60 -29 153 -29 96 0 103 2 177 38 183 90 282 277 249 468 -42 244 -255 404 -497 372z m126 -225 c52 -15 117 -73 140 -122 11 -24 19 -64 19 -96 0 -154 -164 -262 -310 -204 -38 15 -42 15 -60 -1 -53 -48 -84 20 -78 170 3 77 9 109 25 140 54 103 155 146 264 113z"/>
-              </g>
+            <g transform="translate(13, 13)">
+              <svg width="22" height="22" viewBox="24.54 23.24 111.93 137.23" fill="currentColor">
+                <g transform="translate(0,151) scale(0.1,-0.1)">
+                  <path d="M635 1183 c-113 -15 -227 -81 -295 -172 -94 -125 -112 -270 -61 -487 17 -72 31 -147 31 -166 0 -19 5 -39 12 -46 26 -26 111 -7 161 36 15 14 22 13 70 -14 48 -27 60 -29 153 -29 96 0 103 2 177 38 183 90 282 277 249 468 -42 244 -255 404 -497 372z m126 -225 c52 -15 117 -73 140 -122 11 -24 19 -64 19 -96 0 -154 -164 -262 -310 -204 -38 15 -42 15 -60 -1 -53 -48 -84 20 -78 170 3 77 9 109 25 140 54 103 155 146 264 113z"/>
+                </g>
+              </svg>
             </g>
           </svg>
         </a>
@@ -588,13 +590,12 @@ setTimeout(_hideLoader, 5000);
         </div>
       </div>
       <div class="calc-result">
-        <div>
+        <div class="calc-result-left">
           <div class="calc-result-label" id="calcLabel">Примерная стоимость</div>
           <div class="calc-result-price" id="calcResult">5 600 ₽</div>
-          <div class="calc-approx-badge" id="calcApproxBadge">⚠ Уточните точную цену при заказе</div>
           <div class="calc-result-note" id="calcNote">Точная цена согласовывается при заказе</div>
         </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+        <div class="calc-result-right">
           <a href="#catalog" class="calc-order-btn" onclick="event.preventDefault(); window.scrollTo({top:0,behavior:'smooth'}); setTimeout(openCart,400);">Заказать 🎂</a>
           <span class="consent-note">Нажимая кнопку, вы даёте согласие на<br><a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработку персональных данных</a></span>
         </div>
@@ -819,8 +820,7 @@ setTimeout(_hideLoader, 5000);
         Очистить
       </button>
       <button class="cart-close" onclick="closeCart()" title="Закрыть корзину" aria-label="Закрыть корзину">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-        <span style="font-size:11px;display:block;line-height:1;margin-top:2px;color:var(--text-muted);letter-spacing:0.02em">закрыть</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
     </div>
   </div>

@@ -682,23 +682,37 @@ function goBackToCart() {
 // ── iOS-safe scroll lock ──
 // body.style.overflow = 'hidden' alone doesn't prevent scroll on iOS Safari.
 // position:fixed trick preserves scroll position and truly blocks scrolling.
+var _isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 function lockBody() {
-  const count = parseInt(document.body.dataset.lockCount || '0');
+  var count = parseInt(document.body.dataset.lockCount || '0');
   if (count === 0) {
-    document.body.dataset.scrollY = window.scrollY;
-    document.body.style.overflow = 'hidden';
-    document.body.style.touchAction = 'none';
+    var sy = window.scrollY;
+    document.body.dataset.scrollY = sy;
+    if (_isIOS) {
+      document.body.style.position = 'fixed';
+      document.body.style.top = '-' + sy + 'px';
+      document.body.style.width = '100%';
+    } else {
+      document.body.style.overflow = 'hidden';
+    }
   }
   document.body.dataset.lockCount = count + 1;
 }
 function unlockBody() {
-  const count = parseInt(document.body.dataset.lockCount || '0');
+  var count = parseInt(document.body.dataset.lockCount || '0');
   if (count <= 0) return;
-  const newCount = count - 1;
+  var newCount = count - 1;
   document.body.dataset.lockCount = newCount;
   if (newCount === 0) {
-    document.body.style.overflow = '';
-    document.body.style.touchAction = '';
+    var sy = parseInt(document.body.dataset.scrollY || '0');
+    if (_isIOS) {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, sy);
+    } else {
+      document.body.style.overflow = '';
+    }
     delete document.body.dataset.scrollY;
   }
 }
