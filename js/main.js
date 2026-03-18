@@ -1534,9 +1534,43 @@ document.addEventListener('keydown', e => {
     if (typeof closeLightbox === 'function') closeLightbox();
     closePrivacy();
     closeFillPopup();
+    if (document.getElementById('cartDrawer').classList.contains('open')) closeCart();
   }
 });
 
+// Свайп влево по корзине — закрыть
+(function() {
+  var drawer = document.getElementById('cartDrawer');
+  if (!drawer) return;
+  var sx = 0, sy = 0, dragging = false;
+
+  drawer.addEventListener('touchstart', function(e) {
+    sx = e.touches[0].clientX;
+    sy = e.touches[0].clientY;
+    dragging = true;
+  }, { passive: true });
+
+  drawer.addEventListener('touchmove', function(e) {
+    if (!dragging) return;
+    var dx = e.touches[0].clientX - sx;
+    var dy = Math.abs(e.touches[0].clientY - sy);
+    if (dx > 10 && dy < 60) {
+      drawer.style.transform = 'perspective(1000px) translateX(' + Math.min(dx, 200) + 'px)';
+      drawer.style.opacity = Math.max(0, 1 - dx / 280);
+      drawer.style.transition = 'none';
+    }
+  }, { passive: true });
+
+  drawer.addEventListener('touchend', function(e) {
+    if (!dragging) return;
+    dragging = false;
+    var dx = e.changedTouches[0].clientX - sx;
+    drawer.style.transition = '';
+    drawer.style.transform = '';
+    drawer.style.opacity = '';
+    if (dx > 80) closeCart();
+  }, { passive: true });
+})();
 
 // ── Динамический минимум даты (сегодня + 2 дня) ──
 (function() {
@@ -2635,7 +2669,7 @@ document.addEventListener('visibilitychange', () => {
     if (state.raf) { cancelAnimationFrame(state.raf); state.raf = null; }
     var from = { ringOp: state.ringOp, ringY: state.ringY, flatOp: state.flatOp, flatY: state.flatY, flatSize: state.flatSize };
     var to = toHover
-      ? { ringOp: 0, ringY: -18, flatOp: 1, flatY: -22, flatSize: 9 }
+      ? { ringOp: 0, ringY: -18, flatOp: 1, flatY: -30, flatSize: 11 }
       : { ringOp: 1, ringY: 0,   flatOp: 0, flatY: 8,   flatSize: 6.5 };
     var startTs = null;
     function step(ts) {
