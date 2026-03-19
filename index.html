@@ -71,7 +71,6 @@
         "reviewCount": "32",
         "bestRating": "5"
       },
-  ,
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
       "name": "Торты и десерты на заказ",
@@ -204,8 +203,8 @@
   <link rel="dns-prefetch" href="https://mc.yandex.ru" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <!-- Non-blocking font load: не блокирует рендер, нет белого экрана -->
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/></noscript>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/></noscript>
 
   <style id="critical-css">
     /* Critical above-fold CSS — prevents FOUC */
@@ -411,7 +410,7 @@ setTimeout(_hideLoader, 5000);
 
       <!-- Рейтинги + счётчик — социальное доказательство СРАЗУ -->
       <h1 class="hero-title">
-        <span class="hero-title-brand" id="heroTitleBrand">Milovi <em class="hero-title-em">Cake</em></span>
+        <span class="hero-title-brand ht-word" id="heroTitleBrand">Milovi Cake</span>
         <span class="visually-hidden"> — торты на заказ в СПб: свадебный торт, торт на день рождения, детский торт, бенто, меренговые рулеты с доставкой</span>
       </h1>
 
@@ -492,7 +491,7 @@ setTimeout(_hideLoader, 5000);
 <!-- ══════════ ABOUT ══════════ -->
 <section id="about" class="about-section">
   <div class="container">
-    <h2 class="section-title reveal"><span class="ht-em">О</span> <span class="ht-em">Milovi Cake</span></h2>
+    <h2 class="section-title reveal"><span class="ht-em">О</span> <span class="ht-em">Milovi</span> <em class="ht-em" style="font-style:italic;">Cake</em></h2>
     <p class="section-sub reveal wave-text">Частный кондитер в Санкт-Петербурге — с вниманием к каждой детали</p>
     <div class="about-compact reveal">
       <div class="about-compact-block">
@@ -513,6 +512,7 @@ setTimeout(_hideLoader, 5000);
     </div>
   </div>
 </section>
+
 
 <!-- ══════════ CATALOG ══════════ -->
 
@@ -807,90 +807,6 @@ setTimeout(_hideLoader, 5000);
 <!-- ══════════ CART BUTTON ══════════ -->
 
 
-<!-- ══════════ CART DRAWER ══════════ -->
-<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
-<div class="cart-drawer" id="cartDrawer">
-  <div class="cart-header">
-    <h3>🛒 Ваш заказ <span class="cart-count-badge" id="cartCountBadge">0</span></h3>
-    <div class="cart-header-right">
-      <button class="cart-clear-btn" id="cartClearBtn" onclick="clearCart()" title="Очистить корзину" aria-label="Очистить корзину" style="display:none">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
-        Очистить
-      </button>
-      <button class="cart-close" onclick="closeCart()" title="Закрыть корзину" aria-label="Закрыть корзину">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      </button>
-    </div>
-  </div>
-  <!-- Progress steps -->
-  <div class="cart-progress" id="cartProgress">
-    <div class="cart-step active" id="step1" onclick="navigateToStep(1)" style="cursor:pointer;" title="Перейти к выбору">
-      <div class="cart-step-dot">1</div>
-      <span>Выбор</span>
-    </div>
-    <div class="cart-step-line" id="stepLine1"></div>
-    <div class="cart-step" id="step2" onclick="navigateToStep(2)" style="cursor:pointer;" title="Перейти к данным">
-      <div class="cart-step-dot">2</div>
-      <span>Данные</span>
-    </div>
-    <div class="cart-step-line" id="stepLine2"></div>
-    <div class="cart-step" id="step3" style="cursor:default;">
-      <div class="cart-step-dot">3</div>
-      <span>Отправка</span>
-    </div>
-  </div>
-  <div class="cart-body" id="cartBody"></div>
-  <div class="cart-footer" id="cartFooter" style="display:none">
-    <div class="cart-total">
-      <span>Итого:</span>
-      <span class="total-val" id="cartTotal">0 ₽</span>
-    </div>
-    <p class="note">Дополнительный декор оплачивается отдельно.</p>
-
-    <div class="cart-form">
-      <form onsubmit="event.preventDefault(); buildWA(event);" novalidate>
-      <div style="margin-bottom:12px;">
-        <button type="button" onclick="goBackToCart()" style="background:none;border:1px solid var(--cream-dark);border-radius:50px;padding:7px 16px;font-size:13px;color:var(--text-muted);cursor:pointer;font-family:'Jost',sans-serif;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--brown)'" onmouseout="this.style.borderColor='var(--cream-dark)';this.style.color='var(--text-muted)'">
-          ← Назад к выбору
-        </button>
-      </div>
-      <h4>Ваши данные</h4>
-      <div class="form-group float-label">
-        <input type="text" id="cname" placeholder=" " autocomplete="name" />
-        <label for="cname">Как к Вам обращаться?</label>
-      </div>
-      <div class="form-group float-label">
-        <input type="tel" id="cphone" placeholder=" " required autocomplete="tel" inputmode="tel" />
-        <label for="cphone">Телефон</label>
-      </div>
-      <div class="form-group float-label">
-        <input type="date" id="cdate" placeholder=" " />
-        <label for="cdate">Дата получения</label>
-      </div>
-      <div class="form-group float-label">
-        <textarea id="ccomment" placeholder=" " style="min-height:52px;"></textarea>
-        <label for="ccomment">Вес, декор, доставка/самовывоз…</label>
-      </div>
-      </form>
-    </div>
-
-    <div class="cart-actions">
-      <a id="btnWA" href="#" target="_blank" class="btn-tg wa" onclick="buildWA(event)">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        Отправить в WhatsApp
-      </a>
-      <a id="btnTG" href="#" target="_blank" class="btn-tg tg" onclick="buildTG(event)">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.96 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-        Отправить в Telegram
-      </a>
-      <a href="tel:+79119038886" class="btn-tg call">
-        📞 Позвонить +7 911 903 88 86
-      </a>
-    </div>
-    <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="javascript:void(0)" role="button" tabindex="0" onclick="openPrivacy()">обработкой персональных данных</a></p>
-  </div>
-</div>
-
 <!-- ══════════ GEO DELIVERY ══════════ -->
 <section class="geo-section">
   <div class="container">
@@ -989,39 +905,6 @@ setTimeout(_hideLoader, 5000);
   <button id="cookieAccept" onclick="acceptCookie()">Принять</button>
 </div>
 
-<!-- ══════════ PRIVACY MODAL ══════════ -->
-<div id="privacyOverlay" onclick="if(event.target===this)closePrivacy()">
-  <div id="privacyModal">
-    <button id="privacyClose" onclick="closePrivacy()" aria-label="Закрыть">×</button>
-    <h2>Политика конфиденциальности</h2>
-
-    <h3>1. Общие положения</h3>
-    <p>Настоящая Политика конфиденциальности (далее — «Политика») определяет порядок обработки и защиты персональных данных пользователей сайта milovicake.ru (далее — «Сайт»), осуществляемой частным кондитером Milovi Cake (далее — «Оператор»).</p>
-    <p>Политика разработана в соответствии с требованиями Федерального закона от 27.07.2006 № 152-ФЗ «О персональных данных».</p>
-
-    <h3>2. Какие данные мы собираем</h3>
-    <p>При оформлении заказа через формы на сайте или мессенджеры Оператор может собирать следующие персональные данные:</p>
-    <p>— Имя (для персонального обращения);<br>— Номер телефона (для связи и подтверждения заказа);<br>— Дата и адрес доставки (при необходимости);<br>— Комментарии к заказу (пожелания по декору, вкусу и прочее).</p>
-
-    <h3>3. Цели обработки данных</h3>
-    <p>Персональные данные обрабатываются исключительно в следующих целях:</p>
-    <p>— Оформление и выполнение заказа;<br>— Связь с клиентом для уточнения деталей заказа;<br>— Уведомление о готовности и доставке заказа.</p>
-
-    <h3>4. Хранение и защита данных</h3>
-    <p>Оператор принимает необходимые организационные и технические меры для защиты персональных данных от несанкционированного доступа, изменения, раскрытия или уничтожения. Данные не передаются третьим лицам, за исключением случаев, предусмотренных законодательством РФ.</p>
-
-    <h3>5. Cookies</h3>
-    <p>Сайт использует файлы cookie — небольшие текстовые файлы, сохраняемые на устройстве пользователя. Они необходимы для корректной работы сайта и улучшения пользовательского опыта. Cookie не содержат персональных данных. Вы можете отключить cookie в настройках браузера, однако это может повлиять на работу отдельных функций сайта.</p>
-
-    <h3>6. Права субъекта данных</h3>
-    <p>Вы вправе в любой момент запросить уточнение, блокирование или удаление ваших персональных данных, направив запрос по контактам, указанным на сайте.</p>
-
-    <h3>7. Контакты</h3>
-    <p>По вопросам обработки персональных данных обращайтесь:<br>
-    Телефон: +7 911 903 88 86<br>
-    Telegram: @MiloviCake</p>
-  </div>
-</div>
 
 
 
@@ -1373,6 +1256,123 @@ setTimeout(_hideLoader, 5000);
     sessionStorage.removeItem('fromMeringue');
   })();
 </script>
+<!-- ══════════ PRIVACY MODAL ══════════ -->
+<div id="privacyOverlay" onclick="if(event.target===this)closePrivacy()">
+  <div id="privacyModal">
+    <button id="privacyClose" onclick="closePrivacy()" aria-label="Закрыть">×</button>
+    <h2>Политика конфиденциальности</h2>
+
+    <h3>1. Общие положения</h3>
+    <p>Настоящая Политика конфиденциальности (далее — «Политика») определяет порядок обработки и защиты персональных данных пользователей сайта milovicake.ru (далее — «Сайт»), осуществляемой частным кондитером Milovi Cake (далее — «Оператор»).</p>
+    <p>Политика разработана в соответствии с требованиями Федерального закона от 27.07.2006 № 152-ФЗ «О персональных данных».</p>
+
+    <h3>2. Какие данные мы собираем</h3>
+    <p>При оформлении заказа через формы на сайте или мессенджеры Оператор может собирать следующие персональные данные:</p>
+    <p>— Имя (для персонального обращения);<br>— Номер телефона (для связи и подтверждения заказа);<br>— Дата и адрес доставки (при необходимости);<br>— Комментарии к заказу (пожелания по декору, вкусу и прочее).</p>
+
+    <h3>3. Цели обработки данных</h3>
+    <p>Персональные данные обрабатываются исключительно в следующих целях:</p>
+    <p>— Оформление и выполнение заказа;<br>— Связь с клиентом для уточнения деталей заказа;<br>— Уведомление о готовности и доставке заказа.</p>
+
+    <h3>4. Хранение и защита данных</h3>
+    <p>Оператор принимает необходимые организационные и технические меры для защиты персональных данных от несанкционированного доступа, изменения, раскрытия или уничтожения. Данные не передаются третьим лицам, за исключением случаев, предусмотренных законодательством РФ.</p>
+
+    <h3>5. Cookies</h3>
+    <p>Сайт использует файлы cookie — небольшие текстовые файлы, сохраняемые на устройстве пользователя. Они необходимы для корректной работы сайта и улучшения пользовательского опыта. Cookie не содержат персональных данных. Вы можете отключить cookie в настройках браузера, однако это может повлиять на работу отдельных функций сайта.</p>
+
+    <h3>6. Права субъекта данных</h3>
+    <p>Вы вправе в любой момент запросить уточнение, блокирование или удаление ваших персональных данных, направив запрос по контактам, указанным на сайте.</p>
+
+    <h3>7. Контакты</h3>
+    <p>По вопросам обработки персональных данных обращайтесь:<br>
+    Телефон: +7 911 903 88 86<br>
+    Telegram: @MiloviCake</p>
+  </div>
+</div>
+<!-- ══════════ CART DRAWER ══════════ -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-header">
+    <h3>🛒 Ваш заказ <span class="cart-count-badge" id="cartCountBadge">0</span></h3>
+    <div class="cart-header-right">
+      <button class="cart-clear-btn" id="cartClearBtn" onclick="clearCart()" title="Очистить корзину" aria-label="Очистить корзину" style="display:none">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+        Очистить
+      </button>
+      <button class="cart-close" onclick="closeCart()" title="Закрыть корзину" aria-label="Закрыть корзину">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+  </div>
+  <!-- Progress steps -->
+  <div class="cart-progress" id="cartProgress">
+    <div class="cart-step active" id="step1" onclick="navigateToStep(1)" style="cursor:pointer;" title="Перейти к выбору">
+      <div class="cart-step-dot">1</div>
+      <span>Выбор</span>
+    </div>
+    <div class="cart-step-line" id="stepLine1"></div>
+    <div class="cart-step" id="step2" onclick="navigateToStep(2)" style="cursor:pointer;" title="Перейти к данным">
+      <div class="cart-step-dot">2</div>
+      <span>Данные</span>
+    </div>
+    <div class="cart-step-line" id="stepLine2"></div>
+    <div class="cart-step" id="step3" style="cursor:default;">
+      <div class="cart-step-dot">3</div>
+      <span>Отправка</span>
+    </div>
+  </div>
+  <div class="cart-body" id="cartBody"></div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-total">
+      <span>Итого:</span>
+      <span class="total-val" id="cartTotal">0 ₽</span>
+    </div>
+    <p class="note">Дополнительный декор оплачивается отдельно.</p>
+
+    <div class="cart-form">
+      <form onsubmit="event.preventDefault(); buildWA(event);" novalidate>
+      <div style="margin-bottom:12px;">
+        <button type="button" onclick="goBackToCart()" style="background:none;border:1px solid var(--cream-dark);border-radius:50px;padding:7px 16px;font-size:13px;color:var(--text-muted);cursor:pointer;font-family:'Jost',sans-serif;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--brown)'" onmouseout="this.style.borderColor='var(--cream-dark)';this.style.color='var(--text-muted)'">
+          ← Назад к выбору
+        </button>
+      </div>
+      <h4>Ваши данные</h4>
+      <div class="form-group float-label">
+        <input type="text" id="cname" placeholder=" " autocomplete="name" />
+        <label for="cname">Как к Вам обращаться?</label>
+      </div>
+      <div class="form-group float-label">
+        <input type="tel" id="cphone" placeholder=" " required autocomplete="tel" inputmode="tel" />
+        <label for="cphone">Телефон</label>
+      </div>
+      <div class="form-group float-label">
+        <input type="date" id="cdate" placeholder=" " />
+        <label for="cdate">Дата получения</label>
+      </div>
+      <div class="form-group float-label">
+        <textarea id="ccomment" placeholder=" " style="min-height:52px;"></textarea>
+        <label for="ccomment">Вес, декор, доставка/самовывоз…</label>
+      </div>
+      </form>
+    </div>
+
+    <div class="cart-actions">
+      <a id="btnWA" href="#" target="_blank" class="btn-tg wa" onclick="buildWA(event)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Отправить в WhatsApp
+      </a>
+      <a id="btnTG" href="#" target="_blank" class="btn-tg tg" onclick="buildTG(event)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.96 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        Отправить в Telegram
+      </a>
+      <a href="tel:+79119038886" class="btn-tg call">
+        📞 Позвонить +7 911 903 88 86
+      </a>
+    </div>
+    <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="javascript:void(0)" role="button" tabindex="0" onclick="openPrivacy()">обработкой персональных данных</a></p>
+  </div>
+</div>
+
 </body>
 
 </html>

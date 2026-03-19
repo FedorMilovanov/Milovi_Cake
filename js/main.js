@@ -805,6 +805,19 @@ function openCart() {
 
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.add('hidden');
+
+  // Desktop: закрываем корзину при скролле вниз
+  if (window.innerWidth > 900) {
+    var _cartScrollY = window.scrollY;
+    function _cartScrollClose() {
+      if (Math.abs(window.scrollY - _cartScrollY) > 80) {
+        closeCart();
+        window.removeEventListener('scroll', _cartScrollClose);
+      }
+    }
+    window.addEventListener('scroll', _cartScrollClose, { passive: true });
+    drawer._scrollClose = _cartScrollClose;
+  }
 }
 
 function closeCart() {
@@ -814,6 +827,12 @@ function closeCart() {
 
   // Nothing to close
   if (_cartState === 'closed' || _cartState === 'closing') return;
+
+  // Remove scroll-close listener if exists
+  if (drawer._scrollClose) {
+    window.removeEventListener('scroll', drawer._scrollClose);
+    drawer._scrollClose = null;
+  }
 
   _cartClearTimer();
   _cartState = 'closing';
@@ -1484,12 +1503,8 @@ function initCookieBanner() {
   const banner = document.getElementById('cookieBanner');
   if (!banner) return;
   setTimeout(() => {
-    // Main uses classList, city uses style.transform
-    if (banner.getAttribute('style') && banner.getAttribute('style').includes('transform')) {
-      banner.style.transform = 'translateY(0)';
-    } else {
-      banner.classList.add('visible');
-    }
+    banner.style.transform = 'translateY(0)';
+    banner.classList.add('visible');
   }, 800);
 }
 initCookieBanner();
@@ -2685,6 +2700,7 @@ document.addEventListener('visibilitychange', () => {
 
   // ── Public API — functions called from HTML via onclick ──
   window.acceptCookie = typeof acceptCookie !== "undefined" ? acceptCookie : undefined;
+  window.declineCookie = typeof declineCookie !== "undefined" ? declineCookie : undefined;
   window.addToCart = typeof addToCart !== "undefined" ? addToCart : undefined;
   window.buildTG = typeof buildTG !== "undefined" ? buildTG : undefined;
   window.buildWA = typeof buildWA !== "undefined" ? buildWA : undefined;
@@ -2722,8 +2738,6 @@ document.addEventListener('visibilitychange', () => {
 /* ── Wave-text: word-by-word hover ripple ── */
 (function() {
   document.querySelectorAll('.wave-text').forEach(function(el) {
-    if (el._waveBound) return;
-    el._waveBound = true;
     var words = el.textContent.trim().split(/(\s+)/);
     el.innerHTML = words.map(function(w) {
       if (/^\s+$/.test(w)) return w;
@@ -2747,46 +2761,15 @@ document.addEventListener('visibilitychange', () => {
 (function() {
   document.querySelectorAll('.section-title').forEach(function(el) {
     // Skip if already processed
-    if (el.dataset.htProcessed) return;
-    el.dataset.htProcessed = '1';
-
-    // Walk child nodes — wraps bare text in hover spans
-    // insideHtEm = true → use ht-em-w (italic gold), false → use ht-w (gold)
-    function wrapTextNode(node, insideHtEm) {
-      if (node.nodeType === 3) { // Text node
-        var text = node.nodeValue;
-        if (!text || !text.trim()) return;
-        var cls = insideHtEm ? 'ht-em-w' : 'ht-w';
-        var frag = document.createDocumentFragment();
-        text.split(/(\s+)/).forEach(function(part) {
-          if (!part) return;
-          if (/^\s+$/.test(part)) {
-            frag.appendChild(document.createTextNode(part));
-          } else {
-            var span = document.createElement('span');
-            span.className = cls;
-            span.textContent = part;
-            frag.appendChild(span);
-          }
-        });
-        node.parentNode.replaceChild(frag, node);
-      } else if (node.nodeType === 1) { // Element node
-        var cls = node.classList;
-        // .ht-em and <em> = italic gold container
-        var isHtEm = (cls && cls.contains('ht-em')) || node.tagName === 'EM';
-        // .ht-word = regular (non-italic) gold word — treated same as plain text
-        // visually-hidden = skip entirely
-        if (cls && cls.contains('visually-hidden')) return;
-        // Clone children list before iterating (DOM mutates during walk)
-        var children = Array.from(node.childNodes);
-        children.forEach(function(child) {
-          wrapTextNode(child, insideHtEm || isHtEm);
-        });
-      }
-    }
-
-    Array.from(el.childNodes).forEach(function(child) {
-      wrapTextNode(child, false);
+    if (el.querySelector('.ht-w')) return;
+    // Wrap words in plain text nodes, preserve existing tags
+    var html = el.innerHTML;
+    el.innerHTML = html.replace(/(<[^>]+>)|([^<]+)/g, function(match, tag, text) {
+      if (tag) return tag;
+      if (!text || !text.trim()) return text;
+      return text.replace(/(\S+)/g, function(word) {
+        return '<span class="ht-w">' + word + '</span>';
+      });
     });
   });
 
