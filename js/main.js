@@ -1409,14 +1409,95 @@ function wireProductLightbox() {
 // ── CALCULATOR ──
 let _calcWeight = 2;
 const WEIGHT_MIN = 2, WEIGHT_MAX = 10, WEIGHT_STEP = 0.5;
+let _calcQty = 1;
+let _cakeType = 'biscuit'; // biscuit | bento | bentomaxi | cake3d
+
+// Конфиги типов тортов
+const CAKE_CONFIGS = {
+  biscuit:   { weightMin: 2, weightMax: 10, weightStep: 0.5, hasWeight: true,  hasQty: false, pricePerKg: 2800, fixedPrice: null, fillGroup: 'calcFill' },
+  bento:     { weightMin: 1, weightMax: 1,  weightStep: 1,   hasWeight: false, hasQty: true,  pricePerKg: null, fixedPrice: 1600, fillGroup: 'calcFillBento' },
+  bentomaxi: { weightMin: 1, weightMax: 5,  weightStep: 0.5, hasWeight: true,  hasQty: false, pricePerKg: 3000, fixedPrice: null, fillGroup: 'calcFillBento' },
+  cake3d:    { weightMin: 3, weightMax: 15, weightStep: 0.5, hasWeight: true,  hasQty: false, pricePerKg: 5000, fixedPrice: null, fillGroup: 'calcFill3d'   },
+};
+
+function selectCakeType(el, type) {
+  // Снимаем selected со всех карточек типа
+  document.querySelectorAll('#calcType .calc-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  _cakeType = type;
+
+  const cfg = CAKE_CONFIGS[type];
+
+  // Переключаем блок веса
+  const weightRow = document.getElementById('calcWeightRow');
+  const qtyRow    = document.getElementById('calcQtyRow');
+  if (weightRow) weightRow.style.display = cfg.hasWeight ? '' : 'none';
+  if (qtyRow)    qtyRow.style.display    = cfg.hasQty    ? '' : 'none';
+
+  // Обновляем мин вес и значение
+  if (cfg.hasWeight) {
+    const WEIGHT_MIN_CUR = cfg.weightMin;
+    if (_calcWeight < WEIGHT_MIN_CUR) {
+      _calcWeight = WEIGHT_MIN_CUR;
+      const valEl = document.getElementById('calcWeightVal');
+      if (valEl) valEl.textContent = _calcWeight + ' кг';
+      const inp = document.getElementById('calcWeight');
+      if (inp) inp.value = _calcWeight;
+    }
+    const minus = document.getElementById('calcWeightMinus');
+    const plus  = document.getElementById('calcWeightPlus');
+    if (minus) minus.disabled = _calcWeight <= WEIGHT_MIN_CUR;
+    if (plus)  plus.disabled  = _calcWeight >= cfg.weightMax;
+  }
+
+  // Переключаем блок начинок
+  ['calcFillRow','calcFillBentoRow','calcFill3dRow'].forEach(id => {
+    const row = document.getElementById(id);
+    if (!row) return;
+    const forTypes = row.dataset.for || '';
+    row.style.display = forTypes.includes(type) ? '' : 'none';
+  });
+
+  // Сбрасываем selected в активном блоке начинок
+  const activeGroup = document.getElementById(cfg.fillGroup);
+  if (activeGroup) {
+    const items = activeGroup.querySelectorAll('.calc-opt');
+    items.forEach((o, i) => { o.classList.toggle('selected', i === 0); });
+  }
+
+  // Скрываем декор для бенто (там всё включено), показываем для остальных
+  const decorRow = document.getElementById('calcDecor')?.closest('.calc-row');
+  if (decorRow) decorRow.style.display = type === 'bento' ? 'none' : '';
+
+  updateCalc();
+}
+
+function stepQty(dir) {
+  const newVal = _calcQty + dir;
+  if (newVal < 1 || newVal > 20) return;
+  _calcQty = newVal;
+  const valEl = document.getElementById('calcQtyVal');
+  if (valEl) valEl.textContent = _calcQty + ' шт';
+  const minus = document.getElementById('calcQtyMinus');
+  const plus  = document.getElementById('calcQtyPlus');
+  if (minus) minus.disabled = _calcQty <= 1;
+  if (plus)  plus.disabled  = _calcQty >= 20;
+  updateCalc();
+}
 
 let _guestsTimer = null;
 function stepWeight(dir) {
-  const newVal = Math.round((_calcWeight + dir * WEIGHT_STEP) * 10) / 10;
-  if (newVal < WEIGHT_MIN || newVal > WEIGHT_MAX) return;
+  const cfg = CAKE_CONFIGS[_cakeType] || CAKE_CONFIGS.biscuit;
+  const step = cfg.weightStep || WEIGHT_STEP;
+  const newVal = Math.round((_calcWeight + dir * step) * 10) / 10;
+  if (newVal < cfg.weightMin || newVal > cfg.weightMax) return;
   _calcWeight = newVal;
   const _cwEl = document.getElementById('calcWeight');
   if (_cwEl) _cwEl.value = _calcWeight;
+  const minus = document.getElementById('calcWeightMinus');
+  const plus  = document.getElementById('calcWeightPlus');
+  if (minus) minus.disabled = _calcWeight <= cfg.weightMin;
+  if (plus)  plus.disabled  = _calcWeight >= cfg.weightMax;
   updateCalc();
   const popup = document.getElementById('guestsPopup');
   if (popup) popup.style.opacity = '1';
@@ -1475,61 +1556,56 @@ function selectOpt(el, groupId) {
 }
 
 function updateCalc() {
-  const typeEl = document.querySelector('#calcType .selected');
-  const fillEl = document.querySelector('#calcFill .selected');
+  const cfg = CAKE_CONFIGS[_cakeType] || CAKE_CONFIGS.biscuit;
+
+  // Определяем активную группу начинок
+  const fillEl = document.querySelector('#' + cfg.fillGroup + ' .selected');
   const decorEl = document.querySelector('#calcDecor .selected');
+  const fillPrice  = +(fillEl?.dataset.price  || 0);
+  const decorPrice = (_cakeType === 'bento') ? 0 : +(decorEl?.dataset.price || 0);
 
-  const basePrice = +(typeEl?.dataset.price || 2800);
-  const fillPrice = +(fillEl?.dataset.price || 0);
-  const decorPrice = +(decorEl?.dataset.price || 0);
-  const weight = _calcWeight;
+  // Считаем итог
+  let total;
+  let noteText = 'Точная цена согласовывается при заказе';
 
-  // Update stepper display
-  const valEl = document.getElementById('calcWeightVal');
-  if (valEl) {
-    valEl.textContent = weight % 1 === 0 ? weight + ' кг' : weight.toFixed(1) + ' кг';
-  }
-  const guestsEl = document.getElementById('guestsCount');
-  if (guestsEl) {
-    const n = Math.round(weight / 0.2);
-    const mod10 = n % 10;
-    const mod100 = n % 100;
-    let form;
-    if (mod100 >= 11 && mod100 <= 19) {
-      form = 'человек';
-    } else if (mod10 === 1) {
-      form = 'человек';
-    } else if (mod10 >= 2 && mod10 <= 4) {
-      form = 'человека';
-    } else {
-      form = 'человек';
+  if (cfg.fixedPrice !== null) {
+    // Бенто — фиксированная цена × количество
+    total = cfg.fixedPrice * _calcQty + fillPrice;
+    noteText = 'Фиксированная цена за штуку';
+  } else {
+    // Весовой торт
+    const weight = _calcWeight;
+    total = cfg.pricePerKg * weight + fillPrice + decorPrice;
+
+    // Обновляем отображение веса
+    const valEl = document.getElementById('calcWeightVal');
+    if (valEl) valEl.textContent = weight % 1 === 0 ? weight + ' кг' : weight.toFixed(1) + ' кг';
+
+    // Гостей
+    const guestsEl = document.getElementById('guestsCount');
+    if (guestsEl) {
+      const n = Math.round(weight / 0.2);
+      const m10 = n % 10, m100 = n % 100;
+      const form = (m100 >= 11 && m100 <= 19) ? 'человек' : m10 === 1 ? 'человек' : (m10 >= 2 && m10 <= 4) ? 'человека' : 'человек';
+      guestsEl.textContent = n + ' ' + form;
     }
-    guestsEl.textContent = n + ' ' + form;
+
+    if (decorPrice > 0) noteText = '* Стоимость авторского декора рассчитывается индивидуально';
   }
 
-  // Update stepper button states
-  const minusBtn = document.getElementById('calcWeightMinus');
-  const plusBtn = document.getElementById('calcWeightPlus');
-  if (minusBtn) minusBtn.disabled = weight <= WEIGHT_MIN;
-  if (plusBtn) plusBtn.disabled = weight >= WEIGHT_MAX;
+  // 3D торт — особая пометка
+  if (_cakeType === 'cake3d') noteText = 'Сложный декор рассчитывается отдельно';
 
-  let total = basePrice * weight + fillPrice + decorPrice;
-
-  const decorIsNonStandard = decorPrice > 0;
-  const isApprox = decorIsNonStandard;
+  const isApprox = decorPrice > 0 || _cakeType === 'cake3d';
   const prefix = isApprox ? '~ ' : '';
   const calcResultEl = document.getElementById('calcResult');
   if (calcResultEl) calcResultEl.textContent = prefix + total.toLocaleString('ru') + ' ₽';
 
-  const badge = document.getElementById('calcApproxBadge');
-  if (badge) badge.classList.toggle('visible', isApprox);
-
-  let noteText = 'Точная цена согласовывается при заказе';
-  const notes = [];
-  if (decorIsNonStandard) notes.push('декор рассчитывается отдельно');
-  if (notes.length) noteText = '* ' + notes.map(n => n[0].toUpperCase() + n.slice(1)).join(', ');
   const calcNoteEl = document.getElementById('calcNote');
   if (calcNoteEl) calcNoteEl.textContent = noteText;
+
+  const badge = document.getElementById('calcApproxBadge');
+  if (badge) badge.classList.toggle('visible', isApprox);
 }
 
 
@@ -2164,7 +2240,8 @@ REVIEWS.forEach((rv, i) => {
 
   th.addEventListener('click', ()=>{
     if(i !== cur) { goTo(i); return; }
-    if(STATE==='waiting'||STATE==='zoom_in') openLB(th, rv.src, i);
+    // Открываем лайтбокс в любом STATE — не ждём завершения анимации
+    if(STATE==='waiting'||STATE==='zoom_in'||STATE==='typing') openLB(th, rv.src, i);
   });
   scField.appendChild(th);
   thumbs.push(th);
@@ -2854,6 +2931,8 @@ document.addEventListener('visibilitychange', () => {
   window.goBackToCart = typeof goBackToCart !== "undefined" ? goBackToCart : undefined;
   window.goToFormStep = typeof goToFormStep !== "undefined" ? goToFormStep : undefined;
   window.enforceSingleSelected = typeof enforceSingleSelected !== "undefined" ? enforceSingleSelected : undefined;
+  window.selectCakeType = typeof selectCakeType !== "undefined" ? selectCakeType : undefined;
+  window.stepQty = typeof stepQty !== "undefined" ? stepQty : undefined;
   window.goSlide = typeof goSlide !== "undefined" ? goSlide : undefined;
   window.goTo = typeof goTo !== "undefined" ? goTo : undefined;
   window.scrollToProduct = typeof scrollToProduct !== "undefined" ? scrollToProduct : undefined;

@@ -1464,8 +1464,8 @@ section { padding: 100px 60px; }
 #catalog { background: linear-gradient(to bottom, #e8dece 0px, var(--white) 80px); }
 #catalog, #reviews {
   position: relative;
-  isolation: isolate;
 }
+#catalog { isolation: isolate; }
 #reviews { padding: 100px 60px; }
 #catalog::before, #reviews::before {
   content: '';
@@ -1478,8 +1478,8 @@ section { padding: 100px 60px; }
   background-repeat: repeat;
   background-size: 200px 200px;
 }
-#catalog > *, #reviews > * { position: relative; z-index: 1; }
-#reviews > #scField { z-index: 100 !important; }
+#catalog > *, #reviews > *:not(#scField) { position: relative; z-index: 1; }
+#reviews > #scField { position: absolute; z-index: 100; }
 .catalog-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -5282,4 +5282,52 @@ footer .wave-text .w.near {
   width: min(240px, 42vw);
   height: 1px;
   background: linear-gradient(90deg, transparent 0%, rgba(201,147,74,0.45) 50%, transparent 100%);
+}
+
+/* ===== Калькулятор — тип торта карточки ===== */
+.calc-type-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+@media (min-width: 600px) {
+  .calc-type-grid { grid-template-columns: repeat(4, 1fr); }
+}
+.calc-type-card {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 10px 10px;
+  border-radius: 16px !important;
+  gap: 4px;
+  text-align: center;
+  min-height: 70px;
+}
+.calc-type-card .opt-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.calc-type-icon {
+  font-size: 22px;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+.calc-type-hint {
+  font-size: 11px;
+  opacity: 0.65;
+  font-weight: 400;
+  display: block;
+  margin-top: 1px;
+}
+.calc-type-card.selected .calc-type-hint { opacity: 0.85; color: rgba(255,255,255,0.85); }
+.calc-biscuit-note {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: rgba(201,147,74,0.06);
+  border-radius: 8px;
+  border-left: 2px solid rgba(201,147,74,0.3);
 }
