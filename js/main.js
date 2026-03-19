@@ -1038,6 +1038,107 @@ function initCatalogNavScroll() {
   });
 }
 
+function initWaveText() {
+  document.querySelectorAll('.wave-text').forEach(function(el) {
+    if (el.querySelector('.w')) return;
+
+    const frag = document.createDocumentFragment();
+    Array.from(el.childNodes).forEach(function(node) {
+      if (node.nodeType !== Node.TEXT_NODE) {
+        frag.appendChild(node.cloneNode(true));
+        return;
+      }
+      const parts = (node.textContent || '').split(/(\s+)/);
+      parts.forEach(function(part) {
+        if (!part) return;
+        if (/^\s+$/.test(part)) {
+          frag.appendChild(document.createTextNode(part));
+        } else {
+          const span = document.createElement('span');
+          span.className = 'w';
+          span.textContent = part;
+          frag.appendChild(span);
+        }
+      });
+    });
+    el.innerHTML = '';
+    el.appendChild(frag);
+
+    const words = el.querySelectorAll('.w');
+    words.forEach(function(word, i) {
+      word.addEventListener('mouseenter', function() {
+        if (words[i - 1]) words[i - 1].classList.add('near');
+        if (words[i + 1]) words[i + 1].classList.add('near');
+      });
+      word.addEventListener('mouseleave', function() {
+        if (words[i - 1]) words[i - 1].classList.remove('near');
+        if (words[i + 1]) words[i + 1].classList.remove('near');
+      });
+    });
+  });
+}
+
+function initSectionTitleWords() {
+  document.querySelectorAll('.section-title .ht-word, .section-title .ht-em').forEach(function(el) {
+    if (el.dataset.splitInit === '1') return;
+    const txt = (el.textContent || '').trim();
+    if (!txt) return;
+
+    const parts = txt.split(/(\s+)/);
+    el.innerHTML = parts.map(function(p) {
+      if (/^\s+$/.test(p)) return p;
+      return '<span class="ht-w">' + p + '</span>';
+    }).join('');
+    el.dataset.splitInit = '1';
+  });
+}
+
+function initMessengerRings() {
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  [
+    { btn: '.btn-hero-wa', ring: '#ring-text-wa', flat: '#flat-text-wa' },
+    { btn: '.btn-hero-tg', ring: '#ring-text-tg', flat: '#flat-text-tg' }
+  ].forEach(function(cfg) {
+    const btn = document.querySelector(cfg.btn);
+    const ring = document.querySelector(cfg.ring);
+    const flat = document.querySelector(cfg.flat);
+    if (!btn || !ring || !flat) return;
+
+    let raf = null;
+    let state = { p: 0 };
+
+    function render() {
+      const p = state.p;
+      ring.setAttribute('opacity', String(0.5 * (1 - p)));
+      ring.setAttribute('transform', 'translate(0,' + (-18 * p).toFixed(2) + ')');
+      flat.setAttribute('opacity', String(p));
+      flat.setAttribute('transform', 'translate(0,' + (-12 * p).toFixed(2) + ')');
+      flat.setAttribute('font-size', (6.5 + (12 - 6.5) * p).toFixed(2));
+    }
+
+    function animate(to) {
+      if (raf) cancelAnimationFrame(raf);
+      const from = state.p;
+      const start = performance.now();
+      const dur = to > from ? 320 : 360;
+
+      function step(ts) {
+        const t = Math.min((ts - start) / dur, 1);
+        const e = 1 - Math.pow(1 - t, 3);
+        state.p = from + (to - from) * e;
+        render();
+        if (t < 1) raf = requestAnimationFrame(step);
+      }
+      raf = requestAnimationFrame(step);
+    }
+
+    render();
+    btn.addEventListener('mouseenter', function() { animate(1); });
+    btn.addEventListener('mouseleave', function() { animate(0); });
+  });
+}
+
 function initApp() {
   renderCatalogNav();
   renderCatalog(); // calls observeReveal() internally for catalog cards
@@ -1046,6 +1147,11 @@ function initApp() {
   updateCartUI();
   observeReveal(); // picks up static .reveal elements (hero, sections, etc.)
   setTimeout(initCatalogNavScroll, 500);
+
+  // restore missing UI interactions
+  initWaveText();
+  initSectionTitleWords();
+  initMessengerRings();
 
   // Date min is set below (today+2) in the dedicated IIFE
 }
