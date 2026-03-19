@@ -600,18 +600,7 @@ function buildMessage() {
     return null;
   }
 
-  // ✅ Баг 4: валидация даты — нельзя выбрать прошедшую дату
-  if (date !== '—') {
-    const selectedDate = new Date(date);
-    const minDate = new Date();
-    minDate.setDate(minDate.getDate() + 2);
-    minDate.setHours(0, 0, 0, 0);
-    if (selectedDate < minDate) {
-      showToast('Дата должна быть не ранее чем через 2 дня');
-      if (cdateEl) cdateEl.focus();
-      return null;
-    }
-  }
+  // Дата — текстовое поле, валидация не нужна
 
   const items = Object.entries(cart).map(([id, entry]) => {
     // ✅ Баг 2: учитываем maxi вариант для правильного названия и цены
@@ -2733,6 +2722,36 @@ document.addEventListener('visibilitychange', () => {
   window.switchBentoTab = typeof switchBentoTab !== "undefined" ? switchBentoTab : undefined;
   window.switchReviewsTab = typeof switchReviewsTab !== "undefined" ? switchReviewsTab : undefined;
 
+})();
+
+/* ── Calc result: magnetic parallax ── */
+(function() {
+  function initCalcMagnet() {
+    var block  = document.querySelector('.calc-result');
+    if (!block) return;
+    var label  = document.getElementById('calcLabel');
+    var price  = document.getElementById('calcResult');
+    var note   = document.getElementById('calcNote');
+    var btn    = block.querySelector('.calc-order-btn');
+
+    block.addEventListener('mousemove', function(e) {
+      var r = block.getBoundingClientRect();
+      var x = (e.clientX - r.left) / r.width  - 0.5;
+      var y = (e.clientY - r.top)  / r.height - 0.5;
+      if (label) label.style.transform = 'translate(' + (x*5)+'px,' + (y*3)+'px)';
+      if (price) price.style.transform = 'scale(1.05) translate(' + (x*9)+'px,' + (y*6)+'px)';
+      if (note)  note.style.transform  = 'translate(' + (x*4)+'px,' + (y*2)+'px)';
+      if (btn)   btn.style.transform   = 'translate(' + (x*6)+'px,' + (y*4)+'px) translateY(-2px)';
+    });
+
+    block.addEventListener('mouseleave', function() {
+      [label, price, note].forEach(function(el) { if (el) el.style.transform = ''; });
+      if (btn) btn.style.transform = '';
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initCalcMagnet);
+  else initCalcMagnet();
 })();
 
 /* ── Wave-text: word-by-word hover ripple ── */

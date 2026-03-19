@@ -55,6 +55,13 @@ h1, h2 {
   letter-spacing: -0.02em;
 }
 
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--cream); }
+::-webkit-scrollbar-thumb { background: rgba(201,147,74,0.35); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(201,147,74,0.6); }
+* { scrollbar-width: thin; scrollbar-color: rgba(201,147,74,0.35) var(--cream); }
+
 html {
   overflow-x: hidden;
 }
@@ -963,13 +970,20 @@ body:not(.fill-open) .fill-mobile-overlay {
   width: 100%;
   max-height: 85vh;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch; /* iOS smooth scroll */
+  -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  padding: 40px 48px;
+  padding: 40px 48px 40px 48px;
+  padding-right: 36px;
   position: relative;
   box-shadow: 0 24px 80px rgba(61,43,31,0.25);
   font-family: 'Jost', sans-serif;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201,147,74,0.3) transparent;
 }
+#privacyModal::-webkit-scrollbar { width: 4px; }
+#privacyModal::-webkit-scrollbar-track { background: transparent; margin: 12px; }
+#privacyModal::-webkit-scrollbar-thumb { background: rgba(201,147,74,0.3); border-radius: 2px; }
+#privacyModal::-webkit-scrollbar-thumb:hover { background: rgba(201,147,74,0.55); }
 #privacyModal h2 { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--brown); margin-bottom: 24px; letter-spacing: -0.01em; }
 #privacyModal h3 { font-size: 15px; font-weight: 600; color: var(--brown); margin: 20px 0 8px; text-transform: uppercase; letter-spacing: 0.04em; }
 #privacyModal p { font-size: 14px; line-height: 1.75; color: var(--text); margin-bottom: 8px; }
@@ -1071,19 +1085,45 @@ body:not(.fill-open) .fill-mobile-overlay {
 .fill-desc-text strong { font-weight: 500; color: var(--brown); }
 
 .calc-result {
-  background: var(--brown); border-radius: 20px;
-  padding: 28px 32px; margin-top: 8px;
+  background: var(--brown); border-radius: 24px;
+  padding: 32px 36px; margin-top: 8px;
   display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  position: relative; overflow: hidden;
+  border: 1px solid rgba(201,147,74,0.12);
+  transition: border-color 0.5s ease, box-shadow 0.5s ease;
+  cursor: default;
 }
+.calc-result::before {
+  content: '';
+  position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
+  width: 50%; height: 1px;
+  background: linear-gradient(to right, transparent, rgba(201,147,74,0.6), transparent);
+  transition: width 0.5s ease;
+}
+.calc-result::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(201,147,74,0.07), transparent 65%);
+  pointer-events: none;
+}
+.calc-result:hover {
+  border-color: rgba(201,147,74,0.35);
+  box-shadow: 0 16px 50px rgba(61,43,31,0.28), 0 0 0 1px rgba(201,147,74,0.15);
+}
+.calc-result:hover::before { width: 80%; }
 .calc-result-left {
-  display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0;
+  display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0;
+  position: relative; z-index: 1;
 }
 .calc-result-right {
   display: flex; flex-direction: column; align-items: flex-end; gap: 10px; flex-shrink: 0;
+  position: relative; z-index: 1;
 }
-.calc-result-label { color: rgba(255,255,255,0.65); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; font-family: 'Jost', sans-serif; font-weight: 400; }
-.calc-result-price { font-family: 'Cormorant Garamond', serif; font-size: 42px; color: var(--gold-light); font-weight: 600; line-height: 1; }
-.calc-result-note { font-size: 11px; color: rgba(255,255,255,0.38); letter-spacing: 0.02em; }
+.calc-result-label { color: rgba(255,255,255,0.5); font-size: 10px; text-transform: uppercase; letter-spacing: 0.22em; font-family: 'Jost', sans-serif; font-weight: 500; transition: letter-spacing 0.4s ease, color 0.4s ease; }
+.calc-result:hover .calc-result-label { color: rgba(255,255,255,0.8); letter-spacing: 0.28em; }
+.calc-result-price { font-family: 'Cormorant Garamond', serif; font-size: 48px; color: var(--gold-light); font-weight: 600; line-height: 1.1; display: inline-block; padding: 0.05em 0.1em 0.05em 0; overflow: visible; }
+.calc-result-note { font-size: 12px; color: rgba(255,255,255,0.32); letter-spacing: 0.03em; margin-top: 2px; transition: color 0.4s ease, letter-spacing 0.4s ease; }
+.calc-result:hover .calc-result-note { color: rgba(255,255,255,0.55); letter-spacing: 0.04em; }
 .calc-approx-badge {
   display: inline-flex; align-items: center; gap: 5px;
   background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
@@ -2547,27 +2587,6 @@ section { padding: 100px 60px; }
 }
 
 /* ── Date input native picker fix ── */
-input[type="date"] {
-  -webkit-appearance: none;
-  appearance: none;
-  font-family: 'Jost', sans-serif;
-  font-size: 16px;
-  color: var(--text);
-  background: var(--cream);
-  cursor: pointer;
-}
-input[type="date"]::-webkit-calendar-picker-indicator {
-  opacity: 0.5;
-  cursor: pointer;
-}
-
-/* ── Float label fix for date input ── */
-.form-group.float-label input[type="date"] + label {
-  top: -9px;
-  font-size: 11px;
-  color: var(--gold);
-}
-
 /* ── Bigger tap targets for calc-opts on mobile ── */
 @media (max-width: 560px) {
   .calc-opt {
@@ -2628,8 +2647,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   max-width: 320px;
 }
 .hero-subtitle .w {
-  display: inline !important;
-  transform: none !important;
+  display: inline-block;
 }
 
 /* Hero features — from inline styles to CSS */
@@ -3676,18 +3694,18 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   navigation: auto;
 }
 ::view-transition-old(root) {
-  animation: 220ms ease-out both fade-out;
+  animation: 180ms ease both vt-fade-out;
 }
 ::view-transition-new(root) {
-  animation: 220ms ease-out both fade-in;
+  animation: 280ms ease both vt-fade-in;
 }
-@keyframes fade-out {
-  from { opacity: 1; transform: translateY(0); }
-  to   { opacity: 0; transform: translateY(-8px); }
+@keyframes vt-fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
 }
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+@keyframes vt-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* ── PAGE LOAD ANIMATION ── */
@@ -4111,14 +4129,14 @@ a, button {
   /* Desktop cart: fixed top-right, scroll-independent, CSS-only positioning */
   .cart-drawer {
     position: fixed;
-    top: 16px;
+    top: 88px;
     right: 24px;
     left: auto;
     bottom: auto;
     width: 440px;
     max-width: calc(100vw - 48px);
     height: auto;
-    max-height: calc(100dvh - 32px);
+    max-height: calc(100dvh - 104px);
     border-radius: 20px;
     /* Override mobile slide-in with desktop scale+fade */
     transform: scale(0.96) translateY(-12px);
@@ -4535,12 +4553,14 @@ a:focus-visible,
 
 .footer-col nav a,
 .footer-col > a {
-  transition: color 0.4s ease, opacity 0.4s ease;
+  transition: color 0.4s ease, opacity 0.4s ease, transform 0.4s cubic-bezier(.16,1,.3,1), letter-spacing 0.4s ease;
 }
 .footer-col nav a:hover,
 .footer-col > a:hover {
   color: #e8b87a;
   opacity: 0.9;
+  transform: translateX(4px);
+  letter-spacing: 0.02em;
 }
 
 /* ── Disable heavy hover on mobile ── */
@@ -4816,32 +4836,35 @@ footer .wave-text .w.near {
 /* ── Calc result block interactive ── */
 .calc-result {
   transition: box-shadow 0.5s ease, border-color 0.5s ease;
-  border: 1px solid transparent;
+  border: 1px solid rgba(201,147,74,0.12);
   cursor: default;
 }
 .calc-result:hover {
-  box-shadow: 0 12px 40px rgba(61,43,31,0.22), 0 0 0 1px rgba(201,147,74,0.2);
-  border-color: rgba(201,147,74,0.2);
+  box-shadow: 0 16px 50px rgba(61,43,31,0.28), 0 0 0 1px rgba(201,147,74,0.15);
+  border-color: rgba(201,147,74,0.35);
 }
 .calc-result-label {
-  transition: color 0.5s ease, opacity 0.5s ease;
+  transition: color 0.4s ease, letter-spacing 0.4s ease;
   display: block;
 }
 .calc-result:hover .calc-result-label {
-  color: rgba(255,255,255,0.95);
+  color: rgba(255,255,255,0.85);
+  letter-spacing: 0.28em;
 }
 .calc-result-price {
   background: linear-gradient(90deg, #c9934a 0%, #e8b87a 38%, #f0d090 52%, #e8b87a 65%, #c9934a 100%);
   background-size: 300% auto;
   -webkit-background-clip: text;
   background-clip: text;
-  transition: filter 0.5s ease;
+  transition: filter 0.4s ease, transform 0.4s cubic-bezier(.16,1,.3,1);
   cursor: default;
   display: inline-block;
+  overflow: visible;
 }
 .calc-result:hover .calc-result-price {
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 8px rgba(201,147,74,0.22));
+  filter: drop-shadow(0 0 10px rgba(201,147,74,0.3));
+  transform: scale(1.05);
   animation: calcPriceShimmer 2s ease forwards;
 }
 @keyframes calcPriceShimmer {
@@ -4849,11 +4872,11 @@ footer .wave-text .w.near {
   100% { background-position: 0% center; }
 }
 .calc-result-note {
-  transition: color 0.5s ease;
+  transition: color 0.4s ease, letter-spacing 0.4s ease;
   display: block;
 }
 .calc-result:hover .calc-result-note {
-  color: rgba(255,255,255,0.6);
+  color: rgba(255,255,255,0.55);
 }
 .calc-order-btn {
   transition: background 0.3s, transform 0.4s cubic-bezier(.16,1,.3,1), box-shadow 0.3s;
