@@ -605,21 +605,23 @@ function buildMessage() {
   const items = Object.entries(cart).map(([id, entry]) => {
     // ✅ Баг 2: учитываем maxi вариант для правильного названия и цены
     let p = products.find(x => x.id === +id);
-    if (p && p.hasMaxi && entry.mode === 'maxi') {
+    if (!p) return null; // guard: битая позиция
+    if (p.hasMaxi && entry.mode === 'maxi') {
       p = { ...p, ...p.maxiVariant };
     }
     const qty = entry.qty;
     const label = p.unit === 'кг' ? `${qty} кг` : `${qty} шт.`;
     return `• ${p.name} — ${label} (${p.price})`;
-  }).join('\n');
+  }).filter(Boolean).join('\n');
 
   const total = Object.entries(cart).reduce((s, [id, entry]) => {
     // ✅ Баг 2: учитываем maxi цену (3000 вместо 1600)
     let p = products.find(x => x.id === +id);
-    if (p && p.hasMaxi && entry.mode === 'maxi') {
+    if (!p) return s; // guard: битая позиция
+    if (p.hasMaxi && entry.mode === 'maxi') {
       p = { ...p, ...p.maxiVariant };
     }
-    return s + p.priceNum * entry.qty;
+    return s + (p.priceNum || 0) * (entry.qty || 1);
   }, 0);
 
     const fillEl = document.querySelector('#calcFill .selected');
@@ -901,7 +903,7 @@ document.querySelectorAll('img').forEach(img => {
   drawer.addEventListener('touchstart', e => {
     // ✅ Баг 6: не начинать drag если пользователь в поле ввода
     const tag = document.activeElement?.tagName;
-    if (tag === 'INPUT' || tag === 'TEXTAREA') {
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || document.activeElement?.isContentEditable) {
       dragging = false;
       return;
     }
@@ -1098,7 +1100,8 @@ function initMessengerRings() {
 
   [
     { btn: '.btn-hero-wa', ring: '#ring-text-wa', flat: '#flat-text-wa' },
-    { btn: '.btn-hero-tg', ring: '#ring-text-tg', flat: '#flat-text-tg' }
+    { btn: '.btn-hero-tg', ring: '#ring-text-tg', flat: '#flat-text-tg' },
+    { btn: '.btn-hero-max', ring: '#ring-text-max', flat: '#flat-text-max' }
   ].forEach(function(cfg) {
     const btn = document.querySelector(cfg.btn);
     const ring = document.querySelector(cfg.ring);
@@ -1538,6 +1541,10 @@ function updateCalc() {
     }, 5000);
   }
 
+  function stopReviewAutoplay() {
+    if (reviewAutoplay) { clearInterval(reviewAutoplay); reviewAutoplay = null; }
+  }
+
   startReviewAutoplay();
 
   const reviewsCarousel = document.querySelector('.reviews-carousel');
@@ -1547,7 +1554,11 @@ function updateCalc() {
   }
 
   document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) startReviewAutoplay();
+    if (document.hidden) {
+      stopReviewAutoplay && stopReviewAutoplay();
+    } else {
+      startReviewAutoplay();
+    }
   });
 
   // Touch swipe support for reviews
@@ -1870,6 +1881,7 @@ function openChatLightbox(idx) {
 function openReviewsModal(tab) {
   const modal = document.getElementById('reviewsModal');
   if (!modal) return;
+  if (modal.classList.contains('open')) return; // idempotent
   lockBody();
   // visibility:hidden→visible через CSS transition, display не трогаем
   requestAnimationFrame(() => {
@@ -1884,6 +1896,7 @@ function openReviewsModal(tab) {
 function closeReviewsModal() {
   const modal = document.getElementById('reviewsModal');
   if (!modal) return;
+  if (!modal.classList.contains('open')) return; // idempotent
   modal.classList.remove('open');
   document.removeEventListener('keydown', handleReviewsEscape);
   var bn = document.getElementById('bottomNav');
@@ -2593,7 +2606,9 @@ function loop(ts){
       const parkX = lay.side === 'left'
         ? cardL - THUMB_W + OVERLAP   // left side: thumb hangs off left edge
         : cardL + cardW - OVERLAP;    // right side: thumb hangs off right edge
-      const parkY = cardCenterY - THUMB_H / 2 - 80; // vertically centered on track
+      const isMobile = window.innerWidth <= 768;
+      const activeOffset = isMobile ? -18 : -24;
+      const parkY = cardCenterY - THUMB_H / 2 + activeOffset; // vertically centered on track
 
 
       // Smooth ease-out
