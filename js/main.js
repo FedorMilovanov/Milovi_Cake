@@ -1143,6 +1143,12 @@ function initApp() {
   initSectionTitleWords();
   initMessengerRings();
 
+  // Enforce single selection in calc groups on init
+  enforceSingleSelected('calcType');
+  enforceSingleSelected('calcFill');
+  enforceSingleSelected('calcDecor');
+  updateCalc();
+
   // Date min is set below (today+2) in the dedicated IIFE
 }
 
@@ -1397,18 +1403,34 @@ function stepWeight(dir) {
   if (popup) popup.style.opacity = '1';
 }
 
+function enforceSingleSelected(groupId) {
+  const items = Array.from(document.querySelectorAll(`#${groupId} .calc-opt`));
+  if (!items.length) return;
+  const selected = items.filter(x => x.classList.contains('selected'));
+  if (selected.length <= 1) {
+    if (selected.length === 0) items[0].classList.add('selected');
+    return;
+  }
+  selected.forEach((x, i) => i > 0 && x.classList.remove('selected'));
+}
+
 function selectOpt(el, groupId) {
+  // Normalize: find closest .calc-opt even if child element was clicked
+  const opt = el && el.closest ? el.closest('.calc-opt') : el;
+  if (!opt) return;
+
   // On mobile, filling taps open a bottom sheet instead of directly selecting
   if (groupId === 'calcFill' && window.innerWidth < 768) {
-    openFillPopup(el);
+    openFillPopup(opt);
     return;
   }
 
-  document.querySelectorAll(`#${groupId} .calc-opt`).forEach(o => o.classList.remove('selected'));
-  el.classList.add('selected');
+  // Deselect all in group, select only this one
+  document.querySelectorAll(`#${groupId} .calc-opt.selected`).forEach(x => x.classList.remove('selected'));
+  opt.classList.add('selected');
 
   // Rubber click effect on inner wrapper only (tooltip excluded)
-  const inner = el.querySelector('.opt-inner');
+  const inner = opt.querySelector('.opt-inner');
   if (inner) {
     inner.classList.remove('rubber-click');
     void inner.offsetWidth;
@@ -1417,7 +1439,7 @@ function selectOpt(el, groupId) {
   }
 
   // Shake only the text label, not tooltip/tag
-  const label = el.querySelector('.opt-label');
+  const label = opt.querySelector('.opt-label');
   if (label) {
     label.classList.remove('opt-label-shake');
     void label.offsetWidth;
@@ -2812,6 +2834,7 @@ document.addEventListener('visibilitychange', () => {
   window.confirmFillSelection = typeof confirmFillSelection !== "undefined" ? confirmFillSelection : undefined;
   window.goBackToCart = typeof goBackToCart !== "undefined" ? goBackToCart : undefined;
   window.goToFormStep = typeof goToFormStep !== "undefined" ? goToFormStep : undefined;
+  window.enforceSingleSelected = typeof enforceSingleSelected !== "undefined" ? enforceSingleSelected : undefined;
   window.goSlide = typeof goSlide !== "undefined" ? goSlide : undefined;
   window.goTo = typeof goTo !== "undefined" ? goTo : undefined;
   window.scrollToProduct = typeof scrollToProduct !== "undefined" ? scrollToProduct : undefined;
@@ -2908,77 +2931,6 @@ document.addEventListener('visibilitychange', () => {
   } else {
     initSectionTitles();
   }
-})();
-
-// ── Messenger button ring → flat-label animation ──
-(function() {
-  var items = [
-    { btnClass: 'btn-hero-wa',  ringId: 'ring-text-wa',  flatId: 'flat-text-wa'  },
-    { btnClass: 'btn-hero-tg',  ringId: 'ring-text-tg',  flatId: 'flat-text-tg'  },
-    { btnClass: 'btn-hero-max', ringId: 'ring-text-max', flatId: 'flat-text-max' }
-  ];
-
-  function easeOut(t)   { return 1 - Math.pow(1 - t, 3); }
-  function easeInOut(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2; }
-
-  function runAnim(state, toHover, dur) {
-    if (state.raf) { cancelAnimationFrame(state.raf); state.raf = null; }
-    var from = { ringOp: state.ringOp, ringY: state.ringY, flatOp: state.flatOp, flatY: state.flatY, flatSize: state.flatSize, flatGlow: state.flatGlow };
-    var to = toHover
-      ? { ringOp: 0, ringY: -18, flatOp: 1, flatY: -12, flatSize: 12, flatGlow: 0.5 }
-      : { ringOp: 1, ringY: 0,   flatOp: 0, flatY: 8,   flatSize: 6.5, flatGlow: 0 };
-    var startTs = null;
-    function step(ts) {
-      if (!startTs) startTs = ts;
-      var p = Math.min((ts - startTs) / dur, 1);
-      var e = toHover ? easeOut(p) : easeInOut(p);
-      state.ringOp = from.ringOp + (to.ringOp - from.ringOp) * e;
-      state.ringY  = from.ringY  + (to.ringY  - from.ringY)  * e;
-      state.flatOp = from.flatOp + (to.flatOp - from.flatOp) * e;
-      state.flatY  = from.flatY  + (to.flatY  - from.flatY)  * e;
-      state.flatSize = from.flatSize + (to.flatSize - from.flatSize) * e;
-      state.flatGlow = from.flatGlow + (to.flatGlow - from.flatGlow) * e;
-      state.ringEl.setAttribute('opacity', state.ringOp);
-      state.ringEl.setAttribute('transform', 'translate(0,' + state.ringY + ')');
-      state.flatEl.setAttribute('opacity', state.flatOp);
-      state.flatEl.setAttribute('y', state.flatY);
-      state.flatEl.setAttribute('font-size', state.flatSize);
-      var glow = state.flatGlow * 4;
-      state.flatEl.setAttribute('filter', glow > 0.3 ? 'drop-shadow(0 0 ' + glow.toFixed(1) + 'px currentColor)' : '');
-      if (p < 1) { state.raf = requestAnimationFrame(step); }
-      else { Object.assign(state, to); state.raf = null; }
-    }
-    state.raf = requestAnimationFrame(step);
-  }
-
-  function init() {
-    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-    items.forEach(function(item) {
-      var btn    = document.querySelector('.' + item.btnClass);
-      var ringEl = document.getElementById(item.ringId);
-      var flatEl = document.getElementById(item.flatId);
-      if (!btn || !ringEl || !flatEl) return;
-      var state = { ringEl: ringEl, flatEl: flatEl, ringOp: 0.5, ringY: 0, flatOp: 0, flatY: 8, flatSize: 6.5, flatGlow: 0, raf: null };
-
-      // Reset visual state to default
-      ringEl.setAttribute('opacity', 0.5);
-      ringEl.setAttribute('transform', 'translate(0,0)');
-      flatEl.setAttribute('opacity', 0);
-      flatEl.setAttribute('y', 8);
-      flatEl.setAttribute('font-size', 6.5);
-
-      btn.addEventListener('mouseenter', function() { runAnim(state, true,  380); });
-      btn.addEventListener('mouseleave', function() { runAnim(state, false, 420); });
-    });
-  }
-
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-  else init();
-
-  // Reinitialize after bfcache restore (back/forward navigation)
-  window.addEventListener('pageshow', function(e) {
-    if (e.persisted) init();
-  });
 })();
 
 // ══════════════════════════════════════════════

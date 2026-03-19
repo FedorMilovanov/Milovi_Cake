@@ -38,7 +38,10 @@ a:focus-visible,
   --brown-light: #6b4c38;
   --text: #2c1a10;
   --text-muted: #9a7a62;
+  --muted: #9a7a62;
   --white: #FDFBF7;
+  --bg-dark: #110a07;
+  --card-bg: #faf7f2;
   --radius: 16px;
 }
 
@@ -685,8 +688,9 @@ body {
   max-width: 700px; margin: 0 auto;
   background: var(--white); border-radius: 28px;
   padding: 48px; box-shadow: 0 12px 60px rgba(61,43,31,0.1);
+  overflow: visible;
 }
-.calc-row { margin-bottom: 28px; }
+.calc-row { margin-bottom: 28px; overflow: visible; }
 .calc-row label,
 .calc-row .calc-label { display: block; font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
 .calc-options { display: flex; flex-wrap: wrap; gap: 7px; overflow: visible; }
@@ -708,9 +712,9 @@ body {
 /* ── FILL TOOLTIP ── */
 .fill-tooltip {
   position: absolute;
-  bottom: calc(100% + 8px);
-  left: 0;
-  transform: translateY(4px);
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translate(-50%, 6px);
   background: var(--brown);
   color: rgba(255,240,210,0.95);
   font-size: 12px; line-height: 1.55;
@@ -719,8 +723,8 @@ body {
   width: 220px;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  z-index: 200;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 1200;
   box-shadow: 0 8px 24px rgba(0,0,0,0.18);
   white-space: normal;
   text-align: left;
@@ -728,7 +732,8 @@ body {
 .fill-tooltip::after {
   content: '';
   position: absolute;
-  top: 100%; left: 20px;
+  top: 100%; left: 50%;
+  transform: translateX(-50%);
   border: 6px solid transparent;
   border-top-color: var(--brown);
 }
@@ -753,9 +758,12 @@ body {
   background: none;
 }
 .calc-opt:hover .fill-tooltip,
-.calc-opt:focus .fill-tooltip {
+.calc-opt:focus-within .fill-tooltip {
   opacity: 1;
-  transform: translateY(0);
+  transform: translate(-50%, 0);
+}
+@media (max-width: 768px) {
+  .fill-tooltip { display: none; }
 }
 
 /* ── MOBILE FILL POPUP ── */
@@ -4548,14 +4556,12 @@ a:focus-visible,
 
 .footer-col nav a,
 .footer-col > a {
-  transition: color 0.4s ease, opacity 0.4s ease, transform 0.4s cubic-bezier(.16,1,.3,1), letter-spacing 0.4s ease;
+  transition: color 0.35s ease, opacity 0.35s ease;
 }
 .footer-col nav a:hover,
 .footer-col > a:hover {
   color: #e8b87a;
   opacity: 0.9;
-  transform: translateX(4px);
-  letter-spacing: 0.02em;
 }
 
 /* ── Disable heavy hover on mobile ── */
@@ -5111,6 +5117,10 @@ footer .wave-text .w.near {
   background: rgba(61,43,31,0.06);
   border-color: rgba(201,147,74,0.2);
 }
+.header-trust-icon {
+  flex-shrink: 0;
+  border-radius: 3px;
+}
 .header-trust-stars {
   font-size: 10px;
   color: #f5c518;
@@ -5211,4 +5221,62 @@ footer .wave-text .w.near {
   ::-webkit-scrollbar-thumb:hover {
     transition: none;
   }
+}
+
+/* ===== Premium transition: hero -> next section ===== */
+
+/* 1) У hero создаем мягкий нижний veil */
+.hero {
+  position: relative;
+  z-index: 1;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: clamp(120px, 18vw, 220px);
+  pointer-events: none;
+  z-index: 2;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(8, 6, 4, 0) 0%,
+      rgba(22, 17, 13, 0.16) 32%,
+      rgba(236, 231, 222, 0.78) 72%,
+      rgba(236, 231, 222, 0.98) 100%
+    );
+}
+
+/* 2) Верх следующей секции слегка подсвечиваем */
+.about-section {
+  position: relative;
+  z-index: 3;
+  margin-top: 0;
+}
+
+.about-section::before {
+  content: "";
+  position: absolute;
+  top: -34px;
+  left: 0;
+  right: 0;
+  height: 34px;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 42px at 50% 0, rgba(201,147,74,0.16) 0%, rgba(201,147,74,0.06) 42%, rgba(201,147,74,0) 100%);
+}
+
+/* 3) Тонкий золотой seam (очень деликатный) */
+.about-section .section-title::before {
+  content: "";
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(240px, 42vw);
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(201,147,74,0.45) 50%, transparent 100%);
 }
