@@ -4640,6 +4640,7 @@ footer .wave-text .w.near {
   background-position: 100% center;
   -webkit-background-clip: text;
   background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 .site-header.scrolled .header-logo:hover { -webkit-text-fill-color: transparent; }
 @keyframes mainLogoShimmer {

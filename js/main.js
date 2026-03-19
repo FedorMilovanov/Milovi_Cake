@@ -1152,7 +1152,10 @@ function initSectionTitleWords() {
 function initApp() {
   renderCatalogNav();
   renderCatalog(); // calls observeReveal() internally for catalog cards
-  setTimeout(wireProductLightbox, 200);
+  // Wire lightbox after DOM settles — increased timeout avoids race with renderCatalog
+  setTimeout(wireProductLightbox, 400);
+  // Second attempt ensures it wires even on slow devices
+  setTimeout(wireProductLightbox, 1200);
   loadCartFromStorage();
   updateCartUI();
   observeReveal(); // picks up static .reveal elements (hero, sections, etc.)
@@ -2012,17 +2015,32 @@ const CHAT_SRCS = [
   IMG_BASE + '/review_8.webp',
 ];
 
-// Переиспользуем существующий лайтбокс (#lightbox, #lightboxImg, #lbNav)
+// Открываем скриншот отзыва через лайтбокс отзывов (#lbOverlay / #lbImg)
 function openChatLightbox(idx) {
-  const lb = document.getElementById('lightbox');
-  const lbImg = document.getElementById('lightboxImg');
-  if (!lb || !lbImg) return;
-  _lbSrcs = CHAT_SRCS;
-  _lbIdx = idx;
-  lbImg.src = CHAT_SRCS[idx];
-  lb.classList.add('open');
+  const overlay = document.getElementById('lbOverlay');
+  const img     = document.getElementById('lbImg');
+  if (!overlay || !img) return;
+  const safeIdx = ((idx % CHAT_SRCS.length) + CHAT_SRCS.length) % CHAT_SRCS.length;
+  _lbReviewIdx  = safeIdx;
+  img.src = CHAT_SRCS[safeIdx];
+  img.style.opacity   = '1';
+  img.style.transform = 'scale(1)';
+  img.style.transition = 'opacity 0.2s, transform 0.2s';
+  const counter = document.getElementById('lbArrCounter');
+  if (counter) counter.textContent = (safeIdx + 1) + ' / ' + CHAT_SRCS.length;
   lockBody();
-  _lbUpdateArrows();
+  overlay.classList.add('active');
+  const lbXBtn = document.getElementById('lbX');
+  if (lbXBtn) {
+    lbXBtn.style.opacity = '0';
+    lbXBtn.style.transform = 'scale(0.5)';
+    lbXBtn.style.pointerEvents = 'none';
+    setTimeout(() => {
+      lbXBtn.style.opacity = '1';
+      lbXBtn.style.transform = 'scale(1)';
+      lbXBtn.style.pointerEvents = '';
+    }, 500);
+  }
 }
 
 /* ══════════════════════════════════════════
@@ -2884,7 +2902,10 @@ function openLB(triggerEl, src, idx){
 }
 
 function closeLB(){
-  if(!lbIsOpen || lbBusy) return;
+  const overlay = document.getElementById('lbOverlay');
+  // Allow closing even if lbIsOpen is false (e.g. opened via openChatLightbox)
+  if(lbBusy) return;
+  if(!lbIsOpen && !(overlay && overlay.classList.contains('active'))) return;
   lbBusy=true; lbIsOpen=false;
   if (lbBox) lbBox.classList.remove('clickable');
   if (lbX) {
