@@ -4630,6 +4630,13 @@ footer .wave-text .w.near {
   filter: drop-shadow(0 0 10px rgba(201,147,74,0.25));
   transform: scaleX(1.04);
 }
+.site-header.scrolled .header-logo {
+  background: linear-gradient(90deg, #7a4e1a 0%, #c9934a 38%, #a06820 52%, #c9934a 65%, #7a4e1a 100%);
+  background-size: 300% auto;
+  background-position: 100% center;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
 .site-header.scrolled .header-logo:hover { -webkit-text-fill-color: transparent; }
 @keyframes mainLogoShimmer {
   0%   { background-position: 100% center; }
