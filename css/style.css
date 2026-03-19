@@ -1356,6 +1356,9 @@ h1, h2, h3, h4 { font-family: 'Cormorant Garamond', serif; font-weight: 500; }
   flex-wrap: wrap;
   animation: fadeUp 0.8s 0.3s ease both;
 }
+.hero-trust {
+  animation: fadeUp 0.8s 0.5s ease both;
+}
 .btn-primary {
   background: var(--gold);
   color: #f0e6cc;
