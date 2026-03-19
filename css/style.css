@@ -1402,12 +1402,6 @@ section { padding: 100px 60px; }
   transition: transform 0.6s 0.4s ease;
 }
 .section-title.visible::after { transform: translateX(-50%) scaleX(1); }
-
-/* Section titles are always visible — only the underline line animates in via .visible */
-.section-title.reveal {
-  opacity: 1;
-  transform: none;
-}
 .section-sub {
   text-align: center;
   color: var(--text-muted);
@@ -1845,6 +1839,9 @@ section { padding: 100px 60px; }
 /* ── STAGGER REVEAL ── */
 .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
 .reveal.visible { opacity: 1; transform: none; }
+
+/* Section titles visible immediately — only the gold underline animates via .visible */
+.section-title.reveal { opacity: 1; transform: none; }
 .product-card.reveal:nth-child(1) { transition-delay: 0s; }
 .product-card.reveal:nth-child(2) { transition-delay: 0.08s; }
 .product-card.reveal:nth-child(3) { transition-delay: 0.16s; }
