@@ -210,7 +210,7 @@
     /* Critical above-fold CSS — prevents FOUC */
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--cream:#f5f0e8;--gold:#c9934a;--brown:#3d2b1f;--text:#2c1a10;--text-muted:#9a7a62;--white:#FDFBF7}
-    html{scroll-behavior:smooth;background:#f5f0e8;overflow-x:hidden}
+    html{scroll-behavior:smooth;background:#f5f0e8;overflow-x:hidden;scrollbar-gutter:stable}
     body{font-family:'Jost',sans-serif;background:#f5f0e8;color:var(--text);overflow-x:hidden}
     .site-header{position:fixed;top:0;left:0;right:0;z-index:500;transform:translateZ(0);padding:0 60px;height:72px;display:flex;align-items:center;justify-content:space-between;background:transparent;transition:background .35s,box-shadow .35s}
     .hero{min-height:100vh;min-height:100svh;display:flex;align-items:center;padding:100px 60px 80px;position:relative;overflow:hidden}
@@ -221,7 +221,7 @@
     #scroll-progress{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--gold),#d4a76a);z-index:9999;border-radius:0 2px 2px 0}
     @media(max-width:768px){.site-header{padding:0 24px}}
   </style>
-  <link rel="stylesheet" href="css/style.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 
 <body>
@@ -849,7 +849,7 @@ setTimeout(_hideLoader, 5000);
 
 
 <script>var IMG_BASE = 'img';</script>
-<script src="js/main.min.js" defer></script>
+<script src="js/main.js" defer></script>
 
 
 

@@ -2759,24 +2759,27 @@ document.addEventListener('visibilitychange', () => {
 
 /* ── Section title word hover (meringue-style) ── */
 (function() {
-  document.querySelectorAll('.section-title').forEach(function(el) {
-    // Skip if already processed
-    if (el.querySelector('.ht-w')) return;
-    // Wrap words in plain text nodes, preserve existing tags
-    var html = el.innerHTML;
-    el.innerHTML = html.replace(/(<[^>]+>)|([^<]+)/g, function(match, tag, text) {
-      if (tag) return tag;
-      if (!text || !text.trim()) return text;
-      return text.replace(/(\S+)/g, function(word) {
-        return '<span class="ht-w">' + word + '</span>';
+  function initSectionTitles() {
+    document.querySelectorAll('.section-title').forEach(function(el) {
+      if (el.querySelector('.ht-w')) return;
+      var html = el.innerHTML;
+      el.innerHTML = html.replace(/(<[^>]+>)|([^<]+)/g, function(match, tag, text) {
+        if (tag) return tag;
+        if (!text || !text.trim()) return text;
+        return text.replace(/(\S+)/g, function(word) {
+          return '<span class="ht-w">' + word + '</span>';
+        });
       });
     });
-  });
-
-  // Section-sub gentle cursor
-  document.querySelectorAll('.section-sub').forEach(function(el) {
-    el.style.cursor = 'default';
-  });
+    document.querySelectorAll('.section-sub').forEach(function(el) {
+      el.style.cursor = 'default';
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSectionTitles);
+  } else {
+    initSectionTitles();
+  }
 })();
 
 // ── Messenger button ring → flat-label animation ──

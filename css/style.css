@@ -1402,6 +1402,12 @@ section { padding: 100px 60px; }
   transition: transform 0.6s 0.4s ease;
 }
 .section-title.visible::after { transform: translateX(-50%) scaleX(1); }
+
+/* Section titles are always visible — only the underline line animates in via .visible */
+.section-title.reveal {
+  opacity: 1;
+  transform: none;
+}
 .section-sub {
   text-align: center;
   color: var(--text-muted);
@@ -4940,6 +4946,7 @@ footer .wave-text .w.near {
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
+  color: #fff;
   transition: background 0.25s, border-color 0.25s, transform 0.3s cubic-bezier(.16,1,.3,1), box-shadow 0.3s;
   -webkit-tap-highlight-color: transparent;
   flex-shrink: 0;
