@@ -153,6 +153,20 @@ function sliderStep(pid, dir, total) {
   }
 }
 
+// ── CALCULATOR STATE & CONFIG (must be before initApp to avoid TDZ) ──
+let _calcWeight = 2;
+const WEIGHT_MIN = 2, WEIGHT_MAX = 10, WEIGHT_STEP = 0.5;
+let _calcQty = 1;
+let _cakeType = 'biscuit'; // biscuit | bento | bentomaxi | cake3d
+
+// Конфиги типов тортов
+const CAKE_CONFIGS = {
+  biscuit:   { weightMin: 2, weightMax: 10, weightStep: 0.5, hasWeight: true,  hasQty: false, pricePerKg: 2800, fixedPrice: null, fillGroup: 'calcFill' },
+  bento:     { weightMin: 1, weightMax: 1,  weightStep: 1,   hasWeight: false, hasQty: true,  pricePerKg: null, fixedPrice: 1600, fillGroup: 'calcFillBento' },
+  bentomaxi: { weightMin: 1, weightMax: 5,  weightStep: 0.5, hasWeight: true,  hasQty: false, pricePerKg: 3000, fixedPrice: null, fillGroup: 'calcFillBento' },
+  cake3d:    { weightMin: 3, weightMax: 15, weightStep: 0.5, hasWeight: true,  hasQty: false, pricePerKg: 5000, fixedPrice: null, fillGroup: 'calcFill3d'   },
+};
+
 // ── PRODUCT SLIDER TOUCH SWIPE ──
 function addSliderTouch(pid, total) {
   const wrap = document.getElementById('slider-' + pid);
@@ -1426,19 +1440,7 @@ function wireProductLightbox() {
   });
 }
 
-// ── CALCULATOR ──
-let _calcWeight = 2;
-const WEIGHT_MIN = 2, WEIGHT_MAX = 10, WEIGHT_STEP = 0.5;
-let _calcQty = 1;
-let _cakeType = 'biscuit'; // biscuit | bento | bentomaxi | cake3d
-
-// Конфиги типов тортов
-const CAKE_CONFIGS = {
-  biscuit:   { weightMin: 2, weightMax: 10, weightStep: 0.5, hasWeight: true,  hasQty: false, pricePerKg: 2800, fixedPrice: null, fillGroup: 'calcFill' },
-  bento:     { weightMin: 1, weightMax: 1,  weightStep: 1,   hasWeight: false, hasQty: true,  pricePerKg: null, fixedPrice: 1600, fillGroup: 'calcFillBento' },
-  bentomaxi: { weightMin: 1, weightMax: 5,  weightStep: 0.5, hasWeight: true,  hasQty: false, pricePerKg: 3000, fixedPrice: null, fillGroup: 'calcFillBento' },
-  cake3d:    { weightMin: 3, weightMax: 15, weightStep: 0.5, hasWeight: true,  hasQty: false, pricePerKg: 5000, fixedPrice: null, fillGroup: 'calcFill3d'   },
-};
+// ── CALCULATOR ── (variables declared here to avoid TDZ; functions defined later)
 
 function selectCakeType(el, type) {
   // Снимаем selected со всех карточек типа
