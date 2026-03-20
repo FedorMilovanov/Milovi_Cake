@@ -163,7 +163,7 @@ let _cakeType = 'biscuit'; // biscuit | bento | bentomaxi | cake3d
 const CAKE_CONFIGS = {
   biscuit:   { weightMin: 2, weightMax: 10, weightStep: 0.5, hasWeight: true,  hasQty: false, pricePerKg: 2800, fixedPrice: null, fillGroup: 'calcFill' },
   bento:     { weightMin: 1, weightMax: 1,  weightStep: 1,   hasWeight: false, hasQty: true,  pricePerKg: null, fixedPrice: 1600, fillGroup: 'calcFillBento' },
-  bentomaxi: { weightMin: 1, weightMax: 5,  weightStep: 0.5, hasWeight: true,  hasQty: false, pricePerKg: 3000, fixedPrice: null, fillGroup: 'calcFillBento' },
+  bentomaxi: { weightMin: 3, weightMax: 5,  weightStep: 0.5, hasWeight: true,  hasQty: false, pricePerKg: 3000, fixedPrice: null, fillGroup: 'calcFillBento' },
   cake3d:    { weightMin: 3, weightMax: 15, weightStep: 0.5, hasWeight: true,  hasQty: false, pricePerKg: 5000, fixedPrice: null, fillGroup: 'calcFill3d'   },
 };
 
@@ -1086,11 +1086,12 @@ function initSectionTitleWords() {
     if (el.dataset.splitInit === '1') return;
     const txt = (el.textContent || '').trim();
     if (!txt) return;
+    const inheritStyle = el.getAttribute('style') || '';
 
     const parts = txt.split(/(\s+)/);
     el.innerHTML = parts.map(function(p) {
       if (/^\s+$/.test(p)) return p;
-      return '<span class="ht-w">' + p + '</span>';
+      return '<span class="ht-w"' + (inheritStyle ? ' style="' + inheritStyle + '"' : '') + '>' + p + '</span>';
     }).join('');
     el.dataset.splitInit = '1';
   });
@@ -1450,14 +1451,45 @@ function selectCakeType(el, type) {
 
   const cfg = CAKE_CONFIGS[type];
 
+  // helper: плавно показать/скрыть строку
+  function setRowVisible(el, visible) {
+    if (!el) return;
+    el.classList.toggle('calc-row--hidden', !visible);
+  }
+
   // Переключаем блок веса
   const weightRow = document.getElementById('calcWeightRow');
   const qtyRow    = document.getElementById('calcQtyRow');
-  if (weightRow) weightRow.style.display = cfg.hasWeight ? '' : 'none';
-  if (qtyRow)    qtyRow.style.display    = cfg.hasQty    ? '' : 'none';
+  setRowVisible(weightRow, cfg.hasWeight);
+  setRowVisible(qtyRow, cfg.hasQty);
+
+  // Для бенто/макси бенто — скрываем кнопки и показываем фиксированный вес
+  const minus = document.getElementById('calcWeightMinus');
+  const plus  = document.getElementById('calcWeightPlus');
+  const fixedWeightNote = document.getElementById('calcFixedWeightNote');
+
+  if (type === 'bento') {
+    if (minus) minus.style.display = 'none';
+    if (plus)  plus.style.display  = 'none';
+    if (fixedWeightNote) { fixedWeightNote.textContent = '~350 гр'; fixedWeightNote.style.display = ''; }
+    const valEl = document.getElementById('calcWeightVal');
+    if (valEl) valEl.style.display = 'none';
+  } else if (type === 'bentomaxi') {
+    if (minus) minus.style.display = 'none';
+    if (plus)  plus.style.display  = 'none';
+    if (fixedWeightNote) { fixedWeightNote.textContent = '~1100 гр'; fixedWeightNote.style.display = ''; }
+    const valEl = document.getElementById('calcWeightVal');
+    if (valEl) valEl.style.display = 'none';
+  } else {
+    if (minus) minus.style.display = '';
+    if (plus)  plus.style.display  = '';
+    if (fixedWeightNote) fixedWeightNote.style.display = 'none';
+    const valEl = document.getElementById('calcWeightVal');
+    if (valEl) valEl.style.display = '';
+  }
 
   // Обновляем мин вес и значение
-  if (cfg.hasWeight) {
+  if (cfg.hasWeight && type !== 'bento' && type !== 'bentomaxi') {
     const WEIGHT_MIN_CUR = cfg.weightMin;
     if (_calcWeight < WEIGHT_MIN_CUR) {
       _calcWeight = WEIGHT_MIN_CUR;
@@ -1466,8 +1498,6 @@ function selectCakeType(el, type) {
       const inp = document.getElementById('calcWeight');
       if (inp) inp.value = _calcWeight;
     }
-    const minus = document.getElementById('calcWeightMinus');
-    const plus  = document.getElementById('calcWeightPlus');
     if (minus) minus.disabled = _calcWeight <= WEIGHT_MIN_CUR;
     if (plus)  plus.disabled  = _calcWeight >= cfg.weightMax;
   }
@@ -1477,7 +1507,7 @@ function selectCakeType(el, type) {
     const row = document.getElementById(id);
     if (!row) return;
     const forTypes = row.dataset.for || '';
-    row.style.display = forTypes.includes(type) ? '' : 'none';
+    setRowVisible(row, forTypes.includes(type));
   });
 
   // Сбрасываем selected в активном блоке начинок
@@ -1489,7 +1519,7 @@ function selectCakeType(el, type) {
 
   // Скрываем декор для бенто (там всё включено), показываем для остальных
   const decorRow = document.getElementById('calcDecor')?.closest('.calc-row');
-  if (decorRow) decorRow.style.display = type === 'bento' ? 'none' : '';
+  setRowVisible(decorRow, type !== 'bento');
 
   updateCalc();
 }
@@ -1639,6 +1669,7 @@ function updateCalc() {
 
   // 3D торт — особая пометка
   if (_cakeType === 'cake3d') noteText = 'Сложный декор рассчитывается отдельно';
+  else if (_cakeType !== 'bento') noteText = (noteText === 'Точная цена согласовывается при заказе' ? 'Дополнительный декор рассчитывается отдельно' : noteText + '. Дополнительный декор рассчитывается отдельно');
 
   const isApprox = decorPrice > 0 || _cakeType === 'cake3d';
   const prefix = isApprox ? '~ ' : '';
@@ -1650,6 +1681,46 @@ function updateCalc() {
 
   const badge = document.getElementById('calcApproxBadge');
   if (badge) badge.classList.toggle('visible', isApprox);
+
+  // ── Сводка выбора ──
+  const summaryEl = document.getElementById('calcSummary');
+  if (summaryEl) {
+    const typeNames = { biscuit: 'Бисквитный', bento: 'Бенто', bentomaxi: 'Макси Бенто', cake3d: '3D Торт' };
+    const typeIcons = { biscuit: '🎂', bento: '🍰', bentomaxi: '🍰', cake3d: '✨' };
+    const fillName  = fillEl?.querySelector('.opt-label')?.textContent?.trim() || '';
+    const decorName = decorEl?.querySelector('.opt-label')?.textContent?.trim() || '';
+
+    let chips = [];
+
+    // Тип торта
+    chips.push({ icon: typeIcons[_cakeType], label: 'Тип', val: typeNames[_cakeType] });
+
+    // Вес или количество
+    if (cfg.hasQty) {
+      chips.push({ icon: '🔢', label: 'Количество', val: _calcQty + ' шт' });
+    } else if (_cakeType === 'bentomaxi') {
+      chips.push({ icon: '⚖️', label: 'Вес', val: '~1100 гр' });
+    } else if (_cakeType === 'bento') {
+      chips.push({ icon: '⚖️', label: 'Вес', val: '~350 гр' });
+    } else {
+      const w = _calcWeight;
+      const wStr = w % 1 === 0 ? w + ' кг' : w.toFixed(1) + ' кг';
+      const guests = Math.round(w / 0.2);
+      chips.push({ icon: '⚖️', label: 'Вес', val: wStr + ' · ~' + guests + ' чел' });
+    }
+
+    // Начинка
+    if (fillName) chips.push({ icon: '🍓', label: 'Начинка', val: fillName });
+
+    // Декор (только если не бенто)
+    if (_cakeType !== 'bento' && decorName) {
+      chips.push({ icon: '🎨', label: 'Декор', val: decorName });
+    }
+
+    summaryEl.innerHTML = chips.map(c =>
+      `<span class="calc-summary-chip"><span class="chip-icon">${c.icon}</span>${c.label}: <span class="chip-val">${c.val}</span></span>`
+    ).join('');
+  }
 }
 
 

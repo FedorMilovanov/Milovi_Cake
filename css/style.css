@@ -639,7 +639,7 @@ body {
 /* ХИТ остаётся красным при выборе, текст на чёрный */
 .calc-opt.selected .fill-tag.hit  { background: #e8442a; color: #1a0a00; }
 /* ОРЕХИ при выборе — чёрный текст */
-.calc-opt.selected .fill-tag.nuts { background: rgba(255,255,255,0.25); color: #1a0a00; }
+.calc-opt.selected .fill-tag.nuts { background: rgba(255,255,255,0.9); color: #7a4e1a; }
 .calc-opt.selected .fill-tag      { color: #1a0a00; }
 
 .lightbox-nav {
@@ -707,7 +707,7 @@ body {
   display: inline-flex; align-items: center; gap: 5px;
 }
 .calc-opt.selected { border-color: var(--gold); background: var(--gold) !important; color: #fff !important; box-shadow: 0 4px 14px rgba(201,147,74,0.45); }
-.calc-opt.selected .fill-tag { background: rgba(255,255,255,0.25); color: #fff; }
+.calc-opt.selected .fill-tag { background: rgba(255,255,255,0.9); color: #7a4e1a; }
 
 /* ── FILL TOOLTIP ── */
 .fill-tooltip {
@@ -4845,7 +4845,55 @@ footer .wave-text .w.near {
   .product-card:hover h3 { letter-spacing: 0; }
 }
 
-/* ── Calc result block interactive ── */
+/* ── Calc result summary chips ── */
+.calc-result-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0 6px;
+  transition: opacity 0.3s ease;
+}
+.calc-summary-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(201,147,74,0.25);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.75);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.calc-summary-chip .chip-icon { font-size: 13px; line-height: 1; }
+.calc-summary-chip .chip-val  { color: #e8c98a; font-weight: 600; }
+
+/* ── Calc rows smooth show/hide ── */
+.calc-row {
+  overflow: hidden;
+  max-height: 400px;
+  opacity: 1;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.25s ease,
+              margin-bottom 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.calc-row.calc-row--hidden {
+  max-height: 0 !important;
+  opacity: 0;
+  margin-bottom: 0 !important;
+  pointer-events: none;
+}
+
+/* ── Calc result sticky ── */
+.calc-result-wrap {
+  position: sticky;
+  bottom: 16px;
+  z-index: 10;
+  margin-top: 8px;
+}
+
+
 .calc-result {
   transition: box-shadow 0.5s ease, border-color 0.5s ease;
   border: 1px solid rgba(201,147,74,0.12);

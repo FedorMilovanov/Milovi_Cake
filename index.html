@@ -282,7 +282,7 @@
 <!-- FILLINGS / CALCULATOR -->
 <section id="fillings" class="fillings">
   <div class="container">
-    <h2 class="section-title reveal"><span class="ht-word">Начинки</span> <span class="ht-w" style="color:var(--gold);">&</span> <span class="ht-em">Стоимость</span></h2>
+    <h2 class="section-title reveal"><span class="ht-word">Начинки</span> <span class="ht-word ht-amp" style="color:var(--gold);">&amp;</span> <span class="ht-em">Стоимость</span></h2>
     <p class="section-sub reveal wave-text">Выберите начинку и узнайте примерную цену</p>
     <div class="calc-wrap reveal">
 
@@ -292,7 +292,7 @@
         <div class="calc-options calc-type-grid" id="calcType">
           <div class="calc-opt calc-type-card selected" data-price="2800" data-type="biscuit" onclick="selectCakeType(this,'biscuit')">
             <span class="calc-type-icon">🎂</span>
-            <span class="opt-inner"><span class="opt-label">Бисквитный</span><span class="calc-type-hint">от 2 800 ₽/кг</span></span>
+            <span class="opt-inner"><span class="opt-label">Бисквитный</span><span class="calc-type-hint">2 800 ₽/кг</span></span>
           </div>
           <div class="calc-opt calc-type-card" data-price="1600" data-type="bento" onclick="selectCakeType(this,'bento')">
             <span class="calc-type-icon">🍰</span>
@@ -315,6 +315,7 @@
         <div class="calc-weight-stepper">
           <button class="calc-stepper-btn" id="calcWeightMinus" onclick="stepWeight(-1)" aria-label="Уменьшить вес">−</button>
           <div class="calc-stepper-val" id="calcWeightVal">2 кг</div>
+          <span id="calcFixedWeightNote" style="display:none;font-size:1rem;font-weight:600;color:var(--text);padding:0 8px;"></span>
           <button class="calc-stepper-btn" id="calcWeightPlus" onclick="stepWeight(1)" aria-label="Увеличить вес">+</button>
         </div>
         <div id="guestsPopup" style="margin-top:8px;font-size:11px;color:var(--text);letter-spacing:0.06em;text-transform:uppercase;opacity:0;transition:opacity 0.3s ease;">Примерно на <span id="guestsCount">10 человек</span></div>
@@ -322,7 +323,7 @@
       </div>
 
       <!-- КОЛИЧЕСТВО (только для бенто) -->
-      <div class="calc-row" id="calcQtyRow" style="display:none">
+      <div class="calc-row calc-row--hidden" id="calcQtyRow">
         <span class="calc-label">Количество</span>
         <div class="calc-weight-stepper">
           <button class="calc-stepper-btn" id="calcQtyMinus" onclick="stepQty(-1)" aria-label="Уменьшить">−</button>
@@ -347,32 +348,30 @@
           <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')"><span class="opt-inner"><span class="opt-label">Шоколадный микс ягод</span></span><div class="fill-tooltip"><strong>Шоколадный микс ягод</strong>Шоколадный бисквит + микс малины, вишни и лесных ягод + сливочный крем чиз.</div></div>
           <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')"><span class="opt-inner"><span class="opt-label">Красный бархат</span></span><div class="fill-tooltip"><strong>Красный бархат</strong>Бисквит красный бархат + нежный сырный крем. Эффектный срез, бархатный вкус.</div></div>
           <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')"><span class="opt-inner"><span class="opt-label">Супер-Шоколад</span></span><div class="fill-tooltip"><strong>Супер-Шоколад</strong>Шоколадный бисквит + шоколадный крем-чиз. Для истинных любителей шоколада.</div></div>
-          <div class="fill-desc-panel" id="fillDescPanel">
-            <div class="fill-desc-text" id="fillDescText"></div>
-          </div>
+
         </div>
       </div>
 
       <!-- НАЧИНКА — бенто и макси бенто -->
-      <div class="calc-row calc-fill-section" id="calcFillBentoRow" data-for="bento bentomaxi" style="display:none">
+      <div class="calc-row calc-fill-section calc-row--hidden" id="calcFillBentoRow" data-for="bento bentomaxi">
         <span class="calc-label">Начинка</span>
         <div class="calc-options" id="calcFillBento">
-          <div class="calc-opt selected" data-price="0" onclick="selectOpt(this,'calcFillBento')"><span class="opt-inner"><span class="opt-label">Малина</span></span><div class="fill-tooltip"><strong>Малина</strong>Ванильный или шоколадный бисквит + малиновое конфи + крем-чиз. Свежий ягодный вкус.</div></div>
-          <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFillBento')"><span class="opt-inner"><span class="opt-label">Вишня</span></span><div class="fill-tooltip"><strong>Вишня</strong>Ванильный или шоколадный бисквит + вишнёвое конфи + крем-чиз. Яркая и сочная.</div></div>
-          <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFillBento')"><span class="opt-inner"><span class="opt-label">Микс ягод </span><span class="fill-tag hit">хит</span></span><div class="fill-tooltip"><strong>Микс ягод</strong>Ванильный или шоколадный бисквит + микс малины, вишни и лесных ягод + крем-чиз.</div></div>
+          <div class="calc-opt selected" data-price="0" onclick="selectOpt(this,'calcFillBento')"><span class="opt-inner"><span class="opt-label">Микс ягод </span><span class="fill-tag hit">хит</span></span><div class="fill-tooltip"><strong>Микс ягод</strong>Ванильный или шоколадный бисквит + микс малины, вишни и лесных ягод + крем-чиз.</div></div>
           <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFillBento')"><span class="opt-inner"><span class="opt-label">Карамель с орехами </span><span class="fill-tag nuts">орехи</span></span><div class="fill-tooltip"><strong>Карамель с орехами</strong>Ванильный или шоколадный бисквит + солёная карамель + хрустящие орехи + крем-чиз.</div></div>
           <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFillBento')"><span class="opt-inner"><span class="opt-label">Карамель с вафлями </span><span class="fill-tag hit" style="background:rgba(139,90,43,0.15);color:#8b5a2b;">хруст</span></span><div class="fill-tooltip"><strong>Карамель с вафлями</strong>Ванильный или шоколадный бисквит + карамель + кондитерские вафли в шоколаде. Хрустящий слой внутри.</div></div>
+          <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFillBento')"><span class="opt-inner"><span class="opt-label">Малина</span></span><div class="fill-tooltip"><strong>Малина</strong>Ванильный или шоколадный бисквит + малиновое конфи + крем-чиз. Свежий ягодный вкус.</div></div>
+          <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFillBento')"><span class="opt-inner"><span class="opt-label">Вишня</span></span><div class="fill-tooltip"><strong>Вишня</strong>Ванильный или шоколадный бисквит + вишнёвое конфи + крем-чиз. Яркая и сочная.</div></div>
         </div>
         <div class="calc-biscuit-note" style="margin-top:10px;font-size:12px;color:var(--text-muted);letter-spacing:0.03em;">🍫 Бисквит на выбор: ванильный или шоколадный — уточняется при заказе</div>
       </div>
 
       <!-- НАЧИНКА — 3D торт -->
-      <div class="calc-row calc-fill-section" id="calcFill3dRow" data-for="cake3d" style="display:none">
+      <div class="calc-row calc-fill-section calc-row--hidden" id="calcFill3dRow" data-for="cake3d">
         <span class="calc-label">Начинка</span>
         <div class="calc-options" id="calcFill3d">
           <div class="calc-opt selected" data-price="0" onclick="selectOpt(this,'calcFill3d')"><span class="opt-inner"><span class="opt-label">Молочная девочка</span><span class="fill-tag hit">нежный</span></span><div class="fill-tooltip"><strong>Молочная девочка</strong>Тонкие медовые коржи «молочная девочка» + нежный сливочный крем. Деликатно и воздушно.</div></div>
-          <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill3d')"><span class="opt-inner"><span class="opt-label">Шок. молочная девочка</span></span><div class="fill-tooltip"><strong>Шоколадная молочная девочка</strong>Шоколадные коржи «молочная девочка» + шоколадный сливочный крем. Насыщенно и изысканно.</div></div>
           <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill3d')"><span class="opt-inner"><span class="opt-label">Медовик</span><span class="fill-tag hit" style="background:rgba(201,147,74,0.15);color:#c9934a;">классика</span></span><div class="fill-tooltip"><strong>Медовик</strong>Классические медовые коржи + нежный крем со сметаной. Пропитанный, ароматный, любимый всеми.</div></div>
+          <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill3d')"><span class="opt-inner"><span class="opt-label">Молочная девочка + сливочный крем</span></span><div class="fill-tooltip"><strong>Молочная девочка + сливочный крем</strong>Тонкие коржи «молочная девочка» + нежный сливочный крем. Деликатно и воздушно.</div></div>
         </div>
       </div>
 
@@ -386,15 +385,18 @@
       </div>
 
       <!-- РЕЗУЛЬТАТ -->
+      <div class="calc-result-wrap">
       <div class="calc-result">
         <div class="calc-result-left">
           <div class="calc-result-label" id="calcLabel">Примерная стоимость</div>
           <div class="calc-result-price" id="calcResult">5 600 ₽</div>
+          <div class="calc-result-summary" id="calcSummary"></div>
           <div class="calc-result-note" id="calcNote">Точная цена согласовывается при заказе</div>
         </div>
         <div class="calc-result-right">
           <a href="#contacts" class="calc-order-btn" onclick="event.preventDefault(); document.getElementById('contacts').scrollIntoView({behavior:'smooth'}); setTimeout(function(){var el=document.getElementById('fphone'); if(el)el.focus();},600);">Заказать 🎂</a>
         </div>
+      </div>
       </div>
 
     </div>
