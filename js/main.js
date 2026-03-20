@@ -1617,6 +1617,15 @@ function selectOpt(el, groupId) {
   document.querySelectorAll(`#${groupId} .calc-opt.selected`).forEach(x => x.classList.remove('selected'));
   opt.classList.add('selected');
 
+  // Показываем подсказку цены авторского декора
+  if (groupId === 'calcDecor') {
+    const hint = document.getElementById('calcDecorHint');
+    if (hint) {
+      const price = parseInt(opt.dataset.price || 0);
+      hint.classList.toggle('visible', price > 0);
+    }
+  }
+
   // Rubber click effect on inner wrapper only (tooltip excluded)
   const inner = opt.querySelector('.opt-inner');
   if (inner) {
@@ -2852,17 +2861,16 @@ function loop(ts){
     return { top, left };
   }
   const stageOff    = offsetRelTo(stageEl, secEl);
-  // Используем getBoundingClientRect для точного cardL с учётом центрирования
+  // getBoundingClientRect для точных координат с учётом центрирования
   const secRect     = secEl.getBoundingClientRect();
   const stageRect   = stageEl.getBoundingClientRect();
   const cardL       = stageRect.left - secRect.left;
   const cardW       = stageEl.offsetWidth;
-  // Центр блока .reviews-track относительно секции — прямой расчёт
-  // Lazy init кэш элемента — не делаем querySelector каждый кадр
+  // Центр блока с карточкой отзыва — через getBoundingClientRect
   if (!cachedTrackEl) cachedTrackEl = stageEl.querySelector('.reviews-track') || trackEl;
-  const trackEl2   = cachedTrackEl;
-  const trackOff2  = offsetRelTo(trackEl2, secEl);
-  const cardCenterY = trackOff2.top + trackEl2.offsetHeight / 2;
+  const trackEl2    = cachedTrackEl;
+  const trackRect   = trackEl2.getBoundingClientRect();
+  const cardCenterY = trackRect.top - secRect.top + trackRect.height / 2;
 
   thumbs.forEach((th, i)=>{
     const fl  = FLOATS[i];
@@ -2894,7 +2902,7 @@ function loop(ts){
       const parkX = lay.side === 'left'
         ? cardL - THUMB_W + OVERLAP
         : cardL + cardW - OVERLAP;
-      const parkY = cardCenterY - THUMB_H / 2 - 80;
+      const parkY = cardCenterY - THUMB_H / 2 + 20;
 
 
       // Smooth ease-out
@@ -3578,6 +3586,29 @@ document.addEventListener('visibilitychange', () => {
 // ── Fill tooltip: position:fixed + SVG-капля Безье ──
 (function initFillTooltips() {
   const ARROW_SVG = '<svg class="fill-tooltip-arrow" width="24" height="20" viewBox="0 0 24 20" xmlns="http://www.w3.org/2000/svg"><path d="M2,0 Q12,0 12,18 Q12,0 22,0 Z" fill="#3d2b1f"/></svg>';
+  let hideTimer = null;
+
+  function showTip(tip, opt) {
+    if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+    // position:fixed — координаты относительно вьюпорта (getBoundingClientRect)
+    const r = opt.getBoundingClientRect();
+    let left = r.left + r.width / 2 - 110;
+    let top  = r.top - 14;
+    left = Math.max(8, Math.min(left, window.innerWidth - 228));
+    tip.style.left = left + 'px';
+    tip.style.top  = top + 'px';
+    tip.style.transform = 'translateY(-100%) translateY(-4px)';
+    tip.style.opacity = '1';
+    tip.style.pointerEvents = 'all';
+  }
+
+  function hideTip(tip, delay) {
+    hideTimer = setTimeout(() => {
+      tip.style.opacity = '0';
+      tip.style.pointerEvents = 'none';
+      hideTimer = null;
+    }, delay || 120);
+  }
 
   function bindTooltips() {
     document.querySelectorAll('.calc-opt').forEach(opt => {
@@ -3586,22 +3617,22 @@ document.addEventListener('visibilitychange', () => {
       const tip = opt.querySelector('.fill-tooltip');
       if (!tip) return;
 
-      // Добавляем SVG-каплю если ещё нет
       if (!tip.querySelector('.fill-tooltip-arrow')) {
         tip.insertAdjacentHTML('beforeend', ARROW_SVG);
       }
 
-      opt.addEventListener('mouseenter', () => {
-        const r = opt.getBoundingClientRect();
-        let left = r.left + r.width / 2 - 110;
-        let top  = r.top - 24; // 24px зазор для капли
+      // Начальное состояние
+      tip.style.opacity = '0';
+      tip.style.pointerEvents = 'none';
 
-        left = Math.max(8, Math.min(left, window.innerWidth - 228));
+      opt.addEventListener('mouseenter', () => showTip(tip, opt));
+      opt.addEventListener('mouseleave', () => hideTip(tip, 120));
 
-        tip.style.left = left + 'px';
-        tip.style.top  = top + 'px';
-        tip.style.transform = 'translateY(-100%) translateY(-4px)';
+      // Держим тултип пока мышь на нём
+      tip.addEventListener('mouseenter', () => {
+        if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
       });
+      tip.addEventListener('mouseleave', () => hideTip(tip, 80));
     });
   }
 

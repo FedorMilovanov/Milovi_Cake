@@ -402,8 +402,9 @@
             <span class="calc-label">Декор</span>
             <div class="calc-options" id="calcDecor">
               <div class="calc-opt selected" data-price="0" onclick="selectOpt(this,'calcDecor')"><span class="opt-inner"><span class="opt-label">Базовый декор</span></span><div class="fill-tooltip"><strong>Базовый декор</strong>Кремовые мазки, покрытие, подтёки — аккуратное оформление, входит в стоимость торта.</div></div>
-              <div class="calc-opt" data-price="1000" onclick="selectOpt(this,'calcDecor')"><span class="opt-inner"><span class="opt-label">Авторский декор</span><span class="fill-tag fill-tag--price">от +1000 ₽</span></span><div class="fill-tooltip"><strong>Авторский декор</strong>Фигурки, объёмный декор, живые и вафельные цветы, роспись, сахарная печать и другие сложные элементы. Стоимость рассчитывается индивидуально.</div></div>
+              <div class="calc-opt" data-price="1000" onclick="selectOpt(this,'calcDecor')"><span class="opt-inner"><span class="opt-label">Авторский декор</span></span><div class="fill-tooltip"><strong>Авторский декор</strong>Фигурки, объёмный декор, живые и вафельные цветы, роспись, сахарная печать и другие сложные элементы. Стоимость рассчитывается индивидуально.</div></div>
             </div>
+            <div class="calc-decor-hint" id="calcDecorHint">✦ авторский декор — от +1 000 ₽</div>
           </div>
 
         </div><!-- /.calc-left-col -->
@@ -478,14 +479,14 @@
 <!-- STATS -->
 <div class="stats-section">
   <div class="stats-grid">
-    <div class="stat-item stat-item--photo reveal">
-      <div class="stat-photo-wrap">
-        <img src="img/viktoria2.webp" alt="Виктория Милованова украшает торт" loading="lazy" />
-      </div>
-    </div>
     <div class="stat-item reveal"><span class="stat-num" data-target="5" data-suffix=" лет">0</span><div class="stat-label">Опыта работы</div></div>
     <div class="stat-item reveal"><span class="stat-num" data-target="98" data-suffix="%">0</span><div class="stat-label">Довольных клиентов</div></div>
     <div class="stat-item reveal"><span class="stat-num" data-target="9" data-suffix=" видов">0</span><div class="stat-label">Десертов в меню</div></div>
+    <div class="stat-item stat-item--text reveal">
+      <div class="stat-text-icon">❤️</div>
+      <div class="stat-text-title">С душой</div>
+      <div class="stat-text-desc">Индивидуальный подход и внимание к каждой детали</div>
+    </div>
   </div>
 </div>
 <div class="section-fade-divider" aria-hidden="true"></div>
@@ -539,7 +540,7 @@
     <p>Где заказать торт в СПб с доставкой? У нас! Можно заказать торт на день рождения с доставкой, заказать торт на рождение ребёнка, заказать торт на рождение, торт сестре заказать или найти торт дня — просто напишите нам в WhatsApp или Telegram. Ответим в течение 10 минут, согласуем состав, дату и удобный способ доставки. Заказать бенто торт, заказать свадебный торт, заказать торт с доставкой на дом — где можно заказать торт с душой? Здесь, у Milovi Cake.</p>
   </div>
 </section>
-
+<div class="section-fade-divider" aria-hidden="true"></div>
 <!-- CONTACTS -->
 <section id="contacts">
   <div class="container">
@@ -613,6 +614,13 @@
 
 </main>
 
+<!-- FOOTER DIVIDER -->
+<div class="footer-divider" aria-hidden="true">
+  <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,80 L0,80 Z" fill="#110a05"/>
+  </svg>
+  <div class="footer-divider-line"></div>
+</div>
 <!-- FOOTER -->
 <footer class="site-footer">
   <div class="container">
