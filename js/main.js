@@ -1486,7 +1486,9 @@ function selectCakeType(el, type) {
   if (type === 'bento') {
     if (minus) minus.style.display = 'none';
     if (plus)  plus.style.display  = 'none';
-    if (fixedWeightNote) { fixedWeightNote.textContent = '~350 гр'; fixedWeightNote.style.display = ''; }
+    const noteWrap = fixedWeightNote && fixedWeightNote.parentElement;
+    if (fixedWeightNote) fixedWeightNote.textContent = '~350 гр / шт';
+    if (noteWrap) noteWrap.classList.add('visible');
     const valEl = document.getElementById('calcWeightVal');
     if (valEl) valEl.style.display = 'none';
     const lbl = document.getElementById('calcWeightLabel');
@@ -1494,7 +1496,9 @@ function selectCakeType(el, type) {
   } else if (type === 'bentomaxi') {
     if (minus) minus.style.display = 'none';
     if (plus)  plus.style.display  = 'none';
-    if (fixedWeightNote) { fixedWeightNote.textContent = '~1100 гр'; fixedWeightNote.style.display = ''; }
+    const noteWrap = fixedWeightNote && fixedWeightNote.parentElement;
+    if (fixedWeightNote) fixedWeightNote.textContent = '~1100 гр / шт';
+    if (noteWrap) noteWrap.classList.add('visible');
     const valEl = document.getElementById('calcWeightVal');
     if (valEl) valEl.style.display = 'none';
     const lbl = document.getElementById('calcWeightLabel');
@@ -1502,7 +1506,8 @@ function selectCakeType(el, type) {
   } else {
     if (minus) minus.style.display = '';
     if (plus)  plus.style.display  = '';
-    if (fixedWeightNote) fixedWeightNote.style.display = 'none';
+    const noteWrap = fixedWeightNote && fixedWeightNote.parentElement;
+    if (noteWrap) noteWrap.classList.remove('visible');
     const valEl = document.getElementById('calcWeightVal');
     if (valEl) valEl.style.display = '';
     const lbl = document.getElementById('calcWeightLabel');
@@ -1675,23 +1680,26 @@ function updateCalc() {
     if (valEl) valEl.textContent = weight % 1 === 0 ? weight + ' кг' : weight.toFixed(1) + ' кг';
 
     // Гостей — всегда видно рядом со степпером
-    const guestsEl = document.getElementById('guestsCount');
-    const guestsPopup = document.getElementById('guestsPopup');
-    if (guestsEl && guestsPopup) {
+    const guestsPopupEl = document.getElementById('guestsPopup');
+    if (guestsPopupEl) {
       const n = Math.round(weight / 0.2);
-      guestsPopup.textContent = '≈ ' + n + ' чел.';
+      guestsPopupEl.textContent = '≈ ' + n + ' чел.';
     }
 
     if (decorPrice > 0) noteText = '* Стоимость авторского декора рассчитывается индивидуально';
   }
 
-  // Для бенто с фиксированным весом — показываем порцию
+  // Для бенто с фиксированным весом — показываем порцию пропорционально кол-ву
   const guestsPopup = document.getElementById('guestsPopup');
   if (guestsPopup) {
     if (_cakeType === 'bento') {
-      guestsPopup.textContent = '≈ 2–3 чел.';
+      const perPiece = 2; // ~2 человека на 1 бенто
+      const total_ppl = perPiece * _calcQty;
+      guestsPopup.textContent = '≈ ' + total_ppl + ' чел.';
     } else if (_cakeType === 'bentomaxi') {
-      guestsPopup.textContent = '≈ 5–6 чел.';
+      const perPiece = 5; // ~5 человек на 1 макси бенто (~1100 гр)
+      const total_ppl = perPiece * _calcQty;
+      guestsPopup.textContent = '≈ ' + total_ppl + ' чел.';
     }
     // для весовых тортов текст уже установлен выше
   }
@@ -3085,6 +3093,42 @@ document.addEventListener('visibilitychange', () => {
 } // end reviews section guard
 
 
+  // ── Обновить бейдж кнопки калькулятора ──
+  function updateCalcCartBadge() {
+    const badge = document.getElementById('calcCartBadge');
+    if (!badge) return;
+    // Считаем суммарное количество в корзине (все товары)
+    const total = Object.values(cart).reduce((sum, entry) => sum + (entry.qty || 0), 0);
+    const rounded = Math.round(total * 10) / 10;
+    badge.textContent = rounded;
+    if (rounded > 0) {
+      badge.classList.add('visible');
+    } else {
+      badge.classList.remove('visible');
+    }
+  }
+
+  // ── Добавить в корзину из калькулятора с анимацией ──
+  function addCalcToCartAnimated(btn) {
+    addCalcToCart();
+    updateCalcCartBadge();
+    // Анимация бейджа
+    const badge = document.getElementById('calcCartBadge');
+    if (badge) {
+      badge.classList.remove('pop');
+      void badge.offsetWidth; // reflow
+      badge.classList.add('pop');
+    }
+    // Мини-анимация иконки корзины
+    const icon = btn && btn.querySelector('.calc-add-cart-icon');
+    if (icon) {
+      icon.style.transform = 'scale(0.8) rotate(-12deg)';
+      setTimeout(() => { icon.style.transform = ''; }, 300);
+    }
+    // Открываем корзину через задержку
+    setTimeout(() => openCart(), 80);
+  }
+
   // ── Добавить параметры калькулятора в корзину и открыть её ──
   function addCalcToCart() {
     const cfg = CAKE_CONFIGS[_cakeType] || CAKE_CONFIGS.biscuit;
@@ -3159,7 +3203,15 @@ document.addEventListener('visibilitychange', () => {
   window.goToFormStep = typeof goToFormStep !== "undefined" ? goToFormStep : undefined;
   window.enforceSingleSelected = typeof enforceSingleSelected !== "undefined" ? enforceSingleSelected : undefined;
   window.selectCakeType = typeof selectCakeType !== "undefined" ? selectCakeType : undefined;
-  window.addCalcToCart  = typeof addCalcToCart  !== "undefined" ? addCalcToCart  : undefined;
+  window.addCalcToCart         = typeof addCalcToCart         !== "undefined" ? addCalcToCart         : undefined;
+  window.addCalcToCartAnimated = typeof addCalcToCartAnimated !== "undefined" ? addCalcToCartAnimated : undefined;
+  window.updateCalcCartBadge   = typeof updateCalcCartBadge   !== "undefined" ? updateCalcCartBadge   : undefined;
+
+  // Инициализируем бейдж при загрузке
+  if (typeof updateCalcCartBadge === 'function') {
+    document.addEventListener('DOMContentLoaded', updateCalcCartBadge);
+    if (document.readyState !== 'loading') updateCalcCartBadge();
+  }
   window.stepQty = typeof stepQty !== "undefined" ? stepQty : undefined;
   window.goSlide = typeof goSlide !== "undefined" ? goSlide : undefined;
   window.goTo = typeof goTo !== "undefined" ? goTo : undefined;
@@ -3505,40 +3557,5 @@ document.addEventListener('visibilitychange', () => {
     ptrRelease(ptrCurrent * 0.55);
   }, { passive: true });
 
-// ── Smart tooltip positioning: never clips at edges ──
-(function() {
-  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-
-  var TOOLTIP_W = 220;
-  var MARGIN = 12;
-
-  document.addEventListener('mouseover', function(e) {
-    var opt = e.target.closest('.calc-opt');
-    if (!opt) return;
-    var tip = opt.querySelector('.fill-tooltip');
-    if (!tip) return;
-
-    var r = opt.getBoundingClientRect();
-    var vw = window.innerWidth;
-
-    // Preferred: centered above the opt
-    var left = r.left + r.width / 2 - TOOLTIP_W / 2;
-
-    // Clamp to viewport
-    if (left < MARGIN) left = MARGIN;
-    if (left + TOOLTIP_W > vw - MARGIN) left = vw - MARGIN - TOOLTIP_W;
-
-    var top = r.top - 10;
-
-    tip.style.left = left + 'px';
-    tip.style.top  = top + 'px';
-    tip.style.transform = 'translateY(-100%) translateY(-6px)';
-
-    // Arrow: point to center of opt
-    var arrowLeft = (r.left + r.width / 2) - left;
-    arrowLeft = Math.max(16, Math.min(TOOLTIP_W - 16, arrowLeft));
-    tip.querySelector && tip.style.setProperty('--arrow-left', arrowLeft + 'px');
-  });
-})();
 
 })();

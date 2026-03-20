@@ -265,6 +265,7 @@
 <div class="section-fade-divider" aria-hidden="true"></div>
 <!-- ABOUT -->
 <section id="about" class="about-section">
+  <div class="about-bg-decor" aria-hidden="true"><img src="img/viktoria2.webp" alt="" /></div>
   <div class="container">
     <div class="about-layout">
 
@@ -301,8 +302,9 @@
 <div class="section-fade-divider" aria-hidden="true"></div>
 <!-- FILLINGS / CALCULATOR -->
 <section id="fillings" class="fillings">
+  <div class="calc-cake-decor" aria-hidden="true"><img src="img/cake_bday.webp" alt="" loading="lazy" /></div>
   <div class="container">
-    <h2 class="section-title reveal"><span class="ht-word">Начинки</span> <span class="ht-word ht-amp" style="color:var(--gold);">&amp;</span> <span class="ht-em">Стоимость</span></h2>
+    <h2 class="section-title reveal"><span class="ht-word">Начинки</span> <span class="ht-word ht-amp">&amp;</span> <span class="ht-em">Стоимость</span></h2>
     <p class="section-sub reveal wave-text">Выберите начинку и узнайте примерную цену</p>
     <div class="calc-wrap reveal">
       <div class="calc-layout">
@@ -338,10 +340,12 @@
               <div class="calc-weight-stepper">
                 <button class="calc-stepper-btn" id="calcWeightMinus" onclick="stepWeight(-1)" aria-label="Уменьшить вес">−</button>
                 <div class="calc-stepper-val" id="calcWeightVal">2 кг</div>
-                <span id="calcFixedWeightNote" style="display:none;font-size:1rem;font-weight:600;color:var(--text);padding:0 8px;"></span>
                 <button class="calc-stepper-btn" id="calcWeightPlus" onclick="stepWeight(1)" aria-label="Увеличить вес">+</button>
               </div>
               <span class="calc-weight-hint" id="guestsPopup"><span id="guestsCount"></span></span>
+            </div>
+            <div class="calc-fixed-weight-note-wrap">
+              <span id="calcFixedWeightNote"></span>
             </div>
             <input type="hidden" id="calcWeight" value="2" />
           </div>
@@ -411,7 +415,14 @@
             <div class="calc-result-price" id="calcResult">5 600 ₽</div>
             <div class="calc-result-summary" id="calcSummary"></div>
             <div class="calc-result-note" id="calcNote">Точная цена согласовывается при заказе</div>
-            <a href="#" class="calc-order-btn" style="margin-top:20px;display:block;text-align:center;" onclick="event.preventDefault(); addCalcToCart();">Заказать 🎂</a>
+            <button class="calc-add-btn" onclick="addCalcToCartAnimated(this)">
+              <svg class="calc-add-cart-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+              </svg>
+              <span class="calc-add-btn-label">Добавить в корзину</span>
+              <span class="calc-add-btn-badge" id="calcCartBadge">0</span>
+            </button>
           </div>
         </div><!-- /.calc-right-col -->
 
