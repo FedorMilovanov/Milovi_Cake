@@ -719,6 +719,10 @@ function buildMessage() {
     const dessertLabel = entry.dessertType === 'author' ? 'авторский' : 'базовый';
     let details = [`десерт: ${dessertLabel}`];
     if (entry.fill)  details.push(`начинка: ${entry.fill}`);
+    // Biscuit type for bento
+    if ((numId === 2) && window._calcBiscuit) {
+      details.push(`бисквит: ${window._calcBiscuit === 'vanilla' ? 'ванильный' : 'шоколадный'}`);
+    }
     if (entry.decor) details.push(`декор: ${entry.decor}`);
     return `• ${p.name} — ${label} (${p.price})\n  ${details.join(' · ')}`;
   }).filter(Boolean).join('\n');
@@ -1620,7 +1624,7 @@ function selectCakeType(el, type) {
 
   // Скрываем декор для бенто (там всё включено), показываем для остальных
   const decorRow = document.getElementById('calcDecor')?.closest('.calc-row');
-  setRowVisible(decorRow, type !== 'bento');
+  setRowVisible(decorRow, true);
 
   updateCalc();
 }
@@ -3721,6 +3725,14 @@ document.addEventListener('visibilitychange', () => {
 
 
 // ── Content block: вкусы и FAQ ──
+function selectBiscuit(el, type) {
+  document.querySelectorAll('#calcBiscuitSeg .calc-biscuit-opt').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+  // Store selection for buildMessage
+  window._calcBiscuit = type;
+}
+window.selectBiscuit = selectBiscuit;
+
 function cbFlavor(id, btn) {
   document.querySelectorAll('.cb-fp').forEach(p => p.classList.remove('cb-on'));
   document.querySelectorAll('.cb-ftab').forEach(t => t.classList.remove('cb-on'));

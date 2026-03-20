@@ -5296,6 +5296,9 @@ footer .wave-text .w.near {
   color: rgba(255,255,255,0.75);
   letter-spacing: 0.02em;
   white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
   cursor: default;
   transition: background 0.45s ease,
               border-color 0.45s ease,
@@ -6203,23 +6206,24 @@ footer .wave-text .w.near {
 }
 .calc-type-card .calc-weight-tooltip {
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + 4px);
   left: 50%;
-  transform: translateX(-50%) translateY(4px);
-  background: var(--brown);
-  color: #fff8ee;
+  transform: translateX(-50%);
+  background: none;
+  color: var(--text-muted);
   font-size: 11px;
-  padding: 4px 10px;
-  border-radius: 8px;
+  padding: 0;
+  border-radius: 0;
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
-  transition: opacity .2s ease, transform .2s ease;
+  transition: opacity .2s ease;
   z-index: 10;
+  letter-spacing: 0.02em;
 }
 .calc-type-card.selected .calc-weight-tooltip {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  transform: translateX(-50%);
 }
 
 /* ===== Scroll offset fix for О нас и Отзывы ===== */
@@ -6509,6 +6513,83 @@ footer .wave-text .w.near {
 /* ===== Stats section — плавные переходы сверху и снизу ===== */
 .stats-section {
   isolation: isolate;
+}
+
+/* ===== Bento fill — biscuit toggle + fills ===== */
+.calc-bento-fill-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.calc-label--biscuit {
+  width: 96px;
+  flex-shrink: 0;
+  text-align: center;
+  margin-bottom: 0 !important;
+}
+.calc-bento-fill-body {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.calc-biscuit-seg {
+  width: 96px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 14px;
+  margin-right: 14px;
+  justify-content: center;
+}
+.calc-biscuit-opt {
+  padding: 6px 8px;
+  font-size: 12.5px;
+  cursor: pointer;
+  border-radius: 50px;
+  border: 1.5px solid transparent;
+  transition: all .18s;
+  white-space: nowrap;
+  text-align: center;
+  font-weight: 500;
+  font-family: 'Jost', sans-serif;
+  letter-spacing: 0.01em;
+}
+.calc-biscuit-vanilla {
+  background: rgba(100,140,220,0.1);
+  border-color: rgba(100,140,220,0.22);
+  color: #3a5a9a;
+}
+.calc-biscuit-vanilla:hover {
+  background: rgba(100,140,220,0.2);
+  border-color: rgba(100,140,220,0.45);
+}
+.calc-biscuit-vanilla.active {
+  background: #4a7ac8;
+  border-color: #3060b0;
+  color: #fff;
+}
+.calc-biscuit-choco {
+  background: rgba(100,55,30,0.08);
+  border-color: rgba(100,55,30,0.18);
+  color: #7a4a28;
+}
+.calc-biscuit-choco:hover {
+  background: rgba(100,55,30,0.16);
+  border-color: rgba(100,55,30,0.35);
+}
+.calc-biscuit-choco.active {
+  background: #5c3018;
+  border-color: #3d1e0a;
+  color: #f5e8d8;
+}
+.calc-bento-fill-body .calc-options {
+  flex: 1;
+}
+@media (max-width: 600px) {
+  .calc-bento-fill-header { flex-direction: row; }
+  .calc-biscuit-seg { width: 80px; padding-right: 10px; margin-right: 10px; }
+  .calc-biscuit-opt { font-size: 11.5px; padding: 5px 6px; }
 }
 
 /* ===== Contacts cards — hover glow on border ===== */
