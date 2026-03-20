@@ -3530,8 +3530,8 @@ section { padding: 100px 60px; }
    ══════════════════════════════════════ */
 #reviews {
   position: relative;
-  padding: 60px 0 80px;
-  min-height: 740px;
+  padding: 60px 0 100px;
+  min-height: 780px;
   overflow: visible;
 }
 

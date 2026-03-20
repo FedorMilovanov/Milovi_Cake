@@ -2345,14 +2345,14 @@ const REVIEWS = [
 // Horizontal positions are computed DYNAMICALLY in the loop:
 // centered in the gap between the stage edges and the viewport edges.
 const LAYOUTS = [
-  { side:'left',  tp: 18, rot: -14 },  // 0 top-left
-  { side:'right', tp: 35, rot:  18 },  // 1 right-high
-  { side:'left',  tp: 35, rot: -18 },  // 2 left-high
-  { side:'right', tp: 18, rot:  14 },  // 3 top-right
-  { side:'left',  tp: 55, rot:   8 },  // 4 left-mid
-  { side:'right', tp: 55, rot:  -8 },  // 5 right-mid
-  { side:'left',  tp: 76, rot: -11 },  // 6 left-low
-  { side:'right', tp: 76, rot:  11 },  // 7 right-low
+  { side:'left',  tp: 30, rot: -14 },  // 0 top-left
+  { side:'right', tp: 47, rot:  18 },  // 1 right-high
+  { side:'left',  tp: 47, rot: -18 },  // 2 left-high
+  { side:'right', tp: 30, rot:  14 },  // 3 top-right
+  { side:'left',  tp: 63, rot:   8 },  // 4 left-mid
+  { side:'right', tp: 63, rot:  -8 },  // 5 right-mid
+  { side:'left',  tp: 82, rot: -11 },  // 6 left-low — уровень Яндекс/Google
+  { side:'right', tp: 82, rot:  11 },  // 7 right-low — уровень Яндекс/Google
 ];
 
 const FLOATS = [
@@ -2852,7 +2852,10 @@ function loop(ts){
     return { top, left };
   }
   const stageOff    = offsetRelTo(stageEl, secEl);
-  const cardL       = stageOff.left;
+  // Используем getBoundingClientRect для точного cardL с учётом центрирования
+  const secRect     = secEl.getBoundingClientRect();
+  const stageRect   = stageEl.getBoundingClientRect();
+  const cardL       = stageRect.left - secRect.left;
   const cardW       = stageEl.offsetWidth;
   // Центр блока .reviews-track относительно секции — прямой расчёт
   // Lazy init кэш элемента — не делаем querySelector каждый кадр
@@ -2886,12 +2889,12 @@ function loop(ts){
     const ffr = fr * floatScale;
 
     if(isActive && zoomP > 0.001 && (STATE==='zoom_in'||STATE==='waiting'||STATE==='zoom_out')){
-      // Park target: left/right edge of card, vertically centered (the "circles" position)
-      const OVERLAP = 45; // thumb overlaps card edge
+      // Park target: как в оригинале — к краям карточки
+      const OVERLAP = 45;
       const parkX = lay.side === 'left'
-        ? cardL - THUMB_W + OVERLAP   // left side: thumb hangs off left edge
-        : cardL + cardW - OVERLAP;    // right side: thumb hangs off right edge
-      const parkY = cardCenterY - THUMB_H / 2 - 80; // vertically centered on track
+        ? cardL - THUMB_W + OVERLAP
+        : cardL + cardW - OVERLAP;
+      const parkY = cardCenterY - THUMB_H / 2 - 80;
 
 
       // Smooth ease-out
