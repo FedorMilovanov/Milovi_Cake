@@ -685,10 +685,63 @@ body {
 /* ── CALCULATOR ── */
 #calculator { background: linear-gradient(180deg, #faf6ef 0%, #f0e6d4 100%); }
 .calc-wrap {
-  max-width: 700px; margin: 0 auto;
+  max-width: 1000px; margin: 0 auto;
   background: var(--white); border-radius: 28px;
   padding: 48px; box-shadow: 0 12px 60px rgba(61,43,31,0.1);
   overflow: visible;
+}
+
+/* ── Two-column calc layout ── */
+.calc-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 32px;
+  align-items: start;
+}
+.calc-left-col {
+  min-width: 0;
+}
+.calc-right-col {
+  position: sticky;
+  top: 88px;
+}
+.calc-right-col .calc-result {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 28px 24px 24px;
+  min-height: 320px;
+  justify-content: space-between;
+}
+.calc-right-col .calc-result-label {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  font-family: 'Jost', sans-serif;
+  margin-bottom: 6px;
+}
+.calc-right-col .calc-result-price {
+  font-size: 38px;
+  line-height: 1.1;
+  margin-bottom: 12px;
+}
+.calc-right-col .calc-result-summary {
+  margin: 8px 0 10px;
+  flex: 1;
+}
+.calc-right-col .calc-result-note {
+  font-size: 11px;
+  color: rgba(255,255,255,0.32);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+.calc-right-col .calc-order-btn {
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  display: block;
+  margin-top: 0;
 }
 .calc-row { margin-bottom: 28px; overflow: visible; }
 .calc-row label,
@@ -711,10 +764,7 @@ body {
 
 /* ── FILL TOOLTIP ── */
 .fill-tooltip {
-  position: absolute;
-  bottom: calc(100% + 10px);
-  left: 50%;
-  transform: translate(-50%, 6px);
+  position: fixed;
   background: var(--brown);
   color: rgba(255,240,210,0.95);
   font-size: 12px; line-height: 1.55;
@@ -724,15 +774,19 @@ body {
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.18s ease, transform 0.18s ease;
-  z-index: 1200;
+  z-index: 9999;
   box-shadow: 0 8px 24px rgba(0,0,0,0.18);
   white-space: normal;
   text-align: left;
+  /* позиция задаётся через JS */
+  top: 0; left: 0;
+  transform: translateY(6px);
 }
 .fill-tooltip::after {
   content: '';
   position: absolute;
-  top: 100%; left: 50%;
+  top: 100%;
+  left: var(--arrow-left, 50%);
   transform: translateX(-50%);
   border: 6px solid transparent;
   border-top-color: var(--brown);
@@ -760,7 +814,7 @@ body {
 .calc-opt:hover .fill-tooltip,
 .calc-opt:focus-within .fill-tooltip {
   opacity: 1;
-  transform: translate(-50%, 0);
+  transform: translateY(0);
 }
 @media (max-width: 768px) {
   .fill-tooltip { display: none; }
@@ -1123,7 +1177,7 @@ body:not(.fill-open) .fill-mobile-overlay {
   position: relative; z-index: 1;
 }
 .calc-result-label { color: rgba(255,255,255,0.5); font-size: 10px; text-transform: uppercase; letter-spacing: 0.22em; font-family: 'Jost', sans-serif; font-weight: 500; transition: letter-spacing 0.4s ease, color 0.4s ease; }
-.calc-result:hover .calc-result-label { color: rgba(255,255,255,0.8); letter-spacing: 0.28em; }
+.calc-result:hover .calc-result-label { color: rgba(255,255,255,0.8); }
 .calc-result-price { font-family: 'Cormorant Garamond', serif; font-size: 48px; color: var(--gold-light); font-weight: 600; line-height: 1.1; display: inline-block; padding: 0.05em 0.1em 0.05em 0; overflow: visible; }
 .calc-result-note { font-size: 12px; color: rgba(255,255,255,0.32); letter-spacing: 0.03em; margin-top: 2px; transition: color 0.4s ease, letter-spacing 0.4s ease; }
 .calc-result:hover .calc-result-note { color: rgba(255,255,255,0.55); letter-spacing: 0.04em; }
@@ -2047,7 +2101,25 @@ section { padding: 100px 60px; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
   /* rev-arrow stays visible — now under the card */
   #reviews { padding: 70px 16px; }
-  .calc-wrap { padding: 28px 20px; }
+  .calc-wrap { padding: 28px 20px; max-width: 100%; }
+  .calc-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .calc-right-col {
+    position: static;
+    order: 2;
+  }
+  .calc-left-col {
+    order: 1;
+  }
+  .calc-right-col .calc-result {
+    min-height: auto;
+    padding: 24px 20px 20px;
+  }
+  .calc-right-col .calc-result-price {
+    font-size: 42px;
+  }
   .floating-cta { display: none; }
   .breadcrumb-nav { padding: 10px 24px; }
   .footer-grid { grid-template-columns: 1fr; gap: 32px; }
@@ -4665,8 +4737,8 @@ footer .wave-text .w.near {
   transition: color 0.35s ease, transform 0.35s cubic-bezier(.16,1,.3,1), text-shadow 0.35s ease, letter-spacing 0.35s ease;
 }
 .section-title .ht-w:hover {
-  color: #111111;
-  text-shadow: none;
+  color: #0abfbc;
+  text-shadow: 0 0 20px rgba(10, 191, 188, 0.35);
   transform: translateY(-2px);
   letter-spacing: 0.01em;
 }
@@ -4678,8 +4750,8 @@ footer .wave-text .w.near {
   transition: color 0.4s ease, text-shadow 0.4s ease, letter-spacing 0.35s ease;
 }
 .section-title .ht-em-w:hover {
-  color: #111111;
-  text-shadow: none;
+  color: #0abfbc;
+  text-shadow: 0 0 20px rgba(10, 191, 188, 0.35);
   letter-spacing: 0.02em;
 }
 .section-title .ht-word {
@@ -4872,11 +4944,11 @@ footer .wave-text .w.near {
 /* ── Calc rows smooth show/hide ── */
 .calc-row {
   overflow: hidden;
-  max-height: 400px;
+  max-height: 800px;
   opacity: 1;
-  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.25s ease,
-              margin-bottom 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s ease,
+              margin-bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .calc-row.calc-row--hidden {
   max-height: 0 !important;
@@ -4887,9 +4959,6 @@ footer .wave-text .w.near {
 
 /* ── Calc result sticky ── */
 .calc-result-wrap {
-  position: sticky;
-  bottom: 16px;
-  z-index: 10;
   margin-top: 8px;
 }
 
@@ -4909,7 +4978,6 @@ footer .wave-text .w.near {
 }
 .calc-result:hover .calc-result-label {
   color: rgba(255,255,255,0.85);
-  letter-spacing: 0.28em;
 }
 .calc-result-price {
   background: linear-gradient(90deg, #c9934a 0%, #e8b87a 38%, #f0d090 52%, #e8b87a 65%, #c9934a 100%);
@@ -4924,7 +4992,6 @@ footer .wave-text .w.near {
 .calc-result:hover .calc-result-price {
   -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 0 10px rgba(201,147,74,0.3));
-  transform: scale(1.05);
   animation: calcPriceShimmer 2s ease forwards;
 }
 @keyframes calcPriceShimmer {

@@ -163,7 +163,7 @@ let _cakeType = 'biscuit'; // biscuit | bento | bentomaxi | cake3d
 const CAKE_CONFIGS = {
   biscuit:   { weightMin: 2, weightMax: 10, weightStep: 0.5, hasWeight: true,  hasQty: false, pricePerKg: 2800, fixedPrice: null, fillGroup: 'calcFill' },
   bento:     { weightMin: 1, weightMax: 1,  weightStep: 1,   hasWeight: false, hasQty: true,  pricePerKg: null, fixedPrice: 1600, fillGroup: 'calcFillBento' },
-  bentomaxi: { weightMin: 3, weightMax: 5,  weightStep: 0.5, hasWeight: true,  hasQty: false, pricePerKg: 3000, fixedPrice: null, fillGroup: 'calcFillBento' },
+  bentomaxi: { weightMin: 3, weightMax: 5,  weightStep: 0.5, hasWeight: true,  hasQty: true,  pricePerKg: null, fixedPrice: 3000, fillGroup: 'calcFillBento' },
   cake3d:    { weightMin: 3, weightMax: 15, weightStep: 0.5, hasWeight: true,  hasQty: false, pricePerKg: 5000, fixedPrice: null, fillGroup: 'calcFill3d'   },
 };
 
@@ -1184,6 +1184,22 @@ function initApp() {
   enforceSingleSelected('calcType');
   enforceSingleSelected('calcFill');
   enforceSingleSelected('calcDecor');
+
+  // Инициализируем видимость строк калькулятора без анимации
+  (function initCalcRows() {
+    // Временно отключаем transition для всех .calc-row
+    document.querySelectorAll('.calc-row').forEach(r => r.style.transition = 'none');
+    // Симулируем выбор текущего типа торта
+    const activeTypeCard = document.querySelector('#calcType .calc-opt.selected');
+    if (activeTypeCard) {
+      selectCakeType(activeTypeCard, activeTypeCard.dataset.type || 'biscuit');
+    }
+    // Возвращаем transition после следующего frame
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      document.querySelectorAll('.calc-row').forEach(r => r.style.transition = '');
+    }));
+  })();
+
   updateCalc();
 
   // Init fill description panel with default selected filling
@@ -1474,18 +1490,24 @@ function selectCakeType(el, type) {
     if (fixedWeightNote) { fixedWeightNote.textContent = '~350 гр'; fixedWeightNote.style.display = ''; }
     const valEl = document.getElementById('calcWeightVal');
     if (valEl) valEl.style.display = 'none';
+    const lbl = document.getElementById('calcWeightLabel');
+    if (lbl) lbl.textContent = 'Вес одного торта';
   } else if (type === 'bentomaxi') {
     if (minus) minus.style.display = 'none';
     if (plus)  plus.style.display  = 'none';
     if (fixedWeightNote) { fixedWeightNote.textContent = '~1100 гр'; fixedWeightNote.style.display = ''; }
     const valEl = document.getElementById('calcWeightVal');
     if (valEl) valEl.style.display = 'none';
+    const lbl = document.getElementById('calcWeightLabel');
+    if (lbl) lbl.textContent = 'Вес одного торта';
   } else {
     if (minus) minus.style.display = '';
     if (plus)  plus.style.display  = '';
     if (fixedWeightNote) fixedWeightNote.style.display = 'none';
     const valEl = document.getElementById('calcWeightVal');
     if (valEl) valEl.style.display = '';
+    const lbl = document.getElementById('calcWeightLabel');
+    if (lbl) lbl.textContent = 'Вес торта';
   }
 
   // Обновляем мин вес и значение
@@ -1643,9 +1665,9 @@ function updateCalc() {
   let noteText = 'Точная цена согласовывается при заказе';
 
   if (cfg.fixedPrice !== null) {
-    // Бенто — фиксированная цена × количество
+    // Бенто / Макси Бенто — фиксированная цена за штуку
     total = cfg.fixedPrice * _calcQty + fillPrice;
-    noteText = 'Фиксированная цена за штуку';
+    noteText = 'Декор рассчитывается отдельно';
   } else {
     // Весовой торт
     const weight = _calcWeight;
@@ -1669,9 +1691,10 @@ function updateCalc() {
 
   // 3D торт — особая пометка
   if (_cakeType === 'cake3d') noteText = 'Сложный декор рассчитывается отдельно';
-  else if (_cakeType !== 'bento') noteText = (noteText === 'Точная цена согласовывается при заказе' ? 'Дополнительный декор рассчитывается отдельно' : noteText + '. Дополнительный декор рассчитывается отдельно');
+  else if (_cakeType === 'bento' || _cakeType === 'bentomaxi') noteText = 'Декор рассчитывается отдельно';
+  else noteText = (noteText === 'Точная цена согласовывается при заказе' ? 'Дополнительный декор рассчитывается отдельно' : noteText + '. Дополнительный декор рассчитывается отдельно');
 
-  const isApprox = decorPrice > 0 || _cakeType === 'cake3d';
+  const isApprox = decorPrice > 0 || _cakeType === 'cake3d' || _cakeType === 'bento' || _cakeType === 'bentomaxi';
   const prefix = isApprox ? '~ ' : '';
   const calcResultEl = document.getElementById('calcResult');
   if (calcResultEl) calcResultEl.textContent = prefix + total.toLocaleString('ru') + ' ₽';
@@ -1696,12 +1719,12 @@ function updateCalc() {
     chips.push({ icon: typeIcons[_cakeType], label: 'Тип', val: typeNames[_cakeType] });
 
     // Вес или количество
-    if (cfg.hasQty) {
+    if (cfg.hasQty && _cakeType === 'bento') {
+      chips.push({ icon: '⚖️', label: 'Вес', val: '~350 гр / шт' });
       chips.push({ icon: '🔢', label: 'Количество', val: _calcQty + ' шт' });
-    } else if (_cakeType === 'bentomaxi') {
-      chips.push({ icon: '⚖️', label: 'Вес', val: '~1100 гр' });
-    } else if (_cakeType === 'bento') {
-      chips.push({ icon: '⚖️', label: 'Вес', val: '~350 гр' });
+    } else if (cfg.hasQty && _cakeType === 'bentomaxi') {
+      chips.push({ icon: '⚖️', label: 'Вес', val: '~1100 гр / шт' });
+      chips.push({ icon: '🔢', label: 'Количество', val: _calcQty + ' шт' });
     } else {
       const w = _calcWeight;
       const wStr = w % 1 === 0 ? w + ' кг' : w.toFixed(1) + ' кг';
@@ -2103,6 +2126,8 @@ function openChatLightbox(idx) {
   if (counter) counter.textContent = (safeIdx + 1) + ' / ' + CHAT_SRCS.length;
   lockBody();
   overlay.classList.add('active');
+  var bn = document.getElementById('bottomNav');
+  if (bn) bn.classList.add('hidden');
   const lbXBtn = document.getElementById('lbX');
   if (lbXBtn) {
     lbXBtn.style.opacity = '0';
@@ -2991,6 +3016,8 @@ function closeLB(){
   if (lbOverlay) lbOverlay.classList.remove('active');
   // Pair with lockBody() called in openLB
   unlockBody();
+  var bn = document.getElementById('bottomNav');
+  if (bn) bn.classList.remove('hidden');
 
   setTimeout(()=>{
     if (lbImg) lbImg.src = '';
@@ -3416,5 +3443,41 @@ document.addEventListener('visibilitychange', () => {
     if (!ptrActive) return;
     ptrRelease(ptrCurrent * 0.55);
   }, { passive: true });
+
+// ── Smart tooltip positioning: never clips at edges ──
+(function() {
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  var TOOLTIP_W = 220;
+  var MARGIN = 12;
+
+  document.addEventListener('mouseover', function(e) {
+    var opt = e.target.closest('.calc-opt');
+    if (!opt) return;
+    var tip = opt.querySelector('.fill-tooltip');
+    if (!tip) return;
+
+    var r = opt.getBoundingClientRect();
+    var vw = window.innerWidth;
+
+    // Preferred: centered above the opt
+    var left = r.left + r.width / 2 - TOOLTIP_W / 2;
+
+    // Clamp to viewport
+    if (left < MARGIN) left = MARGIN;
+    if (left + TOOLTIP_W > vw - MARGIN) left = vw - MARGIN - TOOLTIP_W;
+
+    var top = r.top - 10;
+
+    tip.style.left = left + 'px';
+    tip.style.top  = top + 'px';
+    tip.style.transform = 'translateY(-100%) translateY(-6px)';
+
+    // Arrow: point to center of opt
+    var arrowLeft = (r.left + r.width / 2) - left;
+    arrowLeft = Math.max(16, Math.min(TOOLTIP_W - 16, arrowLeft));
+    tip.querySelector && tip.style.setProperty('--arrow-left', arrowLeft + 'px');
+  });
+})();
 
 })();
