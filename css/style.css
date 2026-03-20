@@ -6273,6 +6273,7 @@ footer .wave-text .w.near {
 .calc-left-col .calc-weight-stepper-wrap {
   justify-content: center;
   width: 100%;
+  position: relative;
 }
 .calc-left-col #calcWeightRow {
   align-items: center;
@@ -6281,6 +6282,9 @@ footer .wave-text .w.near {
   flex-shrink: 0;
 }
 .calc-left-col .calc-weight-hint {
+  position: absolute;
+  left: calc(50% + 90px);
+  white-space: nowrap;
   flex-shrink: 0;
 }
 .calc-left-col .calc-biscuit-note {
@@ -6422,6 +6426,12 @@ footer .wave-text .w.near {
 #calcDecor {
   justify-content: center;
 }
+#calcDecor .calc-opt.selected {
+  color: #3d2000 !important;
+}
+#calcDecor .calc-opt.selected .opt-label {
+  color: #3d2000 !important;
+}
 #calcDecor .calc-opt {
   flex: 1;
   max-width: 160px;
@@ -6539,9 +6549,21 @@ footer .wave-text .w.near {
 .calc-label--biscuit {
   flex-shrink: 0;
   text-align: center;
-  margin-bottom: 0 !important;
-  padding-right: 14px;
-  margin-right: 14px;
+  margin-bottom: 6px !important;
+  display: block;
+}
+.calc-bento-fill-body {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.calc-biscuit-col {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-right: 8px;
+  margin-right: 0;
 }
 .calc-bento-fill-body {
   display: flex;
@@ -6571,18 +6593,18 @@ footer .wave-text .w.near {
   letter-spacing: 0.01em;
 }
 .calc-biscuit-vanilla {
-  background: rgba(240,210,130,0.15);
-  border-color: rgba(210,175,80,0.3);
-  color: #8a6a1a;
+  background: rgba(243,229,171,0.35);
+  border-color: rgba(220,200,100,0.45);
+  color: #6a5410;
 }
 .calc-biscuit-vanilla:hover {
-  background: rgba(240,210,130,0.28);
-  border-color: rgba(210,175,80,0.55);
+  background: rgba(243,229,171,0.6);
+  border-color: rgba(220,200,100,0.7);
 }
 .calc-biscuit-vanilla.active {
-  background: linear-gradient(135deg, #f0d480, #e4c050);
-  border-color: #c9a020;
-  color: #4a3000;
+  background: #F3E5AB;
+  border-color: #c9b660;
+  color: #3d2c00;
 }
 .calc-biscuit-choco {
   background: rgba(100,55,30,0.08);
