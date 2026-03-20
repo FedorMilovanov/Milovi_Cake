@@ -1483,27 +1483,11 @@ function selectCakeType(el, type) {
   const plus  = document.getElementById('calcWeightPlus');
   const fixedWeightNote = document.getElementById('calcFixedWeightNote');
 
-  if (type === 'bento') {
-    if (minus) minus.style.display = 'none';
-    if (plus)  plus.style.display  = 'none';
-    const noteWrap = fixedWeightNote && fixedWeightNote.parentElement;
-    if (fixedWeightNote) fixedWeightNote.textContent = '~350 гр / шт';
-    if (noteWrap) noteWrap.classList.add('visible');
-    const valEl = document.getElementById('calcWeightVal');
-    if (valEl) valEl.style.display = 'none';
-    const lbl = document.getElementById('calcWeightLabel');
-    if (lbl) lbl.textContent = 'Вес одного торта';
-  } else if (type === 'bentomaxi') {
-    if (minus) minus.style.display = 'none';
-    if (plus)  plus.style.display  = 'none';
-    const noteWrap = fixedWeightNote && fixedWeightNote.parentElement;
-    if (fixedWeightNote) fixedWeightNote.textContent = '~1100 гр / шт';
-    if (noteWrap) noteWrap.classList.add('visible');
-    const valEl = document.getElementById('calcWeightVal');
-    if (valEl) valEl.style.display = 'none';
-    const lbl = document.getElementById('calcWeightLabel');
-    if (lbl) lbl.textContent = 'Вес одного торта';
+  // Для bento/bentomaxi — вес в data-tip на кнопке, строку веса не показываем
+  if (type === 'bento' || type === 'bentomaxi') {
+    setRowVisible(weightRow, false); // скрыть строку веса полностью
   } else {
+    setRowVisible(weightRow, true);
     if (minus) minus.style.display = '';
     if (plus)  plus.style.display  = '';
     const noteWrap = fixedWeightNote && fixedWeightNote.parentElement;
@@ -1689,19 +1673,10 @@ function updateCalc() {
     if (decorPrice > 0) noteText = '* Стоимость авторского декора рассчитывается индивидуально';
   }
 
-  // Для бенто с фиксированным весом — показываем порцию пропорционально кол-ву
+  // Для весовых тортов — показываем кол-во гостей
   const guestsPopup = document.getElementById('guestsPopup');
-  if (guestsPopup) {
-    if (_cakeType === 'bento') {
-      const perPiece = 2; // ~2 человека на 1 бенто
-      const total_ppl = perPiece * _calcQty;
-      guestsPopup.textContent = '≈ ' + total_ppl + ' чел.';
-    } else if (_cakeType === 'bentomaxi') {
-      const perPiece = 5; // ~5 человек на 1 макси бенто (~1100 гр)
-      const total_ppl = perPiece * _calcQty;
-      guestsPopup.textContent = '≈ ' + total_ppl + ' чел.';
-    }
-    // для весовых тортов текст уже установлен выше
+  if (guestsPopup && _cakeType !== 'bento' && _cakeType !== 'bentomaxi') {
+    // текст уже установлен выше для весовых тортов
   }
 
   // 3D торт — особая пометка
@@ -3110,23 +3085,32 @@ document.addEventListener('visibilitychange', () => {
 
   // ── Добавить в корзину из калькулятора с анимацией ──
   function addCalcToCartAnimated(btn) {
+    addCalcToCartOnly(btn);
+  }
+
+  // Добавить в корзину БЕЗ открытия — только анимация иконки и бейдж
+  function addCalcToCartOnly(btn) {
     addCalcToCart();
     updateCalcCartBadge();
-    // Анимация бейджа
+    // Бейдж на кнопке-корзине
     const badge = document.getElementById('calcCartBadge');
     if (badge) {
       badge.classList.remove('pop');
-      void badge.offsetWidth; // reflow
+      void badge.offsetWidth;
       badge.classList.add('pop');
     }
-    // Мини-анимация иконки корзины
+    // Анимация иконки внутри кнопки "Добавить"
     const icon = btn && btn.querySelector('.calc-add-cart-icon');
     if (icon) {
       icon.style.transform = 'scale(0.8) rotate(-12deg)';
       setTimeout(() => { icon.style.transform = ''; }, 300);
     }
-    // Открываем корзину через задержку
-    setTimeout(() => openCart(), 80);
+    // Анимация иконки корзины-кнопки
+    const cartBtn = document.getElementById('calcOpenCartBtn');
+    if (cartBtn) {
+      cartBtn.style.transform = 'translateY(-3px) scale(1.15)';
+      setTimeout(() => { cartBtn.style.transform = ''; }, 350);
+    }
   }
 
   // ── Добавить параметры калькулятора в корзину и открыть её ──
@@ -3205,6 +3189,7 @@ document.addEventListener('visibilitychange', () => {
   window.selectCakeType = typeof selectCakeType !== "undefined" ? selectCakeType : undefined;
   window.addCalcToCart         = typeof addCalcToCart         !== "undefined" ? addCalcToCart         : undefined;
   window.addCalcToCartAnimated = typeof addCalcToCartAnimated !== "undefined" ? addCalcToCartAnimated : undefined;
+  window.addCalcToCartOnly     = typeof addCalcToCartOnly     !== "undefined" ? addCalcToCartOnly     : undefined;
   window.updateCalcCartBadge   = typeof updateCalcCartBadge   !== "undefined" ? updateCalcCartBadge   : undefined;
 
   // Инициализируем бейдж при загрузке

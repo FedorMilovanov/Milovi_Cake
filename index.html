@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" style="background:#f5f0e8;color-scheme:light">
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" href="favicon.svg?v=20260303" type="image/svg+xml">
@@ -76,7 +76,7 @@
   <link rel="stylesheet" href="css/style.css?v=stable-3" />
 </head>
 
-<body>
+<body style="background:#f5f0e8">
 
 <!-- SKIP LINK -->
 <a href="#catalog" class="skip-link">Перейти к содержимому</a>
@@ -237,7 +237,7 @@
                 <textPath href="#ring-path-max" startOffset="25%" text-anchor="middle" letter-spacing="2">MAX</textPath>
               </text>
               <text id="flat-text-max" font-family="Jost,sans-serif" font-size="6.5" fill="currentColor" opacity="0" text-anchor="middle" x="24" y="10" letter-spacing="0.5" font-weight="500">MAX</text>
-              <g transform="translate(9,9) scale(0.208)">
+              <g transform="translate(6,6) scale(0.27)">
                 <g transform="translate(0,151) scale(0.1,-0.1)" fill="currentColor">
                   <path d="M635 1183 c-113 -15 -227 -81 -295 -172 -94 -125 -112 -270 -61 -487 17 -72 31 -147 31 -166 0 -19 5 -39 12 -46 26 -26 111 -7 161 36 15 14 22 13 70 -14 48 -27 60 -29 153 -29 96 0 103 2 177 38 183 90 282 277 249 468 -42 244 -255 404 -497 372z m126 -225 c52 -15 117 -73 140 -122 11 -24 19 -64 19 -96 0 -154 -164 -262 -310 -204 -38 15 -42 15 -60 -1 -53 -48 -84 20 -78 170 3 77 9 109 25 140 54 103 155 146 264 113z"/>
                 </g>
@@ -302,7 +302,6 @@
 <div class="section-fade-divider" aria-hidden="true"></div>
 <!-- FILLINGS / CALCULATOR -->
 <section id="fillings" class="fillings">
-  <div class="calc-cake-decor" aria-hidden="true"><img src="img/cake_bday.webp" alt="" loading="lazy" /></div>
   <div class="container">
     <h2 class="section-title reveal"><span class="ht-word">Начинки</span> <span class="ht-word ht-amp">&amp;</span> <span class="ht-em">Стоимость</span></h2>
     <p class="section-sub reveal wave-text">Выберите начинку и узнайте примерную цену</p>
@@ -322,10 +321,12 @@
               <div class="calc-opt calc-type-card" data-price="1600" data-type="bento" onclick="selectCakeType(this,'bento')">
                 <span class="calc-type-icon">🍰</span>
                 <span class="opt-inner"><span class="opt-label">Бенто</span><span class="calc-type-hint">1 600 ₽/шт</span></span>
+                <span class="calc-weight-tooltip">~350 гр / шт</span>
               </div>
               <div class="calc-opt calc-type-card" data-price="3000" data-type="bentomaxi" onclick="selectCakeType(this,'bentomaxi')">
                 <span class="calc-type-icon">🍰</span>
                 <span class="opt-inner"><span class="opt-label">Макси Бенто</span><span class="calc-type-hint">3 000 ₽/шт</span></span>
+                <span class="calc-weight-tooltip">~1100 гр / шт</span>
               </div>
               <div class="calc-opt calc-type-card" data-price="5000" data-type="cake3d" onclick="selectCakeType(this,'cake3d')">
                 <span class="calc-type-icon">✨</span>
@@ -415,14 +416,22 @@
             <div class="calc-result-price" id="calcResult">5 600 ₽</div>
             <div class="calc-result-summary" id="calcSummary"></div>
             <div class="calc-result-note" id="calcNote">Точная цена согласовывается при заказе</div>
-            <button class="calc-add-btn" onclick="addCalcToCartAnimated(this)">
-              <svg class="calc-add-cart-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-              </svg>
-              <span class="calc-add-btn-label">Добавить в корзину</span>
-              <span class="calc-add-btn-badge" id="calcCartBadge">0</span>
-            </button>
+            <div class="calc-add-row">
+              <button class="calc-add-btn" onclick="addCalcToCartOnly(this)">
+                <svg class="calc-add-cart-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                </svg>
+                <span class="calc-add-btn-label">Добавить в корзину</span>
+              </button>
+              <button class="calc-open-cart-btn" id="calcOpenCartBtn" onclick="openCart()" aria-label="Открыть корзину">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                </svg>
+                <span class="calc-open-cart-badge" id="calcCartBadge">0</span>
+              </button>
+            </div>
           </div>
         </div><!-- /.calc-right-col -->
 
@@ -430,6 +439,60 @@
     </div>
   </div>
 </section>
+<div class="section-fade-divider" aria-hidden="true"></div>
+<section id="reviews">
+  <div class="sc-field" id="scField"></div>
+  <div style="position:relative;z-index:2;padding:0 24px">
+    <h2 class="section-title reveal"><span class="ht-word">Отзывы</span> <span class="ht-em">Клиентов</span></h2>
+    <p class="section-sub reveal wave-text">Нам пишут — мы очень стараемся 🤍</p>
+  </div>
+  <div class="carousel-stage" id="stage">
+    <div class="carousel-row"><div class="reviews-track" id="track"></div></div>
+    <div class="carousel-nav">
+      <button class="rev-arrow" id="btnPrev" aria-label="Назад">&#8592;</button>
+      <button class="rev-arrow" id="btnNext" aria-label="Вперёд">&#8594;</button>
+    </div>
+    <div class="rev-dots" id="dots" style="display:none"></div>
+  </div>
+  <div class="review-filmstrip reveal">
+    <button class="review-filmstrip-item" onclick="openChatLightbox(0)" aria-label="Отзыв 1"><img src="img/review_1.webp" alt="Отзыв 1" loading="lazy" width="280" height="497"></button>
+    <button class="review-filmstrip-item" onclick="openChatLightbox(1)" aria-label="Отзыв 2"><img src="img/review_2.webp" alt="Отзыв 2" loading="lazy" width="280" height="497"></button>
+    <button class="review-filmstrip-item" onclick="openChatLightbox(2)" aria-label="Отзыв 3"><img src="img/review_3.webp" alt="Отзыв 3" loading="lazy" width="280" height="497"></button>
+    <button class="review-filmstrip-item" onclick="openChatLightbox(3)" aria-label="Отзыв 4"><img src="img/review_4.webp" alt="Отзыв 4" loading="lazy" width="280" height="497"></button>
+    <button class="review-filmstrip-item" onclick="openChatLightbox(4)" aria-label="Отзыв 5"><img src="img/review_5.webp" alt="Отзыв 5" loading="lazy" width="280" height="497"></button>
+    <button class="review-filmstrip-item" onclick="openChatLightbox(5)" aria-label="Отзыв 6"><img src="img/review_6.webp" alt="Отзыв 6" loading="lazy" width="280" height="497"></button>
+    <button class="review-filmstrip-item" onclick="openChatLightbox(6)" aria-label="Отзыв 7"><img src="img/review_7.webp" alt="Отзыв 7" loading="lazy" width="280" height="497"></button>
+    <button class="review-filmstrip-item" onclick="openChatLightbox(7)" aria-label="Отзыв 8"><img src="img/review_8.webp" alt="Отзыв 8" loading="lazy" width="280" height="497"></button>
+  </div>
+  <div class="map-badges-center reveal">
+    <button class="map-badge map-badge-yandex" onclick="openReviewsModal('yandex')" aria-label="Отзывы на Яндекс Картах">
+      <svg class="map-badge-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#FC3F1D"/><path d="M13.18 7.2h-.92c-1.2 0-1.84.58-1.84 1.54 0 1.1.48 1.62 1.44 2.28l.8.54-2.28 3.44H8.9l2.08-3.12c-1.2-.86-1.88-1.7-1.88-3.06 0-1.76 1.22-2.92 3.16-2.92h2.3V17h-1.38V7.2z" fill="#fff"/></svg>
+      <span>Яндекс Карты</span>
+      <span class="map-badge-rating">★ 4.8</span>
+      <svg class="map-badge-chevron" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="map-badge map-badge-google" onclick="openReviewsModal('google')" aria-label="Отзывы в Google Maps">
+      <svg class="map-badge-icon" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      <span>Google Maps</span>
+      <span class="map-badge-rating">★ 4.7</span>
+      <svg class="map-badge-chevron" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-section">
+  <div class="stats-grid">
+    <div class="stat-item stat-item--photo reveal">
+      <div class="stat-photo-wrap">
+        <img src="img/viktoria2.webp" alt="Виктория Милованова украшает торт" loading="lazy" />
+      </div>
+    </div>
+    <div class="stat-item reveal"><span class="stat-num" data-target="5" data-suffix=" лет">0</span><div class="stat-label">Опыта работы</div></div>
+    <div class="stat-item reveal"><span class="stat-num" data-target="98" data-suffix="%">0</span><div class="stat-label">Довольных клиентов</div></div>
+    <div class="stat-item reveal"><span class="stat-num" data-target="9" data-suffix=" видов">0</span><div class="stat-label">Десертов в меню</div></div>
+  </div>
+</div>
 <div class="section-fade-divider" aria-hidden="true"></div>
 <!-- WHY US -->
 <section id="why">
@@ -481,57 +544,6 @@
     <p>Где заказать торт в СПб с доставкой? У нас! Можно заказать торт на день рождения с доставкой, заказать торт на рождение ребёнка, заказать торт на рождение, торт сестре заказать или найти торт дня — просто напишите нам в WhatsApp или Telegram. Ответим в течение 10 минут, согласуем состав, дату и удобный способ доставки. Заказать бенто торт, заказать свадебный торт, заказать торт с доставкой на дом — где можно заказать торт с душой? Здесь, у Milovi Cake.</p>
   </div>
 </section>
-<div class="section-fade-divider" aria-hidden="true"></div>
-<section id="reviews">
-  <div class="sc-field" id="scField"></div>
-  <div style="position:relative;z-index:2;padding:0 24px">
-    <h2 class="section-title reveal"><span class="ht-word">Отзывы</span> <span class="ht-em">Клиентов</span></h2>
-    <p class="section-sub reveal wave-text">Нам пишут — мы очень стараемся 🤍</p>
-  </div>
-  <div class="carousel-stage" id="stage">
-    <div class="carousel-row"><div class="reviews-track" id="track"></div></div>
-    <div class="carousel-nav">
-      <button class="rev-arrow" id="btnPrev" aria-label="Назад">&#8592;</button>
-      <button class="rev-arrow" id="btnNext" aria-label="Вперёд">&#8594;</button>
-    </div>
-    <div class="rev-dots" id="dots" style="display:none"></div>
-  </div>
-  <div class="review-filmstrip reveal">
-    <button class="review-filmstrip-item" onclick="openChatLightbox(0)" aria-label="Отзыв 1"><img src="img/review_1.webp" alt="Отзыв 1" loading="lazy" width="280" height="497"></button>
-    <button class="review-filmstrip-item" onclick="openChatLightbox(1)" aria-label="Отзыв 2"><img src="img/review_2.webp" alt="Отзыв 2" loading="lazy" width="280" height="497"></button>
-    <button class="review-filmstrip-item" onclick="openChatLightbox(2)" aria-label="Отзыв 3"><img src="img/review_3.webp" alt="Отзыв 3" loading="lazy" width="280" height="497"></button>
-    <button class="review-filmstrip-item" onclick="openChatLightbox(3)" aria-label="Отзыв 4"><img src="img/review_4.webp" alt="Отзыв 4" loading="lazy" width="280" height="497"></button>
-    <button class="review-filmstrip-item" onclick="openChatLightbox(4)" aria-label="Отзыв 5"><img src="img/review_5.webp" alt="Отзыв 5" loading="lazy" width="280" height="497"></button>
-    <button class="review-filmstrip-item" onclick="openChatLightbox(5)" aria-label="Отзыв 6"><img src="img/review_6.webp" alt="Отзыв 6" loading="lazy" width="280" height="497"></button>
-    <button class="review-filmstrip-item" onclick="openChatLightbox(6)" aria-label="Отзыв 7"><img src="img/review_7.webp" alt="Отзыв 7" loading="lazy" width="280" height="497"></button>
-    <button class="review-filmstrip-item" onclick="openChatLightbox(7)" aria-label="Отзыв 8"><img src="img/review_8.webp" alt="Отзыв 8" loading="lazy" width="280" height="497"></button>
-  </div>
-  <div class="map-badges-center reveal">
-    <button class="map-badge map-badge-yandex" onclick="openReviewsModal('yandex')" aria-label="Отзывы на Яндекс Картах">
-      <svg class="map-badge-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#FC3F1D"/><path d="M13.18 7.2h-.92c-1.2 0-1.84.58-1.84 1.54 0 1.1.48 1.62 1.44 2.28l.8.54-2.28 3.44H8.9l2.08-3.12c-1.2-.86-1.88-1.7-1.88-3.06 0-1.76 1.22-2.92 3.16-2.92h2.3V17h-1.38V7.2z" fill="#fff"/></svg>
-      <span>Яндекс Карты</span>
-      <span class="map-badge-rating">★ 4.8</span>
-      <svg class="map-badge-chevron" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-    <button class="map-badge map-badge-google" onclick="openReviewsModal('google')" aria-label="Отзывы в Google Maps">
-      <svg class="map-badge-icon" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-      <span>Google Maps</span>
-      <span class="map-badge-rating">★ 4.7</span>
-      <svg class="map-badge-chevron" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-  </div>
-  </div>
-</section>
-
-<!-- STATS -->
-<div class="stats-section">
-  <div class="stats-grid">
-    <div class="stat-item reveal"><span class="stat-num" data-target="300" data-suffix="+">0</span><div class="stat-label">Тортов сделано</div></div>
-    <div class="stat-item reveal"><span class="stat-num" data-target="5" data-suffix=" лет">0</span><div class="stat-label">Опыта работы</div></div>
-    <div class="stat-item reveal"><span class="stat-num" data-target="98" data-suffix="%">0</span><div class="stat-label">Довольных клиентов</div></div>
-    <div class="stat-item reveal"><span class="stat-num" data-target="9" data-suffix=" видов">0</span><div class="stat-label">Десертов в меню</div></div>
-  </div>
-</div>
 
 <!-- CONTACTS -->
 <section id="contacts">
@@ -539,7 +551,7 @@
     <h2 class="section-title reveal"><span class="ht-em">Свяжитесь</span> <span class="ht-word">с</span> <span class="ht-word">нами</span></h2>
     <p class="section-sub reveal wave-text">Готовы сделать заказ? Мы всегда на связи!</p>
     <div class="contacts-grid">
-      <div class="card reveal">
+      <div class="card card--dark reveal">
         <h3>Контакты</h3>
         <p class="hours">Отвечаем обычно за 5–10 минут · Пн–Сб, 10:00–22:00</p>
         <div class="contact-primary">
