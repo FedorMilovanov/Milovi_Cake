@@ -6574,3 +6574,286 @@ footer .wave-text .w.near {
   border-color: rgba(201,147,74,0.55) !important;
   box-shadow: 0 12px 40px rgba(201,147,74,0.22), inset 0 0 30px rgba(201,147,74,0.08) !important;
 }
+
+/* ===== Форма Заказа — по слову голубым ===== */
+#contacts .card:not(.card--dark) h3 .wave-text .w {
+  display: inline-block;
+  transition: color .3s ease, transform .3s cubic-bezier(.16,1,.3,1);
+  cursor: default;
+}
+#contacts .card:not(.card--dark) h3 .wave-text .w:hover {
+  color: #7ec8e3;
+  transform: translateY(-2px);
+  -webkit-text-fill-color: #7ec8e3;
+}
+
+/* ===== Content block (вместо SEO-портянки) ===== */
+.content-block {
+  background: var(--cream-dark, #ede5d5);
+  padding: 64px 0;
+}
+.cb-section-label {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 28px;
+  text-align: center;
+}
+.cb-section-label::before,
+.cb-section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(201,147,74,.3), transparent);
+}
+.cb-section-label span {
+  font-family: 'Jost', sans-serif;
+  font-size: 11px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  white-space: nowrap;
+}
+
+/* Табы вкусов */
+.cb-flavor-tabs {
+  display: flex;
+  gap: 0;
+  border-radius: 50px;
+  background: rgba(201,147,74,.08);
+  padding: 4px;
+  width: fit-content;
+  margin: 0 auto 24px;
+}
+.cb-ftab {
+  font-family: 'Jost', sans-serif;
+  font-size: 13px;
+  padding: 8px 22px;
+  border-radius: 50px;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: all .25s;
+  font-weight: 400;
+  border: none;
+  background: none;
+}
+.cb-ftab.cb-on {
+  background: var(--white);
+  color: var(--brown);
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(61,43,31,.1);
+}
+
+/* Карточки вкусов */
+.cb-flavor-wrap { margin-bottom: 52px; }
+.cb-fp { display: none; }
+.cb-fp.cb-on {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+.cb-3col .cb-fl { width: calc(33.33% - 8px); }
+.cb-2col .cb-fl { width: calc(50% - 6px); max-width: 280px; }
+.cb-fl {
+  background: var(--white);
+  border-radius: 14px;
+  padding: 18px 20px;
+  border: 1px solid rgba(201,147,74,.1);
+  transition: all .35s cubic-bezier(.34,1.56,.64,1);
+  cursor: default;
+}
+.cb-fl:hover {
+  border-color: rgba(201,147,74,.45);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(201,147,74,.12);
+}
+.cb-fl-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  color: var(--brown);
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.cb-fl-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* Без глютена */
+.cb-gluten-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 52px;
+}
+.cb-gluten-card {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 28px;
+  border: 1px solid rgba(201,147,74,.15);
+  transition: all .4s cubic-bezier(.34,1.56,.64,1);
+}
+.cb-gluten-card:hover {
+  border-color: rgba(201,147,74,.45);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(201,147,74,.12);
+}
+.cb-gluten-badge {
+  display: inline-block;
+  font-family: 'Jost', sans-serif;
+  font-size: 10px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border: 1px solid rgba(201,147,74,.3);
+  border-radius: 50px;
+  padding: 3px 12px;
+  margin-bottom: 12px;
+}
+.cb-gluten-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  color: var(--brown);
+  font-weight: 400;
+  margin-bottom: 10px;
+}
+.cb-gluten-desc {
+  font-size: 14px;
+  color: var(--brown-light, #6b4c38);
+  line-height: 1.7;
+}
+
+/* Поводы */
+.cb-occ-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 52px;
+}
+.cb-occ {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 24px 16px;
+  text-align: center;
+  border: 1px solid rgba(201,147,74,.1);
+  transition: all .35s cubic-bezier(.34,1.56,.64,1);
+}
+.cb-occ:hover {
+  border-color: rgba(201,147,74,.45);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(201,147,74,.1);
+}
+.cb-occ-icon {
+  font-size: 28px;
+  display: block;
+  margin-bottom: 12px;
+}
+.cb-occ-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  color: var(--brown);
+  font-weight: 400;
+  margin-bottom: 8px;
+}
+.cb-occ-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* FAQ */
+.cb-faq { margin-bottom: 48px; }
+.cb-faq-item {
+  border-bottom: 1px solid rgba(201,147,74,.12);
+  cursor: pointer;
+  transition: background .2s;
+}
+.cb-faq-item:first-child { border-top: 1px solid rgba(201,147,74,.12); }
+.cb-faq-q {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  gap: 16px;
+}
+.cb-faq-q span {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  color: var(--brown);
+  font-weight: 400;
+  line-height: 1.3;
+}
+.cb-faq-ico {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(201,147,74,.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--gold);
+  transition: transform .35s, background .3s, border-color .3s, color .3s;
+}
+.cb-faq-item.cb-open .cb-faq-ico {
+  transform: rotate(45deg);
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #fff;
+}
+.cb-faq-a {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .4s cubic-bezier(.4,0,.2,1);
+}
+.cb-faq-item.cb-open .cb-faq-a { max-height: 200px; }
+.cb-faq-a-inner {
+  padding: 0 0 20px;
+  font-family: 'Jost', sans-serif;
+  font-size: 14px;
+  color: var(--brown-light, #6b4c38);
+  line-height: 1.8;
+}
+
+/* Теги */
+.cb-tags-wrap { text-align: center; }
+.cb-tags-label {
+  font-family: 'Jost', sans-serif;
+  font-size: 10px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+.cb-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+.cb-tags span {
+  font-family: 'Jost', sans-serif;
+  font-size: 12px;
+  color: var(--brown-light, #6b4c38);
+  background: rgba(201,147,74,.08);
+  border: 1px solid rgba(201,147,74,.18);
+  border-radius: 50px;
+  padding: 5px 14px;
+  cursor: default;
+  transition: all .25s cubic-bezier(.34,1.56,.64,1);
+}
+.cb-tags span:hover {
+  background: rgba(201,147,74,.18);
+  border-color: var(--gold);
+  color: var(--brown);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .cb-3col .cb-fl, .cb-2col .cb-fl { width: 100%; max-width: 100%; }
+  .cb-occ-grid { grid-template-columns: 1fr 1fr; }
+  .cb-gluten-grid { grid-template-columns: 1fr; }
+  .cb-faq-q span { font-size: 17px; }
+}

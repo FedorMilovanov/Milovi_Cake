@@ -3647,3 +3647,20 @@ document.addEventListener('visibilitychange', () => {
   }
   setTimeout(bindTooltips, 800);
 })();
+
+
+// ── Content block: вкусы и FAQ ──
+function cbFlavor(id, btn) {
+  document.querySelectorAll('.cb-fp').forEach(p => p.classList.remove('cb-on'));
+  document.querySelectorAll('.cb-ftab').forEach(t => t.classList.remove('cb-on'));
+  const el = document.getElementById('cb-' + id);
+  if (el) el.classList.add('cb-on');
+  if (btn) btn.classList.add('cb-on');
+}
+function cbFaq(item) {
+  const isOpen = item.classList.contains('cb-open');
+  document.querySelectorAll('.cb-faq-item.cb-open').forEach(i => i.classList.remove('cb-open'));
+  if (!isOpen) item.classList.add('cb-open');
+}
+window.cbFlavor = cbFlavor;
+window.cbFaq = cbFaq;

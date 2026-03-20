@@ -530,15 +530,93 @@
   </div>
 </section>
 <div class="section-fade-divider" aria-hidden="true"></div>
-<!-- ══════════ SEO TEXT ══════════ -->
-<section class="seo-section">
+<!-- ══════════ CONTENT BLOCK (вместо SEO-портянки) ══════════ -->
+<section class="content-block" itemscope itemtype="https://schema.org/FAQPage">
+
   <div class="container">
-    <h2>Домашние торты на заказ в Санкт-Петербурге — Milovi Cake</h2>
-    <p>В Milovi Cake мы готовим домашние торты на заказ в Санкт-Петербурге (СПб) для тех, кто ценит настоящий вкус и аккуратный, тёплый подход. Каждый торт собираем вручную, на натуральных сливках и качественном сыре крем-чиз, без готовых смесей и растительных заменителей. Вы выбираете вкус, размер и оформление — мы создаём десерт именно под ваш праздник.</p>
-    <p>Любителям нежной классики подойдут наши ванильные торты на заказ. «Воздушный поцелуй» — сочный ванильный бисквит с клубничной начинкой и сливочным крем-чиз, идеален для девичника или романтического ужина. «Ванильная вишня» сочетает мягкий бисквит и насыщенную вишню. Для любителей свежих вкусов — «Ванильный микс ягод» с малиной, вишней, голубикой и чёрной смородиной, «Ванильные тропики» с курдом манго-маракуйя, «Белый сникерс» с домашней солёной карамелью и арахисом, «Ваниль в молочном шоколаде» с хрустящей вафлей.</p>
-    <p>Если вы ищете шоколадный торт на заказ в СПб — «Вишня в шоколаде», «Шоколадный микс ягод», «Сникерс» с солёной карамелью и арахисом, «Ферреро» с хрустящей вафлей в молочном шоколаде и грецким орехом. Для любителей классики тортов на заказ — «Красный бархат» и домашний «Медовик» с мёдовыми коржами и сливочно-сметанным кремом.</p>
-    <p>Отдельная гордость — меренговые рулеты на заказ в СПб и пирожное Павлова на заказ. Оба десерта готовятся по безглютеновым рецептам на основе взбитых белков — хрустящая корочка безе, нежный крем и свежие ягоды. Принимаем заказы на торты для любых событий. Свадебный торт на заказ в СПб — с нежным оформлением, живыми или сахарными цветами, под любой стиль торжества. Торт на день рождения на заказ — с любимыми начинками и авторским декором, от камерного бенто до многоярусного. Детский торт на заказ — яркий, безопасный, с персонажами или тематическим декором по пожеланию. Также делаем торты на крестины, юбилеи и корпоративы. Доставка тортов по Санкт-Петербургу — собственная или через Яндекс.Доставку — и самовывоз.</p>
-    <p>Где заказать торт в СПб с доставкой? У нас! Можно заказать торт на день рождения с доставкой, заказать торт на рождение ребёнка, заказать торт на рождение, торт сестре заказать или найти торт дня — просто напишите нам в WhatsApp или Telegram. Ответим в течение 10 минут, согласуем состав, дату и удобный способ доставки. Заказать бенто торт, заказать свадебный торт, заказать торт с доставкой на дом — где можно заказать торт с душой? Здесь, у Milovi Cake.</p>
+
+    <!-- Вкусы -->
+    <div class="cb-section-label"><span>Наши фирменные вкусы</span></div>
+    <div class="cb-flavor-tabs">
+      <button class="cb-ftab cb-on" onclick="cbFlavor('vanilla',this)">🍓 Ванильные</button>
+      <button class="cb-ftab" onclick="cbFlavor('choco',this)">🍫 Шоколадные</button>
+      <button class="cb-ftab" onclick="cbFlavor('classic',this)">👑 Классика</button>
+    </div>
+
+    <div class="cb-flavor-wrap">
+      <div class="cb-fp cb-on cb-3col" id="cb-vanilla">
+        <div class="cb-fl"><div class="cb-fl-name">Воздушный поцелуй</div><div class="cb-fl-desc">Сочный бисквит, клубника и крем-чиз — идеал для романтического ужина</div></div>
+        <div class="cb-fl"><div class="cb-fl-name">Ванильная вишня</div><div class="cb-fl-desc">Мягкий бисквит и насыщенная вишня</div></div>
+        <div class="cb-fl"><div class="cb-fl-name">Микс ягод</div><div class="cb-fl-desc">Малина, вишня, голубика и смородина</div></div>
+        <div class="cb-fl"><div class="cb-fl-name">Тропики</div><div class="cb-fl-desc">Курд манго-маракуйя — экзотика</div></div>
+        <div class="cb-fl"><div class="cb-fl-name">Белый сникерс</div><div class="cb-fl-desc">Домашняя солёная карамель с арахисом</div></div>
+        <div class="cb-fl"><div class="cb-fl-name">Ваниль в шоколаде</div><div class="cb-fl-desc">С хрустящей вафельной прослойкой</div></div>
+      </div>
+      <div class="cb-fp cb-2col" id="cb-choco">
+        <div class="cb-fl"><div class="cb-fl-name">Вишня в шоколаде</div><div class="cb-fl-desc">Шоколадный бисквит и вишнёвое конфи</div></div>
+        <div class="cb-fl"><div class="cb-fl-name">Шоколадный микс ягод</div><div class="cb-fl-desc">Малина, вишня и лесные ягоды</div></div>
+        <div class="cb-fl"><div class="cb-fl-name">Сникерс</div><div class="cb-fl-desc">Тягучая солёная карамель и арахис</div></div>
+        <div class="cb-fl"><div class="cb-fl-name">Ферреро</div><div class="cb-fl-desc">Молочный шоколад, вафля и грецкий орех</div></div>
+      </div>
+      <div class="cb-fp cb-2col" id="cb-classic">
+        <div class="cb-fl"><div class="cb-fl-name">Красный бархат</div><div class="cb-fl-desc">Эффектный и тающий во рту</div></div>
+        <div class="cb-fl"><div class="cb-fl-name">Домашний медовик</div><div class="cb-fl-desc">Ароматные коржи со сливочно-сметанным кремом</div></div>
+      </div>
+    </div>
+
+    <!-- Без глютена -->
+    <div class="cb-section-label"><span>Воздушные десерты без глютена</span></div>
+    <div class="cb-gluten-grid">
+      <div class="cb-gluten-card">
+        <div class="cb-gluten-badge">без глютена</div>
+        <div class="cb-gluten-name">Меренговый рулет</div>
+        <p class="cb-gluten-desc">Наша особая гордость. Хрустящая корочка безе, нежнейший крем и облако свежих ягод — готовится по безглютеновому рецепту на основе взбитых белков.</p>
+      </div>
+      <div class="cb-gluten-card">
+        <div class="cb-gluten-badge">без глютена</div>
+        <div class="cb-gluten-name">Пирожное Павлова</div>
+        <p class="cb-gluten-desc">Воздушная меренга с нежным кремом и свежими ягодами. Лёгкое, изящное, безглютеновое — идеально для тех, кто следит за составом.</p>
+      </div>
+    </div>
+
+    <!-- Поводы -->
+    <div class="cb-section-label"><span>Торт для любого события</span></div>
+    <div class="cb-occ-grid">
+      <div class="cb-occ"><div class="cb-occ-icon">💍</div><div class="cb-occ-name">Свадебный</div><div class="cb-occ-desc">Живые или сахарные цветы, под стиль торжества</div></div>
+      <div class="cb-occ"><div class="cb-occ-icon">🎂</div><div class="cb-occ-name">День рождения</div><div class="cb-occ-desc">От камерного бенто до многоярусного шедевра</div></div>
+      <div class="cb-occ"><div class="cb-occ-icon">🧸</div><div class="cb-occ-name">Детский</div><div class="cb-occ-desc">Яркий, безопасный, с любимыми персонажами</div></div>
+      <div class="cb-occ"><div class="cb-occ-icon">🕊️</div><div class="cb-occ-name">Крестины · Юбилей</div><div class="cb-occ-desc">Тёплое оформление для особых семейных дат</div></div>
+    </div>
+
+    <!-- FAQ с микроразметкой -->
+    <div class="cb-section-label"><span>Частые вопросы</span></div>
+    <div class="cb-faq">
+      <div class="cb-faq-item" itemprop="mainEntity" itemscope itemtype="https://schema.org/Question" onclick="cbFaq(this)">
+        <div class="cb-faq-q"><span itemprop="name">Где заказать торт в СПб с доставкой на дом?</span><div class="cb-faq-ico"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg></div></div>
+        <div class="cb-faq-a" itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer"><div class="cb-faq-a-inner" itemprop="text">Milovi Cake доставляет по всему Санкт-Петербургу и пригородам — Пушкин, Петергоф, Гатчина, Всеволожск, Колпино и другие. Собственная служба доставки или Яндекс.Доставка. Самовывоз тоже доступен.</div></div>
+      </div>
+      <div class="cb-faq-item" itemprop="mainEntity" itemscope itemtype="https://schema.org/Question" onclick="cbFaq(this)">
+        <div class="cb-faq-q"><span itemprop="name">Как быстро ответите и сколько ждать торт?</span><div class="cb-faq-ico"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg></div></div>
+        <div class="cb-faq-a" itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer"><div class="cb-faq-a-inner" itemprop="text">Отвечаем в WhatsApp, Telegram или MAX в течение 10 минут. Согласуем состав, дату и удобный способ доставки. Стандартный срок — 2–3 дня, срочные заказы обсуждаются индивидуально.</div></div>
+      </div>
+      <div class="cb-faq-item" itemprop="mainEntity" itemscope itemtype="https://schema.org/Question" onclick="cbFaq(this)">
+        <div class="cb-faq-q"><span itemprop="name">Можно заказать бенто-торт, свадебный или торт на рождение ребёнка?</span><div class="cb-faq-ico"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg></div></div>
+        <div class="cb-faq-a" itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer"><div class="cb-faq-a-inner" itemprop="text">Да! Бенто-торты от 1 600 ₽, свадебные с живыми или сахарными цветами, детские с персонажами, торты на день рождения, крестины, юбилеи и корпоративы. Просто напишите — подберём идеальный вариант.</div></div>
+      </div>
+      <div class="cb-faq-item" itemprop="mainEntity" itemscope itemtype="https://schema.org/Question" onclick="cbFaq(this)">
+        <div class="cb-faq-q"><span itemprop="name">Есть ли торты без глютена и безопасные для детей?</span><div class="cb-faq-ico"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg></div></div>
+        <div class="cb-faq-a" itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer"><div class="cb-faq-a-inner" itemprop="text">Меренговый рулет и пирожное Павлова — без глютена. Детские торты делаем без красителей и консервантов, с безопасным составом и любимыми персонажами.</div></div>
+      </div>
+    </div>
+
+    <!-- Теги -->
+    <div class="cb-tags-wrap">
+      <div class="cb-tags-label">Также ищут</div>
+      <div class="cb-tags">
+        <span>заказать торт СПб</span><span>бенто торт на заказ</span><span>свадебный торт СПб</span><span>детский торт на заказ</span><span>торт с доставкой на дом</span><span>частный кондитер СПб</span><span>торт на день рождения</span><span>меренговый рулет заказать</span><span>Павлова на заказ</span><span>торт на рождение ребёнка</span><span>торт сестре заказать</span><span>домашние торты СПб</span>
+      </div>
+    </div>
+
   </div>
 </section>
 <div class="section-fade-divider" aria-hidden="true"></div>
@@ -600,7 +678,7 @@
         </div>
       </div>
       <div class="card reveal">
-        <h3>Форма Заказа</h3>
+        <h3><span class="wave-text">Форма Заказа</span></h3>
         <p class="hours" style="opacity:0"> </p>
         <form onsubmit="event.preventDefault(); sendFormWA();" novalidate>
           <div class="form-group float-label"><input type="text" id="fname" placeholder=" " autocomplete="name" /><label for="fname">Как к Вам обращаться?</label></div>
