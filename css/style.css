@@ -166,7 +166,21 @@ html { scroll-behavior: smooth; }
   position: relative;
   border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 24px 70px rgba(61,34,8,0.16), 0 4px 16px rgba(61,34,8,0.08);
+  box-shadow:
+    0 24px 70px rgba(61,34,8,0.16),
+    0 4px 16px rgba(61,34,8,0.08),
+    0 0 0 1.5px rgba(201,147,74,0.15);
+  transition:
+    box-shadow 1.2s cubic-bezier(0.25,0.46,0.45,0.94),
+    transform 1.2s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.about-photo-wrap:hover {
+  box-shadow:
+    0 40px 90px rgba(61,34,8,0.22),
+    0 8px 32px rgba(61,34,8,0.12),
+    0 0 0 2.5px rgba(201,147,74,0.55),
+    0 0 40px rgba(201,147,74,0.12);
+  transform: translateY(-6px);
 }
 .about-photo-wrap img {
   width: 100%;
@@ -174,10 +188,11 @@ html { scroll-behavior: smooth; }
   object-fit: cover;
   object-position: center 10%;
   display: block;
-  transition: transform 0.45s ease;
+  transition: transform 1.4s cubic-bezier(0.25,0.46,0.45,0.94);
+  transform-origin: center bottom;
 }
 .about-photo-wrap:hover img {
-  transform: scale(1.06);
+  transform: scale(1.03) translateY(-8px);
 }
 .about-photo-badge { display: none; 
   position: absolute;
@@ -231,34 +246,55 @@ html { scroll-behavior: smooth; }
   gap: 10px;
   width: 100%;
   margin-top: 20px;
-  padding: 14px 20px;
+  padding: 0 20px;
+  height: 52px;
   background: var(--gold);
   color: #fff;
-  border: none;
+  border: 1.5px solid transparent;
   border-radius: 50px;
   font-family: 'Jost', sans-serif;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.03em;
   cursor: pointer;
   position: relative;
+  overflow: hidden;
   box-shadow: 0 6px 20px rgba(201,147,74,0.4);
-  transition: background 0.25s, transform 0.2s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s;
+  transition: background 0.35s ease,
+              border-color 0.35s ease,
+              box-shadow 0.35s ease,
+              transform 0.35s cubic-bezier(0.34,1.56,0.64,1),
+              letter-spacing 0.35s ease;
   -webkit-tap-highlight-color: transparent;
 }
 .calc-add-btn:hover {
-  background: #b07d30;
-  box-shadow: 0 8px 28px rgba(201,147,74,0.5);
+  background: transparent;
+  border-color: var(--gold);
+  color: var(--gold);
+  box-shadow: 0 0 22px rgba(201,147,74,0.45), inset 0 0 12px rgba(201,147,74,0.08);
+  transform: translateY(-3px);
+  letter-spacing: 0.07em;
 }
 .calc-add-btn:active {
   transform: scale(0.96);
 }
+.calc-add-btn-label {
+  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1),
+              letter-spacing 0.35s ease;
+  display: inline-block;
+}
+.calc-add-btn:hover .calc-add-btn-label {
+  transform: translateX(3px);
+}
 .calc-add-cart-icon {
   flex-shrink: 0;
-  transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+.calc-add-btn:hover .calc-add-cart-icon {
+  transform: scale(1.2);
 }
 .calc-add-btn:active .calc-add-cart-icon {
-  transform: scale(0.85) rotate(-8deg);
+  transform: scale(0.9);
 }
 .calc-add-btn-badge {
   position: absolute;
@@ -1024,7 +1060,7 @@ body {
 }
 .calc-row { margin-bottom: 28px; overflow: visible; }
 .calc-row label,
-.calc-row .calc-label { display: block; font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+.calc-row .calc-label { display: block; font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; text-align: center; }
 .calc-options { display: flex; flex-wrap: wrap; gap: 7px; overflow: visible; }
 #calcFill.calc-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; overflow: visible; }
 #calcFill .calc-opt { justify-content: flex-start; }
@@ -1043,10 +1079,7 @@ body {
 
 /* ── FILL TOOLTIP ── */
 .fill-tooltip {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%) translateY(4px);
+  position: fixed;
   background: var(--brown);
   color: rgba(255,240,210,0.95);
   font-size: 12px; line-height: 1.55;
@@ -1056,19 +1089,23 @@ body {
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.2s ease, transform 0.2s ease;
-  z-index: 200;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  z-index: 9500;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
   white-space: normal;
   text-align: left;
+  transform: translateY(4px);
 }
 .fill-tooltip::after {
-  content: '';
+  display: none;
+}
+.fill-tooltip-arrow {
   position: absolute;
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  border: 6px solid transparent;
-  border-top-color: var(--brown);
+  pointer-events: none;
+  overflow: visible;
+  display: block;
 }
 .fill-tooltip strong { color: #fff; font-weight: 500; display: none; margin-bottom: 3px; }
 .calc-opt .opt-label {
@@ -1093,7 +1130,7 @@ body {
 .calc-opt:hover .fill-tooltip,
 .calc-opt:focus-within .fill-tooltip {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  transform: translateY(0);
 }
 @media (max-width: 768px) {
   .fill-tooltip { display: none; }
@@ -2090,9 +2127,9 @@ section { padding: 100px 60px; }
 .cart-overlay.open {
   opacity: 1;
   pointer-events: all;
-  background: rgba(20,10,5,0.50);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+  background: rgba(10,5,2,0.78);
+  backdrop-filter: blur(10px) brightness(0.7);
+  -webkit-backdrop-filter: blur(10px) brightness(0.7);
 }
 .cart-drawer {
   position: fixed;
@@ -3077,12 +3114,23 @@ section { padding: 100px 60px; }
   background: #fff;
   border-radius: 16px;
   padding: 28px 24px;
-  border: 1px solid rgba(201,147,74,0.12);
-  transition: box-shadow 0.25s, transform 0.25s;
+  border: 1px solid rgba(201,147,74,0.14);
+  box-shadow:
+    0 2px 8px rgba(61,34,8,0.06),
+    0 8px 28px rgba(61,34,8,0.07),
+    0 0 0 0.5px rgba(201,147,74,0.10);
+  transition: box-shadow 0.6s cubic-bezier(0.25,0.46,0.45,0.94),
+              transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94),
+              border-color 0.6s ease;
 }
 .about-compact-block:hover {
-  box-shadow: 0 8px 32px rgba(201,147,74,0.12);
-  transform: translateY(-3px);
+  box-shadow:
+    0 4px 16px rgba(61,34,8,0.08),
+    0 16px 48px rgba(61,34,8,0.10),
+    0 0 0 1.5px rgba(201,147,74,0.40),
+    0 0 28px rgba(201,147,74,0.08);
+  border-color: rgba(201,147,74,0.30);
+  transform: translateY(-4px);
 }
 .about-emoji {
   font-size: 32px;
@@ -3482,8 +3530,8 @@ section { padding: 100px 60px; }
    ══════════════════════════════════════ */
 #reviews {
   position: relative;
-  padding: 80px 0 80px;
-  min-height: 680px;
+  padding: 60px 0 80px;
+  min-height: 740px;
   overflow: visible;
 }
 
@@ -4488,8 +4536,9 @@ a, button {
     backdrop-filter: none;
   }
   .cart-overlay.open {
-    background: rgba(20,10,5,0.18);
-    backdrop-filter: none;
+    background: rgba(10,5,2,0.72);
+    backdrop-filter: blur(10px) brightness(0.7);
+    -webkit-backdrop-filter: blur(10px) brightness(0.7);
     pointer-events: all;
   }
 
@@ -5235,9 +5284,39 @@ footer .wave-text .w.near {
   color: rgba(255,255,255,0.75);
   letter-spacing: 0.02em;
   white-space: nowrap;
+  cursor: default;
+  transition: background 0.45s ease,
+              border-color 0.45s ease,
+              color 0.45s ease,
+              transform 0.5s cubic-bezier(0.34,1.56,0.64,1),
+              box-shadow 0.45s ease,
+              letter-spacing 0.45s ease;
 }
-.calc-summary-chip .chip-icon { font-size: 13px; line-height: 1; }
-.calc-summary-chip .chip-val  { color: #e8c98a; font-weight: 600; }
+.calc-summary-chip:hover {
+  background: rgba(201,147,74,0.18);
+  border-color: rgba(201,147,74,0.6);
+  color: #fff8ee;
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 6px 18px rgba(201,147,74,0.25);
+  letter-spacing: 0.05em;
+}
+.calc-summary-chip:hover .chip-icon {
+  transform: scale(1.2);
+}
+.calc-summary-chip .chip-icon {
+  font-size: 13px;
+  line-height: 1;
+  display: inline-block;
+  transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
+}
+.calc-summary-chip .chip-val {
+  color: #e8c98a;
+  font-weight: 600;
+  transition: color 0.35s ease;
+}
+.calc-summary-chip:hover .chip-val {
+  color: #ffd98a;
+}
 
 /* ── Calc rows smooth show/hide ── */
 .calc-row {
@@ -5720,44 +5799,7 @@ footer .wave-text .w.near {
   border-left: 2px solid rgba(201,147,74,0.3);
 }
 
-/* ===== About bg decor (viktoria2) ===== */
-.about-section {
-  overflow: hidden;
-}
-.about-bg-decor {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 38%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
-}
-.about-bg-decor img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center top;
-  display: block;
-  opacity: 0.13;
-  filter: grayscale(30%) blur(0.5px);
-  mask-image: linear-gradient(to left, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.18) 60%, transparent 100%),
-              linear-gradient(to bottom, transparent 0%, rgba(0,0,0,1) 8%, rgba(0,0,0,1) 88%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.18) 60%, transparent 100%),
-                      linear-gradient(to bottom, transparent 0%, rgba(0,0,0,1) 8%, rgba(0,0,0,1) 88%, transparent 100%);
-  mask-composite: intersect;
-  -webkit-mask-composite: source-in;
-}
-.about-section .container,
-.about-section .about-layout,
-.about-section .about-text-col,
-.about-section .about-photo-col {
-  position: relative;
-  z-index: 1;
-}
-@media (max-width: 768px) {
-  .about-bg-decor { display: none; }
-}
+
 
 /* ===== Cake birthday decor in calculator section ===== */
 
@@ -5769,7 +5811,7 @@ footer .wave-text .w.near {
   background: transparent;
   border: 1px solid rgba(201,147,74,0.18);
   cursor: default;
-  min-height: 180px;
+  position: relative;
 }
 .stat-item--photo:hover {
   transform: translateY(-6px);
@@ -5779,24 +5821,23 @@ footer .wave-text .w.near {
 .stat-photo-wrap {
   width: 100%;
   height: 100%;
-  min-height: 180px;
   overflow: hidden;
   border-radius: 20px;
-  position: relative;
+  position: absolute;
+  inset: 0;
 }
 .stat-photo-wrap img {
   width: 100%;
-  height: 120%;
+  height: 100%;
   object-fit: cover;
-  object-position: center 20%;
+  object-position: center 15%;
   display: block;
-  transition: transform 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-              object-position 1.8s ease;
-  transform: translateY(0px);
+  transition: transform 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform: translateY(0);
   will-change: transform;
 }
 .stat-item--photo:hover .stat-photo-wrap img {
-  transform: translateY(-8%);
+  transform: translateY(-6%);
 }
 
 /* ===== Rubber push effect on stats grid ===== */
@@ -6222,4 +6263,46 @@ footer .wave-text .w.near {
 #about,
 #reviews {
   scroll-margin-top: 80px;
+}
+
+
+
+/* ===== Тег цены декора — виден в любом состоянии ===== */
+.fill-tag--price {
+  background: rgba(201,147,74,0.15);
+  color: #c9934a;
+  border: 1px solid rgba(201,147,74,0.3);
+}
+.calc-opt.selected .fill-tag--price {
+  background: rgba(255,255,255,0.22) !important;
+  color: #fff5dc !important;
+  border-color: rgba(255,255,255,0.35) !important;
+}
+
+/* ===== Двойная иконка Макси Бенто ===== */
+.calc-type-icon--double {
+  font-size: 16px;
+  letter-spacing: -2px;
+}
+
+/* ===== Calc left col — центрировка ===== */
+.calc-left-col .calc-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.calc-left-col .calc-options {
+  justify-content: center;
+}
+.calc-left-col #calcFill.calc-options,
+.calc-left-col #calcFillBento.calc-options,
+.calc-left-col #calcFill3d.calc-options,
+.calc-left-col #calcDecor.calc-options {
+  justify-content: center;
+}
+.calc-left-col .calc-weight-stepper-wrap {
+  justify-content: center;
+}
+.calc-left-col .calc-biscuit-note {
+  text-align: center;
 }

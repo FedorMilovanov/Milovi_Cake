@@ -265,7 +265,6 @@
 <div class="section-fade-divider" aria-hidden="true"></div>
 <!-- ABOUT -->
 <section id="about" class="about-section">
-  <div class="about-bg-decor" aria-hidden="true"><img src="img/viktoria2.webp" alt="" /></div>
   <div class="container">
     <div class="about-layout">
 
@@ -324,7 +323,7 @@
                 <span class="calc-weight-tooltip">~350 гр / шт</span>
               </div>
               <div class="calc-opt calc-type-card" data-price="3000" data-type="bentomaxi" onclick="selectCakeType(this,'bentomaxi')">
-                <span class="calc-type-icon">🍰</span>
+                <span class="calc-type-icon calc-type-icon--double">🍰🍰</span>
                 <span class="opt-inner"><span class="opt-label">Макси Бенто</span><span class="calc-type-hint">3 000 ₽/шт</span></span>
                 <span class="calc-weight-tooltip">~1100 гр / шт</span>
               </div>
@@ -403,7 +402,7 @@
             <span class="calc-label">Декор</span>
             <div class="calc-options" id="calcDecor">
               <div class="calc-opt selected" data-price="0" onclick="selectOpt(this,'calcDecor')"><span class="opt-inner"><span class="opt-label">Базовый декор</span></span><div class="fill-tooltip"><strong>Базовый декор</strong>Кремовые мазки, покрытие, подтёки — аккуратное оформление, входит в стоимость торта.</div></div>
-              <div class="calc-opt" data-price="1000" onclick="selectOpt(this,'calcDecor')"><span class="opt-inner"><span class="opt-label">Авторский декор</span><span class="fill-tag" style="background:rgba(201,147,74,0.15);color:#c9934a;border:1px solid rgba(201,147,74,0.3);">от +1000 ₽</span></span><div class="fill-tooltip"><strong>Авторский декор</strong>Фигурки, объёмный декор, живые и вафельные цветы, роспись, сахарная печать и другие сложные элементы. Стоимость рассчитывается индивидуально.</div></div>
+              <div class="calc-opt" data-price="1000" onclick="selectOpt(this,'calcDecor')"><span class="opt-inner"><span class="opt-label">Авторский декор</span><span class="fill-tag fill-tag--price">от +1000 ₽</span></span><div class="fill-tooltip"><strong>Авторский декор</strong>Фигурки, объёмный декор, живые и вафельные цветы, роспись, сахарная печать и другие сложные элементы. Стоимость рассчитывается индивидуально.</div></div>
             </div>
           </div>
 
@@ -418,10 +417,6 @@
             <div class="calc-result-note" id="calcNote">Точная цена согласовывается при заказе</div>
             <div class="calc-add-row">
               <button class="calc-add-btn" onclick="addCalcToCartOnly(this)">
-                <svg class="calc-add-cart-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-                </svg>
                 <span class="calc-add-btn-label">Добавить в корзину</span>
               </button>
               <button class="calc-open-cart-btn" id="calcOpenCartBtn" onclick="openCart()" aria-label="Открыть корзину">

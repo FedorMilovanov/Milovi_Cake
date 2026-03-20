@@ -107,17 +107,45 @@ function renderCatalog() {
     </div>`;
   }).join('');
 
-  // Auto-slide (store IDs to allow cleanup)
+  // Auto-slide — останавливается при наведении мыши
   products.forEach(p => {
     if (p.slides && p.slides.length > 1) {
       let cur = 0;
-      slideTimers[p.id] = setInterval(() => {
-        if (document.hidden) return; // не крутим когда вкладка неактивна
-        cur = (cur + 1) % p.slides.length;
-        goSlide(p.id, cur);
-      }, 3000);
-      // Add touch swipe after DOM renders
-      setTimeout(() => addSliderTouch(p.id, p.slides.length), 100);
+
+      function startTimer() {
+        stopTimer();
+        slideTimers[p.id] = setInterval(() => {
+          if (document.hidden) return;
+          cur = (cur + 1) % p.slides.length;
+          goSlide(p.id, cur);
+        }, 3000);
+      }
+
+      function stopTimer() {
+        if (slideTimers[p.id]) {
+          clearInterval(slideTimers[p.id]);
+          delete slideTimers[p.id];
+        }
+      }
+
+      startTimer();
+
+      // Пауза при наведении — никаких резких переключений
+      setTimeout(() => {
+        const wrap = document.getElementById('slider-' + p.id);
+        if (wrap) {
+          wrap.addEventListener('mouseenter', () => {
+            stopTimer();
+            // Синхронизируем cur с реальным активным слайдом
+            cur = sliderCurrentIdx[p.id] || 0;
+          });
+          wrap.addEventListener('mouseleave', () => {
+            cur = sliderCurrentIdx[p.id] || 0;
+            startTimer();
+          });
+        }
+        addSliderTouch(p.id, p.slides.length);
+      }, 100);
     }
   });
 
@@ -2317,14 +2345,14 @@ const REVIEWS = [
 // Horizontal positions are computed DYNAMICALLY in the loop:
 // centered in the gap between the stage edges and the viewport edges.
 const LAYOUTS = [
-  { side:'left',  tp:  8, rot: -14 },  // 0 top-left
-  { side:'right', tp: 27, rot:  18 },  // 1 right-high
-  { side:'left',  tp: 27, rot: -18 },  // 2 left-high
-  { side:'right', tp:  8, rot:  14 },  // 3 top-right
-  { side:'left',  tp: 50, rot:   8 },  // 4 left-mid
-  { side:'right', tp: 50, rot:  -8 },  // 5 right-mid
-  { side:'left',  tp: 71, rot: -11 },  // 6 left-low
-  { side:'right', tp: 71, rot:  11 },  // 7 right-low
+  { side:'left',  tp: 18, rot: -14 },  // 0 top-left
+  { side:'right', tp: 35, rot:  18 },  // 1 right-high
+  { side:'left',  tp: 35, rot: -18 },  // 2 left-high
+  { side:'right', tp: 18, rot:  14 },  // 3 top-right
+  { side:'left',  tp: 55, rot:   8 },  // 4 left-mid
+  { side:'right', tp: 55, rot:  -8 },  // 5 right-mid
+  { side:'left',  tp: 76, rot: -11 },  // 6 left-low
+  { side:'right', tp: 76, rot:  11 },  // 7 right-low
 ];
 
 const FLOATS = [
@@ -3164,8 +3192,6 @@ document.addEventListener('visibilitychange', () => {
     updateCartUI();
     saveCartToStorage();
 
-    // Открываем корзину со стильной задержкой для ощущения плавности
-    setTimeout(() => openCart(), 80);
   }
 
   // ── Public API — functions called from HTML via onclick ──
@@ -3543,4 +3569,43 @@ document.addEventListener('visibilitychange', () => {
   }, { passive: true });
 
 
+})();
+
+
+// ── Fill tooltip: position:fixed + SVG-капля Безье ──
+(function initFillTooltips() {
+  const ARROW_SVG = '<svg class="fill-tooltip-arrow" width="24" height="20" viewBox="0 0 24 20" xmlns="http://www.w3.org/2000/svg"><path d="M2,0 Q12,0 12,18 Q12,0 22,0 Z" fill="#3d2b1f"/></svg>';
+
+  function bindTooltips() {
+    document.querySelectorAll('.calc-opt').forEach(opt => {
+      if (opt._tooltipBound) return;
+      opt._tooltipBound = true;
+      const tip = opt.querySelector('.fill-tooltip');
+      if (!tip) return;
+
+      // Добавляем SVG-каплю если ещё нет
+      if (!tip.querySelector('.fill-tooltip-arrow')) {
+        tip.insertAdjacentHTML('beforeend', ARROW_SVG);
+      }
+
+      opt.addEventListener('mouseenter', () => {
+        const r = opt.getBoundingClientRect();
+        let left = r.left + r.width / 2 - 110;
+        let top  = r.top - 24; // 24px зазор для капли
+
+        left = Math.max(8, Math.min(left, window.innerWidth - 228));
+
+        tip.style.left = left + 'px';
+        tip.style.top  = top + 'px';
+        tip.style.transform = 'translateY(-100%) translateY(-4px)';
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindTooltips);
+  } else {
+    bindTooltips();
+  }
+  setTimeout(bindTooltips, 800);
 })();
