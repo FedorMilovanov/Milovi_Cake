@@ -762,7 +762,21 @@ body {
 .floating-cta { display: none !important; }
 
 /* ── STATS ── */
-.stats-section { background: var(--brown); padding: 60px; }
+.stats-section {
+  background: var(--brown);
+  padding: 60px;
+  position: relative;
+}
+.stats-section::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: linear-gradient(to bottom, transparent, var(--brown));
+  pointer-events: none;
+}
 .stats-grid {
   max-width: 1200px; margin: 0 auto;
   display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; text-align: center;
@@ -6473,4 +6487,90 @@ footer .wave-text .w.near {
 .card--dark .float-label textarea:not(:placeholder-shown) + label {
   color: var(--gold);
   background: #1a1009;
+}
+
+/* ===== Переход светлый → тёмный перед контактами ===== */
+.contacts-transition {
+  height: 80px;
+  background: linear-gradient(to bottom, var(--cream-dark, #ede5d5), #1a1009);
+  margin-bottom: -1px;
+}
+
+
+/* Divider рядом со stats-section — скрываем */
+#reviews + .section-fade-divider + .stats-section,
+.stats-section + .section-fade-divider::before {
+  display: none;
+}
+
+/* ===== Stats section — плавные переходы сверху и снизу ===== */
+.stats-section {
+  isolation: isolate;
+}
+.stats-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 48px;
+  background: linear-gradient(to bottom, var(--cream, #f5f0e8), transparent);
+  z-index: 1;
+  pointer-events: none;
+}
+.stats-section::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 48px;
+  background: linear-gradient(to top, var(--cream, #f5f0e8), transparent);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ===== Contacts cards — hover glow on border ===== */
+#contacts .card {
+  transition:
+    box-shadow 0.6s cubic-bezier(0.25,0.46,0.45,0.94),
+    border-color 0.6s cubic-bezier(0.25,0.46,0.45,0.94),
+    transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94);
+  border: 1px solid transparent;
+}
+#contacts .card.card--dark:hover {
+  border-color: rgba(201,147,74,0.55);
+  box-shadow:
+    0 0 0 1px rgba(201,147,74,0.2),
+    0 0 32px rgba(201,147,74,0.15),
+    0 20px 60px rgba(0,0,0,0.3),
+    inset 0 0 40px rgba(201,147,74,0.04);
+  transform: translateY(-3px);
+}
+#contacts .card:not(.card--dark):hover {
+  border-color: rgba(201,147,74,0.45);
+  box-shadow:
+    0 0 0 1px rgba(201,147,74,0.15),
+    0 0 28px rgba(201,147,74,0.12),
+    0 20px 50px rgba(61,34,8,0.12),
+    inset 0 0 30px rgba(201,147,74,0.03);
+  transform: translateY(-3px);
+}
+
+/* ===== Stat text block — heart pulse + hover ===== */
+@keyframes heartbeat {
+  0%   { transform: scale(1); }
+  14%  { transform: scale(1.3); }
+  28%  { transform: scale(1); }
+  42%  { transform: scale(1.2); }
+  56%  { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+.stat-text-heart {
+  display: inline-block;
+  font-style: normal;
+}
+.stat-item--text:hover .stat-text-heart {
+  animation: heartbeat 0.9s cubic-bezier(0.34,1.56,0.64,1) infinite;
+}
+.stat-item--text:hover {
+  transform: translateY(-6px) scale(1.04) !important;
+  border-color: rgba(201,147,74,0.55) !important;
+  box-shadow: 0 12px 40px rgba(201,147,74,0.22), inset 0 0 30px rgba(201,147,74,0.08) !important;
 }
