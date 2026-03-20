@@ -46,6 +46,120 @@ a:focus-visible,
 }
 
 html { scroll-behavior: smooth; }
+/* ── Section fade divider (Fade A) ── */
+.section-fade-divider {
+  position: relative;
+  height: 1px;
+  margin: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.section-fade-divider::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(201, 147, 74, 0.6) 25%,
+    rgba(201, 147, 74, 1) 50%,
+    rgba(201, 147, 74, 0.6) 75%,
+    transparent 100%
+  );
+}
+
+
+/* ── Messenger bar: 3 equal sections ── */
+.messenger-bar {
+  display: flex;
+  width: 100%;
+  border-radius: 50px;
+  overflow: hidden;
+  gap: 0;
+  margin-bottom: 4px;
+}
+.messenger-bar-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 12px;
+  font-family: 'Jost', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: #fff;
+  text-decoration: none;
+  transition: filter 0.2s, transform 0.15s;
+  letter-spacing: 0.02em;
+}
+.messenger-bar-btn:hover  { filter: brightness(1.12); }
+.messenger-bar-btn:active { transform: scale(0.97); }
+
+/* WhatsApp — зелёный */
+.messenger-bar-wa  { background: #25D366; }
+/* Telegram — синий */
+.messenger-bar-tg  { background: #229ED9; }
+/* MAX — фиолетовый */
+.messenger-bar-max { background: #7B5EE8; }
+
+/* ── Weight stepper wrap + guests badge (no layout shift) ── */
+.calc-weight-stepper-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+}
+.calc-guests-badge {
+  font-size: 11px;
+  font-family: 'Jost', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  background: rgba(201,147,74,0.09);
+  border: 1px solid rgba(201,147,74,0.22);
+  border-radius: 20px;
+  padding: 3px 10px;
+  white-space: nowrap;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+
+/* ── Weight row stable layout ── */
+.calc-weight-stepper-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+}
+.calc-weight-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  white-space: nowrap;
+  /* never takes layout space — just sits next to stepper */
+}
+.calc-weight-hint:empty {
+  display: none;
+}
+
+
+@media (max-width: 480px) {
+  .messenger-bar { border-radius: 20px; flex-direction: column; }
+  .messenger-bar-btn { border-radius: 0; padding: 13px 16px; justify-content: center; }
+  .messenger-bar-wa  { border-radius: 20px 20px 0 0; }
+  .messenger-bar-max { border-radius: 0 0 20px 20px; }
+}
+
+
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 ::selection {
@@ -579,23 +693,35 @@ body {
 /* ── LIGHTBOX ── */
 .lightbox {
   position: fixed; inset: 0;
-  background: rgba(10,5,0,0.92);
+  background: rgba(8,4,0,0);
+  backdrop-filter: blur(0px) brightness(1);
+  -webkit-backdrop-filter: blur(0px) brightness(1);
   z-index: 9000;
   display: flex; align-items: center; justify-content: center;
   opacity: 0; pointer-events: none;
-  transition: opacity 0.3s;
+  transition: opacity 0.4s ease, background 0.4s ease, backdrop-filter 0.5s ease, -webkit-backdrop-filter 0.5s ease;
 }
-.lightbox.open { opacity: 1; pointer-events: all; }
+.lightbox.open {
+  opacity: 1;
+  pointer-events: all;
+  background: rgba(8,4,0,0.88);
+  backdrop-filter: blur(18px) brightness(0.5);
+  -webkit-backdrop-filter: blur(18px) brightness(0.5);
+}
 .lightbox-img-wrap img {
-  max-width: 65vw; max-height: 70vh;
-  border-radius: 16px;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  max-width: 65vw; max-height: 75vh;
+  border-radius: 20px;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.06);
   object-fit: contain;
-  transform: scale(0.92);
-  transition: transform 0.3s;
+  transform: scale(0.88) translateY(16px);
+  opacity: 0;
+  transition: transform 0.45s cubic-bezier(0.16,1,0.3,1), opacity 0.35s ease;
   display: block;
 }
-.lightbox.open .lightbox-img-wrap img { transform: scale(1); }
+.lightbox.open .lightbox-img-wrap img {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
 .lightbox-img-wrap {
   position: relative;
   display: flex;
@@ -2713,6 +2839,16 @@ section { padding: 100px 60px; }
   font-weight: 300;
   letter-spacing: 0.04em;
   padding-left: 4px;
+  display: inline-block;
+  transition: letter-spacing 0.4s cubic-bezier(0.16,1,0.3,1),
+              color 0.35s ease,
+              transform 0.4s cubic-bezier(0.16,1,0.3,1);
+  cursor: default;
+}
+.hero-trust-count:hover {
+  letter-spacing: 0.14em;
+  color: rgba(255,235,185,0.95);
+  transform: scaleX(1.04);
 }
 
 /* USP subtitle */
@@ -4944,17 +5080,20 @@ footer .wave-text .w.near {
 /* ── Calc rows smooth show/hide ── */
 .calc-row {
   overflow: hidden;
-  max-height: 800px;
   opacity: 1;
-  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.3s ease,
-              margin-bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.25s ease,
+              margin-bottom 0.3s ease;
 }
 .calc-row.calc-row--hidden {
   max-height: 0 !important;
   opacity: 0;
   margin-bottom: 0 !important;
+  overflow: hidden;
   pointer-events: none;
+}
+/* Weight row fixed height — prevents jumping */
+#calcWeightRow {
+  min-height: 72px;
 }
 
 /* ── Calc result sticky ── */

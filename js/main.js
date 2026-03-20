@@ -551,7 +551,8 @@ function updateCartUI() {
         <div class="cart-item-info">
           <h4>${p.name}</h4>
           <div class="item-price">${p.price}</div>
-          ${p.min ? `<div class="item-min">${p.min}</div>` : ''}
+          ${entry.fill  ? `<div class="item-min">🍓 ${entry.fill}</div>`  : (p.min ? `<div class="item-min">${p.min}</div>` : '')}
+          ${entry.decor ? `<div class="item-min" style="opacity:0.7">🎨 ${entry.decor}</div>` : ''}
         </div>
         <div class="qty-ctrl">
           <button class="qty-btn" onclick="changeQty(${id}, -1)" ${atMin ? 'title="Минимальный заказ"' : ''}>−</button>
@@ -1443,10 +1444,8 @@ function wireProductLightbox() {
       const img = e.target.closest('.slide-img');
       if (!img || img.classList.contains('slide-video')) return;
 
-      // Find which slide is currently active by dot index
-      const dots = wrap.querySelectorAll('.dot');
-      let activeIdx = 0;
-      dots.forEach((d, i) => { if (d.classList.contains('active')) activeIdx = i; });
+      // Use sliderCurrentIdx as source of truth for active slide
+      const activeIdx = (typeof sliderCurrentIdx !== 'undefined' && sliderCurrentIdx[p.id]) ? sliderCurrentIdx[p.id] : 0;
 
       // Get current slides list (bento may have switched to maxi)
       const mode = typeof bentoModes !== 'undefined' && bentoModes[p.id];
@@ -1573,8 +1572,6 @@ function stepWeight(dir) {
   if (minus) minus.disabled = _calcWeight <= cfg.weightMin;
   if (plus)  plus.disabled  = _calcWeight >= cfg.weightMax;
   updateCalc();
-  const popup = document.getElementById('guestsPopup');
-  if (popup) popup.style.opacity = '1';
 }
 
 function enforceSingleSelected(groupId) {
@@ -1677,16 +1674,26 @@ function updateCalc() {
     const valEl = document.getElementById('calcWeightVal');
     if (valEl) valEl.textContent = weight % 1 === 0 ? weight + ' кг' : weight.toFixed(1) + ' кг';
 
-    // Гостей
+    // Гостей — всегда видно рядом со степпером
     const guestsEl = document.getElementById('guestsCount');
-    if (guestsEl) {
+    const guestsPopup = document.getElementById('guestsPopup');
+    if (guestsEl && guestsPopup) {
       const n = Math.round(weight / 0.2);
-      const m10 = n % 10, m100 = n % 100;
-      const form = (m100 >= 11 && m100 <= 19) ? 'человек' : m10 === 1 ? 'человек' : (m10 >= 2 && m10 <= 4) ? 'человека' : 'человек';
-      guestsEl.textContent = n + ' ' + form;
+      guestsPopup.textContent = '≈ ' + n + ' чел.';
     }
 
     if (decorPrice > 0) noteText = '* Стоимость авторского декора рассчитывается индивидуально';
+  }
+
+  // Для бенто с фиксированным весом — показываем порцию
+  const guestsPopup = document.getElementById('guestsPopup');
+  if (guestsPopup) {
+    if (_cakeType === 'bento') {
+      guestsPopup.textContent = '≈ 2–3 чел.';
+    } else if (_cakeType === 'bentomaxi') {
+      guestsPopup.textContent = '≈ 5–6 чел.';
+    }
+    // для весовых тортов текст уже установлен выше
   }
 
   // 3D торт — особая пометка
@@ -2873,9 +2880,7 @@ function loop(ts){
       const parkX = lay.side === 'left'
         ? cardL - THUMB_W + OVERLAP   // left side: thumb hangs off left edge
         : cardL + cardW - OVERLAP;    // right side: thumb hangs off right edge
-      const isMobile = window.innerWidth <= 768;
-      const activeOffset = isMobile ? -18 : -24;
-      const parkY = cardCenterY - THUMB_H / 2 + activeOffset; // vertically centered on track
+      const parkY = cardCenterY - THUMB_H / 2 - 80; // vertically centered on track
 
 
       // Smooth ease-out
@@ -3080,6 +3085,61 @@ document.addEventListener('visibilitychange', () => {
 } // end reviews section guard
 
 
+  // ── Добавить параметры калькулятора в корзину и открыть её ──
+  function addCalcToCart() {
+    const cfg = CAKE_CONFIGS[_cakeType] || CAKE_CONFIGS.biscuit;
+
+    // Определяем product id и mode по типу торта
+    const typeToProduct = {
+      biscuit:   { id: 1, mode: 'regular' },
+      bento:     { id: 2, mode: 'regular' },
+      bentomaxi: { id: 2, mode: 'maxi'    },
+      cake3d:    { id: 3, mode: 'regular' },
+    };
+    const mapping = typeToProduct[_cakeType];
+    if (!mapping) return;
+
+    const { id, mode } = mapping;
+
+    // Определяем количество/вес
+    let qty;
+    if (cfg.fixedPrice !== null) {
+      // бенто / макси бенто — количество штук
+      qty = _calcQty;
+    } else {
+      // весовой — вес в кг
+      qty = _calcWeight;
+    }
+
+    // Умное суммирование: если товар уже в корзине того же режима — суммируем
+    if (cart[id] && cart[id].mode === mode) {
+      const p = products.find(x => x.id === id);
+      const maxQty = cfg.fixedPrice !== null ? 20 : (cfg.weightMax || 20);
+      cart[id].qty = Math.min(
+        Math.round((cart[id].qty + qty) * 10) / 10,
+        maxQty
+      );
+    } else {
+      // Иначе — заменяем (другой режим или нет в корзине)
+      cart[id] = { qty, mode };
+    }
+
+    // Собираем заметку о начинке и декоре для отображения в корзине
+    const fillEl  = document.querySelector('#' + cfg.fillGroup + ' .selected .opt-label');
+    const decorEl = document.querySelector('#calcDecor .selected .opt-label');
+    const fillName  = fillEl  ? fillEl.textContent.trim()  : '';
+    const decorName = decorEl ? decorEl.textContent.trim() : '';
+    // Сохраняем доп. параметры в запись корзины
+    cart[id].fill  = fillName;
+    cart[id].decor = decorName;
+
+    updateCartUI();
+    saveCartToStorage();
+
+    // Открываем корзину со стильной задержкой для ощущения плавности
+    setTimeout(() => openCart(), 80);
+  }
+
   // ── Public API — functions called from HTML via onclick ──
   window.acceptCookie = typeof acceptCookie !== "undefined" ? acceptCookie : undefined;
   window.declineCookie = typeof declineCookie !== "undefined" ? declineCookie : undefined;
@@ -3099,6 +3159,7 @@ document.addEventListener('visibilitychange', () => {
   window.goToFormStep = typeof goToFormStep !== "undefined" ? goToFormStep : undefined;
   window.enforceSingleSelected = typeof enforceSingleSelected !== "undefined" ? enforceSingleSelected : undefined;
   window.selectCakeType = typeof selectCakeType !== "undefined" ? selectCakeType : undefined;
+  window.addCalcToCart  = typeof addCalcToCart  !== "undefined" ? addCalcToCart  : undefined;
   window.stepQty = typeof stepQty !== "undefined" ? stepQty : undefined;
   window.goSlide = typeof goSlide !== "undefined" ? goSlide : undefined;
   window.goTo = typeof goTo !== "undefined" ? goTo : undefined;
