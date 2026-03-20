@@ -5295,10 +5295,10 @@ footer .wave-text .w.near {
   font-size: 12px;
   color: rgba(255,255,255,0.75);
   letter-spacing: 0.02em;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
   max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
   cursor: default;
   transition: background 0.45s ease,
               border-color 0.45s ease,
@@ -6210,6 +6210,7 @@ footer .wave-text .w.near {
   left: 50%;
   transform: translateX(-50%);
   background: none;
+  border: none;
   color: var(--text-muted);
   font-size: 11px;
   padding: 0;
@@ -6220,10 +6221,12 @@ footer .wave-text .w.near {
   transition: opacity .2s ease;
   z-index: 10;
   letter-spacing: 0.02em;
+  box-shadow: none;
 }
 .calc-type-card.selected .calc-weight-tooltip {
   opacity: 1;
   transform: translateX(-50%);
+  color: var(--text-muted);
 }
 
 /* ===== Scroll offset fix for О нас и Отзывы ===== */
@@ -6394,11 +6397,22 @@ footer .wave-text .w.near {
 /* ===== Calc result — центрировка чипсов ===== */
 .calc-right-col .calc-result-summary {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.calc-right-col .calc-result-summary .calc-result-summary {
+  flex-direction: row;
+  flex-wrap: wrap;
   justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+}
+.calc-right-col .calc-summary-chip {
+  white-space: normal;
+  word-break: break-word;
+  max-width: 100%;
+  text-align: center;
+  justify-content: center;
+}
+.calc-right-col .calc-summary-chip .chip-val {
+  white-space: normal;
+  word-break: break-word;
 }
 .calc-right-col .calc-approx-badge {
   align-self: center;
@@ -6520,12 +6534,14 @@ footer .wave-text .w.near {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
+  gap: 0;
 }
 .calc-label--biscuit {
-  width: 96px;
   flex-shrink: 0;
   text-align: center;
   margin-bottom: 0 !important;
+  padding-right: 14px;
+  margin-right: 14px;
 }
 .calc-bento-fill-body {
   display: flex;
@@ -6533,7 +6549,6 @@ footer .wave-text .w.near {
   gap: 0;
 }
 .calc-biscuit-seg {
-  width: 96px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -6543,8 +6558,8 @@ footer .wave-text .w.near {
   justify-content: center;
 }
 .calc-biscuit-opt {
-  padding: 6px 8px;
-  font-size: 12.5px;
+  padding: 7px 14px;
+  font-size: 13px;
   cursor: pointer;
   border-radius: 50px;
   border: 1.5px solid transparent;
@@ -6556,18 +6571,18 @@ footer .wave-text .w.near {
   letter-spacing: 0.01em;
 }
 .calc-biscuit-vanilla {
-  background: rgba(100,140,220,0.1);
-  border-color: rgba(100,140,220,0.22);
-  color: #3a5a9a;
+  background: rgba(240,210,130,0.15);
+  border-color: rgba(210,175,80,0.3);
+  color: #8a6a1a;
 }
 .calc-biscuit-vanilla:hover {
-  background: rgba(100,140,220,0.2);
-  border-color: rgba(100,140,220,0.45);
+  background: rgba(240,210,130,0.28);
+  border-color: rgba(210,175,80,0.55);
 }
 .calc-biscuit-vanilla.active {
-  background: #4a7ac8;
-  border-color: #3060b0;
-  color: #fff;
+  background: linear-gradient(135deg, #f0d480, #e4c050);
+  border-color: #c9a020;
+  color: #4a3000;
 }
 .calc-biscuit-choco {
   background: rgba(100,55,30,0.08);
@@ -6587,9 +6602,7 @@ footer .wave-text .w.near {
   flex: 1;
 }
 @media (max-width: 600px) {
-  .calc-bento-fill-header { flex-direction: row; }
-  .calc-biscuit-seg { width: 80px; padding-right: 10px; margin-right: 10px; }
-  .calc-biscuit-opt { font-size: 11.5px; padding: 5px 6px; }
+  .calc-biscuit-opt { font-size: 12px; padding: 6px 10px; }
 }
 
 /* ===== Contacts cards — hover glow on border ===== */
