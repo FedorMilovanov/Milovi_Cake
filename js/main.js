@@ -3621,11 +3621,15 @@ document.addEventListener('visibilitychange', () => {
         tip.insertAdjacentHTML('beforeend', ARROW_SVG);
       }
 
+      // Переносим тултип в body чтобы transform родителей не ломал position:fixed
+      document.body.appendChild(tip);
+
       // Начальное состояние
       tip.style.opacity = '0';
       tip.style.pointerEvents = 'none';
 
       opt.addEventListener('mouseenter', () => showTip(tip, opt));
+      opt.addEventListener('mousemove', () => showTip(tip, opt));
       opt.addEventListener('mouseleave', () => hideTip(tip, 120));
 
       // Держим тултип пока мышь на нём
