@@ -10,6 +10,37 @@
    Пригороды:  <script>var IMG_BASE = '../../img';</script>
 ═══════════════════════════════════════════════════════ */
 
+// ── FILLS DATA (по типу позиции) ──
+const FILLS = {
+  biscuit: ['Микс ягод 🍓', 'Белый сникерс', 'Сникерс', 'Ферреро', 'Воздушный поцелуй', 'Ванильная вишня', 'Ванильные тропики', 'Ванильные облака', 'Вишня в шоколаде', 'Шоколадный микс ягод', 'Красный бархат', 'Супер-Шоколад'],
+  bento: ['Микс ягод 🍓', 'Карамель с орехами', 'Карамель с вафлями', 'Малина', 'Вишня'],
+  cake3d: ['Молочная девочка', 'Медовик', 'Молочная девочка + сливочный крем'],
+};
+
+function getFillsForProduct(p) {
+  if (p.id === 1) return FILLS.biscuit;
+  if (p.id === 2) return FILLS.bento;
+  if (p.id === 3) return FILLS.cake3d;
+  return [];
+}
+
+function setCartItemFill(cartKey, fill) {
+  if (cart[cartKey]) {
+    cart[cartKey].fill = fill || '';
+    saveCartToStorage();
+  }
+}
+window.setCartItemFill = setCartItemFill;
+
+function setCartItemDessertType(cartKey, type) {
+  if (cart[cartKey]) {
+    cart[cartKey].dessertType = type;
+    saveCartToStorage();
+    updateCartUI();
+  }
+}
+window.setCartItemDessertType = setCartItemDessertType;
+
 // ── DATA ──
 const products = [
   { id: 1, name: 'Бисквитный торт', desc: 'Воздушный торт с нежнейшим кремом и авторским декором', min: 'Заказ от 2 кг, декор рассчитывается отдельно', price: 'от 2 800 ₽/кг', priceNum: 2800, unit: 'кг', minKg: 2, emoji: '🎂',
@@ -303,13 +334,12 @@ function loadCartFromStorage() {
     const saved = localStorage.getItem('milovicake_cart');
     if (saved) {
       const parsed = JSON.parse(saved);
-      // Validate: keep only items that exist in products
-      Object.keys(parsed).forEach(id => {
-        if (products.find(p => p.id === +id)) {
-          cart[id] = parsed[id];
-          // ✅ Баг 1: восстановить bento mode чтобы UI таб подсвечивался правильно
-          if (parsed[id].mode) {
-            bentoModes[+id] = parsed[id].mode;
+      Object.keys(parsed).forEach(key => {
+        const numId = parseInt(key); // works for "2", "2:maxi", "2:regular"
+        if (products.find(p => p.id === numId)) {
+          cart[key] = parsed[key];
+          if (parsed[key].mode) {
+            bentoModes[numId] = parsed[key].mode;
           }
         }
       });
@@ -352,23 +382,18 @@ function confettiBurst(x, y) {
 function addToCart(id, e) {
   let p = products.find(x => x.id === id);
   const mode = (p && p.hasMaxi && bentoModes[id] === 'maxi') ? 'maxi' : 'regular';
-  // If bento and in maxi mode, use maxi variant data
+  // Use composite key so бенто and макси бенто are separate cart items
+  const cartKey = (p && p.hasMaxi) ? `${id}:${mode}` : String(id);
+
   if (p && p.hasMaxi && mode === 'maxi') {
     p = { ...p, ...p.maxiVariant };
   }
-  if (!cart[id]) {
-    // Default: 1 шт or minimum kg
+  if (!cart[cartKey]) {
     const defaultQty = p.unit === 'кг' ? (p.minKg || 1) : (p.minQty || 1);
-    cart[id] = { qty: defaultQty, mode };
+    cart[cartKey] = { qty: defaultQty, mode, dessertType: 'base' };
   } else {
-    // If mode changed, reset qty for new mode
-    if (cart[id].mode !== mode) {
-      const defaultQty = p.unit === 'кг' ? (p.minKg || 1) : (p.minQty || 1);
-      cart[id] = { qty: defaultQty, mode };
-    } else {
-      const step = p.unit === 'кг' ? 0.5 : 1;
-      cart[id].qty = Math.round((cart[id].qty + step) * 10) / 10;
-    }
+    const step = p.unit === 'кг' ? 0.5 : 1;
+    cart[cartKey].qty = Math.round((cart[cartKey].qty + step) * 10) / 10;
   }
   updateCartUI();
   saveCartToStorage();
@@ -486,17 +511,20 @@ function clearCart() {
   };
 }
 
-function changeQty(id, delta) {
-  let p = products.find(x => x.id === id);
-  if (p && p.hasMaxi && cart[id] && cart[id].mode === 'maxi') {
+function changeQty(cartKey, delta) {
+  // cartKey may be "2:maxi", "2:regular", or plain "1" etc.
+  const numId = parseInt(cartKey);
+  let p = products.find(x => x.id === numId);
+  const entry = cart[cartKey];
+  if (!p || !entry) return;
+  if (p.hasMaxi && entry.mode === 'maxi') {
     p = { ...p, ...p.maxiVariant };
   }
   const step = p.unit === 'кг' ? 0.5 : 1;
-  // ✅ Баг 3: используем minQty из продукта (Павлова=2, Капкейки=6)
   const minQty = p.minQty || (p.unit === 'кг' ? (p.minKg || 1) : 1);
-  cart[id].qty = Math.round((cart[id].qty + delta * step) * 10) / 10;
-  if (cart[id].qty < minQty) {
-    delete cart[id];
+  entry.qty = Math.round((entry.qty + delta * step) * 10) / 10;
+  if (entry.qty < minQty) {
+    delete cart[cartKey];
   }
   updateCartUI();
   saveCartToStorage();
@@ -535,13 +563,12 @@ function updateCartUI() {
   const countBadge = document.getElementById('cartCountBadge');
   if (countBadge) countBadge.textContent = totalItems;
 
-  // Показываем кнопку очистки только когда есть товары и мы на шаге 1
   const clearBtn = document.getElementById('cartClearBtn');
   if (clearBtn) clearBtn.style.display = totalItems > 0 ? 'inline-flex' : 'none';
 
   const body = document.getElementById('cartBody');
   const footer = document.getElementById('cartFooter');
-  if (!body) return; // корзина не в DOM на этой странице
+  if (!body) return;
 
   const items = Object.entries(cart);
   if (!items.length) {
@@ -558,10 +585,11 @@ function updateCartUI() {
   }
 
   let total = 0;
-  body.innerHTML = items.map(([id, entry]) => {
-    let p = products.find(x => x.id === +id);
-    // Use maxi variant if saved in cart
-    if (p && p.hasMaxi && entry.mode === 'maxi') {
+  body.innerHTML = items.map(([cartKey, entry]) => {
+    const numId = parseInt(cartKey);
+    let p = products.find(x => x.id === numId);
+    if (!p) return '';
+    if (p.hasMaxi && entry.mode === 'maxi') {
       p = { ...p, ...p.maxiVariant };
     }
     const qty = entry.qty;
@@ -574,22 +602,56 @@ function updateCartUI() {
     const minQty = isKg ? (p.minKg || 1) : (p.minQty || 1);
     const atMin = qty <= minQty;
 
+    const dessertType = entry.dessertType || 'base';
+    const isBase = dessertType === 'base';
+
+    // Dessert type toggle — авторский/базовый
+    const dessertToggle = `
+      <div style="margin-top:8px;">
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+          <span style="font-size:11px;color:var(--text-muted);letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;">Тип:</span>
+          <button onclick="setCartItemDessertType('${cartKey}','base')"
+            style="font-size:12px;font-family:'Jost',sans-serif;padding:3px 10px;border-radius:20px;border:1px solid ${isBase ? 'var(--gold)' : 'var(--cream-dark)'};background:${isBase ? 'var(--gold)' : 'transparent'};color:${isBase ? '#fff' : 'var(--text-muted)'};cursor:pointer;transition:all .2s;">
+            Базовый
+          </button>
+          <button onclick="setCartItemDessertType('${cartKey}','author')"
+            style="font-size:12px;font-family:'Jost',sans-serif;padding:3px 10px;border-radius:20px;border:1px solid ${!isBase ? 'var(--gold)' : 'var(--cream-dark)'};background:${!isBase ? 'var(--gold)' : 'transparent'};color:${!isBase ? '#fff' : 'var(--text-muted)'};cursor:pointer;transition:all .2s;">
+            Авторский
+          </button>
+        </div>
+        ${(() => {
+          const fills = getFillsForProduct(p);
+          if (!fills.length) return '';
+          const currentFill = entry.fill || '';
+          const opts = fills.map(f => `<option value="${f}" ${currentFill === f ? 'selected' : ''}>${f}</option>`).join('');
+          return `<div style="display:flex;align-items:center;gap:6px;margin-top:6px;">
+            <span style="font-size:11px;color:var(--text-muted);letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;">Начинка:</span>
+            <select onchange="setCartItemFill('${cartKey}', this.value)"
+              style="font-size:12px;font-family:'Jost',sans-serif;padding:3px 8px;border-radius:12px;border:1px solid var(--cream-dark);background:transparent;color:var(--text);cursor:pointer;flex:1;max-width:180px;">
+              <option value="">— уточнить —</option>
+              ${opts}
+            </select>
+          </div>`;
+        })()}
+      </div>`;
+
     return `
-      <div class="cart-item" data-cart-id="${id}">
+      <div class="cart-item" data-cart-id="${cartKey}">
         <div class="cart-item-info">
           <h4>${p.name}</h4>
           <div class="item-price">${p.price}</div>
-          ${entry.fill  ? `<div class="item-min">🍓 ${entry.fill}</div>`  : (p.min ? `<div class="item-min">${p.min}</div>` : '')}
+          ${p.min && !entry.fill ? `<div class="item-min">${p.min}</div>` : ''}
           ${entry.decor ? `<div class="item-min" style="opacity:0.7">🎨 ${entry.decor}</div>` : ''}
+          ${dessertToggle}
         </div>
         <div class="qty-ctrl">
-          <button class="qty-btn" onclick="changeQty(${id}, -1)" ${atMin ? 'title="Минимальный заказ"' : ''}>−</button>
+          <button class="qty-btn" onclick="changeQty('${cartKey}', -1)" ${atMin ? 'title="Минимальный заказ"' : ''}>−</button>
           <span class="qty-val">${qtyLabel}</span>
-          <button class="qty-btn" onclick="changeQty(${id}, 1)">+</button>
+          <button class="qty-btn" onclick="changeQty('${cartKey}', 1)">+</button>
         </div>
         <div class="cart-item-right">
           <div class="cart-line-total">${lineTotalFmt}</div>
-          <button class="del-btn" onclick="removeFromCart(${id})" aria-label="Удалить">🗑</button>
+          <button class="del-btn" onclick="removeFromCart('${cartKey}')" aria-label="Удалить">🗑</button>
         </div>
       </div>`;
   }).join('');
@@ -598,13 +660,13 @@ function updateCartUI() {
   const cartTotalEl = document.getElementById('cartTotal');
   if (cartTotalEl) cartTotalEl.textContent = totalFmt;
 
-  // Step 1: add summary + next button at bottom of cart-body
   body.innerHTML += `
     <div id="cartStep1Footer" style="margin-top:16px;padding-top:14px;border-top:1px solid var(--cream-dark);">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-        <span style="font-size:15px;color:var(--brown);">Итого:</span>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <span style="font-size:15px;color:var(--brown);">Итого (предварительно):</span>
         <span class="cart-inline-total">${totalFmt}</span>
       </div>
+      <p style="font-size:11px;color:var(--text-muted);margin-bottom:14px;line-height:1.5;">Окончательная цена согласовывается после обсуждения декора — каждый торт индивидуален.</p>
       <button onclick="goToFormStep()" style="width:100%;background:var(--gold);color:#fff;border:none;border-radius:50px;padding:14px 24px;font-size:15px;font-family:'Jost',sans-serif;font-weight:500;cursor:pointer;box-shadow:0 6px 20px rgba(201,147,74,0.35);">
         Далее →
       </button>
@@ -645,32 +707,33 @@ function buildMessage() {
 
   // Дата — текстовое поле, валидация не нужна
 
-  const items = Object.entries(cart).map(([id, entry]) => {
-    // ✅ Баг 2: учитываем maxi вариант для правильного названия и цены
-    let p = products.find(x => x.id === +id);
-    if (!p) return null; // guard: битая позиция
+  const items = Object.entries(cart).map(([cartKey, entry]) => {
+    const numId = parseInt(cartKey);
+    let p = products.find(x => x.id === numId);
+    if (!p) return null;
     if (p.hasMaxi && entry.mode === 'maxi') {
       p = { ...p, ...p.maxiVariant };
     }
     const qty = entry.qty;
     const label = p.unit === 'кг' ? `${qty} кг` : `${qty} шт.`;
-    return `• ${p.name} — ${label} (${p.price})`;
+    const dessertLabel = entry.dessertType === 'author' ? 'авторский' : 'базовый';
+    let details = [`десерт: ${dessertLabel}`];
+    if (entry.fill)  details.push(`начинка: ${entry.fill}`);
+    if (entry.decor) details.push(`декор: ${entry.decor}`);
+    return `• ${p.name} — ${label} (${p.price})\n  ${details.join(' · ')}`;
   }).filter(Boolean).join('\n');
 
-  const total = Object.entries(cart).reduce((s, [id, entry]) => {
-    // ✅ Баг 2: учитываем maxi цену (3000 вместо 1600)
-    let p = products.find(x => x.id === +id);
-    if (!p) return s; // guard: битая позиция
+  const total = Object.entries(cart).reduce((s, [cartKey, entry]) => {
+    const numId = parseInt(cartKey);
+    let p = products.find(x => x.id === numId);
+    if (!p) return s;
     if (p.hasMaxi && entry.mode === 'maxi') {
       p = { ...p, ...p.maxiVariant };
     }
     return s + (p.priceNum || 0) * (entry.qty || 1);
   }, 0);
 
-    const fillEl = document.querySelector('#calcFill .selected');
-  const fillLine = fillEl ? '\nНачинка: ' + fillEl.textContent.trim() : '';
-
-  return `Привет! Хочу сделать заказ 🎂\n\n${items}${fillLine}\n\nИтого (ориентировочно): ${total.toLocaleString('ru')} ₽\n\nИмя: ${name}\nТелефон: ${phone}\nДата готовности: ${date}\nКомментарий: ${comment}`;
+  return `Привет! Хочу сделать заказ 🎂\n\n${items}\n\nИтого (предварительно): ${total.toLocaleString('ru')} ₽\n⚠️ Цена предварительная — окончательная стоимость согласовывается после обсуждения декора и нюансов.\n\nИмя: ${name}\nТелефон: ${phone}\nДата: ${date}\nКомментарий: ${comment}`;
 }
 
 function buildWA(e) {
