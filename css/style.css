@@ -767,16 +767,7 @@ body {
   padding: 60px;
   position: relative;
 }
-.stats-section::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 40px;
-  background: linear-gradient(to bottom, transparent, var(--brown));
-  pointer-events: none;
-}
+
 .stats-grid {
   max-width: 1200px; margin: 0 auto;
   display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; text-align: center;
@@ -5855,6 +5846,17 @@ footer .wave-text .w.near {
   transform: translateX(-14px) translateY(-3px) rotate(-1.5deg);
 }
 
+/* Наводим на ЧЕТВЁРТЫЙ (С душой) */
+.stats-grid:has(.stat-item:nth-child(4):hover) .stat-item:nth-child(1) {
+  transform: translateX(-10px) translateY(6px) rotate(-1deg);
+}
+.stats-grid:has(.stat-item:nth-child(4):hover) .stat-item:nth-child(2) {
+  transform: translateX(-8px) translateY(-4px) rotate(-1.2deg);
+}
+.stats-grid:has(.stat-item:nth-child(4):hover) .stat-item:nth-child(3) {
+  transform: translateX(-14px) translateY(-3px) rotate(-1.5deg);
+}
+
 /* Резиновый отскок */
 .stat-item {
   transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1),
@@ -5865,7 +5867,8 @@ footer .wave-text .w.near {
 /* Сам hovered блок */
 .stats-grid:has(.stat-item:nth-child(1):hover) .stat-item:nth-child(1),
 .stats-grid:has(.stat-item:nth-child(2):hover) .stat-item:nth-child(2),
-.stats-grid:has(.stat-item:nth-child(3):hover) .stat-item:nth-child(3) {
+.stats-grid:has(.stat-item:nth-child(3):hover) .stat-item:nth-child(3),
+.stats-grid:has(.stat-item:nth-child(4):hover) .stat-item:nth-child(4) {
   transform: translateY(-8px) scale(1.04);
 }
 
@@ -6506,24 +6509,6 @@ footer .wave-text .w.near {
 /* ===== Stats section — плавные переходы сверху и снизу ===== */
 .stats-section {
   isolation: isolate;
-}
-.stats-section::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 48px;
-  background: linear-gradient(to bottom, var(--cream, #f5f0e8), transparent);
-  z-index: 1;
-  pointer-events: none;
-}
-.stats-section::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 48px;
-  background: linear-gradient(to top, var(--cream, #f5f0e8), transparent);
-  z-index: 1;
-  pointer-events: none;
 }
 
 /* ===== Contacts cards — hover glow on border ===== */

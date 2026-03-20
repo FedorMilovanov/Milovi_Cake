@@ -3587,9 +3587,16 @@ document.addEventListener('visibilitychange', () => {
 (function initFillTooltips() {
   const ARROW_SVG = '<svg class="fill-tooltip-arrow" width="24" height="20" viewBox="0 0 24 20" xmlns="http://www.w3.org/2000/svg"><path d="M2,0 Q12,0 12,18 Q12,0 22,0 Z" fill="#3d2b1f"/></svg>';
   let hideTimer = null;
+  let activeTip = null;
 
   function showTip(tip, opt) {
     if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+    // Скрываем предыдущий тултип если это другой
+    if (activeTip && activeTip !== tip) {
+      activeTip.style.opacity = '0';
+      activeTip.style.pointerEvents = 'none';
+    }
+    activeTip = tip;
     // position:fixed — координаты относительно вьюпорта (getBoundingClientRect)
     const r = opt.getBoundingClientRect();
     let left = r.left + r.width / 2 - 110;
@@ -3606,6 +3613,7 @@ document.addEventListener('visibilitychange', () => {
     hideTimer = setTimeout(() => {
       tip.style.opacity = '0';
       tip.style.pointerEvents = 'none';
+      if (activeTip === tip) activeTip = null;
       hideTimer = null;
     }, delay || 120);
   }
