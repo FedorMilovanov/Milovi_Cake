@@ -43,28 +43,57 @@
     "@context": "https://schema.org",
     "@type": ["LocalBusiness", "Bakery"],
     "name": "Milovi Cake",
+    "description": "Авторские торты и десерты ручной работы на заказ в Санкт-Петербурге. Бисквитные торты, бенто, 3D-торты, меренговые рулеты, Павлова, капкейки. Доставка по СПб и Ленобласти.",
     "url": "https://milovicake.ru/",
-    "image": "https://milovicake.ru/img/hero.jpg",
+    "image": [
+      "https://milovicake.ru/img/og-cover.jpg",
+      "https://milovicake.ru/img/head.webp",
+      "https://milovicake.ru/img/cake_biscuit_0.webp"
+    ],
     "telephone": "+79119038886",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Пулковская ул., 19",
       "addressLocality": "Санкт-Петербург",
+      "postalCode": "196240",
+      "addressRegion": "Санкт-Петербург",
       "addressCountry": "RU"
     },
-    "openingHours": "Mo-Sa 10:00-22:00",
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 59.838,
+      "longitude": 30.323
+    },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+        "opens": "10:00",
+        "closes": "20:00"
+      }
+    ],
     "priceRange": "₽₽",
+    "servesCuisine": "Кондитерские изделия",
+    "hasMap": "https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "reviewCount": "32",
+      "bestRating": "5",
+      "worstRating": "1"
+    },
     "sameAs": [
       "https://vk.com/milovi_cake",
-      "https://t.me/MiloviCake"
+      "https://t.me/MiloviCake",
+      "https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/"
     ]
   }
   </script>
 
   <style id="critical-css">
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--cream:#f5f0e8;--gold:#c9934a;--brown:#3d2b1f;--text:#2c1a10;--text-muted:#9a7a62;--white:#FDFBF7}
-    html{scroll-behavior:smooth;background:#f5f0e8;overflow-x:hidden}
+    :root{--cream:#f5f0e8;--gold:#c9934a;--brown:#3d2b1f;--text:#2c1a10;--text-muted:#9a7a62;--white:#FDFBF7;--z-nav:100;--z-header:110;--z-drawer:300;--z-overlay:310;--z-modal:400;--z-toast:450}
+    html{background:#f5f0e8;overflow-x:hidden}
     body{font-family:'Jost',sans-serif;background:#f5f0e8;color:var(--text);overflow-x:hidden}
     .site-header{position:fixed;top:0;left:0;right:0;z-index:500;padding:0 60px;height:72px;display:flex;align-items:center;justify-content:space-between;background:transparent;transition:background .35s,box-shadow .35s}
     .hero{min-height:100vh;min-height:100svh;display:flex;align-items:center;padding:100px 60px 80px;position:relative;overflow:hidden}
@@ -73,10 +102,58 @@
     #scroll-progress{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--gold),#d4a76a);z-index:9999;border-radius:0 2px 2px 0}
     @media(max-width:768px){.site-header{padding:0 24px}}
   </style>
-  <link rel="stylesheet" href="css/style.css?v=stable-3" />
+  <link rel="stylesheet" href="css/style.min.css?v=20260322" />
   <link rel="prefetch" href="img/bento_maxi.webp" as="image" />
   <link rel="prefetch" href="img/cake_3d.webp" as="image" />
   <link rel="prefetch" href="img/cake_3d_2.webp" as="image" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Где заказать торт в СПб с доставкой на дом?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Milovi Cake доставляет по всему Санкт-Петербургу и пригородам — Пушкин, Петергоф, Гатчина, Всеволожск, Колпино и другие. Собственная служба доставки или Яндекс.Доставка. Самовывоз тоже доступен."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Как быстро ответите и сколько ждать торт?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Отвечаем в WhatsApp, Telegram или MAX в рабочее время. Стандартный срок изготовления — 2–3 дня, срочные заказы обсуждаются индивидуально."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Можно заказать бенто-торт, свадебный или торт на рождение ребёнка?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Да! Бенто-торты от 1 600 ₽, свадебные с живыми или сахарными цветами, детские с персонажами, торты на день рождения, крестины, юбилеи и корпоративы."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Есть ли торты без глютена?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Меренговый рулет и пирожное Павлова — без глютена. Детские торты делаем без красителей и консервантов."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Сколько стоит торт на заказ в СПб?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Бисквитные торты от 2 800 ₽/кг, бенто-торты от 1 600 ₽/шт, 3D-торты от 5 000 ₽/кг. Меренговый рулет 2 500 ₽, Павлова от 350 ₽. Точная цена согласовывается при заказе."
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 
 <body style="background:#f5f0e8">
@@ -1020,9 +1097,9 @@
 </script>
 
 <script>var IMG_BASE = 'img';</script>
-<script src="js/main.js?v=stable-3" defer></script>
+<script src="js/main.min.js?v=20260322" defer></script>
 
 
-<script src="/js/nav.js" defer></script>
+<script src="/js/nav.min.js?v=20260322" defer></script>
 </body>
 </html>

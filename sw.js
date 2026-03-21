@@ -4,7 +4,7 @@
    ══════════════════════════════════════════════ */
 
 // Version is updated on each deploy — change this date to bust caches
-const DEPLOY_VERSION = '2026-03-19b';
+const DEPLOY_VERSION = '2026-03-22a';
 const STATIC_CACHE = `milovi-static-v1-${DEPLOY_VERSION}`;
 const IMAGE_CACHE  = `milovi-images-v2`;
 
@@ -15,6 +15,7 @@ const PRECACHE_URLS = [
   '/css/style.min.css',
   '/js/main.js',
   '/js/main.min.js',
+  '/js/nav.js',
   '/manifest.json',
   '/favicon.svg',
   '/icon-192.png',

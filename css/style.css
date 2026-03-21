@@ -3165,36 +3165,51 @@ section { padding: 100px 60px; }
   padding: 14px 32px;
   position: relative;
 }
-/* Живая рамка — золотой градиент медленно обходит кнопку */
+/* Живая рамка — fallback для браузеров без @property (Яндекс Браузер) */
 .btn-primary--hero::after {
   content: '';
   position: absolute;
   inset: -2px;
   border-radius: 50px;
-  background: conic-gradient(
-    from var(--angle, 0deg),
-    rgba(201,147,74,0) 0deg,
-    rgba(201,147,74,0.8) 60deg,
-    rgba(245,219,160,1) 120deg,
-    rgba(201,147,74,0.8) 180deg,
-    rgba(201,147,74,0) 240deg,
-    rgba(201,147,74,0) 360deg
-  );
-  animation: borderSpin 4s linear infinite;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  padding: 1.5px;
+  /* Fallback: простая пульсирующая рамка — работает везде */
+  background: transparent;
+  border: 1.5px solid transparent;
+  animation: heroBorderPulse 3s ease-in-out infinite;
   pointer-events: none;
   z-index: 0;
 }
-@property --angle {
+/* Для браузеров с @property — более красивый вариант */
+@supports (background: conic-gradient(from 0deg, red, blue)) {
+  .btn-primary--hero::after {
+    background: conic-gradient(
+      from var(--_angle, 0deg),
+      rgba(201,147,74,0) 0deg,
+      rgba(201,147,74,0.8) 60deg,
+      rgba(245,219,160,1) 120deg,
+      rgba(201,147,74,0.8) 180deg,
+      rgba(201,147,74,0) 240deg,
+      rgba(201,147,74,0) 360deg
+    );
+    border: none;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    padding: 1.5px;
+    animation: heroBorderSpin 4s linear infinite;
+  }
+  @keyframes heroBorderSpin {
+    from { --_angle: 0deg; }
+    to   { --_angle: 360deg; }
+  }
+}
+@keyframes heroBorderPulse {
+  0%,100% { border-color: rgba(201,147,74,0.2); box-shadow: none; }
+  50%      { border-color: rgba(201,147,74,0.7); box-shadow: 0 0 12px rgba(201,147,74,0.2); }
+}
+@property --_angle {
   syntax: '<angle>';
   initial-value: 0deg;
   inherits: false;
-}
-@keyframes borderSpin {
-  to { --angle: 360deg; }
 }
 .btn-price-hint {
   font-size: 11px;
