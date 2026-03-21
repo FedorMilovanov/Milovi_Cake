@@ -1122,6 +1122,7 @@ body {
   pointer-events: none;
   overflow: visible;
   display: block;
+  margin-top: -1px;
 }
 .fill-tooltip strong { color: #fff; font-weight: 500; display: none; margin-bottom: 3px; }
 .calc-opt .opt-label {
@@ -6440,7 +6441,7 @@ footer .wave-text .w.near {
 }
 .calc-decor-hint {
   font-size: 11px;
-  color: rgba(201,147,74,0.6);
+  color: rgba(139,90,43,0.85);
   letter-spacing: 0.05em;
   margin-top: 8px;
   text-align: center;
@@ -6561,7 +6562,7 @@ footer .wave-text .w.near {
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   padding-right: 8px;
   margin-right: 0;
 }
