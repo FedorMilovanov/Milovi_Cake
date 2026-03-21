@@ -3652,7 +3652,7 @@ document.addEventListener('visibilitychange', () => {
 
 // ── Fill tooltip: position:fixed + SVG-капля Безье ──
 (function initFillTooltips() {
-  const ARROW_SVG = '<svg class="fill-tooltip-arrow" width="24" height="20" viewBox="0 0 24 20" xmlns="http://www.w3.org/2000/svg"><path d="M2,0 Q12,0 12,18 Q12,0 22,0 Z" fill="#3d2b1f"/></svg>';
+  const ARROW_SVG = '<svg class="fill-tooltip-arrow" width="18" height="10" viewBox="0 0 18 10" xmlns="http://www.w3.org/2000/svg"><polygon points="0,0 18,0 9,10" fill="#3d2b1f"/></svg>';
   let hideTimer = null;
   let activeTip = null;
 
