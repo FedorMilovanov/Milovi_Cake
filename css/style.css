@@ -43,9 +43,23 @@ a:focus-visible,
   --bg-dark: #110a07;
   --card-bg: #faf7f2;
   --radius: 16px;
+
+  /* ── Z-INDEX система — не менять произвольно ── */
+  --z-base:       10;   /* обычные элементы */
+  --z-sticky:     50;   /* sticky элементы */
+  --z-nav:       100;   /* bottom-nav, progress bar */
+  --z-header:    110;   /* site header */
+  --z-dropdown:  200;   /* выпадающие меню */
+  --z-drawer:    300;   /* cart drawer, side panels */
+  --z-overlay:   310;   /* оверлеи под модалями */
+  --z-modal:     400;   /* модальные окна */
+  --z-toast:     450;   /* toast уведомления */
+  --z-ptr:       460;   /* pull-to-refresh индикатор */
+  --z-top:       499;   /* самый верх — skip-link и т.п. */
+}
 }
 
-html { scroll-behavior: smooth; }
+/* scroll-behavior управляется точечно через JS behavior:'smooth' */
 /* ── Section fade divider (Fade A) ── */
 .section-fade-divider {
   position: relative;
@@ -379,7 +393,7 @@ body {
   height: 3px;
   width: 0%;
   background: linear-gradient(90deg, var(--gold), var(--gold-light), #e8b87a);
-  z-index: 9999;
+  z-index: var(--z-nav);
   border-radius: 0 2px 2px 0;
   transition: width 0.08s linear;
   box-shadow: 0 0 8px rgba(201,147,74,0.5);
@@ -389,7 +403,7 @@ body {
 .site-header {
   position: fixed;
   top: 0; left: 0; right: 0;
-  z-index: 900;
+  z-index: var(--z-header);
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
   padding: 0 60px;
@@ -539,7 +553,7 @@ body {
   border: none;
   cursor: pointer;
   padding: 8px;
-  z-index: 601;
+  z-index: var(--z-dropdown);
 }
 .burger-btn span {
   display: block;
@@ -558,7 +572,7 @@ body {
   position: fixed;
   inset: 0;
   background: linear-gradient(160deg, #f5efe4 0%, #ede4d2 100%);
-  z-index: 600;
+  z-index: var(--z-dropdown);
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -749,7 +763,7 @@ body {
   padding: 14px 24px;
   border-radius: 50px;
   font-size: 15px;
-  z-index: 9990;
+  z-index: var(--z-toast);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s, transform 0.3s;
@@ -891,7 +905,7 @@ body {
   background: rgba(8,4,0,0);
   backdrop-filter: blur(0px) brightness(1);
   -webkit-backdrop-filter: blur(0px) brightness(1);
-  z-index: 9000;
+  z-index: var(--z-overlay);
   display: flex; align-items: center; justify-content: center;
   opacity: 0; pointer-events: none;
   transition: opacity 0.4s ease, background 0.4s ease, backdrop-filter 0.5s ease, -webkit-backdrop-filter 0.5s ease;
@@ -938,7 +952,7 @@ body {
   font-size: 14px; font-weight: 400;
   letter-spacing: 0.03em;
   transition: background 0.2s, border-color 0.2s;
-  z-index: 9001;
+  z-index: var(--z-overlay);
 }
 .lightbox-close:hover { background: rgba(255,255,255,0.25); border-color: rgba(255,255,255,0.5); }
 
@@ -967,7 +981,7 @@ body {
   position: relative;
   display: flex; align-items: center; justify-content: center;
   gap: 16px;
-  z-index: 9001;
+  z-index: var(--z-overlay);
   pointer-events: none;
   width: 100%;
 }
@@ -1105,7 +1119,7 @@ body {
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.2s ease, transform 0.2s ease;
-  z-index: 9500;
+  z-index: var(--z-modal);
   box-shadow: 0 8px 24px rgba(0,0,0,0.25);
   white-space: normal;
   text-align: left;
@@ -1153,6 +1167,13 @@ body {
 /* Блокируем скролл фона без lockBody (избегаем прыжка страницы) */
 body.fill-open {
   overflow: hidden;
+  /* iOS-safe: позиция сохраняется через JS (см. openFillPopup/closeFillPopup) */
+}
+body.fill-open-ios {
+  position: fixed;
+  left: 0;
+  right: 0;
+  overflow: hidden;
 }
 body.menu-open {
   overflow: hidden;
@@ -1168,7 +1189,7 @@ body:not(.fill-open) .fill-mobile-overlay {
 .fill-mobile-overlay {
   position: fixed; inset: 0;
   background: rgba(20,10,5,0.62);
-  z-index: 799;
+  z-index: var(--z-overlay);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.28s ease;
@@ -1183,7 +1204,7 @@ body:not(.fill-open) .fill-mobile-overlay {
   bottom: 0; left: 0; right: 0;
   background: #1e1008;
   border-radius: 24px 24px 0 0;
-  z-index: 800;
+  z-index: var(--z-modal);
   padding: 0 0 max(28px, env(safe-area-inset-bottom));
   box-shadow: 0 -12px 48px rgba(0,0,0,0.45);
   -webkit-transform: translateY(100%);
@@ -1297,7 +1318,7 @@ body:not(.fill-open) .fill-mobile-overlay {
 #cookieBanner {
   position: fixed;
   bottom: 0; left: 0; right: 0;
-  z-index: 9000;
+  z-index: var(--z-overlay);
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
   background: var(--brown);
@@ -1335,7 +1356,7 @@ body:not(.fill-open) .fill-mobile-overlay {
 #privacyOverlay {
   position: fixed;
   inset: 0;
-  z-index: 10100;
+  z-index: var(--z-modal);
   background: rgba(45,28,18,0.72);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
@@ -1594,7 +1615,7 @@ body:not(.fill-open) .fill-mobile-overlay {
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.2s, transform 0.2s;
-  z-index: 9999;
+  z-index: var(--z-toast);
   white-space: nowrap;
 }
 .bento-weight-toast.show {
@@ -2130,7 +2151,7 @@ section { padding: 100px 60px; }
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0);
-  z-index: 1100;
+  z-index: var(--z-overlay);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease, backdrop-filter 0.3s ease;
@@ -2152,7 +2173,7 @@ section { padding: 100px 60px; }
   height: 100%;
   height: 100dvh;
   background: var(--white);
-  z-index: 1101;
+  z-index: var(--z-drawer);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -2940,7 +2961,7 @@ section { padding: 100px 60px; }
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
-  z-index: 99999;
+  z-index: var(--z-top);
   transition: top 0.2s;
 }
 .skip-link:focus {
@@ -2972,7 +2993,7 @@ section { padding: 100px 60px; }
     font-size: 15px;
     font-weight: 500;
     text-decoration: none;
-    z-index: 490;
+    z-index: var(--z-nav);
     box-shadow: 0 -4px 20px rgba(37,211,102,0.3);
     transform: translateY(100%);
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -3373,7 +3394,7 @@ section { padding: 100px 60px; }
   background: rgba(0,0,0,0.55);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  z-index: 10000;
+  z-index: var(--z-drawer)0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3818,7 +3839,7 @@ section { padding: 100px 60px; }
 /* ── Lightbox — Blur Focus effect (вариант 6) ── */
 .lb-overlay {
   position: fixed; inset: 0;
-  z-index: 9000;
+  z-index: var(--z-overlay);
   display: flex; align-items: center; justify-content: center;
   pointer-events: none;
   opacity: 0;
@@ -3892,7 +3913,7 @@ section { padding: 100px 60px; }
   position: fixed;
   top: max(24px, calc(16px + env(safe-area-inset-top, 0px)));
   right: max(24px, calc(16px + env(safe-area-inset-right, 0px)));
-  z-index: 9010; width: 44px; height: 44px;
+  z-index: var(--z-overlay); width: 44px; height: 44px;
   border-radius: 50%;
   border: 1px solid rgba(255,255,255,0.2);
   background: rgba(255,255,255,0.05);
@@ -3918,7 +3939,7 @@ section { padding: 100px 60px; }
   align-items: center;
   justify-content: center;
   gap: 20px;
-  z-index: 10100;
+  z-index: var(--z-modal);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.4s 0.5s;
@@ -4198,7 +4219,7 @@ section { padding: 100px 60px; }
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 490;
+    z-index: var(--z-nav);
     background: rgba(253,251,247,0.97);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -4356,12 +4377,7 @@ section { padding: 100px 60px; }
     box-shadow: 0 2px 12px rgba(61,43,31,0.1) !important;
   }
 
-  /* overscroll для body */
-  body {
-    overscroll-behavior-y: none;
-  }
-  
-  /* Галерея с горизонтальным свайпом */
+  /* overscroll для body управляется JS только при активном PTR */
   .review-filmstrip {
     overscroll-behavior-x: contain;
   }
@@ -4818,21 +4834,29 @@ a, button {
   outline-offset: 2px;
 }
 
-/* ── UX: Skeleton loader улучшен — убираем мерцание на iOS ── */
+/* ── UX: Skeleton loader — GPU-friendly через translateX вместо background-position ── */
 @keyframes skeletonShimmer {
-  0%   { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 .skeleton-img,
 .skeleton-line {
+  background: var(--cream-dark);
+  overflow: hidden;
+  position: relative;
+}
+.skeleton-img::after,
+.skeleton-line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
   background: linear-gradient(90deg,
-    var(--cream-dark) 25%,
+    transparent 0%,
     #ede0c8 50%,
-    var(--cream-dark) 75%
+    transparent 100%
   );
-  background-size: 800px 100%;
   animation: skeletonShimmer 1.4s ease-in-out infinite;
-  will-change: background-position;
+  will-change: transform;
 }
 
 /* ── UX: Плавный переход при смене раздела в bottom-nav ── */
@@ -4876,16 +4900,14 @@ body.menu-open {
 
 /* ── PERFORMANCE: Hint для браузера об анимируемых элементах ── */
 .sc-thumb,
-.product-card .slider-wrap,
-.cart-drawer,
-.fill-mobile-popup,
-.lightbox {
+.product-card .slider-wrap {
   will-change: transform;
 }
 /* Снимаем will-change когда неактивно — экономия памяти GPU ── */
 .sc-thumb:not(.is-active) {
   will-change: auto;
 }
+/* cart-drawer, fill-mobile-popup, lightbox получают will-change через JS только перед открытием */
 
 /* ── UX: Увеличиваем зону клика у стрелок лайтбокса ── */
 .lightbox-arrow {
@@ -6284,7 +6306,7 @@ footer .wave-text .w.near {
 }
 .calc-left-col .calc-weight-hint {
   position: absolute;
-  left: calc(50% + 90px);
+  left: calc(50% + 112px);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -6547,38 +6569,43 @@ footer .wave-text .w.near {
   margin-bottom: 10px;
   gap: 0;
 }
-.calc-label--biscuit {
-  flex-shrink: 0;
-  text-align: center;
-  margin-bottom: 6px !important;
-  display: block;
-}
 .calc-bento-fill-body {
   display: flex;
-  gap: 8px;
-  align-items: center;
+  gap: 0;
+  align-items: flex-start;
 }
 .calc-biscuit-col {
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  padding-right: 8px;
+  padding-right: 14px;
   margin-right: 0;
 }
-.calc-bento-fill-body {
+.calc-fill-col {
+  flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0;
+  min-width: 0;
+}
+.calc-label--biscuit,
+.calc-label--fill {
+  flex-shrink: 0;
+  text-align: center;
+  margin-bottom: 10px !important;
+  display: block;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 .calc-biscuit-seg {
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding-right: 14px;
-  margin-right: 14px;
-  justify-content: center;
+  justify-content: flex-start;
 }
 .calc-biscuit-opt {
   padding: 7px 14px;
@@ -6621,8 +6648,9 @@ footer .wave-text .w.near {
   border-color: #3d1e0a;
   color: #f5e8d8;
 }
-.calc-bento-fill-body .calc-options {
-  flex: 1;
+.calc-fill-col .calc-options {
+  justify-content: center;
+  width: 100%;
 }
 @media (max-width: 600px) {
   .calc-biscuit-opt { font-size: 12px; padding: 6px 10px; }

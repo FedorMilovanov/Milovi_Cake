@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta name="format-detection" content="telephone=no" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Торты на заказ в Павловске — Milovi Cake | Доставка из СПб</title>
   <meta name="description" content="Свадебный торт, торт на день рождения, детский торт на заказ в Павловск от частного кондитера. Доставка из СПб. Ручная работа, натуральные ингредиенты." />
   <meta name="robots" content="index, follow" />
@@ -126,6 +126,10 @@
     <a href="#contacts">Контакты</a>
     <a href="#catalog" class="header-order">Заказать</a>
   </nav>
+  <button class="header-cart-btn" id="cartBtn" onclick="openCart()" aria-label="Корзина">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+    <span class="cart-badge" id="cartBadge">0</span>
+  </button>
   <button class="burger-btn" id="burgerBtn" aria-label="Меню" aria-expanded="false" aria-controls="mobileMenu">
     <span></span><span></span><span></span>
   </button>
@@ -139,9 +143,13 @@
   </button>
   <div class="mobile-menu-nav">
     <a href="#catalog" onclick="closeMobileMenu()">Каталог</a>
+    <div class="mobile-menu-divider"></div>
     <a href="#fillings" onclick="closeMobileMenu()">Начинки</a>
+    <div class="mobile-menu-divider"></div>
     <a href="#reviews" onclick="closeMobileMenu()">Отзывы</a>
+    <div class="mobile-menu-divider"></div>
     <a href="#contacts" onclick="closeMobileMenu()">Контакты</a>
+    <div class="mobile-menu-divider"></div>
     <a href="tel:+79119038886" class="mobile-menu-phone" onclick="closeMobileMenu()">
       <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.07 2.18 2 2 0 012.03 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
       +7 911 903 88 86
@@ -177,7 +185,7 @@
 
       <div class="hero-geo-label">Доставка в Павловск · Пушкин · Царское Село</div>
       <h1 class="hero-title">Торты на заказ в Павловске<br>от Milovi Cake</h1>
-      <p class="hero-subtitle">Авторские торты и десерты ручной работы с доставкой в Павловск, Пушкин и Царское Село прямо к вашему празднику</p>
+      <p class="hero-subtitle wave-text">Авторские торты и десерты ручной работы с доставкой в Павловск, Пушкин и Царское Село прямо к вашему празднику</p>
 
       <div class="hero-features">
         <div class="hero-feature-item">
@@ -251,43 +259,6 @@
   </div>
 </section>
 
-<section id="why">
-  <div class="container">
-    <h2 class="section-title reveal">Почему Выбирают Нас</h2>
-    <div class="features-grid">
-      <div class="feature reveal">
-        <div class="feature-icon">🤍</div>
-        <h4>Ручная Работа</h4>
-        <p>Каждый десерт создаётся с любовью и заботой вручную</p>
-      </div>
-      <div class="feature reveal">
-        <div class="feature-icon">🌿</div>
-        <h4>Натуральные Ингредиенты</h4>
-        <p>Только качественные продукты без искусственных добавок</p>
-      </div>
-      <div class="feature reveal">
-        <div class="feature-icon">🎯</div>
-        <h4>Свежесть Под Заказ</h4>
-        <p>Готовим специально для вас, всегда свежее</p>
-      </div>
-      <div class="feature reveal">
-        <div class="feature-icon">📦</div>
-        <h4>Доставка По СПб</h4>
-        <p>Аккуратная доставка в красивой упаковке</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="reviews" style="background:var(--white);padding:100px 60px;">
-  <div class="container">
-    <h2 class="section-title reveal">Отзывы Клиентов</h2>
-    <p class="section-sub reveal">Доставляем радость в СПб, Павловск и Пушкин 🤍</p>
-    <div class="catalog-grid" id="catalogGrid">
-      <!-- rendered by JS -->
-    </div>
-  </div>
-</section>
 
 <!-- ══════════ FILLINGS / CALCULATOR ══════════ -->
 <div class="section-fade-divider" aria-hidden="true"></div>
@@ -369,7 +340,6 @@
           </div>
 
           <div class="calc-row calc-fill-section calc-row--hidden" id="calcFillBentoRow" data-for="bento bentomaxi">
-            <span class="calc-label">Начинка</span>
             <div class="calc-bento-fill-body">
               <div class="calc-biscuit-col">
                 <span class="calc-label calc-label--biscuit">Бисквит</span>
@@ -378,12 +348,15 @@
                   <div class="calc-biscuit-opt calc-biscuit-choco" onclick="selectBiscuit(this,'choco')">Шоколадный</div>
                 </div>
               </div>
+              <div class="calc-fill-col">
+                <span class="calc-label calc-label--fill">Начинка</span>
               <div class="calc-options" id="calcFillBento">
                 <div class="calc-opt selected" data-price="0" onclick="selectOpt(this,'calcFillBento')"><span class="opt-inner"><span class="opt-label">Микс ягод </span><span class="fill-tag hit">хит</span></span><div class="fill-tooltip"><strong>Микс ягод</strong>Ванильный или шоколадный бисквит + микс малины, вишни и лесных ягод + крем-чиз.</div></div>
                 <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFillBento')"><span class="opt-inner"><span class="opt-label">Карамель с орехами</span></span><div class="fill-tooltip"><strong>Карамель с орехами</strong>Ванильный или шоколадный бисквит + солёная карамель + хрустящие орехи + крем-чиз.</div></div>
                 <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFillBento')"><span class="opt-inner"><span class="opt-label">Карамель с вафлями </span><span class="fill-tag hit" style="background:rgba(139,90,43,0.15);color:#8b5a2b;">хруст</span></span><div class="fill-tooltip"><strong>Карамель с вафлями</strong>Ванильный или шоколадный бисквит + карамель + кондитерские вафли в шоколаде.</div></div>
                 <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFillBento')"><span class="opt-inner"><span class="opt-label">Малина</span></span><div class="fill-tooltip"><strong>Малина</strong>Ванильный или шоколадный бисквит + малиновое конфи + крем-чиз.</div></div>
                 <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFillBento')"><span class="opt-inner"><span class="opt-label">Вишня</span></span><div class="fill-tooltip"><strong>Вишня</strong>Ванильный или шоколадный бисквит + вишнёвое конфи + крем-чиз.</div></div>
+              </div>
               </div>
             </div>
           </div>
@@ -460,7 +433,21 @@
         <div class="feature-icon">📦</div>
         <h4>Доставка по СПб</h4>
         <p>Аккуратная доставка в красивой упаковке</p>
+      
+      <div class="hero-trust" style="display:flex;align-items:center;gap:10px;margin-top:14px;">
+        <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/reviews/" target="_blank" rel="noopener noreferrer" class="hero-trust-badge">
+          <svg class="hero-trust-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" style="flex-shrink:0;border-radius:50%;overflow:hidden;"><circle cx="10" cy="10" r="10" fill="#FC3F1D"/><text x="10" y="14.5" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="12" fill="#fff">Я</text></svg>
+          <span class="hero-trust-stars">★★★★★</span>
+          <span class="hero-trust-rating">4.8</span>
+        </a>
+        <a href="https://maps.app.goo.gl/R3mdjxpnebUYMQES6" target="_blank" rel="noopener noreferrer" class="hero-trust-badge">
+          <svg class="hero-trust-icon" width="16" height="16" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          <span class="hero-trust-stars">★★★★★</span>
+          <span class="hero-trust-rating">4.7</span>
+        </a>
+        <span class="hero-trust-count">5 лет успешной работы</span>
       </div>
+</div>
     </div>
   </div>
 </section>

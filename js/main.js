@@ -809,7 +809,7 @@ function lockBody() {
   if (count === 0) {
     var scrollbarW = window.innerWidth - document.documentElement.clientWidth;
     document.body.style.overflow = 'hidden';
-    document.body.style.touchAction = 'none';
+    // НЕ ставим touchAction:none на body — это блокирует скролл внутри drawer на iOS
     if (scrollbarW > 0) document.body.style.paddingRight = scrollbarW + 'px';
   }
   document.body.dataset.lockCount = count + 1;
@@ -817,9 +817,7 @@ function lockBody() {
 function unlockBody() {
   var count = parseInt(document.body.dataset.lockCount || '0');
   if (count <= 0) {
-    // Safety: always ensure clean state even if count is already 0
     document.body.style.overflow = '';
-    document.body.style.touchAction = '';
     document.body.style.paddingRight = '';
     return;
   }
@@ -827,7 +825,6 @@ function unlockBody() {
   document.body.dataset.lockCount = newCount;
   if (newCount === 0) {
     document.body.style.overflow = '';
-    document.body.style.touchAction = '';
     document.body.style.paddingRight = '';
     delete document.body.dataset.scrollY;
   }
@@ -837,7 +834,6 @@ window.addEventListener('pageshow', function(e) {
   if (e.persisted) {
     document.body.dataset.lockCount = '0';
     document.body.style.overflow = '';
-    document.body.style.touchAction = '';
     document.body.style.paddingRight = '';
   }
 });
@@ -864,7 +860,6 @@ function _cartForceClose() {
   if (overlay) { overlay.classList.remove('open'); }
   document.body.classList.remove('cart-open');
   document.body.style.overflow    = '';
-  document.body.style.touchAction = '';
   document.body.style.paddingRight = '';
   document.body.dataset.lockCount = '0';
   _cartState = 'closed';
@@ -885,6 +880,9 @@ function openCart() {
 
   _cartClearTimer();
   _cartState = 'opening';
+
+  // will-change только перед анимацией — экономим GPU память
+  drawer.style.willChange = 'transform';
 
   // Clear ALL inline styles — CSS handles positioning entirely
   drawer.classList.remove('closing');
@@ -938,6 +936,7 @@ function closeCart() {
     _cartTimer = null;
     drawer.classList.remove('closing');
     drawer.style.cssText = '';
+    drawer.style.willChange = 'auto'; // снимаем GPU-слой после анимации
     _cartState = 'closed';
   }, delay);
 
@@ -2007,8 +2006,16 @@ function openFillPopup(optEl) {
   popup.classList.add('open');
   overlay.classList.add('open');
   document.body.classList.add('fill-open');
-  // Не используем lockBody() — он сохраняет scrollY и при unlockBody()
-  // прыгает страница наверх. Фон блокируется через CSS body.fill-open
+  // will-change только перед анимацией
+  popup.style.willChange = 'transform';
+  // iOS-safe: фиксируем body с сохранением позиции скролла
+  var _isIOSFill = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  if (_isIOSFill) {
+    var scrollY = window.scrollY;
+    document.body.style.top = '-' + scrollY + 'px';
+    document.body.classList.add('fill-open-ios');
+    document.body.dataset.fillScrollY = scrollY;
+  }
 
 
   // Focus the select button for a11y
@@ -2021,10 +2028,18 @@ function closeFillPopup() {
   if (popup)   popup.classList.remove('open');
   if (overlay) overlay.classList.remove('open');
   document.body.classList.remove('fill-open');
+  // iOS-safe: снимаем фиксацию и восстанавливаем позицию скролла
+  if (document.body.classList.contains('fill-open-ios')) {
+    var savedY = parseInt(document.body.dataset.fillScrollY || '0', 10);
+    document.body.classList.remove('fill-open-ios');
+    document.body.style.top = '';
+    delete document.body.dataset.fillScrollY;
+    window.scrollTo(0, savedY);
+  }
   // Не вызываем unlockBody() — lockBody() не вызывался
 
   _fillSheetPendingEl = null;
-  if (popup) popup.style.transform = '';
+  if (popup) { popup.style.transform = ''; popup.style.willChange = 'auto'; }
 }
 
 function confirmFillSelection() {
@@ -2155,21 +2170,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const heroBg = document.querySelector('.hero-photo-bg img');
 if (heroBg) {
-  // Skip parallax on mobile for perf — motion not visible anyway
-  if (window.matchMedia('(min-width: 769px)').matches) {
-    let _rafPending = false;
-    window.addEventListener('scroll', () => {
-      if (_rafPending) return;
-      _rafPending = true;
-      requestAnimationFrame(() => {
-        const y = window.scrollY;
-        if (y < window.innerHeight) {
-          heroBg.style.transform = `translateY(${y * 0.15}px) scale(1.05)`;
-        }
-        _rafPending = false;
-      });
-    }, { passive: true });
+  let _rafPending = false;
+  let _parallaxBound = false;
+
+  function _parallaxHandler() {
+    if (_rafPending) return;
+    _rafPending = true;
+    requestAnimationFrame(() => {
+      const y = window.scrollY;
+      if (y < window.innerHeight) {
+        heroBg.style.transform = `translateY(${y * 0.15}px) scale(1.05)`;
+      }
+      _rafPending = false;
+    });
   }
+
+  function _bindParallax(mq) {
+    if (mq.matches && !_parallaxBound) {
+      window.addEventListener('scroll', _parallaxHandler, { passive: true });
+      _parallaxBound = true;
+    } else if (!mq.matches && _parallaxBound) {
+      window.removeEventListener('scroll', _parallaxHandler);
+      heroBg.style.transform = '';
+      _parallaxBound = false;
+    }
+  }
+
+  const _mq = window.matchMedia('(min-width: 769px)');
+  _bindParallax(_mq);
+  // Реагируем на смену ориентации
+  if (_mq.addEventListener) _mq.addEventListener('change', _bindParallax);
+  else _mq.addListener(_bindParallax); // iOS < 14 fallback
+
+  // Пауза при фоновом режиме
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden && _parallaxBound) {
+      window.removeEventListener('scroll', _parallaxHandler);
+      _parallaxBound = false;
+    } else if (!document.hidden) {
+      _bindParallax(_mq);
+    }
+  });
 }
 
 
@@ -2179,6 +2220,9 @@ document.querySelectorAll('.btn-primary, .btn-wa, .calc-order-btn, .btn-add, .he
   btn._rippleBound = true;
   btn.classList.add('ripple-wrap');
   btn.addEventListener('click', function(e) {
+    // Удаляем предыдущий ripple если ещё не исчез — нет накопления DOM-узлов
+    const prev = this.querySelector('.ripple-circle');
+    if (prev) prev.remove();
     const circle = document.createElement('span');
     circle.classList.add('ripple-circle');
     const rect = this.getBoundingClientRect();
@@ -2803,7 +2847,14 @@ function goTo(n, skipTypewriter){
   // Подсвечиваем и прокручиваем filmstrip к активному элементу
   if (filmItems[cur]) {
     filmItems[cur].classList.add('active');
-    filmItems[cur].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    // Ручной скролл вместо scrollIntoView({inline}) — не работает в iOS < 15.4
+    var strip = filmItems[cur].parentElement;
+    if (strip) {
+      var itemLeft = filmItems[cur].offsetLeft;
+      var itemW    = filmItems[cur].offsetWidth;
+      var stripW   = strip.offsetWidth;
+      strip.scrollTo({ left: itemLeft - (stripW - itemW) / 2, behavior: 'smooth' });
+    }
   }
 
   if(!skipTypewriter) startTypewriter();
@@ -3506,7 +3557,6 @@ document.addEventListener('visibilitychange', () => {
 
     // Request permission on iOS 13+
     if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-      // Attach to first user gesture on the hero
       var heroSection = document.getElementById('home');
       if (heroSection) {
         heroSection.addEventListener('touchstart', function startGyro() {
@@ -3524,18 +3574,34 @@ document.addEventListener('visibilitychange', () => {
       animateParallax();
     }
 
-    // Pause when hero is not visible
+    // Pause when hero is not visible — также отключаем deviceorientation
+    var gyroActive = false;
     var heroObserver = new IntersectionObserver(function(entries) {
       entries.forEach(function(entry) {
         if (entry.isIntersecting) {
           if (!rafId) animateParallax();
+          if (!gyroActive) {
+            window.addEventListener('deviceorientation', onOrientation, { passive: true });
+            gyroActive = true;
+          }
         } else {
           if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
           heroBg.style.transform = '';
+          window.removeEventListener('deviceorientation', onOrientation);
+          gyroActive = false;
         }
       });
     }, { threshold: 0.1 });
     heroObserver.observe(document.getElementById('home'));
+
+    // Пауза при уходе в фон — экономим батарею
+    document.addEventListener('visibilitychange', function() {
+      if (document.hidden) {
+        if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+        window.removeEventListener('deviceorientation', onOrientation);
+        gyroActive = false;
+      }
+    });
   }
 
 
@@ -3557,7 +3623,7 @@ document.addEventListener('visibilitychange', () => {
     'display:flex', 'align-items:center', 'justify-content:center', 'gap:8px',
     'transform:translateY(-56px)',
     'transition:none',
-    'z-index:9998',
+    'z-index:' + (460),
     'pointer-events:none',
     'will-change:transform'
   ].join(';');
@@ -3588,6 +3654,7 @@ document.addEventListener('visibilitychange', () => {
 
   function ptrRelease(dy) {
     ptrActive = false;
+    document.body.style.overscrollBehaviorY = '';
     if (dy >= PTR_THRESHOLD && !ptrBusy) {
       ptrBusy = true;
       setPtrPos(PTR_MAX);
@@ -3604,7 +3671,10 @@ document.addEventListener('visibilitychange', () => {
         setTimeout(function() {
           ptrIndicator.style.transition = 'none';
           ptrBusy = false;
-          window.location.reload();
+          // Кастомное событие вместо жёсткого reload — можно перехватить
+          var ev = new CustomEvent('ptr:refresh', { bubbles: true, cancelable: true });
+          var cancelled = !document.dispatchEvent(ev);
+          if (!cancelled) window.location.reload();
         }, 500);
       }, 1000);
     } else {
@@ -3617,7 +3687,9 @@ document.addEventListener('visibilitychange', () => {
 
   document.addEventListener('touchstart', function(e) {
     if (ptrBusy) return;
-    if (window.scrollY > 4) return;
+    // iOS rubber-band: scrollY может быть отрицательным — не запускаем PTR
+    var sy = window.scrollY;
+    if (sy > 16 || sy < 0) return;
     // Don't trigger PTR when any overlay / modal / drawer is open
     if (document.body.classList.contains('cart-open') ||
         document.body.classList.contains('fill-open') ||
@@ -3631,12 +3703,13 @@ document.addEventListener('visibilitychange', () => {
     ptrStartY  = e.touches[0].clientY;
     ptrCurrent = 0;
     ptrActive  = true;
+    document.body.style.overscrollBehaviorY = 'none';
   }, { passive: true });
 
   document.addEventListener('touchmove', function(e) {
     if (!ptrActive) return;
     var dy = e.touches[0].clientY - ptrStartY;
-    if (dy < 0) { ptrActive = false; return; }
+    if (dy < 0) { ptrActive = false; document.body.style.overscrollBehaviorY = ''; return; }
     ptrCurrent = dy;
     setPtrPos(dy * 0.55); // resistance factor
   }, { passive: true });
