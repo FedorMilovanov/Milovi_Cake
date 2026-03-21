@@ -2235,6 +2235,54 @@ document.querySelectorAll('.btn-primary, .btn-wa, .calc-order-btn, .btn-add, .he
   });
 });
 
+// ── Gold ripple на карточках товаров (touch) ──
+(function() {
+  function bindCardRipple(card) {
+    if (card._goldRippleBound) return;
+    card._goldRippleBound = true;
+    card.addEventListener('touchstart', function(e) {
+      const prev = this.querySelector('.gold-ripple-circle');
+      if (prev) prev.remove();
+      const touch = e.touches[0];
+      const rect = this.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height) * 1.4;
+      const circle = document.createElement('span');
+      circle.className = 'gold-ripple-circle';
+      circle.style.cssText = [
+        'position:absolute',
+        'border-radius:50%',
+        'pointer-events:none',
+        'z-index:10',
+        'width:' + size + 'px',
+        'height:' + size + 'px',
+        'left:' + (touch.clientX - rect.left - size/2) + 'px',
+        'top:' + (touch.clientY - rect.top - size/2) + 'px',
+        'background:radial-gradient(circle,rgba(201,147,74,0.22) 0%,rgba(201,147,74,0) 70%)',
+        'transform:scale(0)',
+        'animation:goldRippleAnim 0.7s ease-out forwards',
+      ].join(';');
+      this.appendChild(circle);
+      setTimeout(function() { if (circle.parentNode) circle.remove(); }, 750);
+    }, { passive: true });
+  }
+
+  // Вешаем на уже существующие карточки
+  document.querySelectorAll('.product-card').forEach(bindCardRipple);
+
+  // И на динамически добавляемые (каталог рендерится JS-ом)
+  var observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(m) {
+      m.addedNodes.forEach(function(node) {
+        if (!node.querySelectorAll) return;
+        node.querySelectorAll('.product-card').forEach(bindCardRipple);
+        if (node.classList && node.classList.contains('product-card')) bindCardRipple(node);
+      });
+    });
+  });
+  var grid = document.getElementById('catalogGrid');
+  if (grid) observer.observe(grid, { childList: true, subtree: true });
+})();
+
 // (map reviews accordion removed — elements not present in HTML)
 
 // ── CHAT GALLERY LIGHTBOX ──
@@ -3423,6 +3471,33 @@ document.addEventListener('visibilitychange', () => {
         if (spans[i+1]) spans[i+1].classList.remove('near');
       });
     });
+
+    // Автоволна на мобиле — голубой, редко, плавно
+    if (spans.length < 2) return;
+    var isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+    if (!isTouch) return;
+
+    function runAutoWave() {
+      var i = 0;
+      var total = spans.length;
+      function step() {
+        // Снимаем предыдущие
+        spans.forEach(function(s) { s.classList.remove('w-auto', 'w-auto-near'); });
+        if (i >= total) return; // пауза до следующего цикла
+        spans[i].classList.add('w-auto');
+        if (i > 0) spans[i-1].classList.add('w-auto-near');
+        if (i < total-1) spans[i+1].classList.add('w-auto-near');
+        i++;
+        setTimeout(step, 480); // шаг между словами
+      }
+      step();
+    }
+
+    // Первый запуск через 4с, потом каждые 12с — редко и ненавязчиво
+    setTimeout(function loop() {
+      runAutoWave();
+      setTimeout(loop, 12000);
+    }, 4000 + Math.random() * 3000);
   });
 })();
 
@@ -3820,3 +3895,125 @@ function cbFaq(item) {
 }
 window.cbFlavor = cbFlavor;
 window.cbFaq = cbFaq;
+
+
+// ── Gold Stars — искры при тапе на кнопку «Заказать» ──
+(function() {
+  'use strict';
+
+  var CHARS = ['★','✦','✧','⋆','·','✶'];
+  var COLORS = [
+    'rgba(245,219,160,1)',
+    'rgba(201,147,74,1)',
+    'rgba(255,235,185,1)',
+    'rgba(212,167,106,1)',
+    'rgba(255,245,210,0.9)',
+  ];
+
+  // CSS вставляем один раз
+  var style = document.createElement('style');
+  style.textContent = [
+    '@keyframes goldStarFly{',
+      '0%{transform:translate(0,0) scale(1) rotate(0deg);opacity:1;}',
+      '60%{opacity:0.8;}',
+      '100%{transform:translate(var(--sx),var(--sy)) scale(0) rotate(var(--sr));opacity:0;}',
+    '}',
+    '.gold-star{',
+      'position:fixed;pointer-events:none;z-index:99998;',
+      'font-style:normal;line-height:1;',
+      'animation:goldStarFly var(--sd) cubic-bezier(.25,.46,.45,.94) forwards;',
+      'will-change:transform,opacity;',
+    '}',
+  ].join('');
+  document.head.appendChild(style);
+
+  function burst(cx, cy) {
+    var count = 18; // было 12 — теперь 18
+    for (var i = 0; i < count; i++) {
+      (function(i) {
+        var delay = Math.random() * 80;
+        setTimeout(function() {
+          var el = document.createElement('span');
+          el.className = 'gold-star';
+
+          // Угол с небольшим разбросом
+          var angle = (i / count) * 360 + (Math.random() - 0.5) * 28;
+          var rad   = angle * Math.PI / 180;
+
+          // Дальность — было 28-60, теперь 38-78
+          var dist  = 38 + Math.random() * 40;
+          var sx    = Math.cos(rad) * dist;
+          var sy    = Math.sin(rad) * dist - (Math.random() * 18 + 8);
+
+          var size  = 10 + Math.random() * 8; // было 8-14, теперь 10-18
+          var dur   = (0.75 + Math.random() * 0.45) + 's';
+          var rot   = (Math.random() - 0.5) * 200 + 'deg';
+          var color = COLORS[Math.floor(Math.random() * COLORS.length)];
+          var char  = CHARS[Math.floor(Math.random() * CHARS.length)];
+
+          el.style.cssText = [
+            'left:' + (cx - size/2) + 'px',
+            'top:' + (cy - size/2) + 'px',
+            'font-size:' + size + 'px',
+            'color:' + color,
+            '--sx:' + sx + 'px',
+            '--sy:' + sy + 'px',
+            '--sd:' + dur,
+            '--sr:' + rot,
+          ].join(';');
+          el.textContent = char;
+
+          document.body.appendChild(el);
+          var ms = parseFloat(dur) * 1000 + 100;
+          setTimeout(function() { if (el.parentNode) el.remove(); }, ms);
+        }, delay);
+      })(i);
+    }
+  }
+
+  function bindStars(el) {
+    if (el._goldStarBound) return;
+    el._goldStarBound = true;
+    el.addEventListener('touchstart', function(e) {
+      var t = e.touches[0];
+      burst(t.clientX, t.clientY);
+    }, { passive: true });
+    // На десктопе — по клику
+    el.addEventListener('click', function(e) {
+      if (e.isTrusted) burst(e.clientX, e.clientY);
+    });
+  }
+
+  function init() {
+    // Кнопка «Заказать» в bottom-nav (наш новый mcNav)
+    var mcOrder = document.querySelector('.mc-btn--order');
+    if (mcOrder) bindStars(mcOrder);
+
+    // Старая кнопка bottom-nav
+    var bnOrder = document.querySelector('.bottom-nav-item--order');
+    if (bnOrder) bindStars(bnOrder);
+
+    // Hero-кнопка «Выбрать торт»
+    var heroBtn = document.querySelector('.btn-primary--hero');
+    if (heroBtn) bindStars(heroBtn);
+
+    // Кнопка в калькуляторе
+    var calcBtn = document.querySelector('.calc-add-btn');
+    if (calcBtn) bindStars(calcBtn);
+  }
+
+  // Запуск после рендера
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  // MutationObserver — подхватит mcNav который строится позже
+  var mo = new MutationObserver(function() {
+    var mcOrder = document.querySelector('.mc-btn--order:not([_goldStarBound])');
+    if (mcOrder) { bindStars(mcOrder); }
+  });
+  mo.observe(document.body, { childList: true, subtree: true });
+
+})();
