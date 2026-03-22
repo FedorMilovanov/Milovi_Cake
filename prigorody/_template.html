@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
   <meta name="format-detection" content="telephone=no" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>{{title}}</title>
@@ -15,6 +16,11 @@
   <meta property="og:image:height" content="630" />
   <meta property="og:url" content="{{canonical_url}}" />
   <meta property="og:type" content="website" />
+  <meta property="og:locale" content="ru_RU" />
+  <meta property="og:site_name" content="Milovi Cake" />
+  <meta property="og:image:alt" content="{{og_image_alt}}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://milovicake.ru/img/og-cover.jpg" />
     <!-- PWA -->
   <link rel="preload" as="image" href="../../img/head_desktop.webp" media="(min-width:769px)" fetchpriority="high" />
   <link rel="preload" as="image" href="../../img/head_mobile.webp" media="(max-width:768px)" fetchpriority="high" />
@@ -23,8 +29,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Milovi Cake" />
-  <meta name="theme-color" content="#c9934a" />
-  <link rel="apple-touch-icon" href="/icon-192.png" />
+  <meta name="theme-color" content="#c9934a" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#3d2b1f" media="(prefers-color-scheme: dark)" />
+  <link rel="apple-touch-icon" href="/icon-apple.png" />
   <meta name="view-transition" content="same-origin" />
   <link rel="canonical" href="{{canonical_url}}" />
   <script type="application/ld+json">
@@ -1017,6 +1024,7 @@
     <div class="footer-bottom">
       <span>© 2020–2026 Milovi Cake. Все права защищены.</span>
       <a href="#" role="button" onclick="openPrivacy(); return false;">Политика конфиденциальности</a>
+      <span style="color:rgba(237,224,204,0.25);font-size:11px;">Самозанятая · Милованова Виктория · ИНН: 263006403654</span>
     </div>
   </div>
 </footer>

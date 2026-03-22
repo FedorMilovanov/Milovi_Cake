@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" href="/favicon.svg?v=20260303" type="image/svg+xml">
+  <link rel="icon" href="/icon-192.png?v=20260303" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="/icon-apple.png?v=20260303" />
   <meta name="format-detection" content="telephone=no" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -54,7 +55,14 @@
       "priceCurrency": "RUB",
       "availability": "https://schema.org/InStock"
     },
-    "image": "https://milovicake.ru/img/meringue_roll.webp"
+    "image": "https://milovicake.ru/img/meringue_roll.webp",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5.0",
+      "reviewCount": "47",
+      "bestRating": "5",
+      "worstRating": "1"
+    }
   }
   </script>
   <script type="application/ld+json">
@@ -103,8 +111,8 @@
   <link rel="dns-prefetch" href="https://wa.me" />
   <link rel="dns-prefetch" href="https://mc.yandex.ru" />
   <link rel="preload" as="image" href="../img/meringue_roll.webp" fetchpriority="high" />
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/></noscript>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Jost:wght@300;400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/></noscript>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -312,6 +320,29 @@
       margin-bottom: 32px;
       opacity: 0; transform: translateY(20px);
       animation: fadeUp 0.8s ease 0.5s forwards;
+    }
+    .spb-tag {
+      display: inline-block;
+      color: #7ec8e3;
+      font-style: italic;
+      font-size: 0.72em;
+      letter-spacing: 0.01em;
+      vertical-align: middle;
+      cursor: default;
+      transition:
+        color 0.4s ease,
+        text-shadow 0.4s ease,
+        letter-spacing 0.4s ease,
+        transform 0.4s cubic-bezier(.16,1,.3,1);
+      will-change: transform;
+    }
+    .spb-tag:hover {
+      color: #a8dfff;
+      letter-spacing: 0.06em;
+      text-shadow:
+        0 0 18px rgba(126,200,227,0.55),
+        0 0 40px rgba(126,200,227,0.25);
+      transform: translateY(-2px);
     }
     .hero-title em {
       font-style: italic;
@@ -807,12 +838,15 @@
       transform-origin: center center;
     }
     .feature-icon svg { stroke: var(--gold); }
-    .feature-title {
+    .feature-title,
+    h3.feature-title {
       font-family: var(--serif); font-size: 19px; font-weight: 400;
-      margin-bottom: 12px; color: var(--cream);
+      margin: 0 0 12px 0; padding: 0; color: var(--cream);
       transition: color 0.3s, text-shadow 0.3s; cursor: default;
+      line-height: inherit;
     }
-    .feature-card:hover .feature-title {
+    .feature-card:hover .feature-title,
+    .feature-card:hover h3.feature-title {
       color: rgba(245,237,224,0.97);
       text-shadow: 0 0 20px rgba(245,237,224,0.1);
     }
@@ -1646,8 +1680,59 @@
     .lb-arr-btn { background: rgba(201,147,74,0.1); border: 1px solid rgba(201,147,74,0.2); color: #c9934a; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     .lb-arr-counter { font-size: 12px; letter-spacing: 0.12em; color: rgba(237,224,204,0.5); }
   </style>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Сколько стоит меренговый рулет на заказ в Санкт-Петербурге?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Меренговый рулет с малиной и крем чизом стоит 2 500 ₽. В стоимость входит фирменная коробка с окошком. Вес одного рулета — 1 100 г, рассчитан на 6–8 порций."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Из чего сделан меренговый рулет Milovi Cake?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Состав: воздушная меренга (взбитые белки, сахарная пудра), нежный крем чиз (сливочный сыр, сливки), свежая малина, декор из фисташек и шоколадных жемчужин. Рецепт безглютеновый."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Как заказать меренговый рулет с доставкой по СПб?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Заказать можно через WhatsApp, Telegram или по телефону +7 911 903 88 86. Принимаем заказы за 1–2 дня. Доставляем по всему Санкт-Петербургу и Ленинградской области."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Сколько хранится меренговый рулет?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Срок хранения — 48 часов в холодильнике. Рулет готовится в день доставки, поэтому всегда свежий."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Есть ли доставка меренгового рулета в пригороды Петербурга?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Да, доставляем в пригороды Санкт-Петербурга: Пушкин, Петергоф, Гатчину, Всеволожск, Мурино, Кудрово, Колпино, Сестрорецк и другие населённые пункты Ленобласти. Уточняйте стоимость и время при заказе."
+        }
+      }
+    ]
+  }
+  </script>
+
 </head>
 <body>
+<a href="#order" class="skip-link">Перейти к содержимому</a>
 
 <!-- LOADER -->
 <div id="loader">
@@ -1724,7 +1809,7 @@
     <h1 class="hero-title">
       <span class="ht-word">Меренговый</span><br>
       <em class="ht-em">рулет</em><br>
-      <span class="ht-word">на заказ</span>
+      <span class="ht-word">на заказ <span class="spb-tag" id="spbTag">в&nbsp;СПб</span></span>
     </h1>
     <div class="hero-divider"></div>
     <p class="hero-desc wave-text" id="heroDesc">
@@ -1795,7 +1880,8 @@
   <div class="split-text">
     <span class="sec-label reveal" style="display:inline-block;transition:color 0.4s,letter-spacing 0.4s,text-shadow 0.4s;cursor:default;" onmouseenter="this.style.color='#e8b87a';this.style.letterSpacing='0.4em';this.style.textShadow='0 0 16px rgba(201,147,74,0.2)'" onmouseleave="this.style.color='';this.style.letterSpacing='';this.style.textShadow=''">Состав</span>
     <h2 class="sec-title reveal rd1">
-      <span class="ht-word">Малина</span><br>и <em class="ht-em">крем чиз</em>
+      <span class="ht-word">Малина и крем чиз</span><br>
+      <em class="ht-em" style="font-size:0.6em;letter-spacing:0.04em;">— начинка меренгового рулета</em>
     </h2>
     <p class="sec-body wave-text reveal rd2">
       Каждый рулет — это нежная, почти невесомая меренга, тающая во рту, с лёгким сливочным кремом чиз и свежей малиной. Никакой лишней сладости — только чистый, воздушный вкус.
@@ -1859,7 +1945,7 @@
     <img class="box-float" src="../img/meringue_box_nobg.webp" alt="" aria-hidden="true" width="600" height="600" />
     <span class="sec-label reveal" style="display:inline-block;transition:color 0.4s,letter-spacing 0.4s,text-shadow 0.4s;cursor:default;" onmouseenter="this.style.color='#e8b87a';this.style.letterSpacing='0.4em';this.style.textShadow='0 0 16px rgba(201,147,74,0.2)'" onmouseleave="this.style.color='';this.style.letterSpacing='';this.style.textShadow=''">Детали заказа</span>
     <h2 class="sec-title reveal rd1">
-      <span class="ht-word ht-word-wide">Вес</span><br>и <em class="ht-em">стоимость</em>
+      <span class="ht-word ht-word-wide">Вес и цена</span><br><em class="ht-em">меренгового рулета</em>
     </h2>
     <p class="sec-body wave-text reveal rd2">
       Один рулет весит 1 100 г — этого хватит на 6–8 порций. Идеален для семейного чаепития, дня рождения или в качестве подарка.
@@ -1902,9 +1988,9 @@
     <!-- Ручная работа — тортик -->
     <div class="feature-card card-heart reveal">
       <div class="feature-icon" style="transition: transform 0.5s cubic-bezier(.16,1,.3,1), border-color 0.5s, box-shadow 0.5s;">
-        <img src="../img/icon-loading.webp" alt="" width="30" height="30" style="width:30px;height:30px;object-fit:cover;border-radius:50%;opacity:0.85;transition:opacity 0.5s,transform 0.5s cubic-bezier(.16,1,.3,1);" class="heart-svg"/>
+        <img src="../img/icon-loading.webp" alt="" aria-hidden="true" width="30" height="30" style="width:30px;height:30px;object-fit:cover;border-radius:50%;opacity:0.85;transition:opacity 0.5s,transform 0.5s cubic-bezier(.16,1,.3,1);" class="heart-svg"/>
       </div>
-      <div class="feature-title"><span class="ht-word">Ручная работа</span></div>
+      <h3 class="feature-title"><span class="ht-word">Ручная работа</span></h3>
       <div class="feature-text wave-text">Каждый рулет создаётся вручную — никакого конвейера и полуфабрикатов</div>
     </div>
     <!-- Фирменная упаковка — открывается крышка -->
@@ -1916,7 +2002,7 @@
           <line x1="12" y1="8" x2="12" y2="21"/>
         </svg>
       </div>
-      <div class="feature-title"><span class="ht-word">Фирменная упаковка</span></div>
+      <h3 class="feature-title"><span class="ht-word">Фирменная упаковка</span></h3>
       <div class="feature-text wave-text">Рулет приедет в красивой коробке — готовый подарок, ничего не нужно дополнительно оформлять</div>
     </div>
     <!-- Тот самый вкус — разлетаются сердечки -->
@@ -1929,7 +2015,7 @@
       <div class="feature-icon">
         <svg class="heart-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9934a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
       </div>
-      <div class="feature-title"><span class="ht-word">Тот самый вкус</span></div>
+      <h3 class="feature-title"><span class="ht-word">Тот самый вкус меренгового рулета</span></h3>
       <div class="feature-text wave-text">Такую нежную меренгу с малиной сложно найти даже в хорошем кафе</div>
     </div>
     <!-- Свежесть — тикают часы -->
@@ -1943,7 +2029,7 @@
           </g>
         </svg>
       </div>
-      <div class="feature-title"><span class="ht-word">Свежесть</span></div>
+      <h3 class="feature-title"><span class="ht-word">Свежесть</span></h3>
       <div class="feature-text wave-text">Готовим в день доставки — всегда свежий десерт прямо к вашему столу</div>
     </div>
   </div></div>
@@ -2128,6 +2214,15 @@
       <a href="https://milovicake.ru/#contacts">Контакты</a>
     </div>
     <div class="footer-col">
+      <div class="footer-col-title">Доставка в пригороды</div>
+      <a href="https://milovicake.ru/prigorody/pushkin/">Пушкин</a>
+      <a href="https://milovicake.ru/prigorody/peterhof/">Петергоф</a>
+      <a href="https://milovicake.ru/prigorody/gatchina/">Гатчина</a>
+      <a href="https://milovicake.ru/prigorody/vsevolozhsk/">Всеволожск</a>
+      <a href="https://milovicake.ru/prigorody/murino/">Мурино</a>
+      <a href="https://milovicake.ru/prigorody/kolpino/">Колпино</a>
+    </div>
+    <div class="footer-col">
       <div class="footer-col-title">Контакты</div>
       <a href="tel:+79119038886">+7 911 903 88 86</a>
       <a href="https://wa.me/79119038886" target="_blank" rel="noopener noreferrer">WhatsApp</a>
@@ -2140,6 +2235,7 @@
   <div class="footer-bottom">
     <span class="wave-text wave-gold">© 2020–2026 Milovi Cake. Все права защищены.</span>
     <a href="https://milovicake.ru/">milovicake.ru</a>
+    <span style="color:rgba(237,224,204,0.25);font-size:11px;">Самозанятая · Милованова Виктория · ИНН: 263006403654</span>
   </div>
 </footer>
 
@@ -2502,5 +2598,37 @@
 </script>
 
 <script src="../js/nav.js?v=20260322" defer></script>
+<script>
+  /* ── Яндекс.Метрика: цели ── */
+  (function() {
+    var YM_ID = 106945185;
+    function reach(goal) {
+      if (typeof ym === 'function') ym(YM_ID, 'reachGoal', goal);
+    }
+    // WhatsApp clicks
+    document.querySelectorAll('a[href*="wa.me"]').forEach(function(el) {
+      el.addEventListener('click', function() { reach('wa_click'); });
+    });
+    // Telegram clicks
+    document.querySelectorAll('a[href*="t.me"]').forEach(function(el) {
+      el.addEventListener('click', function() { reach('tg_click'); });
+    });
+    // Phone clicks
+    document.querySelectorAll('a[href^="tel:"]').forEach(function(el) {
+      el.addEventListener('click', function() { reach('phone_click'); });
+    });
+    // Form submit (contact form)
+    document.querySelectorAll('form').forEach(function(form) {
+      form.addEventListener('submit', function() { reach('form_submit'); });
+    });
+    // Cart open
+    var cartBtn = document.getElementById('cartBtn');
+    if (cartBtn) cartBtn.addEventListener('click', function() { reach('cart_open'); });
+    // Order button in catalog
+    document.querySelectorAll('.card-order-btn, .catalog-order-btn').forEach(function(el) {
+      el.addEventListener('click', function() { reach('catalog_order_click'); });
+    });
+  })();
+</script>
 </body>
 </html>

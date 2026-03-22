@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" href="favicon.svg?v=20260303" type="image/svg+xml">
+  <link rel="icon" href="icon-192.png?v=20260303" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="icon-apple.png?v=20260303" />
   <meta name="format-detection" content="telephone=no" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Milovi Cake — Торты и десерты на заказ в Санкт-Петербурге</title>
-  <meta name="description" content="Заказать торт в СПб с доставкой на дом — Milovi Cake. Свадебный торт, торт на день рождения, бенто, детский торт. Ручная работа, натуральные ингредиенты. Заказать торт СПб легко — пишите в WhatsApp!" />
+  <meta name="description" content="Авторские торты и десерты на заказ в Санкт-Петербурге — Milovi Cake. Свадебный, бенто, детский торт, меренговый рулет. Доставка по СПб и Ленобласти." />
   <meta name="keywords" content="заказать торт СПб, торты на заказ СПб, свадебный торт, детский торт, бенто торт, меренговый рулет, капкейки, частный кондитер СПб" />
   <meta name="robots" content="index, follow" />
   <meta name="yandex-verification" content="9bde19424208d6ce" />
@@ -16,6 +18,7 @@
   <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Авторские торты на заказ в Санкт-Петербурге — Milovi Cake" />
   <meta property="og:url" content="https://milovicake.ru/" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="ru_RU" />
@@ -37,6 +40,41 @@
   <link rel="preload" as="image" href="img/head_mobile.webp" media="(max-width:768px)" fetchpriority="high" />
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/></noscript>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "Главная", "item": "https://milovicake.ru/"}
+    ]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Милованова Виктория",
+    "jobTitle": "Частный кондитер",
+    "worksFor": {
+      "@type": "LocalBusiness",
+      "name": "Milovi Cake",
+      "url": "https://milovicake.ru/"
+    },
+    "url": "https://milovicake.ru/",
+    "sameAs": [
+      "https://vk.com/milovi_cake",
+      "https://t.me/MiloviCake",
+      "https://www.instagram.com/milovi_cake/"
+    ],
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Санкт-Петербург",
+      "addressCountry": "RU"
+    }
+  }
+  </script>
 
   <script type="application/ld+json">
   {
@@ -69,7 +107,7 @@
         "@type": "OpeningHoursSpecification",
         "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
         "opens": "10:00",
-        "closes": "20:00"
+        "closes": "22:00"
       }
     ],
     "priceRange": "₽₽",
@@ -225,6 +263,11 @@
     <a href="#reviews" onclick="closeMobileMenu()">Отзывы</a>
     <div class="mobile-menu-divider"></div>
     <a href="#contacts" onclick="closeMobileMenu()">Контакты</a>
+    <div class="mobile-menu-divider"></div>
+    <a href="tel:+79119038886" class="mobile-menu-phone" onclick="closeMobileMenu()">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.07 2.18 2 2 0 012.03 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+      +7 911 903 88 86
+    </a>
   </div>
 </div>
 
@@ -815,6 +858,7 @@
     <div class="footer-bottom">
       <span class="wave-text">© 2020–2026 Milovi Cake. Все права защищены.</span>
       <a href="javascript:void(0)" onclick="openPrivacy()">Политика конфиденциальности</a>
+      <span style="color:rgba(237,224,204,0.25);font-size:11px;">Самозанятая · Милованова Виктория · ИНН: 263006403654</span>
     </div>
   </div>
 </footer>
@@ -1101,5 +1145,56 @@
 
 
 <script src="/js/nav.js?v=20260322" defer></script>
+
+<script>
+  /* ── Яндекс.Метрика: цели ── */
+  (function() {
+    var YM_ID = 106945185;
+    function reach(goal) {
+      if (typeof ym === 'function') ym(YM_ID, 'reachGoal', goal);
+    }
+    // WhatsApp clicks
+    document.querySelectorAll('a[href*="wa.me"]').forEach(function(el) {
+      el.addEventListener('click', function() { reach('wa_click'); });
+    });
+    // Telegram clicks
+    document.querySelectorAll('a[href*="t.me"]').forEach(function(el) {
+      el.addEventListener('click', function() { reach('tg_click'); });
+    });
+    // Phone clicks
+    document.querySelectorAll('a[href^="tel:"]').forEach(function(el) {
+      el.addEventListener('click', function() { reach('phone_click'); });
+    });
+    // Form submit (contact form)
+    document.querySelectorAll('form').forEach(function(form) {
+      form.addEventListener('submit', function() { reach('form_submit'); });
+    });
+    // Cart open
+    var cartBtn = document.getElementById('cartBtn');
+    if (cartBtn) cartBtn.addEventListener('click', function() { reach('cart_open'); });
+    // Order button in catalog
+    document.querySelectorAll('.card-order-btn, .catalog-order-btn').forEach(function(el) {
+      el.addEventListener('click', function() { reach('catalog_order_click'); });
+    });
+  })();
+</script>
+
+<!-- ══════════ YANDEX METRIKA (end of body — non-blocking) ══════════ -->
+<script type="text/javascript">
+  (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+  m[i].l=1*new Date();
+  for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+  k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+  (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+  ym(106945185, "init", {
+    clickmap: true,
+    trackLinks: true,
+    accurateTrackBounce: true,
+    webvisor: true
+  });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/106945185" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+
 </body>
 </html>
