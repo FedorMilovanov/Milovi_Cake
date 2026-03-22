@@ -865,6 +865,8 @@ function _cartForceClose() {
   _cartState = 'closed';
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.remove('hidden');
+  var mcn = document.getElementById('mcNav');
+  if (mcn) mcn.classList.remove('mc-nav--hidden');
 }
 
 function openCart() {
@@ -904,6 +906,8 @@ function openCart() {
 
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.add('hidden');
+  var mcn = document.getElementById('mcNav');
+  if (mcn) mcn.classList.add('mc-nav--hidden');
 }
 
 function closeCart() {
@@ -942,6 +946,8 @@ function closeCart() {
 
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.remove('hidden');
+  var mcn = document.getElementById('mcNav');
+  if (mcn) mcn.classList.remove('mc-nav--hidden');
 }
 
 function toggleCart() {
@@ -2314,6 +2320,8 @@ function openChatLightbox(idx) {
   overlay.classList.add('active');
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.add('hidden');
+  var mcn = document.getElementById('mcNav');
+  if (mcn) mcn.classList.add('mc-nav--hidden');
   const lbXBtn = document.getElementById('lbX');
   if (lbXBtn) {
     lbXBtn.style.opacity = '0';
@@ -2343,6 +2351,8 @@ function openReviewsModal(tab) {
   document.addEventListener('keydown', handleReviewsEscape);
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.add('hidden');
+  var mcn = document.getElementById('mcNav');
+  if (mcn) mcn.classList.add('mc-nav--hidden');
 }
 
 function closeReviewsModal() {
@@ -2353,6 +2363,8 @@ function closeReviewsModal() {
   document.removeEventListener('keydown', handleReviewsEscape);
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.remove('hidden');
+  var mcn = document.getElementById('mcNav');
+  if (mcn) mcn.classList.remove('mc-nav--hidden');
   // Fallback timeout ensures unlockBody() fires even if transitionend doesn't
   var _unlocked = false;
   var _unlockFallback = setTimeout(function() {
@@ -3211,6 +3223,8 @@ function closeLB(){
   unlockBody();
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.remove('hidden');
+  var mcn = document.getElementById('mcNav');
+  if (mcn) mcn.classList.remove('mc-nav--hidden');
 
   setTimeout(()=>{
     if (lbImg) lbImg.src = '';

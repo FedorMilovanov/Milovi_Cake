@@ -407,11 +407,9 @@
       backdrop.classList.add('mc-open');
       moreBtn.setAttribute('aria-expanded', 'true');
       moreBtn.classList.add('mc-active');
-      // Блокировать скролл iOS-safe
-      var scrollY = window.scrollY;
-      document.body.style.top = '-' + scrollY + 'px';
-      document.body.classList.add('mc-sheet-open');
-      document.body.dataset.mcScrollY = scrollY;
+      // iOS-safe: только overflow:hidden, БЕЗ position:fixed (не смещаем контент)
+      body.style.overflow = 'hidden';
+      body.dataset.mcSheetOpen = '1';
     }
 
     function closeSheet() {
@@ -421,12 +419,9 @@
       moreBtn.setAttribute('aria-expanded', 'false');
       moreBtn.classList.remove('mc-active');
       // Восстановить скролл
-      if (document.body.classList.contains('mc-sheet-open')) {
-        var savedY = parseInt(document.body.dataset.mcScrollY || '0', 10);
-        document.body.classList.remove('mc-sheet-open');
-        document.body.style.top = '';
-        delete document.body.dataset.mcScrollY;
-        window.scrollTo(0, savedY);
+      if (document.body.dataset.mcSheetOpen) {
+        document.body.style.overflow = '';
+        delete document.body.dataset.mcSheetOpen;
       }
     }
 
@@ -509,9 +504,9 @@
       });
     }, { passive: true });
 
-    // ── CSS для body.mc-sheet-open (iOS scroll lock) ──
+    // ── CSS для mc-sheet-open (только overflow, без position:fixed) ──
     var lockStyle = document.createElement('style');
-    lockStyle.textContent = 'body.mc-sheet-open{overflow:hidden;position:fixed;left:0;right:0;}';
+    lockStyle.textContent = '.mc-sheet-open{} /* reserved */';
     document.head.appendChild(lockStyle);
   }
 
@@ -553,5 +548,32 @@
     });
   });
   mo.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+  // ── Emergency cleanup: сброс если body застрял ──
+  function emergencyReset() {
+    if (document.body.dataset.mcSheetOpen) {
+      document.body.style.overflow = '';
+      delete document.body.dataset.mcSheetOpen;
+    }
+    // Убрать position:fixed если вдруг застрял от старой версии
+    if (document.body.style.position === 'fixed') {
+      document.body.style.position = '';
+      document.body.style.top = '';
+    }
+    var s = document.getElementById('mcSheet');
+    var b = document.getElementById('mcBackdrop');
+    if (s) s.classList.remove('mc-open');
+    if (b) b.classList.remove('mc-open');
+    var mb = document.getElementById('mcMoreBtn');
+    if (mb) { mb.setAttribute('aria-expanded','false'); mb.classList.remove('mc-active'); }
+  }
+  // bfcache — когда пользователь вернулся кнопкой "назад"
+  window.addEventListener('pageshow', function(e) {
+    if (e.persisted) emergencyReset();
+  });
+  // visibilitychange — приложение вернулось из фона
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden && document.body.style.position === 'fixed') emergencyReset();
+  });
 
 })();
