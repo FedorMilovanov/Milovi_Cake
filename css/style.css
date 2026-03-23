@@ -3968,6 +3968,7 @@ section { padding: 100px 60px; }
 .lb-box {
   position: relative; z-index: 2;
   max-width: 88vw; width: auto;
+  max-height: 85vh;
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 24px 80px rgba(0,0,0,0.45);
@@ -4001,11 +4002,12 @@ section { padding: 100px 60px; }
 .lb-box.clickable { pointer-events: all; }
 
 .lb-box img {
-  width: 100%;
-  height: auto;
-  max-height: 72vh;
-  object-fit: contain;
   display: block;
+  width: auto;
+  height: auto;
+  max-width: 88vw;
+  max-height: 80vh;
+  object-fit: contain;
   user-select: none;
   -webkit-user-select: none;
   -webkit-user-drag: none;
@@ -4544,15 +4546,82 @@ a, button {
               opacity 0.18s ease;
 }
 
-/* ── HERO: полноэкранный на мобиле ── */
+/* ── HERO: стек на мобиле — фото вверху, контент снизу ── */
 @media (max-width: 768px) {
+  /* Убираем полноэкранный режим — делаем flex-колонку */
   .hero {
-    min-height: 100dvh;
-    /* edge-to-edge на мобиле */
-    padding-left: 0;
-    padding-right: 0;
-    padding-left: max(20px, env(safe-area-inset-left));
-    padding-right: max(20px, env(safe-area-inset-right));
+    display: flex;
+    flex-direction: column;
+    min-height: auto;
+    padding: 0;
+    align-items: stretch;
+    overflow: visible;
+  }
+
+  /* Фото-блок: занимает верхнюю часть */
+  .hero-photo-bg {
+    position: relative !important;
+    inset: auto !important;
+    height: 62vw;
+    min-height: 300px;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .hero-photo-bg img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 20%;
+    display: block;
+  }
+  /* Лёгкое затемнение снизу фото (без текста сверху — не нужно тяжёлое) */
+  .hero-photo-bg::after {
+    background:
+      linear-gradient(to bottom, rgba(10,6,3,0.15) 0%, rgba(13,8,5,0.6) 100%);
+  }
+
+  /* Контентный блок: тёмный фон, как у меренгового */
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    background: #0d0805;
+    padding: 36px 24px calc(80px + env(safe-area-inset-bottom, 0px)) 24px;
+    max-width: 100%;
+    margin: 0;
+  }
+
+  /* Пригородные страницы — убираем padding-top от breadcrumb */
+  .hero-city { padding-top: 0; }
+
+  /* Типографика */
+  .hero-title {
+    font-size: clamp(38px, 9vw, 52px);
+    margin-bottom: 10px;
+  }
+  .hero-title .hero-title-seo {
+    font-size: clamp(13px, 3.5vw, 16px);
+  }
+  .hero-subtitle {
+    font-size: 14px;
+    max-width: 100%;
+    margin-bottom: 20px;
+  }
+  .hero-features {
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .hero-feature-item span {
+    font-size: 13px;
+  }
+  .hero-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .hero-trust {
+    margin-top: 18px !important;
   }
 }
 
@@ -4992,6 +5061,9 @@ a, button {
 /* ── PERFORMANCE: hero-photo-bg — prevent CLS (резервируем высоту) ── */
 .hero {
   min-height: 100svh;
+}
+@media (max-width: 768px) {
+  .hero { min-height: auto; }
 }
 .hero-photo-bg {
   contain: layout style;
