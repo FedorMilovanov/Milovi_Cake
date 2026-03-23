@@ -406,19 +406,23 @@ body {
   z-index: var(--z-header);
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
+  will-change: backdrop-filter; /* создаём composited layer заранее — blur не вызовет фриз при первом скролле */
   padding: 0 60px;
   height: 72px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: transparent;
-  transition: background 0.35s, box-shadow 0.35s, backdrop-filter 0.35s;
-}
-.site-header.scrolled {
   background: rgba(245,240,232,0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   box-shadow: 0 2px 20px rgba(61,43,31,0.08);
+  transition: background 0.35s, box-shadow 0.35s, backdrop-filter 0.35s;
+}
+.site-header.scrolled {
+  background: rgba(245,240,232,0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 2px 24px rgba(61,43,31,0.13);
 }
 .header-logo {
   font-family: 'Cormorant Garamond', serif;
@@ -452,25 +456,31 @@ body {
 
 /* City pages: logo is dark on light bg header */
 .site-header.header-city {
-  background: rgba(25, 14, 5, 0.75);
+  background: rgba(25, 14, 5, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 .site-header.header-city .header-logo {
   color: #fff;
   font-weight: 400;
-}
-.site-header.header-city.scrolled .header-logo {
-  color: var(--brown);
-  text-shadow: none;
-}
-.site-header.header-city .header-logo {
   text-shadow: 0 1px 8px rgba(0,0,0,0.55), 0 0 20px rgba(0,0,0,0.3);
 }
+/* На городских страницах при скролле фон остаётся тёмным, логотип белым */
+.site-header.header-city.scrolled {
+  background: rgba(20, 11, 4, 0.97);
+  box-shadow: 0 2px 20px rgba(0,0,0,0.25);
+}
 .site-header.header-city.scrolled .header-logo {
-  color: var(--brown);
+  color: #fff;
   text-shadow: none;
 }
+.site-header.header-city.scrolled .header-logo-sub {
+  color: rgba(255,235,185,0.45);
+}
 .site-header.header-city .header-nav a { color: rgba(255,255,255,0.88); }
+.site-header.header-city.scrolled .header-nav a { color: rgba(255,255,255,0.88); }
 .site-header.header-city .burger-btn span { background: #fff; }
+.site-header.header-city.scrolled .burger-btn span { background: #fff; }
 
 .header-nav {
   display: flex;
@@ -1708,6 +1718,7 @@ h1, h2, h3, h4 { font-family: 'Cormorant Garamond', serif; font-weight: 500; }
   filter: blur(80px);
   pointer-events: none;
   animation: orbFloat 8s ease-in-out infinite;
+  will-change: transform; /* GPU-слой: не даём браузеру перекрашивать орбы на CPU при скролле */
 }
 .hero-orb-1 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(201,147,74,0.18) 0%, transparent 70%); top: -100px; left: -100px; animation-duration: 10s; }
 .hero-orb-2 { width: 350px; height: 350px; background: radial-gradient(circle, rgba(180,120,50,0.12) 0%, transparent 70%); bottom: -80px; right: 10%; animation-duration: 13s; animation-delay: -4s; }
@@ -2107,7 +2118,8 @@ section { padding: 100px 60px; }
 .form-group input, .form-group textarea { width: 100%; padding: 14px 18px; border: 1.5px solid #e8ddd0; border-radius: 12px; font-family: 'Jost', sans-serif; font-size: 16px; /* iOS: prevents auto-zoom on focus */ background: var(--cream); color: var(--text); outline: none; transition: border-color 0.2s; }
 .form-group input::placeholder, .form-group textarea::placeholder { color: var(--text-muted); }
 .form-group input:focus, .form-group textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,147,74,0.1), 0 4px 16px rgba(201,147,74,0.08); transition: border-color 0.2s, box-shadow 0.3s; }
-.form-group textarea { resize: vertical; min-height: 100px; }
+.form-group textarea { resize: vertical; min-height: 100px; max-width: 100%; }
+@media (max-width: 768px) { .form-group textarea { resize: none; } }
 .form-note { font-size: 12px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.5; }
 .form-note a { color: var(--gold); }
 
@@ -2390,8 +2402,11 @@ section { padding: 100px 60px; }
   100% { left: -120%; opacity: 1; }
 }
 
-/* ── PREMIUM: Pulsating glow на цене ── */
-.price { animation: priceGlow 2.5s ease-in-out infinite alternate; }
+/* ── PREMIUM: Pulsating glow на цене — только когда карточка видима ── */
+/* По умолчанию анимация выключена; JS добавляет .in-view когда карточка в вьюпорте */
+.price { animation: none; }
+.product-card.in-view .price,
+.product-card.visible .price { animation: priceGlow 2.5s ease-in-out infinite alternate; }
 @keyframes priceGlow {
   from { text-shadow: 0 0 8px rgba(201,147,74,0.25); }
   to   { text-shadow: 0 0 22px rgba(201,147,74,0.65), 0 0 44px rgba(201,147,74,0.18); }
@@ -2440,8 +2455,8 @@ section { padding: 100px 60px; }
 
 /* ── PREMIUM: Section separator ── */
 .section-separator { width: 100%; height: 1px; position: relative; overflow: hidden; }
-.section-separator::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 1px; background: linear-gradient(90deg, transparent 0%, rgba(201,147,74,0.1) 20%, rgba(201,147,74,0.4) 50%, rgba(201,147,74,0.1) 80%, transparent 100%); animation: separatorSlide 4s ease-in-out infinite; }
-@keyframes separatorSlide { 0% { left: -100%; } 100% { left: 100%; } }
+.section-separator::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 1px; background: linear-gradient(90deg, transparent 0%, rgba(201,147,74,0.1) 20%, rgba(201,147,74,0.4) 50%, rgba(201,147,74,0.1) 80%, transparent 100%); animation: separatorSlide 4s ease-in-out infinite; transform: translateX(-100%); will-change: transform; }
+@keyframes separatorSlide { 0% { transform: translateX(-100%); } 100% { transform: translateX(200%); } }
 
 /* ── PREMIUM: Review card gradient border ── */
 .review-card { position: relative; background: var(--cream); border: none; }
@@ -3029,8 +3044,8 @@ section { padding: 100px 60px; }
     bottom: 0;
     left: 0;
     right: 0;
-    background: #25D366;
-    color: #fff;
+    background: var(--gold);
+    color: var(--ink, #1a0e06);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3038,15 +3053,20 @@ section { padding: 100px 60px; }
     padding: 14px 20px;
     padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
     font-family: 'Jost', sans-serif;
-    font-size: 15px;
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     text-decoration: none;
     z-index: var(--z-nav);
-    box-shadow: 0 -4px 20px rgba(37,211,102,0.3);
+    box-shadow: 0 -4px 20px rgba(201,147,74,0.35);
     transform: translateY(100%);
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+  }
+  .mobile-sticky-cta svg {
+    fill: var(--ink, #1a0e06);
   }
   .mobile-sticky-cta.visible {
     transform: translateY(0);
@@ -3443,20 +3463,10 @@ section { padding: 100px 60px; }
 }
 
 /* ══════════════════════════════════════════════
-   GEO-TAGS: horizontal scroll on mobile
+   GEO-TAGS: скрыты на мобильных (есть в нижнем меню)
    ══════════════════════════════════════════════ */
 @media (max-width: 768px) {
-  .geo-tags {
-    display: flex;
-    flex-wrap: nowrap !important;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    gap: 8px;
-    padding-bottom: 6px;
-  }
-  .geo-tags::-webkit-scrollbar { display: none; }
-  .geo-tag { white-space: nowrap; flex-shrink: 0; }
+  .geo-tags { display: none; }
 }
 
 /* ══════════════════════════════════════════════
@@ -4554,8 +4564,10 @@ a, button {
   .btn-add::after {
     animation: none;
   }
-  /* priceGlow — включаем на мобиле, только text-shadow (без layout) */
-  .price { animation: priceGlow 2.5s ease-in-out infinite alternate; }
+  /* priceGlow — только когда карточка видима, чтобы не грузить CPU при скролле */
+  .price { animation: none; }
+  .product-card.in-view .price,
+  .product-card.visible .price { animation: priceGlow 2.5s ease-in-out infinite alternate; }
   .calc-result-price { animation: calcPriceGlow 3s ease-in-out infinite alternate; }
 }
 

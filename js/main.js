@@ -181,6 +181,7 @@ function renderCatalog() {
   });
 
   observeReveal();
+  initPriceGlowObserver();
 }
 
 function goSlide(pid, idx) {
@@ -975,15 +976,25 @@ window.addEventListener('pageshow', function(e) {
   if (window.innerWidth < 769) return; // на мобиле не нужно — экономим батарею
   const orbs = document.querySelectorAll('.hero-orb-1, .hero-orb-2, .hero-orb-3');
   if (!orbs.length) return;
+
+  // Останавливаем CSS-анимацию orbFloat чтобы не конкурировала с JS transform
+  // CSS animation и JS style.transform на одном элементе — разные слои, браузер не может объединить
+  orbs.forEach(orb => {
+    orb.style.animationPlayState = 'paused';
+    orb.style.willChange = 'transform';
+  });
+
+  // Стартовые смещения из paused CSS animation (визуально без прыжка)
+  let baseY = [0, 0, 0];
   let ticking = false;
   window.addEventListener('scroll', () => {
     if (ticking) return;
     ticking = true;
     requestAnimationFrame(() => {
       const y = window.scrollY;
-      if (orbs[0]) orbs[0].style.transform = `translateY(${y * 0.15}px)`;
-      if (orbs[1]) orbs[1].style.transform = `translateY(${y * -0.10}px)`;
-      if (orbs[2]) orbs[2].style.transform = `translateY(${y * 0.08}px)`;
+      if (orbs[0]) orbs[0].style.transform = `translateY(${baseY[0] + y * 0.15}px)`;
+      if (orbs[1]) orbs[1].style.transform = `translateY(${baseY[1] + y * -0.10}px)`;
+      if (orbs[2]) orbs[2].style.transform = `translateY(${baseY[2] + y * 0.08}px)`;
       ticking = false;
     });
   }, { passive: true });
@@ -1063,7 +1074,20 @@ function observeReveal() {
   els.forEach(el => io.observe(el));
 }
 
-// ══════════════════════════════════════════════
+// ── priceGlow: включаем анимацию только когда карточка в вьюпорте ──
+// Это экономит CPU — не гоняем 6 text-shadow анимаций когда каталог за экраном
+function initPriceGlowObserver() {
+  const cards = document.querySelectorAll('.product-card');
+  if (!cards.length) return;
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      e.target.classList.toggle('in-view', e.isIntersecting);
+    });
+  }, { threshold: 0.1 });
+  cards.forEach(c => io.observe(c));
+}
+
+
 // CATALOG NAV — мобильная навигация по десертам
 // ══════════════════════════════════════════════
 
