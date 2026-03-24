@@ -172,7 +172,7 @@
       padding: 0 56px;
       height: 68px;
       display: flex; align-items: center; justify-content: space-between;
-      background: linear-gradient(to bottom, rgba(11,8,6,0.55) 0%, rgba(11,8,6,0) 100%);
+      background: transparent;
       transition: background 0.6s ease, backdrop-filter 0.6s ease, box-shadow 0.6s ease;
     }
     .site-hdr.scrolled {
@@ -329,20 +329,43 @@
       letter-spacing: 0.01em;
       vertical-align: middle;
       cursor: default;
+      /* Градиент для перелива: голубой → белый → голубой */
+      background: linear-gradient(
+        90deg,
+        #7ec8e3 0%,
+        #7ec8e3 20%,
+        #d6f4ff 45%,
+        #ffffff 50%,
+        #d6f4ff 55%,
+        #7ec8e3 80%,
+        #7ec8e3 100%
+      );
+      background-size: 200% 100%;
+      background-position: 100% 0; /* полоска за правым краем — не видна */
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
       transition:
-        color 0.4s ease,
-        text-shadow 0.4s ease,
+        background-position 0.6s cubic-bezier(0.22, 1, 0.36, 1),
         letter-spacing 0.4s ease,
         transform 0.4s cubic-bezier(.16,1,.3,1);
       will-change: transform;
     }
     .spb-tag:hover {
-      color: #a8dfff;
+      background-position: -100% 0; /* полоска пробегает справа налево */
       letter-spacing: 0.06em;
-      text-shadow:
-        0 0 18px rgba(126,200,227,0.55),
-        0 0 40px rgba(126,200,227,0.25);
       transform: translateY(-2px);
+    }
+    /* На тач-устройствах — убираем анимацию совсем, не грузим GPU */
+    @media (hover: none) {
+      .spb-tag {
+        background: none;
+        -webkit-background-clip: unset;
+        background-clip: unset;
+        -webkit-text-fill-color: #7ec8e3;
+        transition: none;
+        will-change: auto;
+      }
     }
     .hero-title em {
       font-style: italic;
@@ -509,6 +532,7 @@
       letter-spacing: 0.14em; text-transform: uppercase;
       padding: 15px 34px; border-radius: 50px;
       text-decoration: none; border: none; cursor: pointer;
+      position: relative; overflow: hidden;
       transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
     }
     .btn-primary:hover { background: var(--gold2); transform: translateY(-2px); box-shadow: 0 12px 36px rgba(201,147,74,0.25); }
@@ -521,9 +545,25 @@
       letter-spacing: 0.14em; text-transform: uppercase;
       padding: 15px 34px; border-radius: 50px;
       text-decoration: none; cursor: pointer;
+      position: relative; overflow: hidden;
       transition: background 0.2s, border-color 0.2s, transform 0.2s;
     }
     .btn-ghost:hover { background: rgba(201,147,74,0.08); border-color: var(--gold); transform: translateY(-2px); }
+    /* Hover-перелив справа налево для всех кнопок */
+    .btn-primary::after, .btn-ghost::after, .hdr-order::after {
+      content: '';
+      position: absolute;
+      top: 0; right: -120%;
+      width: 55%; height: 100%;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.07) 30%, rgba(255,255,255,0.22) 50%, rgba(255,255,255,0.07) 70%, transparent 100%);
+      transform: skewX(-15deg);
+      opacity: 0;
+      pointer-events: none;
+      transition: right 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.05s;
+    }
+    .btn-primary:hover::after, .btn-ghost:hover::after, .hdr-order:hover::after {
+      right: 160%; opacity: 1;
+    }
     .btn-wa-green {
       background: #25D366; color: #fff;
       border: none;
@@ -1669,16 +1709,20 @@
         transition-duration: 0.01ms !important;
       }
     }
-    .lb-overlay { display: none; position: fixed; inset: 0; z-index: 9000; }
+    .lb-overlay { display: none; position: fixed; inset: 0; z-index: 10000; }
     .lb-overlay.active { display: block; }
-    .lb-backdrop { position: absolute; inset: 0; background: rgba(11,8,6,0.96); cursor: pointer; }
-    .lb-x { position: absolute; top: 24px; right: 28px; z-index: 2; background: transparent; border: none; color: rgba(237,224,204,0.5); font-size: 22px; cursor: pointer; }
+    .lb-backdrop { position: absolute; inset: 0; z-index: 1; background: rgba(11,8,6,0.96); cursor: pointer; }
+    .lb-x { position: absolute; top: 24px; right: 28px; z-index: 4; background: transparent; border: none; color: rgba(237,224,204,0.5); font-size: 22px; cursor: pointer; line-height: 1; padding: 8px; }
     .lb-x:hover { color: #c9934a; }
-    .lb-box { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 80px 120px; pointer-events: none; }
-    .lb-box img { max-width: 100%; max-height: 100%; object-fit: contain; pointer-events: none; }
-    .lb-arrows { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 20px; z-index: 2; }
+    .lb-box { position: absolute; inset: 0; z-index: 2; display: flex; align-items: center; justify-content: center; padding: 80px 60px 100px; }
+    .lb-box img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; pointer-events: none; user-select: none; }
+    .lb-arrows { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: 3; display: flex; align-items: center; gap: 20px; }
     .lb-arr-btn { background: rgba(201,147,74,0.1); border: 1px solid rgba(201,147,74,0.2); color: #c9934a; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     .lb-arr-counter { font-size: 12px; letter-spacing: 0.12em; color: rgba(237,224,204,0.5); }
+    @media (max-width: 600px) {
+      .lb-box { padding: 70px 12px 80px; }
+      .lb-x { top: 16px; right: 16px; font-size: 26px; padding: 10px; }
+    }
   </style>
 
   <script type="application/ld+json">
@@ -2433,10 +2477,11 @@
     img.style.opacity = '1';
     img.style.transform = 'scale(1)';
     if (counter) counter.textContent = (curIdx + 1) + ' / ' + GALLERY_SRCS.length;
-    if (lbX) { lbX.style.opacity = '1'; lbX.style.transform = 'scale(1)'; lbX.style.pointerEvents = ''; }
+    if (lbX) { lbX.style.opacity = '1'; lbX.style.pointerEvents = ''; }
+    overlay.style.display = 'block'; /* block — не flex, иначе webkit ломает stacking context дочерних absolute */
     overlay.classList.add('active');
-    overlay.style.display = 'flex';
     document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
     window._galleryLbActive = true;
   }
 
@@ -2444,6 +2489,7 @@
     var overlay = document.getElementById('lbOverlay');
     if (overlay) { overlay.classList.remove('active'); overlay.style.display = 'none'; }
     document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
     window._galleryLbActive = false;
   }
 
@@ -2490,7 +2536,7 @@
 
 
 <!-- COOKIE BANNER -->
-<div id="cookieBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:rgba(19,12,7,0.97);backdrop-filter:blur(12px);border-top:1px solid rgba(201,147,74,0.2);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'Jost',sans-serif;font-size:13px;color:rgba(237,224,204,0.75);transform:translateY(100%);transition:transform 0.4s cubic-bezier(.16,1,.3,1);">
+<div id="cookieBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:rgba(19,12,7,0.97);backdrop-filter:blur(12px);border-top:1px solid rgba(201,147,74,0.2);padding:14px 24px;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'Jost',sans-serif;font-size:13px;color:rgba(237,224,204,0.75);transform:translateY(100%);transition:transform 0.4s cubic-bezier(.16,1,.3,1);">
   <span>Мы используем файлы cookie для аналитики и улучшения сайта.&nbsp;
     <a href="#" onclick="openCookiePrivacy(); return false;" style="color:#c9934a;text-decoration:underline;cursor:pointer;">Политика конфиденциальности</a>
   </span>
@@ -2501,7 +2547,7 @@
 </div>
 
 <!-- PRIVACY MODAL (meringue) -->
-<div id="cookiePrivacyOverlay" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(11,8,6,0.92);overflow-y:auto;" onclick="if(event.target===this)closeCookiePrivacy()">
+<div id="cookiePrivacyOverlay" style="display:none;position:fixed;inset:0;z-index:10001;background:rgba(11,8,6,0.92);overflow-y:auto;" onclick="if(event.target===this)closeCookiePrivacy()">
   <div style="max-width:600px;margin:60px auto;background:#1c1108;border:1px solid rgba(201,147,74,0.2);border-radius:16px;padding:48px 40px;color:rgba(237,224,204,0.8);font-family:'Jost',sans-serif;font-size:14px;line-height:1.7;position:relative;">
     <button onclick="closeCookiePrivacy()" aria-label="Закрыть" style="position:absolute;top:20px;right:20px;background:transparent;border:none;color:rgba(237,224,204,0.4);font-size:22px;cursor:pointer;transition:color 0.3s;" onmouseover="this.style.color='#c9934a'" onmouseout="this.style.color='rgba(237,224,204,0.4)'">×</button>
     <h2 style="font-family:'Cormorant Garamond',serif;font-size:26px;color:#e8b87a;margin-bottom:24px;">Политика конфиденциальности</h2>
