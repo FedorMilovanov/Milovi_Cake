@@ -11,11 +11,9 @@ const IMAGE_CACHE  = `milovi-images-v2`;
 /* Только критичные ресурсы — пригороды кешируются по запросу */
 const PRECACHE_URLS = [
   '/',
-  '/css/style.css',
-  '/css/style.min.css',
-  '/js/main.js',
-  '/js/main.min.js',
-  '/js/nav.js',
+  '/css/style.css?v=20260322',
+  '/js/main.js?v=20260322',
+  '/js/nav.js?v=20260322',
   '/manifest.json',
   '/favicon.svg',
   '/icon-192.png',
