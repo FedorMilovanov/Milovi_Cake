@@ -78,10 +78,8 @@
   // ── Создать панель навигации ──
   function buildNav() {
     // Удаляем старый bottom-nav если есть
-    var old = document.getElementById('bottomNav');
-        if (old) old.style.display = 'none';
-        var old2 = document.getElementById('mrBottomNav');
-        if (old2) old2.style.display = 'none';
+    var old = document.getElementById('bottomNav') || document.getElementById('mrBottomNav');
+    // Оставляем — просто скрываем, наш новый nav будет отдельным
 
     // CSS
     var style = document.createElement('style');
@@ -94,10 +92,11 @@
         '.mc-nav{',
           'display:flex;',
           'position:fixed;bottom:0;left:0;right:0;',
-          'z-index:100;',
+          'z-index:500;',
           'height:calc(60px + env(safe-area-inset-bottom));',
           'padding-bottom:env(safe-area-inset-bottom);',
-          'background:rgba(253,251,247,0.99);',
+          'background:rgba(253,251,247,0.96);',
+          'backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);',
           'border-top:1px solid rgba(201,147,74,0.13);',
           'box-shadow:0 -2px 20px rgba(61,43,31,0.07);',
           'align-items:stretch;',
@@ -153,7 +152,8 @@
 
         /* ── SLIDE-UP ПАНЕЛЬ ── */
         '.mc-sheet-backdrop{',
-          'position:fixed;inset:0;z-index:290;',
+          'display:none;',
+          'position:fixed;inset:0;z-index:498;',
           'background:rgba(44,26,16,0);',
           'transition:background 0.3s ease;',
           '-webkit-tap-highlight-color:transparent;',
@@ -165,7 +165,7 @@
         '.mc-sheet{',
           'position:fixed;',
           'bottom:calc(60px + env(safe-area-inset-bottom));',
-          'left:0;right:0;z-index:300;',
+          'left:0;right:0;z-index:499;',
           'background:#fdfbf7;',
           'border-radius:20px 20px 0 0;',
           'border-top:1px solid rgba(201,147,74,0.15);',
@@ -408,11 +408,7 @@
       moreBtn.setAttribute('aria-expanded', 'true');
       moreBtn.classList.add('mc-active');
       // iOS-safe: только overflow:hidden, БЕЗ position:fixed (не смещаем контент)
-      if (typeof window.lockBody === 'function') {
-            window.lockBody();
-        } else {
-            body.style.overflow = 'hidden';
-        }
+      body.style.overflow = 'hidden';
       body.dataset.mcSheetOpen = '1';
     }
 
@@ -424,14 +420,9 @@
       moreBtn.classList.remove('mc-active');
       // Восстановить скролл
       if (document.body.dataset.mcSheetOpen) {
-            if (typeof window.unlockBody === 'function') {
-                window.unlockBody();
-            } else {
-                document.body.style.overflow = '';
-            }
-            delete document.body.dataset.mcSheetOpen;
-        }
-        setTimeout(function() { sheet.style.willChange = 'auto'; }, 400);
+        document.body.style.overflow = '';
+        delete document.body.dataset.mcSheetOpen;
+      }
     }
 
     moreBtn.addEventListener('click', function() {
@@ -545,16 +536,13 @@
           var s = document.getElementById('mcSheet');
           var bd = document.getElementById('mcBackdrop');
           var mb = document.getElementById('mcMoreBtn');
-                if (s && s.classList.contains('mc-open')) {
-                    s.classList.remove('mc-open');
-                    if (bd) bd.classList.remove('mc-open');
-                    if (mb) { mb.setAttribute('aria-expanded','false'); mb.classList.remove('mc-active'); }
-                    if (b.dataset.mcSheetOpen) {
-                        if (typeof window.unlockBody === 'function') window.unlockBody();
-                        else b.style.overflow = '';
-                        delete b.dataset.mcSheetOpen;
-                    }
-                }
+          if (s && s.classList.contains('mc-open')) {
+            s.classList.remove('mc-open');
+            if (bd) bd.classList.remove('mc-open');
+            if (mb) { mb.setAttribute('aria-expanded','false'); mb.classList.remove('mc-active'); }
+            b.classList.remove('mc-sheet-open');
+            b.style.top = '';
+          }
         }
       }
     });
