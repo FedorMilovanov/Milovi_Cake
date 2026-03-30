@@ -350,8 +350,10 @@ function loadCartFromStorage() {
 
 // ── Confetti burst ──
 function confettiBurst(x, y) {
+    var now = Date.now();
+    if (confettiBurst._last && now - confettiBurst._last < 400) return;
+    confettiBurst._last = now;
   const colors = ["#c9934a", "#d4a76a", "#e8c080", "#f5e1c0", "#fff"];
-  for (let i = 0; i < 20; i++) {
     const particle = document.createElement("div");
     const size = Math.random() * 6 + 4;
     particle.style.cssText = `
@@ -830,6 +832,8 @@ function unlockBody() {
     delete document.body.dataset.scrollY;
   }
 }
+window.lockBody = lockBody;
+window.unlockBody = unlockBody;
 // Emergency cleanup: if user navigates back (bfcache), ensure body is unlocked
 window.addEventListener('pageshow', function(e) {
   if (e.persisted) {
@@ -854,20 +858,18 @@ function _cartClearTimer() {
 
 // Emergency reset — force cart to clean closed state
 function _cartForceClose() {
-  _cartClearTimer();
-  var drawer  = document.getElementById('cartDrawer');
-  var overlay = document.getElementById('cartOverlay');
-  if (drawer)  { drawer.classList.remove('open', 'closing'); drawer.style.cssText = ''; }
-  if (overlay) { overlay.classList.remove('open'); }
-  document.body.classList.remove('cart-open');
-  document.body.style.overflow    = '';
-  document.body.style.paddingRight = '';
-  document.body.dataset.lockCount = '0';
-  _cartState = 'closed';
-  var bn = document.getElementById('bottomNav');
-  if (bn) bn.classList.remove('hidden');
-  var mcn = document.getElementById('mcNav');
-  if (mcn) mcn.classList.remove('mc-nav--hidden');
+    _cartClearTimer();
+    var drawer = document.getElementById('cartDrawer');
+    var overlay = document.getElementById('cartOverlay');
+    if (drawer) { drawer.classList.remove('open', 'closing'); drawer.style.cssText = ''; }
+    if (overlay) { overlay.classList.remove('open'); }
+    document.body.classList.remove('cart-open');
+    if (_cartState === 'open' && window.innerWidth <= 900) unlockBody();
+    _cartState = 'closed';
+    var bn = document.getElementById('bottomNav');
+    if (bn) bn.classList.remove('hidden');
+    var mcn = document.getElementById('mcNav');
+    if (mcn) mcn.classList.remove('mc-nav--hidden');
 }
 
 function openCart() {
@@ -971,41 +973,44 @@ window.addEventListener('pageshow', function(e) {
   if (e.persisted) _cartForceClose();
 });
 
-// ── PARALLAX ON HERO ORBS (только десктоп) ──
+/* ── Hero visibility + Parallax orbs ── */
 (function() {
-  if (window.innerWidth < 769) return; // на мобиле не нужно — экономим батарею
-  const orbs = document.querySelectorAll('.hero-orb-1, .hero-orb-2, .hero-orb-3');
-  if (!orbs.length) return;
+    var hero = document.querySelector('.hero');
+    if (!hero) return;
+    window._heroVisible = false;
+    var obs = new IntersectionObserver(function(entries) {
+        var vis = entries[0].isIntersecting;
+        hero.classList.toggle('hero--visible', vis);
+        window._heroVisible = vis;
+    }, { threshold: 0.05 });
+    obs.observe(hero);
 
-  // Останавливаем CSS-анимацию orbFloat чтобы не конкурировала с JS transform
-  // CSS animation и JS style.transform на одном элементе — разные слои, браузер не может объединить
-  orbs.forEach(orb => {
-    orb.style.animationPlayState = 'paused';
-    orb.style.willChange = 'transform';
-  });
-
-  // Стартовые смещения из paused CSS animation (визуально без прыжка)
-  let baseY = [0, 0, 0];
-  let ticking = false;
-  window.addEventListener('scroll', () => {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(() => {
-      const y = window.scrollY;
-      if (orbs[0]) orbs[0].style.transform = `translateY(${baseY[0] + y * 0.15}px)`;
-      if (orbs[1]) orbs[1].style.transform = `translateY(${baseY[1] + y * -0.10}px)`;
-      if (orbs[2]) orbs[2].style.transform = `translateY(${baseY[2] + y * 0.08}px)`;
-      ticking = false;
-    });
-  }, { passive: true });
+    if (window.innerWidth < 769) return;
+    var orbs = document.querySelectorAll('.hero-orb-1, .hero-orb-2, .hero-orb-3');
+    if (!orbs.length) return;
+    var baseY = [0, 0, 0];
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+        if (ticking || !window._heroVisible) return;
+        ticking = true;
+        requestAnimationFrame(function() {
+            var y = window.scrollY;
+            if (orbs[0]) orbs[0].style.transform = 'translateY(' + (baseY[0] + y * 0.15) + 'px)';
+            if (orbs[1]) orbs[1].style.transform = 'translateY(' + (baseY[1] + y * -0.10) + 'px)';
+            if (orbs[2]) orbs[2].style.transform = 'translateY(' + (baseY[2] + y * 0.08) + 'px)';
+            ticking = false;
+        });
+    }, { passive: true });
 })();
 
 // ── SMOOTH IMAGE FADE-IN ON LOAD ──
-document.querySelectorAll('img').forEach(img => {
-  if (img.complete) return;
-  img.style.opacity = '0';
-  img.style.transition = 'opacity 0.5s ease';
-  img.addEventListener('load', () => { img.style.opacity = '1'; });
+document.querySelectorAll('img').forEach(function(img) {
+    if (img.complete || img.naturalWidth > 0) return;
+    img.style.opacity = '0';
+    img.style.transition = 'opacity 0.5s ease';
+    img.addEventListener('load', function() { img.style.opacity = '1'; });
+    img.addEventListener('error', function() { img.style.opacity = '1'; });
+    setTimeout(function() { if (img.style.opacity === '0') img.style.opacity = '1'; }, 5000);
 });
 
 // ── CART SWIPE-RIGHT TO CLOSE ──
@@ -1204,6 +1209,33 @@ function initWaveText() {
       });
     });
   });
+
+    // Автоволна на мобиле
+    var isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+    if (!isTouch) return;
+    document.querySelectorAll('.wave-text').forEach(function(el) {
+        if (el._autoWaveBound) return;
+        el._autoWaveBound = true;
+        var spans = el.querySelectorAll('.w');
+        if (spans.length < 2) return;
+        function runAutoWave() {
+            var i = 0, total = spans.length;
+            function step() {
+                spans.forEach(function(s) { s.classList.remove('w-auto', 'w-auto-near'); });
+                if (i >= total) return;
+                spans[i].classList.add('w-auto');
+                if (i > 0) spans[i - 1].classList.add('w-auto-near');
+                if (i < total - 1) spans[i + 1].classList.add('w-auto-near');
+                i++;
+                setTimeout(step, 480);
+            }
+            step();
+        }
+        setTimeout(function loop() {
+            if (!document.hidden) runAutoWave();
+            setTimeout(loop, 12000);
+        }, 4000 + Math.random() * 3000);
+    });
 }
 
 function initSectionTitleWords() {
@@ -3490,80 +3522,6 @@ document.addEventListener('visibilitychange', () => {
   else initCalcMagnet();
 })();
 
-/* ── Wave-text: word-by-word hover ripple ── */
-(function() {
-  document.querySelectorAll('.wave-text').forEach(function(el) {
-    var words = el.textContent.trim().split(/(\s+)/);
-    el.innerHTML = words.map(function(w) {
-      if (/^\s+$/.test(w)) return w;
-      return '<span class="w">' + w + '</span>';
-    }).join('');
-    var spans = el.querySelectorAll('.w');
-    spans.forEach(function(span, i) {
-      span.addEventListener('mouseenter', function() {
-        if (spans[i-1]) spans[i-1].classList.add('near');
-        if (spans[i+1]) spans[i+1].classList.add('near');
-      });
-      span.addEventListener('mouseleave', function() {
-        if (spans[i-1]) spans[i-1].classList.remove('near');
-        if (spans[i+1]) spans[i+1].classList.remove('near');
-      });
-    });
-
-    // Автоволна на мобиле — голубой, редко, плавно
-    if (spans.length < 2) return;
-    var isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
-    if (!isTouch) return;
-
-    function runAutoWave() {
-      var i = 0;
-      var total = spans.length;
-      function step() {
-        // Снимаем предыдущие
-        spans.forEach(function(s) { s.classList.remove('w-auto', 'w-auto-near'); });
-        if (i >= total) return; // пауза до следующего цикла
-        spans[i].classList.add('w-auto');
-        if (i > 0) spans[i-1].classList.add('w-auto-near');
-        if (i < total-1) spans[i+1].classList.add('w-auto-near');
-        i++;
-        setTimeout(step, 480); // шаг между словами
-      }
-      step();
-    }
-
-    // Первый запуск через 4с, потом каждые 12с — редко и ненавязчиво
-    setTimeout(function loop() {
-      runAutoWave();
-      setTimeout(loop, 12000);
-    }, 4000 + Math.random() * 3000);
-  });
-})();
-
-/* ── Section title word hover (meringue-style) ── */
-(function() {
-  function initSectionTitles() {
-    document.querySelectorAll('.section-title').forEach(function(el) {
-      if (el.querySelector('.ht-w')) return;
-      var html = el.innerHTML;
-      el.innerHTML = html.replace(/(<[^>]+>)|([^<]+)/g, function(match, tag, text) {
-        if (tag) return tag;
-        if (!text || !text.trim()) return text;
-        return text.replace(/(\S+)/g, function(word) {
-          return '<span class="ht-w">' + word + '</span>';
-        });
-      });
-    });
-    document.querySelectorAll('.section-sub').forEach(function(el) {
-      el.style.cursor = 'default';
-    });
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initSectionTitles);
-  } else {
-    initSectionTitles();
-  }
-})();
-
 // ══════════════════════════════════════════════
 // MOBILE ENHANCEMENTS
 // ══════════════════════════════════════════════
@@ -3684,7 +3642,6 @@ document.addEventListener('visibilitychange', () => {
       }
     } else {
       window.addEventListener('deviceorientation', onOrientation, { passive: true });
-      animateParallax();
     }
 
     // Pause when hero is not visible — также отключаем deviceorientation
@@ -4048,10 +4005,14 @@ window.cbFaq = cbFaq;
   }
 
   // MutationObserver — подхватит mcNav который строится позже
-  var mo = new MutationObserver(function() {
-    var mcOrder = document.querySelector('.mc-btn--order:not([_goldStarBound])');
-    if (mcOrder) { bindStars(mcOrder); }
-  });
-  mo.observe(document.body, { childList: true, subtree: true });
+  (function waitForMcOrder() {
+        var attempts = 0;
+        function check() {
+            var mcOrder = document.querySelector('.mc-btn--order');
+            if (mcOrder && !mcOrder._goldStarBound) { bindStars(mcOrder); return; }
+            if (++attempts < 20) setTimeout(check, 500);
+        }
+        setTimeout(check, 1000);
+    })();
 
 })();
