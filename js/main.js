@@ -379,7 +379,6 @@ function confettiBurst(x, y) {
       duration: 800 + Math.random() * 400,
       easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
     }).onfinish = () => particle.remove();
-  }
 }
 
 function addToCart(id, e) {
@@ -1072,11 +1071,17 @@ document.addEventListener('keydown', function(e) {
 
 function observeReveal() {
   const els = document.querySelectorAll('.reveal:not(.visible), .reveal-photo:not(.visible)');
-  const threshold = window.innerWidth <= 768 ? 0.05 : 0.15;
+  const threshold = window.innerWidth <= 768 ? 0.02 : 0.05;
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
-  }, { threshold });
+  }, { threshold, rootMargin: '0px 0px 60px 0px' });
   els.forEach(el => io.observe(el));
+  // Fallback: принудительно показать всё через 2.5с (на случай IO-бага в Яндекс Браузере)
+  setTimeout(function() {
+    document.querySelectorAll('.reveal:not(.visible), .reveal-photo:not(.visible)').forEach(function(el) {
+      el.classList.add('visible');
+    });
+  }, 2500);
 }
 
 // ── priceGlow: включаем анимацию только когда карточка в вьюпорте ──
@@ -1474,7 +1479,7 @@ const counterObserver = new IntersectionObserver(entries => {
       counterObserver.unobserve(e.target);
     }
   });
-}, { threshold: 0.4 });
+}, { threshold: 0.1, rootMargin: '0px 0px 40px 0px' });
 document.querySelectorAll('.stat-num').forEach(el => counterObserver.observe(el));
 
 // ── BURGER MENU ──
