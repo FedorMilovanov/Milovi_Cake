@@ -1377,6 +1377,112 @@ body:not(.fill-open) .fill-mobile-overlay {
 }
 .fill-sheet-btn-dismiss:active { background: rgba(255,220,150,0.18); }
 
+/* ── Fill toast snackbar ── */
+.fill-toast {
+  position: fixed;
+  bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #1e1008;
+  border: 1px solid rgba(201,147,74,0.25);
+  border-radius: 16px;
+  padding: 13px 18px 13px 14px;
+  max-width: min(340px, calc(100vw - 32px));
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45), 0 0 0 1px rgba(201,147,74,0.08);
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.fill-toast--in {
+  animation: fillToastIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.fill-toast--out {
+  animation: fillToastOut 0.28s ease-in forwards;
+}
+@keyframes fillToastIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+@keyframes fillToastOut {
+  from { opacity: 1; transform: translateX(-50%) translateY(0); }
+  to   { opacity: 0; transform: translateX(-50%) translateY(10px); }
+}
+.fill-toast-icon {
+  color: var(--gold);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.fill-toast-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.fill-toast-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 17px;
+  font-weight: 500;
+  color: #fff8ee;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fill-toast-desc {
+  font-family: 'Jost', sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(255,235,190,0.6);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Fill popup navigation bar ── */
+.fill-sheet-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 20px 8px;
+  gap: 8px;
+}
+.fill-nav-btn {
+  width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,220,150,0.08);
+  border: 1px solid rgba(255,220,150,0.15);
+  border-radius: 50%;
+  color: rgba(255,235,190,0.55);
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+.fill-nav-btn:not(:disabled):active {
+  background: rgba(255,220,150,0.18);
+  color: var(--gold);
+  transform: scale(0.93);
+}
+.fill-nav-btn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+.fill-nav-counter {
+  flex: 1;
+  text-align: center;
+  font-family: 'Jost', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,220,150,0.4);
+  user-select: none;
+}
+
 /* ── COOKIE BANNER ── */
 #cookieBanner {
   position: fixed;
@@ -6050,39 +6156,41 @@ footer .wave-text .w.near {
 /* ===== Калькулятор — тип торта карточки ===== */
 .calc-type-grid {
   display: grid !important;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-}
-@media (min-width: 600px) {
-  .calc-type-grid { grid-template-columns: repeat(4, 1fr); }
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
 }
 .calc-type-card {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 12px 10px 10px;
-  border-radius: 16px !important;
-  gap: 4px;
+  padding: 10px 6px 9px;
+  border-radius: 14px !important;
+  gap: 3px;
   text-align: center;
-  min-height: 70px;
+  min-height: 64px;
 }
 .calc-type-card .opt-inner {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 1px;
 }
 .calc-type-icon {
-  font-size: 22px;
+  font-size: 18px;
   line-height: 1;
   margin-bottom: 2px;
 }
 .calc-type-hint {
-  font-size: 11px;
+  font-size: 10px;
   opacity: 0.65;
   font-weight: 400;
   display: block;
   margin-top: 1px;
+  white-space: nowrap;
+}
+.calc-type-card .opt-label {
+  font-size: 12px;
+  white-space: nowrap;
 }
 .calc-type-card.selected .calc-type-hint { opacity: 0.85; color: rgba(255,255,255,0.85); }
 .calc-biscuit-note {

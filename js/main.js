@@ -881,6 +881,9 @@ function openCart() {
   var overlay = document.getElementById('cartOverlay');
   if (!drawer || !overlay) return;
 
+  // Close the mobile nav sheet if open
+  if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
+
   // If mid-close, snap to closed then open fresh
   if (_cartState === 'closing') _cartForceClose();
 
@@ -1533,6 +1536,7 @@ if (burgerBtn && mobileMenu) {
 let _lbSrcs = [], _lbIdx = 0;
 
 function openLightbox(src, srcs) {
+  if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
   const lb = document.getElementById('lightbox');
   const lbImg = document.getElementById('lightboxImg');
   if (!lb || !lbImg) return;
@@ -1758,9 +1762,30 @@ function selectOpt(el, groupId) {
   const opt = el && el.closest ? el.closest('.calc-opt') : el;
   if (!opt) return;
 
-  // On mobile, filling taps open a bottom sheet instead of directly selecting
-  if (groupId === 'calcFill' && window.innerWidth < 768) {
-    openFillPopup(opt);
+  // On mobile, all fill/decor taps instantly select + show a toast preview
+  const _fillGroups = ['calcFill', 'calcFillBento', 'calcFill3d', 'calcDecor'];
+  if (_fillGroups.indexOf(groupId) !== -1 && window.innerWidth < 768) {
+    // Instantly select
+    document.querySelectorAll(`#${groupId} .calc-opt.selected`).forEach(x => x.classList.remove('selected'));
+    opt.classList.add('selected');
+    // Update decor hint price badge (mobile)
+    if (groupId === 'calcDecor') {
+      const hint = document.getElementById('calcDecorHint');
+      if (hint) {
+        const price = parseInt(opt.dataset.price || 0);
+        hint.classList.toggle('visible', price > 0);
+      }
+    }
+    updateCalc && updateCalc();
+    // Show toast with filling info
+    showFillToast(opt, groupId);
+    // Rubber click animation
+    const _inner = opt.querySelector('.opt-inner');
+    if (_inner) {
+      _inner.classList.remove('rubber-click'); void _inner.offsetWidth;
+      _inner.classList.add('rubber-click');
+      _inner.addEventListener('animationend', () => _inner.classList.remove('rubber-click'), { once: true });
+    }
     return;
   }
 
@@ -2052,6 +2077,7 @@ initCookieBanner();
 
 // ── Privacy modal ──
 function openPrivacy() {
+  if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
   const el = document.getElementById('privacyOverlay');
   if (!el) return;
   el.classList.add('open');
@@ -2068,12 +2094,12 @@ function closePrivacy() {
 // ── BOTTOM SHEET: Fill info ──
 // ══════════════════════════════════════════
 
-let _fillSheetPendingEl = null; // calc-opt element waiting to be confirmed
+let _fillSheetPendingEl = null;      // calc-opt element waiting to be confirmed
+let _fillSheetPendingGroupId = null; // group id of the pending element
 
-function openFillPopup(optEl) {
+function _fillPopupRender(optEl) {
   if (!optEl) return;
   const title = optEl.querySelector('.opt-label')?.textContent?.trim() || '';
-  // Description lives inside .fill-tooltip (after the <strong> title element)
   const tooltipEl = optEl.querySelector('.fill-tooltip');
   const desc = tooltipEl
     ? Array.from(tooltipEl.childNodes)
@@ -2082,7 +2108,6 @@ function openFillPopup(optEl) {
         .join('').trim()
     : (optEl.dataset.desc || '');
 
-  // Read tags from the opt element
   const tagEls = optEl.querySelectorAll('.fill-tag');
   const tagsHTML = Array.from(tagEls).map(t => {
     const cls = t.classList.contains('hit')  ? 'tag-hit'  :
@@ -2097,7 +2122,65 @@ function openFillPopup(optEl) {
   if (_fillPopupTitleEl) _fillPopupTitleEl.textContent = title;
   if (_fillPopupTextEl)  _fillPopupTextEl.textContent  = desc;
 
+  // Update counter & nav arrows
+  const groupId = _fillSheetPendingGroupId || 'calcFill';
+  const allOpts = Array.from(document.querySelectorAll(`#${groupId} .calc-opt`));
+  const idx = allOpts.indexOf(optEl);
+  const total = allOpts.length;
+  const counterEl = document.getElementById('fillNavCounter');
+  const prevBtn   = document.getElementById('fillNavPrev');
+  const nextBtn   = document.getElementById('fillNavNext');
+  if (counterEl) counterEl.textContent = total > 1 ? `${idx + 1} / ${total}` : '';
+  if (prevBtn)   prevBtn.disabled  = (idx <= 0);
+  if (nextBtn)   nextBtn.disabled  = (idx >= total - 1);
+
+  // Update button text for decor group
+  const selectBtn = document.getElementById('fillSheetSelect');
+  if (selectBtn) {
+    selectBtn.textContent = (groupId === 'calcDecor') ? 'Выбрать оформление' : 'Выбрать начинку';
+  }
+}
+
+// ── Fill toast: brief confirmation snackbar after tap ──
+let _fillToastTimer = null;
+function showFillToast(optEl, groupId) {
+  // Close mobile nav sheet if it's open
+  if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
+  const title = optEl.querySelector('.opt-label')?.textContent?.trim() || '';
+  const tooltipEl = optEl.querySelector('.fill-tooltip');
+  const desc = tooltipEl
+    ? Array.from(tooltipEl.childNodes)
+        .filter(n => n.nodeName !== 'STRONG')
+        .map(n => n.textContent).join('').trim()
+    : '';
+
+  let toast = document.getElementById('fillToast');
+  if (!toast) return;
+
+  const titleEl = toast.querySelector('.fill-toast-title');
+  const descEl  = toast.querySelector('.fill-toast-desc');
+  if (titleEl) titleEl.textContent = title;
+  if (descEl)  descEl.textContent  = desc;
+
+  // Reset & show
+  clearTimeout(_fillToastTimer);
+  toast.classList.remove('fill-toast--out');
+  toast.classList.add('fill-toast--in');
+
+  _fillToastTimer = setTimeout(() => {
+    toast.classList.add('fill-toast--out');
+    toast.addEventListener('animationend', () => {
+      toast.classList.remove('fill-toast--in', 'fill-toast--out');
+    }, { once: true });
+  }, 2800);
+}
+
+function openFillPopup(optEl, groupId) {
+  if (!optEl) return;
+
   _fillSheetPendingEl = optEl;
+  _fillSheetPendingGroupId = groupId || 'calcFill';
+  _fillPopupRender(optEl);
 
   const popup   = document.getElementById('fillPopup');
   const overlay = document.getElementById('fillOverlay');
@@ -2142,13 +2225,14 @@ function closeFillPopup() {
   if (_mcNavFill) _mcNavFill.classList.remove('mc-nav--hidden');
 
   _fillSheetPendingEl = null;
+  _fillSheetPendingGroupId = null;
   if (popup) { popup.style.transform = ''; popup.style.willChange = 'auto'; }
 }
 
 function confirmFillSelection() {
   if (_fillSheetPendingEl) {
-    // Actually select this option
-    const groupId = 'calcFill';
+    // Actually select this option — use the group that opened the sheet
+    const groupId = _fillSheetPendingGroupId || 'calcFill';
     document.querySelectorAll(`#${groupId} .calc-opt`).forEach(o => o.classList.remove('selected'));
     _fillSheetPendingEl.classList.add('selected');
     // Rubber click animation
@@ -2167,6 +2251,17 @@ function confirmFillSelection() {
     const result = document.getElementById('calcResult');
     if (result) result.closest('.calc-result')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, 200);
+}
+
+// ── Navigate between fills inside the bottom sheet ──
+function navigateFill(dir) {
+  if (!_fillSheetPendingEl || !_fillSheetPendingGroupId) return;
+  const allOpts = Array.from(document.querySelectorAll(`#${_fillSheetPendingGroupId} .calc-opt`));
+  const idx = allOpts.indexOf(_fillSheetPendingEl);
+  const next = allOpts[idx + dir];
+  if (!next) return;
+  _fillSheetPendingEl = next;
+  _fillPopupRender(next);
 }
 
 // ── Swipe-to-dismiss on bottom sheet ──
@@ -2402,6 +2497,7 @@ const CHAT_SRCS = [
 
 // Открываем скриншот отзыва через лайтбокс отзывов (#lbOverlay / #lbImg)
 function openChatLightbox(idx) {
+  if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
   const overlay = document.getElementById('lbOverlay');
   const img     = document.getElementById('lbImg');
   if (!overlay || !img) return;
@@ -2436,6 +2532,7 @@ function openChatLightbox(idx) {
    REVIEWS MODAL
 ══════════════════════════════════════════ */
 function openReviewsModal(tab) {
+  if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
   const modal = document.getElementById('reviewsModal');
   if (!modal) return;
   if (modal.classList.contains('open')) return; // idempotent
@@ -3269,6 +3366,7 @@ function lerp(a,b,t){ return a+(b-a)*t; }
 
 
 function openLB(triggerEl, src, idx){
+  if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
   // Force-reset if stuck
   if(lbBusy){ lbBusy=false; lbIsOpen=false; lbOverlay.classList.remove('active'); }
   if(waitTimer){ clearTimeout(waitTimer); waitTimer=null; }

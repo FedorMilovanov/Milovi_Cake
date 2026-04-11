@@ -422,12 +422,13 @@
     }
 
     function closeSheet() {
+      // Idempotent: always remove visual state even if called redundantly
       isOpen = false;
       sheet.classList.remove('mc-open');
       backdrop.classList.remove('mc-open');
       moreBtn.setAttribute('aria-expanded', 'false');
       moreBtn.classList.remove('mc-active');
-      // Восстановить скролл
+      // Восстановить скролл — только если шит владел локом
       if (document.body.dataset.mcSheetOpen) {
             if (typeof window.unlockBody === 'function') {
                 window.unlockBody();
@@ -444,6 +445,9 @@
     });
     backdrop.addEventListener('click', closeSheet);
     document.getElementById('mcSheetClose').addEventListener('click', closeSheet);
+
+    // Expose closeSheet globally so other overlays (cart, fill-toast, etc.) can close it
+    window.closeMcSheet = closeSheet;
 
     // Закрыть при клике на якорь внутри панели
     sheet.querySelectorAll('.mc-row-anchor').forEach(function(el) {

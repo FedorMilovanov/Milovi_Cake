@@ -956,16 +956,15 @@
 <!-- ══════════ BOTTOM SHEET: Начинка ══════════ -->
 <div class="fill-mobile-overlay" id="fillOverlay"></div>
 <div class="fill-mobile-popup" id="fillPopup" role="dialog" aria-modal="true" aria-label="Информация о начинке">
-  <div class="fill-sheet-handle" id="fillSheetHandle"></div>
-  <div class="fill-sheet-body">
-    <div class="fill-sheet-tags" id="fillSheetTags"></div>
-    <div class="fill-sheet-name" id="fillPopupTitle"></div>
-    <div class="fill-sheet-desc" id="fillPopupText"></div>
-  </div>
-  <div class="fill-sheet-divider"></div>
-  <div class="fill-sheet-cta">
-    <button class="fill-sheet-btn-select" id="fillSheetSelect" onclick="confirmFillSelection()">Выбрать эту начинку</button>
-    <button class="fill-sheet-btn-dismiss" onclick="closeFillPopup()">Назад</button>
+<!-- fill popup kept for legacy/fallback, hidden by default -->
+</div>
+
+<!-- Fill toast snackbar -->
+<div class="fill-toast" id="fillToast" aria-live="polite">
+  <svg class="fill-toast-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  <div class="fill-toast-body">
+    <span class="fill-toast-title"></span>
+    <span class="fill-toast-desc"></span>
   </div>
 </div>
 
