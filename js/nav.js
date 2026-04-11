@@ -514,8 +514,10 @@
         var y = window.scrollY;
         if (y > lastScrollY + 10 && y > 120 && !isOpen) {
           nav.classList.add('mc-nav--hidden');
+          document.body.classList.add('mc-nav-hidden');
         } else if (y < lastScrollY - 5) {
           nav.classList.remove('mc-nav--hidden');
+          document.body.classList.remove('mc-nav-hidden');
         }
         lastScrollY = y;
         ticking = false;
@@ -601,6 +603,7 @@
     // FIX: make sure mc-nav is visible after reset
     var nav = document.getElementById('mcNav');
     if (nav) nav.classList.remove('mc-nav--hidden');
+    document.body.classList.remove('mc-nav-hidden');
   }
   // bfcache — когда пользователь вернулся кнопкой "назад"
   window.addEventListener('pageshow', function(e) {

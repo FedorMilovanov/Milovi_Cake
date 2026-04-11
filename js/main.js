@@ -873,7 +873,7 @@ function _cartForceClose() {
     var bn = document.getElementById('bottomNav');
     if (bn) bn.classList.remove('hidden');
     var mcn = document.getElementById('mcNav');
-    if (mcn) mcn.classList.remove('mc-nav--hidden');
+    if (mcn) { mcn.classList.remove('mc-nav--hidden'); document.body.classList.remove('mc-nav-hidden'); }
 }
 
 function openCart() {
@@ -917,7 +917,7 @@ function openCart() {
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.add('hidden');
   var mcn = document.getElementById('mcNav');
-  if (mcn) mcn.classList.add('mc-nav--hidden');
+  if (mcn) { mcn.classList.add('mc-nav--hidden'); document.body.classList.add('mc-nav-hidden'); }
 }
 
 function closeCart() {
@@ -957,7 +957,7 @@ function closeCart() {
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.remove('hidden');
   var mcn = document.getElementById('mcNav');
-  if (mcn) mcn.classList.remove('mc-nav--hidden');
+  if (mcn) { mcn.classList.remove('mc-nav--hidden'); document.body.classList.remove('mc-nav-hidden'); }
 }
 
 function toggleCart() {
@@ -2197,7 +2197,7 @@ function openFillPopup(optEl, groupId) {
   // FIX: hide mc-nav while fill popup is open (was missing, causing nav bar to
   // sit on top of the popup on mobile)
   var _mcNavFill = document.getElementById('mcNav');
-  if (_mcNavFill) _mcNavFill.classList.add('mc-nav--hidden');
+  if (_mcNavFill) { _mcNavFill.classList.add('mc-nav--hidden'); document.body.classList.add('mc-nav-hidden'); }
 
   // Focus the select button for a11y
   setTimeout(() => document.getElementById('fillSheetSelect')?.focus({ preventScroll: true }), 80);
@@ -2222,7 +2222,7 @@ function closeFillPopup() {
   unlockBody();
   // FIX: restore mc-nav visibility after fill popup closes
   var _mcNavFill = document.getElementById('mcNav');
-  if (_mcNavFill) _mcNavFill.classList.remove('mc-nav--hidden');
+  if (_mcNavFill) { _mcNavFill.classList.remove('mc-nav--hidden'); document.body.classList.remove('mc-nav-hidden'); }
 
   _fillSheetPendingEl = null;
   _fillSheetPendingGroupId = null;
@@ -2514,7 +2514,7 @@ function openChatLightbox(idx) {
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.add('hidden');
   var mcn = document.getElementById('mcNav');
-  if (mcn) mcn.classList.add('mc-nav--hidden');
+  if (mcn) { mcn.classList.add('mc-nav--hidden'); document.body.classList.add('mc-nav-hidden'); }
   const lbXBtn = document.getElementById('lbX');
   if (lbXBtn) {
     lbXBtn.style.opacity = '0';
@@ -2546,7 +2546,7 @@ function openReviewsModal(tab) {
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.add('hidden');
   var mcn = document.getElementById('mcNav');
-  if (mcn) mcn.classList.add('mc-nav--hidden');
+  if (mcn) { mcn.classList.add('mc-nav--hidden'); document.body.classList.add('mc-nav-hidden'); }
 }
 
 function closeReviewsModal() {
@@ -2558,7 +2558,7 @@ function closeReviewsModal() {
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.remove('hidden');
   var mcn = document.getElementById('mcNav');
-  if (mcn) mcn.classList.remove('mc-nav--hidden');
+  if (mcn) { mcn.classList.remove('mc-nav--hidden'); document.body.classList.remove('mc-nav-hidden'); }
   // Fallback timeout ensures unlockBody() fires even if transitionend doesn't
   var _unlocked = false;
   var _unlockFallback = setTimeout(function() {
@@ -3419,7 +3419,7 @@ function closeLB(){
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.remove('hidden');
   var mcn = document.getElementById('mcNav');
-  if (mcn) mcn.classList.remove('mc-nav--hidden');
+  if (mcn) { mcn.classList.remove('mc-nav--hidden'); document.body.classList.remove('mc-nav-hidden'); }
 
   setTimeout(()=>{
     if (lbImg) lbImg.src = '';
