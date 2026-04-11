@@ -811,6 +811,8 @@ function lockBody() {
   if (count === 0) {
     var scrollbarW = window.innerWidth - document.documentElement.clientWidth;
     document.body.style.overflow = 'hidden';
+    // Fix: also lock <html> so iOS Safari can't scroll through it
+    document.documentElement.style.overflow = 'hidden';
     // НЕ ставим touchAction:none на body — это блокирует скролл внутри drawer на iOS
     if (scrollbarW > 0) document.body.style.paddingRight = scrollbarW + 'px';
   }
@@ -820,6 +822,7 @@ function unlockBody() {
   var count = parseInt(document.body.dataset.lockCount || '0');
   if (count <= 0) {
     document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
     document.body.style.paddingRight = '';
     return;
   }
@@ -827,6 +830,7 @@ function unlockBody() {
   document.body.dataset.lockCount = newCount;
   if (newCount === 0) {
     document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
     document.body.style.paddingRight = '';
     delete document.body.dataset.scrollY;
   }
@@ -838,6 +842,7 @@ window.addEventListener('pageshow', function(e) {
   if (e.persisted) {
     document.body.dataset.lockCount = '0';
     document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
     document.body.style.paddingRight = '';
   }
 });
@@ -969,7 +974,20 @@ window.addEventListener('orientationchange', function() {
 
 // bfcache restore — ensure clean state
 window.addEventListener('pageshow', function(e) {
-  if (e.persisted) _cartForceClose();
+  if (e.persisted) {
+    _cartForceClose();
+    // FIX: clean up fill popup state in case it was open when user navigated away
+    if (document.body.classList.contains('fill-open-ios')) {
+      document.body.classList.remove('fill-open-ios');
+      document.body.style.top = '';
+      document.body.style.position = '';
+    }
+    document.body.classList.remove('fill-open');
+    var fillPopup = document.getElementById('fillPopup');
+    var fillOverlay = document.getElementById('fillOverlay');
+    if (fillPopup) fillPopup.classList.remove('open');
+    if (fillOverlay) fillOverlay.classList.remove('open');
+  }
 });
 
 /* ── Hero visibility + Parallax orbs ── */
@@ -2090,15 +2108,13 @@ function openFillPopup(optEl) {
   document.body.classList.add('fill-open');
   // will-change только перед анимацией
   popup.style.willChange = 'transform';
-  // iOS-safe: фиксируем body с сохранением позиции скролла
-  var _isIOSFill = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-  if (_isIOSFill) {
-    var scrollY = window.scrollY;
-    document.body.style.top = '-' + scrollY + 'px';
-    document.body.classList.add('fill-open-ios');
-    document.body.dataset.fillScrollY = scrollY;
-  }
-
+  // FIX: use lockBody() universally instead of fragile iOS position:fixed trick
+  // that left body frozen and blocked all taps after popup close
+  lockBody();
+  // FIX: hide mc-nav while fill popup is open (was missing, causing nav bar to
+  // sit on top of the popup on mobile)
+  var _mcNavFill = document.getElementById('mcNav');
+  if (_mcNavFill) _mcNavFill.classList.add('mc-nav--hidden');
 
   // Focus the select button for a11y
   setTimeout(() => document.getElementById('fillSheetSelect')?.focus({ preventScroll: true }), 80);
@@ -2110,15 +2126,20 @@ function closeFillPopup() {
   if (popup)   popup.classList.remove('open');
   if (overlay) overlay.classList.remove('open');
   document.body.classList.remove('fill-open');
-  // iOS-safe: снимаем фиксацию и восстанавливаем позицию скролла
+  // FIX: clean up old iOS position:fixed state if somehow still set (from old cached version)
   if (document.body.classList.contains('fill-open-ios')) {
     var savedY = parseInt(document.body.dataset.fillScrollY || '0', 10);
     document.body.classList.remove('fill-open-ios');
     document.body.style.top = '';
+    document.body.style.position = '';
     delete document.body.dataset.fillScrollY;
     window.scrollTo(0, savedY);
   }
-  // Не вызываем unlockBody() — lockBody() не вызывался
+  // FIX: unlock body (now lockBody() is called in open)
+  unlockBody();
+  // FIX: restore mc-nav visibility after fill popup closes
+  var _mcNavFill = document.getElementById('mcNav');
+  if (_mcNavFill) _mcNavFill.classList.remove('mc-nav--hidden');
 
   _fillSheetPendingEl = null;
   if (popup) { popup.style.transform = ''; popup.style.willChange = 'auto'; }

@@ -2542,6 +2542,10 @@
   function showBanner() {
     var b = document.getElementById('cookieBanner');
     if (!b) return;
+    // FIX Bug#9: on mobile push banner above mc-nav (60px) so nav buttons remain tappable
+    if (window.innerWidth <= 768) {
+      b.style.bottom = 'calc(60px + env(safe-area-inset-bottom, 0px))';
+    }
     b.style.display = 'flex';
     setTimeout(function() { b.style.transform = 'translateY(0)'; }, 100);
   }
@@ -2610,7 +2614,7 @@
 })();
 </script>
 
-<script src="../js/nav.js?v=20260322" defer></script>
+<script src="../js/nav.js?v=20260401" defer></script>
 <script>
   /* ── Яндекс.Метрика: цели ── */
   (function() {

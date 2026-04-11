@@ -1231,12 +1231,11 @@ body {
 /* Блокируем скролл фона без lockBody (избегаем прыжка страницы) */
 body.fill-open {
   overflow: hidden;
-  /* iOS-safe: позиция сохраняется через JS (см. openFillPopup/closeFillPopup) */
+  /* iOS scroll lock handled by lockBody() in JS */
 }
 body.fill-open-ios {
-  position: fixed;
-  left: 0;
-  right: 0;
+  /* FIX: removed position:fixed + top:-Xpx — this caused body to freeze and
+     blocked all button taps after popup close. Now using lockBody() instead. */
   overflow: hidden;
 }
 body.menu-open {
@@ -1401,6 +1400,13 @@ body:not(.fill-open) .fill-mobile-overlay {
 }
 #cookieBanner.visible { transform: translateY(0); }
 #cookieBanner a { color: var(--gold-light); text-decoration: underline; cursor: pointer; }
+/* FIX Bug#9: on mobile the cookie banner sits on top of mc-nav (z-290 > z-105).
+   Shift banner bottom up by nav height so both are visible and clickable. */
+@media (max-width: 768px) {
+  #cookieBanner {
+    bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+  }
+}
 #cookieAccept {
   background: var(--gold);
   color: #fff;
@@ -4542,6 +4548,19 @@ section { padding: 100px 60px; }
 }
 
 /* ── HEADER HIDE ON SCROLL (мобильная) ── */
+/* FIX: Ensure body has bottom padding for mc-nav (nav.js dynamic nav bar).
+   The old .bottom-nav block above has a body rule but mc-nav is a separate element.
+   This guarantees content is never hidden under the 60px nav bar. */
+@media (max-width: 768px) {
+  body:has(#mcNav) {
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+  }
+  /* FIX: scField had z-index:100 (same as mc-nav) and could overlap nav buttons.
+     Lowered to avoid conflict with the bottom navigation bar. */
+  #reviews > #scField {
+    z-index: 50 !important;
+  }
+}
 @media (max-width: 768px) {
   .site-header {
     transition: transform 0.28s cubic-bezier(0.4,0,0.2,1),

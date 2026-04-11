@@ -94,7 +94,7 @@
         '.mc-nav{',
           'display:flex;',
           'position:fixed;bottom:0;left:0;right:0;',
-          'z-index:100;',
+          'z-index:105;',
           'height:calc(60px + env(safe-area-inset-bottom));',
           'padding-bottom:env(safe-area-inset-bottom);',
           'background:rgba(253,251,247,0.99);',
@@ -157,9 +157,10 @@
           'background:rgba(44,26,16,0);',
           'transition:background 0.3s ease;',
           '-webkit-tap-highlight-color:transparent;',
+          'pointer-events:none;',
         '}',
         '.mc-sheet-backdrop.mc-open{',
-          'display:block;',
+          'pointer-events:auto;',
           'background:rgba(44,26,16,0.45);',
         '}',
         '.mc-sheet{',
@@ -331,6 +332,10 @@
     nav.appendChild(moreBtn);
 
     document.body.appendChild(nav);
+    // FIX: ensure body has bottom padding for mc-nav (fallback for CSS :has() rule)
+    if (!document.body.style.paddingBottom) {
+      document.body.style.paddingBottom = 'calc(60px + env(safe-area-inset-bottom, 0px))';
+    }
 
     // ── Построить slide-up панель ──
     var backdrop = document.createElement('div');
@@ -565,12 +570,23 @@
   function emergencyReset() {
     if (document.body.dataset.mcSheetOpen) {
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
       delete document.body.dataset.mcSheetOpen;
     }
-    // Убрать position:fixed если вдруг застрял от старой версии
+    // Убрать position:fixed если вдруг застрял (fill-open-ios bug)
     if (document.body.style.position === 'fixed') {
       document.body.style.position = '';
       document.body.style.top = '';
+    }
+    // FIX: reset html+body overflow and lockCount on any stuck state
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
+    document.body.dataset.lockCount = '0';
+    // FIX: clean fill-open-ios state on bfcache restore
+    if (document.body.classList.contains('fill-open-ios')) {
+      document.body.classList.remove('fill-open-ios');
+      document.body.style.top = '';
+      document.body.style.position = '';
     }
     var s = document.getElementById('mcSheet');
     var b = document.getElementById('mcBackdrop');
@@ -578,6 +594,9 @@
     if (b) b.classList.remove('mc-open');
     var mb = document.getElementById('mcMoreBtn');
     if (mb) { mb.setAttribute('aria-expanded','false'); mb.classList.remove('mc-active'); }
+    // FIX: make sure mc-nav is visible after reset
+    var nav = document.getElementById('mcNav');
+    if (nav) nav.classList.remove('mc-nav--hidden');
   }
   // bfcache — когда пользователь вернулся кнопкой "назад"
   window.addEventListener('pageshow', function(e) {
