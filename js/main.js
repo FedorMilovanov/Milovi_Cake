@@ -840,6 +840,7 @@ window.unlockBody = unlockBody;
 // Emergency cleanup: if user navigates back (bfcache), ensure body is unlocked
 window.addEventListener('pageshow', function(e) {
   if (e.persisted) {
+    closeCalcPanel();
     document.body.dataset.lockCount = '0';
     document.body.style.overflow = '';
     document.documentElement.style.overflow = '';
@@ -881,6 +882,7 @@ function openCart() {
   var overlay = document.getElementById('cartOverlay');
   if (!drawer || !overlay) return;
 
+  closeCalcPanel();
   // Close the mobile nav sheet if open
   if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
 
@@ -979,6 +981,7 @@ window.addEventListener('orientationchange', function() {
 window.addEventListener('pageshow', function(e) {
   if (e.persisted) {
     _cartForceClose();
+    closeCalcPanel();
     // FIX: clean up fill popup state in case it was open when user navigated away
     if (document.body.classList.contains('fill-open-ios')) {
       document.body.classList.remove('fill-open-ios');
@@ -1074,6 +1077,7 @@ document.querySelectorAll('img').forEach(function(img) {
 // ── CART ESCAPE KEY TO CLOSE ──
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
+    closeCalcPanel();
     const drawer = document.getElementById('cartDrawer');
     if (drawer && drawer.classList.contains('open')) closeCart();
   }
@@ -1537,6 +1541,7 @@ let _lbSrcs = [], _lbIdx = 0;
 
 function openLightbox(src, srcs) {
   if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
+  closeCalcPanel();
   const lb = document.getElementById('lightbox');
   const lbImg = document.getElementById('lightboxImg');
   if (!lb || !lbImg) return;
@@ -1902,6 +1907,10 @@ function updateCalc() {
   const calcResultEl = document.getElementById('calcResult');
   if (calcResultEl) calcResultEl.textContent = prefix + total.toLocaleString('ru') + ' ₽';
 
+  // Sync collapsed bar price (mobile)
+  const collapsedPrice = document.getElementById('calcResultCollapsed');
+  if (collapsedPrice) collapsedPrice.textContent = prefix + total.toLocaleString('ru') + ' ₽';
+
   const calcNoteEl = document.getElementById('calcNote');
   if (calcNoteEl) calcNoteEl.textContent = noteText;
 
@@ -2078,6 +2087,7 @@ initCookieBanner();
 // ── Privacy modal ──
 function openPrivacy() {
   if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
+  closeCalcPanel();
   const el = document.getElementById('privacyOverlay');
   if (!el) return;
   el.classList.add('open');
@@ -2143,9 +2153,31 @@ function _fillPopupRender(optEl) {
 
 // ── Fill toast: brief confirmation snackbar after tap ──
 let _fillToastTimer = null;
+// ── Раскрывающаяся панель стоимости (мобильная) ──
+function toggleCalcPanel() {
+  if (window.innerWidth > 560) return; // только мобильный
+  const col = document.getElementById('calcRightCol');
+  if (!col) return;
+  col.classList.toggle('calc-result-open');
+}
+
+function closeCalcPanel() {
+  const col = document.getElementById('calcRightCol');
+  if (col) col.classList.remove('calc-result-open');
+}
+
+// Закрыть панель при тапе вне её
+document.addEventListener('click', function(e) {
+  if (window.innerWidth > 560) return;
+  const col = document.getElementById('calcRightCol');
+  if (!col || !col.classList.contains('calc-result-open')) return;
+  if (!col.contains(e.target)) closeCalcPanel();
+}, { passive: true });
+
 function showFillToast(optEl, groupId) {
   // Close mobile nav sheet if it's open
   if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
+  closeCalcPanel();
   const title = optEl.querySelector('.opt-label')?.textContent?.trim() || '';
   const tooltipEl = optEl.querySelector('.fill-tooltip');
   const desc = tooltipEl
@@ -2318,6 +2350,7 @@ document.addEventListener('keydown', e => {
     if (typeof closeLightbox === 'function') closeLightbox();
     closePrivacy();
     closeFillPopup();
+    closeCalcPanel();
     const _cartDr = document.getElementById('cartDrawer');
     if (_cartDr && _cartDr.classList.contains('open')) closeCart();
   }
@@ -2498,6 +2531,7 @@ const CHAT_SRCS = [
 // Открываем скриншот отзыва через лайтбокс отзывов (#lbOverlay / #lbImg)
 function openChatLightbox(idx) {
   if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
+  closeCalcPanel();
   const overlay = document.getElementById('lbOverlay');
   const img     = document.getElementById('lbImg');
   if (!overlay || !img) return;
@@ -2533,6 +2567,7 @@ function openChatLightbox(idx) {
 ══════════════════════════════════════════ */
 function openReviewsModal(tab) {
   if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
+  closeCalcPanel();
   const modal = document.getElementById('reviewsModal');
   if (!modal) return;
   if (modal.classList.contains('open')) return; // idempotent
@@ -3367,6 +3402,7 @@ function lerp(a,b,t){ return a+(b-a)*t; }
 
 function openLB(triggerEl, src, idx){
   if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
+  closeCalcPanel();
   // Force-reset if stuck
   if(lbBusy){ lbBusy=false; lbIsOpen=false; lbOverlay.classList.remove('active'); }
   if(waitTimer){ clearTimeout(waitTimer); waitTimer=null; }

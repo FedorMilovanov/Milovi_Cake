@@ -370,24 +370,43 @@
         </div><!-- /.calc-left-col -->
 
         <!-- ПРАВАЯ КОЛОНКА: итог -->
-        <div class="calc-right-col">
+        <div class="calc-right-col" id="calcRightCol">
           <div class="calc-result" id="calcResultBox">
-            <div class="calc-result-label" id="calcLabel">Примерная стоимость</div>
-            <div class="calc-result-price" id="calcResult">5 600 ₽</div>
-            <div class="calc-result-summary" id="calcSummary"></div>
-            <div class="calc-result-note" id="calcNote">Точная цена согласовывается при заказе</div>
-            <div class="calc-add-row">
-              <button class="calc-add-btn" onclick="addCalcToCartOnly(this)">
-                <span class="calc-add-btn-label">Добавить в корзину</span>
-              </button>
-              <button class="calc-open-cart-btn" id="calcOpenCartBtn" onclick="openCart()" aria-label="Открыть корзину">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-                </svg>
-                <span class="calc-open-cart-badge" id="calcCartBadge">0</span>
-              </button>
+
+            <!-- Компактная полоска — всегда видна, тап раскрывает -->
+            <div class="calc-result-collapsed" id="calcCollapsedBar" onclick="toggleCalcPanel()">
+              <div class="calc-result-collapsed-handle"></div>
+              <div style="display:flex;flex-direction:column;gap:1px;flex:1;padding-top:6px;">
+                <span class="calc-result-collapsed-label">Примерная стоимость</span>
+                <span class="calc-result-collapsed-price" id="calcResultCollapsed">5 600 ₽</span>
+              </div>
+              <div class="calc-result-collapsed-arrow" aria-label="Подробнее">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+              </div>
             </div>
+
+            <!-- Раскрывающаяся часть — полный блок -->
+            <div class="calc-result-expandable" id="calcExpandable">
+              <div class="calc-result-expand-inner">
+                <div class="calc-result-label" id="calcLabel">Примерная стоимость</div>
+                <div class="calc-result-price" id="calcResult">5 600 ₽</div>
+                <div class="calc-result-summary" id="calcSummary"></div>
+                <div class="calc-result-note" id="calcNote">Точная цена согласовывается при заказе</div>
+                <div class="calc-add-row">
+                  <button class="calc-add-btn" onclick="addCalcToCartOnly(this)">
+                    <span class="calc-add-btn-label">Добавить в корзину</span>
+                  </button>
+                  <button class="calc-open-cart-btn" id="calcOpenCartBtn" onclick="openCart()" aria-label="Открыть корзину">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                    </svg>
+                    <span class="calc-open-cart-badge" id="calcCartBadge">0</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div><!-- /.calc-right-col -->
 

@@ -1152,6 +1152,19 @@ body {
   display: block;
   margin-top: 0;
 }
+
+/* ── Expandable panel — desktop: show full, hide collapsed bar ── */
+.calc-result-collapsed { display: none; }
+.calc-result-expandable {
+  max-height: none !important;
+  overflow: visible !important;
+  display: contents; /* transparent wrapper — children act as direct flex children */
+}
+.calc-result-expand-inner {
+  display: contents; /* same — pass through to flex parent */
+  padding: 0;
+  border-top: none;
+}
 .calc-row { margin-bottom: 28px; overflow: visible; }
 .calc-row label,
 .calc-row .calc-label { display: block; font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; text-align: center; }
@@ -2726,52 +2739,133 @@ section { padding: 100px 60px; }
 
   /* ══ КАЛЬКУЛЯТОР — мобильный редизайн ══ */
 
-  /* Блок стоимости — sticky снизу, над навбаром */
+  /* ══ БЛОК СТОИМОСТИ — раскрывающаяся sticky панель ══ */
   .calc-right-col {
-    position: sticky !important;
+    position: fixed !important;
+    left: 0; right: 0;
     bottom: calc(60px + env(safe-area-inset-bottom, 0px)) !important;
     transition: bottom 0.28s cubic-bezier(.4,0,.2,1);
     top: auto !important;
     order: 99 !important;
     z-index: 104;
-    margin: 0 -20px -28px;
-    width: calc(100% + 40px);
+    margin: 0;
+    width: 100%;
   }
+  body.mc-nav-hidden .calc-right-col {
+    bottom: env(safe-area-inset-bottom, 0px) !important;
+  }
+  /* Тёмная область за панелью при раскрытии */
+  .calc-right-col::before {
+    content: '';
+    display: block;
+    position: absolute;
+    inset: 0; top: auto;
+    height: 0;
+    background: rgba(0,0,0,0);
+    transition: height 0s, background 0.3s;
+    pointer-events: none;
+    z-index: -1;
+  }
+  /* Основной блок */
   .calc-right-col .calc-result {
     border-radius: 20px 20px 0 0 !important;
-    padding: 16px 20px 14px !important;
+    padding: 0 !important;
     min-height: auto !important;
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
-    align-items: center !important;
-    gap: 0 12px !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    gap: 0 !important;
     text-align: left !important;
+    overflow: hidden !important;
+    box-shadow: 0 -8px 40px rgba(0,0,0,0.35) !important;
   }
-  .calc-right-col .calc-result-label {
-    width: 100%;
-    font-size: 9px !important;
-    margin-bottom: 2px !important;
-    text-align: left !important;
+  /* Компактная всегда-видимая полоска */
+  .calc-result-collapsed {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px 14px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
   }
-  .calc-right-col .calc-result-price {
-    font-size: 34px !important;
-    margin-bottom: 0 !important;
-    line-height: 1 !important;
+  .calc-result-collapsed-handle {
+    position: absolute;
+    top: 8px; left: 50%;
+    transform: translateX(-50%);
+    width: 36px; height: 4px;
+    background: rgba(255,220,150,0.25);
+    border-radius: 2px;
+    transition: background 0.2s;
+  }
+  .calc-result-collapsed:active .calc-result-collapsed-handle {
+    background: rgba(255,220,150,0.5);
+  }
+  .calc-result-collapsed-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.45);
+    font-family: 'Jost', sans-serif;
+    white-space: nowrap;
+  }
+  .calc-result-collapsed-price {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--gold-light, #e8c98a);
+    line-height: 1;
+    flex: 1;
+  }
+  .calc-result-collapsed-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: rgba(255,220,150,0.1);
+    border: 1px solid rgba(255,220,150,0.2);
+    color: rgba(255,220,150,0.7);
     flex-shrink: 0;
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), background 0.2s;
+  }
+  /* Раскрытый блок */
+  .calc-result-expandable {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.42s cubic-bezier(0.4,0,0.2,1);
+  }
+  .calc-result-expand-inner {
+    padding: 0 20px 18px;
+    border-top: 1px solid rgba(201,147,74,0.12);
+  }
+  /* Открытое состояние */
+  .calc-right-col.calc-result-open .calc-result-expandable {
+    max-height: 340px;
+  }
+  .calc-right-col.calc-result-open .calc-result-collapsed-arrow {
+    transform: rotate(180deg);
+    background: rgba(255,220,150,0.18);
+  }
+  /* Скрыть ненужное из оригинального блока */
+  .calc-right-col .calc-result-label { display: none !important; }
+  .calc-right-col .calc-result-price { display: none !important; }
+  .calc-right-col .calc-result-note {
+    display: block !important;
+    font-size: 11px;
+    color: rgba(255,255,255,0.3);
+    margin-top: 4px;
+    margin-bottom: 12px;
   }
   .calc-right-col .calc-result-summary {
-    flex: 1;
-    margin: 0 !important;
-    font-size: 11px;
-    text-align: left;
-    min-width: 80px;
+    display: flex !important;
+    margin: 12px 0 4px !important;
+    gap: 5px !important;
   }
-  .calc-right-col .calc-result-note { display: none; }
-  .calc-right-col .calc-result-summary { display: none; }
-
-body.mc-nav-hidden .calc-right-col {
-  bottom: env(safe-area-inset-bottom, 0px) !important;
-}
+  .calc-right-col .calc-summary-chip {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
   .calc-add-row {
     width: 100%;
     margin-top: 10px;
@@ -2784,6 +2878,10 @@ body.mc-nav-hidden .calc-right-col {
     padding: 12px 16px !important;
     font-size: 14px !important;
     height: 46px;
+  }
+  /* Паддинг снизу у страницы чтобы контент не скрывался под панелью */
+  .fillings .container {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   }
 
   /* ── НАЧИНКИ: 2 равные колонки с фиксированной высотой ── */
