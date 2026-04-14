@@ -14,7 +14,7 @@
   <meta name="yandex-verification" content="9bde19424208d6ce" />
   <meta property="og:title" content="Milovi Cake — Авторские торты на заказ в СПб" />
   <meta property="og:description" content="Заказать торт СПб с доставкой на дом — свадебный, на день рождения, бенто, детский." />
-  <meta property="og:image" content="https://milovicake.ru/img/hero.jpg" />
+  <meta property="og:image" content="https://milovicake.ru/img/og-cover.jpg" />
   <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -24,9 +24,10 @@
   <meta property="og:locale" content="ru_RU" />
   <meta property="og:site_name" content="Milovi Cake" />
   <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@milovi_cake" />
   <meta name="twitter:title" content="Milovi Cake — Авторские торты на заказ в СПб" />
   <meta name="twitter:description" content="Бисквитные, бенто, 3D-торты, меренговые рулеты, Павлова, капкейки. Доставка по СПб." />
-  <meta name="twitter:image" content="https://milovicake.ru/img/hero.jpg" />
+  <meta name="twitter:image" content="https://milovicake.ru/img/og-cover.jpg" />
   <link rel="canonical" href="https://milovicake.ru/" />
   <meta name="theme-color" content="#c9934a" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#3d2b1f" media="(prefers-color-scheme: dark)" />
@@ -46,15 +47,6 @@
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/></noscript>
 
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {"@type": "ListItem", "position": 1, "name": "Главная", "item": "https://milovicake.ru/"}
-    ]
-  }
-  </script>
 
   <script type="application/ld+json">
   {
@@ -62,15 +54,9 @@
     "@type": "Person",
     "name": "Милованова Виктория",
     "jobTitle": "Частный кондитер",
-    "worksFor": {
-      "@type": "LocalBusiness",
-      "name": "Milovi Cake",
-      "url": "https://milovicake.ru/"
-    },
+    "worksFor": { "@id": "https://milovicake.ru/#business" },
     "url": "https://milovicake.ru/",
     "sameAs": [
-      "https://vk.com/milovi_cake",
-      "https://t.me/MiloviCake",
       "https://www.instagram.com/milovi_cake/"
     ],
     "address": {
@@ -85,6 +71,7 @@
   {
     "@context": "https://schema.org",
     "@type": ["LocalBusiness", "Bakery"],
+    "@id": "https://milovicake.ru/#business",
     "name": "Milovi Cake",
     "description": "Авторские торты и десерты ручной работы на заказ в Санкт-Петербурге. Бисквитные торты, бенто, 3D-торты, меренговые рулеты, Павлова, капкейки. Доставка по СПб и Ленобласти.",
     "url": "https://milovicake.ru/",
@@ -110,7 +97,7 @@
     "openingHoursSpecification": [
       {
         "@type": "OpeningHoursSpecification",
-        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
         "opens": "10:00",
         "closes": "22:00"
       }
@@ -121,7 +108,7 @@
     "aggregateRating": {
       "@type": "AggregateRating",
       "ratingValue": "4.8",
-      "reviewCount": "32",
+      "reviewCount": "8",
       "bestRating": "5",
       "worstRating": "1"
     },
@@ -209,7 +196,7 @@
 <body style="background:#f5f0e8">
 
 <!-- SKIP LINK -->
-<a href="#catalog" class="skip-link">Перейти к содержимому</a>
+<a href="#main-content" class="skip-link">Перейти к содержимому</a>
 
 
 <div id="scroll-progress"></div>
@@ -287,7 +274,7 @@
     <picture>
       <source media="(max-width: 768px)" srcset="img/head_mobile.webp" />
       <source media="(min-width: 769px)" srcset="img/head_desktop.webp" />
-      <img src="img/head.webp" alt="Авторский торт Milovi Cake" fetchpriority="high" decoding="sync" width="1920" height="1080" />
+      <img src="img/head.webp" alt="Авторский торт Milovi Cake" fetchpriority="high" decoding="async" width="1920" height="1080" />
     </picture>
   </div>
   <div class="hero-content">
@@ -773,11 +760,11 @@
           </a>
         </div>
         <div class="messenger-bar">
-          <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D1%81%D0%B4%D0%B5%D0%BB%D0%B0%D1%82%D1%8C%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7" target="_blank" class="messenger-bar-btn messenger-bar-wa">
+          <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D1%81%D0%B4%D0%B5%D0%BB%D0%B0%D1%82%D1%8C%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7" target="_blank" rel="noopener noreferrer" class="messenger-bar-btn messenger-bar-wa">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
             WhatsApp
           </a>
-          <a href="https://t.me/+79119038886" target="_blank" class="messenger-bar-btn messenger-bar-tg">
+          <a href="https://t.me/+79119038886" target="_blank" rel="noopener noreferrer" class="messenger-bar-btn messenger-bar-tg">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.96 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
             Telegram
           </a>
@@ -786,28 +773,28 @@
             MAX
           </a>
         </div>
-        <p class="consent-note" style="text-align:left;">Нажимая кнопку, вы даёте согласие на <a href="javascript:void(0)" onclick="openPrivacy()">обработку персональных данных</a></p>
+        <p class="consent-note" style="text-align:left;">Нажимая кнопку, вы даёте согласие на <a href="#" onclick="openPrivacy(); return false;">обработку персональных данных</a></p>
         <div class="social-divider"><span>Мы в соцсетях</span></div>
         <div class="social-links">
-          <a href="https://vk.com/milovi_cake" target="_blank" class="social-link vk">
+          <a href="https://vk.com/milovi_cake" target="_blank" rel="noopener noreferrer" class="social-link vk">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.05-1.727-1.033-1-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C5.044 10.8 4.06 8.494 4.06 8.087c0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.677.863 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.203.17-.407.44-.407h2.744c.373 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.253-1.406 2.151-3.574 2.151-3.574.119-.254.322-.491.762-.491h1.744c.525 0 .644.27.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.779 1.203 1.253.745.847 1.32 1.558 1.473 2.05.17.49-.085.745-.576.745z"/></svg>
             ВКонтакте
           </a>
-          <a href="https://t.me/MiloviCake" target="_blank" class="social-link tg">
+          <a href="https://t.me/MiloviCake" target="_blank" rel="noopener noreferrer" class="social-link tg">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.96 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
             Telegram
           </a>
-          <a href="https://www.youtube.com/channel/UCMDnxfGZiBqcDzgUV1zjFpw" target="_blank" class="social-link yt">
+          <a href="https://www.youtube.com/channel/UCMDnxfGZiBqcDzgUV1zjFpw" target="_blank" rel="noopener noreferrer" class="social-link yt">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
             YouTube
           </a>
         </div>
         <div class="social-links" style="margin-top:10px">
-          <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/" target="_blank" class="social-link ya">
+          <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/" target="_blank" rel="noopener noreferrer" class="social-link ya">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11.998 0C5.366 0 0 5.367 0 12c0 6.634 5.366 12 11.998 12C18.633 24 24 18.634 24 12 24 5.367 18.633 0 11.998 0zm.004 4.457c1.748 0 3.15.47 4.205 1.41 1.056.94 1.583 2.198 1.583 3.77 0 1.133-.3 2.104-.9 2.912-.6.808-1.478 1.393-2.635 1.757L17.1 19.5h-2.818l-2.57-4.89h-1.04V19.5H8.13V4.457h3.872zm-.107 2.18H10.67v5.85h1.332c1.005 0 1.77-.245 2.297-.735.526-.49.79-1.19.79-2.1 0-.896-.261-1.58-.783-2.05-.522-.47-1.28-.705-2.275-.705-.046 0-.09.003-.136.004v.036z"/></svg>
             Яндекс Карты
           </a>
-          <a href="https://maps.app.goo.gl/6aCJvobUQPcBZTmz6" target="_blank" class="social-link google">
+          <a href="https://maps.app.goo.gl/6aCJvobUQPcBZTmz6" target="_blank" rel="noopener noreferrer" class="social-link google">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
             Google Карты
           </a>
@@ -820,7 +807,7 @@
           <div class="form-group float-label"><input type="text" id="fname" placeholder=" " autocomplete="name" /><label for="fname">Как к Вам обращаться?</label></div>
           <div class="form-group float-label"><input type="tel" id="fphone" placeholder=" " required autocomplete="tel" inputmode="tel" /><label for="fphone">Телефон</label></div>
           <div class="form-group float-label"><textarea id="fcomment" placeholder=" "></textarea><label for="fcomment">Комментарий — вес, декор, дата…</label></div>
-          <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="javascript:void(0)" onclick="openPrivacy()">обработкой персональных данных</a></p>
+          <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="#" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
           <button type="submit" class="btn-wa">Отправить Заказ</button>
         </form>
       </div>
@@ -856,14 +843,14 @@
       <div class="footer-col">
         <h4>Контакты</h4>
         <a href="tel:+79119038886">+7 911 903 88 86</a>
-        <a href="https://wa.me/79119038886" target="_blank">WhatsApp</a>
-        <a href="https://t.me/MiloviCake" target="_blank">Telegram</a>
+        <a href="https://wa.me/79119038886" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        <a href="https://t.me/+79119038886" target="_blank" rel="noopener noreferrer">Telegram</a>
         <p class="footer-hours" id="footerHours">Пн–Сб, 10:00–22:00</p>
       </div>
     </div>
     <div class="footer-bottom">
       <span class="wave-text">© 2020–2026 Milovi Cake. Все права защищены.</span>
-      <a href="javascript:void(0)" onclick="openPrivacy()">Политика конфиденциальности</a>
+      <a href="#" onclick="openPrivacy(); return false;">Политика конфиденциальности</a>
       <span style="color:rgba(237,224,204,0.25);font-size:11px;">Самозанятая · Милованова Виктория · ИНН: 263006403654</span>
     </div>
   </div>
@@ -1057,7 +1044,7 @@
 
 <!-- COOKIE BANNER -->
 <div id="cookieBanner">
-  <span>Мы используем файлы cookie для улучшения работы сайта. <a href="javascript:void(0)" onclick="openPrivacy()">Политика конфиденциальности</a></span>
+  <span>Мы используем файлы cookie для улучшения работы сайта. <a href="#" onclick="openPrivacy(); return false;">Политика конфиденциальности</a></span>
   <button id="cookieDecline" onclick="declineCookie()">Отказаться</button>
   <button id="cookieAccept" onclick="acceptCookie()">Принять</button>
 </div>
@@ -1096,19 +1083,19 @@
         <h4>Ваши данные</h4>
         <div class="form-group float-label"><input type="text" id="cname" placeholder=" " autocomplete="name" /><label for="cname">Как к Вам обращаться?</label></div>
         <div class="form-group float-label"><input type="tel" id="cphone" placeholder=" " required autocomplete="tel" inputmode="tel" /><label for="cphone">Телефон</label></div>
-        <div class="form-group float-label"><input type="text" id="cdate" placeholder=" " autocomplete="off" /><label for="cdate">Дата</label></div>
+        <div class="form-group float-label"><input type="date" id="cdate" placeholder=" " autocomplete="off" /><label for="cdate">Дата</label></div>
         <div class="form-group float-label"><textarea id="ccomment" placeholder=" " style="min-height:52px;"></textarea><label for="ccomment">Вес, декор, доставка/самовывоз…</label></div>
       </form>
     </div>
     <div class="cart-actions">
-      <a id="btnWA" href="#" target="_blank" class="btn-tg wa" onclick="buildWA(event)">
+      <a id="btnWA" href="#" target="_blank" rel="noopener noreferrer" class="btn-tg wa" onclick="buildWA(event)">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
         Отправить в WhatsApp
       </a>
-      <a id="btnTG" href="#" target="_blank" class="btn-tg tg" onclick="buildTG(event)">Отправить в Telegram</a>
+      <a id="btnTG" href="#" target="_blank" rel="noopener noreferrer" class="btn-tg tg" onclick="buildTG(event)">Отправить в Telegram</a>
       <a href="tel:+79119038886" class="btn-tg call">📞 Позвонить +7 911 903 88 86</a>
     </div>
-    <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="javascript:void(0)" onclick="openPrivacy()">обработкой персональных данных</a></p>
+    <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="#" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
   </div>
 </div>
 

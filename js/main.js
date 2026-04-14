@@ -215,7 +215,6 @@ function sliderStep(pid, dir, total) {
 
 // ── CALCULATOR STATE & CONFIG (must be before initApp to avoid TDZ) ──
 let _calcWeight = 2;
-const WEIGHT_MIN = 2, WEIGHT_MAX = 10, WEIGHT_STEP = 0.5;
 let _calcQty = 1;
 let _cakeType = 'biscuit'; // biscuit | bento | bentomaxi | cake3d
 
@@ -223,7 +222,7 @@ let _cakeType = 'biscuit'; // biscuit | bento | bentomaxi | cake3d
 const CAKE_CONFIGS = {
   biscuit:   { weightMin: 2, weightMax: 10, weightStep: 0.5, hasWeight: true,  hasQty: false, pricePerKg: 2800, fixedPrice: null, fillGroup: 'calcFill' },
   bento:     { weightMin: 1, weightMax: 1,  weightStep: 1,   hasWeight: false, hasQty: true,  pricePerKg: null, fixedPrice: 1600, fillGroup: 'calcFillBento' },
-  bentomaxi: { weightMin: 3, weightMax: 5,  weightStep: 0.5, hasWeight: true,  hasQty: true,  pricePerKg: null, fixedPrice: 3000, fillGroup: 'calcFillBento' },
+  bentomaxi: { weightMin: 3, weightMax: 5,  weightStep: 0.5, hasWeight: false, hasQty: true,  pricePerKg: null, fixedPrice: 3000, fillGroup: 'calcFillBento' },
   cake3d:    { weightMin: 3, weightMax: 15, weightStep: 0.5, hasWeight: true,  hasQty: false, pricePerKg: 5000, fixedPrice: null, fillGroup: 'calcFill3d'   },
 };
 
@@ -565,6 +564,9 @@ function updateCartUI() {
   const countBadge = document.getElementById('cartCountBadge');
   if (countBadge) countBadge.textContent = totalItems;
 
+  // Синхронизируем бейдж калькулятора при любом изменении корзины
+  if (typeof updateCalcCartBadge === 'function') updateCalcCartBadge();
+
   const clearBtn = document.getElementById('cartClearBtn');
   if (clearBtn) clearBtn.style.display = totalItems > 0 ? 'inline-flex' : 'none';
 
@@ -699,9 +701,9 @@ function buildMessage() {
 
   if (!Object.keys(cart).length) { showToast('Корзина пуста — добавьте товар'); return null; }
   if (!phone || phone === '—') { showToast('Пожалуйста, укажите телефон'); return null; }
-  // Validate phone digits
+  // Validate phone digits (минимум 11 цифр для полного российского номера)
   const phoneDigits = phone.replace(/\D/g, '');
-  if (phoneDigits.length < 10) {
+  if (phoneDigits.length < 11) {
     showToast('Введите корректный номер телефона');
     if (cphoneEl) cphoneEl.focus();
     return null;
@@ -777,7 +779,7 @@ function sendFormWA() {
   const comment = document.getElementById('fcomment').value.trim() || '—';
   if (!phone) { showToast('Пожалуйста, укажите телефон'); document.getElementById('fphone').focus(); return; }
   const phoneDigits = phone.replace(/\D/g, '');
-  if (phoneDigits.length < 10) { showToast('Введите корректный номер телефона'); document.getElementById('fphone').focus(); return; }
+  if (phoneDigits.length < 11) { showToast('Введите корректный номер телефона'); document.getElementById('fphone').focus(); return; }
   const msg = encodeURIComponent(`Привет! 👋\nИмя: ${name}\nТелефон: ${phone}\nКомментарий: ${comment}`);
   window.open(`https://wa.me/79119038886?text=${msg}`, '_blank');
 }
@@ -805,7 +807,6 @@ function goBackToCart() {
 }
 
 // ── iOS-safe scroll lock ──
-var _isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 function lockBody() {
   var count = parseInt(document.body.dataset.lockCount || '0');
   if (count === 0) {
@@ -838,15 +839,6 @@ function unlockBody() {
 window.lockBody = lockBody;
 window.unlockBody = unlockBody;
 // Emergency cleanup: if user navigates back (bfcache), ensure body is unlocked
-window.addEventListener('pageshow', function(e) {
-  if (e.persisted) {
-    closeCalcPanel();
-    document.body.dataset.lockCount = '0';
-    document.body.style.overflow = '';
-    document.documentElement.style.overflow = '';
-    document.body.style.paddingRight = '';
-  }
-});
 
 // ═══════════════════════════════════════════════════════════════
 // CART — Production-ready state machine
@@ -980,9 +972,13 @@ window.addEventListener('orientationchange', function() {
 // bfcache restore — ensure clean state
 window.addEventListener('pageshow', function(e) {
   if (e.persisted) {
-    _cartForceClose();
     closeCalcPanel();
-    // FIX: clean up fill popup state in case it was open when user navigated away
+    _cartForceClose();
+    document.body.dataset.lockCount = '0';
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+    document.body.style.paddingRight = '';
+    // Clean up fill popup state in case it was open when user navigated away
     if (document.body.classList.contains('fill-open-ios')) {
       document.body.classList.remove('fill-open-ios');
       document.body.style.top = '';
@@ -1354,10 +1350,9 @@ function initSectionTitleWords() {
 function initApp() {
   renderCatalogNav();
   renderCatalog(); // calls observeReveal() internally for catalog cards
-  // Wire lightbox after DOM settles — increased timeout avoids race with renderCatalog
+  // Wire lightbox after DOM settles — timeout avoids race with renderCatalog
+  // _lbBound flag on each slider prevents double-binding if called again
   setTimeout(wireProductLightbox, 400);
-  // Second attempt ensures it wires even on slow devices
-  setTimeout(wireProductLightbox, 1200);
   loadCartFromStorage();
   updateCartUI();
   observeReveal(); // picks up static .reveal elements (hero, sections, etc.)
@@ -1444,7 +1439,6 @@ setTimeout(() => {
 
 // ── ОБЪЕДИНЁННЫЙ SCROLL HANDLER (один rAF на все) ──
 const _scrollEl = document.getElementById('scroll-progress');
-const header = document.getElementById('siteHeader');
 const contactsSection = document.getElementById('contacts');
 const backToTopEl = document.getElementById('backToTop');
 let _scrollTicking = false;
@@ -1459,8 +1453,7 @@ function _onScroll() {
     // Progress bar
     if (_scrollEl) _scrollEl.style.width = (y / total * 100) + '%';
 
-    // Header scrolled state
-    if (header) header.classList.toggle('scrolled', y > 60);
+    // Header scrolled state handled by inline script (avoids double toggle)
 
     // Back to top
     if (backToTopEl) backToTopEl.classList.toggle('visible', y > 600);
@@ -1539,6 +1532,12 @@ if (burgerBtn && mobileMenu) {
 // ── LIGHTBOX with gallery + swipe ──
 let _lbSrcs = [], _lbIdx = 0;
 
+// Генерирует alt-текст из пути к изображению для скринридеров
+function _lbAltFromSrc(src) {
+  const file = (src || '').split('/').pop().replace(/\.[^.]+$/, '').replace(/[_-]/g, ' ');
+  return file ? 'Фото торта Milovi Cake — ' + file : 'Фото торта Milovi Cake';
+}
+
 function openLightbox(src, srcs) {
   if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
   closeCalcPanel();
@@ -1550,6 +1549,7 @@ function openLightbox(src, srcs) {
   _lbIdx = _lbSrcs.findIndex(s => src.endsWith(s) || s.endsWith(src) || src === s);
   if (_lbIdx < 0) _lbIdx = 0;
   lbImg.src = _lbSrcs[_lbIdx];
+  lbImg.alt = _lbAltFromSrc(_lbSrcs[_lbIdx]);
   lb.classList.add('open');
   lockBody(); // iOS-safe scroll lock
   _lbUpdateArrows();
@@ -1564,6 +1564,7 @@ function lbNavigate(dir) {
   img.style.transition = 'opacity 0.15s';
   setTimeout(() => {
     img.src = _lbSrcs[_lbIdx];
+    img.alt = _lbAltFromSrc(_lbSrcs[_lbIdx]);
     img.style.opacity = '1';
   }, 150);
   _lbUpdateArrows();
@@ -1738,7 +1739,7 @@ function stepQty(dir) {
 let _guestsTimer = null;
 function stepWeight(dir) {
   const cfg = CAKE_CONFIGS[_cakeType] || CAKE_CONFIGS.biscuit;
-  const step = cfg.weightStep || WEIGHT_STEP;
+  const step = cfg.weightStep || 0.5;
   const newVal = Math.round((_calcWeight + dir * step) * 10) / 10;
   if (newVal < cfg.weightMin || newVal > cfg.weightMax) return;
   _calcWeight = newVal;
@@ -3370,7 +3371,9 @@ function _lbReviewNav(dir) {
   lbImg.style.opacity = '0';
   lbImg.style.transform = 'scale(0.95)';
   setTimeout(() => {
-    lbImg.src = REVIEWS[_lbReviewIdx].src;
+    const rev = REVIEWS[_lbReviewIdx];
+    lbImg.src = rev.src;
+    lbImg.alt = 'Отзыв ' + (_lbReviewIdx + 1) + ': ' + rev.text;
     lbImg.onload = () => {
       lbImg.style.opacity = '1';
       lbImg.style.transform = 'scale(1)';
@@ -3411,6 +3414,7 @@ function openLB(triggerEl, src, idx){
   lbImg.src = src;
   // Инициализируем счётчик стрелок
   _lbReviewIdx = typeof idx === 'number' ? idx : 0;
+  lbImg.alt = 'Отзыв ' + (_lbReviewIdx + 1) + ': ' + REVIEWS[_lbReviewIdx].text;
   lbImg.style.opacity = '1';
   lbImg.style.transform = 'scale(1)';
   lbImg.style.transition = 'opacity 0.2s, transform 0.2s';
@@ -3578,6 +3582,9 @@ document.addEventListener('visibilitychange', () => {
     if (!mapping) return;
 
     const { id, mode } = mapping;
+    // Составной ключ совпадает с форматом addToCart из каталога
+    const p = products.find(x => x.id === id);
+    const cartKey = (p && p.hasMaxi) ? `${id}:${mode}` : String(id);
 
     // Определяем количество/вес
     let qty;
@@ -3590,16 +3597,15 @@ document.addEventListener('visibilitychange', () => {
     }
 
     // Умное суммирование: если товар уже в корзине того же режима — суммируем
-    if (cart[id] && cart[id].mode === mode) {
-      const p = products.find(x => x.id === id);
+    if (cart[cartKey] && cart[cartKey].mode === mode) {
       const maxQty = cfg.fixedPrice !== null ? 20 : (cfg.weightMax || 20);
-      cart[id].qty = Math.min(
-        Math.round((cart[id].qty + qty) * 10) / 10,
+      cart[cartKey].qty = Math.min(
+        Math.round((cart[cartKey].qty + qty) * 10) / 10,
         maxQty
       );
     } else {
       // Иначе — заменяем (другой режим или нет в корзине)
-      cart[id] = { qty, mode };
+      cart[cartKey] = { qty, mode };
     }
 
     // Собираем заметку о начинке и декоре для отображения в корзине
@@ -3608,8 +3614,8 @@ document.addEventListener('visibilitychange', () => {
     const fillName  = fillEl  ? fillEl.textContent.trim()  : '';
     const decorName = decorEl ? decorEl.textContent.trim() : '';
     // Сохраняем доп. параметры в запись корзины
-    cart[id].fill  = fillName;
-    cart[id].decor = decorName;
+    cart[cartKey].fill  = fillName;
+    cart[cartKey].decor = decorName;
 
     updateCartUI();
     saveCartToStorage();
@@ -3858,32 +3864,42 @@ document.addEventListener('visibilitychange', () => {
   var ptrCurrent    = 0;
   var ptrBusy       = false;
 
-  // Create indicator element
-  var ptrIndicator = document.createElement('div');
-  ptrIndicator.id = 'ptrIndicator';
-  ptrIndicator.style.cssText = [
-    'position:fixed',
-    'top:0', 'left:0', 'right:0',
-    'height:56px',
-    'display:flex', 'align-items:center', 'justify-content:center', 'gap:8px',
-    'transform:translateY(-56px)',
-    'transition:none',
-    'z-index:' + (460),
-    'pointer-events:none',
-    'will-change:transform'
-  ].join(';');
+  // Create indicator element lazily on first relevant touchstart
+  var ptrIndicator = null;
+  var ptrSpinner   = null;
+  var ptrLabel     = null;
 
-  ptrIndicator.innerHTML = [
-    '<div id="ptrSpinner" style="width:22px;height:22px;border-radius:50%;border:2px solid rgba(201,147,74,0.25);border-top-color:#c9934a;flex-shrink:0"></div>',
-    '<span id="ptrLabel" style="font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:0.06em;font-family:Jost,sans-serif;text-transform:uppercase">Потяни ещё</span>'
-  ].join('');
+  function _ensurePtrIndicator() {
+    if (ptrIndicator) return;
+    ptrIndicator = document.createElement('div');
+    ptrIndicator.id = 'ptrIndicator';
+    ptrIndicator.style.cssText = [
+      'position:fixed',
+      'top:0', 'left:0', 'right:0',
+      'height:56px',
+      'display:flex', 'align-items:center', 'justify-content:center', 'gap:8px',
+      'transform:translateY(-56px)',
+      'transition:none',
+      'z-index:' + (460),
+      'pointer-events:none',
+      'will-change:transform'
+    ].join(';');
 
-  document.body.appendChild(ptrIndicator);
+    ptrIndicator.innerHTML = [
+      '<div id="ptrSpinner" style="width:22px;height:22px;border-radius:50%;border:2px solid rgba(201,147,74,0.25);border-top-color:#c9934a;flex-shrink:0"></div>',
+      '<span id="ptrLabel" style="font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:0.06em;font-family:Jost,sans-serif;text-transform:uppercase">Потяни ещё</span>'
+    ].join('');
 
-  var ptrSpinner = document.getElementById('ptrSpinner');
-  var ptrLabel   = document.getElementById('ptrLabel');
-  var spinStyle  = document.createElement('style');
-  spinStyle.textContent = '@keyframes ptrSpin{to{transform:rotate(360deg)}} .ptr-spinning{animation:ptrSpin 0.65s linear infinite!important}';
+    document.body.appendChild(ptrIndicator);
+
+    ptrSpinner = document.getElementById('ptrSpinner');
+    ptrLabel   = document.getElementById('ptrLabel');
+
+    var spinStyle  = document.createElement('style');
+    spinStyle.textContent = '@keyframes ptrSpin{to{transform:rotate(360deg)}} .ptr-spinning{animation:ptrSpin 0.65s linear infinite!important}';
+    document.head.appendChild(spinStyle);
+  }
+
   document.head.appendChild(spinStyle);
 
   function setPtrPos(dy) {
@@ -3935,6 +3951,7 @@ document.addEventListener('visibilitychange', () => {
     // iOS rubber-band: scrollY может быть отрицательным — не запускаем PTR
     var sy = window.scrollY;
     if (sy > 16 || sy < 0) return;
+    _ensurePtrIndicator();
     // Don't trigger PTR when any overlay / modal / drawer is open
     if (document.body.classList.contains('cart-open') ||
         document.body.classList.contains('fill-open') ||
@@ -4038,7 +4055,7 @@ document.addEventListener('visibilitychange', () => {
   } else {
     bindTooltips();
   }
-  setTimeout(bindTooltips, 800);
+  // Single call is sufficient — _tooltipBound guard prevents double-bind
 })();
 
 

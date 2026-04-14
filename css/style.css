@@ -56,6 +56,12 @@ a:focus-visible,
   --z-toast:     450;   /* toast уведомления */
   --z-ptr:       460;   /* pull-to-refresh индикатор */
   --z-top:       499;   /* самый верх — skip-link и т.п. */
+
+  /* Scrollbar */
+  --sb-size: 10px;
+  --sb-track: rgba(18, 12, 8, 0.18);
+  --sb-thumb: linear-gradient(180deg, rgba(232,184,122,0.78) 0%, rgba(201,147,74,0.86) 48%, rgba(160,104,32,0.92) 100%);
+  --sb-thumb-hover: linear-gradient(180deg, rgba(245,210,155,0.92) 0%, rgba(212,167,106,0.96) 48%, rgba(176,118,42,0.98) 100%);
 }
 
 /* scroll-behavior управляется точечно через JS behavior:'smooth' */
@@ -6292,12 +6298,6 @@ footer .wave-text .w.near {
 /* Tooltips removed — ring text animation handles labels */
 
 /* ===== Premium Scrollbar ===== */
-:root {
-  --sb-size: 10px;
-  --sb-track: rgba(18, 12, 8, 0.18);
-  --sb-thumb: linear-gradient(180deg, rgba(232,184,122,0.78) 0%, rgba(201,147,74,0.86) 48%, rgba(160,104,32,0.92) 100%);
-  --sb-thumb-hover: linear-gradient(180deg, rgba(245,210,155,0.92) 0%, rgba(212,167,106,0.96) 48%, rgba(176,118,42,0.98) 100%);
-}
 
 * {
   scrollbar-width: thin;
