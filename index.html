@@ -124,7 +124,11 @@
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--cream:#f5f0e8;--gold:#c9934a;--brown:#3d2b1f;--text:#2c1a10;--text-muted:#9a7a62;--white:#FDFBF7;--z-nav:100;--z-header:110;--z-overlay:290;--z-drawer:300;--z-modal:400;--z-toast:450}
     html{background:#f5f0e8;overflow-x:hidden}
-    body{font-family:'Jost',sans-serif;background:#f5f0e8;color:var(--text);overflow-x:hidden}
+    body{font-family:'Jost',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:#f5f0e8;color:var(--text);overflow-x:hidden}
+    /* [W-5 FIXED v5] Improved fallback font stacks: system-ui/-apple-system are metrically
+       close to Jost (geometric sans) → less layout shift when web font loads.
+       Headings: Georgia is metrically close to Cormorant Garamond on all platforms. */
+    h1,h2,h3,h4{font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif}
     .site-header{position:fixed;top:0;left:0;right:0;z-index:110;padding:0 60px;height:72px;display:flex;align-items:center;justify-content:space-between;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none;transition:background .35s,box-shadow .35s}
     .site-header.scrolled{background:rgba(245,240,232,0.96);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 2px 24px rgba(61,43,31,0.10)}
     .hero{min-height:100vh;min-height:100svh;display:flex;align-items:center;padding:100px 60px 80px;position:relative;overflow:hidden}
@@ -138,8 +142,12 @@
       .hero-photo-bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:60% center}
       .hero-content{position:relative!important;background:linear-gradient(160deg,#0d0805 0%,#1a1009 45%,#110b05 100%);border-top:1px solid rgba(201,147,74,0.18);padding:32px 24px 104px!important}
     }
+    /* [W-4 FIXED] Critical catalog-card geometry prevents layout shift after style.css loads */
+    #catalogGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:24px;padding:0 24px 40px}
+    .catalog-card,.skeleton-card{border-radius:20px;overflow:hidden;background:var(--white,#FDFBF7);aspect-ratio:3/4;position:relative}
+    @media(max-width:768px){#catalogGrid{grid-template-columns:repeat(2,1fr);gap:16px;padding:0 16px 32px}}
   </style>
-  <link rel="stylesheet" href="css/style.css?v=20260401" />
+  <link rel="stylesheet" href="css/style.css?v=20260428" />
   <link rel="prefetch" href="img/bento_maxi.webp" as="image" />
   <link rel="prefetch" href="img/cake_3d.webp" as="image" />
   <link rel="prefetch" href="img/cake_3d_2.webp" as="image" />
@@ -198,6 +206,11 @@
 <!-- SKIP LINK -->
 <a href="#main-content" class="skip-link">Перейти к содержимому</a>
 
+<!-- [NM-2 FIXED] mobileStickyWa was missing from index.html entirely -->
+<a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D1%81%D0%B4%D0%B5%D0%BB%D0%B0%D1%82%D1%8C%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7" target="_blank" rel="noopener noreferrer" class="mobile-sticky-cta" id="mobileStickyWa" aria-label="Заказать торт через WhatsApp">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  Заказать в WhatsApp
+</a>
 
 <div id="scroll-progress"></div>
 <div class="toast" id="toast"></div>
@@ -392,7 +405,13 @@
     <h2 class="section-title reveal"><span class="ht-word">Наши</span> <span class="ht-em">Десерты</span></h2>
     <p class="section-sub reveal wave-text">Выберите свой любимый торт или десерт из нашей коллекции</p>
     <nav class="catalog-nav" id="catalogNav" aria-label="Быстрая навигация по каталогу"></nav>
-    <div class="catalog-grid" id="catalogGrid"></div>
+    <div class="catalog-grid" id="catalogGrid">
+      <!-- [W-1 FIXED] Skeleton cards shown before JS loads catalog — prevents empty white area -->
+      <div class="skeleton-card" aria-hidden="true"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+      <div class="skeleton-card" aria-hidden="true"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+      <div class="skeleton-card" aria-hidden="true"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+      <div class="skeleton-card" aria-hidden="true"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+    </div>
   </div>
 </section>
 <div class="section-fade-divider" aria-hidden="true"></div>
@@ -459,19 +478,24 @@
           <div class="calc-row calc-fill-section" id="calcFillRow" data-for="biscuit">
             <span class="calc-label">Начинка</span>
             <div class="calc-options" id="calcFill">
-              <div class="calc-opt selected" data-price="0" onclick="selectOpt(this,'calcFill')"><span class="opt-inner"><span class="opt-label">Микс ягод </span><span class="fill-tag hit">хит</span></span><div class="fill-tooltip"><strong>Микс ягод</strong>Бисквит ваниль + микс малины, вишни и лесных ягод + крем-чиз.</div></div>
-              <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')"><span class="opt-inner"><span class="opt-label">Белый сникерс </span><span class="fill-tag nuts">орехи</span></span><div class="fill-tooltip"><strong>Белый сникерс</strong>Ванильный бисквит + соленая карамель + арахис + крем-чиз.</div></div>
-              <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')"><span class="opt-inner"><span class="opt-label">Сникерс </span><span class="fill-tag nuts">орехи</span></span><div class="fill-tooltip"><strong>Сникерс</strong>Шоколадный бисквит + солёная карамель + арахис + крем чиз.</div></div>
-              <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')"><span class="opt-inner"><span class="opt-label">Ферреро </span><span class="fill-tag nuts">орехи</span></span><div class="fill-tooltip"><strong>Ферреро</strong>Шоколадный бисквит + шоколадный сырный крем + молотый грецкий орех + вафельный хруст.</div></div>
-              <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')"><span class="opt-inner"><span class="opt-label">Воздушный поцелуй</span></span><div class="fill-tooltip"><strong>Воздушный поцелуй</strong>Бисквит ваниль + клубничное конфи + крем-чиз.</div></div>
-              <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')"><span class="opt-inner"><span class="opt-label">Ванильная вишня</span></span><div class="fill-tooltip"><strong>Ванильная вишня</strong>Бисквит ваниль + вишнёвое конфи + крем-чиз.</div></div>
-              <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')"><span class="opt-inner"><span class="opt-label">Ванильные тропики</span></span><div class="fill-tooltip"><strong>Ванильные тропики</strong>Бисквит ваниль + курд манго-маракуйя + крем чиз.</div></div>
-              <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')"><span class="opt-inner"><span class="opt-label">Ванильные облака</span></span><div class="fill-tooltip"><strong>Ванильные облака</strong>Ванильный бисквит + крем чиз. Нежно, идеально для маленьких детей.</div></div>
-              <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')"><span class="opt-inner"><span class="opt-label">Вишня в шоколаде</span></span><div class="fill-tooltip"><strong>Вишня в шоколаде</strong>Шоколадный бисквит + вишнёвое конфи + сливочный крем чиз.</div></div>
-              <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')"><span class="opt-inner"><span class="opt-label">Шоколадный микс ягод</span></span><div class="fill-tooltip"><strong>Шоколадный микс ягод</strong>Шоколадный бисквит + микс малины, вишни и лесных ягод + сливочный крем чиз.</div></div>
-              <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')"><span class="opt-inner"><span class="opt-label">Красный бархат</span></span><div class="fill-tooltip"><strong>Красный бархат</strong>Бисквит красный бархат + нежный сырный крем.</div></div>
-              <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')"><span class="opt-inner"><span class="opt-label">Супер-Шоколад</span></span><div class="fill-tooltip"><strong>Супер-Шоколад</strong>Шоколадный бисквит + шоколадный крем-чиз.</div></div>
+              <div role="button" tabindex="0" class="calc-opt selected" data-price="0" onclick="selectOpt(this,'calcFill')" onkeydown="if(event.key===&apos;Enter&apos;||event.key===&apos; &apos;){event.preventDefault();selectOpt(this,&apos;calcFill&apos;)}"><span class="opt-inner"><span class="opt-label">Микс ягод </span><span class="fill-tag hit">хит</span></span><div class="fill-tooltip"><strong>Микс ягод</strong>Бисквит ваниль + микс малины, вишни и лесных ягод + крем-чиз.</div></div>
+              <div role="button" tabindex="0" class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')" onkeydown="if(event.key===&apos;Enter&apos;||event.key===&apos; &apos;){event.preventDefault();selectOpt(this,&apos;calcFill&apos;)}"><span class="opt-inner"><span class="opt-label">Белый сникерс </span><span class="fill-tag nuts">орехи</span></span><div class="fill-tooltip"><strong>Белый сникерс</strong>Ванильный бисквит + соленая карамель + арахис + крем-чиз.</div></div>
+              <div role="button" tabindex="0" class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')" onkeydown="if(event.key===&apos;Enter&apos;||event.key===&apos; &apos;){event.preventDefault();selectOpt(this,&apos;calcFill&apos;)}"><span class="opt-inner"><span class="opt-label">Сникерс </span><span class="fill-tag nuts">орехи</span></span><div class="fill-tooltip"><strong>Сникерс</strong>Шоколадный бисквит + солёная карамель + арахис + крем чиз.</div></div>
+              <div role="button" tabindex="0" class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')" onkeydown="if(event.key===&apos;Enter&apos;||event.key===&apos; &apos;){event.preventDefault();selectOpt(this,&apos;calcFill&apos;)}"><span class="opt-inner"><span class="opt-label">Ферреро </span><span class="fill-tag nuts">орехи</span></span><div class="fill-tooltip"><strong>Ферреро</strong>Шоколадный бисквит + шоколадный сырный крем + молотый грецкий орех + вафельный хруст.</div></div>
+              <div role="button" tabindex="0" class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')" onkeydown="if(event.key===&apos;Enter&apos;||event.key===&apos; &apos;){event.preventDefault();selectOpt(this,&apos;calcFill&apos;)}"><span class="opt-inner"><span class="opt-label">Воздушный поцелуй</span></span><div class="fill-tooltip"><strong>Воздушный поцелуй</strong>Бисквит ваниль + клубничное конфи + крем-чиз.</div></div>
+              <div role="button" tabindex="0" class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')" onkeydown="if(event.key===&apos;Enter&apos;||event.key===&apos; &apos;){event.preventDefault();selectOpt(this,&apos;calcFill&apos;)}"><span class="opt-inner"><span class="opt-label">Ванильная вишня</span></span><div class="fill-tooltip"><strong>Ванильная вишня</strong>Бисквит ваниль + вишнёвое конфи + крем-чиз.</div></div>
+              <div role="button" tabindex="0" class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')" onkeydown="if(event.key===&apos;Enter&apos;||event.key===&apos; &apos;){event.preventDefault();selectOpt(this,&apos;calcFill&apos;)}"><span class="opt-inner"><span class="opt-label">Ванильные тропики</span></span><div class="fill-tooltip"><strong>Ванильные тропики</strong>Бисквит ваниль + курд манго-маракуйя + крем чиз.</div></div>
+              <div role="button" tabindex="0" class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')" onkeydown="if(event.key===&apos;Enter&apos;||event.key===&apos; &apos;){event.preventDefault();selectOpt(this,&apos;calcFill&apos;)}"><span class="opt-inner"><span class="opt-label">Ванильные облака</span></span><div class="fill-tooltip"><strong>Ванильные облака</strong>Ванильный бисквит + крем чиз. Нежно, идеально для маленьких детей.</div></div>
+              <div role="button" tabindex="0" class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')" onkeydown="if(event.key===&apos;Enter&apos;||event.key===&apos; &apos;){event.preventDefault();selectOpt(this,&apos;calcFill&apos;)}"><span class="opt-inner"><span class="opt-label">Вишня в шоколаде</span></span><div class="fill-tooltip"><strong>Вишня в шоколаде</strong>Шоколадный бисквит + вишнёвое конфи + сливочный крем чиз.</div></div>
+              <div role="button" tabindex="0" class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')" onkeydown="if(event.key===&apos;Enter&apos;||event.key===&apos; &apos;){event.preventDefault();selectOpt(this,&apos;calcFill&apos;)}"><span class="opt-inner"><span class="opt-label">Шоколадный микс ягод</span></span><div class="fill-tooltip"><strong>Шоколадный микс ягод</strong>Шоколадный бисквит + микс малины, вишни и лесных ягод + сливочный крем чиз.</div></div>
+              <div role="button" tabindex="0" class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')" onkeydown="if(event.key===&apos;Enter&apos;||event.key===&apos; &apos;){event.preventDefault();selectOpt(this,&apos;calcFill&apos;)}"><span class="opt-inner"><span class="opt-label">Красный бархат</span></span><div class="fill-tooltip"><strong>Красный бархат</strong>Бисквит красный бархат + нежный сырный крем.</div></div>
+              <div role="button" tabindex="0" class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')" onkeydown="if(event.key===&apos;Enter&apos;||event.key===&apos; &apos;){event.preventDefault();selectOpt(this,&apos;calcFill&apos;)}"><span class="opt-inner"><span class="opt-label">Супер-Шоколад</span></span><div class="fill-tooltip"><strong>Супер-Шоколад</strong>Шоколадный бисквит + шоколадный крем-чиз.</div></div>
             </div>
+          </div>
+
+          <!-- [C-7 FIXED] fillDescPanel was missing — desktop fill description panel silently inactive -->
+          <div class="fill-desc-panel" id="fillDescPanel" style="opacity:0">
+            <p class="fill-desc-text" id="fillDescText"></p>
           </div>
 
           <div class="calc-row calc-fill-section calc-row--hidden" id="calcFillBentoRow" data-for="bento bentomaxi">
@@ -486,11 +510,11 @@
               <div class="calc-fill-col">
                 <span class="calc-label calc-label--fill">Начинка</span>
               <div class="calc-options" id="calcFillBento">
-                <div class="calc-opt selected" data-price="0" onclick="selectOpt(this,'calcFillBento')"><span class="opt-inner"><span class="opt-label">Микс ягод </span><span class="fill-tag hit">хит</span></span><div class="fill-tooltip"><strong>Микс ягод</strong>Ванильный или шоколадный бисквит + микс малины, вишни и лесных ягод + крем-чиз.</div></div>
-                <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFillBento')"><span class="opt-inner"><span class="opt-label">Карамель с орехами</span></span><div class="fill-tooltip"><strong>Карамель с орехами</strong>Ванильный или шоколадный бисквит + солёная карамель + хрустящие орехи + крем-чиз.</div></div>
-                <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFillBento')"><span class="opt-inner"><span class="opt-label">Карамель с вафлями </span><span class="fill-tag hit" style="background:rgba(139,90,43,0.15);color:#8b5a2b;">хруст</span></span><div class="fill-tooltip"><strong>Карамель с вафлями</strong>Ванильный или шоколадный бисквит + карамель + кондитерские вафли в шоколаде.</div></div>
-                <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFillBento')"><span class="opt-inner"><span class="opt-label">Малина</span></span><div class="fill-tooltip"><strong>Малина</strong>Ванильный или шоколадный бисквит + малиновое конфи + крем-чиз.</div></div>
-                <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFillBento')"><span class="opt-inner"><span class="opt-label">Вишня</span></span><div class="fill-tooltip"><strong>Вишня</strong>Ванильный или шоколадный бисквит + вишнёвое конфи + крем-чиз.</div></div>
+                <div role="button" tabindex="0" class="calc-opt selected" data-price="0" onclick="selectOpt(this,'calcFillBento')" onkeydown="if(event.key===&apos;Enter&apos;||event.key===&apos; &apos;){event.preventDefault();selectOpt(this,&apos;calcFillBento&apos;)}"><span class="opt-inner"><span class="opt-label">Микс ягод </span><span class="fill-tag hit">хит</span></span><div class="fill-tooltip"><strong>Микс ягод</strong>Ванильный или шоколадный бисквит + микс малины, вишни и лесных ягод + крем-чиз.</div></div>
+                <div role="button" tabindex="0" class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFillBento')" onkeydown="if(event.key===&apos;Enter&apos;||event.key===&apos; &apos;){event.preventDefault();selectOpt(this,&apos;calcFillBento&apos;)}"><span class="opt-inner"><span class="opt-label">Карамель с орехами</span></span><div class="fill-tooltip"><strong>Карамель с орехами</strong>Ванильный или шоколадный бисквит + солёная карамель + хрустящие орехи + крем-чиз.</div></div>
+                <div role="button" tabindex="0" class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFillBento')" onkeydown="if(event.key===&apos;Enter&apos;||event.key===&apos; &apos;){event.preventDefault();selectOpt(this,&apos;calcFillBento&apos;)}"><span class="opt-inner"><span class="opt-label">Карамель с вафлями </span><span class="fill-tag hit" style="background:rgba(139,90,43,0.15);color:#8b5a2b;">хруст</span></span><div class="fill-tooltip"><strong>Карамель с вафлями</strong>Ванильный или шоколадный бисквит + карамель + кондитерские вафли в шоколаде.</div></div>
+                <div role="button" tabindex="0" class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFillBento')" onkeydown="if(event.key===&apos;Enter&apos;||event.key===&apos; &apos;){event.preventDefault();selectOpt(this,&apos;calcFillBento&apos;)}"><span class="opt-inner"><span class="opt-label">Малина</span></span><div class="fill-tooltip"><strong>Малина</strong>Ванильный или шоколадный бисквит + малиновое конфи + крем-чиз.</div></div>
+                <div role="button" tabindex="0" class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFillBento')" onkeydown="if(event.key===&apos;Enter&apos;||event.key===&apos; &apos;){event.preventDefault();selectOpt(this,&apos;calcFillBento&apos;)}"><span class="opt-inner"><span class="opt-label">Вишня</span></span><div class="fill-tooltip"><strong>Вишня</strong>Ванильный или шоколадный бисквит + вишнёвое конфи + крем-чиз.</div></div>
               </div>
               </div>
             </div>
@@ -499,17 +523,17 @@
           <div class="calc-row calc-fill-section calc-row--hidden" id="calcFill3dRow" data-for="cake3d">
             <span class="calc-label">Начинка</span>
             <div class="calc-options" id="calcFill3d">
-              <div class="calc-opt selected" data-price="0" onclick="selectOpt(this,'calcFill3d')"><span class="opt-inner"><span class="opt-label">Молочная девочка</span><span class="fill-tag hit">нежный</span></span><div class="fill-tooltip"><strong>Молочная девочка</strong>Тонкие медовые коржи «молочная девочка» + нежный сливочный крем.</div></div>
-              <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill3d')"><span class="opt-inner"><span class="opt-label">Медовик</span><span class="fill-tag hit" style="background:rgba(201,147,74,0.15);color:#c9934a;">классика</span></span><div class="fill-tooltip"><strong>Медовик</strong>Классические медовые коржи + нежный крем со сметаной.</div></div>
-              <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill3d')"><span class="opt-inner"><span class="opt-label">Молочная девочка + сливочный крем</span></span><div class="fill-tooltip"><strong>Молочная девочка + сливочный крем</strong>Тонкие коржи «молочная девочка» + нежный сливочный крем.</div></div>
+              <div role="button" tabindex="0" class="calc-opt selected" data-price="0" onclick="selectOpt(this,'calcFill3d')" onkeydown="if(event.key===&apos;Enter&apos;||event.key===&apos; &apos;){event.preventDefault();selectOpt(this,&apos;calcFill3d&apos;)}"><span class="opt-inner"><span class="opt-label">Молочная девочка</span><span class="fill-tag hit">нежный</span></span><div class="fill-tooltip"><strong>Молочная девочка</strong>Тонкие медовые коржи «молочная девочка» + нежный сливочный крем.</div></div>
+              <div role="button" tabindex="0" class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill3d')" onkeydown="if(event.key===&apos;Enter&apos;||event.key===&apos; &apos;){event.preventDefault();selectOpt(this,&apos;calcFill3d&apos;)}"><span class="opt-inner"><span class="opt-label">Медовик</span><span class="fill-tag hit" style="background:rgba(201,147,74,0.15);color:#c9934a;">классика</span></span><div class="fill-tooltip"><strong>Медовик</strong>Классические медовые коржи + нежный крем со сметаной.</div></div>
+              <div role="button" tabindex="0" class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill3d')" onkeydown="if(event.key===&apos;Enter&apos;||event.key===&apos; &apos;){event.preventDefault();selectOpt(this,&apos;calcFill3d&apos;)}"><span class="opt-inner"><span class="opt-label">Молочная девочка + сливочный крем</span></span><div class="fill-tooltip"><strong>Молочная девочка + сливочный крем</strong>Тонкие коржи «молочная девочка» + нежный сливочный крем.</div></div>
             </div>
           </div>
 
           <div class="calc-row">
             <span class="calc-label">Декор</span>
             <div class="calc-options" id="calcDecor">
-              <div class="calc-opt selected" data-price="0" onclick="selectOpt(this,'calcDecor')"><span class="opt-inner"><span class="opt-label">Базовый декор</span></span><div class="fill-tooltip"><strong>Базовый декор</strong>Кремовые мазки, покрытие, подтёки — аккуратное оформление, входит в стоимость торта.</div></div>
-              <div class="calc-opt" data-price="1000" onclick="selectOpt(this,'calcDecor')"><span class="opt-inner"><span class="opt-label">Авторский декор</span></span><div class="fill-tooltip"><strong>Авторский декор</strong>Фигурки, объёмный декор, живые и вафельные цветы, роспись, сахарная печать и другие сложные элементы. Стоимость рассчитывается индивидуально.</div></div>
+              <div role="button" tabindex="0" class="calc-opt selected" data-price="0" onclick="selectOpt(this,'calcDecor')" onkeydown="if(event.key===&apos;Enter&apos;||event.key===&apos; &apos;){event.preventDefault();selectOpt(this,&apos;calcDecor&apos;)}"><span class="opt-inner"><span class="opt-label">Базовый декор</span></span><div class="fill-tooltip"><strong>Базовый декор</strong>Кремовые мазки, покрытие, подтёки — аккуратное оформление, входит в стоимость торта.</div></div>
+              <div role="button" tabindex="0" class="calc-opt" data-price="1000" onclick="selectOpt(this,'calcDecor')" onkeydown="if(event.key===&apos;Enter&apos;||event.key===&apos; &apos;){event.preventDefault();selectOpt(this,&apos;calcDecor&apos;)}"><span class="opt-inner"><span class="opt-label">Авторский декор</span></span><div class="fill-tooltip"><strong>Авторский декор</strong>Фигурки, объёмный декор, живые и вафельные цветы, роспись, сахарная печать и другие сложные элементы. Стоимость рассчитывается индивидуально.</div></div>
             </div>
             <div class="calc-decor-hint" id="calcDecorHint">✦ авторский декор — от +1 000 ₽</div>
           </div>
@@ -535,7 +559,7 @@
             <!-- Раскрывающаяся часть — полный блок -->
             <div class="calc-result-expandable" id="calcExpandable">
               <div class="calc-result-expand-inner">
-                <div class="calc-result-label" id="calcLabel">Примерная стоимость</div>
+                <div class="calc-result-label" id="calcLabel">Примерная стоимость<span class="calc-approx-badge" id="calcApproxBadge" aria-label="Приблизительная цена">~</span></div>
                 <div class="calc-result-price" id="calcResult">5 600 ₽</div>
                 <div class="calc-result-summary" id="calcSummary"></div>
                 <div class="calc-result-note" id="calcNote">Точная цена согласовывается при заказе</div>
@@ -569,7 +593,9 @@
     <p class="section-sub reveal wave-text">Нам пишут — мы очень стараемся 🤍</p>
   </div>
   <div class="carousel-stage" id="stage">
-    <div class="carousel-row"><div class="reviews-track" id="track"></div></div>
+    <div class="carousel-row"><div class="reviews-track" id="track"><!-- [W-2 FIXED] Skeleton slides shown before JS populates reviews — prevents empty white strip on slow connections -->
+      <div class="review-slide active skeleton-review" aria-hidden="true"><div class="review-card"><div class="review-q">❝</div><p class="review-text skeleton-text" style="height:4em;background:linear-gradient(90deg,rgba(201,147,74,.08) 25%,rgba(201,147,74,.18) 50%,rgba(201,147,74,.08) 75%);border-radius:4px;animation:shimmer 1.6s infinite"></p></div></div>
+    </div></div>
     <div class="carousel-nav">
       <button class="rev-arrow" id="btnPrev" aria-label="Назад">&#8592;</button>
       <button class="rev-arrow" id="btnNext" aria-label="Вперёд">&#8594;</button>
@@ -577,14 +603,14 @@
     <div class="rev-dots" id="dots" style="display:none"></div>
   </div>
   <div class="review-filmstrip reveal">
-    <button class="review-filmstrip-item" onclick="openChatLightbox(0)" aria-label="Отзыв 1"><img src="img/review_1.webp" alt="Отзыв 1" loading="lazy" width="280" height="497"></button>
-    <button class="review-filmstrip-item" onclick="openChatLightbox(1)" aria-label="Отзыв 2"><img src="img/review_2.webp" alt="Отзыв 2" loading="lazy" width="280" height="497"></button>
-    <button class="review-filmstrip-item" onclick="openChatLightbox(2)" aria-label="Отзыв 3"><img src="img/review_3.webp" alt="Отзыв 3" loading="lazy" width="280" height="497"></button>
-    <button class="review-filmstrip-item" onclick="openChatLightbox(3)" aria-label="Отзыв 4"><img src="img/review_4.webp" alt="Отзыв 4" loading="lazy" width="280" height="497"></button>
-    <button class="review-filmstrip-item" onclick="openChatLightbox(4)" aria-label="Отзыв 5"><img src="img/review_5.webp" alt="Отзыв 5" loading="lazy" width="280" height="497"></button>
-    <button class="review-filmstrip-item" onclick="openChatLightbox(5)" aria-label="Отзыв 6"><img src="img/review_6.webp" alt="Отзыв 6" loading="lazy" width="280" height="497"></button>
-    <button class="review-filmstrip-item" onclick="openChatLightbox(6)" aria-label="Отзыв 7"><img src="img/review_7.webp" alt="Отзыв 7" loading="lazy" width="280" height="497"></button>
-    <button class="review-filmstrip-item" onclick="openChatLightbox(7)" aria-label="Отзыв 8"><img src="img/review_8.webp" alt="Отзыв 8" loading="lazy" width="280" height="497"></button>
+    <button class="review-filmstrip-item" onclick="openChatLightbox(0)" aria-label="Открыть скриншот отзыва 1 в полном размере"><img src="img/review_1.webp" alt="Скриншот отзыва покупателя 1" loading="lazy" width="280" height="497"></button>
+    <button class="review-filmstrip-item" onclick="openChatLightbox(1)" aria-label="Открыть скриншот отзыва 2 в полном размере"><img src="img/review_2.webp" alt="Скриншот отзыва покупателя 2" loading="lazy" width="280" height="497"></button>
+    <button class="review-filmstrip-item" onclick="openChatLightbox(2)" aria-label="Открыть скриншот отзыва 3 в полном размере"><img src="img/review_3.webp" alt="Скриншот отзыва покупателя 3" loading="lazy" width="280" height="497"></button>
+    <button class="review-filmstrip-item" onclick="openChatLightbox(3)" aria-label="Открыть скриншот отзыва 4 в полном размере"><img src="img/review_4.webp" alt="Скриншот отзыва покупателя 4" loading="lazy" width="280" height="497"></button>
+    <button class="review-filmstrip-item" onclick="openChatLightbox(4)" aria-label="Открыть скриншот отзыва 5 в полном размере"><img src="img/review_5.webp" alt="Скриншот отзыва покупателя 5" loading="lazy" width="280" height="497"></button>
+    <button class="review-filmstrip-item" onclick="openChatLightbox(5)" aria-label="Открыть скриншот отзыва 6 в полном размере"><img src="img/review_6.webp" alt="Скриншот отзыва покупателя 6" loading="lazy" width="280" height="497"></button>
+    <button class="review-filmstrip-item" onclick="openChatLightbox(6)" aria-label="Открыть скриншот отзыва 7 в полном размере"><img src="img/review_7.webp" alt="Скриншот отзыва покупателя 7" loading="lazy" width="280" height="497"></button>
+    <button class="review-filmstrip-item" onclick="openChatLightbox(7)" aria-label="Открыть скриншот отзыва 8 в полном размере"><img src="img/review_8.webp" alt="Скриншот отзыва покупателя 8" loading="lazy" width="280" height="497"></button>
   </div>
   <div class="map-badges-center reveal">
     <button class="map-badge map-badge-yandex" onclick="openReviewsModal('yandex')" aria-label="Отзывы на Яндекс Картах">
@@ -1030,7 +1056,27 @@
 <!-- FILL POPUP -->
 <div class="fill-mobile-overlay" id="fillOverlay"></div>
 <div class="fill-mobile-popup" id="fillPopup" role="dialog" aria-modal="true" aria-label="Информация о начинке">
-<!-- fill popup kept for legacy/fallback, hidden by default -->
+  <!-- [C-5 FIXED] fillPopup was empty — _fillPopupRender found all children null -->
+  <div class="fill-sheet-handle" id="fillSheetHandle" aria-hidden="true"></div>
+  <div class="fill-sheet-body">
+    <div class="fill-sheet-tags" id="fillSheetTags"></div>
+    <div class="fill-sheet-name" id="fillPopupTitle"></div>
+    <div class="fill-sheet-desc" id="fillPopupText"></div>
+  </div>
+  <div class="fill-sheet-divider"></div>
+  <div class="fill-sheet-nav">
+    <button class="fill-nav-btn" id="fillNavPrev" onclick="navigateFill(-1)" aria-label="Предыдущая начинка">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <span class="fill-nav-counter" id="fillNavCounter" aria-live="polite"></span>
+    <button class="fill-nav-btn" id="fillNavNext" onclick="navigateFill(1)" aria-label="Следующая начинка">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+  <div class="fill-sheet-cta">
+    <button class="fill-sheet-btn-select" id="fillSheetSelect" onclick="confirmFillSelection()">Выбрать начинку</button>
+    <button class="fill-sheet-btn-dismiss" onclick="closeFillPopup()" aria-label="Закрыть">Закрыть</button>
+  </div>
 </div>
 
 <!-- Fill toast snackbar -->
@@ -1041,6 +1087,9 @@
     <span class="fill-toast-desc"></span>
   </div>
 </div>
+
+<!-- [C-6 FIXED] bentoWeightToast was missing from HTML — showBentoWeightToast() silently failed -->
+<div class="bento-weight-toast" id="bentoWeightToast" role="status" aria-live="polite"></div>
 
 <!-- COOKIE BANNER -->
 <div id="cookieBanner">
@@ -1124,10 +1173,10 @@
 </script>
 
 <script>var IMG_BASE = 'img';</script>
-<script src="js/main.js?v=20260401" defer></script>
+<script src="js/main.js?v=20260428" defer></script>
 
 
-<script src="js/nav.js?v=20260401" defer></script>
+<script src="js/nav.js?v=20260428" defer></script>
 
 <script>
   /* ── Яндекс.Метрика: цели ── */
@@ -1162,6 +1211,29 @@
   })();
 </script>
 
+<!-- [NM-1/NM-2 FIXED] mobileStickyWa scroll activation — shows WA button after 300px scroll,
+     hides near bottom of page (contacts visible). Mirrors prigorody behavior. -->
+<script>
+(function() {
+  if (window.innerWidth > 768) return;
+  var cta = document.getElementById('mobileStickyWa');
+  if (!cta) return;
+  var shown = false;
+  function updateStickyCta() {
+    var y = window.scrollY || window.pageYOffset;
+    if (y > 300 && !shown) { cta.classList.add('visible'); shown = true; }
+    var nearBottom = (document.documentElement.scrollHeight - window.innerHeight - y) < 120;
+    cta.classList.toggle('near-bottom', nearBottom);
+    // Hide when cart is open
+    var cartOpen = document.body.classList.contains('cart-open') || document.body.classList.contains('fill-open');
+    cta.style.display = cartOpen ? 'none' : '';
+  }
+  window.addEventListener('scroll', updateStickyCta, { passive: true });
+  window.addEventListener('resize', function() {
+    if (window.innerWidth > 768) { cta.classList.remove('visible'); shown = false; }
+  });
+})();
+</script>
 
 </body>
 </html>

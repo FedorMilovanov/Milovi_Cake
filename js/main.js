@@ -321,6 +321,11 @@ function switchBentoTab(pid, mode) {
         goSlide(pid, sliderCurrentIdx[pid]);
       }, 3000);
     }
+
+    // [P-3 FIXED] addSliderTouch guards with _touchBound — old handler has stale `total`
+    // from the previous variant. Reset flag so addSliderTouch rebinds with new slide count.
+    wrap._touchBound = false;
+    addSliderTouch(pid, slides.length);
   }
 }
 
@@ -349,10 +354,12 @@ function loadCartFromStorage() {
 
 // ── Confetti burst ──
 function confettiBurst(x, y) {
-    var now = Date.now();
-    if (confettiBurst._last && now - confettiBurst._last < 400) return;
-    confettiBurst._last = now;
+  // [C-4 FIXED] Was creating exactly 1 particle — now creates 14 for a proper burst.
+  var now = Date.now();
+  if (confettiBurst._last && now - confettiBurst._last < 400) return;
+  confettiBurst._last = now;
   const colors = ["#c9934a", "#d4a76a", "#e8c080", "#f5e1c0", "#fff"];
+  for (let i = 0; i < 14; i++) {
     const particle = document.createElement("div");
     const size = Math.random() * 6 + 4;
     particle.style.cssText = `
@@ -378,6 +385,7 @@ function confettiBurst(x, y) {
       duration: 800 + Math.random() * 400,
       easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
     }).onfinish = () => particle.remove();
+  }
 }
 
 function addToCart(id, e) {
@@ -401,7 +409,11 @@ function addToCart(id, e) {
   if (e) confettiBurst(e.clientX, e.clientY);
 }
 
+// [P-8 FIXED] Guard against double-click: track IDs currently being removed.
+const _removingCartIds = new Set();
 function removeFromCart(id) {
+  if (_removingCartIds.has(String(id))) return; // already in-flight
+  _removingCartIds.add(String(id));
   // Анимируем удаление одного элемента
   const items = document.querySelectorAll('.cart-item');
   // Primary: find by data-cart-id attribute (fast, reliable)
@@ -426,11 +438,13 @@ function removeFromCart(id) {
     });
     setTimeout(() => {
       delete cart[id];
+      _removingCartIds.delete(String(id));
       updateCartUI();
       saveCartToStorage();
     }, 350);
   } else {
     delete cart[id];
+    _removingCartIds.delete(String(id));
     updateCartUI();
     saveCartToStorage();
   }
@@ -684,8 +698,12 @@ function goToFormStep() {
   const cartBody = document.getElementById('cartBody');
   if (!cartFooter || !cartBody) return;
   setCartStep(2);
-  cartFooter.style.display = 'block';
   cartBody.style.display = 'none';
+  // [P-10 FIXED v5] Fade-in animation on step switch
+  cartFooter.style.display = 'block';
+  cartFooter.classList.remove('step-enter');
+  void cartFooter.offsetWidth; // reflow to re-trigger animation
+  cartFooter.classList.add('step-enter');
 }
 
 function buildMessage() {
@@ -802,7 +820,11 @@ function goBackToCart() {
   if (!cartFooter || !cartBody) return;
   setCartStep(1);
   cartFooter.style.display = 'none';
+  // [P-10 FIXED v5] Fade-in animation on step switch
   cartBody.style.display = '';
+  cartBody.classList.remove('step-enter');
+  void cartBody.offsetWidth; // reflow to re-trigger animation
+  cartBody.classList.add('step-enter');
   updateCartUI();
 }
 
@@ -961,6 +983,12 @@ function toggleCart() {
 
 // Orientation change — re-evaluate lock state
 window.addEventListener('orientationchange', function() {
+  // [W-3 FIXED v5] Suppress hero background-image recalculation flash during rotation
+  var heroEl = document.querySelector('.hero');
+  if (heroEl) {
+    heroEl.classList.add('hero--orient-change');
+    setTimeout(function() { heroEl.classList.remove('hero--orient-change'); }, 350);
+  }
   setTimeout(function() {
     if (_cartState === 'open') {
       if (window.innerWidth <= 900) lockBody();
@@ -1009,6 +1037,14 @@ window.addEventListener('pageshow', function(e) {
     if (!orbs.length) return;
     var baseY = [0, 0, 0];
     var ticking = false;
+    // [P-11 FIXED v5] Apply initial transform based on current scrollY so
+    // orbs don't jump from transform:none on first scroll event.
+    (function applyInitialOrbs() {
+      var y = window.scrollY;
+      if (orbs[0]) orbs[0].style.transform = 'translateY(' + (baseY[0] + y * 0.15) + 'px)';
+      if (orbs[1]) orbs[1].style.transform = 'translateY(' + (baseY[1] + y * -0.10) + 'px)';
+      if (orbs[2]) orbs[2].style.transform = 'translateY(' + (baseY[2] + y * 0.08) + 'px)';
+    })();
     window.addEventListener('scroll', function() {
         if (ticking || !window._heroVisible) return;
         ticking = true;
@@ -1070,14 +1106,7 @@ document.querySelectorAll('img').forEach(function(img) {
   }, { passive: true });
 })();
 
-// ── CART ESCAPE KEY TO CLOSE ──
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') {
-    closeCalcPanel();
-    const drawer = document.getElementById('cartDrawer');
-    if (drawer && drawer.classList.contains('open')) closeCart();
-  }
-});
+// [P-1 FIXED] Duplicate Escape handler removed — unified handler below covers this.
 
 // ── CART OVERLAY CLICK-OUTSIDE (desktop: transparent overlay) ──
 (function() {
@@ -1090,13 +1119,20 @@ document.addEventListener('keydown', function(e) {
   });
 })();
 
+// [P-2 FIXED] Guard against accumulating IntersectionObservers on repeated calls.
+// Elements already marked .visible or already in _revealObserved are skipped.
+const _revealObserved = new WeakSet();
 function observeReveal() {
   const els = document.querySelectorAll('.reveal:not(.visible), .reveal-photo:not(.visible)');
   const threshold = window.innerWidth <= 768 ? 0.02 : 0.05;
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
   }, { threshold, rootMargin: '0px 0px 60px 0px' });
-  els.forEach(el => io.observe(el));
+  els.forEach(el => {
+    if (_revealObserved.has(el)) return; // already registered — skip
+    _revealObserved.add(el);
+    io.observe(el);
+  });
   // Fallback: принудительно показать всё через 2.5с (на случай IO-бага в Яндекс Браузере)
   setTimeout(function() {
     document.querySelectorAll('.reveal:not(.visible), .reveal-photo:not(.visible)').forEach(function(el) {
@@ -1107,16 +1143,31 @@ function observeReveal() {
 
 // ── priceGlow: включаем анимацию только когда карточка в вьюпорте ──
 // Это экономит CPU — не гоняем 6 text-shadow анимаций когда каталог за экраном
+// [P-4 FIXED] Store IO reference so repeated calls disconnect the stale observer
+// (e.g. after renderCatalog re-runs on filter change) instead of accumulating multiple IOs.
+let _priceGlowIO = null;
 function initPriceGlowObserver() {
   const cards = document.querySelectorAll('.product-card');
   if (!cards.length) return;
-  const io = new IntersectionObserver((entries) => {
+  if (_priceGlowIO) { _priceGlowIO.disconnect(); _priceGlowIO = null; }
+  _priceGlowIO = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       e.target.classList.toggle('in-view', e.isIntersecting);
     });
   }, { threshold: 0.1 });
-  cards.forEach(c => io.observe(c));
+  cards.forEach(c => _priceGlowIO.observe(c));
 }
+
+// [P-12 FIXED v5] Section separator: play animation only when in viewport
+// CSS sets animation-play-state: paused by default; .in-view switches to running.
+(function initSeparatorObserver() {
+  const seps = document.querySelectorAll('.section-separator');
+  if (!seps.length || typeof IntersectionObserver === 'undefined') return;
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => e.target.classList.toggle('in-view', e.isIntersecting));
+  }, { threshold: 0 });
+  seps.forEach(s => io.observe(s));
+})();
 
 
 // CATALOG NAV — мобильная навигация по десертам
@@ -1158,10 +1209,16 @@ function scrollToProduct(id) {
   const card = document.getElementById('card-' + id);
   if (!card) return;
 
-  const headerHeight = 72;
+  // [NM-19 FIXED] Was hardcoded 72px — doesn't account for Dynamic Island safe-area-top.
+  // Use actual measured header height so scrolled card isn't hidden behind the header.
+  const hdr = document.getElementById('siteHeader');
+  const headerHeight = hdr ? hdr.offsetHeight : 72;
   const nav = document.getElementById('catalogNav');
   const navHeight = (nav && window.innerWidth <= 768) ? nav.offsetHeight + 16 : 0;
-  const offset = headerHeight + navHeight + 16;
+  // [NM-6/NM-14 FIXED] Account for breadcrumb on prigorody pages (~44px fixed bar)
+  const breadcrumb = document.querySelector('.breadcrumb-nav');
+  const breadcrumbHeight = (breadcrumb && window.innerWidth <= 768) ? breadcrumb.offsetHeight : 0;
+  const offset = headerHeight + navHeight + breadcrumbHeight + 16;
 
   const top = card.getBoundingClientRect().top + window.scrollY - offset;
   window.scrollTo({ top, behavior: 'smooth' });
@@ -1348,11 +1405,19 @@ function initSectionTitleWords() {
 })();
 
 function initApp() {
+  // [C-8 FIXED] Default biscuit must be set before any buildMessage() call,
+  // otherwise the biscuit type is omitted from the order if user never tapped the toggle.
+  if (typeof window._calcBiscuit === 'undefined') window._calcBiscuit = 'vanilla';
+
   renderCatalogNav();
   renderCatalog(); // calls observeReveal() internally for catalog cards
-  // Wire lightbox after DOM settles — timeout avoids race with renderCatalog
-  // _lbBound flag on each slider prevents double-binding if called again
-  setTimeout(wireProductLightbox, 400);
+  // [P-13 FIXED v5] Was: setTimeout(wireProductLightbox, 400) — noticeable delay on fast devices.
+  // requestIdleCallback runs after initial paint; rAF fallback for Safari < 17.
+  if (typeof requestIdleCallback !== 'undefined') {
+    requestIdleCallback(wireProductLightbox, { timeout: 500 });
+  } else {
+    requestAnimationFrame(function() { requestAnimationFrame(wireProductLightbox); });
+  }
   loadCartFromStorage();
   updateCartUI();
   observeReveal(); // picks up static .reveal elements (hero, sections, etc.)
@@ -1584,10 +1649,7 @@ function closeLightbox() {
   unlockBody();
   _lbSrcs = []; _lbIdx = 0;
 }
-document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight') lbNavigate(1);
-  if (e.key === 'ArrowLeft') lbNavigate(-1);
-});
+// [P-1 cleanup v6] Arrow handlers merged into unified keydown below — removed standalone listener
 
 // Click on backdrop closes lightbox
 (function() {
@@ -1648,6 +1710,14 @@ function wireProductLightbox() {
 // ── CALCULATOR ── (variables declared here to avoid TDZ; functions defined later)
 
 function selectCakeType(el, type) {
+  // [C-10 FIXED] Tooltips are moved to document.body by initFillTooltips.
+  // When fill rows are rebuilt on type switch the original .calc-opt elements
+  // leave the DOM, but their tooltips remain in body as orphan nodes.
+  // Purge any tooltip not currently inside a .calc-opt before rebuilding.
+  document.querySelectorAll('.fill-tooltip').forEach(function(t) {
+    if (!t.closest('.calc-opt')) t.remove();
+  });
+
   // Снимаем selected со всех карточек типа
   document.querySelectorAll('#calcType .calc-opt').forEach(o => o.classList.remove('selected'));
   el.classList.add('selected');
@@ -2054,8 +2124,13 @@ function loadMetrika() {
 }
 
 // ── Cookie banner ──
+// [JS-1 FIXED v6] localStorage throws SecurityError in iOS Safari private mode and
+// Firefox with strict privacy settings. All reads/writes now guarded via _lsGet/_lsSet.
+function _lsGet(key) { try { return localStorage.getItem(key); } catch(e) { return null; } }
+function _lsSet(key, val) { try { localStorage.setItem(key, val); } catch(e) {} }
+
 function acceptCookie() {
-  localStorage.setItem('cookieAccepted', Date.now() + 365 * 24 * 60 * 60 * 1000);
+  _lsSet('cookieAccepted', Date.now() + 365 * 24 * 60 * 60 * 1000);
   const banner = document.getElementById('cookieBanner');
   if (!banner) return;
   banner.classList.remove('visible');
@@ -2071,7 +2146,7 @@ function declineCookie() {
   banner.addEventListener('transitionend', () => banner.remove(), { once: true });
 }
 function initCookieBanner() {
-  const stored = localStorage.getItem('cookieAccepted');
+  const stored = _lsGet('cookieAccepted');
   if (stored && Date.now() < parseInt(stored)) {
     loadMetrika(); // already accepted
     return;
@@ -2159,12 +2234,30 @@ function toggleCalcPanel() {
   if (window.innerWidth > 560) return; // только мобильный
   const col = document.getElementById('calcRightCol');
   if (!col) return;
-  col.classList.toggle('calc-result-open');
+  const isOpen = col.classList.toggle('calc-result-open');
+  // [P-9 FIXED v5] Show/hide backdrop
+  _setCalcBackdrop(isOpen);
 }
 
 function closeCalcPanel() {
   const col = document.getElementById('calcRightCol');
   if (col) col.classList.remove('calc-result-open');
+  // [P-9 FIXED v5] Hide backdrop
+  _setCalcBackdrop(false);
+}
+
+// [P-9 FIXED v5] Lazy-create backdrop and manage visibility
+function _setCalcBackdrop(show) {
+  if (window.innerWidth > 560) return;
+  let bd = document.getElementById('calcPanelBackdrop');
+  if (!bd) {
+    bd = document.createElement('div');
+    bd.id = 'calcPanelBackdrop';
+    bd.setAttribute('aria-hidden', 'true');
+    bd.addEventListener('click', closeCalcPanel);
+    document.body.appendChild(bd);
+  }
+  bd.classList.toggle('visible', !!show);
 }
 
 // Закрыть панель при тапе вне её
@@ -2173,6 +2266,14 @@ document.addEventListener('click', function(e) {
   const col = document.getElementById('calcRightCol');
   if (!col || !col.classList.contains('calc-result-open')) return;
   if (!col.contains(e.target)) closeCalcPanel();
+}, { passive: true });
+
+// [NM-11 FIXED] Panel was staying open during page scroll, covering 340px of content.
+// Closing on scroll is the expected UX (same pattern as bottom sheets everywhere).
+window.addEventListener('scroll', function() {
+  if (window.innerWidth > 560) return;
+  const col = document.getElementById('calcRightCol');
+  if (col && col.classList.contains('calc-result-open')) closeCalcPanel();
 }, { passive: true });
 
 function showFillToast(optEl, groupId) {
@@ -2346,9 +2447,15 @@ function navigateFill(dir) {
   }
 })();
 
+// [P-1 FIXED v3→v6] Unified keydown handler — was 3 separate listeners (line 1082, here, line 3554).
+// ArrowLeft/Right for catalog lightbox merged here in v6 (was a separate listener above closeFillPopup).
+// Reviews modal has its own dynamic listener (handleReviewsEscape) and is intentionally separate.
 document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') lbNavigate(1);
+  if (e.key === 'ArrowLeft')  lbNavigate(-1);
   if (e.key === 'Escape') {
     if (typeof closeLightbox === 'function') closeLightbox();
+    if (typeof lbIsOpen !== 'undefined' && lbIsOpen && typeof closeLB === 'function') closeLB();
     closePrivacy();
     closeFillPopup();
     closeCalcPanel();
@@ -2531,6 +2638,10 @@ const CHAT_SRCS = [
 
 // Открываем скриншот отзыва через лайтбокс отзывов (#lbOverlay / #lbImg)
 function openChatLightbox(idx) {
+  // [NM-10 FIXED] Race condition: if closeLB() had a pending 600ms timer that
+  // would clear lbImg.src, we cancel it here by resetting lbBusy/lbIsOpen.
+  // Also fixes lockBody counter mismatch (double-lock → page stuck, no scroll).
+  if (lbBusy) { lbBusy = false; lbIsOpen = false; }
   if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
   closeCalcPanel();
   const overlay = document.getElementById('lbOverlay');
@@ -2829,7 +2940,7 @@ REVIEWS.forEach((rv, i) => {
   th.appendChild(hint);
 
   th.addEventListener('click', ()=>{
-    if(i !== cur) { goTo(i); return; }
+    if(i !== cur) { if (!_goToBusy) goTo(i); return; }
     // Открываем лайтбокс в любом STATE — не ждём завершения анимации
     if(STATE==='waiting'||STATE==='zoom_in'||STATE==='typing') openLB(th, rv.src, i);
   });
@@ -2867,7 +2978,7 @@ REVIEWS.forEach((rv, i) => {
   const dot = document.createElement('button');
   dot.className='rev-dot'+(i===0?' on':'');
   dot.setAttribute('aria-label',`Отзыв ${i+1}`);
-  dot.addEventListener('click',()=> goTo(i));
+  dot.addEventListener('click',()=> { if (!_goToBusy) goTo(i); });
   dotsEl.appendChild(dot);
 });
 
@@ -2875,6 +2986,12 @@ if (thumbs.length) thumbs[0].classList.add('is-active');
 // Подсветить первый элемент filmstrip
 const firstFilmItem = document.querySelector('.review-filmstrip-item');
 if (firstFilmItem) firstFilmItem.classList.add('active');
+// [NM-16 FIXED] Cache NodeLists after DOM is built — goTo() called up to 60fps via autoplay,
+// querySelectorAll('.review-slide') on every call causes unnecessary DOM traversal.
+// These lists are static after init (no add/remove of slides at runtime).
+const _cachedSlides    = trackEl ? Array.from(trackEl.querySelectorAll('.review-slide')) : [];
+const _cachedDots      = dotsEl  ? Array.from(dotsEl.querySelectorAll('.rev-dot'))       : [];
+const _cachedFilmItems = Array.from(document.querySelectorAll('.review-filmstrip-item'));
 // startTypewriter() вызовется когда секция станет видна
 
 function hideArrows(){
@@ -3101,11 +3218,19 @@ function dissolveText(){
   requestAnimationFrame(tick);
 }
 
+// [P-6 v2 FIXED] Guard moved to UI handlers only — autoplay must never be blocked.
+// When _goToBusy=true and zoom_out reaches zoomP<0.02, STATE is set to 'idle' BEFORE
+// calling goTo(). If goTo() returned early here, STATE would stay 'idle' forever → freeze.
+// Fix: only UI-triggered calls (click/swipe/dot) check _goToBusy; internal autoplay skips it.
+let _goToBusy = false;
 function goTo(n, skipTypewriter){
+  _goToBusy = true;
+  setTimeout(() => { _goToBusy = false; }, 600); // unlock after transition window
   if (!scField || !trackEl || !dotsEl || !stageEl) return; // not on reviews page
-  const slides = trackEl.querySelectorAll('.review-slide');
-  const dts    = dotsEl.querySelectorAll('.rev-dot');
-  const filmItems = document.querySelectorAll('.review-filmstrip-item');
+  // [NM-16 FIXED] Use pre-cached arrays — no DOM traversal on every slide change
+  const slides    = _cachedSlides;
+  const dts       = _cachedDots;
+  const filmItems = _cachedFilmItems;
 
   // cancel all pending timers immediately
   if(typeTimer){ clearTimeout(typeTimer); typeTimer=null; }
@@ -3137,13 +3262,30 @@ function goTo(n, skipTypewriter){
   // Подсвечиваем и прокручиваем filmstrip к активному элементу
   if (filmItems[cur]) {
     filmItems[cur].classList.add('active');
-    // Ручной скролл вместо scrollIntoView({inline}) — не работает в iOS < 15.4
-    var strip = filmItems[cur].parentElement;
+    // [NM-15 FIXED v5] offsetLeft is relative to offsetParent (may NOT be the strip).
+    // Use getBoundingClientRect diff to get position relative to the scrollable strip.
+    var strip = filmItems[cur].closest('.review-filmstrip') || filmItems[cur].parentElement;
     if (strip) {
-      var itemLeft = filmItems[cur].offsetLeft;
-      var itemW    = filmItems[cur].offsetWidth;
-      var stripW   = strip.offsetWidth;
-      strip.scrollTo({ left: itemLeft - (stripW - itemW) / 2, behavior: 'smooth' });
+      var itemRect  = filmItems[cur].getBoundingClientRect();
+      var stripRect = strip.getBoundingClientRect();
+      var itemLeft  = itemRect.left - stripRect.left + strip.scrollLeft;
+      var itemW     = filmItems[cur].offsetWidth;
+      var stripW    = strip.offsetWidth;
+      var targetLeft = itemLeft - (stripW - itemW) / 2;
+      // Smooth scroll with polyfill for iOS < 15.4 (no native scrollBehavior on overflow elements)
+      if ('scrollBehavior' in document.documentElement.style) {
+        strip.scrollTo({ left: targetLeft, behavior: 'smooth' });
+      } else {
+        // Polyfill: linear interpolation over ~300ms
+        var start = strip.scrollLeft, dist = targetLeft - start, dur = 300, startT = 0;
+        function _filmScroll(ts) {
+          if (!startT) startT = ts;
+          var prog = Math.min((ts - startT) / dur, 1);
+          strip.scrollLeft = start + dist * prog;
+          if (prog < 1) requestAnimationFrame(_filmScroll);
+        }
+        requestAnimationFrame(_filmScroll);
+      }
     }
   }
 
@@ -3153,8 +3295,9 @@ function goTo(n, skipTypewriter){
 
 const _btnPrev = document.getElementById('btnPrev');
 const _btnNext = document.getElementById('btnNext');
-if (_btnPrev) _btnPrev.addEventListener('click', ()=> goTo(cur-1));
-if (_btnNext) _btnNext.addEventListener('click', ()=> goTo(cur+1));
+// [P-6 v2] UI handlers guard — only user-initiated navigation is rate-limited
+if (_btnPrev) _btnPrev.addEventListener('click', ()=> { if (!_goToBusy) goTo(cur-1); });
+if (_btnNext) _btnNext.addEventListener('click', ()=> { if (!_goToBusy) goTo(cur+1); });
 
 let tsX=0, tsY=0;
 if (trackEl) {
@@ -3162,7 +3305,7 @@ if (trackEl) {
   trackEl.addEventListener('touchend', e=>{
     const dx=e.changedTouches[0].clientX-tsX;
     const dy=e.changedTouches[0].clientY-tsY;
-    if(Math.abs(dx)>Math.abs(dy)*1.4 && Math.abs(dx)>40){ goTo(dx<0 ? cur+1 : cur-1); }
+    if(Math.abs(dx)>Math.abs(dy)*1.4 && Math.abs(dx)>40){ if (!_goToBusy) goTo(dx<0 ? cur+1 : cur-1); }
   });
 }
 
@@ -3173,19 +3316,28 @@ function getStageCenter(){
 }
 let sectionSnapH = 0;
 function snapSectionHeight(){ sectionSnapH = document.getElementById('reviews').offsetHeight; }
-window.addEventListener('resize', snapSectionHeight);
+// [P-5 FIXED] Debounce resize to avoid heavy recalcs on every pixel
+let _snapResizeTimer = null;
+window.addEventListener('resize', function() {
+  clearTimeout(_snapResizeTimer);
+  _snapResizeTimer = setTimeout(snapSectionHeight, 150);
+});
 setTimeout(snapSectionHeight, 100);
 
 // ── CACHE для loop() — избегаем DOM-запросы каждый кадр ──
 let cachedTrackEl = null;
 let cachedSectionWidth = 0;
 let cachedSectionHeight = 0;
+// [NM-21 FIXED] Cache secEl — getElementById('reviews') was called on every rAF frame
+// forcing a DOM traversal at 60fps. Invalidated on resize via ResizeObserver below.
+let _cachedSecEl = null;
 
 // ResizeObserver кэширует размер секции — избегаем forced reflow в loop
 const _sectionResizeObs = new ResizeObserver(entries => {
   const rect = entries[0].contentRect;
   cachedSectionWidth = rect.width;
   cachedSectionHeight = rect.height;
+  _cachedSecEl = null; // invalidate so loop() re-fetches on next frame
   snapSectionHeight();
 });
 
@@ -3227,7 +3379,9 @@ let lastT=0;
 function loop(ts){
   if (!loopRunning || !loopActive) return; // пауза когда секция вне зоны видимости
 
-  const secEl = document.getElementById('reviews');
+  // [NM-21 FIXED] Use cached reference — avoid getElementById traversal at 60fps
+  if (!_cachedSecEl) _cachedSecEl = document.getElementById('reviews');
+  const secEl = _cachedSecEl;
   if (!secEl) { if (loopActive) requestAnimationFrame(loop); return; }
 
   const dt = Math.min(ts-lastT, 40);
@@ -3510,7 +3664,7 @@ function animBox(frames, times, done){
 if (lbBg)  lbBg.addEventListener('click', closeLB);
 if (lbBox) lbBox.addEventListener('click', closeLB);
 if (lbX)   lbX.addEventListener('click',  closeLB);
-document.addEventListener('keydown', e=>{ if(e.key==='Escape' && lbIsOpen) closeLB(); });
+// [P-1 FIXED] Escape for chat LB merged into unified keydown handler above.
 
 // Сброс lbBusy если пользователь переключил вкладку во время анимации
 document.addEventListener('visibilitychange', () => {
@@ -3623,6 +3777,10 @@ document.addEventListener('visibilitychange', () => {
   }
 
   // ── Public API — functions called from HTML via onclick ──
+  // [C-3 FIXED] toggleCalcPanel / closeCalcPanel called from HTML onclick —
+  // must be on window, otherwise mobile taps throw "not a function".
+  window.toggleCalcPanel = typeof toggleCalcPanel !== "undefined" ? toggleCalcPanel : undefined;
+  window.closeCalcPanel  = typeof closeCalcPanel  !== "undefined" ? closeCalcPanel  : undefined;
   window.acceptCookie = typeof acceptCookie !== "undefined" ? acceptCookie : undefined;
   window.declineCookie = typeof declineCookie !== "undefined" ? declineCookie : undefined;
   window.addToCart = typeof addToCart !== "undefined" ? addToCart : undefined;
@@ -3900,7 +4058,9 @@ document.addEventListener('visibilitychange', () => {
     document.head.appendChild(spinStyle);
   }
 
-  document.head.appendChild(spinStyle);
+  // [C-1 FIXED] Removed orphan head-append of spinStyle that was outside
+  // _ensurePtrIndicator — caused ReferenceError in strict mode,
+  // breaking all PTR touch handlers registration.
 
   function setPtrPos(dy) {
     var d = Math.min(dy, PTR_MAX);

@@ -77,6 +77,15 @@
 
   // ── Создать панель навигации ──
   function buildNav() {
+    // [N-2 FIXED] Guard against duplicate nav on HMR / repeated calls
+    if (document.getElementById('mcNav')) {
+      document.getElementById('mcNav').remove();
+      var oldBackdrop = document.getElementById('mcBackdrop');
+      if (oldBackdrop) oldBackdrop.remove();
+      var oldSheet = document.getElementById('mcSheet');
+      if (oldSheet) oldSheet.remove();
+    }
+
     // Удаляем старый bottom-nav если есть
     var old = document.getElementById('bottomNav');
         if (old) old.style.display = 'none';
@@ -153,7 +162,7 @@
 
         /* ── SLIDE-UP ПАНЕЛЬ ── */
         '.mc-sheet-backdrop{',
-          'position:fixed;inset:0;z-index:290;',
+          'position:fixed;inset:0;z-index:295;', /* [N-3 FIXED] Was 290 = same as --z-overlay; raised to 295 so overlay-level elements don't bleed through */
           'background:rgba(44,26,16,0);',
           'transition:background 0.3s ease;',
           '-webkit-tap-highlight-color:transparent;',
@@ -311,7 +320,17 @@
       icon('<path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>', 22) +
       '</div><span class="mc-btn-label">Заказать</span>';
     if (typeof openCart === 'function') {
-      orderBtn.addEventListener('click', function() { openCart(); });
+      orderBtn.addEventListener('click', function() {
+        // [N-1 FIXED] If the sheet is open when user taps "Заказать", calling openCart()
+        // immediately creates two simultaneous overlays + double lockBody() → scroll freeze.
+        // Close sheet first, then open cart after animation completes.
+        if (isOpen) {
+          closeSheet();
+          setTimeout(function() { openCart(); }, 320);
+        } else {
+          openCart();
+        }
+      });
     } else {
       orderBtn.addEventListener('click', function() {
         window.location.href = 'https://wa.me/79119038886?text=Здравствуйте! Хочу сделать заказ';

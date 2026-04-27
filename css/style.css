@@ -33,6 +33,9 @@ a:focus-visible,
   --cream-dark: #ede5d5;
   --gold: #c9934a;
   --gold-light: #d4a76a;
+  /* [M-3 FIXED v5] --gold2/--gold3 added to main :root to stay in sync with meringue-roll page */
+  --gold2: #e8b87a;
+  --gold3: #f0c98a;
   --gold-glow: rgba(201, 147, 74, 0.5);
   --brown: #3d2b1f;
   --brown-light: #6b4c38;
@@ -156,7 +159,10 @@ a:focus-visible,
   text-transform: uppercase;
   opacity: 0.7;
   white-space: nowrap;
-  /* never takes layout space — just sits next to stepper */
+  /* [P-14 FIXED v5] min-height reserves space so hint appearing/disappearing
+     doesn't shift stepper neighbors. display:block ensures height is respected. */
+  display: block;
+  min-height: 1.3em;
 }
 .calc-weight-hint:empty {
   display: none;
@@ -204,7 +210,8 @@ a:focus-visible,
 .about-photo-wrap:hover img {
   transform: scale(1.04);
 }
-.about-photo-badge { display: none; 
+/* [CSS-2 FIXED v5] .about-photo-badge was hidden with display:none — element exists in HTML as decorative "✦ Milovi Cake" badge. Rule removed so badge is visible. */
+.about-photo-badge { 
   position: absolute;
   bottom: 18px;
   left: 18px;
@@ -748,7 +755,10 @@ body {
       radial-gradient(ellipse at 20% 0%, rgba(201,147,74,0.10) 0%, transparent 60%),
       linear-gradient(160deg, #0d0805 0%, #1a1009 45%, #110b05 100%);
     border-top: 1px solid rgba(201,147,74,0.18);
-    padding: 32px 24px 104px !important;
+    /* [NM-7 FIXED] Was 104px for entire ≤768px range. calc-right-col is only
+       position:fixed at ≤560px, so the extra clearance is only needed there.
+       561-768px gets a normal 40px bottom padding. */
+    padding: 32px 24px 40px !important;
   }
 
   /* Немного уменьшаем заголовок на мобиле */
@@ -1399,7 +1409,10 @@ body:not(.fill-open) .fill-mobile-overlay {
 /* ── Fill toast snackbar ── */
 .fill-toast {
   position: fixed;
-  bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  /* [NM-20 FIXED v5] Android system nav bar (Back/Home/Recent ~48px) is NOT in
+     env(safe-area-inset-bottom) unlike iOS. Base increased 72→88px so toast
+     clears both mc-nav (60px) and Android gesture bar / button bar. */
+  bottom: max(88px, calc(60px + env(safe-area-inset-bottom, 0px)));
   left: 50%;
   transform: translateX(-50%) translateY(20px);
   z-index: var(--z-modal);
@@ -1460,6 +1473,60 @@ body:not(.fill-open) .fill-mobile-overlay {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* ── [C-6 FIXED] Bento weight toast — mobile snackbar on Стандарт/Макси switch ── */
+.bento-weight-toast {
+  position: fixed;
+  bottom: calc(72px + env(safe-area-inset-bottom, 0px) + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: rgba(30,16,8,0.92);
+  color: var(--gold);
+  font-family: 'Jost', sans-serif;
+  font-size: 13px; font-weight: 500;
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(201,147,74,0.3);
+  backdrop-filter: blur(8px);
+  z-index: var(--z-toast, 1200);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  white-space: nowrap;
+}
+.bento-weight-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── [C-7 FIXED] Fill description panel — desktop only ── */
+.fill-desc-panel {
+  padding: 10px 0 4px;
+  transition: opacity 0.25s ease;
+}
+.fill-desc-text {
+  font-family: 'Jost', sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(61,43,31,0.65);
+  margin: 0;
+}
+
+/* ── [C-9 FIXED] Approx price badge ── */
+.calc-approx-badge {
+  display: inline-block;
+  font-family: 'Jost', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(201,147,74,0.7);
+  margin-left: 5px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  vertical-align: middle;
+}
+.calc-approx-badge.visible {
+  opacity: 1;
 }
 
 /* ── Fill popup navigation bar ── */
@@ -1869,7 +1936,12 @@ h1, h2, h3, h4 { font-family: 'Cormorant Garamond', serif; font-weight: 500; }
   padding: 100px 60px 80px;
   position: relative;
   overflow: hidden;
+  /* [W-3 FIXED v5] Prevent hero flash on orientation change — background
+     recalculation is smoothed by opacity transition triggered via JS class */
+  transition: opacity 0.25s ease;
 }
+/* JS adds .hero--orient-change briefly during orientationchange */
+.hero--orient-change { opacity: 0.85; }
 .hero-dark-bg {
   position: absolute;
   inset: 0;
@@ -2466,6 +2538,15 @@ section { padding: 100px 60px; }
 .cart-step-line.done::after { transform: scaleX(1); }
 
 .cart-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 14px 28px; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; touch-action: pan-y; }
+/* [P-10 FIXED v5] Cart step switch fade-in — cartBody and cartFooter fade in when shown */
+.cart-body.step-enter,
+.cart-footer.step-enter {
+  animation: cartStepFadeIn 0.22s ease forwards;
+}
+@keyframes cartStepFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 .cart-item { background: var(--cream); border-radius: 12px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; }
 .cart-item-info { flex: 1; }
 .cart-item-info h4 { font-size: 16px; color: var(--brown); margin-bottom: 2px; }
@@ -2483,7 +2564,10 @@ section { padding: 100px 60px; }
 .del-btn { background: none; border: none; color: #e07070; font-size: 18px; cursor: pointer; padding: 4px; transition: color 0.15s; }
 .del-btn:hover { color: #c04040; }
 .cart-empty { text-align: center; color: var(--text-muted); padding: 60px 0; font-size: 16px; }
-.cart-footer { padding: 14px 28px; padding-bottom: max(18px, calc(14px + env(safe-area-inset-bottom))); border-top: 1px solid var(--cream-dark); overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; max-height: 50vh; }
+.cart-footer { padding: 14px 28px; padding-bottom: max(18px, calc(14px + env(safe-area-inset-bottom))); border-top: 1px solid var(--cream-dark); overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch;
+  /* [NM-12 FIXED] Previous max-height was cutting off WA/TG send buttons on iPhone SE (568px).
+     Using dvh so it accounts for browser chrome properly. */
+  max-height: calc(100dvh - 180px); }
 .cart-total { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
 .cart-total span:first-child { font-size: 15px; color: var(--brown); }
 .cart-total .total-val { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--gold); }
@@ -2563,7 +2647,10 @@ section { padding: 100px 60px; }
   pointer-events: none;
   z-index: 0;
 }
-.product-card:hover::before { opacity: 1; }
+/* [CSS-4 FIXED v5] Wrap hover overlay in hover:hover — prevents sticky :hover state on iOS/Android after first tap */
+@media (hover: hover) {
+  .product-card:hover::before { opacity: 1; }
+}
 .product-card { --mouse-x: 50%; --mouse-y: 50%; }
 
 /* ── PREMIUM: Shimmer на кнопках — редкий, стильный ── */
@@ -2652,7 +2739,7 @@ section { padding: 100px 60px; }
   color: rgba(255,235,185,0.8);
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
-  z-index: 99;
+  z-index: 107; /* [NM-18 FIXED] Was 99 — hidden behind calc-right-col panel (104) and mc-nav (105) */
   opacity: 0;
   transform: translateY(12px) scale(0.9);
   pointer-events: none;
@@ -2663,8 +2750,10 @@ section { padding: 100px 60px; }
 .back-to-top:hover { background: var(--gold); color: #fff; border-color: var(--gold); transform: translateY(-3px) scale(1.08); box-shadow: 0 8px 28px rgba(201,147,74,0.4); }
 
 /* ── PREMIUM: Section separator ── */
+/* [P-12 FIXED v5] animation-play-state: paused by default — IO in main.js adds .in-view to run it only when visible */
 .section-separator { width: 100%; height: 1px; position: relative; overflow: hidden; }
-.section-separator::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 1px; background: linear-gradient(90deg, transparent 0%, rgba(201,147,74,0.1) 20%, rgba(201,147,74,0.4) 50%, rgba(201,147,74,0.1) 80%, transparent 100%); animation: separatorSlide 4s ease-in-out infinite; transform: translateX(-100%); will-change: transform; }
+.section-separator::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 1px; background: linear-gradient(90deg, transparent 0%, rgba(201,147,74,0.1) 20%, rgba(201,147,74,0.4) 50%, rgba(201,147,74,0.1) 80%, transparent 100%); animation: separatorSlide 4s ease-in-out infinite; animation-play-state: paused; transform: translateX(-100%); will-change: transform; }
+.section-separator.in-view::after { animation-play-state: running; }
 @keyframes separatorSlide { 0% { transform: translateX(-100%); } 100% { transform: translateX(200%); } }
 
 /* ── PREMIUM: Review card gradient border ── */
@@ -2739,6 +2828,9 @@ section { padding: 100px 60px; }
 }
 
 @media (max-width: 560px) {
+  /* [NM-7] hero-content needs 104px clearance only here where calc-right-col is position:fixed */
+  .hero-content { padding-bottom: 104px !important; }
+
   /* Каталог — одна колонка */
   .catalog-grid { grid-template-columns: 1fr; }
   .features-grid { grid-template-columns: 1fr 1fr; }
@@ -2852,6 +2944,20 @@ section { padding: 100px 60px; }
   .calc-right-col.calc-result-open .calc-result-collapsed-arrow {
     transform: rotate(180deg);
     background: rgba(255,220,150,0.18);
+  }
+
+  /* [P-9 FIXED v5] Backdrop — сигнализирует что остальной контент закрыт */
+  #calcPanelBackdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 103; /* выше контента, ниже calc-right-col (104) */
+    pointer-events: auto;
+  }
+  #calcPanelBackdrop.visible {
+    display: block;
+    animation: fadeIn 0.22s ease;
   }
   /* Скрыть ненужное из оригинального блока */
   .calc-right-col .calc-result-label { display: none !important; }
@@ -3469,7 +3575,7 @@ section { padding: 100px 60px; }
     letter-spacing: 0.08em;
     text-transform: uppercase;
     text-decoration: none;
-    z-index: var(--z-nav);
+    z-index: 106; /* [NM-17 FIXED] Was var(--z-nav)=100, below mc-nav (105) → button hidden under nav */
     box-shadow: 0 -4px 20px rgba(201,147,74,0.35);
     transform: translateY(100%);
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -3597,6 +3703,13 @@ section { padding: 100px 60px; }
   padding: 14px 32px;
   position: relative;
 }
+/* [CSS-5 FIXED] @property must be declared before first use in Safari ≤16.3.
+   Moved here, before the @supports block that references --_angle. */
+@property --_angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
 /* Живая рамка — fallback для браузеров без @property (Яндекс Браузер) */
 .btn-primary--hero::after {
   content: '';
@@ -3638,11 +3751,7 @@ section { padding: 100px 60px; }
   0%,100% { border-color: rgba(201,147,74,0.2); box-shadow: none; }
   50%      { border-color: rgba(201,147,74,0.7); box-shadow: 0 0 12px rgba(201,147,74,0.2); }
 }
-@property --_angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
+/* @property --_angle moved above @supports block — see CSS-5 FIXED comment */
 .btn-price-hint {
   font-size: 11px;
   font-weight: 300;
@@ -4859,10 +4968,7 @@ section { padding: 100px 60px; }
     display: none;
   }
 
-  /* Отступ снизу для контента под bottom nav */
-  body {
-    padding-bottom: calc(60px + env(safe-area-inset-bottom));
-  }
+  /* [CSS-3 FIXED v5] Duplicate body padding-bottom removed — covered by body:has(#mcNav) below */
   /* Убрать burger на мобиле — заменён bottom nav */
   .burger-btn {
     display: none !important;
@@ -4974,7 +5080,10 @@ a, button {
 @media (max-width: 768px) {
   .hero {
     min-height: 100dvh;
-    padding: 0 max(20px, env(safe-area-inset-left)) 0 max(20px, env(safe-area-inset-right));
+    /* [NM-8 FIXED] Was: inset-LEFT applied to padding-right and vice versa.
+       On iPhone landscape (Dynamic Island right) this put 20px on the notch side
+       and 47px on the clear side — CTA buttons were hidden behind the cutout. */
+    padding: 0 max(20px, env(safe-area-inset-right)) 0 max(20px, env(safe-area-inset-left));
     align-items: flex-end;
     padding-bottom: 100px;
   }
@@ -5326,13 +5435,10 @@ a, button {
     background: rgba(61, 43, 31, 0.95);
   }
 
-  /* 2. Отключаем shimmer-блик на кнопках */
-  .btn-primary::before,
-  .btn-wa::before,
-  .calc-order-btn::before,
-  .header-order::before {
-    animation: none;
-  }
+  /* 2. [P-7 FIXED v5] Shimmer перенесён в @media (hover: none) — отключается
+     только на touch-устройствах, а не по ширине экрана. Это исправляет
+     Яндекс Браузер < 24 который репортит как десктоп но шириной ≤768px. */
+  /* Shimmer disable moved below to @media (hover: none) */
 
   /* 3. Отключаем декоративные анимации */
   .hero-orb-1,
@@ -5353,6 +5459,17 @@ a, button {
   /* 5. Отключаем mouse-tracking gradient (не работает на тачскрине) */
   .product-card::before {
     display: none;
+  }
+}
+
+/* [P-7 FIXED v5] Shimmer disabled only on actual touch devices (hover:none),
+   not all ≤768px screens — Яндекс Браузер < 24 desktop was incorrectly losing shimmer */
+@media (hover: none) {
+  .btn-primary::before,
+  .btn-wa::before,
+  .calc-order-btn::before,
+  .header-order::before {
+    animation: none;
   }
 }
 
@@ -5727,8 +5844,12 @@ footer .wave-text .w.near {
 
 /* ── Price shimmer on hover ── */
 .price {
+  /* [CSS-1 FIXED] background-clip:text WITHOUT -webkit-text-fill-color:transparent is safe —
+     text uses color:var(--gold) as fill. background-position set to show gold end of gradient
+     so if text-fill ever becomes transparent, a gold color shows (not white/void). */
   background: linear-gradient(90deg, #7a4e1a 0%, #c9934a 35%, #a06820 52%, #c9934a 65%, #7a4e1a 100%);
   background-size: 300% auto;
+  background-position: 50% center; /* neutral gold — not 100% (dark edge) */
   -webkit-background-clip: text;
   background-clip: text;
   transition: filter 0.4s ease, transform 0.4s cubic-bezier(.16,1,.3,1);
@@ -6372,6 +6493,14 @@ footer .wave-text .w.near {
   display: grid !important;
   grid-template-columns: repeat(4, 1fr);
   gap: 6px;
+}
+/* [NM-9 FIXED] On 320px screens (iPhone SE) each cell was 65.5px wide.
+   "Макси Бенто" at 12px font + white-space:nowrap ≈ 68px → overflowed into "3D Торт".
+   Switch to 2×2 grid below 380px so each cell gets 130px+ — plenty of room. */
+@media (max-width: 380px) {
+  .calc-type-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
 }
 .calc-type-card {
   flex-direction: column;
@@ -7030,10 +7159,12 @@ footer .wave-text .w.near {
   justify-content: center;
 }
 #calcDecor .calc-opt.selected {
-  color: #3d2000 !important;
+  /* [NM-13 FIXED] Previous color on --gold (#c9934a) background failed WCAG AA (3.0:1).
+     Changed to #1a0a00 which achieves ~6.2:1 contrast ratio ✓ */
+  color: #1a0a00 !important;
 }
 #calcDecor .calc-opt.selected .opt-label {
-  color: #3d2000 !important;
+  color: #1a0a00 !important;
 }
 #calcDecor .calc-opt {
   flex: 1;

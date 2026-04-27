@@ -50,7 +50,7 @@
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "Milovi Cake",
-    "description": "Авторские торты, меренговые рулеты и десерты на заказ с доставкой в Тосно от частного кондитера."
+    "description": "Авторские торты, меренговые рулеты и десерты на заказ с доставкой в Тосно от частного кондитера.",
     "url": "https://milovicake.ru/prigorody/tosno/",
     "telephone": "+79119038886",
     "address": {
@@ -77,7 +77,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
   <!-- noscript fonts -->
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/></noscript>
-  <link rel="stylesheet" href="../../css/style.css?v=20260401" />
+  <link rel="stylesheet" href="../../css/style.css?v=20260428" />
 </head>
 
 <body>
@@ -967,8 +967,8 @@
 
 
 <script>var IMG_BASE = '../../img';</script>
-<script src="../../js/main.js?v=20260401" defer></script>
-<script src="../../js/nav.js?v=20260401" defer></script>
+<script src="../../js/main.js?v=20260428" defer></script>
+<script src="../../js/nav.js?v=20260428" defer></script>
 
 
 
@@ -1261,5 +1261,24 @@
 <div class="lb-box" id="lbBox"><img id="lbImg" src="" alt=""></div>
 <button class="lb-x" id="lbX" aria-label="Закрыть">✕</button>
 
+<!-- [NM-1 FIXED] mobileStickyWa scroll activation: was present in HTML but never activated -->
+<script>
+(function() {
+  if (window.innerWidth > 768) return;
+  var cta = document.getElementById('mobileStickyWa');
+  if (!cta) return;
+  var shown = false;
+  function updateStickyCta() {
+    var y = window.scrollY || window.pageYOffset;
+    if (y > 300 && !shown) { cta.classList.add('visible'); shown = true; }
+    var nearBottom = (document.documentElement.scrollHeight - window.innerHeight - y) < 120;
+    cta.classList.toggle('near-bottom', nearBottom);
+  }
+  window.addEventListener('scroll', updateStickyCta, { passive: true });
+  window.addEventListener('resize', function() {
+    if (window.innerWidth > 768) { cta.classList.remove('visible'); shown = false; }
+  });
+})();
+</script>
 </body>
 </html>

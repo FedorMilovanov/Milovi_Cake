@@ -4,16 +4,19 @@
    ══════════════════════════════════════════════ */
 
 // Version is updated on each deploy — change this date to bust caches
-const DEPLOY_VERSION = '2026-03-22a';
+// [SW-1 FIXED v6] Was '2026-03-22a' — stale version caused SW never to reinstall for
+// users who installed before April 1, and PRECACHE_URLS pointed at ?v=20260322 while
+// HTML references ?v=20260428 → offline mode missing all v4/v5 fixes.
+const DEPLOY_VERSION = '2026-04-28a';
 const STATIC_CACHE = `milovi-static-v1-${DEPLOY_VERSION}`;
 const IMAGE_CACHE  = `milovi-images-v2`;
 
 /* Только критичные ресурсы — пригороды кешируются по запросу */
 const PRECACHE_URLS = [
   '/',
-  '/css/style.css?v=20260322',
-  '/js/main.js?v=20260322',
-  '/js/nav.js?v=20260322',
+  '/css/style.css?v=20260428',
+  '/js/main.js?v=20260428',
+  '/js/nav.js?v=20260428',
   '/manifest.json',
   '/favicon.svg',
   '/icon-192.png',
