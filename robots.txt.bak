@@ -1,0 +1,15 @@
+User-agent: *
+Disallow: /call/
+Disallow: /prigorody/build.py
+Disallow: /prigorody/_template.html
+Disallow: /prigorody/_cities.csv
+Allow: /
+
+# Яндекс
+User-agent: Yandex
+Disallow: /call/
+Allow: /
+Host: milovicake.ru
+Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term
+
+Sitemap: https://milovicake.ru/sitemap.xml
