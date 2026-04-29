@@ -981,6 +981,75 @@ function toggleCart() {
   else openCart();
 }
 
+// [MOB-3 FIXED] Swipe-right-to-close for cart drawer on mobile.
+// On mobile (≤900px) the cart slides in FROM the right (translateX animation).
+// The matching dismiss gesture is therefore swipe RIGHT, not swipe down.
+// Tracks touch delta X; if user drags ≥80px rightward → close.
+// Live feedback: translateX follows the finger so the drawer visually follows.
+// Guard: only activates when cart is fully open; ignored on desktop (>900px).
+// Scroll-safe: only starts tracking after ≥8px horizontal movement is confirmed
+// so vertical scrolling inside the cart body is never blocked.
+(function() {
+  var _swipeSX = 0;
+  var _swipeSY = 0;
+  var _swipeDragging = false;
+  var _swipeLocked  = false; // true once we confirmed horizontal intent
+  var _swipeThreshold = 80; // px rightward drag to trigger close
+
+  var _drawer = document.getElementById('cartDrawer');
+  if (!_drawer) return;
+
+  _drawer.addEventListener('touchstart', function(e) {
+    if (window.innerWidth > 900) return; // desktop uses popup, no swipe
+    if (_cartState !== 'open') return;
+    _swipeSX = e.touches[0].clientX;
+    _swipeSY = e.touches[0].clientY;
+    _swipeDragging = true;
+    _swipeLocked   = false;
+  }, { passive: true });
+
+  _drawer.addEventListener('touchmove', function(e) {
+    if (!_swipeDragging) return;
+    var dx = e.touches[0].clientX - _swipeSX;
+    var dy = e.touches[0].clientY - _swipeSY;
+
+    // Confirm horizontal intent before locking (avoids fighting vertical scroll)
+    if (!_swipeLocked) {
+      if (Math.abs(dy) > Math.abs(dx)) { _swipeDragging = false; return; } // vertical — ignore
+      if (Math.abs(dx) < 8) return; // not enough movement yet
+      _swipeLocked = true;
+      _drawer.style.transition = 'none'; // freeze CSS transition during drag
+    }
+
+    if (dx <= 0) return; // ignore leftward drag (expanding into screen)
+    _drawer.style.transform = 'translateX(' + dx + 'px)';
+    // Fade overlay proportionally as drawer slides away
+    var overlay = document.getElementById('cartOverlay');
+    if (overlay) overlay.style.opacity = Math.max(0, 1 - dx / (_swipeThreshold * 2));
+  }, { passive: true });
+
+  _drawer.addEventListener('touchend', function(e) {
+    if (!_swipeDragging) return;
+    _swipeDragging = false;
+    var dx = e.changedTouches[0].clientX - _swipeSX;
+    var willClose = _swipeLocked && dx >= _swipeThreshold;
+
+    // Always restore transition and clear inline transform.
+    // For close: we must clear inline style BEFORE closeCart() so the class-based
+    // translateX(100%) animation in .closing is not blocked by inline specificity.
+    // requestAnimationFrame ensures closeCart fires after the browser has applied
+    // the cleared transform in one paint cycle, eliminating the visible snap-back.
+    _drawer.style.transition = '';
+    _drawer.style.transform  = '';
+    var overlay = document.getElementById('cartOverlay');
+    if (overlay) overlay.style.opacity = '';
+
+    if (willClose) {
+      requestAnimationFrame(function() { closeCart(); });
+    }
+  }, { passive: true });
+})();
+
 // Orientation change — re-evaluate lock state
 window.addEventListener('orientationchange', function() {
   // [W-3 FIXED v5] Suppress hero background-image recalculation flash during rotation
@@ -3888,14 +3957,22 @@ document.addEventListener('visibilitychange', () => {
       vibe(7);
       return;
     }
+    // Bottom nav ORDER button — stronger pulse (checked BEFORE .bottom-nav-item
+    // because it carries both classes: "bottom-nav-item bottom-nav-item--order")
+    if (t.closest('.bottom-nav-item--order')) {
+      vibe([8, 25, 8]);
+      return;
+    }
     // Bottom nav items — ultra light
     if (t.closest('.bottom-nav-item')) {
       vibe(5);
       return;
     }
-    // Order button in bottom nav — stronger
-    if (t.closest('.bottom-nav-item--order')) {
-      vibe([8, 25, 8]);
+    // [MOB-4 FIXED] .btn-add lives INSIDE .product-card — must be checked first.
+    // Old order: .product-card matched first → vibe(6) → early return →
+    // the stronger "add to cart" pattern [8,40,8] never fired.
+    if (t.closest('.btn-add, .cart-add-btn, .cart-confirm-btn, [onclick*="addToCart"], [onclick*="openCart"]')) {
+      vibe([8, 40, 8]);
       return;
     }
     // Product cards — gentle tap
@@ -3906,11 +3983,6 @@ document.addEventListener('visibilitychange', () => {
     // Filling / decor options — minimal
     if (t.closest('.calc-opt')) {
       vibe(5);
-      return;
-    }
-    // Cart add / confirm buttons
-    if (t.closest('.cart-add-btn, .cart-confirm-btn, [onclick*="addToCart"], [onclick*="openCart"]')) {
-      vibe([8, 40, 8]);
       return;
     }
     // Review cards
@@ -3936,7 +4008,47 @@ document.addEventListener('visibilitychange', () => {
   }, { passive: true });
 
 
-  // ── 2. GYROSCOPE PARALLAX on hero photo ─────
+  // ── 2. FILMSTRIP SCROLL DISCOVERABILITY (MOB-6) ──────────
+  // On mobile (≤600px) the review filmstrip scrolls horizontally.
+  // New users have no indication that content extends past the viewport.
+  // Fix: (a) one-time nudge animation when filmstrip first enters view,
+  //      (b) right-edge fade gradient that disappears once scrolled to end.
+  (function() {
+    if (window.innerWidth > 600) return;
+    var filmstrip = document.querySelector('.review-filmstrip');
+    var filmwrap  = document.querySelector('.review-filmstrip-wrap');
+    if (!filmstrip || !filmwrap) return;
+
+    // (b) Hide gradient when user scrolled all the way right
+    filmstrip.addEventListener('scroll', function() {
+      var atEnd = filmstrip.scrollLeft + filmstrip.clientWidth >= filmstrip.scrollWidth - 8;
+      filmwrap.classList.toggle('at-end', atEnd);
+    }, { passive: true });
+
+    // (a) Nudge once when filmstrip comes into view — only if never interacted.
+    // We animate scrollLeft, NOT translateX on the container.
+    // translateX would shift the whole block off-screen; scrollLeft is the correct
+    // way to reveal hidden content inside a scroll container.
+    var nudgeDone = false;
+    var io = new IntersectionObserver(function(entries) {
+      if (nudgeDone) return;
+      if (!entries[0].isIntersecting) return;
+      nudgeDone = true;
+      io.disconnect();
+      setTimeout(function() {
+        if (filmstrip.scrollLeft > 0) return; // user already scrolled — skip
+        // Peek animation: scroll right to reveal next item, then scroll back
+        var peekPx = 56;
+        filmstrip.scrollTo({ left: peekPx, behavior: 'smooth' });
+        setTimeout(function() {
+          filmstrip.scrollTo({ left: 0, behavior: 'smooth' });
+        }, 540);
+      }, 700);
+    }, { threshold: 0.5 });
+    io.observe(filmstrip);
+  })();
+
+  // ── 3. GYROSCOPE PARALLAX on hero photo ─────
   var heroBg = document.getElementById('heroPhotoBg');
   if (heroBg && window.DeviceOrientationEvent) {
     var baseGamma = null, baseBeta = null;
@@ -4014,7 +4126,7 @@ document.addEventListener('visibilitychange', () => {
   }
 
 
-  // ── 3. PULL-TO-REFRESH ──────────────────────
+  // ── 4. PULL-TO-REFRESH ──────────────────────
   var PTR_THRESHOLD = 65;
   var PTR_MAX       = 80;
   var ptrActive     = false;
