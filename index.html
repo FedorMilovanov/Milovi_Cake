@@ -1,6 +1,17 @@
 <!DOCTYPE html>
-<html lang="ru" style="background:#f5f0e8;color-scheme:light">
+<html lang="ru">
 <head>
+  <!-- [UI-1] Anti-flash dark mode: применяем тему ДО рендера -->
+  <script>
+    (function(){
+      try {
+        var t = localStorage.getItem('mc_theme');
+        if (t) document.documentElement.setAttribute('data-theme', t);
+        else if (window.matchMedia('(prefers-color-scheme: dark)').matches)
+          document.documentElement.setAttribute('data-theme', 'dark');
+      } catch(e){}
+    })();
+  </script>
   <meta charset="UTF-8" />
   <link rel="icon" href="favicon.svg?v=20260303" type="image/svg+xml">
   <link rel="icon" href="icon-192.png?v=20260303" type="image/png" sizes="192x192">
@@ -136,8 +147,9 @@
   <style id="critical-css">
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--cream:#f5f0e8;--gold:#c9934a;--brown:#3d2b1f;--text:#2c1a10;--text-muted:#9a7a62;--white:#FDFBF7;--z-nav:100;--z-header:110;--z-overlay:290;--z-drawer:300;--z-modal:400;--z-toast:450}
-    html{background:#f5f0e8;overflow-x:hidden}
-    body{font-family:'Jost',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:#f5f0e8;color:var(--text);overflow-x:hidden}
+    [data-theme="dark"]{--cream:#1a1108;--text:#f0e4d0;--text-muted:#c8a880;--white:#201508}
+    html{background:var(--cream);overflow-x:hidden}
+    body{font-family:'Jost',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--cream);color:var(--text);overflow-x:hidden}
     /* [W-5 FIXED v5] Improved fallback font stacks: system-ui/-apple-system are metrically
        close to Jost (geometric sans) → less layout shift when web font loads.
        Headings: Georgia is metrically close to Cormorant Garamond on all platforms. */
@@ -146,13 +158,13 @@
     .site-header.scrolled{background:rgba(245,240,232,0.96);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 2px 24px rgba(61,43,31,0.10)}
     .hero{min-height:100vh;min-height:100svh;display:flex;align-items:center;padding:100px 60px 80px;position:relative;overflow:hidden}
     .hero-photo-bg{position:absolute;inset:0;z-index:0;overflow:hidden}
-    .hero-photo-bg img{width:100%;height:100%;object-fit:cover;object-position:68% center;display:block}
+    .hero-photo-bg img{width:100%;height:100%;object-fit:cover;object-position:50% center;display:block}
     #scroll-progress{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--gold),#d4a76a);z-index:9999;border-radius:0 2px 2px 0}
     @media(max-width:768px){
       .site-header{padding:0 24px}
       .hero{flex-direction:column!important;align-items:stretch!important;min-height:unset!important;padding:0!important;overflow:visible!important}
       .hero-photo-bg{position:relative!important;inset:unset!important;height:58vw;min-height:260px;max-height:420px;overflow:hidden;flex-shrink:0}
-      .hero-photo-bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:60% center}
+      .hero-photo-bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:45% center}
       .hero-content{position:relative!important;background:linear-gradient(160deg,#0d0805 0%,#1a1009 45%,#110b05 100%);border-top:1px solid rgba(201,147,74,0.18);padding:32px 24px 104px!important}
     }
     /* [W-4 FIXED] Critical catalog-card geometry prevents layout shift after style.css loads */
@@ -354,7 +366,7 @@
   </script>
 </head>
 
-<body style="background:#f5f0e8">
+<body>
 
 <!-- SKIP LINK -->
 <a href="#main-content" class="skip-link">Перейти к содержимому</a>
@@ -380,6 +392,10 @@
     <a href="#reviews">Отзывы</a>
     <a href="#contacts">Контакты</a>
     <a href="#catalog" class="header-order">Заказать</a>
+    <button id="themeToggleBtn"
+            class="theme-toggle"
+            onclick="toggleTheme()"
+            aria-label="Переключить тему">☾</button>
     <button class="header-cart-btn" id="cartBtn" onclick="openCart()" aria-label="Корзина">
       🛒
       <span class="cart-badge" id="cartBadge">0</span>
@@ -440,7 +456,7 @@
     <picture>
       <source media="(max-width: 768px)" srcset="img/head_mobile.webp" />
       <source media="(min-width: 769px)" srcset="img/head_desktop.webp" />
-      <img src="img/head.webp" alt="Авторский торт Milovi Cake" fetchpriority="high" decoding="async" width="1920" height="1080" />
+      <img src="img/head.webp" alt="Авторский торт Milovi Cake" fetchpriority="high" decoding="async" width="1440" height="960" />
     </picture>
   </div>
   <div class="hero-content">
@@ -1267,9 +1283,13 @@
 
 <!-- CART DRAWER (PREMIUM) -->
 <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
-<div class="cart-drawer" id="cartDrawer">
+<div class="cart-drawer" id="cartDrawer"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="cartDrawerTitle"
+     aria-hidden="true">
   <div class="cart-header">
-    <h3>🛒 Ваш заказ <span class="cart-count-badge" id="cartCountBadge">0</span></h3>
+    <h3 id="cartDrawerTitle">🛒 Ваш заказ <span class="cart-count-badge" id="cartCountBadge">0</span></h3>
     <div class="cart-header-right">
       <button class="cart-clear-btn" id="cartClearBtn" onclick="clearCart()" aria-label="Очистить корзину" style="display:none">🗑 Очистить</button>
       <button class="cart-close" onclick="closeCart()" aria-label="Закрыть корзину">

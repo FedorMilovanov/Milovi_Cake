@@ -10,6 +10,25 @@
    Пригороды:  <script>var IMG_BASE = '../../img';</script>
 ═══════════════════════════════════════════════════════ */
 
+// ── THEME ENGINE — [UI-1 Dark Mode] ──
+// Запускаем ДО рендера чтобы не было flash of wrong theme
+(function initTheme() {
+  var saved       = (function(){ try { return localStorage.getItem('mc_theme'); } catch(e){ return null; } })();
+  var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  var theme       = saved || (prefersDark ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', theme);
+})();
+
+function toggleTheme() {
+  var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  var next   = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try { localStorage.setItem('mc_theme', next); } catch(e){}
+  var btn = document.getElementById('themeToggleBtn');
+  if (btn) btn.textContent = next === 'dark' ? '☀' : '☾';
+}
+window.toggleTheme = toggleTheme;
+
 // ── FILLS DATA (по типу позиции) ──
 const FILLS = {
   biscuit: ['Микс ягод 🍓', 'Белый сникерс', 'Сникерс', 'Ферреро', 'Воздушный поцелуй', 'Ванильная вишня', 'Ванильные тропики', 'Ванильные облака', 'Вишня в шоколаде', 'Шоколадный микс ягод', 'Красный бархат', 'Супер-Шоколад'],
@@ -17,18 +36,53 @@ const FILLS = {
   cake3d: ['Молочная девочка', 'Медовик', 'Молочная девочка + сливочный крем'],
 };
 
+// [JS-2 FIX] Читаем начинки через поле fillGroup в данных продукта —
+// не через магические p.id. Смена порядка продуктов теперь безопасна.
 function getFillsForProduct(p) {
-  if (p.id === 1) return FILLS.biscuit;
-  if (p.id === 2) return FILLS.bento;
-  if (p.id === 3) return FILLS.cake3d;
-  return [];
+  return FILLS[p.fillGroup] || [];
 }
 
-function setCartItemFill(cartKey, fill) {
-  if (cart[cartKey]) {
-    cart[cartKey].fill = fill || '';
-    saveCartToStorage();
+// ── buildCartKey: единственная точка формирования ключа корзины ──
+// Используется в addCalcToCart и в setCartItemFill при смене начинки.
+function buildCartKey(numId, mode, hasMaxi, fillName, decorName) {
+  const fillKey  = fillName  ? `:${fillName}`  : '';
+  const decorKey = decorName ? `:${decorName}` : '';
+  if (hasMaxi) return `${numId}:${mode}${fillKey}${decorKey}`;
+  return fillKey ? `${numId}${fillKey}${decorKey}` : String(numId);
+}
+
+function setCartItemFill(oldCartKey, fill) {
+  const entry = cart[oldCartKey];
+  if (!entry) return;
+
+  const newFill = fill || '';
+  const numId   = parseInt(oldCartKey);
+  const p       = products.find(x => x.id === numId);
+
+  // [CART-1 FIX] Пересчитываем ключ с новой начинкой.
+  // Если ключ изменился — перемещаем запись, чтобы избежать
+  // слияния с другими позициями при следующем добавлении той же начинки.
+  const newKey = p
+    ? buildCartKey(numId, entry.mode || 'regular', !!p.hasMaxi, newFill, entry.decor || '')
+    : oldCartKey;
+
+  if (newKey !== oldCartKey) {
+    if (cart[newKey]) {
+      // Уже есть позиция с этой начинкой — суммируем количество
+      const maxQty = p && p.unit === 'кг' ? (p.maxiVariant ? 5 : 20) : 20;
+      cart[newKey].qty = Math.min(
+        Math.round((cart[newKey].qty + entry.qty) * 10) / 10,
+        maxQty
+      );
+    } else {
+      cart[newKey] = { ...entry, fill: newFill };
+    }
+    delete cart[oldCartKey];
+  } else {
+    cart[oldCartKey].fill = newFill;
   }
+  saveCartToStorage();
+  updateCartUI();
 }
 window.setCartItemFill = setCartItemFill;
 
@@ -43,10 +97,10 @@ window.setCartItemDessertType = setCartItemDessertType;
 
 // ── DATA ──
 const products = [
-  { id: 1, name: 'Бисквитный торт', desc: 'Воздушный торт с нежнейшим кремом и авторским декором', min: 'Заказ от 2 кг, декор рассчитывается отдельно', price: 'от 2 800 ₽/кг', priceNum: 2800, unit: 'кг', minKg: 2, emoji: '🎂',
+  { id: 1, name: 'Бисквитный торт', fillGroup: 'biscuit', desc: 'Воздушный торт с нежнейшим кремом и авторским декором', min: 'Заказ от 2 кг, декор рассчитывается отдельно', price: 'от 2 800 ₽/кг', priceNum: 2800, unit: 'кг', minKg: 2, emoji: '🎂',
     slides: [IMG_BASE + '/cake_biscuit_0.webp', IMG_BASE + '/cake_biscuit_1.webp', IMG_BASE + '/cake_biscuit_2.webp', IMG_BASE + '/cake_biscuit_3.webp', IMG_BASE + '/cake_biscuit_4.webp', IMG_BASE + '/cake_biscuit_5.webp'],
-    slidePos: ['center 30%', 'center 25%', 'center 20%', 'center 30%', 'center 20%'] },
-  { id: 2, name: 'Бенто торт', desc: 'Миниатюрный торт — идеальный подарок для особенного момента', min: '', price: '1 600 ₽', priceNum: 1600, unit: 'шт', emoji: '🍰',
+    slidePos: ['center 30%', 'center 25%', 'center 20%', 'center 30%', 'center 20%', 'center 25%'] },
+  { id: 2, name: 'Бенто торт', fillGroup: 'bento', desc: 'Миниатюрный торт — идеальный подарок для особенного момента', min: '', price: '1 600 ₽', priceNum: 1600, unit: 'шт', emoji: '🍰',
     slides: [IMG_BASE + '/bento_1.webp', IMG_BASE + '/bento_2.webp', IMG_BASE + '/bento_4.webp'],
     slidePos: ['60% 50%', 'center 5%', 'center 40%'],
     slideScale: [1.4, 1, 1],
@@ -63,19 +117,19 @@ const products = [
       slideScale: [1]
     }
   },
-  { id: 3, name: '3D Торт', desc: 'Уникальный дизайнерский торт с объёмными элементами', min: 'Заказ от 3 кг', price: '5 000 ₽/кг', priceNum: 5000, unit: 'кг', minKg: 3, emoji: '✨',
+  { id: 3, name: '3D Торт', fillGroup: 'cake3d', desc: 'Уникальный дизайнерский торт с объёмными элементами', min: 'Заказ от 3 кг', price: '5 000 ₽/кг', priceNum: 5000, unit: 'кг', minKg: 3, emoji: '✨',
     slides: [IMG_BASE + '/cake_3d.webp', IMG_BASE + '/cake_3d_2.webp'],
     slidePos: ['center 30%', 'center 10%'],
     slideScale: [1, 1] },
   { id: 4, name: 'Меренговый рулет', desc: 'Хрустящая меренга с нежным кремом — наш фирменный десерт', min: '', price: '2 500 ₽/шт', priceNum: 2500, unit: 'шт', emoji: '🥐',
     slides: [IMG_BASE + '/meringue_roll.webp', IMG_BASE + '/meringue_roll_2.webp', IMG_BASE + '/meringue_roll_3.webp', IMG_BASE + '/meringue_roll_4.webp', IMG_BASE + '/meringue_roll_5.webp', IMG_BASE + '/meringue_roll_6.webp'],
-    slidePos: ['center 35%', 'center 40%', 'center 35%'] },
+    slidePos: ['center 35%', 'center 40%', 'center 35%', 'center 30%', 'center 25%', 'center 30%'] },
   { id: 5, name: 'Пирожное "Павлова"', minQty: 2, desc: 'Воздушная меренга с кремом и начинкой из ягод', min: 'Заказ от 2 шт', price: '350 ₽/шт', priceNum: 350, unit: 'шт', emoji: '🍓',
     slides: [IMG_BASE + '/pavlova.webp', IMG_BASE + '/pavlova_2.webp', IMG_BASE + '/pavlova_3.webp'],
     slidePos: ['center 55%', 'center 45%', 'center 50%'] },
   { id: 6, name: 'Капкейки', minQty: 6, desc: 'Набор изящных капкейков с разными вкусами', min: 'Заказ от 6 шт одного вкуса', price: '350 ₽/шт', priceNum: 350, unit: 'шт', emoji: '🧁',
     slides: [IMG_BASE + '/cupcakes.webp', IMG_BASE + '/cupcakes_2.webp'],
-    slidePos: ['center 35%', 'center 40%', 'center 35%'] },
+    slidePos: ['center 35%', 'center 40%'] },
 ];
 
 // cart: { [id]: { qty: number } }  — for kg-products qty is in kg (step 0.5)
@@ -98,12 +152,12 @@ function renderCatalog() {
           ${p.slides.map((src, i) => {
             const active = i === 0 ? ' active' : '';
             return `<div class="slide-img${active}">
-              <img src="${src}" alt="${p.name}" loading="${i === 0 ? 'eager' : 'lazy'}" onerror="this.style.display='none'" />
+              <img src="${src}" alt="${p.name}" loading="lazy" decoding="async" onerror="this.closest('.slide-img').innerHTML='<div class=\\'slide-img-fallback\\'>${p.emoji || '🎂'}</div>'" />
             </div>`;
           }).join('')}
           ${totalSlides > 1 ? `
-            <button class="slide-btn slide-prev" onclick="sliderStep('${p.id}',-1,${totalSlides})" aria-label="Назад">&#8249;</button>
-            <button class="slide-btn slide-next" onclick="sliderStep('${p.id}',1,${totalSlides})" aria-label="Вперёд">&#8250;</button>
+            <button class="slide-btn slide-prev" onclick="sliderStep('${p.id}',-1,${totalSlides})" aria-label="Предыдущее фото — ${p.name}">&#8249;</button>
+            <button class="slide-btn slide-next" onclick="sliderStep('${p.id}',1,${totalSlides})" aria-label="Следующее фото — ${p.name}">&#8250;</button>
             <div class="slide-dots">${p.slides.map((_,i) => `<span class="dot${i===0?' active':''}" onclick="goSlide('${p.id}',${i})"></span>`).join('')}</div>
           ` : ''}
         </div>`;
@@ -202,9 +256,10 @@ function sliderStep(pid, dir, total) {
   const next = (current + dir + total) % total;
   sliderCurrentIdx[pid] = next;
   goSlide(pid, next);
-  // Reset auto-slide timer
+  // Reset auto-slide timer — but only if mouse is not currently over the slider
   if (slideTimers[pid]) { clearInterval(slideTimers[pid]); delete slideTimers[pid]; }
-  if (total > 1) {
+  const wrap = document.getElementById('slider-' + pid);
+  if (total > 1 && wrap && !wrap.matches(':hover')) {
     slideTimers[pid] = setInterval(() => {
       if (document.hidden) return;
       sliderCurrentIdx[pid] = ((sliderCurrentIdx[pid] || 0) + 1) % total;
@@ -298,9 +353,10 @@ function switchBentoTab(pid, mode) {
 
     // Build new slides
     let newSlidesHtml = '';
+    const variantEmoji = (isMaxi ? p.emoji : p.emoji) || '🎂';
     slides.forEach((src, i) => {
       const active = i === 0 ? ' active' : '';
-      newSlidesHtml += `<div class="slide-img${active}"><img src="${src}" alt="${variant.name}" loading="lazy" onerror="this.style.display='none'" style="object-position:${positions[i]};transform:scale(${scales[i]});transform-origin:${positions[i]};"></div>`;
+      newSlidesHtml += `<div class="slide-img${active}"><img src="${src}" alt="${variant.name}" loading="lazy" onerror="this.closest('.slide-img').innerHTML='<div class=\\'slide-img-fallback\\'>${variantEmoji}</div>'" style="object-position:${positions[i]};transform:scale(${scales[i]});transform-origin:${positions[i]};"></div>`;
     });
     if (dotsEl) {
       dotsEl.insertAdjacentHTML('beforebegin', newSlidesHtml);
@@ -313,10 +369,11 @@ function switchBentoTab(pid, mode) {
     // Reset current index
     sliderCurrentIdx[pid] = 0;
 
-    // Restart auto-slide timer
+    // Restart auto-slide timer — только если мышь не над слайдером
     if (slideTimers[pid]) { clearInterval(slideTimers[pid]); delete slideTimers[pid]; }
-    if (slides.length > 1) {
+    if (slides.length > 1 && !wrap.matches(':hover')) {
       slideTimers[pid] = setInterval(() => {
+        if (document.hidden) return;
         sliderCurrentIdx[pid] = ((sliderCurrentIdx[pid] || 0) + 1) % slides.length;
         goSlide(pid, sliderCurrentIdx[pid]);
       }, 3000);
@@ -906,6 +963,9 @@ function openCart() {
   // Already open — nothing to do
   if (_cartState === 'open' || _cartState === 'opening') return;
 
+  // [A11Y] Запоминаем элемент, который был в фокусе до открытия корзины
+  openCart._lastFocused = document.activeElement;
+
   _cartClearTimer();
   _cartState = 'opening';
 
@@ -924,11 +984,23 @@ function openCart() {
   overlay.classList.add('open');
   document.body.classList.add('cart-open');
 
+  // [A11Y] Устанавливаем ARIA-атрибуты диалога
+  drawer.setAttribute('role', 'dialog');
+  drawer.setAttribute('aria-modal', 'true');
+  drawer.setAttribute('aria-hidden', 'false');
+  drawer.setAttribute('aria-labelledby', 'cartDrawerTitle');
+
   if (window.innerWidth <= 900) lockBody();
 
   _cartState = 'open';
   setCartStep(1);
   updateCartUI();
+
+  // [A11Y] Переводим фокус на кнопку закрытия после открытия
+  setTimeout(function() {
+    var closeBtn = drawer.querySelector('.cart-close, [aria-label="Закрыть"], [onclick="closeCart()"]');
+    if (closeBtn) closeBtn.focus();
+  }, 100);
 
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.add('hidden');
@@ -958,6 +1030,9 @@ function closeCart() {
   overlay.classList.remove('open');
   document.body.classList.remove('cart-open');
 
+  // [A11Y] Скрываем диалог для screen readers
+  drawer.setAttribute('aria-hidden', 'true');
+
   if (window.innerWidth <= 900) unlockBody();
 
   // Delay matches CSS transition durations
@@ -968,6 +1043,12 @@ function closeCart() {
     drawer.style.cssText = '';
     drawer.style.willChange = 'auto'; // снимаем GPU-слой после анимации
     _cartState = 'closed';
+
+    // [A11Y] Возвращаем фокус на элемент, который был активен до открытия корзины
+    if (openCart._lastFocused && typeof openCart._lastFocused.focus === 'function') {
+      openCart._lastFocused.focus();
+      openCart._lastFocused = null;
+    }
   }, delay);
 
   var bn = document.getElementById('bottomNav');
@@ -1137,43 +1218,10 @@ document.querySelectorAll('img').forEach(function(img) {
     setTimeout(function() { if (img.style.opacity === '0') img.style.opacity = '1'; }, 5000);
 });
 
-// ── CART SWIPE-RIGHT TO CLOSE ──
-(function() {
-  const drawer = document.getElementById('cartDrawer');
-  if (!drawer) return;
-  let startX = 0, startY = 0, dragging = false;
-  drawer.addEventListener('touchstart', e => {
-    // ✅ Баг 6: не начинать drag если пользователь в поле ввода
-    const tag = document.activeElement?.tagName;
-    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || document.activeElement?.isContentEditable) {
-      dragging = false;
-      return;
-    }
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-    dragging = true;
-    drawer.style.transition = 'none';
-  }, { passive: true });
-  drawer.addEventListener('touchmove', e => {
-    if (!dragging) return;
-    const dx = e.touches[0].clientX - startX;
-    const dy = Math.abs(e.touches[0].clientY - startY);
-    if (dy > 30 && Math.abs(dx) < dy) { dragging = false; drawer.style.transition = ''; return; }
-    if (dx > 0) drawer.style.transform = `translateX(${dx}px)`;
-  }, { passive: true });
-  drawer.addEventListener('touchend', e => {
-    if (!dragging) return;
-    dragging = false;
-    drawer.style.transition = '';
-    const dx = e.changedTouches[0].clientX - startX;
-    if (dx > 100) {
-      drawer.style.transform = '';
-      closeCart();
-    } else {
-      drawer.style.transform = '';
-    }
-  }, { passive: true });
-})();
+// [FIX] Второй swipe-to-close обработчик удалён — конфликтовал с основным (строки 1018-1077).
+// Основной обработчик уже реализует: проверку _cartState === 'open', guard против input полей,
+// плавный следящий translateX, fade оверлея и порог 80px.
+
 
 // [P-1 FIXED] Duplicate Escape handler removed — unified handler below covers this.
 
@@ -1536,6 +1584,24 @@ function initApp() {
   })();
 
   // Date min is set below (today+2) in the dedicated IIFE
+
+  // [PERF-1 FIX] hero-orb will-change активируется только когда герой в viewport
+  (function initHeroOrbWillChange() {
+    const hero = document.querySelector('.hero');
+    if (!hero || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => e.target.classList.toggle('hero--visible', e.isIntersecting));
+    }, { threshold: 0 });
+    io.observe(hero);
+  })();
+
+  // [UI-1] Синхронизируем иконку theme-toggle с текущей темой
+  (function syncThemeBtn() {
+    const btn = document.getElementById('themeToggleBtn');
+    if (!btn) return;
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    btn.textContent = isDark ? '☀' : '☾';
+  })();
 }
 
 if (document.readyState === 'loading') {
@@ -2205,9 +2271,16 @@ function acceptCookie() {
   banner.classList.remove('visible');
   banner.style.transform = 'translateY(100%)';
   banner.addEventListener('transitionend', () => banner.remove(), { once: true });
+  // [PERF-2 FIX] Preconnect к mc.yandex.ru заранее — экономит DNS+TLS handshake (~200-400ms на 4G)
+  const pc = document.createElement('link');
+  pc.rel = 'preconnect';
+  pc.href = 'https://mc.yandex.ru';
+  document.head.appendChild(pc);
   loadMetrika();
 }
 function declineCookie() {
+  // [COOKIE FIX] Сохраняем отказ на 30 дней — баннер не будет показываться повторно
+  _lsSet('cookieAccepted', 'denied:' + (Date.now() + 30 * 24 * 60 * 60 * 1000));
   const banner = document.getElementById('cookieBanner');
   if (!banner) return;
   banner.classList.remove('visible');
@@ -2216,9 +2289,13 @@ function declineCookie() {
 }
 function initCookieBanner() {
   const stored = _lsGet('cookieAccepted');
-  if (stored && Date.now() < parseInt(stored)) {
-    loadMetrika(); // already accepted
-    return;
+  if (stored) {
+    const isDenied  = stored.startsWith('denied:');
+    const expiry    = parseInt(isDenied ? stored.slice(7) : stored);
+    if (Date.now() < expiry) {
+      if (!isDenied) loadMetrika(); // already accepted — load analytics
+      return; // denied or accepted but not expired — skip banner
+    }
   }
   const banner = document.getElementById('cookieBanner');
   if (!banner) return;
@@ -3807,7 +3884,16 @@ document.addEventListener('visibilitychange', () => {
     const { id, mode } = mapping;
     // Составной ключ совпадает с форматом addToCart из каталога
     const p = products.find(x => x.id === id);
-    const cartKey = (p && p.hasMaxi) ? `${id}:${mode}` : String(id);
+
+    // Читаем начинку заранее, чтобы включить в ключ корзины
+    const fillEl  = document.querySelector('#' + cfg.fillGroup + ' .selected .opt-label');
+    const decorEl = document.querySelector('#calcDecor .selected .opt-label');
+    const fillName  = fillEl  ? fillEl.textContent.trim()  : '';
+    const decorName = decorEl ? decorEl.textContent.trim() : '';
+
+    // [CART-1] Ключ строится через buildCartKey — единую точку формирования.
+    // Разные начинки/декоры → разные позиции корзины.
+    const cartKey = buildCartKey(id, mode, !!(p && p.hasMaxi), fillName, decorName);
 
     // Определяем количество/вес
     let qty;
@@ -3831,11 +3917,7 @@ document.addEventListener('visibilitychange', () => {
       cart[cartKey] = { qty, mode };
     }
 
-    // Собираем заметку о начинке и декоре для отображения в корзине
-    const fillEl  = document.querySelector('#' + cfg.fillGroup + ' .selected .opt-label');
-    const decorEl = document.querySelector('#calcDecor .selected .opt-label');
-    const fillName  = fillEl  ? fillEl.textContent.trim()  : '';
-    const decorName = decorEl ? decorEl.textContent.trim() : '';
+    // Собираем заметку о начинке и декоре для отображения в корзине (уже прочитаны выше)
     // Сохраняем доп. параметры в запись корзины
     cart[cartKey].fill  = fillName;
     cart[cartKey].decor = decorName;
