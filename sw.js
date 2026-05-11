@@ -7,16 +7,16 @@
 // [SW-1 FIXED v6] Was '2026-03-22a' — stale version caused SW never to reinstall for
 // users who installed before April 1, and PRECACHE_URLS pointed at ?v=20260322 while
 // HTML references ?v=20260428 → offline mode missing all v4/v5 fixes.
-const DEPLOY_VERSION = '2026-04-28a';
+const DEPLOY_VERSION = '2026-05-12a';
 const STATIC_CACHE = `milovi-static-v1-${DEPLOY_VERSION}`;
 const IMAGE_CACHE  = `milovi-images-v2`;
 
 /* Только критичные ресурсы — пригороды кешируются по запросу */
 const PRECACHE_URLS = [
   '/',
-  '/css/style.css?v=20260428',
-  '/js/main.js?v=20260428',
-  '/js/nav.js?v=20260428',
+  '/css/style.css?v=20260512',
+  '/js/main.js?v=20260512',
+  '/js/nav.js?v=20260512',
   '/manifest.json',
   '/favicon.svg',
   '/icon-192.png',
@@ -94,7 +94,11 @@ self.addEventListener('fetch', event => {
 /* ── Стратегии ── */
 
 async function cacheFirst(request, cacheName) {
-  const cached = await caches.match(request);
+  // [SW-FIX SEO-Г5] Strip query-params (e.g. ?v=20260512) before cache lookup
+  // so versioned CSS/JS URLs always hit their cached counterpart
+  const urlNoQuery = request.url.split('?')[0];
+  const keyRequest = urlNoQuery !== request.url ? new Request(urlNoQuery) : request;
+  const cached = await caches.match(keyRequest) || await caches.match(request);
   if (cached) return cached;
   try {
     const response = await fetch(request);

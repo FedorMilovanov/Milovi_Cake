@@ -1,0 +1,16 @@
+# Build-system files — не публиковать в GitHub Pages
+prigorody/_template.html
+prigorody/_cities.csv
+prigorody/build.py
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Logs / temp
+*.log
+*.tmp

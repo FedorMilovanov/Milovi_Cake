@@ -152,7 +152,7 @@ function renderCatalog() {
           ${p.slides.map((src, i) => {
             const active = i === 0 ? ' active' : '';
             return `<div class="slide-img${active}">
-              <img src="${src}" alt="${p.name}" loading="lazy" decoding="async" onerror="this.closest('.slide-img').innerHTML='<div class=\\'slide-img-fallback\\'>${p.emoji || '🎂'}</div>'" />
+              <img src="${src}" alt="${p.name}" width="600" height="800" loading="lazy" decoding="async" onerror="this.closest('.slide-img').innerHTML='<div class=\\'slide-img-fallback\\'>${p.emoji || '🎂'}</div>'" />
             </div>`;
           }).join('')}
           ${totalSlides > 1 ? `

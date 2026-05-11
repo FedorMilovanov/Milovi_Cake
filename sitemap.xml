@@ -4,7 +4,7 @@
   <url>
     <loc>https://milovicake.ru/</loc>
     <changefreq>weekly</changefreq>
-    <lastmod>2026-04-28</lastmod>
+    <lastmod>2026-05-12</lastmod>
     <priority>1.0</priority>
     <image:image>
       <image:loc>https://milovicake.ru/img/head.webp</image:loc>
@@ -74,7 +74,7 @@
   <url>
     <loc>https://milovicake.ru/meringue-roll/</loc>
     <changefreq>monthly</changefreq>
-    <lastmod>2026-04-28</lastmod>
+    <lastmod>2026-05-12</lastmod>
     <priority>0.8</priority>
     <image:image>
       <image:loc>https://milovicake.ru/img/meringue_roll.webp</image:loc>
@@ -91,21 +91,28 @@
   </url>
   <url>
     <loc>https://milovicake.ru/prigorody/</loc>
-    <lastmod>2026-04-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <lastmod>2026-05-12</lastmod>
     <priority>0.8</priority>
   </url>
-  <url><loc>https://milovicake.ru/prigorody/vsevolozhsk/</loc><changefreq>monthly</changefreq><lastmod>2026-04-28</lastmod><priority>0.7</priority></url>
-  <url><loc>https://milovicake.ru/prigorody/murino/</loc><changefreq>monthly</changefreq><lastmod>2026-04-28</lastmod><priority>0.7</priority></url>
-  <url><loc>https://milovicake.ru/prigorody/kudrovo/</loc><changefreq>monthly</changefreq><lastmod>2026-04-28</lastmod><priority>0.7</priority></url>
-  <url><loc>https://milovicake.ru/prigorody/gatchina/</loc><changefreq>monthly</changefreq><lastmod>2026-04-28</lastmod><priority>0.7</priority></url>
-  <url><loc>https://milovicake.ru/prigorody/pushkin/</loc><changefreq>monthly</changefreq><lastmod>2026-04-28</lastmod><priority>0.7</priority></url>
-  <url><loc>https://milovicake.ru/prigorody/peterhof/</loc><changefreq>monthly</changefreq><lastmod>2026-04-28</lastmod><priority>0.7</priority></url>
-  <url><loc>https://milovicake.ru/prigorody/kolpino/</loc><changefreq>monthly</changefreq><lastmod>2026-04-28</lastmod><priority>0.7</priority></url>
-  <url><loc>https://milovicake.ru/prigorody/kronshtadt/</loc><changefreq>monthly</changefreq><lastmod>2026-04-28</lastmod><priority>0.7</priority></url>
-  <url><loc>https://milovicake.ru/prigorody/lomonosov/</loc><changefreq>monthly</changefreq><lastmod>2026-04-28</lastmod><priority>0.7</priority></url>
-  <url><loc>https://milovicake.ru/prigorody/pavlovsk/</loc><changefreq>monthly</changefreq><lastmod>2026-04-28</lastmod><priority>0.7</priority></url>
-  <url><loc>https://milovicake.ru/prigorody/sestroretsk/</loc><changefreq>monthly</changefreq><lastmod>2026-04-28</lastmod><priority>0.7</priority></url>
-  <url><loc>https://milovicake.ru/prigorody/shushary/</loc><changefreq>monthly</changefreq><lastmod>2026-04-28</lastmod><priority>0.7</priority></url>
-  <url><loc>https://milovicake.ru/prigorody/tosno/</loc><changefreq>monthly</changefreq><lastmod>2026-04-28</lastmod><priority>0.7</priority></url>
-  <url><loc>https://milovicake.ru/prigorody/krasnoe-selo/</loc><changefreq>monthly</changefreq><lastmod>2026-04-28</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/vsevolozhsk/</loc><changefreq>monthly</changefreq><lastmod>2026-05-12</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/murino/</loc><changefreq>monthly</changefreq><lastmod>2026-05-12</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/kudrovo/</loc><changefreq>monthly</changefreq><lastmod>2026-05-12</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/gatchina/</loc><changefreq>monthly</changefreq><lastmod>2026-05-12</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/pushkin/</loc><changefreq>monthly</changefreq><lastmod>2026-05-12</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/peterhof/</loc><changefreq>monthly</changefreq><lastmod>2026-05-12</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/kolpino/</loc><changefreq>monthly</changefreq><lastmod>2026-05-12</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/kronshtadt/</loc><changefreq>monthly</changefreq><lastmod>2026-05-12</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/lomonosov/</loc><changefreq>monthly</changefreq><lastmod>2026-05-12</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/pavlovsk/</loc><changefreq>monthly</changefreq><lastmod>2026-05-12</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/sestroretsk/</loc><changefreq>monthly</changefreq><lastmod>2026-05-12</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/shushary/</loc><changefreq>monthly</changefreq><lastmod>2026-05-12</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/tosno/</loc><changefreq>monthly</changefreq><lastmod>2026-05-12</lastmod><priority>0.7</priority></url>
+  <url><loc>https://milovicake.ru/prigorody/krasnoe-selo/</loc><changefreq>monthly</changefreq><lastmod>2026-05-12</lastmod><priority>0.7</priority></url>
+  <url>
+    <loc>https://milovicake.ru/certificates/</loc>
+    <lastmod>2026-05-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
 </urlset>

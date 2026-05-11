@@ -1,16 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <script>
-    (function(){
-      try {
-        var t = localStorage.getItem('mc_theme');
-        if (t) document.documentElement.setAttribute('data-theme', t);
-        else if (window.matchMedia('(prefers-color-scheme: dark)').matches)
-          document.documentElement.setAttribute('data-theme', 'dark');
-      } catch(e){}
-    })();
-    </script>
   <meta charset="UTF-8" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
@@ -18,6 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Торты на заказ в Мурино — Milovi Cake | Доставка из СПб</title>
   <meta name="description" content="Свадебный торт, торт на день рождения, детский торт на заказ в Мурино от частного кондитера. Доставка из СПб. Ручная работа, натуральные ингредиенты." />
+  <meta name="keywords" content="Торты в Мурино, Торты в Кудрово, Торты в Девяткино, Торт на день рождения в Мурино, Торт на свадьбу в Мурино, Детский торт в Мурино, Меренговый рулет в Мурино, Бенто торт в Мурино, Павлова в Мурино" />
   <meta name="robots" content="index, follow" />
   <meta property="og:title" content="Milovi Cake — Торты на заказ в Мурино" />
   <meta property="og:description" content="Частный кондитер — доставляем авторские торты и десерты ручной работы в Мурино. Бисквитные, бенто, 3D-торты, меренговые рулеты и Павлова." />
@@ -58,6 +49,22 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Торты и десерты на заказ — Milovi Cake",
+    "url": "https://milovicake.ru/prigorody/murino/",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "Бисквитный торт на заказ"},
+      {"@type": "ListItem", "position": 2, "name": "Свадебный торт на заказ"},
+      {"@type": "ListItem", "position": 3, "name": "Детский торт на заказ"},
+      {"@type": "ListItem", "position": 4, "name": "Бенто торт на заказ"},
+      {"@type": "ListItem", "position": 5, "name": "Меренговый рулет на заказ"},
+      {"@type": "ListItem", "position": 6, "name": "Пирожное Павлова на заказ"}
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "Milovi Cake",
     "description": "Авторские торты, меренговые рулеты и десерты на заказ с доставкой в Мурино от частного кондитера.",
@@ -75,6 +82,7 @@
     "sameAs": [
         "https://vk.com/milovi_cake",
         "https://t.me/MiloviCake",
+        "https://www.youtube.com/@milovi_cake",
         "https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/"
     ]
   }
@@ -87,8 +95,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
   <!-- noscript fonts -->
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/></noscript>
-  <link rel="stylesheet" href="../../css/style.css?v=20260428" />
-  <style>    [data-theme="dark"]{--cream:#1a1108;--text:#f0e4d0;--text-muted:#c8a880;--white:#201508}</style>
+  <link rel="stylesheet" href="../../css/style.css?v=20260512" />
 </head>
 
 <body>
@@ -97,7 +104,7 @@
 <a href="#catalog" class="skip-link">Перейти к содержимому</a>
 
 <!-- ── STICKY MOBILE CTA (WhatsApp) ── -->
-<a href="https://wa.me/79119038886?text=Здравствуйте!%20Хочу%20сделать%20заказ" target="_blank" class="mobile-sticky-cta" id="mobileStickyWa" aria-label="Заказать торт через WhatsApp">
+<a href="https://wa.me/79119038886?text=Здравствуйте!%20Хочу%20сделать%20заказ" target="_blank" class="mobile-sticky-cta" id="mobileStickyWa" aria-label="Заказать торт через WhatsApp" rel="noopener noreferrer">
   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
   Заказать в WhatsApp
 </a>
@@ -304,6 +311,18 @@
     <div class="catalog-grid" id="catalogGrid">
       <!-- rendered by JS -->
     </div>
+  </div>
+</section>
+
+<!-- ══════════ CROSS-PROMO: МЕРЕНГОВЫЙ РУЛЕТ ══════════ -->
+<div class="section-fade-divider" aria-hidden="true"></div>
+<section class="meringue-promo" aria-label="Меренговый рулет на заказ">
+  <div class="container">
+    <p class="meringue-promo__text reveal">
+      Также принимаем заказы на
+      <a href="/meringue-roll/" class="meringue-promo__link">меренговый рулет и пирожное Павлова</a>
+      — безглютеновые десерты с хрустящей меренгой и свежими ягодами 🤍
+    </p>
   </div>
 </section>
 
@@ -557,63 +576,36 @@
               <div class="map-score-stars">★★★★☆</div>
               <span class="map-score-count">на Яндекс Картах · 18 оценок</span>
             </div>
-            <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/reviews/" target="_blank" rel="noopener" class="map-link-btn map-link-yandex">
+            <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/reviews/" target="_blank" rel="noopener noreferrer" class="map-link-btn map-link-yandex">
               Все отзывы →
             </a>
           </div>
           <div class="map-review-list">
-
             <div class="map-review-item">
               <div class="map-reviewer-row">
                 <div class="map-reviewer-avatar" style="background:#c0604a;">Е</div>
                 <div class="map-reviewer-info">
                   <span class="map-reviewer-name">Евгения Монтихо</span>
-                  <span class="map-reviewer-date">20 декабря 2025</span>
+                  <span class="map-reviewer-date"><time datetime="2025-12-20">20 декабря 2025</time></span>
                   <span class="map-reviewer-stars">★★★★★</span>
                 </div>
               </div>
-              <p class="map-reviewer-text map-text-clamp">Дважды заказывали торты. Первый раз нам сделали в стиле Острова с ярким вкусом сочных тропических фруктов, а второй торт в выдержанном стиле, так как торт для мужчины предназначался, с начинкой «вишня в шоколаде». Оба торта просто шикарные, я очень рада, что мы нашли вас, так как ваше творчество дарит не только эстетическое удовольствие, но и гастрономическое. Благодарим от всего сердца 💕🎂😍</p>
-              <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/reviews/" target="_blank" rel="noopener" class="map-review-source">Читать на Яндекс Картах →</a>
+              <p class="map-reviewer-text map-text-clamp">Дважды заказывали торты. Первый раз сделали в стиле Острова с ярким вкусом тропических фруктов, второй в выдержанном стиле с начинкой «вишня в шоколаде». Оба торта шикарные, ваше творчество дарит эстетическое и гастрономическое удовольствие. Благодарим от всего сердца 💕🎂😍</p>
+              <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/reviews/" target="_blank" rel="noopener noreferrer" class="map-review-source">Читать на Яндекс Картах →</a>
             </div>
-
-            <div class="map-review-item">
-              <div class="map-reviewer-row">
-                <div class="map-reviewer-avatar" style="background:#6a7fc8;">Е</div>
-                <div class="map-reviewer-info">
-                  <span class="map-reviewer-name">Екатерина Гарсес Еникеева</span>
-                  <span class="map-reviewer-date">24 ноября 2025</span>
-                  <span class="map-reviewer-stars">★★★★★</span>
-                </div>
-              </div>
-              <p class="map-reviewer-text map-text-clamp">Я являюсь постоянным клиентом Виктории. Все торты на детские дни рождения мы берем у нее. Ценю индивидуальный подход, всегда все вовремя, каждый раз воплощаем любые идеи, и конечно же, всегда очень вкусно, красиво и качественно.</p>
-              <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/reviews/" target="_blank" rel="noopener" class="map-review-source">Читать на Яндекс Картах →</a>
-            </div>
-
             <div class="map-review-item">
               <div class="map-reviewer-row">
                 <div class="map-reviewer-avatar" style="background:#72b58a;">Е</div>
                 <div class="map-reviewer-info">
                   <span class="map-reviewer-name">Евгения Е.</span>
-                  <span class="map-reviewer-date">29 ноября 2025</span>
+                  <span class="map-reviewer-date"><time datetime="2025-11-29">29 ноября 2025</time></span>
                   <span class="map-reviewer-stars">★★★★★</span>
                 </div>
               </div>
-              <p class="map-reviewer-text map-text-clamp">Заказывала у Виктории тортики много раз, на праздники, дни рождения и просто так — всегда безумно вкусно!! Оформление и дизайн отличные! По вашему запросу, любой сложности. Виктория отзывчивый и доброжелательный мастер, все заказы выполнялись в срок. Впечатления максимально положительные :)</p>
-              <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/reviews/" target="_blank" rel="noopener" class="map-review-source">Читать на Яндекс Картах →</a>
+              <p class="map-reviewer-text map-text-clamp">Заказывала у Виктории тортики много раз, на праздники и просто так — всегда безумно вкусно! Оформление и дизайн отличные, любой сложности. Отзывчивый мастер, все заказы в срок 👍</p>
+              <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/reviews/" target="_blank" rel="noopener noreferrer" class="map-review-source">Читать на Яндекс Картах →</a>
             </div>
-
-            <div class="map-review-item">
-              <div class="map-reviewer-row">
-                <div class="map-reviewer-avatar" style="background:#d4a030;">Ж</div>
-                <div class="map-reviewer-info">
-                  <span class="map-reviewer-name">Жанель</span>
-                  <span class="map-reviewer-date">2 февраля 2026</span>
-                  <span class="map-reviewer-stars">★★★★★</span>
-                </div>
-              </div>
-              <p class="map-reviewer-text map-text-clamp">Огромное спасибо, Виктория! За вашу оперативность, внимательный подход, рекомендации по вкусам и конечно же за вашу работу! Торт получился отличным, каким и планировался, именинница довольна, расхвалила его так! Уже стоит в планах, что как только окажусь в Питере, закажу торт у Виктории и отведаю его.</p>
-              <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/reviews/" target="_blank" rel="noopener" class="map-review-source">Читать на Яндекс Картах →</a>
-            </div>
+          </div>
 
           </div>
         </div>
@@ -628,64 +620,35 @@
               <div class="map-score-stars">★★★★☆</div>
               <span class="map-score-count">в Google Maps · 14 отзывов</span>
             </div>
-            <a href="https://maps.app.goo.gl/R3mdjxpnebUYMQES6" target="_blank" rel="noopener" class="map-link-btn map-link-google">
+            <a href="https://maps.app.goo.gl/R3mdjxpnebUYMQES6" target="_blank" rel="noopener noreferrer" class="map-link-btn map-link-google">
               Все отзывы →
             </a>
           </div>
           <div class="map-review-list">
-
             <div class="map-review-item">
               <div class="map-reviewer-row">
-                <div class="map-reviewer-avatar" style="background:#8B4513; color:#fff;">Т</div>
+                <div class="map-reviewer-avatar" style="background:#8B4513;color:#fff;">Т</div>
                 <div class="map-reviewer-info">
                   <span class="map-reviewer-name">Татьяна</span>
-                  <span class="map-reviewer-date">год назад</span>
+                  <span class="map-reviewer-date"><time datetime="2024-05-01">год назад</time></span>
                   <span class="map-reviewer-stars">★★★★★</span>
                 </div>
               </div>
-              <p class="map-reviewer-text map-text-clamp">Изумительно! Заказала дочери, была поражена! Какая красота. Как и задумала! Огромное спасибо, Виктории! Всё на высшем уровне. Картинка — заказ, фото, чеки, доставка. Торт, упаковка, открытки, ленты — всё просто оригинально и с душой изготовлено и упаковано! Попутно и внучку порадовать капкейками. Просто вау! Буду обращаться ещё, благодарю! Угодили!</p>
-              <a href="https://maps.app.goo.gl/R3mdjxpnebUYMQES6" target="_blank" rel="noopener" class="map-review-source">Читать в Google Maps →</a>
+              <p class="map-reviewer-text map-text-clamp">Изумительно! Заказала дочери — поражена! Огромное спасибо Виктории! Всё на высшем уровне: заказ, фото, доставка. Торт, упаковка, открытки — всё с душой! Буду обращаться ещё.</p>
+              <a href="https://maps.app.goo.gl/R3mdjxpnebUYMQES6" target="_blank" rel="noopener noreferrer" class="map-review-source">Читать в Google Maps →</a>
             </div>
-
-            <div class="map-review-item">
-              <div class="map-reviewer-row">
-                <div class="map-reviewer-avatar" style="background:#4285F4;">Л</div>
-                <div class="map-reviewer-info">
-                  <span class="map-reviewer-name">Liras Магазин</span>
-                  <span class="map-reviewer-date">2 года назад</span>
-                  <span class="map-reviewer-stars">★★★★★</span>
-                </div>
-              </div>
-              <p class="map-reviewer-text map-text-clamp">Спасибо огромное!!! 🤗 Все остались в восторге, было очень вкусно. Боялась, что шоколадный будет очень сладкий, но он замечательный, вот как хотелось! Зефирное покрытие просто прекрасное, гораздо лучше мастики! 🌷</p>
-              <a href="https://maps.app.goo.gl/R3mdjxpnebUYMQES6" target="_blank" rel="noopener" class="map-review-source">Читать в Google Maps →</a>
-            </div>
-
             <div class="map-review-item">
               <div class="map-reviewer-row">
                 <div class="map-reviewer-avatar" style="background:#34A853;">И</div>
                 <div class="map-reviewer-info">
                   <span class="map-reviewer-name">Ирина Силантьева</span>
-                  <span class="map-reviewer-date">год назад</span>
+                  <span class="map-reviewer-date"><time datetime="2024-05-01">год назад</time></span>
                   <span class="map-reviewer-stars">★★★★★</span>
                 </div>
               </div>
-              <p class="map-reviewer-text map-text-clamp">Спасибо огромное за прекрасно выполненную работу к 40-ю Свадьбы. Всё на высшем уровне и вкусовые качества кондитерского изделия, и шикарно выполненный заказанный дизайн тортика, и внешнее оформление коробочки. И мы и гости были в восторге.</p>
-              <a href="https://maps.app.goo.gl/R3mdjxpnebUYMQES6" target="_blank" rel="noopener" class="map-review-source">Читать в Google Maps →</a>
+              <p class="map-reviewer-text map-text-clamp">Спасибо за прекрасную работу к 40-летию свадьбы! Всё на высшем уровне — вкусовые качества, дизайн тортика, внешнее оформление коробочки. И мы, и гости были в восторге.</p>
+              <a href="https://maps.app.goo.gl/R3mdjxpnebUYMQES6" target="_blank" rel="noopener noreferrer" class="map-review-source">Читать в Google Maps →</a>
             </div>
-
-            <div class="map-review-item">
-              <div class="map-reviewer-row">
-                <div class="map-reviewer-avatar" style="background:#EA4335;">Е</div>
-                <div class="map-reviewer-info">
-                  <span class="map-reviewer-name">Елена Кузнецова</span>
-                  <span class="map-reviewer-date">2 года назад</span>
-                  <span class="map-reviewer-stars">★★★★★</span>
-                </div>
-              </div>
-              <p class="map-reviewer-text map-text-clamp">Спасибо за такой классный тортик. Всё очень понравилось 🙏 Все от заказа до доставки на 5+!!! Как хорошо, что мне из другого города попались именно Вы) Все подсказали, привезли. Красиво, вкусно 💛 Главное именинник доволен и родители тоже. Обязательно обратимся ещё не один раз)</p>
-              <a href="https://maps.app.goo.gl/R3mdjxpnebUYMQES6" target="_blank" rel="noopener" class="map-review-source">Читать в Google Maps →</a>
-            </div>
-
           </div>
         </div>
       </div>
@@ -741,7 +704,7 @@
               <div class="contact-primary-value">+7 911 903 88 86</div>
             </div>
           </a>
-          <a href="https://maps.app.goo.gl/6aCJvobUQPcBZTmz6" target="_blank" class="contact-primary-item">
+          <a href="https://maps.app.goo.gl/6aCJvobUQPcBZTmz6" target="_blank" class="contact-primary-item" rel="noopener noreferrer">
             <div class="contact-primary-icon">
               <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
             </div>
@@ -753,7 +716,7 @@
         </div>
 
         <!-- CTA WhatsApp -->
-        <a href="https://wa.me/79119038886?text=Здравствуйте!%20Хочу%20сделать%20заказ" target="_blank" class="btn-wa">
+        <a href="https://wa.me/79119038886?text=Здравствуйте!%20Хочу%20сделать%20заказ" target="_blank" class="btn-wa" rel="noopener noreferrer">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           Заказать через WhatsApp
         </a>
@@ -764,11 +727,11 @@
           <span>Мы в соцсетях</span>
         </div>
         <div class="social-links">
-          <a href="https://vk.com/milovi_cake" target="_blank" class="social-link vk">
+          <a href="https://vk.com/milovi_cake" target="_blank" class="social-link vk" rel="noopener noreferrer">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.05-1.727-1.033-1-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C5.044 10.8 4.06 8.494 4.06 8.087c0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.677.863 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.203.17-.407.44-.407h2.744c.373 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.253-1.406 2.151-3.574 2.151-3.574.119-.254.322-.491.762-.491h1.744c.525 0 .644.27.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.779 1.203 1.253.745.847 1.32 1.558 1.473 2.05.17.49-.085.745-.576.745z"/></svg>
             ВКонтакте
           </a>
-          <a href="https://t.me/MiloviCake" target="_blank" class="social-link tg">
+          <a href="https://t.me/MiloviCake" target="_blank" class="social-link tg" rel="noopener noreferrer">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.96 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
             Telegram
           </a>
@@ -776,17 +739,17 @@
             <svg width="18" height="18" viewBox="0 0 135 151" fill="currentColor" aria-hidden="true"><g transform="translate(0,151) scale(0.1,-0.1)"><path d="M635 1183 c-113 -15 -227 -81 -295 -172 -94 -125 -112 -270 -61 -487 17 -72 31 -147 31 -166 0 -19 5 -39 12 -46 26 -26 111 -7 161 36 15 14 22 13 70 -14 48 -27 60 -29 153 -29 96 0 103 2 177 38 183 90 282 277 249 468 -42 244 -255 404 -497 372z m126 -225 c52 -15 117 -73 140 -122 11 -24 19 -64 19 -96 0 -154 -164 -262 -310 -204 -38 15 -42 15 -60 -1 -53 -48 -84 20 -78 170 3 77 9 109 25 140 54 103 155 146 264 113z"/></g></svg>
             MAX
           </a>
-          <a href="https://www.youtube.com/channel/UCMDnxfGZiBqcDzgUV1zjFpw" target="_blank" class="social-link yt">
+          <a href="https://www.youtube.com/@milovi_cake" target="_blank" class="social-link yt" rel="noopener noreferrer">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
             YouTube
           </a>
         </div>
         <div class="social-links" style="margin-top:10px">
-          <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/" target="_blank" class="social-link ya">
+          <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/" target="_blank" class="social-link ya" rel="noopener noreferrer">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11.998 0C5.366 0 0 5.367 0 12c0 6.634 5.366 12 11.998 12C18.633 24 24 18.634 24 12 24 5.367 18.633 0 11.998 0zm.004 4.457c1.748 0 3.15.47 4.205 1.41 1.056.94 1.583 2.198 1.583 3.77 0 1.133-.3 2.104-.9 2.912-.6.808-1.478 1.393-2.635 1.757L17.1 19.5h-2.818l-2.57-4.89h-1.04V19.5H8.13V4.457h3.872zm-.107 2.18H10.67v5.85h1.332c1.005 0 1.77-.245 2.297-.735.526-.49.79-1.19.79-2.1 0-.896-.261-1.58-.783-2.05-.522-.47-1.28-.705-2.275-.705-.046 0-.09.003-.136.004v.036z"/></svg>
             Яндекс Карты
           </a>
-          <a href="https://maps.app.goo.gl/6aCJvobUQPcBZTmz6" target="_blank" class="social-link google">
+          <a href="https://maps.app.goo.gl/6aCJvobUQPcBZTmz6" target="_blank" class="social-link google" rel="noopener noreferrer">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
             Google Карты
           </a>
@@ -922,11 +885,11 @@
     </div>
 
     <div class="cart-actions">
-      <a id="btnWA" href="#" target="_blank" class="btn-tg wa" onclick="buildWA(event)">
+      <a id="btnWA" href="#" target="_blank" class="btn-tg wa" onclick="buildWA(event)" rel="noopener noreferrer">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
         Отправить в WhatsApp
       </a>
-      <a id="btnTG" href="#" target="_blank" class="btn-tg tg" onclick="buildTG(event)">
+      <a id="btnTG" href="#" target="_blank" class="btn-tg tg" onclick="buildTG(event)" rel="noopener noreferrer">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.96 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
         Отправить в Telegram
       </a>
@@ -978,8 +941,8 @@
 
 
 <script>var IMG_BASE = '../../img';</script>
-<script src="../../js/main.js?v=20260428" defer></script>
-<script src="../../js/nav.js?v=20260428" defer></script>
+<script src="../../js/main.js?v=20260512" defer></script>
+<script src="../../js/nav.js?v=20260512" defer></script>
 
 
 
@@ -1069,13 +1032,13 @@
         <span class="footer-logo">Milovi Cake</span>
         <p class="wave-text">Авторские торты и&nbsp;десерты ручной работы в&nbsp;Санкт-Петербурге</p>
         <div class="footer-socials">
-          <a href="https://wa.me/79119038886" target="_blank" rel="noopener" aria-label="WhatsApp">
+          <a href="https://wa.me/79119038886" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           </a>
-          <a href="https://t.me/MiloviCake" target="_blank" rel="noopener" aria-label="Telegram">
+          <a href="https://t.me/MiloviCake" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 00 0 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
           </a>
-          <a href="https://vk.com/milovi_cake" target="_blank" rel="noopener" aria-label="ВКонтакте">
+          <a href="https://vk.com/milovi_cake" target="_blank" rel="noopener noreferrer" aria-label="ВКонтакте">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.05-1.727-1.033-1.01-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C4.624 10.857 4 8.408 4 7.935c0-.254.102-.491.593-.491h1.744c.441 0 .61.203.78.677.863 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.203.17-.407.44-.407h2.744c.373 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.253-1.406 2.15-3.574 2.15-3.574.119-.254.322-.491.763-.491h1.744c.525 0 .644.27.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.78 1.203 1.253.745.847 1.32 1.558 1.473 2.049.17.491-.085.745-.576.745z"/></svg>
           </a>
         </div>
@@ -1092,8 +1055,8 @@
       <div class="footer-col">
         <h4>Контакты</h4>
         <a href="tel:+79119038886">+7 911 903 88 86</a>
-        <a href="https://wa.me/79119038886" target="_blank" rel="noopener">WhatsApp</a>
-        <a href="https://t.me/MiloviCake" target="_blank" rel="noopener">Telegram</a>
+        <a href="https://wa.me/79119038886" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        <a href="https://t.me/MiloviCake" target="_blank" rel="noopener noreferrer">Telegram</a>
         <p class="footer-hours">Пн–Вс, 10:00–20:00</p>
       </div>
     </div>
@@ -1258,7 +1221,7 @@
 
     <div class="reviews-modal-footer">
       <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/reviews/"
-         target="_blank" rel="noopener" id="reviewsExternalLink" class="reviews-external-link">
+         target="_blank" rel="noopener noreferrer" id="reviewsExternalLink" class="reviews-external-link">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
         Все отзывы на Яндекс Картах →
       </a>
@@ -1272,24 +1235,5 @@
 <div class="lb-box" id="lbBox"><img id="lbImg" src="" alt=""></div>
 <button class="lb-x" id="lbX" aria-label="Закрыть">✕</button>
 
-<!-- [NM-1 FIXED] mobileStickyWa scroll activation: was present in HTML but never activated -->
-<script>
-(function() {
-  if (window.innerWidth > 768) return;
-  var cta = document.getElementById('mobileStickyWa');
-  if (!cta) return;
-  var shown = false;
-  function updateStickyCta() {
-    var y = window.scrollY || window.pageYOffset;
-    if (y > 300 && !shown) { cta.classList.add('visible'); shown = true; }
-    var nearBottom = (document.documentElement.scrollHeight - window.innerHeight - y) < 120;
-    cta.classList.toggle('near-bottom', nearBottom);
-  }
-  window.addEventListener('scroll', updateStickyCta, { passive: true });
-  window.addEventListener('resize', function() {
-    if (window.innerWidth > 768) { cta.classList.remove('visible'); shown = false; }
-  });
-})();
-</script>
 </body>
 </html>
