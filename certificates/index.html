@@ -741,36 +741,22 @@
         </div>
       </article>
 
-      <!-- Cert 2: Tort A do Ya -->
-      <article class="cert-card" onclick="openLightbox(1)" role="button" tabindex="0" aria-label="Открыть сертификат: Торт от А до Я">
+      <!-- Cert 2: Shokoladnaya floristika -->
+      <article class="cert-card" onclick="openLightbox(1)" role="button" tabindex="0" aria-label="Открыть сертификат: Шоколадная флористика">
         <div class="cert-img-wrap">
-          <img src="../img/cert_tort_a_ya.webp"
-               alt="Сертификат кондитерского мастер-класса «Торт от А до Я» — Виктория Милованова, школа Praline, октябрь 2022"
+          <img src="../img/cert_shokolad.webp"
+               alt="Сертификат курса «Шоколадная флористика» — Ирина Мошкина, золотой призёр чемпионата России, май 2024"
                width="1536" height="1024" loading="lazy" />
         </div>
         <div class="cert-info">
-          <div class="cert-year">Октябрь 2022</div>
-          <h2 class="cert-title">Торт от А до Я</h2>
-          <p class="cert-issuer">Кондитерская школа Praline — Припутнева Юлия</p>
+          <div class="cert-year">Май 2024</div>
+          <h2 class="cert-title">Шоколадная флористика</h2>
+          <p class="cert-issuer">Ирина Мошкина — золотой призёр Чемпионата России по кондитерскому искусству</p>
         </div>
       </article>
 
-      <!-- Cert 3: Akvarel / Baryef -->
-      <article class="cert-card" onclick="openLightbox(2)" role="button" tabindex="0" aria-label="Открыть сертификат: Акварельная роспись по мастике">
-        <div class="cert-img-wrap">
-          <img src="../img/cert_akvarel.webp"
-               alt="Сертификат — основы акварельной росписи по мастике, техника «Барельеф», школа Praline, декабрь 2023"
-               width="1536" height="1024" loading="lazy" />
-        </div>
-        <div class="cert-info">
-          <div class="cert-year">Декабрь 2023</div>
-          <h2 class="cert-title">Акварельная роспись по мастике. Барельеф</h2>
-          <p class="cert-issuer">Кондитерская школа Praline — Припутнева Юлия</p>
-        </div>
-      </article>
-
-      <!-- Cert 4: Detskie torty -->
-      <article class="cert-card" onclick="openLightbox(3)" role="button" tabindex="0" aria-label="Открыть сертификат: Детские торты">
+      <!-- Cert 3: Detskie torty -->
+      <article class="cert-card" onclick="openLightbox(2)" role="button" tabindex="0" aria-label="Открыть сертификат: Детские торты">
         <div class="cert-img-wrap">
           <img src="../img/cert_detskie_torty.webp"
                alt="Сертификат мастер-класса «Детские торты» — Виктория Милованова, школа Praline, май 2024"
@@ -783,17 +769,31 @@
         </div>
       </article>
 
-      <!-- Cert 5: Shokoladnaya floristika -->
-      <article class="cert-card" onclick="openLightbox(4)" role="button" tabindex="0" aria-label="Открыть сертификат: Шоколадная флористика">
+      <!-- Cert 4: Akvarel / Baryef -->
+      <article class="cert-card" onclick="openLightbox(3)" role="button" tabindex="0" aria-label="Открыть сертификат: Акварельная роспись по мастике">
         <div class="cert-img-wrap">
-          <img src="../img/cert_shokolad.webp"
-               alt="Сертификат курса «Шоколадная флористика» — Ирина Мошкина, золотой призёр чемпионата России, май 2024"
+          <img src="../img/cert_akvarel.webp"
+               alt="Сертификат — основы акварельной росписи по мастике, техника «Барельеф», школа Praline, декабрь 2023"
                width="1536" height="1024" loading="lazy" />
         </div>
         <div class="cert-info">
-          <div class="cert-year">Май 2024</div>
-          <h2 class="cert-title">Шоколадная флористика</h2>
-          <p class="cert-issuer">Ирина Мошкина — золотой призёр Чемпионата России по кондитерскому искусству</p>
+          <div class="cert-year">Декабрь 2023</div>
+          <h2 class="cert-title">Акварельная роспись по мастике. Барельеф</h2>
+          <p class="cert-issuer">Кондитерская школа Praline — Припутнева Юлия</p>
+        </div>
+      </article>
+
+      <!-- Cert 5: Tort A do Ya -->
+      <article class="cert-card" onclick="openLightbox(4)" role="button" tabindex="0" aria-label="Открыть сертификат: Торт от А до Я">
+        <div class="cert-img-wrap">
+          <img src="../img/cert_tort_a_ya.webp"
+               alt="Сертификат кондитерского мастер-класса «Торт от А до Я» — Виктория Милованова, школа Praline, октябрь 2022"
+               width="1536" height="1024" loading="lazy" />
+        </div>
+        <div class="cert-info">
+          <div class="cert-year">Октябрь 2022</div>
+          <h2 class="cert-title">Торт от А до Я</h2>
+          <p class="cert-issuer">Кондитерская школа Praline — Припутнева Юлия</p>
         </div>
       </article>
 
@@ -899,10 +899,10 @@
     // ── Lightbox ──
     const certs = [
       { src: '../img/cert_tort_million.webp', caption: '«Торт на миллион 3.0» — Ксения Большан, 2022' },
-      { src: '../img/cert_tort_a_ya.webp', caption: 'Торт от А до Я — Praline, 2022' },
-      { src: '../img/cert_akvarel.webp', caption: 'Акварельная роспись. Барельеф — Praline, 2023' },
-      { src: '../img/cert_detskie_torty.webp', caption: 'Детские торты — Praline, 2024' },
       { src: '../img/cert_shokolad.webp', caption: 'Шоколадная флористика — Ирина Мошкина, 2024' },
+      { src: '../img/cert_detskie_torty.webp', caption: 'Детские торты — Praline, 2024' },
+      { src: '../img/cert_akvarel.webp', caption: 'Акварельная роспись. Барельеф — Praline, 2023' },
+      { src: '../img/cert_tort_a_ya.webp', caption: 'Торт от А до Я — Praline, 2022' },
     ];
 
     function openLightbox(i) {
