@@ -1,6 +1,31 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+  
+  <!-- ANTI-FOUC v1: instant background match + body opacity reveal -->
+  <style id="anti-fouc">
+    html{background:#f5f0e8;color-scheme:light}
+    html[data-theme="dark"]{background:#1a1108;color-scheme:dark}
+    body{background:inherit}
+    body:not(.ready){opacity:0}
+    body.ready{opacity:1;transition:opacity .28s ease-out}
+    @media (prefers-reduced-motion:reduce){body{opacity:1!important;transition:none!important}}
+  </style>
+  <script>
+    (function(){
+      try{var t=localStorage.getItem('mc_theme');
+        if(t)document.documentElement.setAttribute('data-theme',t);
+        else if(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)
+          document.documentElement.setAttribute('data-theme','dark');
+      }catch(e){}
+      function reveal(){requestAnimationFrame(function(){document.body&&document.body.classList.add('ready')})}
+      if(document.readyState!=='loading')reveal();
+      else document.addEventListener('DOMContentLoaded',reveal);
+      // safety net
+      setTimeout(reveal,1200);
+    })();
+  </script>
+
   <meta charset="UTF-8" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
@@ -67,7 +92,7 @@
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "Milovi Cake",
-    "description": "Авторские торты, меренговые рулеты и десерты на заказ с доставкой в Всеволожск от частного кондитера."
+    "description": "Авторские торты, меренговые рулеты и десерты на заказ с доставкой в Всеволожск от частного кондитера.",
     "url": "https://milovicake.ru/prigorody/vsevolozhsk/",
     "telephone": "+79119038886",
     "address": {
@@ -95,7 +120,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
   <!-- noscript fonts -->
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/></noscript>
-  <link rel="stylesheet" href="../../css/style.css?v=20260512" />
+  <link rel="stylesheet" href="../../css/style.css?v=20260601" />
+  <link rel="stylesheet" href="/css/premium-overrides.css?v=20260601" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -117,7 +143,7 @@
   </script>
 </head>
 
-<body>
+<body class="prigorody-page">
 
 <!-- ── SKIP LINK (accessibility) ── -->
 <a href="#catalog" class="skip-link">Перейти к содержимому</a>
@@ -376,12 +402,13 @@
 
 <!-- ══════════ CROSS-PROMO: МЕРЕНГОВЫЙ РУЛЕТ ══════════ -->
 <div class="section-fade-divider" aria-hidden="true"></div>
-<section class="meringue-promo" aria-label="Меренговый рулет на заказ">
+<section class="meringue-promo" aria-label="Меренговый рулет с доставкой в Всеволожск" data-city="vsevolozhsk">
   <div class="container">
     <p class="meringue-promo__text reveal">
       Также принимаем заказы на
-      <a href="/meringue-roll/" class="meringue-promo__link">меренговый рулет и пирожное Павлова</a>
-      — безглютеновые десерты с хрустящей меренгой и свежими ягодами 🤍
+      <a href="/meringue-roll/?city=vsevolozhsk" class="meringue-promo__link">меренговый рулет и пирожное Павлова</a>
+      — безглютеновые десерты с хрустящей меренгой и свежими ягодами с доставкой
+      <span class="meringue-promo__city">в Всеволожск</span> 🤍
     </p>
   </div>
 </section>
@@ -1052,8 +1079,8 @@
 
 
 <script>var IMG_BASE = '../../img';</script>
-<script src="../../js/main.js?v=20260512" defer></script>
-<script src="../../js/nav.js?v=20260512" defer></script>
+<script src="../../js/main.js?v=20260601" defer></script>
+<script src="../../js/nav.js?v=20260601" defer></script>
 
 
 

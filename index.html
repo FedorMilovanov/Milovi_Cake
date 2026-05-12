@@ -12,6 +12,21 @@
       } catch(e){}
     })();
   </script>
+  <!-- ANTI-FOUC v1: body opacity reveal (theme handled above) -->
+  <style id="anti-fouc-body">
+    body{background:var(--cream)}
+    body:not(.ready){opacity:0}
+    body.ready{opacity:1;transition:opacity .28s ease-out}
+    @media (prefers-reduced-motion:reduce){body{opacity:1!important;transition:none!important}}
+  </style>
+  <script>
+    (function(){
+      function reveal(){requestAnimationFrame(function(){document.body&&document.body.classList.add('ready')})}
+      if(document.readyState!=='loading')reveal();
+      else document.addEventListener('DOMContentLoaded',reveal);
+      setTimeout(reveal,1200);
+    })();
+  </script>
   <meta charset="UTF-8" />
   <link rel="icon" href="favicon.svg?v=20260303" type="image/svg+xml">
   <link rel="icon" href="icon-192.png?v=20260303" type="image/png" sizes="192x192">
@@ -320,7 +335,8 @@
   }
   </script>
 
-  <link rel="stylesheet" href="css/style.css?v=20260512" />
+  <link rel="stylesheet" href="css/style.css?v=20260601" />
+  <link rel="stylesheet" href="css/premium-overrides.css?v=20260601" />
   <link rel="prefetch" href="img/bento_maxi.webp" as="image" />
   <link rel="prefetch" href="img/cake_3d.webp" as="image" />
   <link rel="prefetch" href="img/cake_3d_2.webp" as="image" />
@@ -1429,7 +1445,10 @@
 <script>
 (function() {
   'use strict';
-  window.addEventListener('load', function() { document.body.classList.add('page-loaded'); });
+  // [PERF v2] page-loaded раньше: на DOMContentLoaded, не ждём картинки
+  function _mcPageLoaded(){ document.body.classList.add('page-loaded'); }
+  if (document.readyState !== 'loading') _mcPageLoaded();
+  else document.addEventListener('DOMContentLoaded', _mcPageLoaded);
   var header = document.getElementById('siteHeader');
   var lastScrollY = 0, ticking = false, scrollDelta = 0;
   function updateHeader() {
@@ -1450,10 +1469,10 @@
 </script>
 
 <script>var IMG_BASE = 'img';</script>
-<script src="js/main.js?v=20260512" defer></script>
+<script src="js/main.js?v=20260601" defer></script>
 
 
-<script src="js/nav.js?v=20260512" defer></script>
+<script src="js/nav.js?v=20260601" defer></script>
 
 <script>
   /* ── Яндекс.Метрика: цели ── */

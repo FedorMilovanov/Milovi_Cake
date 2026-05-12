@@ -188,7 +188,7 @@ def render_city(template, p):
     html = html.replace('{{ld_breadcrumb_name}}', f'"name": "Торты в {p["breadcrumb_name"]}"'  )
     html = html.replace('{{ld_description}}',
         f'"description": "Авторские торты, меренговые рулеты и десерты на заказ '
-        f'с доставкой в {p["ld_city"]} от частного кондитера."'
+        f'с доставкой в {p["ld_city"]} от частного кондитера.",'
     )
     html = html.replace('{{ld_area_name}}', f'"name": "{p["ld_area"]}"'  )
 
@@ -202,6 +202,10 @@ def render_city(template, p):
 
     # Delivery city = accusative = ld_city
     html = html.replace('{{delivery_city}}', p['ld_city'])
+
+    # Slug + city in accusative for meringue-promo and ?city= queries
+    html = html.replace('{{slug}}', slug)
+    html = html.replace('{{city_acc_label}}', p.get('ld_city', p['breadcrumb_name']))
 
     # Simple replacements
     simple = {

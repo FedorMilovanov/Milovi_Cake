@@ -117,7 +117,7 @@
   </script>
 </head>
 
-<body>
+<body class="prigorody-page">
 
 <!-- ── SKIP LINK (accessibility) ── -->
 <a href="#catalog" class="skip-link">Перейти к содержимому</a>
@@ -338,12 +338,13 @@
 
 <!-- ══════════ CROSS-PROMO: МЕРЕНГОВЫЙ РУЛЕТ ══════════ -->
 <div class="section-fade-divider" aria-hidden="true"></div>
-<section class="meringue-promo" aria-label="Меренговый рулет на заказ">
+<section class="meringue-promo" aria-label="Меренговый рулет с доставкой в {{city_acc_label}}" data-city="{{slug}}">
   <div class="container">
     <p class="meringue-promo__text reveal">
       Также принимаем заказы на
-      <a href="/meringue-roll/" class="meringue-promo__link">меренговый рулет и пирожное Павлова</a>
-      — безглютеновые десерты с хрустящей меренгой и свежими ягодами 🤍
+      <a href="/meringue-roll/?city={{slug}}" class="meringue-promo__link">меренговый рулет и пирожное Павлова</a>
+      — безглютеновые десерты с хрустящей меренгой и свежими ягодами с доставкой
+      <span class="meringue-promo__city">в {{city_acc_label}}</span> 🤍
     </p>
   </div>
 </section>

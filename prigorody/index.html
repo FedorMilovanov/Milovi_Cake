@@ -1,6 +1,31 @@
 <!DOCTYPE html>
 <html lang="ru" style="background:#f5f0e8;color-scheme:light">
 <head>
+  
+  <!-- ANTI-FOUC v1: instant background match + body opacity reveal -->
+  <style id="anti-fouc">
+    html{background:#f5f0e8;color-scheme:light}
+    html[data-theme="dark"]{background:#1a1108;color-scheme:dark}
+    body{background:inherit}
+    body:not(.ready){opacity:0}
+    body.ready{opacity:1;transition:opacity .28s ease-out}
+    @media (prefers-reduced-motion:reduce){body{opacity:1!important;transition:none!important}}
+  </style>
+  <script>
+    (function(){
+      try{var t=localStorage.getItem('mc_theme');
+        if(t)document.documentElement.setAttribute('data-theme',t);
+        else if(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)
+          document.documentElement.setAttribute('data-theme','dark');
+      }catch(e){}
+      function reveal(){requestAnimationFrame(function(){document.body&&document.body.classList.add('ready')})}
+      if(document.readyState!=='loading')reveal();
+      else document.addEventListener('DOMContentLoaded',reveal);
+      // safety net
+      setTimeout(reveal,1200);
+    })();
+  </script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Торты на заказ с доставкой по пригородам СПб — Milovi Cake</title>
@@ -41,7 +66,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/></noscript>
-  <link rel="stylesheet" href="../css/style.css?v=20260428" />
+  <link rel="stylesheet" href="../css/style.css?v=20260601" />
+  <link rel="stylesheet" href="/css/premium-overrides.css?v=20260601" />
   <style>
     .hub-hero { padding: 120px 24px 60px; text-align: center; background: linear-gradient(160deg, var(--cream) 0%, var(--cream-dark) 100%); }
     .hub-hero h1 { font-family: "Cormorant Garamond", serif; font-size: clamp(28px, 6vw, 52px); font-weight: 400; color: var(--brown); margin-bottom: 16px; }
@@ -142,7 +168,7 @@
     window.addEventListener("load", () => { navigator.serviceWorker.register("/sw.js").catch(() => {}); });
   }
 </script>
-<script src="/js/nav.js?v=20260428" defer></script>
+<script src="/js/nav.js?v=20260601" defer></script>
 
 <!-- ══════════ YANDEX METRIKA (end of body — non-blocking) ══════════ -->
 <script type="text/javascript">
