@@ -12,7 +12,7 @@
   <meta name="robots" content="index, follow" />
   <meta property="og:title" content="{{og_title}}" />
   <meta property="og:description" content="{{og_desc}}" />
-  <meta property="og:image" content="https://milovicake.ru/img/head.webp" />
+  <meta property="og:image" content="https://milovicake.ru/img/og-cover.jpg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:url" content="{{canonical_url}}" />
@@ -96,6 +96,25 @@
   <!-- noscript fonts -->
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/></noscript>
   <link rel="stylesheet" href="../../css/style.css?v=20260512" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type":"Question","name":"{{faq_q1}}","acceptedAnswer":{"@type":"Answer","text":"{{faq_a1}}"}},
+      {"@type":"Question","name":"{{faq_q2}}","acceptedAnswer":{"@type":"Answer","text":"{{faq_a2}}"}},
+      {"@type":"Question","name":"{{faq_q3}}","acceptedAnswer":{"@type":"Answer","text":"{{faq_a3}}"}}
+    ]
+  }
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-94ZZ5B8YNY"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-94ZZ5B8YNY');
+  </script>
 </head>
 
 <body>
@@ -262,6 +281,47 @@
   </div>
 </section>
 
+
+
+<!-- ══════════ DELIVERY CARD ══════════ -->
+<div class="section-fade-divider" aria-hidden="true"></div>
+<section class="city-delivery" id="delivery">
+  <div class="container">
+    <div class="delivery-card reveal">
+      <div class="delivery-card__header">
+        <h2 class="delivery-card__title">Доставка в {{delivery_city}}</h2>
+        <span class="delivery-card__badge">{{delivery_km}} от кондитерской</span>
+      </div>
+      <div class="delivery-card__grid">
+        <div class="delivery-card__item">
+          <div class="delivery-card__icon">🚗</div>
+          <div class="delivery-card__label">Стоимость</div>
+          <div class="delivery-card__value delivery-card__price">{{delivery_price}}</div>
+        </div>
+        <div class="delivery-card__item">
+          <div class="delivery-card__icon">⏱</div>
+          <div class="delivery-card__label">Время в пути</div>
+          <div class="delivery-card__value">{{delivery_time}}</div>
+        </div>
+        <div class="delivery-card__item">
+          <div class="delivery-card__icon">📅</div>
+          <div class="delivery-card__label">Дни доставки</div>
+          <div class="delivery-card__value">{{delivery_days}}</div>
+        </div>
+        <div class="delivery-card__item">
+          <div class="delivery-card__icon">📦</div>
+          <div class="delivery-card__label">Самовывоз</div>
+          <div class="delivery-card__value">Бесплатно</div>
+        </div>
+      </div>
+      {{delivery_note_block}}
+      <div class="delivery-card__districts">
+        <span class="delivery-card__districts-label">Доставляем в районы:</span>
+        <p class="delivery-card__districts-list">{{districts}}</p>
+      </div>
+    </div>
+  </div>
+</section>
 
 
 <!-- ══════════ CATALOG ══════════ -->
@@ -445,6 +505,21 @@
   </div>
 </section>
 
+<!-- ══════════ LOCAL CONTEXT ══════════ -->
+<div class="section-fade-divider" aria-hidden="true"></div>
+<section class="local-context">
+  <div class="container">
+    <div class="local-context__inner reveal">
+      <div class="local-context__landmark">
+        <span class="local-context__landmark-icon">📍</span>
+        <span class="local-context__landmark-name">{{local_landmark}}</span>
+      </div>
+      <p class="local-context__text">{{local_flavor_text}}</p>
+    </div>
+  </div>
+</section>
+
+
 <!-- ══════════ WHY US ══════════ -->
 <div class="section-fade-divider" aria-hidden="true"></div>
 <section id="why">
@@ -598,6 +673,29 @@
 
 
 
+<!-- ══════════ DELIVERY FAQ ══════════ -->
+<div class="section-fade-divider" aria-hidden="true"></div>
+<section class="delivery-faq" id="faq">
+  <div class="container">
+    <h2 class="section-title reveal">Вопросы о доставке в {{delivery_city}}</h2>
+    <div class="faq-list">
+      <div class="faq-item" onclick="cbFaq(this)">
+        <div class="cb-faq-q"><span>{{faq_q1}}</span><div class="cb-faq-ico">+</div></div>
+        <div class="cb-faq-a"><div class="cb-faq-a-inner">{{faq_a1}}</div></div>
+      </div>
+      <div class="faq-item" onclick="cbFaq(this)">
+        <div class="cb-faq-q"><span>{{faq_q2}}</span><div class="cb-faq-ico">+</div></div>
+        <div class="cb-faq-a"><div class="cb-faq-a-inner">{{faq_a2}}</div></div>
+      </div>
+      <div class="faq-item" onclick="cbFaq(this)">
+        <div class="cb-faq-q"><span>{{faq_q3}}</span><div class="cb-faq-ico">+</div></div>
+        <div class="cb-faq-a"><div class="cb-faq-a-inner">{{faq_a3}}</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
 <!-- ══════════ CONTACTS ══════════ -->
 <div class="section-fade-divider" aria-hidden="true"></div>
 <section id="contacts">
@@ -696,10 +794,22 @@
   </div>
 </section>
 
+<!-- ══════════ NEARBY CITIES ══════════ -->
+<div class="section-fade-divider" aria-hidden="true"></div>
+<section class="nearby-cities">
+  <div class="container">
+    <h3 class="nearby-cities__title reveal">Также доставляем рядом</h3>
+    <div class="nearby-cities__grid">
+      {{nearby_cities_html}}
+    </div>
+  </div>
+</section>
+
+
 <!-- ══════════ GEO / SEO ══════════ -->
 <section class="geo-section">
   <div class="container">
-    <h2>{{main_seo_h2}}</h2>
+    <h2>{{main_seo_h2_full}}</h2>
     <p>{{main_seo_p}}</p>
     <div class="geo-tags">
 {{first_geo_tags}}
@@ -835,16 +945,6 @@
 </section>
 
 
-<!-- ══════════ SEO TEXT ══════════ -->
-<section class="seo-section">
-  <div class="container">
-    <h2>Домашние торты на заказ в Санкт-Петербурге — Milovi Cake</h2>
-    <p>В Milovi Cake мы готовим домашние торты на заказ в Санкт-Петербурге (СПб) для тех, кто ценит настоящий вкус и аккуратный, тёплый подход. Каждый торт собираем вручную, на натуральных сливках и качественном сыре крем-чиз, без готовых смесей и растительных заменителей. Вы выбираете вкус, размер и оформление — мы создаём десерт именно под ваш праздник.</p>
-    <p>Любителям нежной классики подойдут наши ванильные торты на заказ. «Воздушный поцелуй» — сочный ванильный бисквит с клубничной начинкой и сливочным крем-чиз, идеален для девичника или романтического ужина. «Ванильная вишня» сочетает мягкий бисквит и насыщенную вишню. Для любителей свежих вкусов — «Ванильный микс ягод» с малиной, вишней, голубикой и чёрной смородиной, «Ванильные тропики» с курдом манго-маракуйя, «Белый сникерс» с домашней солёной карамелью и арахисом, «Ваниль в молочном шоколаде» с хрустящей вафлей.</p>
-    <p>Если вы ищете шоколадный торт на заказ в СПб — «Вишня в шоколаде», «Шоколадный микс ягод», «Сникерс» с солёной карамелью и арахисом, «Ферреро» с хрустящей вафлей в молочном шоколаде и грецким орехом. Для любителей классики тортов на заказ — «Красный бархат» и домашний «Медовик» с мёдовыми коржами и сливочно-сметанным кремом.</p>
-    <p>Отдельная гордость — меренговые рулеты на заказ в СПб и пирожное Павлова на заказ. Оба десерта готовятся по безглютеновым рецептам на основе взбитых белков — хрустящая корочка безе, нежный крем и свежие ягоды. Принимаем заказы на торты для любых событий. Свадебный торт на заказ в СПб — с нежным оформлением, живыми или сахарными цветами, под любой стиль торжества. Торт на день рождения на заказ — с любимыми начинками и авторским декором, от камерного бенто до многоярусного. Детский торт на заказ — яркий, безопасный, с персонажами или тематическим декором по пожеланию. Также делаем торты на крестины, юбилеи и корпоративы. Доставка тортов по Санкт-Петербургу — собственная или через Яндекс.Доставку — и самовывоз.</p>
-  </div>
-</section>
 
 
 
@@ -1142,6 +1242,15 @@
 <div class="lb-bg" id="lbBg"></div>
 <div class="lb-box" id="lbBox"><img id="lbImg" src="" alt=""></div>
 <button class="lb-x" id="lbX" aria-label="Закрыть">✕</button>
+
+
+<script>
+function cbFaq(el){
+  var isOpen = el.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(function(i){ i.classList.remove('open'); });
+  if(!isOpen) el.classList.add('open');
+}
+</script>
 
 </body>
 </html>

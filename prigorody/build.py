@@ -1,26 +1,48 @@
 #!/usr/bin/env python3
 """
-Milovi Cake — Генератор страниц пригородов
-==========================================
-Запуск:  python3 prigorody/build.py
-Результат: пересобирает все index.html в папках пригородов
-           из шаблона _template.html и данных _cities.csv
-
-Как добавить новый пригород:
-  1. Добавь строку в _cities.csv с нужными данными
-  2. Запусти скрипт — папка и файл создадутся автоматически
+Milovi Cake — Генератор страниц пригородов v2
+Run: python3 prigorody/build.py
 """
-
-import os
-import csv
-import re
+import os, csv, re
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_PATH = os.path.join(BASE_DIR, '_template.html')
 CSV_PATH = os.path.join(BASE_DIR, '_cities.csv')
 
+CITY_INFO = {
+    'gatchina':    {'name':'Гатчина',      'price':'от 1 500 ₽','km':'~45 км'},
+    'peterhof':    {'name':'Петергоф',     'price':'от 1 500 ₽','km':'~35 км'},
+    'pushkin':     {'name':'Пушкин',       'price':'от 1 000 ₽','km':'~25 км'},
+    'kolpino':     {'name':'Колпино',      'price':'от 1 000 ₽','km':'~20 км'},
+    'murino':      {'name':'Мурино',       'price':'от 1 200 ₽','km':'~18 км'},
+    'kudrovo':     {'name':'Кудрово',      'price':'от 900 ₽',  'km':'~15 км'},
+    'vsevolozhsk': {'name':'Всеволожск',   'price':'от 1 500 ₽','km':'~25 км'},
+    'shushary':    {'name':'Шушары',       'price':'от 600 ₽',  'km':'~10 км'},
+    'krasnoe-selo':{'name':'Красное Село', 'price':'от 800 ₽',  'km':'~20 км'},
+    'kronshtadt':  {'name':'Кронштадт',    'price':'от 1 500 ₽','km':'~55 км'},
+    'lomonosov':   {'name':'Ломоносов',    'price':'от 1 500 ₽','km':'~40 км'},
+    'pavlovsk':    {'name':'Павловск',     'price':'от 1 000 ₽','km':'~28 км'},
+    'sestroretsk': {'name':'Сестрорецк',   'price':'от 1 500 ₽','km':'~35 км'},
+    'tosno':       {'name':'Тосно',        'price':'от 1 500 ₽','km':'~45 км'},
+}
 
-# ── Review rotation sets ──
+NEARBY = {
+    'gatchina':     ['pushkin','krasnoe-selo','pavlovsk','kolpino'],
+    'peterhof':     ['lomonosov','krasnoe-selo','sestroretsk'],
+    'pushkin':      ['pavlovsk','gatchina','kolpino','shushary'],
+    'kolpino':      ['shushary','tosno','pushkin','murino'],
+    'murino':       ['kudrovo','vsevolozhsk'],
+    'kudrovo':      ['murino','vsevolozhsk','kolpino'],
+    'vsevolozhsk':  ['murino','kudrovo','sestroretsk'],
+    'shushary':     ['kolpino','pushkin','krasnoe-selo'],
+    'krasnoe-selo': ['peterhof','gatchina','lomonosov','shushary'],
+    'kronshtadt':   ['sestroretsk','lomonosov','peterhof'],
+    'lomonosov':    ['peterhof','krasnoe-selo','kronshtadt'],
+    'pavlovsk':     ['pushkin','gatchina','kolpino'],
+    'sestroretsk':  ['kronshtadt','vsevolozhsk','peterhof'],
+    'tosno':        ['kolpino','shushary','gatchina'],
+}
+
 YANDEX_REVIEWS = {
     'R1': """            <div class="map-review-item">
               <div class="map-reviewer-row">
@@ -130,10 +152,24 @@ REVIEW_SETS = {
 }
 
 
-def render_city(template: str, p: dict) -> str:
-    html = template
+def build_nearby_html(slug):
+    cards = []
+    for nb in NEARBY.get(slug, []):
+        info = CITY_INFO.get(nb, {})
+        cards.append(
+            f'      <a href="/prigorody/{nb}/" class="nearby-city-card">\n'
+            f'        <span class="nearby-city-card__name">{info.get("name","")}</span>\n'
+            f'        <span class="nearby-city-card__info">{info.get("km","")} · {info.get("price","")}</span>\n'
+            f'      </a>'
+        )
+    return '\n'.join(cards)
 
-    # Geo-tags blocks
+
+def render_city(template, p):
+    html = template
+    slug = p['slug']
+
+    # Geo-tags
     first_tags_html = '\n'.join(
         f'      <span class="geo-tag">{t}</span>'
         for t in p['first_geo_tags'].split('|') if t
@@ -145,91 +181,102 @@ def render_city(template: str, p: dict) -> str:
     html = html.replace('{{first_geo_tags}}', first_tags_html)
     html = html.replace('{{seo_geo_tags}}', seo_tags_html)
 
-    # Canonical URL
-    slug = p['slug']
+    # Canonical
     html = html.replace('{{canonical_url}}', f'https://milovicake.ru/prigorody/{slug}/')
 
-    # LD+JSON structured fields
-    html = html.replace('{{ld_breadcrumb_name}}', f'"name": "Торты в {p["breadcrumb_name"]}"')
-    html = html.replace(
-        '{{ld_description}}',
+    # LD+JSON
+    html = html.replace('{{ld_breadcrumb_name}}', f'"name": "Торты в {p["breadcrumb_name"]}"'  )
+    html = html.replace('{{ld_description}}',
         f'"description": "Авторские торты, меренговые рулеты и десерты на заказ '
         f'с доставкой в {p["ld_city"]} от частного кондитера."'
     )
-    html = html.replace('{{ld_area_name}}', f'"name": "{p["ld_area"]}"')
+    html = html.replace('{{ld_area_name}}', f'"name": "{p["ld_area"]}"'  )
 
-    # Simple text replacements
+    # Delivery note block
+    note = p.get('delivery_note', '').strip()
+    note_block = f'<p class="delivery-card__note">💡 {note}</p>' if note else ''
+    html = html.replace('{{delivery_note_block}}', note_block)
+
+    # Nearby cities
+    html = html.replace('{{nearby_cities_html}}', build_nearby_html(slug))
+
+    # Delivery city = accusative = ld_city
+    html = html.replace('{{delivery_city}}', p['ld_city'])
+
+    # Simple replacements
     simple = {
-        '{{title}}':       p['title'],
-        '{{meta_desc}}':   p['meta_desc'],
-        '{{og_title}}':    p['og_title'],
-        '{{og_desc}}':     p['og_desc'],
+        '{{title}}':         p['title'],
+        '{{meta_desc}}':     p['meta_desc'],
+        '{{og_title}}':      p['og_title'],
+        '{{og_desc}}':       p['og_desc'],
         '{{nav_span_text}}': f'Торты в {p["nav_span"]}',
-        '{{nav_span}}':    f'<span>Торты в {p["nav_span"]}</span>',
-        '{{geo_label}}':   p['geo_label'],
-        '{{h1}}':          f'Торты на заказ в {p["h1_city"]}',
-        '{{hero_p}}':      p['hero_p'],
-        '{{hero_span}}':   p['hero_span'],
-        '{{catalog_h2}}':  'Торты и Десерты с Доставкой ' + 
-                           ('во ' if p['catalog_h2'].startswith('В') else 'в ') +
-                           p['catalog_h2'],
-        '{{section_sub}}': p['section_sub'],
-        '{{main_seo_h2}}': p['main_seo_h2'],
-        '{{main_seo_p}}':  p['main_seo_p'],
-        '{{seo_h2}}':      p['seo_h2'],
-        '{{seo_p1}}':      p['seo_p1'],
-        '{{seo_p2}}':      p['seo_p2'],
-        '{{seo_p3}}':      p['seo_p3'],
+        '{{nav_span}}':      f'<span>Торты в {p["nav_span"]}</span>',
+        '{{geo_label}}':     p['geo_label'],
+        '{{h1}}':            f'Торты на заказ в {p["h1_city"]}',
+        '{{hero_p}}':        p['hero_p'],
+        '{{hero_span}}':     p['hero_span'],
+        '{{catalog_h2}}':    'Торты и Десерты с Доставкой ' +
+                              ('во ' if p['catalog_h2'].startswith('В') else 'в ') +
+                              p['catalog_h2'],
+        '{{section_sub}}':   p['section_sub'],
+        '{{main_seo_h2_full}}': ('Доставка тортов во ' if p['main_seo_h2'].startswith(('В','в','А','а')) else 'Доставка тортов в ') + p['main_seo_h2'],
+        '{{main_seo_p}}':    p['main_seo_p'],
+        '{{seo_h2}}':        p['seo_h2'],
+        '{{seo_p1}}':        p['seo_p1'],
+        '{{seo_p2}}':        p['seo_p2'],
+        '{{seo_p3}}':        p['seo_p3'],
         '{{meta_keywords}}': ', '.join(t for t in p['seo_geo_tags'].split('|') if t),
-        '{{meta_keywords}}': ', '.join(t for t in p['seo_geo_tags'].split('|') if t),
+        # New fields
+        '{{delivery_price}}':      p.get('delivery_price', ''),
+        '{{delivery_km}}':         p.get('delivery_km', ''),
+        '{{delivery_time}}':       p.get('delivery_time', ''),
+        '{{delivery_days}}':       p.get('delivery_days', ''),
+        '{{districts}}':           p.get('districts', ''),
+        '{{local_landmark}}':      p.get('local_landmark', ''),
+        '{{local_flavor_text}}':   p.get('local_flavor_text', ''),
+        '{{faq_q1}}':              p.get('faq_q1', ''),
+        '{{faq_a1}}':              p.get('faq_a1', ''),
+        '{{faq_q2}}':              p.get('faq_q2', ''),
+        '{{faq_a2}}':              p.get('faq_a2', ''),
+        '{{faq_q3}}':              p.get('faq_q3', ''),
+        '{{faq_a3}}':              p.get('faq_a3', ''),
     }
-    for placeholder, value in simple.items():
-        if value:
-            html = html.replace(placeholder, value)
+    for ph, val in simple.items():
+        if val:
+            html = html.replace(ph, val)
 
-
-    # Review rotation (SEO-Б7)
-    review_set = p.get('review_set', 'A')
-    rs = REVIEW_SETS.get(review_set, REVIEW_SETS['A'])
-    yandex_html = '\n'.join(YANDEX_REVIEWS[k] for k in rs['y'])
-    google_html = '\n'.join(GOOGLE_REVIEWS[k] for k in rs['g'])
-    html = html.replace('{{yandex_reviews}}', yandex_html)
-    html = html.replace('{{google_reviews}}', google_html)
+    # Reviews rotation
+    rs = REVIEW_SETS.get(p.get('review_set', 'A'), REVIEW_SETS['A'])
+    html = html.replace('{{yandex_reviews}}', '\n'.join(YANDEX_REVIEWS[k] for k in rs['y']))
+    html = html.replace('{{google_reviews}}', '\n'.join(GOOGLE_REVIEWS[k] for k in rs['g']))
     return html
 
 
 def main():
     with open(TEMPLATE_PATH, encoding='utf-8') as f:
         template = f.read()
-
     with open(CSV_PATH, encoding='utf-8') as f:
         rows = list(csv.DictReader(f))
 
-    ok = 0
-    errors = 0
+    ok = errors = 0
     for p in rows:
         slug = p['slug']
         html = render_city(template, p)
-
-        # Check for leftover placeholders
-        leftovers = [line.strip() for line in html.split('\n') if '{{' in line]
+        leftovers = [ln.strip() for ln in html.split('\n') if '{{'  in ln]
         if leftovers:
             print(f'✗ {slug}: незаполненные плейсхолдеры:')
-            for l in leftovers:
-                print(f'    {l[:100]}')
+            for l in leftovers[:5]:
+                print(f'    {l[:120]}')
             errors += 1
             continue
-
         out_dir = os.path.join(BASE_DIR, slug)
         os.makedirs(out_dir, exist_ok=True)
-        out_path = os.path.join(out_dir, 'index.html')
-        with open(out_path, 'w', encoding='utf-8') as f:
+        with open(os.path.join(out_dir, 'index.html'), 'w', encoding='utf-8') as f:
             f.write(html)
-
         print(f'✓ {slug}')
         ok += 1
 
-    print(f'\nГотово: {ok} файлов сгенерировано, {errors} ошибок.')
+    print(f'\nГотово: {ok} файлов, {errors} ошибок.')
 
 
 if __name__ == '__main__':
