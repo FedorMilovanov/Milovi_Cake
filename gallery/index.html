@@ -42,393 +42,384 @@
 </script>
 
 <style>
-  :root {
-    --cream: #f5f0e8;
-    --cream-deep: #ede7db;
-    --gold: #b8823a;
-    --gold-light: #d4a85c;
-    --brown: #3d2b1f;
-    --brown-mid: #6b4c38;
-    --text: #2c1a10;
-    --muted: #9a7a62;
-    --white: #FDFBF7;
-    --gap: 2px;
-    --row-h: 280px;
-    --grid-cols: 4;
-  }
+:root {
+  --cream: #f5f0e8;
+  --cream-deep: #ede7db;
+  --gold: #b8823a;
+  --gold-light: #d4a85c;
+  --brown: #3d2b1f;
+  --brown-mid: #6b4c38;
+  --text: #2c1a10;
+  --muted: #9a7a62;
+  --white: #FDFBF7;
+  
+  /* Muuri grid settings */
+  --grid-cols: 4;
+  --item-base: 280px;
+  --gap: 2px;
+}
 
-  *, *::before, *::after { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; }
 
-  html, body {
-    margin: 0; padding: 0;
-    background: var(--cream);
-    color: var(--text);
-    font-family: 'Jost', system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
-  }
+html, body {
+  margin: 0; padding: 0;
+  background: var(--cream);
+  color: var(--text);
+  font-family: 'Jost', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
 
-  a { color: inherit; }
+a { color: inherit; }
 
-  /* ===== ШАПКА ===== */
-  .gx-header {
-    padding: 56px 24px 40px;
-    text-align: center;
-    max-width: 900px;
-    margin: 0 auto;
-  }
+/* ===== ШАПКА ===== */
+.gx-header {
+  padding: 56px 24px 40px;
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
 
-  .gx-back {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    text-decoration: none;
-    margin-bottom: 20px;
-    transition: color .2s;
-  }
-  .gx-back:hover { color: var(--gold); }
-  .gx-back::before {
-    content: '';
-    display: inline-block;
-    width: 24px; height: 1px;
-    background: currentColor;
-    transition: width .3s;
-  }
-  .gx-back:hover::before { width: 36px; }
+.gx-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  margin-bottom: 20px;
+  transition: color .2s;
+}
+.gx-back:hover { color: var(--gold); }
+.gx-back::before {
+  content: '';
+  display: inline-block;
+  width: 24px; height: 1px;
+  background: currentColor;
+  transition: width .3s;
+}
+.gx-back:hover::before { width: 36px; }
 
-  .gx-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 400;
-    font-size: clamp(36px, 5.5vw, 62px);
-    margin: 0 0 6px;
-    letter-spacing: .02em;
-    line-height: 1.1;
-  }
-  .gx-title em {
-    font-style: italic;
-    color: var(--gold);
-  }
+.gx-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
+  font-size: clamp(36px, 5.5vw, 62px);
+  margin: 0 0 6px;
+  letter-spacing: .02em;
+  line-height: 1.1;
+}
+.gx-title em {
+  font-style: italic;
+  color: var(--gold);
+}
 
-  .gx-divider {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    margin: 18px auto 16px;
-    max-width: 320px;
-  }
-  .gx-divider span {
-    flex: 1; height: 1px;
-    background: linear-gradient(to right, transparent, var(--gold-light), transparent);
-  }
-  .gx-divider i {
-    width: 5px; height: 5px;
-    border: 1px solid var(--gold);
-    transform: rotate(45deg);
-    display: block;
-  }
+.gx-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 18px auto 16px;
+  max-width: 320px;
+}
+.gx-divider span {
+  flex: 1; height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold-light), transparent);
+}
+.gx-divider i {
+  width: 5px; height: 5px;
+  border: 1px solid var(--gold);
+  transform: rotate(45deg);
+  display: block;
+}
 
-  .gx-sub {
-    color: var(--muted);
-    font-size: 14px;
-    line-height: 1.75;
-    max-width: 560px;
-    margin: 0 auto 28px;
-    font-weight: 300;
-    letter-spacing: .02em;
-  }
+.gx-sub {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.75;
+  max-width: 560px;
+  margin: 0 auto 28px;
+  font-weight: 300;
+  letter-spacing: .02em;
+}
 
-  /* ===== ФИЛЬТР ===== */
-  .gx-filter {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 6px;
-    margin-top: 0;
-  }
+/* ===== ФИЛЬТР ===== */
+.gx-filter {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 0;
+}
 
-  .gx-filter button {
-    background: transparent;
-    border: 1px solid rgba(61,43,31,.15);
-    color: var(--brown-mid);
-    padding: 7px 18px;
-    border-radius: 999px;
-    font: 400 11px/1 'Jost', sans-serif;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all .25s;
-  }
-  .gx-filter button:hover {
-    border-color: var(--gold);
-    color: var(--gold);
-    background: rgba(184,130,58,.06);
-  }
-  .gx-filter button[aria-pressed="true"] {
-    background: var(--brown);
-    color: var(--white);
-    border-color: var(--brown);
-    letter-spacing: .1em;
-  }
+.gx-filter button {
+  background: transparent;
+  border: 1px solid rgba(61,43,31,.15);
+  color: var(--brown-mid);
+  padding: 7px 18px;
+  border-radius: 999px;
+  font: 400 11px/1 'Jost', sans-serif;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .25s;
+}
+.gx-filter button:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(184,130,58,.06);
+}
+.gx-filter button[aria-pressed="true"] {
+  background: var(--brown);
+  color: var(--white);
+  border-color: var(--brown);
+  letter-spacing: .1em;
+}
 
-  .gx-rule {
-    height: 1px;
-    background: linear-gradient(to right, transparent 0%, var(--cream-deep) 20%, var(--gold-light) 50%, var(--cream-deep) 80%, transparent 100%);
-    margin: 0;
-  }
+.gx-rule {
+  height: 1px;
+  background: linear-gradient(to right, transparent 0%, var(--cream-deep) 20%, var(--gold-light) 50%, var(--cream-deep) 80%, transparent 100%);
+  margin: 0;
+}
 
-  /* ===== CSS GRID ===== */
-  .gx-grid {
-    display: grid;
-    grid-template-columns: repeat(var(--grid-cols), 1fr);
-    grid-auto-rows: var(--row-h);
-    gap: var(--gap);
-    padding: 0;
-    max-width: 1600px;
-    margin: 0 auto;
-  }
+/* ===== MUURI GRID ===== */
+.gx-grid {
+  position: relative; /* REQUIRED by Muuri */
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: var(--gap);
+}
 
-  @media (max-width: 1100px) {
-    :root { --grid-cols: 3; --row-h: 260px; }
-  }
-  @media (max-width: 680px) {
-    :root { --grid-cols: 2; --row-h: 220px; }
-  }
+/* Item sizes - Muuri requires absolute positioning */
+.gx-cell {
+  position: absolute; /* REQUIRED by Muuri */
+  display: block;
+  margin: var(--gap);
+  background: #1c1410;
+  cursor: zoom-in;
+  overflow: hidden;
+  line-height: 0;
+  z-index: 1;
+}
 
-  /* Размеры ячеек */
-  .gx-cell          { grid-column: span 1; grid-row: span 1; }
-  .gx-cell.s-tall   { grid-column: span 1; grid-row: span 2; }
-  .gx-cell.s-wide   { grid-column: span 2; grid-row: span 1; }
-  .gx-cell.s-big    { grid-column: span 2; grid-row: span 2; }
+/* Size variants */
+.gx-cell.s-1x1 { width: calc(25% - var(--gap) * 2); height: var(--item-base); }
+.gx-cell.s-2x1 { width: calc(50% - var(--gap) * 2); height: var(--item-base); }
+.gx-cell.s-1x2 { width: calc(25% - var(--gap) * 2); height: calc(var(--item-base) * 2 + var(--gap) * 2); }
+.gx-cell.s-2x2 { width: calc(50% - var(--gap) * 2); height: calc(var(--item-base) * 2 + var(--gap) * 2); }
 
-  @media (max-width: 1100px) {
-    .gx-cell.s-wide { grid-column: span 2; }
-    .gx-cell.s-big  { grid-column: span 2; }
-  }
-  @media (max-width: 680px) {
-    .gx-cell.s-wide { grid-column: span 2; }
-    .gx-cell.s-big  { grid-column: span 2; }
-  }
+@media (max-width: 1100px) {
+  :root { --grid-cols: 3; --item-base: 260px; }
+  .gx-cell.s-1x1 { width: calc(33.333% - var(--gap) * 2); }
+  .gx-cell.s-2x1 { width: calc(66.666% - var(--gap) * 2); }
+  .gx-cell.s-1x2 { width: calc(33.333% - var(--gap) * 2); }
+  .gx-cell.s-2x2 { width: calc(66.666% - var(--gap) * 2); }
+}
 
-  .gx-cell {
-    position: relative;
-    display: block;
-    width: 100%; height: 100%;
-    margin: 0;
-    background: #1c1410;
-    cursor: zoom-in;
-    overflow: hidden;
-    line-height: 0;
-  }
+@media (max-width: 680px) {
+  :root { --grid-cols: 2; --item-base: 200px; }
+  .gx-cell.s-1x1 { width: calc(50% - var(--gap) * 2); }
+  .gx-cell.s-2x1 { width: calc(100% - var(--gap) * 2); }
+  .gx-cell.s-1x2 { width: calc(50% - var(--gap) * 2); }
+  .gx-cell.s-2x2 { width: calc(100% - var(--gap) * 2); }
+}
 
-  .gx-cell img,
-  .gx-cell .gx-vid-inline {
-    display: block;
-    width: 100%; height: 100%;
-    object-fit: cover;
-    object-position: center;
-    transition: transform .9s cubic-bezier(.2,.8,.2,1), filter .5s;
-    will-change: transform;
-  }
+/* Item content wrapper - REQUIRED by Muuri */
+.gx-cell-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
 
-  @media (hover: hover) {
-    .gx-cell:hover img,
-    .gx-cell:hover .gx-vid-inline { transform: scale(1.06); filter: brightness(1.04); }
-  }
+.gx-cell img,
+.gx-cell .gx-vid-inline {
+  display: block;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform .9s cubic-bezier(.2,.8,.2,1), filter .5s;
+  will-change: transform;
+}
 
-  .gx-cell::after {
-    content: '';
-    position: absolute;
-    inset: auto 0 0 0;
-    height: 55%;
-    background: linear-gradient(to top,
-      rgba(10,5,2,.72) 0%,
-      rgba(10,5,2,.3) 40%,
-      transparent 100%);
-    opacity: 0;
-    transition: opacity .4s;
-    pointer-events: none;
-  }
-  .gx-cell:hover::after { opacity: 1; }
+@media (hover: hover) {
+  .gx-cell:hover img,
+  .gx-cell:hover .gx-vid-inline { transform: scale(1.06); filter: brightness(1.04); }
+}
 
-  .gx-caption {
-    position: absolute;
-    left: 0; right: 0; bottom: 0;
-    padding: 20px 18px 16px;
-    color: #fff;
-    font: 300 12px/1.4 'Jost', sans-serif;
-    letter-spacing: .07em;
-    text-transform: uppercase;
-    transform: translateY(6px);
-    opacity: 0;
-    transition: transform .4s cubic-bezier(.2,.8,.2,1), opacity .4s;
-    pointer-events: none;
-    text-shadow: 0 1px 6px rgba(0,0,0,.5);
-  }
-  .gx-cell:hover .gx-caption { opacity: 1; transform: translateY(0); }
+.gx-cell::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 55%;
+  background: linear-gradient(to top,
+    rgba(10,5,2,.72) 0%,
+    rgba(10,5,2,.3) 40%,
+    transparent 100%);
+  opacity: 0;
+  transition: opacity .4s;
+  pointer-events: none;
+}
+.gx-cell:hover::after { opacity: 1; }
 
-  .gx-cell[data-type="video"] .gx-vid-badge {
-    position: absolute;
-    top: 12px; right: 12px;
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    background: rgba(255,255,255,.14);
-    border: 1px solid rgba(255,255,255,.3);
-    backdrop-filter: blur(8px);
-    display: flex; align-items: center; justify-content: center;
-    pointer-events: none;
-    transition: opacity .3s;
-  }
-  .gx-cell:hover .gx-vid-badge { opacity: 0; }
-  .gx-vid-badge svg { width: 10px; height: 10px; fill: #fff; margin-left: 2px; }
+.gx-caption {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 20px 18px 16px;
+  color: #fff;
+  font: 300 12px/1.4 'Jost', sans-serif;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  transform: translateY(6px);
+  opacity: 0;
+  transition: transform .4s cubic-bezier(.2,.8,.2,1), opacity .4s;
+  pointer-events: none;
+  text-shadow: 0 1px 6px rgba(0,0,0,.5);
+  z-index: 2;
+}
+.gx-cell:hover .gx-caption { opacity: 1; transform: translateY(0); }
 
-  .gx-vid-inline.is-loading { opacity: 0; }
-  .gx-vid-inline.is-ready   { opacity: 1; transition: opacity .6s; }
+.gx-cell[data-type="video"] .gx-vid-badge {
+  position: absolute;
+  top: 12px; right: 12px;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.14);
+  border: 1px solid rgba(255,255,255,.3);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+  transition: opacity .3s;
+  z-index: 3;
+}
+.gx-cell:hover .gx-vid-badge { opacity: 0; }
+.gx-vid-badge svg { width: 10px; height: 10px; fill: #fff; margin-left: 2px; }
 
-  /* ===== ЗАГЛУШКА-ЗАПОЛНИТЕЛЬ (rectangle completion) ===== */
-  /*
-    Фоновый паттерн задаёт ощущение «пустого холста» —
-    не белый прямоугольник, а намеренная пауза между работами.
-  */
-  .gx-filler {
-    background-color: var(--cream-deep);
-    background-image:
-      linear-gradient(45deg, rgba(184,130,58,.06) 25%, transparent 25%),
-      linear-gradient(-45deg, rgba(184,130,58,.06) 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, rgba(184,130,58,.06) 75%),
-      linear-gradient(-45deg, transparent 75%, rgba(184,130,58,.06) 75%);
-    background-size: 20px 20px;
-    background-position: 0 0, 0 10px, 10px -10px, -10px 0;
-    pointer-events: none;
-    /* Плавно появляется вместе с сеткой */
-    animation: gxFillerIn .4s ease-out both;
-  }
-  @keyframes gxFillerIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
+.gx-vid-inline.is-loading { opacity: 0; }
+.gx-vid-inline.is-ready   { opacity: 1; transition: opacity .6s; }
 
-  /* ===== LIGHTBOX ===== */
-  .gx-light {
-    position: fixed;
-    inset: 0;
-    background: rgba(6,3,1,.97);
-    z-index: 9999;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    animation: gxFade .3s ease-out;
-  }
-  .gx-light[aria-hidden="false"] { display: flex; }
-  @keyframes gxFade { from { opacity: 0; } to { opacity: 1; } }
+/* Muuri states */
+.gx-cell.muuri-item-dragging { z-index: 3; }
+.gx-cell.muuri-item-releasing { z-index: 2; }
+.gx-cell.muuri-item-hidden { z-index: 0; pointer-events: none; }
 
-  .gx-light-stage {
-    position: relative;
-    max-width: min(96vw, 1600px);
-    max-height: 92vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .gx-light img,
-  .gx-light video,
-  .gx-light iframe {
-    max-width: 96vw;
-    max-height: 92vh;
-    display: block;
-    background: #000;
-    box-shadow: 0 40px 100px rgba(0,0,0,.7);
-  }
-  .gx-light iframe {
-    width: min(96vw, 540px);
-    aspect-ratio: 9 / 16;
-    border: 0;
-  }
+/* ===== LIGHTBOX ===== */
+.gx-light {
+  position: fixed;
+  inset: 0;
+  background: rgba(6,3,1,.97);
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  animation: gxFade .3s ease-out;
+}
+.gx-light[aria-hidden="false"] { display: flex; }
+@keyframes gxFade { from { opacity: 0; } to { opacity: 1; } }
 
-  .gx-ctrl {
-    position: absolute;
-    width: 44px; height: 44px;
-    border-radius: 50%;
-    background: rgba(255,255,255,.07);
-    border: 1px solid rgba(255,255,255,.2);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all .2s;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-  }
-  .gx-ctrl:hover {
-    background: var(--gold);
-    border-color: var(--gold);
-    transform: scale(1.08);
-  }
-  .gx-ctrl svg { width: 18px; height: 18px; fill: #fff; }
-  .gx-close { top: 24px; right: 24px; }
-  .gx-prev  { left: 24px;  top: 50%; transform: translateY(-50%); }
-  .gx-next  { right: 24px; top: 50%; transform: translateY(-50%); }
-  .gx-mute  { bottom: 24px; right: 24px; }
-  .gx-prev:hover { transform: translateY(-50%) scale(1.08); }
-  .gx-next:hover { transform: translateY(-50%) scale(1.08); }
+.gx-light-stage {
+  position: relative;
+  max-width: min(96vw, 1600px);
+  max-height: 92vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gx-light img,
+.gx-light video,
+.gx-light iframe {
+  max-width: 96vw;
+  max-height: 92vh;
+  display: block;
+  background: #000;
+  box-shadow: 0 40px 100px rgba(0,0,0,.7);
+}
+.gx-light iframe {
+  width: min(96vw, 540px);
+  aspect-ratio: 9 / 16;
+  border: 0;
+}
 
-  .gx-meta {
-    position: absolute;
-    left: 24px; bottom: 24px;
-    color: rgba(255,255,255,.75);
-    font: 300 12px/1.5 'Jost', sans-serif;
-    letter-spacing: .06em;
-    text-transform: uppercase;
-    max-width: 60vw;
-  }
-  .gx-meta b {
-    font-weight: 400;
-    font-size: 14px;
-    display: block;
-    margin-bottom: 4px;
-    color: #fff;
-    letter-spacing: .08em;
-  }
+.gx-ctrl {
+  position: absolute;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.2);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all .2s;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.gx-ctrl:hover {
+  background: var(--gold);
+  border-color: var(--gold);
+  transform: scale(1.08);
+}
+.gx-ctrl svg { width: 18px; height: 18px; fill: #fff; }
+.gx-close { top: 24px; right: 24px; }
+.gx-prev  { left: 24px;  top: 50%; transform: translateY(-50%); }
+.gx-next  { right: 24px; top: 50%; transform: translateY(-50%); }
+.gx-mute  { bottom: 24px; right: 24px; }
+.gx-prev:hover { transform: translateY(-50%) scale(1.08); }
+.gx-next:hover { transform: translateY(-50%) scale(1.08); }
 
-  .gx-footer {
-    text-align: center;
-    padding: 40px 24px 56px;
-    color: var(--muted);
-    font: 300 12px/1 'Jost', sans-serif;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-  }
-  .gx-footer a {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--brown);
-    text-decoration: none;
-    padding: 14px 32px;
-    border: 1px solid rgba(61,43,31,.2);
-    border-radius: 999px;
-    transition: all .25s;
-    font-size: 11px;
-  }
-  .gx-footer a:hover {
-    border-color: var(--gold);
-    color: var(--gold);
-    background: rgba(184,130,58,.06);
-  }
+.gx-meta {
+  position: absolute;
+  left: 24px; bottom: 24px;
+  color: rgba(255,255,255,.75);
+  font: 300 12px/1.5 'Jost', sans-serif;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  max-width: 60vw;
+}
+.gx-meta b {
+  font-weight: 400;
+  font-size: 14px;
+  display: block;
+  margin-bottom: 4px;
+  color: #fff;
+  letter-spacing: .08em;
+}
 
-  @media (max-width: 700px) {
-    .gx-close  { top: 14px; right: 14px; width: 38px; height: 38px; }
-    .gx-prev   { left: 8px; }
-    .gx-next   { right: 8px; }
-    .gx-mute   { bottom: 14px; right: 14px; width: 38px; height: 38px; }
-    .gx-meta   { left: 14px; bottom: 14px; font-size: 11px; max-width: 80vw; }
-  }
+.gx-footer {
+  text-align: center;
+  padding: 40px 24px 56px;
+  color: var(--muted);
+  font: 300 12px/1 'Jost', sans-serif;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.gx-footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--brown);
+  text-decoration: none;
+  padding: 14px 32px;
+  border: 1px solid rgba(61,43,31,.2);
+  border-radius: 999px;
+  transition: all .25s;
+  font-size: 11px;
+}
+.gx-footer a:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(184,130,58,.06);
+}
+
+@media (max-width: 700px) {
+  .gx-close  { top: 14px; right: 14px; width: 38px; height: 38px; }
+  .gx-prev   { left: 8px; }
+  .gx-next   { right: 8px; }
+  .gx-mute   { bottom: 14px; right: 14px; width: 38px; height: 38px; }
+  .gx-meta   { left: 14px; bottom: 14px; font-size: 11px; max-width: 80vw; }
+}
 </style>
 </head>
 <body>
@@ -453,491 +444,552 @@
 <div class="gx-rule"></div>
 
 <!-- ================================================================
-     СЕТКА  — CSS Grid, grid-auto-rows: var(--row-h)
-     s-tall  = span 2 rows
-     s-wide  = span 2 columns
-     s-big   = span 2 columns × 2 rows
+     MUURI GRID
+     Размеры: s-1x1 (базовый), s-2x1 (широкий), s-1x2 (высокий), s-2x2 (большой)
+     fillGaps: true — заполняет все пустоты идеально!
      ================================================================ -->
 <main class="gx-grid" id="gxGrid">
 
-  <!-- ROW 1-2 -->
-  <figure class="gx-cell s-tall" data-type="video" data-tags="3d bday"
+  <!-- Каждый item ОБЯЗАТЕЛЬНО имеет внутренний div.gx-cell-content -->
+  
+  <figure class="gx-cell s-1x2" data-type="video" data-tags="3d bday"
           data-mp4="/img/gallery/videos/video-01-knigi.webm"
           data-title="Торт «Книги» с именами"
           data-desc="Авторский 3D-торт на заказ — Milovi Cake СПб">
-    <video class="gx-vid-inline" src="/img/gallery/videos/video-01-knigi.webm"
-           muted loop playsinline preload="metadata" aria-label="Торт «Книги» с именами"></video>
-    <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
-    <figcaption class="gx-caption">Торт «Книги» с именами</figcaption>
+    <div class="gx-cell-content">
+      <video class="gx-vid-inline" src="/img/gallery/videos/video-01-knigi.webm"
+             muted loop playsinline preload="metadata" aria-label="Торт «Книги» с именами"></video>
+      <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
+      <figcaption class="gx-caption">Торт «Книги» с именами</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="photo" data-tags="meringue"
+  <figure class="gx-cell s-1x1" data-type="photo" data-tags="meringue"
           data-full="/img/gallery/gallery-27-hd.webp"
           data-title="3D торт с объёмным декором"
           data-desc="Фигурный 3D-торт на заказ в Санкт-Петербурге">
-    <img src="/img/gallery/gallery-27.webp"
-         alt="Фигурный 3D-торт на заказ в Санкт-Петербурге — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">3D торт с объёмным декором</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-27.webp"
+           alt="Фигурный 3D-торт на заказ в Санкт-Петербурге — Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">3D торт с объёмным декором</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell s-wide" data-type="photo" data-tags="bday"
+  <figure class="gx-cell s-2x1" data-type="photo" data-tags="bday"
           data-full="/img/gallery/gallery-15-hd.webp"
           data-title="Авторский торт ручной работы"
           data-desc="Многоярусный торт на заказ — Milovi Cake СПб">
-    <img src="/img/gallery/gallery-15.webp"
-         alt="Многоярусный торт на заказ — Milovi Cake СПб"
-         loading="eager" decoding="async" fetchpriority="high">
-    <figcaption class="gx-caption">Авторский торт ручной работы</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-15.webp"
+           alt="Многоярусный торт на заказ — Milovi Cake СПб"
+           loading="eager" decoding="async" fetchpriority="high">
+      <figcaption class="gx-caption">Авторский торт ручной работы</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="video" data-tags="wedding"
+  <figure class="gx-cell s-1x1" data-type="video" data-tags="wedding"
           data-mp4="/img/gallery/videos/video-02-spb-cakes.webm"
           data-title="Торты в Санкт-Петербурге"
           data-desc="Витрина авторских тортов от Milovi Cake">
-    <video class="gx-vid-inline" src="/img/gallery/videos/video-02-spb-cakes.webm"
-           muted loop playsinline preload="metadata" aria-label="Торты в Санкт-Петербурге"></video>
-    <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
-    <figcaption class="gx-caption">Торты в Санкт-Петербурге</figcaption>
+    <div class="gx-cell-content">
+      <video class="gx-vid-inline" src="/img/gallery/videos/video-02-spb-cakes.webm"
+             muted loop playsinline preload="metadata" aria-label="Торты в Санкт-Петербурге"></video>
+      <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
+      <figcaption class="gx-caption">Торты в Санкт-Петербурге</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="photo" data-tags="meringue"
+  <figure class="gx-cell s-1x1" data-type="photo" data-tags="meringue"
           data-full="/img/gallery/gallery-07-hd.webp"
           data-title="Свадебный торт"
           data-desc="Многоярусный свадебный торт ручной работы СПб">
-    <img src="/img/gallery/gallery-07.webp"
-         alt="Многоярусный свадебный торт ручной работы СПб — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Свадебный торт</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-07.webp"
+           alt="Многоярусный свадебный торт ручной работы СПб — Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Свадебный торт</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="photo" data-tags="bday"
+  <figure class="gx-cell s-1x1" data-type="photo" data-tags="bday"
           data-full="/img/gallery/gallery-20-hd.webp"
           data-title="Десертный стол Candy Bar"
           data-desc="Десертный стол на праздник — Milovi Cake СПб">
-    <img src="/img/gallery/gallery-20.webp"
-         alt="Десертный стол на праздник — Milovi Cake СПб"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Десертный стол Candy Bar</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-20.webp"
+           alt="Десертный стол на праздник — Milovi Cake СПб"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Десертный стол Candy Bar</figcaption>
+    </div>
   </figure>
 
-  <!-- ROW 3-4 -->
-  <figure class="gx-cell s-big" data-type="photo" data-tags="wedding"
+  <figure class="gx-cell s-2x2" data-type="photo" data-tags="wedding"
           data-full="/img/gallery/gallery-14-hd.webp"
           data-title="Многоярусный авторский торт"
           data-desc="Премиальный торт на заказ, СПб">
-    <img src="/img/gallery/gallery-14.webp"
-         alt="Премиальный торт на заказ, СПб — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Многоярусный авторский торт</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-14.webp"
+           alt="Премиальный торт на заказ, СПб — Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Многоярусный авторский торт</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="photo" data-tags="bento"
+  <figure class="gx-cell s-1x1" data-type="photo" data-tags="bento"
           data-full="/img/gallery/gallery-13-hd.webp"
           data-title="Бенто-торт"
           data-desc="Мини бенто-торт на одну персону СПб">
-    <img src="/img/gallery/gallery-13.webp"
-         alt="Мини бенто-торт на одну персону СПб — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Бенто-торт</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-13.webp"
+           alt="Мини бенто-торт на одну персону СПб — Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Бенто-торт</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell s-tall" data-type="video" data-tags="bday"
+  <figure class="gx-cell s-1x2" data-type="video" data-tags="bday"
           data-mp4="/img/gallery/videos/video-03-bday.webm"
           data-title="Торт на день рождения"
           data-desc="Праздничный торт на заказ в СПб">
-    <video class="gx-vid-inline" src="/img/gallery/videos/video-03-bday.webm"
-           muted loop playsinline preload="metadata" aria-label="Торт на день рождения"></video>
-    <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
-    <figcaption class="gx-caption">Торт на день рождения</figcaption>
+    <div class="gx-cell-content">
+      <video class="gx-vid-inline" src="/img/gallery/videos/video-03-bday.webm"
+             muted loop playsinline preload="metadata" aria-label="Торт на день рождения"></video>
+      <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
+      <figcaption class="gx-caption">Торт на день рождения</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="photo" data-tags="3d"
+  <figure class="gx-cell s-1x1" data-type="photo" data-tags="3d"
           data-full="/img/gallery/gallery-06-hd.webp"
           data-title="Торт на день рождения"
           data-desc="Авторский торт на день рождения — заказ СПб">
-    <img src="/img/gallery/gallery-06.webp"
-         alt="Авторский торт на день рождения — заказ СПб — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Торт на день рождения</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-06.webp"
+           alt="Авторский торт на день рождения — заказ СПб — Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Торт на день рождения</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="photo" data-tags="3d"
+  <figure class="gx-cell s-1x1" data-type="photo" data-tags="3d"
           data-full="/img/gallery/gallery-12-hd.webp"
           data-title="Премиальный торт-композиция"
           data-desc="Эксклюзивный авторский торт от частного кондитера">
-    <img src="/img/gallery/gallery-12.webp"
-         alt="Эксклюзивный авторский торт от частного кондитера — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Премиальный торт-композиция</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-12.webp"
+           alt="Эксклюзивный авторский торт от частного кондитера — Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Премиальный торт-композиция</figcaption>
+    </div>
   </figure>
 
-  <!-- ROW 5-6 -->
-  <figure class="gx-cell s-tall" data-type="video" data-tags="bday"
+  <figure class="gx-cell s-1x2" data-type="video" data-tags="bday"
           data-mp4="/img/gallery/videos/video-05-secret.webm"
           data-title="Торт со скрытой надписью"
           data-desc="Сюрприз внутри — авторский торт, СПб">
-    <video class="gx-vid-inline" src="/img/gallery/videos/video-05-secret.webm"
-           muted loop playsinline preload="metadata" aria-label="Торт со скрытой надписью"></video>
-    <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
-    <figcaption class="gx-caption">Торт со скрытой надписью</figcaption>
+    <div class="gx-cell-content">
+      <video class="gx-vid-inline" src="/img/gallery/videos/video-05-secret.webm"
+             muted loop playsinline preload="metadata" aria-label="Торт со скрытой надписью"></video>
+      <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
+      <figcaption class="gx-caption">Торт со скрытой надписью</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell s-wide" data-type="photo" data-tags="wedding"
+  <figure class="gx-cell s-2x1" data-type="photo" data-tags="wedding"
           data-full="/img/gallery/gallery-11-hd.webp"
           data-title="Композиция десертов"
           data-desc="Авторская подача десертов от Milovi Cake">
-    <img src="/img/gallery/gallery-11.webp"
-         alt="Авторская подача десертов от Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Композиция десертов</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-11.webp"
+           alt="Авторская подача десертов от Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Композиция десертов</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="video" data-tags="bento"
+  <figure class="gx-cell s-1x1" data-type="video" data-tags="bento"
           data-mp4="/img/gallery/videos/video-06-bento-love.webm"
           data-title="Бенто-торт «Люблю»"
           data-desc="Маленький бенто-торт на двоих — Milovi Cake">
-    <video class="gx-vid-inline" src="/img/gallery/videos/video-06-bento-love.webm"
-           muted loop playsinline preload="metadata" aria-label="Бенто-торт «Люблю»"></video>
-    <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
-    <figcaption class="gx-caption">Бенто-торт «Люблю»</figcaption>
+    <div class="gx-cell-content">
+      <video class="gx-vid-inline" src="/img/gallery/videos/video-06-bento-love.webm"
+             muted loop playsinline preload="metadata" aria-label="Бенто-торт «Люблю»"></video>
+      <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
+      <figcaption class="gx-caption">Бенто-торт «Люблю»</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="photo" data-tags="bday"
+  <figure class="gx-cell s-1x1" data-type="photo" data-tags="bday"
           data-full="/img/gallery/gallery-10-hd.webp"
           data-title="Многоярусный торт"
           data-desc="Свадебный торт с авторским декором, СПб">
-    <img src="/img/gallery/gallery-10.webp"
-         alt="Свадебный торт с авторским декором, СПб — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Многоярусный торт</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-10.webp"
+           alt="Свадебный торт с авторским декором, СПб — Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Многоярусный торт</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="photo" data-tags="bento"
+  <figure class="gx-cell s-1x1" data-type="photo" data-tags="bento"
           data-full="/img/gallery/gallery-23-hd.webp"
           data-title="Срез торта"
           data-desc="Срез авторского торта — натуральные ингредиенты">
-    <img src="/img/gallery/gallery-23.webp"
-         alt="Срез авторского торта — натуральные ингредиенты — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Срез торта</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-23.webp"
+           alt="Срез авторского торта — натуральные ингредиенты — Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Срез торта</figcaption>
+    </div>
   </figure>
 
-  <!-- ROW 7-8 -->
-  <figure class="gx-cell s-tall" data-type="video" data-tags="3d bday"
+  <figure class="gx-cell s-1x2" data-type="video" data-tags="3d bday"
           data-mp4="/img/gallery/videos/video-08-foxes.webm"
           data-title="Торт с лисятами ручной лепки"
           data-desc="Авторский 3D-декор — Milovi Cake СПб">
-    <video class="gx-vid-inline" src="/img/gallery/videos/video-08-foxes.webm"
-           muted loop playsinline preload="metadata" aria-label="Торт с лисятами ручной лепки"></video>
-    <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
-    <figcaption class="gx-caption">Торт с лисятами ручной лепки</figcaption>
+    <div class="gx-cell-content">
+      <video class="gx-vid-inline" src="/img/gallery/videos/video-08-foxes.webm"
+             muted loop playsinline preload="metadata" aria-label="Торт с лисятами ручной лепки"></video>
+      <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
+      <figcaption class="gx-caption">Торт с лисятами ручной лепки</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="photo" data-tags="bday"
+  <figure class="gx-cell s-1x1" data-type="photo" data-tags="bday"
           data-full="/img/gallery/gallery-30-hd.webp"
           data-title="Бенто с надписью"
           data-desc="Персональный бенто-торт на заказ СПб">
-    <img src="/img/gallery/gallery-30.webp"
-         alt="Персональный бенто-торт на заказ СПб — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Бенто с надписью</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-30.webp"
+           alt="Персональный бенто-торт на заказ СПб — Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Бенто с надписью</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell s-wide" data-type="photo" data-tags="pavlova"
+  <figure class="gx-cell s-2x1" data-type="photo" data-tags="pavlova"
           data-full="/img/gallery/gallery-28-hd.webp"
           data-title="Торт с цветочным декором"
           data-desc="Свадебный торт с живыми цветами, СПб">
-    <img src="/img/gallery/gallery-28.webp"
-         alt="Свадебный торт с живыми цветами, СПб — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Торт с цветочным декором</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-28.webp"
+           alt="Свадебный торт с живыми цветами, СПб — Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Торт с цветочным декором</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="photo" data-tags="meringue"
+  <figure class="gx-cell s-1x1" data-type="photo" data-tags="meringue"
           data-full="/img/gallery/gallery-17-hd.webp"
           data-title="Авторский десерт"
           data-desc="Ручная работа Milovi Cake, Санкт-Петербург">
-    <img src="/img/gallery/gallery-17.webp"
-         alt="Ручная работа Milovi Cake, Санкт-Петербург"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Авторский десерт</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-17.webp"
+           alt="Ручная работа Milovi Cake, Санкт-Петербург"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Авторский десерт</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="video" data-tags="bento bday"
+  <figure class="gx-cell s-1x1" data-type="video" data-tags="bento bday"
           data-mp4="/img/gallery/videos/video-07-bento-bday.webm"
           data-title="Бенто-торт на день рождения"
           data-desc="Мини-торт на одну персону, СПб">
-    <video class="gx-vid-inline" src="/img/gallery/videos/video-07-bento-bday.webm"
-           muted loop playsinline preload="metadata" aria-label="Бенто-торт на день рождения"></video>
-    <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
-    <figcaption class="gx-caption">Бенто-торт на день рождения</figcaption>
+    <div class="gx-cell-content">
+      <video class="gx-vid-inline" src="/img/gallery/videos/video-07-bento-bday.webm"
+             muted loop playsinline preload="metadata" aria-label="Бенто-торт на день рождения"></video>
+      <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
+      <figcaption class="gx-caption">Бенто-торт на день рождения</figcaption>
+    </div>
   </figure>
 
-  <!-- ROW 9-10 -->
-  <figure class="gx-cell s-wide" data-type="photo" data-tags="3d"
+  <figure class="gx-cell s-2x1" data-type="photo" data-tags="3d"
           data-full="/img/gallery/gallery-16-hd.webp"
           data-title="Меренговый рулет"
           data-desc="Меренговый рулет с ягодами на заказ СПб">
-    <img src="/img/gallery/gallery-16.webp"
-         alt="Меренговый рулет с ягодами на заказ СПб — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Меренговый рулет</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-16.webp"
+           alt="Меренговый рулет с ягодами на заказ СПб — Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Меренговый рулет</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell s-tall" data-type="video" data-tags="bday 3d"
+  <figure class="gx-cell s-1x2" data-type="video" data-tags="bday 3d"
           data-mp4="/img/gallery/videos/video-11-bears.webm"
           data-title="Торт на день рождения с мишками"
           data-desc="Детский торт на заказ, Milovi Cake">
-    <video class="gx-vid-inline" src="/img/gallery/videos/video-11-bears.webm"
-           muted loop playsinline preload="metadata" aria-label="Торт на день рождения с мишками"></video>
-    <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
-    <figcaption class="gx-caption">Торт на день рождения с мишками</figcaption>
+    <div class="gx-cell-content">
+      <video class="gx-vid-inline" src="/img/gallery/videos/video-11-bears.webm"
+             muted loop playsinline preload="metadata" aria-label="Торт на день рождения с мишками"></video>
+      <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
+      <figcaption class="gx-caption">Торт на день рождения с мишками</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="photo" data-tags="3d"
+  <figure class="gx-cell s-1x1" data-type="photo" data-tags="3d"
           data-full="/img/gallery/gallery-02-hd.webp"
           data-title="Праздничный торт"
           data-desc="Авторский торт на праздник — Milovi Cake">
-    <img src="/img/gallery/gallery-02.webp"
-         alt="Авторский торт на праздник — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Праздничный торт</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-02.webp"
+           alt="Авторский торт на праздник — Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Праздничный торт</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="photo" data-tags="wedding"
+  <figure class="gx-cell s-1x1" data-type="photo" data-tags="wedding"
           data-full="/img/gallery/gallery-19-hd.webp"
           data-title="Авторский торт ручной работы"
           data-desc="Многоярусный торт на заказ — Milovi Cake СПб">
-    <img src="/img/gallery/gallery-19.webp"
-         alt="Многоярусный торт на заказ — Milovi Cake СПб"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Авторский торт ручной работы</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-19.webp"
+           alt="Многоярусный торт на заказ — Milovi Cake СПб"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Авторский торт ручной работы</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="video" data-tags="meringue"
+  <figure class="gx-cell s-1x1" data-type="video" data-tags="meringue"
           data-mp4="/img/gallery/videos/video-09-cupcakes-berry.webm"
           data-title="Ванильные капкейки с ягодами"
           data-desc="Капкейки на заказ в Санкт-Петербурге">
-    <video class="gx-vid-inline" src="/img/gallery/videos/video-09-cupcakes-berry.webm"
-           muted loop playsinline preload="metadata" aria-label="Ванильные капкейки с ягодами"></video>
-    <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
-    <figcaption class="gx-caption">Ванильные капкейки с ягодами</figcaption>
+    <div class="gx-cell-content">
+      <video class="gx-vid-inline" src="/img/gallery/videos/video-09-cupcakes-berry.webm"
+             muted loop playsinline preload="metadata" aria-label="Ванильные капкейки с ягодами"></video>
+      <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
+      <figcaption class="gx-caption">Ванильные капкейки с ягодами</figcaption>
+    </div>
   </figure>
 
-  <!-- ROW 11-12 -->
-  <figure class="gx-cell s-big" data-type="photo" data-tags="pavlova"
+  <figure class="gx-cell s-2x2" data-type="photo" data-tags="pavlova"
           data-full="/img/gallery/gallery-18-hd.webp"
           data-title="Свадебный торт"
           data-desc="Многоярусный свадебный торт ручной работы СПб">
-    <img src="/img/gallery/gallery-18.webp"
-         alt="Многоярусный свадебный торт ручной работы СПб — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Свадебный торт</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-18.webp"
+           alt="Многоярусный свадебный торт ручной работы СПб — Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Свадебный торт</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell s-tall" data-type="video" data-tags="wedding"
+  <figure class="gx-cell s-1x2" data-type="video" data-tags="wedding"
           data-mp4="/img/gallery/videos/video-12-wedding-heart.webm"
           data-title="Свадебный торт «Сердце» с малиной"
           data-desc="Романтичный свадебный торт — СПб">
-    <video class="gx-vid-inline" src="/img/gallery/videos/video-12-wedding-heart.webm"
-           muted loop playsinline preload="metadata" aria-label="Свадебный торт «Сердце» с малиной"></video>
-    <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
-    <figcaption class="gx-caption">Свадебный торт «Сердце» с малиной</figcaption>
+    <div class="gx-cell-content">
+      <video class="gx-vid-inline" src="/img/gallery/videos/video-12-wedding-heart.webm"
+             muted loop playsinline preload="metadata" aria-label="Свадебный торт «Сердце» с малиной"></video>
+      <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
+      <figcaption class="gx-caption">Свадебный торт «Сердце» с малиной</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="video" data-tags="meringue"
+  <figure class="gx-cell s-1x1" data-type="video" data-tags="meringue"
           data-mp4="/img/gallery/videos/video-10-cupcakes.webm"
           data-title="Капкейки от Milovi Cake"
           data-desc="Десерты на праздник — СПб">
-    <video class="gx-vid-inline" src="/img/gallery/videos/video-10-cupcakes.webm"
-           muted loop playsinline preload="metadata" aria-label="Капкейки от Milovi Cake"></video>
-    <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
-    <figcaption class="gx-caption">Капкейки от Milovi Cake</figcaption>
+    <div class="gx-cell-content">
+      <video class="gx-vid-inline" src="/img/gallery/videos/video-10-cupcakes.webm"
+             muted loop playsinline preload="metadata" aria-label="Капкейки от Milovi Cake"></video>
+      <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
+      <figcaption class="gx-caption">Капкейки от Milovi Cake</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="photo" data-tags="bday"
+  <figure class="gx-cell s-1x1" data-type="photo" data-tags="bday"
           data-full="/img/gallery/gallery-25-hd.webp"
           data-title="Авторский десерт"
           data-desc="Ручная работа Milovi Cake">
-    <img src="/img/gallery/gallery-25.webp"
-         alt="Ручная работа Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Авторский десерт</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-25.webp"
+           alt="Ручная работа Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Авторский десерт</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="photo" data-tags="3d"
+  <figure class="gx-cell s-1x1" data-type="photo" data-tags="3d"
           data-full="/img/gallery/gallery-26-hd.webp"
           data-title="Десертная композиция"
           data-desc="Подача авторских десертов — Milovi Cake">
-    <img src="/img/gallery/gallery-26.webp"
-         alt="Подача авторских десертов — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Десертная композиция</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-26.webp"
+           alt="Подача авторских десертов — Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Десертная композиция</figcaption>
+    </div>
   </figure>
 
-  <!-- ROW 13-14 -->
-  <figure class="gx-cell s-tall" data-type="video" data-tags="bday 3d"
+  <figure class="gx-cell s-1x2" data-type="video" data-tags="bday 3d"
           data-mp4="/img/gallery/videos/video-13-bunny.webm"
           data-title="Торт с зайчиком"
           data-desc="Детский торт ручной работы, СПб">
-    <video class="gx-vid-inline" src="/img/gallery/videos/video-13-bunny.webm"
-           muted loop playsinline preload="metadata" aria-label="Торт с зайчиком"></video>
-    <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
-    <figcaption class="gx-caption">Торт с зайчиком</figcaption>
+    <div class="gx-cell-content">
+      <video class="gx-vid-inline" src="/img/gallery/videos/video-13-bunny.webm"
+             muted loop playsinline preload="metadata" aria-label="Торт с зайчиком"></video>
+      <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
+      <figcaption class="gx-caption">Торт с зайчиком</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="photo" data-tags="bday"
+  <figure class="gx-cell s-1x1" data-type="photo" data-tags="bday"
           data-full="/img/gallery/gallery-05-hd.webp"
           data-title="Торт на день рождения"
           data-desc="Авторский торт на день рождения — заказ СПб">
-    <img src="/img/gallery/gallery-05.webp"
-         alt="Авторский торт на день рождения — заказ СПб — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Торт на день рождения</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-05.webp"
+           alt="Авторский торт на день рождения — заказ СПб — Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Торт на день рождения</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell s-wide" data-type="photo" data-tags="wedding"
+  <figure class="gx-cell s-2x1" data-type="photo" data-tags="wedding"
           data-full="/img/gallery/gallery-09-hd.webp"
           data-title="Многоярусный торт"
           data-desc="Свадебный торт с авторским декором, СПб">
-    <img src="/img/gallery/gallery-09.webp"
-         alt="Свадебный торт с авторским декором, СПб — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Многоярусный торт</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-09.webp"
+           alt="Свадебный торт с авторским декором, СПб — Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Многоярусный торт</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="photo" data-tags="pavlova"
+  <figure class="gx-cell s-1x1" data-type="photo" data-tags="pavlova"
           data-full="/img/gallery/gallery-08-hd.webp"
           data-title="Премиальный торт-композиция"
           data-desc="Эксклюзивный авторский торт от частного кондитера">
-    <img src="/img/gallery/gallery-08.webp"
-         alt="Эксклюзивный авторский торт от частного кондитера — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Премиальный торт-композиция</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-08.webp"
+           alt="Эксклюзивный авторский торт от частного кондитера — Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Премиальный торт-композиция</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="video" data-tags="3d bday"
+  <figure class="gx-cell s-1x1" data-type="video" data-tags="3d bday"
           data-mp4="/img/gallery/videos/video-15-basketball.webm"
           data-title="Торт «Баскетбол»"
           data-desc="Тематический 3D-торт на заказ, Milovi Cake">
-    <video class="gx-vid-inline" src="/img/gallery/videos/video-15-basketball.webm"
-           muted loop playsinline preload="metadata" aria-label="Торт «Баскетбол»"></video>
-    <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
-    <figcaption class="gx-caption">Торт «Баскетбол»</figcaption>
+    <div class="gx-cell-content">
+      <video class="gx-vid-inline" src="/img/gallery/videos/video-15-basketball.webm"
+             muted loop playsinline preload="metadata" aria-label="Торт «Баскетбол»"></video>
+      <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
+      <figcaption class="gx-caption">Торт «Баскетбол»</figcaption>
+    </div>
   </figure>
 
-  <!-- ROW 15-16 -->
-  <figure class="gx-cell s-wide" data-type="photo" data-tags="wedding"
+  <figure class="gx-cell s-2x1" data-type="photo" data-tags="wedding"
           data-full="/img/gallery/gallery-24-hd.webp"
           data-title="Авторский десерт"
           data-desc="Ручная работа Milovi Cake, Санкт-Петербург">
-    <img src="/img/gallery/gallery-24.webp"
-         alt="Ручная работа Milovi Cake, Санкт-Петербург"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Авторский десерт</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-24.webp"
+           alt="Ручная работа Milovi Cake, Санкт-Петербург"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Авторский десерт</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell s-tall" data-type="video" data-tags="bday 3d"
+  <figure class="gx-cell s-1x2" data-type="video" data-tags="bday 3d"
           data-mp4="/img/gallery/videos/video-16-moon-stars.webm"
           data-title="Торт с месяцем и звёздами"
           data-desc="Романтичный торт ручной работы, СПб">
-    <video class="gx-vid-inline" src="/img/gallery/videos/video-16-moon-stars.webm"
-           muted loop playsinline preload="metadata" aria-label="Торт с месяцем и звёздами"></video>
-    <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
-    <figcaption class="gx-caption">Торт с месяцем и звёздами</figcaption>
+    <div class="gx-cell-content">
+      <video class="gx-vid-inline" src="/img/gallery/videos/video-16-moon-stars.webm"
+             muted loop playsinline preload="metadata" aria-label="Торт с месяцем и звёздами"></video>
+      <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
+      <figcaption class="gx-caption">Торт с месяцем и звёздами</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="photo" data-tags="bento"
+  <figure class="gx-cell s-1x1" data-type="photo" data-tags="bento"
           data-full="/img/gallery/gallery-03-hd.webp"
           data-title="3D торт с объёмным декором"
           data-desc="Фигурный 3D-торт на заказ в Санкт-Петербурге">
-    <img src="/img/gallery/gallery-03.webp"
-         alt="Фигурный 3D-торт на заказ в Санкт-Петербурге — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">3D торт с объёмным декором</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-03.webp"
+           alt="Фигурный 3D-торт на заказ в Санкт-Петербурге — Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">3D торт с объёмным декором</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="video" data-tags="bday"
+  <figure class="gx-cell s-1x1" data-type="video" data-tags="bday"
           data-mp4="/img/gallery/videos/video-14-blue-balloons.webm"
           data-title="Синий торт с шариками"
           data-desc="Праздничный торт на день рождения, СПб">
-    <video class="gx-vid-inline" src="/img/gallery/videos/video-14-blue-balloons.webm"
-           muted loop playsinline preload="metadata" aria-label="Синий торт с шариками"></video>
-    <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
-    <figcaption class="gx-caption">Синий торт с шариками</figcaption>
+    <div class="gx-cell-content">
+      <video class="gx-vid-inline" src="/img/gallery/videos/video-14-blue-balloons.webm"
+             muted loop playsinline preload="metadata" aria-label="Синий торт с шариками"></video>
+      <div class="gx-vid-badge"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
+      <figcaption class="gx-caption">Синий торт с шариками</figcaption>
+    </div>
   </figure>
 
-  <!-- ROW 17 -->
-  <figure class="gx-cell s-wide" data-type="photo" data-tags="wedding"
+  <figure class="gx-cell s-2x1" data-type="photo" data-tags="wedding"
           data-full="/img/gallery/gallery-01-hd.webp"
           data-title="Торт с цветочным декором"
           data-desc="Свадебный торт с живыми цветами, СПб">
-    <img src="/img/gallery/gallery-01.webp"
-         alt="Свадебный торт с живыми цветами, СПб — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Торт с цветочным декором</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-01.webp"
+           alt="Свадебный торт с живыми цветами, СПб — Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Торт с цветочным декором</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="photo" data-tags="wedding"
+  <figure class="gx-cell s-1x1" data-type="photo" data-tags="wedding"
           data-full="/img/gallery/gallery-21-hd.webp"
           data-title="Многоярусный авторский торт"
           data-desc="Премиальный торт на заказ, СПб">
-    <img src="/img/gallery/gallery-21.webp"
-         alt="Премиальный торт на заказ, СПб — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Многоярусный авторский торт</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-21.webp"
+           alt="Премиальный торт на заказ, СПб — Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Многоярусный авторский торт</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="photo" data-tags="wedding"
+  <figure class="gx-cell s-1x1" data-type="photo" data-tags="wedding"
           data-full="/img/gallery/gallery-29-hd.webp"
           data-title="Подача десерта"
           data-desc="Премиальная сервировка от Milovi Cake">
-    <img src="/img/gallery/gallery-29.webp"
-         alt="Премиальная сервировка от Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Подача десерта</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-29.webp"
+           alt="Премиальная сервировка от Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Подача десерта</figcaption>
+    </div>
   </figure>
 
-  <figure class="gx-cell" data-type="photo" data-tags="wedding"
+  <figure class="gx-cell s-1x1" data-type="photo" data-tags="wedding"
           data-full="/img/gallery/gallery-04-hd.webp"
           data-title="Праздничный торт"
           data-desc="Авторский торт на праздник — Milovi Cake">
-    <img src="/img/gallery/gallery-04.webp"
-         alt="Авторский торт на праздник — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Праздничный торт</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-04.webp"
+           alt="Авторский торт на праздник — Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Праздничный торт</figcaption>
+    </div>
   </figure>
 
-  <!-- ROW 18 -->
-  <figure class="gx-cell s-wide" data-type="photo" data-tags="3d"
+  <figure class="gx-cell s-2x1" data-type="photo" data-tags="3d"
           data-full="/img/gallery/gallery-22-hd.webp"
           data-title="Капкейки"
           data-desc="Авторские капкейки на заказ в СПб">
-    <img src="/img/gallery/gallery-22.webp"
-         alt="Авторские капкейки на заказ в СПб — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Капкейки</figcaption>
-  </figure>
-
-  <figure class="gx-cell" data-type="photo" data-tags="wedding"
-          data-full="/img/gallery/gallery-19-hd.webp"
-          data-title="Свадебный торт"
-          data-desc="Авторский декор, Санкт-Петербург">
-    <img src="/img/gallery/gallery-19.webp"
-         alt="Свадебный торт с авторским декором — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Свадебный торт</figcaption>
-  </figure>
-
-  <figure class="gx-cell" data-type="photo" data-tags="bday"
-          data-full="/img/gallery/gallery-05-hd.webp"
-          data-title="Торт на день рождения"
-          data-desc="Авторский торт, СПб">
-    <img src="/img/gallery/gallery-05.webp"
-         alt="Авторский торт на день рождения — Milovi Cake"
-         loading="lazy" decoding="async">
-    <figcaption class="gx-caption">Торт на день рождения</figcaption>
+    <div class="gx-cell-content">
+      <img src="/img/gallery/gallery-22.webp"
+           alt="Авторские капкейки на заказ в СПб — Milovi Cake"
+           loading="lazy" decoding="async">
+      <figcaption class="gx-caption">Капкейки</figcaption>
+    </div>
   </figure>
 
 </main>
@@ -965,105 +1017,114 @@
   <div class="gx-meta" id="gxMeta"></div>
 </div>
 
+<!-- Muuri from CDN (или npm install muuri) -->
+<script src="https://cdn.jsdelivr.net/npm/muuri@0.9.5/dist/muuri.min.js"></script>
+
 <script>
 (function () {
   'use strict';
 
-  const grid  = document.getElementById('gxGrid');
-  const cells = Array.from(grid.querySelectorAll('.gx-cell'));
-  let list    = cells.slice();
-  let idx     = 0;
+  const gridElement = document.getElementById('gxGrid');
+  const allItems    = Array.from(gridElement.querySelectorAll('.gx-cell'));
+  let grid;
+  let visibleItems  = [];
+  let currentIndex  = 0;
 
   /* ─────────────────────────────────────────────────────────────
-     RECTANGLE COMPLETION
-     После каждого показа/скрытия карточек читаем фактические
-     позиции ячеек через getComputedStyle (после layout),
-     находим все незаполненные клетки сетки и вставляем
-     div.gx-filler точно в нужные grid-позиции.
+     MUURI INITIALIZATION
+     fillGaps: true — ключевая опция для идеального заполнения!
   ───────────────────────────────────────────────────────────── */
-
-  function syncFillers() {
-    /* Удаляем старые заглушки */
-    grid.querySelectorAll('.gx-filler').forEach(f => f.remove());
-
-    const visible = cells.filter(c => c.style.display !== 'none');
-    if (!visible.length) return;
-
-    /*
-      Читаем resolved grid-позиции.
-      Браузер заполняет их автоматически при layout;
-      getComputedStyle возвращает целые числа.
-    */
-    let maxRowEnd = 0;
-    let maxColEnd = 0;
-
-    const positions = visible.map(c => {
-      const cs = getComputedStyle(c);
-      const rs = parseInt(cs.gridRowStart,    10);
-      const re = parseInt(cs.gridRowEnd,      10);
-      const cs2 = parseInt(cs.gridColumnStart, 10);
-      const ce  = parseInt(cs.gridColumnEnd,   10);
-      if (re  > maxRowEnd) maxRowEnd = re;
-      if (ce  > maxColEnd) maxColEnd = ce;
-      return { rs, re, cs: cs2, ce };
+  
+  function initMuuri() {
+    grid = new Muuri(gridElement, {
+      items: '.gx-cell',
+      
+      // LAYOUT: fillGaps заполняет все пустоты идеально
+      layout: {
+        fillGaps: true,           // Заполнять все пустоты!
+        horizontal: false,        // Вертикальное направление
+        alignRight: false,
+        alignBottom: false,
+        rounding: true            // Стабилизация расчётов
+      },
+      
+      // Плавные анимации
+      layoutDuration: 400,
+      layoutEasing: 'ease-out',
+      
+      // Анимация показа/скрытия
+      showDuration: 300,
+      showEasing: 'ease-out',
+      hideDuration: 300,
+      hideEasing: 'ease-in',
+      
+      // Анимация видимости
+      visibleStyles: {
+        opacity: '1',
+        transform: 'scale(1)'
+      },
+      hiddenStyles: {
+        opacity: '0',
+        transform: 'scale(0.8)'
+      },
+      
+      // Без drag-and-drop (только галерея)
+      dragEnabled: false
     });
 
-    const cols = maxColEnd - 1; /* кол-во колонок сетки */
-
-    /* Строим множество занятых клеток: «row,col» */
-    const occupied = new Set();
-    positions.forEach(({ rs, re, cs, ce }) => {
-      for (let r = rs; r < re; r++) {
-        for (let col = cs; col < ce; col++) {
-          occupied.add(`${r},${col}`);
-        }
-      }
-    });
-
-    /* Находим пустые клетки во всех строках */
-    const gaps = [];
-    for (let r = 1; r < maxRowEnd; r++) {
-      for (let col = 1; col <= cols; col++) {
-        if (!occupied.has(`${r},${col}`)) gaps.push({ r, col });
-      }
-    }
-
-    /*
-      Слипаем соседние пустые клетки в одной строке в один
-      широкий filler — меньше DOM-узлов, чище результат.
-    */
-    const runs = [];
-    let run = null;
-    gaps.forEach(({ r, col }) => {
-      if (run && run.r === r && run.colEnd === col) {
-        run.colEnd = col + 1;
-      } else {
-        if (run) runs.push(run);
-        run = { r, colStart: col, colEnd: col + 1 };
-      }
-    });
-    if (run) runs.push(run);
-
-    runs.forEach(({ r, colStart, colEnd }) => {
-      const filler = document.createElement('div');
-      filler.className = 'gx-filler';
-      /* Ставим ровно на место пустоты */
-      filler.style.gridRow    = `${r}`;
-      filler.style.gridColumn = `${colStart} / ${colEnd}`;
-      grid.appendChild(filler);
-    });
+    // Сохраняем видимые элементы для lightbox
+    updateVisibleItems();
+    
+    // Слушаем конец layout для обновления списка
+    grid.on('layoutEnd', updateVisibleItems);
   }
 
-  /*
-    Запускаем синхронизацию ПОСЛЕ layout браузера.
-    Двойной rAF гарантирует, что CSS Grid уже рассчитал позиции.
-  */
-  function scheduleFill() {
-    requestAnimationFrame(() => requestAnimationFrame(syncFillers));
+  function updateVisibleItems() {
+    visibleItems = grid.getItems().filter(item => item.isActive());
   }
 
-  /* ── Inline-видео: autoplay при входе в viewport ── */
-  const inlineVids = Array.from(grid.querySelectorAll('.gx-vid-inline'));
+  /* ─────────────────────────────────────────────────────────────
+     ФИЛЬТРАЦИЯ
+  ───────────────────────────────────────────────────────────── */
+  
+  document.querySelectorAll('.gx-filter button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Обновляем UI кнопок
+      document.querySelectorAll('.gx-filter button')
+              .forEach(b => b.setAttribute('aria-pressed', 'false'));
+      btn.setAttribute('aria-pressed', 'true');
+      
+      const filter = btn.dataset.f;
+      
+      // Фильтруем через Muuri
+      grid.filter(item => {
+        const el = item.getElement();
+        if (filter === 'all') return true;
+        if (filter === 'photo') return el.dataset.type === 'photo';
+        if (filter === 'video') return el.dataset.type === 'video';
+        return (el.dataset.tags || '').split(/\s+/).includes(filter);
+      });
+    });
+  });
+
+  /* ─────────────────────────────────────────────────────────────
+     RESIZE HANDLING
+  ───────────────────────────────────────────────────────────── */
+  
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if (grid) grid.refreshItems().layout();
+    }, 100);
+  });
+
+  /* ─────────────────────────────────────────────────────────────
+     INLINE VIDEO AUTOPLAY
+  ───────────────────────────────────────────────────────────── */
+  
+  const inlineVids = Array.from(gridElement.querySelectorAll('.gx-vid-inline'));
+  
   inlineVids.forEach(v => {
     v.classList.add('is-loading');
     const ready = () => v.classList.replace('is-loading', 'is-ready');
@@ -1072,50 +1133,30 @@
   });
 
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  
   if ('IntersectionObserver' in window && !prefersReduced) {
     const io = new IntersectionObserver(entries => {
       entries.forEach(e => {
-        if (e.isIntersecting && e.intersectionRatio >= 0.35) e.target.play().catch(() => {});
-        else e.target.pause();
+        if (e.isIntersecting && e.intersectionRatio >= 0.35) {
+          e.target.play().catch(() => {});
+        } else {
+          e.target.pause();
+        }
       });
     }, { threshold: [0, 0.35, 0.75] });
+    
     inlineVids.forEach(v => io.observe(v));
   } else {
-    inlineVids.forEach(v => { v.pause(); try { v.currentTime = 0.05; } catch (e) {} });
+    inlineVids.forEach(v => { 
+      v.pause(); 
+      try { v.currentTime = 0.05; } catch (e) {} 
+    });
   }
 
-  /* ── Фильтр ── */
-  document.querySelectorAll('.gx-filter button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.gx-filter button')
-              .forEach(b => b.setAttribute('aria-pressed', 'false'));
-      btn.setAttribute('aria-pressed', 'true');
-      const f = btn.dataset.f;
-
-      cells.forEach(c => {
-        const show = f === 'all'
-          || (f === 'photo' && c.dataset.type === 'photo')
-          || (f === 'video' && c.dataset.type === 'video')
-          || (c.dataset.tags || '').split(/\s+/).includes(f);
-        c.style.display = show ? '' : 'none';
-      });
-
-      list = cells.filter(c => c.style.display !== 'none');
-      scheduleFill();
-    });
-  });
-
-  /* Адаптация при изменении размера окна (breakpoints меняют число колонок) */
-  let resizeTimer;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(scheduleFill, 150);
-  });
-
-  /* Первый запуск */
-  scheduleFill();
-
-  /* ── Lightbox ── */
+  /* ─────────────────────────────────────────────────────────────
+     LIGHTBOX
+  ───────────────────────────────────────────────────────────── */
+  
   const light   = document.getElementById('gxLight');
   const stage   = document.getElementById('gxStage');
   const meta    = document.getElementById('gxMeta');
@@ -1123,69 +1164,108 @@
   const muteOff = document.getElementById('gxMuteOff');
   const muteOn  = document.getElementById('gxMuteOn');
 
-  function open(i) {
-    idx = i;
-    const c = list[idx];
-    if (!c) return;
+  function openLightbox(index) {
+    currentIndex = index;
+    const muuriItem = visibleItems[currentIndex];
+    if (!muuriItem) return;
+    
+    const el = muuriItem.getElement();
     stage.innerHTML = '';
-    meta.innerHTML = `<b>${c.dataset.title || ''}</b>${c.dataset.desc || ''}`;
+    meta.innerHTML = `<b>${el.dataset.title || ''}</b>${el.dataset.desc || ''}`;
     muteBtn.hidden = true;
 
-    if (c.dataset.type === 'photo') {
+    if (el.dataset.type === 'photo') {
       const img = document.createElement('img');
-      img.src = c.dataset.full || c.querySelector('img').src;
-      img.alt = c.querySelector('img').alt;
+      img.src = el.dataset.full || el.querySelector('img').src;
+      img.alt = el.querySelector('img')?.alt || '';
       stage.appendChild(img);
-    } else if (c.dataset.mp4) {
+    } else if (el.dataset.mp4) {
       const v = document.createElement('video');
-      v.src = c.dataset.mp4;
-      v.controls = false; v.autoplay = true;
-      v.loop = true; v.playsInline = true; v.muted = true;
+      v.src = el.dataset.mp4;
+      v.controls = false; 
+      v.autoplay = true;
+      v.loop = true; 
+      v.playsInline = true; 
+      v.muted = true;
       stage.appendChild(v);
       muteBtn.hidden = false;
-      updateMute(true);
-      muteBtn.onclick = () => { v.muted = !v.muted; updateMute(v.muted); };
+      updateMuteIcon(true);
+      muteBtn.onclick = () => { v.muted = !v.muted; updateMuteIcon(v.muted); };
     }
 
     light.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
   }
 
-  function updateMute(muted) { muteOff.hidden = !muted; muteOn.hidden = muted; }
+  function updateMuteIcon(muted) { 
+    muteOff.hidden = !muted; 
+    muteOn.hidden = muted; 
+  }
 
-  function closeLB() {
+  function closeLightbox() {
     light.setAttribute('aria-hidden', 'true');
     stage.innerHTML = '';
     document.body.style.overflow = '';
   }
 
-  function nav(d) { open((idx + d + list.length) % list.length); }
+  function navigate(direction) { 
+    const newIndex = (currentIndex + direction + visibleItems.length) % visibleItems.length;
+    openLightbox(newIndex); 
+  }
 
-  cells.forEach(c => c.addEventListener('click', () => {
-    list = cells.filter(x => x.style.display !== 'none');
-    open(list.indexOf(c));
-  }));
+  // Click на ячейках
+  allItems.forEach(cell => {
+    cell.addEventListener('click', () => {
+      // Находим индекс в текущем списке видимых
+      const muuriItem = grid.getItem(cell);
+      const index = visibleItems.indexOf(muuriItem);
+      if (index !== -1) openLightbox(index);
+    });
+  });
 
-  document.getElementById('gxClose').onclick = closeLB;
-  document.getElementById('gxPrev').onclick  = () => nav(-1);
-  document.getElementById('gxNext').onclick  = () => nav(1);
-  light.addEventListener('click', e => { if (e.target === light) closeLB(); });
+  // Controls
+  document.getElementById('gxClose').onclick = closeLightbox;
+  document.getElementById('gxPrev').onclick  = () => navigate(-1);
+  document.getElementById('gxNext').onclick  = () => navigate(1);
+  light.addEventListener('click', e => { if (e.target === light) closeLightbox(); });
 
+  // Keyboard
   document.addEventListener('keydown', e => {
     if (light.getAttribute('aria-hidden') === 'true') return;
-    if (e.key === 'Escape')     closeLB();
-    if (e.key === 'ArrowLeft')  nav(-1);
-    if (e.key === 'ArrowRight') nav(1);
+    if (e.key === 'Escape')     closeLightbox();
+    if (e.key === 'ArrowLeft')  navigate(-1);
+    if (e.key === 'ArrowRight') navigate(1);
     if (e.key.toLowerCase() === 'm' && !muteBtn.hidden) muteBtn.click();
   });
 
-  /* Свайп вниз — закрыть (мобилки) */
-  let startY = null;
-  light.addEventListener('touchstart', e => { startY = e.touches[0].clientY; });
+  // Touch swipe
+  let touchStartY = null;
+  light.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; });
   light.addEventListener('touchmove',  e => {
-    if (startY == null) return;
-    if (e.touches[0].clientY - startY > 80) { closeLB(); startY = null; }
+    if (touchStartY == null) return;
+    if (e.touches[0].clientY - touchStartY > 80) { closeLightbox(); touchStartY = null; }
   });
+
+  /* ─────────────────────────────────────────────────────────────
+     INIT ON DOM READY
+  ───────────────────────────────────────────────────────────── */
+  
+  // Ждём загрузки картинок для корректного расчёта размеров
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMuuri);
+  } else {
+    initMuuri();
+  }
+
+  // Пересчёт после полной загрузки (на случай lazy-loaded изображений)
+  window.addEventListener('load', () => {
+    if (grid) {
+      setTimeout(() => {
+        grid.refreshItems().layout();
+      }, 100);
+    }
+  });
+
 })();
 </script>
 </body>
