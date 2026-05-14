@@ -115,4 +115,161 @@
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
+  <url>
+    <loc>https://milovicake.ru/gallery/</loc>
+    <changefreq>weekly</changefreq>
+    <lastmod>2026-05-12</lastmod>
+    <priority>0.9</priority>
+    
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-15-hd.webp</image:loc>
+      <image:title>Многоярусный торт на заказ — Milovi Cake СПб</image:title>
+      <image:caption>Авторский торт ручной работы — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-27-hd.webp</image:loc>
+      <image:title>Фигурный 3D-торт на заказ в Санкт-Петербурге</image:title>
+      <image:caption>3D торт с объёмным декором — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-07-hd.webp</image:loc>
+      <image:title>Многоярусный свадебный торт ручной работы СПб</image:title>
+      <image:caption>Свадебный торт — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-20-hd.webp</image:loc>
+      <image:title>Десертный стол на праздник — Milovi Cake СПб</image:title>
+      <image:caption>Десертный стол Candy Bar — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-13-hd.webp</image:loc>
+      <image:title>Мини бенто-торт на одну персону СПб</image:title>
+      <image:caption>Бенто-торт — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-06-hd.webp</image:loc>
+      <image:title>Авторский торт на день рождения — заказ СПб</image:title>
+      <image:caption>Торт на день рождения — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-12-hd.webp</image:loc>
+      <image:title>Эксклюзивный авторский торт от частного кондитера</image:title>
+      <image:caption>Премиальный торт-композиция — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-11-hd.webp</image:loc>
+      <image:title>Авторская подача десертов от Milovi Cake</image:title>
+      <image:caption>Композиция десертов — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-10-hd.webp</image:loc>
+      <image:title>Свадебный торт с авторским декором, СПб</image:title>
+      <image:caption>Многоярусный торт — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-17-hd.webp</image:loc>
+      <image:title>Ручная работа Milovi Cake, Санкт-Петербург</image:title>
+      <image:caption>Авторский десерт — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-28-hd.webp</image:loc>
+      <image:title>Свадебный торт с живыми цветами, СПб</image:title>
+      <image:caption>Торт с цветочным декором — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-23-hd.webp</image:loc>
+      <image:title>Срез авторского торта — натуральные ингредиенты</image:title>
+      <image:caption>Срез торта — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-30-hd.webp</image:loc>
+      <image:title>Персональный бенто-торт на заказ СПб</image:title>
+      <image:caption>Бенто с надписью — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-02-hd.webp</image:loc>
+      <image:title>Авторский торт на праздник — Milovi Cake</image:title>
+      <image:caption>Праздничный торт — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-14-hd.webp</image:loc>
+      <image:title>Премиальный торт на заказ, СПб</image:title>
+      <image:caption>Многоярусный авторский торт — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-16-hd.webp</image:loc>
+      <image:title>Меренговый рулет с ягодами на заказ СПб</image:title>
+      <image:caption>Меренговый рулет — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-19-hd.webp</image:loc>
+      <image:title>Многоярусный торт на заказ — Milovi Cake СПб</image:title>
+      <image:caption>Авторский торт ручной работы — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-03-hd.webp</image:loc>
+      <image:title>Фигурный 3D-торт на заказ в Санкт-Петербурге</image:title>
+      <image:caption>3D торт с объёмным декором — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-18-hd.webp</image:loc>
+      <image:title>Многоярусный свадебный торт ручной работы СПб</image:title>
+      <image:caption>Свадебный торт — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-26-hd.webp</image:loc>
+      <image:title>Подача авторских десертов — Milovi Cake</image:title>
+      <image:caption>Десертная композиция — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-25-hd.webp</image:loc>
+      <image:title>Ручная работа Milovi Cake</image:title>
+      <image:caption>Авторский десерт — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-05-hd.webp</image:loc>
+      <image:title>Авторский торт на день рождения — заказ СПб</image:title>
+      <image:caption>Торт на день рождения — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-08-hd.webp</image:loc>
+      <image:title>Эксклюзивный авторский торт от частного кондитера</image:title>
+      <image:caption>Премиальный торт-композиция — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-22-hd.webp</image:loc>
+      <image:title>Авторские капкейки на заказ в СПб</image:title>
+      <image:caption>Капкейки — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-09-hd.webp</image:loc>
+      <image:title>Свадебный торт с авторским декором, СПб</image:title>
+      <image:caption>Многоярусный торт — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-24-hd.webp</image:loc>
+      <image:title>Ручная работа Milovi Cake, Санкт-Петербург</image:title>
+      <image:caption>Авторский десерт — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-01-hd.webp</image:loc>
+      <image:title>Свадебный торт с живыми цветами, СПб</image:title>
+      <image:caption>Торт с цветочным декором — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-29-hd.webp</image:loc>
+      <image:title>Премиальная сервировка от Milovi Cake</image:title>
+      <image:caption>Подача десерта — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-04-hd.webp</image:loc>
+      <image:title>Авторский торт на праздник — Milovi Cake</image:title>
+      <image:caption>Праздничный торт — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-21-hd.webp</image:loc>
+      <image:title>Премиальный торт на заказ, СПб</image:title>
+      <image:caption>Многоярусный авторский торт — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
+    </image:image>
+  </url>
 </urlset>

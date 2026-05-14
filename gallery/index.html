@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Галерея работ — фото и видео тортов на заказ в СПб | Milovi Cake</title>
+<meta name="description" content="Портфолио кондитера Milovi Cake — авторские торты, бенто, 3D-торты, меренговые рулеты, Павлова. Фото и видео работ, сделанных в Санкт-Петербурге." />
+<meta name="keywords" content="портфолио кондитера СПб, фото тортов на заказ, видео тортов, авторские торты Санкт-Петербург, Milovi Cake галерея, свадебный торт фото, бенто торт фото" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<link rel="canonical" href="https://milovicake.ru/gallery/" />
+<meta property="og:title" content="Галерея работ — Milovi Cake" />
+<meta property="og:description" content="Портфолио авторских тортов и десертов. Фото и видео реальных заказов." />
+<meta property="og:image" content="https://milovicake.ru/img/og-cover.jpg" />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="ru_RU" />
+<meta property="og:url" content="https://milovicake.ru/gallery/" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+<!-- ===== Schema.org: Страница-галерея ===== -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ImageGallery",
+  "name": "Портфолио Milovi Cake",
+  "url": "https://milovicake.ru/gallery/",
+  "description": "Авторские торты, бенто, 3D, меренговые рулеты, Павлова — реальные работы кондитера в СПб.",
+  "isPartOf": { "@type": "WebSite", "url": "https://milovicake.ru/" },
+  "creator": { "@type": "Person", "name": "Виктория Милованова" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type":"ListItem","position":1,"name":"Главная","item":"https://milovicake.ru/"},
+    {"@type":"ListItem","position":2,"name":"Галерея","item":"https://milovicake.ru/gallery/"}
+  ]
+}
+</script>
+
+<style>
+  :root{
+    --cream:#f5f0e8; --gold:#c9934a; --brown:#3d2b1f; --text:#2c1a10;
+    --muted:#9a7a62; --white:#FDFBF7;
+    --gap:2px;          /* «почти без стыков» */
+    --radius:0px;       /* острые края = студийность; поставь 6px если хочешь мягче */
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--cream);color:var(--text);font-family:'Jost',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+
+  /* ===== Шапка страницы ===== */
+  .gx-header{padding:48px 24px 24px;text-align:center;max-width:980px;margin:0 auto}
+  .gx-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none;margin-bottom:16px}
+  .gx-back:hover{color:var(--gold)}
+  .gx-title{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(32px,5vw,56px);margin:0 0 12px;letter-spacing:.01em}
+  .gx-sub{color:var(--muted);font-size:15px;line-height:1.6;max-width:640px;margin:0 auto}
+  .gx-filter{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:24px}
+  .gx-filter button{background:transparent;border:1px solid rgba(61,43,31,.18);color:var(--brown);padding:8px 16px;border-radius:999px;font:500 13px/1 'Jost',sans-serif;letter-spacing:.04em;cursor:pointer;transition:.2s}
+  .gx-filter button:hover{border-color:var(--gold);color:var(--gold)}
+  .gx-filter button[aria-pressed="true"]{background:var(--brown);color:var(--white);border-color:var(--brown)}
+
+  /* ===== Сетка ===== */
+  .gx-grid{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    grid-auto-rows: 22vw;
+    gap:var(--gap);
+    padding:24px;
+    max-width:1600px;
+    margin:0 auto;
+  }
+  @media (max-width: 1100px){ .gx-grid{grid-template-columns:repeat(3,1fr); grid-auto-rows: 28vw} }
+  @media (max-width: 700px){  .gx-grid{grid-template-columns:repeat(2,1fr); grid-auto-rows: 44vw; padding:12px; gap:2px} }
+
+  .gx-cell{position:relative;overflow:hidden;background:#1a1a1a;cursor:zoom-in;border-radius:var(--radius);content-visibility:auto;contain-intrinsic-size:300px}
+  .gx-cell.s-tall { grid-row: span 2; }
+  .gx-cell.s-wide { grid-column: span 2; }
+  .gx-cell.s-big  { grid-row: span 2; grid-column: span 2; }
+  @media (max-width:700px){
+    .gx-cell.s-wide,.gx-cell.s-big{grid-column: span 2}
+    .gx-cell.s-big{grid-row: span 2}
+  }
+
+  .gx-cell img,
+  .gx-cell video{
+    width:100%;height:100%;object-fit:cover;display:block;
+    transition:transform .8s cubic-bezier(.2,.8,.2,1), filter .4s;
+    will-change:transform;
+  }
+  .gx-cell:hover img,
+  .gx-cell:hover video{ transform:scale(1.04); }
+
+  /* мягкое затемнение снизу для подписи */
+  .gx-cell::after{
+    content:""; position:absolute; inset:auto 0 0 0; height:42%;
+    background:linear-gradient(to top, rgba(0,0,0,.55), transparent);
+    opacity:0; transition:opacity .35s; pointer-events:none;
+  }
+  .gx-cell:hover::after{opacity:1}
+
+  .gx-caption{
+    position:absolute; left:14px; right:14px; bottom:12px;
+    color:#fff; font:400 13px/1.35 'Jost',sans-serif;
+    transform:translateY(8px); opacity:0; transition:.35s;
+    pointer-events:none; text-shadow:0 1px 4px rgba(0,0,0,.4);
+  }
+  .gx-cell:hover .gx-caption{opacity:1; transform:translateY(0)}
+
+  /* ===== Минималистичный SVG play в углу для видео ===== */
+  .gx-cell[data-type="video"] .gx-play{
+    position:absolute; top:12px; right:12px;
+    width:28px; height:28px; border-radius:50%;
+    background:rgba(255,255,255,.14); backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,.35);
+    display:flex; align-items:center; justify-content:center;
+    transition:.25s; pointer-events:none;
+  }
+  .gx-cell[data-type="video"]:hover .gx-play{
+    background:rgba(201,147,74,.9); border-color:rgba(255,255,255,.6); transform:scale(1.08);
+  }
+  .gx-play svg{width:11px;height:11px;fill:#fff;margin-left:1px}
+
+  /* ===== Lightbox (fullscreen) ===== */
+  .gx-light{
+    position:fixed; inset:0; background:rgba(8,4,2,.96); z-index:9999;
+    display:none; align-items:center; justify-content:center;
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    animation: gxFade .25s ease-out;
+  }
+  .gx-light[aria-hidden="false"]{display:flex}
+  @keyframes gxFade{from{opacity:0}to{opacity:1}}
+
+  .gx-light-stage{
+    position:relative; max-width:min(96vw, 1600px); max-height:92vh;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .gx-light img,
+  .gx-light video,
+  .gx-light iframe{
+    max-width:96vw; max-height:92vh; display:block;
+    background:#000; box-shadow:0 30px 80px rgba(0,0,0,.6);
+  }
+  .gx-light iframe{width:min(96vw, 540px); aspect-ratio:9/16; border:0}
+
+  .gx-ctrl{
+    position:absolute; width:44px; height:44px; border-radius:50%;
+    background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.25);
+    color:#fff; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:.2s; backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+  }
+  .gx-ctrl:hover{background:var(--gold); border-color:var(--gold); transform:scale(1.06)}
+  .gx-ctrl svg{width:18px;height:18px;fill:#fff}
+  .gx-close{top:24px; right:24px}
+  .gx-prev{left:24px; top:50%; transform:translateY(-50%)}
+  .gx-next{right:24px; top:50%; transform:translateY(-50%)}
+  .gx-mute{bottom:24px; right:24px}
+  .gx-prev:hover,.gx-next:hover{transform:translateY(-50%) scale(1.06)}
+
+  .gx-meta{
+    position:absolute; left:24px; bottom:24px; color:#fff;
+    font:400 13px/1.4 'Jost',sans-serif; max-width:60vw;
+    text-shadow:0 1px 4px rgba(0,0,0,.5);
+  }
+  .gx-meta b{font-weight:500; font-size:15px; display:block; margin-bottom:4px}
+
+  @media (max-width: 700px){
+    .gx-close{top:14px;right:14px;width:38px;height:38px}
+    .gx-prev{left:8px} .gx-next{right:8px}
+    .gx-mute{bottom:14px;right:14px;width:38px;height:38px}
+    .gx-meta{left:14px;bottom:14px;font-size:12px;max-width:80vw}
+  }
+
+  ::view-transition-old(card),::view-transition-new(card){
+    animation-duration:.45s; animation-timing-function:cubic-bezier(.2,.8,.2,1);
+  }
+</style>
+</head>
+<body>
+
+<header class="gx-header">
+  <a href="/" class="gx-back">← На главную</a>
+  <h1 class="gx-title">Студия Milovi Cake</h1>
+  <p class="gx-sub">Каждый торт — авторская работа. Здесь — реальные фото и видео заказов из СПб. Наведи на карточку, чтобы увидеть деталь, кликни — чтобы открыть во весь экран.</p>
+  <div class="gx-filter" role="tablist" aria-label="Фильтр галереи">
+    <button data-f="all" aria-pressed="true">Все</button>
+    <button data-f="photo">Фото</button>
+    <button data-f="video">Видео</button>
+    <button data-f="wedding">Свадебные</button>
+    <button data-f="bento">Бенто</button>
+    <button data-f="3d">3D</button>
+    <button data-f="meringue">Меренговые рулеты</button>
+    <button data-f="pavlova">Павлова</button>
+  </div>
+</header>
+
+<!-- ===== СЕТКА ===== -->
+<!-- ВАЖНО: data-src/data-poster заполни своими файлами; ниже — демо на основе уже существующих img/* -->
+<main class="gx-grid" id="gxGrid">
+
+  <figure class="gx-cell s-tall" data-type="photo" data-tags="bday"
+          data-full="/img/gallery/gallery-15-hd.webp"
+          data-title="Авторский торт ручной работы"
+          data-desc="Многоярусный торт на заказ — Milovi Cake СПб">
+    <img src="/img/gallery/gallery-15.webp"
+         alt="Многоярусный торт на заказ — Milovi Cake СПб — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Авторский торт ручной работы</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-big" data-type="photo" data-tags="meringue"
+          data-full="/img/gallery/gallery-27-hd.webp"
+          data-title="3D торт с объёмным декором"
+          data-desc="Фигурный 3D-торт на заказ в Санкт-Петербурге">
+    <img src="/img/gallery/gallery-27.webp"
+         alt="Фигурный 3D-торт на заказ в Санкт-Петербурге — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">3D торт с объёмным декором</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-tall" data-type="photo" data-tags="meringue"
+          data-full="/img/gallery/gallery-07-hd.webp"
+          data-title="Свадебный торт"
+          data-desc="Многоярусный свадебный торт ручной работы СПб">
+    <img src="/img/gallery/gallery-07.webp"
+         alt="Многоярусный свадебный торт ручной работы СПб — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Свадебный торт</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-wide" data-type="photo" data-tags="bday"
+          data-full="/img/gallery/gallery-20-hd.webp"
+          data-title="Десертный стол Candy Bar"
+          data-desc="Десертный стол на праздник — Milovi Cake СПб">
+    <img src="/img/gallery/gallery-20.webp"
+         alt="Десертный стол на праздник — Milovi Cake СПб — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Десертный стол Candy Bar</figcaption>
+  </figure>
+
+  <figure class="gx-cell" data-type="photo" data-tags="bento"
+          data-full="/img/gallery/gallery-13-hd.webp"
+          data-title="Бенто-торт"
+          data-desc="Мини бенто-торт на одну персону СПб">
+    <img src="/img/gallery/gallery-13.webp"
+         alt="Мини бенто-торт на одну персону СПб — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Бенто-торт</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-tall" data-type="photo" data-tags="3d"
+          data-full="/img/gallery/gallery-06-hd.webp"
+          data-title="Торт на день рождения"
+          data-desc="Авторский торт на день рождения — заказ СПб">
+    <img src="/img/gallery/gallery-06.webp"
+         alt="Авторский торт на день рождения — заказ СПб — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Торт на день рождения</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-tall" data-type="photo" data-tags="3d"
+          data-full="/img/gallery/gallery-12-hd.webp"
+          data-title="Премиальный торт-композиция"
+          data-desc="Эксклюзивный авторский торт от частного кондитера">
+    <img src="/img/gallery/gallery-12.webp"
+         alt="Эксклюзивный авторский торт от частного кондитера — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Премиальный торт-композиция</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-wide" data-type="photo" data-tags="wedding"
+          data-full="/img/gallery/gallery-11-hd.webp"
+          data-title="Композиция десертов"
+          data-desc="Авторская подача десертов от Milovi Cake">
+    <img src="/img/gallery/gallery-11.webp"
+         alt="Авторская подача десертов от Milovi Cake — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Композиция десертов</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-tall" data-type="photo" data-tags="bday"
+          data-full="/img/gallery/gallery-10-hd.webp"
+          data-title="Многоярусный торт"
+          data-desc="Свадебный торт с авторским декором, СПб">
+    <img src="/img/gallery/gallery-10.webp"
+         alt="Свадебный торт с авторским декором, СПб — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Многоярусный торт</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-tall" data-type="photo" data-tags="meringue"
+          data-full="/img/gallery/gallery-17-hd.webp"
+          data-title="Авторский десерт"
+          data-desc="Ручная работа Milovi Cake, Санкт-Петербург">
+    <img src="/img/gallery/gallery-17.webp"
+         alt="Ручная работа Milovi Cake, Санкт-Петербург — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Авторский десерт</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-tall" data-type="photo" data-tags="pavlova"
+          data-full="/img/gallery/gallery-28-hd.webp"
+          data-title="Торт с цветочным декором"
+          data-desc="Свадебный торт с живыми цветами, СПб">
+    <img src="/img/gallery/gallery-28.webp"
+         alt="Свадебный торт с живыми цветами, СПб — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Торт с цветочным декором</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-wide" data-type="photo" data-tags="bento"
+          data-full="/img/gallery/gallery-23-hd.webp"
+          data-title="Срез торта"
+          data-desc="Срез авторского торта — натуральные ингредиенты">
+    <img src="/img/gallery/gallery-23.webp"
+         alt="Срез авторского торта — натуральные ингредиенты — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Срез торта</figcaption>
+  </figure>
+
+  <figure class="gx-cell" data-type="photo" data-tags="bday"
+          data-full="/img/gallery/gallery-30-hd.webp"
+          data-title="Бенто с надписью"
+          data-desc="Персональный бенто-торт на заказ СПб">
+    <img src="/img/gallery/gallery-30.webp"
+         alt="Персональный бенто-торт на заказ СПб — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Бенто с надписью</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-tall" data-type="photo" data-tags="3d"
+          data-full="/img/gallery/gallery-02-hd.webp"
+          data-title="Праздничный торт"
+          data-desc="Авторский торт на праздник — Milovi Cake">
+    <img src="/img/gallery/gallery-02.webp"
+         alt="Авторский торт на праздник — Milovi Cake — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Праздничный торт</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-tall" data-type="photo" data-tags="wedding"
+          data-full="/img/gallery/gallery-14-hd.webp"
+          data-title="Многоярусный авторский торт"
+          data-desc="Премиальный торт на заказ, СПб">
+    <img src="/img/gallery/gallery-14.webp"
+         alt="Премиальный торт на заказ, СПб — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Многоярусный авторский торт</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-wide" data-type="photo" data-tags="3d"
+          data-full="/img/gallery/gallery-16-hd.webp"
+          data-title="Меренговый рулет"
+          data-desc="Меренговый рулет с ягодами на заказ СПб">
+    <img src="/img/gallery/gallery-16.webp"
+         alt="Меренговый рулет с ягодами на заказ СПб — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Меренговый рулет</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-tall" data-type="photo" data-tags="wedding"
+          data-full="/img/gallery/gallery-19-hd.webp"
+          data-title="Авторский торт ручной работы"
+          data-desc="Многоярусный торт на заказ — Milovi Cake СПб">
+    <img src="/img/gallery/gallery-19.webp"
+         alt="Многоярусный торт на заказ — Milovi Cake СПб — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Авторский торт ручной работы</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-tall" data-type="photo" data-tags="bento"
+          data-full="/img/gallery/gallery-03-hd.webp"
+          data-title="3D торт с объёмным декором"
+          data-desc="Фигурный 3D-торт на заказ в Санкт-Петербурге">
+    <img src="/img/gallery/gallery-03.webp"
+         alt="Фигурный 3D-торт на заказ в Санкт-Петербурге — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">3D торт с объёмным декором</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-big" data-type="photo" data-tags="pavlova"
+          data-full="/img/gallery/gallery-18-hd.webp"
+          data-title="Свадебный торт"
+          data-desc="Многоярусный свадебный торт ручной работы СПб">
+    <img src="/img/gallery/gallery-18.webp"
+         alt="Многоярусный свадебный торт ручной работы СПб — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Свадебный торт</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-wide" data-type="photo" data-tags="3d"
+          data-full="/img/gallery/gallery-26-hd.webp"
+          data-title="Десертная композиция"
+          data-desc="Подача авторских десертов — Milovi Cake">
+    <img src="/img/gallery/gallery-26.webp"
+         alt="Подача авторских десертов — Milovi Cake — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Десертная композиция</figcaption>
+  </figure>
+
+  <figure class="gx-cell" data-type="photo" data-tags="bday"
+          data-full="/img/gallery/gallery-25-hd.webp"
+          data-title="Авторский десерт"
+          data-desc="Ручная работа Milovi Cake">
+    <img src="/img/gallery/gallery-25.webp"
+         alt="Ручная работа Milovi Cake — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Авторский десерт</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-tall" data-type="photo" data-tags="bday"
+          data-full="/img/gallery/gallery-05-hd.webp"
+          data-title="Торт на день рождения"
+          data-desc="Авторский торт на день рождения — заказ СПб">
+    <img src="/img/gallery/gallery-05.webp"
+         alt="Авторский торт на день рождения — заказ СПб — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Торт на день рождения</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-tall" data-type="photo" data-tags="pavlova"
+          data-full="/img/gallery/gallery-08-hd.webp"
+          data-title="Премиальный торт-композиция"
+          data-desc="Эксклюзивный авторский торт от частного кондитера">
+    <img src="/img/gallery/gallery-08.webp"
+         alt="Эксклюзивный авторский торт от частного кондитера — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Премиальный торт-композиция</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-wide" data-type="photo" data-tags="3d"
+          data-full="/img/gallery/gallery-22-hd.webp"
+          data-title="Капкейки"
+          data-desc="Авторские капкейки на заказ в СПб">
+    <img src="/img/gallery/gallery-22.webp"
+         alt="Авторские капкейки на заказ в СПб — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Капкейки</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-tall" data-type="photo" data-tags="wedding"
+          data-full="/img/gallery/gallery-09-hd.webp"
+          data-title="Многоярусный торт"
+          data-desc="Свадебный торт с авторским декором, СПб">
+    <img src="/img/gallery/gallery-09.webp"
+         alt="Свадебный торт с авторским декором, СПб — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Многоярусный торт</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-big" data-type="photo" data-tags="wedding"
+          data-full="/img/gallery/gallery-24-hd.webp"
+          data-title="Авторский десерт"
+          data-desc="Ручная работа Milovi Cake, Санкт-Петербург">
+    <img src="/img/gallery/gallery-24.webp"
+         alt="Ручная работа Milovi Cake, Санкт-Петербург — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Авторский десерт</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-tall" data-type="photo" data-tags="wedding"
+          data-full="/img/gallery/gallery-01-hd.webp"
+          data-title="Торт с цветочным декором"
+          data-desc="Свадебный торт с живыми цветами, СПб">
+    <img src="/img/gallery/gallery-01.webp"
+         alt="Свадебный торт с живыми цветами, СПб — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Торт с цветочным декором</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-wide" data-type="photo" data-tags="wedding"
+          data-full="/img/gallery/gallery-29-hd.webp"
+          data-title="Подача десерта"
+          data-desc="Премиальная сервировка от Milovi Cake">
+    <img src="/img/gallery/gallery-29.webp"
+         alt="Премиальная сервировка от Milovi Cake — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Подача десерта</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-tall" data-type="photo" data-tags="wedding"
+          data-full="/img/gallery/gallery-04-hd.webp"
+          data-title="Праздничный торт"
+          data-desc="Авторский торт на праздник — Milovi Cake">
+    <img src="/img/gallery/gallery-04.webp"
+         alt="Авторский торт на праздник — Milovi Cake — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Праздничный торт</figcaption>
+  </figure>
+
+  <figure class="gx-cell s-tall" data-type="photo" data-tags="wedding"
+          data-full="/img/gallery/gallery-21-hd.webp"
+          data-title="Многоярусный авторский торт"
+          data-desc="Премиальный торт на заказ, СПб">
+    <img src="/img/gallery/gallery-21.webp"
+         alt="Премиальный торт на заказ, СПб — Milovi Cake"
+         loading="lazy" decoding="async" fetchpriority="low">
+    <figcaption class="gx-caption">Многоярусный авторский торт</figcaption>
+  </figure>
+
+</main>
+
+<!-- ===== Lightbox разметка ===== -->
+<div class="gx-light" id="gxLight" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="gx-light-stage" id="gxStage"></div>
+
+  <button class="gx-ctrl gx-close" id="gxClose" aria-label="Закрыть">
+    <svg viewBox="0 0 24 24"><path d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.71 2.88 18.3 9.17 12 2.88 5.71 4.3 4.29l6.29 6.3 6.3-6.3z"/></svg>
+  </button>
+  <button class="gx-ctrl gx-prev" id="gxPrev" aria-label="Назад">
+    <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+  </button>
+  <button class="gx-ctrl gx-next" id="gxNext" aria-label="Вперёд">
+    <svg viewBox="0 0 24 24"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
+  </button>
+  <button class="gx-ctrl gx-mute" id="gxMute" aria-label="Звук" hidden>
+    <!-- иконки переключаются JS -->
+    <svg id="gxMuteOff" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zM19 12c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 5.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.17v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+    <svg id="gxMuteOn" viewBox="0 0 24 24" hidden><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+  </button>
+  <div class="gx-meta" id="gxMeta"></div>
+</div>
+
+<script>
+/* ===== Лёгкая логика галереи ===== */
+(function(){
+  const cells = Array.from(document.querySelectorAll('#gxGrid .gx-cell'));
+  let idx = 0, list = cells;
+
+  /* ---- Hover-видео (превью) ---- */
+  cells.forEach(cell => {
+    if (cell.dataset.type !== 'video' || !cell.dataset.mp4) return;
+    let v;
+    cell.addEventListener('mouseenter', () => {
+      if (!v){
+        v = document.createElement('video');
+        v.src = cell.dataset.mp4; v.muted = true; v.loop = true; v.playsInline = true;
+        v.preload = 'auto';
+        v.style.position='absolute'; v.style.inset='0';
+        v.style.width='100%'; v.style.height='100%'; v.style.objectFit='cover';
+        cell.appendChild(v);
+      }
+      v.play().catch(()=>{});
+    });
+    cell.addEventListener('mouseleave', () => { if (v){ v.pause(); v.currentTime = 0; } });
+  });
+
+  /* ---- Фильтр ---- */
+  document.querySelectorAll('.gx-filter button').forEach(btn=>{
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.gx-filter button').forEach(b => b.setAttribute('aria-pressed','false'));
+      btn.setAttribute('aria-pressed','true');
+      const f = btn.dataset.f;
+      cells.forEach(c => {
+        const show = f==='all'
+          || (f==='photo' && c.dataset.type==='photo')
+          || (f==='video' && c.dataset.type==='video')
+          || (c.dataset.tags||'').split(/\s+/).includes(f);
+        c.style.display = show ? '' : 'none';
+      });
+      list = cells.filter(c => c.style.display !== 'none');
+    });
+  });
+
+  /* ---- Lightbox ---- */
+  const light = document.getElementById('gxLight');
+  const stage = document.getElementById('gxStage');
+  const meta  = document.getElementById('gxMeta');
+  const muteBtn = document.getElementById('gxMute');
+  const muteOff = document.getElementById('gxMuteOff');
+  const muteOn  = document.getElementById('gxMuteOn');
+
+  function open(i){
+    idx = i;
+    const c = list[idx]; if (!c) return;
+    stage.innerHTML = '';
+    meta.innerHTML = `<b>${c.dataset.title||''}</b>${c.dataset.desc||''}`;
+    muteBtn.hidden = true;
+
+    if (c.dataset.type === 'photo'){
+      const img = document.createElement('img');
+      img.src = c.dataset.full || c.querySelector('img').src;
+      img.alt = c.querySelector('img').alt;
+      stage.appendChild(img);
+    } else {
+      // Видео: если есть embed (VK/RuTube) — используем iframe, иначе локальный mp4
+      if (c.dataset.embed && !/XXXX/.test(c.dataset.embed)){
+        const f = document.createElement('iframe');
+        f.src = c.dataset.embed;
+        f.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture';
+        f.allowFullscreen = true;
+        stage.appendChild(f);
+      } else if (c.dataset.mp4){
+        const v = document.createElement('video');
+        v.src = c.dataset.mp4; v.controls = false; v.autoplay = true;
+        v.loop = true; v.playsInline = true; v.muted = true;
+        stage.appendChild(v);
+        muteBtn.hidden = false;
+        updateMute(true);
+        muteBtn.onclick = () => { v.muted = !v.muted; updateMute(v.muted); };
+      }
+    }
+
+    light.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+  function updateMute(muted){
+    muteOff.hidden = !muted; muteOn.hidden = muted;
+  }
+  function close(){
+    light.setAttribute('aria-hidden','true');
+    stage.innerHTML = '';
+    document.body.style.overflow = '';
+  }
+  function nav(d){
+    const next = (idx + d + list.length) % list.length;
+    open(next);
+  }
+
+  cells.forEach((c, i) => c.addEventListener('click', () => {
+    list = cells.filter(x => x.style.display !== 'none');
+    open(list.indexOf(c));
+  }));
+  document.getElementById('gxClose').onclick = close;
+  document.getElementById('gxPrev').onclick = () => nav(-1);
+  document.getElementById('gxNext').onclick = () => nav(1);
+  light.addEventListener('click', e => { if (e.target === light) close(); });
+  document.addEventListener('keydown', e => {
+    if (light.getAttribute('aria-hidden') === 'true') return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft') nav(-1);
+    if (e.key === 'ArrowRight') nav(1);
+    if (e.key.toLowerCase() === 'm' && !muteBtn.hidden) muteBtn.click();
+  });
+
+  /* Свайп вниз для закрытия (мобилка) */
+  let startY = null;
+  light.addEventListener('touchstart', e => startY = e.touches[0].clientY);
+  light.addEventListener('touchmove', e => {
+    if (startY == null) return;
+    if (e.touches[0].clientY - startY > 80){ close(); startY = null; }
+  });
+})();
+</script>
+
+<!-- ===== JSON-LD на каждое изображение и видео (пример — расширить под все 50) ===== -->
+<script type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-15-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-15.webp",
+    "name": "Авторский торт ручной работы",
+    "caption": "Многоярусный торт на заказ — Milovi Cake СПб",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-27-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-27.webp",
+    "name": "3D торт с объёмным декором",
+    "caption": "Фигурный 3D-торт на заказ в Санкт-Петербурге",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-07-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-07.webp",
+    "name": "Свадебный торт",
+    "caption": "Многоярусный свадебный торт ручной работы СПб",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-20-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-20.webp",
+    "name": "Десертный стол Candy Bar",
+    "caption": "Десертный стол на праздник — Milovi Cake СПб",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-13-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-13.webp",
+    "name": "Бенто-торт",
+    "caption": "Мини бенто-торт на одну персону СПб",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-06-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-06.webp",
+    "name": "Торт на день рождения",
+    "caption": "Авторский торт на день рождения — заказ СПб",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-12-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-12.webp",
+    "name": "Премиальный торт-композиция",
+    "caption": "Эксклюзивный авторский торт от частного кондитера",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-11-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-11.webp",
+    "name": "Композиция десертов",
+    "caption": "Авторская подача десертов от Milovi Cake",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-10-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-10.webp",
+    "name": "Многоярусный торт",
+    "caption": "Свадебный торт с авторским декором, СПб",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-17-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-17.webp",
+    "name": "Авторский десерт",
+    "caption": "Ручная работа Milovi Cake, Санкт-Петербург",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-28-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-28.webp",
+    "name": "Торт с цветочным декором",
+    "caption": "Свадебный торт с живыми цветами, СПб",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-23-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-23.webp",
+    "name": "Срез торта",
+    "caption": "Срез авторского торта — натуральные ингредиенты",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-30-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-30.webp",
+    "name": "Бенто с надписью",
+    "caption": "Персональный бенто-торт на заказ СПб",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-02-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-02.webp",
+    "name": "Праздничный торт",
+    "caption": "Авторский торт на праздник — Milovi Cake",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-14-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-14.webp",
+    "name": "Многоярусный авторский торт",
+    "caption": "Премиальный торт на заказ, СПб",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-16-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-16.webp",
+    "name": "Меренговый рулет",
+    "caption": "Меренговый рулет с ягодами на заказ СПб",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-19-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-19.webp",
+    "name": "Авторский торт ручной работы",
+    "caption": "Многоярусный торт на заказ — Milovi Cake СПб",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-03-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-03.webp",
+    "name": "3D торт с объёмным декором",
+    "caption": "Фигурный 3D-торт на заказ в Санкт-Петербурге",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-18-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-18.webp",
+    "name": "Свадебный торт",
+    "caption": "Многоярусный свадебный торт ручной работы СПб",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-26-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-26.webp",
+    "name": "Десертная композиция",
+    "caption": "Подача авторских десертов — Milovi Cake",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-25-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-25.webp",
+    "name": "Авторский десерт",
+    "caption": "Ручная работа Milovi Cake",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-05-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-05.webp",
+    "name": "Торт на день рождения",
+    "caption": "Авторский торт на день рождения — заказ СПб",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-08-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-08.webp",
+    "name": "Премиальный торт-композиция",
+    "caption": "Эксклюзивный авторский торт от частного кондитера",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-22-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-22.webp",
+    "name": "Капкейки",
+    "caption": "Авторские капкейки на заказ в СПб",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-09-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-09.webp",
+    "name": "Многоярусный торт",
+    "caption": "Свадебный торт с авторским декором, СПб",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-24-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-24.webp",
+    "name": "Авторский десерт",
+    "caption": "Ручная работа Milovi Cake, Санкт-Петербург",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-01-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-01.webp",
+    "name": "Торт с цветочным декором",
+    "caption": "Свадебный торт с живыми цветами, СПб",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-29-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-29.webp",
+    "name": "Подача десерта",
+    "caption": "Премиальная сервировка от Milovi Cake",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-04-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-04.webp",
+    "name": "Праздничный торт",
+    "caption": "Авторский торт на праздник — Milovi Cake",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": "https://milovicake.ru/img/gallery/gallery-21-hd.webp",
+    "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-21.webp",
+    "name": "Многоярусный авторский торт",
+    "caption": "Премиальный торт на заказ, СПб",
+    "creator": {
+      "@type": "Person",
+      "name": "Виктория Милованова"
+    },
+    "creditText": "Milovi Cake",
+    "copyrightNotice": "© Milovi Cake",
+    "license": "https://milovicake.ru/",
+    "acquireLicensePage": "https://milovicake.ru/#contacts",
+    "isPartOf": "https://milovicake.ru/gallery/"
+  }
+]
+</script>
+
+</body>
+</html>

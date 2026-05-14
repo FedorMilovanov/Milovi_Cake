@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+  <url>
+    <loc>https://milovicake.ru/gallery/</loc>
+    <video:video>
+      <video:thumbnail_loc>https://milovicake.ru/img/cake_biscuit_3.webp</video:thumbnail_loc>
+      <video:title>Свадебный торт — процесс сборки | Milovi Cake</video:title>
+      <video:description>Backstage сборки 3-ярусного свадебного торта с акварельной росписью в мастерской частного кондитера Milovi Cake (Санкт-Петербург).</video:description>
+      <video:content_loc>https://milovicake.ru/img/preview_wedding.mp4</video:content_loc>
+      <video:player_loc allow_embed="yes" autoplay="ap=1">https://vk.com/video_ext.php?oid=-XXXXXXXX&amp;id=YYYYYYYYY</video:player_loc>
+      <video:duration>8</video:duration>
+      <video:publication_date>2026-05-01T00:00:00+03:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:tag>торт на заказ</video:tag>
+      <video:tag>свадебный торт спб</video:tag>
+      <video:tag>milovi cake</video:tag>
+      <video:uploader info="https://milovicake.ru/">Milovi Cake</video:uploader>
+      <video:live>no</video:live>
+    </video:video>
+    <!--
+      ШАБЛОН: продублируй блок <video:video>...</video:video> для каждого SHORTS.
+      thumbnail_loc — кадр-постер (webp/jpg)
+      content_loc — лёгкий MP4-превью в /img/gallery/
+      player_loc — iframe VK Видео или RuTube embed
+      duration — секунды
+    -->
+  </url>
+</urlset>
