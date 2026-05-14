@@ -1,0 +1,2738 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  
+  <!-- ANTI-FOUC v1: instant background match + body opacity reveal -->
+  <style id="anti-fouc">
+    html{background:#f5f0e8;color-scheme:light}
+    html[data-theme="dark"]{background:#1a1108;color-scheme:dark}
+    body{background:inherit}
+    body:not(.ready){opacity:0}
+    body.ready{opacity:1;transition:opacity .28s ease-out}
+    @media (prefers-reduced-motion:reduce){body{opacity:1!important;transition:none!important}}
+  </style>
+  <script>
+    (function(){
+      try{var t=localStorage.getItem('mc_theme');
+        if(t)document.documentElement.setAttribute('data-theme',t);
+        else if(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)
+          document.documentElement.setAttribute('data-theme','dark');
+      }catch(e){}
+      function reveal(){requestAnimationFrame(function(){document.body&&document.body.classList.add('ready')})}
+      if(document.readyState!=='loading')reveal();
+      else document.addEventListener('DOMContentLoaded',reveal);
+      // safety net
+      setTimeout(reveal,1200);
+    })();
+  </script>
+
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/favicon.svg?v=20260303" type="image/svg+xml">
+  <link rel="icon" href="/icon-192.png?v=20260303" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/icon-apple.png?v=20260303" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0e0806" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#f5ede0" media="(prefers-color-scheme: light)" />
+
+  <title>Меренговый рулет на заказ в СПб — Milovi Cake | Доставка по СПб и ЛО</title>
+  <meta name="description" content="Меренговый рулет на заказ в СПб — воздушная меренга, нежный крем чиз, свежая малина. 1100 г — 2500 ₽. Безглютеновый рецепт. Доставка по СПб и ЛО." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@milovicake" />
+  <meta name="twitter:title" content="Меренговый рулет на заказ — Milovi Cake, СПб" />
+  <meta name="twitter:description" content="Воздушная меренга, малина, крем чиз. 1100 г — 2500 ₽. Безглютеновый рецепт. Доставка по СПб и ЛО." />
+  <meta name="twitter:image" content="https://milovicake.ru/img/meringue_roll.webp" />
+  <meta name="keywords" content="меренговый рулет на заказ, меренговый рулет СПб, меренговый рулет с малиной, безглютеновый рулет, воздушная меренга, рулет с кремом чиз, заказать меренговый рулет, рулет на заказ Санкт-Петербург" />
+  <meta name="yandex-verification" content="9bde19424208d6ce" />
+  <meta property="vk:image" content="https://milovicake.ru/img/meringue_roll.webp" />
+  <meta name="robots" content="index, follow" />
+
+  <meta property="og:title" content="Меренговый рулет на заказ — Milovi Cake, СПб" />
+  <meta property="og:description" content="Воздушная меренга, малина, нежный крем чиз. 1100 г — 2500 ₽. Безглютеновый рецепт. Доставка по СПб и ЛО." />
+  <meta property="og:image" content="https://milovicake.ru/img/meringue_roll.webp" />
+  <meta property="og:image:type" content="image/webp" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:alt" content="Меренговый рулет на заказ в Санкт-Петербурге — Milovi Cake" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:url" content="https://milovicake.ru/meringue-roll/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="ru_RU" />
+  <meta property="og:site_name" content="Milovi Cake" />
+
+  <link rel="canonical" href="https://milovicake.ru/meringue-roll/" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Milovi Cake" />
+  <meta name="view-transition" content="same-origin" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "Меренговый рулет",
+    "description": "Меренговый рулет с малиной и нежным сливочным кремом чиз. Воздушная меренга, безглютеновый рецепт, свежие ягоды.",
+    "url": "https://milovicake.ru/meringue-roll/",
+    "brand": { "@type": "Brand", "name": "Milovi Cake" },
+    "offers": {
+      "@type": "Offer",
+      "price": "2500",
+      "priceCurrency": "RUB",
+      "availability": "https://schema.org/InStock",
+      "priceValidUntil": "2026-12-31",
+      "url": "https://milovicake.ru/meringue-roll/",
+      "seller": { "@id": "https://milovicake.ru/#business" }
+    },
+    "image": "https://milovicake.ru/img/meringue_roll.webp"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "Главная", "item": "https://milovicake.ru/"},
+      {"@type": "ListItem", "position": 2, "name": "Меренговый рулет", "item": "https://milovicake.ru/meringue-roll/"}
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "@id": "https://milovicake.ru/#business",
+    "name": "Milovi Cake",
+    "description": "Авторские торты и десерты ручной работы на заказ в Санкт-Петербурге. Меренговые рулеты, бисквитные торты, Павлова, капкейки. Доставка по СПб и Ленобласти.",
+    "image": "https://milovicake.ru/img/og-cover.jpg",
+    "url": "https://milovicake.ru/",
+    "telephone": "+79119038886",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Пулковская ул., 19",
+      "addressLocality": "Санкт-Петербург",
+      "addressCountry": "RU"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 59.8380,
+      "longitude": 30.3230
+    },
+    "openingHours": "Mo-Su 10:00-20:00",
+    "priceRange": "₽₽",
+    "sameAs": [
+      "https://vk.com/milovi_cake",
+      "https://t.me/MiloviCake",
+      "https://www.youtube.com/@milovi_cake",
+      "https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/"
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="dns-prefetch" href="https://wa.me" />
+  <link rel="dns-prefetch" href="https://mc.yandex.ru" />
+  <link rel="preload" as="image" href="../img/meringue_roll.webp" fetchpriority="high" />
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Jost:wght@300;400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/></noscript>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:     #0b0806;
+      --dark:    #130c07;
+      --surface: #1c1108;
+      /* [M-3 FIXED v5] --cream intentionally differs from main (#f5f0e8):
+         meringue page uses dark UI so cream is warmer/more saturated (#f5ede0).
+         --gold is identical to main. --gold2/--gold3 are meringue-specific accent
+         tints; added to main :root as aliases to prevent future divergence. */
+      --cream:   #f5ede0;
+      --warm:    #e8d5b8;
+      --gold:    #c9934a;   /* identical to main --gold */
+      --gold2:   #e8b87a;   /* meringue accent — matches main --gold-light (#d4a76a) tone */
+      --gold3:   #f0c98a;   /* meringue highlight — one step lighter than gold2 */
+      --text:    #ede0cc;
+      --muted:   rgba(237,224,204,0.5);
+      --serif:   'Cormorant Garamond', Georgia, serif;
+      --sans:    'Jost', system-ui, sans-serif;
+    }
+
+    /* scroll-behavior управляется точечно через JS */
+    body {
+      background: var(--ink);
+      color: var(--text);
+      font-family: var(--sans);
+      font-weight: 300;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -webkit-text-size-adjust: 100%; /* iOS не масштабирует текст при повороте */
+    }
+    /* Убираем синюю подсветку tap на iOS/Android */
+    a, button, [role="button"] {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation; /* убирает 300ms задержку клика */
+    }
+    img { -webkit-touch-callout: none; } /* запрещаем долгое нажатие на картинки на iOS */
+
+    /* ─── LOADER ─── */
+    #loader {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--ink);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 20px;
+      transition: opacity 0.7s ease, visibility 0.7s ease;
+    }
+    #loader.gone { opacity: 0; visibility: hidden; pointer-events: none; }
+    #loader.gone .loader-line { animation: none; }
+    .loader-logo { font-family: var(--serif); font-size: 22px; letter-spacing: 0.18em; color: var(--gold); text-transform: uppercase; }
+    .loader-line {
+      width: 80px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      animation: loaderLine 1.4s ease-in-out infinite;
+    }
+    @keyframes loaderLine { 0%,100%{transform:scaleX(0.3);opacity:0.4} 50%{transform:scaleX(1);opacity:1} }
+
+    /* ─── HEADER ─── */
+    .site-hdr {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      padding: 0 56px;
+      height: 68px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: transparent;
+      transition: background 0.6s ease, backdrop-filter 0.6s ease, box-shadow 0.6s ease;
+    }
+    .site-hdr.scrolled {
+      background: rgba(11,8,6,0.9);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 1px 0 rgba(201,147,74,0.12);
+    }
+    .hdr-logo {
+      font-family: var(--serif);
+      font-size: 19px;
+      letter-spacing: 0.14em;
+      color: var(--gold);
+      text-decoration: none;
+      text-transform: uppercase;
+      display: flex; flex-direction: column;
+      line-height: 1;
+      transition: letter-spacing 0.5s ease, filter 0.5s ease;
+      position: relative;
+    }
+    .hdr-logo:hover {
+      letter-spacing: 0.2em;
+      filter: drop-shadow(0 0 10px rgba(201,147,74,0.3));
+      animation: brandPremium 1.8s ease forwards;
+    }
+    .hdr-logo-sub {
+      font-family: var(--sans); font-size: 9px; font-weight: 400;
+      letter-spacing: 0.22em; color: var(--muted);
+      text-transform: uppercase; margin-top: 4px;
+      display: flex; gap: 0.3em;
+    }
+    .hdr-logo-sub .sub-w {
+      transition: color 0.3s ease, letter-spacing 0.3s ease;
+      cursor: default;
+    }
+    .hdr-logo-sub .sub-w:hover {
+      color: rgba(201,147,74,0.7);
+      letter-spacing: 0.28em;
+    }
+    .hdr-right { display: flex; align-items: center; gap: 20px; }
+    .hdr-back {
+      font-family: var(--sans); font-size: 11px; font-weight: 400;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      transition: color 0.3s, letter-spacing 0.3s, text-shadow 0.3s;
+      position: relative;
+    }
+    .hdr-back:hover {
+      color: var(--gold2);
+      letter-spacing: 0.22em;
+      text-shadow: 0 0 12px rgba(201,147,74,0.15);
+    }
+    .hdr-order {
+      background: transparent;
+      border: 1px solid rgba(201,147,74,0.5);
+      color: var(--gold);
+      font-family: var(--sans); font-size: 11px; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      padding: 10px 24px;
+      border-radius: 40px;
+      text-decoration: none;
+      transition: background 0.5s ease, border-color 0.5s ease, color 0.5s ease, transform 0.7s cubic-bezier(.16,1,.3,1);
+      position: relative;
+      overflow: hidden;
+      animation: btnHint 6s ease-in-out infinite;
+    }
+    @keyframes btnHint {
+      0%   { box-shadow: 0 0 0px rgba(201,147,74,0); }
+      12%  { box-shadow: 0 0 10px rgba(201,147,74,0.25), inset 0 0 8px rgba(201,147,74,0.08); }
+      24%  { box-shadow: 0 0 0px rgba(201,147,74,0); }
+      100% { box-shadow: 0 0 0px rgba(201,147,74,0); }
+    }
+    .hdr-order:hover { background: var(--gold); border-color: var(--gold); color: var(--ink); transform: scale(1.06); }
+
+    /* ─── BREADCRUMB ─── */
+    .breadcrumb {
+      position: absolute; z-index: 10;
+      top: 84px; left: 56px;
+      display: none;
+    }
+    .breadcrumb a { color: var(--muted); text-decoration: none; transition: color 0.3s, letter-spacing 0.3s; }
+    .breadcrumb a:hover { color: var(--gold2); letter-spacing: 0.16em; }
+    .breadcrumb span { color: rgba(201,147,74,0.4); }
+    .breadcrumb-current {
+      color: var(--gold);
+      cursor: default;
+      display: inline-block;
+      transition: color 0.4s ease, letter-spacing 0.4s ease, text-shadow 0.4s ease;
+    }
+    .breadcrumb-current:hover {
+      color: var(--gold2);
+      letter-spacing: 0.14em;
+      text-shadow: 0 0 12px rgba(201,147,74,0.25);
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      min-height: 100dvh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+    }
+
+    /* Left: photo */
+    .hero-photo {
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-photo img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transform: scale(1.08);
+      animation: heroPhotoIn 1.4s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+    @keyframes heroPhotoIn { to { transform: scale(1); } }
+    .hero-photo-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to right, rgba(11,8,6,0) 60%, var(--ink) 100%),
+                  linear-gradient(to bottom, rgba(11,8,6,0.2) 0%, rgba(11,8,6,0) 60%);
+      z-index: 1;
+    }
+
+    /* Right: content */
+    .hero-content {
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 120px 72px 80px 56px;
+      position: relative; z-index: 2;
+    }
+    .hero-eyebrow {
+      font-family: var(--sans); font-size: 10px; font-weight: 500;
+      letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+      margin-bottom: 28px;
+      opacity: 0; transform: translateY(12px);
+      animation: fadeUp 0.6s ease 0.3s forwards;
+      display: block;
+    }
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(52px, 5.5vw, 88px);
+      font-weight: 300;
+      line-height: 1.02;
+      letter-spacing: -0.01em;
+      margin-bottom: 32px;
+      opacity: 0; transform: translateY(20px);
+      animation: fadeUp 0.8s ease 0.5s forwards;
+    }
+    .spb-v {
+      display: inline-block;
+      color: #ffffff;
+      font-style: normal;
+      font-size: 0.72em;
+      vertical-align: middle;
+    }
+    .spb-tag {
+      display: inline-block;
+      color: #7ec8e3;
+      font-style: italic;
+      font-size: 0.72em;
+      letter-spacing: 0.01em;
+      vertical-align: middle;
+      cursor: default;
+      transition:
+        letter-spacing 0.4s ease,
+        transform 0.4s cubic-bezier(.16,1,.3,1);
+      will-change: transform;
+    }
+    .spb-tag:hover {
+      letter-spacing: 0.06em;
+      transform: translateY(-2px);
+    }
+    /* На тач-устройствах — убираем анимацию совсем, не грузим GPU */
+    @media (hover: none) {
+      .spb-tag {
+        transition: none;
+        will-change: auto;
+      }
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold2);
+      font-weight: 400;
+    }
+    .ht-word {
+      display: inline-block;
+      transition: color 0.35s ease, text-shadow 0.35s ease, letter-spacing 0.35s ease;
+      cursor: default;
+    }
+    .ht-word:hover {
+      color: rgba(245,237,224,0.95);
+      text-shadow: 0 0 40px rgba(245,237,224,0.15);
+      letter-spacing: 0.01em;
+    }
+    .ht-word-wide:hover {
+      color: rgba(245,237,224,0.95);
+      text-shadow: 0 0 40px rgba(245,237,224,0.15);
+      letter-spacing: 0.03em;
+    }
+    .ht-em {
+      font-style: italic;
+      color: var(--gold2);
+      font-weight: 400;
+      display: inline-block;
+      cursor: default;
+      transition: color 0.4s ease, text-shadow 0.4s ease, letter-spacing 0.35s ease;
+    }
+    .ht-em {
+      font-style: italic;
+      font-weight: 400;
+      display: inline-block;
+      cursor: default;
+      padding: 0.1em 0.15em;
+      background: linear-gradient(90deg, #c9934a 0%, #e8b87a 38%, #f5dba0 52%, #e8b87a 65%, #c9934a 100%);
+      background-size: 300% auto;
+      background-position: 80% center;
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      transition: text-shadow 0.4s ease, letter-spacing 0.35s ease;
+    }
+    .ht-em:hover {
+      letter-spacing: 0.02em;
+      animation: priceShimmer 1.4s ease forwards;
+    }
+    @keyframes htShimmer {
+      0%   { background-position: 100% center; }
+      100% { background-position: 0% center; }
+    }
+    .hero-divider {
+      width: 40px; height: 1px;
+      background: linear-gradient(to right, var(--gold), transparent);
+      margin-bottom: 28px;
+      opacity: 0; animation: fadeUp 0.5s ease 0.7s forwards;
+    }
+    .hero-desc {
+      font-size: 15px; line-height: 1.8; font-weight: 300;
+      color: var(--muted);
+      margin-bottom: 48px; max-width: 400px;
+      opacity: 0; transform: translateY(12px);
+      animation: fadeUp 0.7s ease 0.8s forwards;
+    }
+    .hero-price-block {
+      display: flex; align-items: baseline; gap: 16px;
+      margin-bottom: 44px;
+      opacity: 0; animation: fadeUp 0.6s ease 1s forwards;
+      cursor: default;
+    }
+    .hero-price-num {
+      font-family: var(--serif); font-size: 60px; font-weight: 600; color: var(--gold);
+      line-height: 1;
+      display: inline-block;
+      background: linear-gradient(90deg, #c9934a 0%, #e8b87a 38%, #f5dba0 52%, #e8b87a 65%, #c9934a 100%);
+      background-size: 300% auto;
+      -webkit-background-clip: text; background-clip: text;
+      padding: 0.1em 0.15em;
+      transition: filter 0.4s ease, transform 0.4s cubic-bezier(.16,1,.3,1);
+    }
+    .hero-price-num:hover {
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 6px rgba(201,147,74,0.2));
+      transform: scale(1.04);
+      animation: priceShimmer 1.4s ease forwards;
+    }
+    @keyframes priceShimmer {
+      0%   { background-position: 100% center; }
+      100% { background-position: 0% center; }
+    }
+    .hero-price-meta { display: flex; flex-direction: column; gap: 3px; }
+    .hero-price-weight {
+      font-size: 12px; letter-spacing: 0.12em; color: var(--muted);
+      transition: color 0.3s ease, letter-spacing 0.3s ease;
+      cursor: default;
+    }
+    .hero-price-weight:hover { color: rgba(237,224,204,0.85); letter-spacing: 0.16em; }
+    .hero-price-portions {
+      font-size: 11px; letter-spacing: 0.1em; color: var(--gold3); opacity: 0.7;
+      transition: color 0.3s ease, opacity 0.3s ease, transform 0.3s cubic-bezier(.16,1,.3,1), letter-spacing 0.3s ease;
+      cursor: default; display: inline-block;
+    }
+    .hero-price-portions:hover { opacity: 1; color: var(--gold2); transform: translateY(-2px); letter-spacing: 0.14em; }
+
+    .hero-tags {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin-bottom: 44px;
+      opacity: 0; animation: fadeUp 0.6s ease 1.05s forwards;
+    }
+    .hero-tag {
+      font-family: var(--sans); font-size: 10px; font-weight: 500;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 40px;
+      border: 1px solid rgba(201,147,74,0.3);
+      color: var(--gold2);
+      transition: border-color 0.3s, color 0.3s, background 0.3s,
+                  transform 0.3s cubic-bezier(.16,1,.3,1), box-shadow 0.3s;
+      cursor: default;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .hero-tag:hover {
+      transform: translateY(-3px);
+      border-color: rgba(201,147,74,0.65);
+      color: var(--gold3);
+      background: rgba(201,147,74,0.08);
+      box-shadow: 0 4px 14px rgba(201,147,74,0.12);
+    }
+
+    .wave-text .w {
+      display: inline-block;
+      transition: color 0.3s ease, transform 0.3s cubic-bezier(.16,1,.3,1), text-shadow 0.3s ease;
+      cursor: default;
+      will-change: transform;
+    }
+    .wave-text .w:hover {
+      color: rgba(245,237,224,0.9);
+      text-shadow: 0 0 14px rgba(240,201,138,0.2);
+      transform: translateY(-2px);
+    }
+    .wave-text .w.near {
+      color: rgba(237,224,204,0.7);
+      transform: translateY(-1px);
+    }
+    .wave-gold .w:hover {
+      color: var(--gold2);
+      text-shadow: 0 0 12px rgba(201,147,74,0.2);
+      transform: translateY(-2px);
+    }
+    .wave-gold .w.near {
+      color: var(--gold);
+      transform: translateY(-1px);
+    }
+
+    .hero-cta-group {
+      display: flex; gap: 14px; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp 0.6s ease 1.15s forwards;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--gold); color: var(--ink);
+      font-family: var(--sans); font-size: 12px; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      padding: 15px 34px; border-radius: 50px;
+      text-decoration: none; border: none; cursor: pointer;
+      position: relative; overflow: hidden;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover { background: var(--gold2); transform: translateY(-2px); box-shadow: 0 12px 36px rgba(201,147,74,0.25); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: transparent;
+      border: 1px solid rgba(201,147,74,0.35);
+      color: var(--gold);
+      font-family: var(--sans); font-size: 12px; font-weight: 500;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      padding: 15px 34px; border-radius: 50px;
+      text-decoration: none; cursor: pointer;
+      position: relative; overflow: hidden;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s;
+    }
+    .btn-ghost:hover { background: rgba(201,147,74,0.08); border-color: var(--gold); transform: translateY(-2px); }
+    /* Hover-перелив справа налево для всех кнопок */
+    .btn-primary::after, .btn-ghost::after, .hdr-order::after {
+      content: '';
+      position: absolute;
+      top: 0; right: -120%;
+      width: 55%; height: 100%;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.07) 30%, rgba(255,255,255,0.22) 50%, rgba(255,255,255,0.07) 70%, transparent 100%);
+      transform: skewX(-15deg);
+      opacity: 0;
+      pointer-events: none;
+      transition: right 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.05s;
+    }
+    .btn-primary:hover::after, .btn-ghost:hover::after, .hdr-order:hover::after {
+      right: 160%; opacity: 1;
+    }
+    .btn-wa-green {
+      background: #25D366; color: #fff;
+      border: none;
+    }
+    .btn-wa-green:hover { background: #1ebc5a; }
+
+    /* ─── SECTION COMMON ─── */
+    section { position: relative; }
+    .reveal {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity 0.8s cubic-bezier(0.22,1,0.36,1), transform 0.8s cubic-bezier(0.22,1,0.36,1);
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+    .rd1 { transition-delay: 0.1s; }
+    .rd2 { transition-delay: 0.2s; }
+    .rd3 { transition-delay: 0.3s; }
+    .rd4 { transition-delay: 0.4s; }
+
+    .sec-label {
+      font-family: var(--sans); font-size: 10px; font-weight: 500;
+      letter-spacing: 0.34em; text-transform: uppercase; color: var(--gold);
+      display: block; margin-bottom: 18px;
+    }
+    .sec-title {
+      font-family: var(--serif); font-weight: 300; line-height: 1.1;
+      font-size: clamp(30px, 3.5vw, 52px);
+      margin-bottom: 20px;
+    }
+    .sec-title em { font-style: italic; color: var(--gold2); font-weight: 400; }
+    .sec-body {
+      font-size: 14px; line-height: 1.85; color: var(--muted); font-weight: 300;
+    }
+
+    /* ─── GALLERY STRIP ─── */
+    .gallery-strip {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: 180px 180px;
+      gap: 3px;
+      height: auto;
+    }
+    .gallery-item {
+      position: relative; overflow: hidden; cursor: zoom-in;
+    }
+    .gallery-item:first-child {
+      grid-row: 1 / 3;
+    }
+    .gallery-item img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform 5s ease;
+    }
+    .gallery-item:hover img { transform: scale(1.05); }
+    .gallery-item-overlay {
+      position: absolute; inset: 0;
+      background: rgba(11,8,6,0);
+      transition: background 0.3s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .gallery-item:hover .gallery-item-overlay {
+      background: rgba(11,8,6,0.25);
+    }
+
+
+    /* ─── BLOCK TRANSITIONS ─── */
+    .gallery-strip {
+      position: relative;
+    }
+    .gallery-strip::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 120px;
+      background: linear-gradient(to bottom, transparent, var(--dark));
+      pointer-events: none;
+      z-index: 2;
+    }
+    .features-section {
+      position: relative;
+      background: #0d0905;
+    }
+    .features-header,
+    .features-grid {
+      position: relative;
+      z-index: 2;
+    }
+
+    .split-right-rolls {
+      background: #0d0905;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      min-height: 60vh;
+    }
+    .roll-float {
+      position: absolute;
+      width: 55%;
+      top: 2%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0.6;
+      pointer-events: auto;
+      z-index: 0;
+      transition: opacity .6s ease, filter .6s ease, transform .6s ease;
+      filter: brightness(1.0) hue-rotate(6deg) saturate(1.15);
+      cursor: default;
+      animation: rollShimmer 4.5s ease-in-out infinite;
+    }
+    @keyframes rollShimmer {
+      0%,100% { filter: brightness(1.0) hue-rotate(6deg) saturate(1.15); opacity: 0.6; }
+      50%      { filter: brightness(1.05) hue-rotate(6deg) saturate(1.15); opacity: 0.68; }
+    }
+    .roll-float:hover {
+      opacity: 0.9;
+      filter: brightness(1.05) hue-rotate(6deg) saturate(1.2);
+      transform: translateX(-50%) translateY(-8px) scale(1.04);
+      animation: none;
+    }
+    
+    .box-float {
+      position: absolute;
+      width: 52%;
+      top: 84%;
+      left: 55%;
+      transform: translate(-50%, -50%);
+      opacity: 0.35;
+      pointer-events: auto;
+      z-index: 1;
+      transition: opacity .6s ease, filter .6s ease, transform .6s ease;
+      filter: brightness(0.75) saturate(0.9);
+      cursor: default;
+      animation: boxShimmer 4s ease-in-out infinite;
+    }
+    @keyframes boxShimmer {
+      0%,100% { filter: brightness(0.75) saturate(0.9); opacity: 0.35; }
+      50%      { filter: brightness(0.95) saturate(1.1); opacity: 0.45; }
+    }
+    .box-float:hover {
+      opacity: 0.92;
+      filter: brightness(1.15) saturate(1.2);
+      transform: translate(-50%, -50%) translateY(-6px) scale(1.04);
+      animation: none;
+    }
+    .split-text .sec-label,
+    .split-text .sec-title,
+    .split-text .sec-body,
+    .split-text .ingredients {
+      position: relative;
+      z-index: 1;
+    }
+    /* Коробка под списком — только мобиль */
+    .box-float-mobile { display: none; }
+    .box-float-mobile-wrap { display: none; }
+
+    @keyframes boxPulse {
+      0%   { filter: brightness(0.9) saturate(0.9) drop-shadow(0 4px 10px rgba(201,147,74,0)); }
+      50%  { filter: brightness(1.08) saturate(1.15) drop-shadow(0 8px 24px rgba(201,147,74,0.35)); }
+      100% { filter: brightness(0.9) saturate(0.9) drop-shadow(0 4px 10px rgba(201,147,74,0)); }
+    }
+    @keyframes boxShine {
+      0%        { left: -75%; opacity: 0; }
+      15%       { opacity: 1; }
+      45%       { left: 130%; opacity: 1; }
+      50%, 100% { left: 130%; opacity: 0; }
+    }
+
+    /* ─── SPLIT SECTION ─── */
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 60vh;
+    }
+    .split-photo {
+      position: relative; overflow: hidden;
+    }
+    .split-photo::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 140px;
+      background: linear-gradient(to bottom, transparent, var(--dark));
+      pointer-events: none;
+      z-index: 2;
+    }
+    .split-photo img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform 6s ease;
+    }
+    .split:hover .split-photo img { transform: scale(1.03); }
+    .split-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(11,8,6,0.1), rgba(11,8,6,0.35));
+    }
+    .split-text {
+      background: var(--dark);
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 80px 72px;
+    }
+    .split-text--light { background: var(--surface); }
+
+    /* Ingredient list */
+    .ingredients {
+      display: flex; flex-direction: column; gap: 0;
+      margin-top: 32px;
+    }
+    .ingredient {
+      display: flex; align-items: center; gap: 20px;
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(201,147,74,0.1);
+      transition: border-color 0.3s ease, padding-left 0.35s cubic-bezier(.16,1,.3,1);
+      cursor: default;
+    }
+    .ingredient:hover {
+      border-color: rgba(201,147,74,0.25);
+      padding-left: 6px;
+    }
+    .ingredient:last-child { border-bottom: none; }
+    .ingredient-num {
+      font-family: var(--serif); font-size: 26px; font-weight: 300;
+      color: rgba(201,147,74,0.25); flex-shrink: 0; width: 32px;
+      line-height: 1;
+      transition: color 0.35s ease;
+    }
+    .ingredient:hover .ingredient-num {
+      color: rgba(201,147,74,0.55);
+    }
+    .ingredient-name {
+      font-family: var(--serif); font-size: 18px; font-weight: 400;
+      color: var(--cream); flex: 1;
+      transition: color 0.35s ease, text-shadow 0.35s ease;
+    }
+    .ingredient:hover .ingredient-name {
+      color: rgba(245,237,224,0.97);
+      text-shadow: 0 0 20px rgba(245,237,224,0.08);
+    }
+    .ingredient-desc {
+      font-size: 11px; letter-spacing: 0.08em; color: var(--gold); text-align: right;
+      transition: color 0.35s ease, opacity 0.35s ease;
+      opacity: 0.6;
+    }
+    .ingredient:hover .ingredient-desc {
+      color: var(--gold2);
+      opacity: 1;
+    }
+
+    /* ─── FEATURES CARDS ─── */
+    .features-section {
+      background: var(--surface);
+      padding: 100px 72px;
+    }
+    .features-header { text-align: center; margin-bottom: 72px; }
+    .features-grid-wrap {
+      position: relative;
+      padding: 1px;
+      border-radius: 2px;
+    }
+    .features-grid-wrap::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 2px;
+      background: linear-gradient(
+        135deg,
+        rgba(201,147,74,0.0),
+        rgba(201,147,74,0.3),
+        rgba(240,201,138,0.45),
+        rgba(201,147,74,0.05),
+        rgba(201,147,74,0.0),
+        rgba(201,147,74,0.28),
+        rgba(240,201,138,0.38),
+        rgba(201,147,74,0.0)
+      );
+      background-size: 300% 300%;
+      animation: borderShimmer 8s linear infinite;
+    }
+    @keyframes borderShimmer {
+      0%   { background-position: 0% 0%;     filter: brightness(0.9); }
+      50%  { background-position: 100% 100%; filter: brightness(1.1); }
+      100% { background-position: 0% 0%;     filter: brightness(0.9); }
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      position: relative;
+      z-index: 1;
+      overflow: visible;
+    }
+    .feature-card {
+      background: var(--dark);
+      padding: 48px 36px;
+      text-align: center;
+      border: 1px solid transparent;
+      transition: background 0.3s, transform 0.4s cubic-bezier(.16,1,.3,1), box-shadow 0.4s, border-color 0.3s;
+      cursor: default;
+      position: relative;
+    }
+    .feature-card:hover {
+      background: var(--surface);
+      transform: scale(1.03);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      border-color: rgba(201,147,74,0.35);
+      z-index: 3;
+    }
+    .feature-icon {
+      width: 48px; height: 48px; margin: 0 auto 24px;
+      border-radius: 50%;
+      border: 1px solid rgba(201,147,74,0.2);
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(201,147,74,0.05);
+      transform-origin: center center;
+    }
+    .feature-icon svg { stroke: var(--gold); }
+    .feature-title,
+    h3.feature-title {
+      font-family: var(--serif); font-size: 19px; font-weight: 400;
+      margin: 0 0 12px 0; padding: 0; color: var(--cream);
+      transition: color 0.3s, text-shadow 0.3s; cursor: default;
+      line-height: inherit;
+    }
+    .feature-card:hover .feature-title,
+    .feature-card:hover h3.feature-title {
+      color: rgba(245,237,224,0.97);
+      text-shadow: 0 0 20px rgba(245,237,224,0.1);
+    }
+    .feature-text { font-size: 13px; line-height: 1.7; color: var(--muted); }
+
+    /* ── Анимации иконок ── */
+    @keyframes heartbeat {
+      0%,100%{transform:scale(1)} 15%{transform:scale(1.4)} 30%{transform:scale(1)} 45%{transform:scale(1.2)} 60%{transform:scale(1)}
+    }
+    @keyframes spinMin { to { transform: rotate(360deg); } }
+    @keyframes spinHour { to { transform: rotate(360deg); } }
+    @keyframes flyHeart {
+      0%   { opacity:1; transform:translate(0,0) scale(1); }
+      100% { opacity:0; transform:translate(var(--tx),var(--ty)) scale(.3); }
+    }
+    @keyframes lidOpen {
+      0%   { transform: rotateX(0deg); }
+      100% { transform: rotateX(-62deg); }
+    }
+
+    .card-heart:hover .feature-icon {
+      transform: scale(2);
+      transform-origin: center center;
+      border-color: rgba(201,147,74,0.5);
+      box-shadow: 0 0 20px rgba(201,147,74,0.15);
+    }
+    .card-heart:hover .heart-svg { animation: none; }
+    .card-heart:hover img.heart-svg { animation: none; opacity: 1; transform: scale(1); }
+    .card-taste:hover .heart-svg { animation: heartbeat .7s ease infinite; }
+
+    @keyframes spinMin  { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes spinHour { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .clock-min-g  { transform-origin: 0 0; }
+    .clock-hour-g { transform-origin: 0 0; }
+    .card-clock:hover .clock-min-g  { animation: spinMin  2s  linear infinite; }
+    .card-clock:hover .clock-hour-g { animation: spinHour 12s linear infinite; }
+
+    .box-lid { transform-origin: center top; transform-style: preserve-3d; transform-box: fill-box; backface-visibility: visible; -webkit-backface-visibility: visible; }
+    .card-box:hover .box-lid { animation: lidOpen .4s cubic-bezier(.16,1,.3,1) forwards; }
+    .feature-icon { perspective: 120px; }
+
+    .heart-particle {
+      position: absolute; pointer-events: none;
+      font-size: 11px; color: var(--gold); opacity: 0;
+    }
+    .card-taste:hover .heart-particle { animation: flyHeart .9s ease forwards; }
+    .heart-particle:nth-child(1){left:28%;top:42%;--tx:-20px;--ty:-28px;animation-delay:.00s}
+    .heart-particle:nth-child(2){left:62%;top:38%;--tx: 22px;--ty:-32px;animation-delay:.10s}
+    .heart-particle:nth-child(3){left:45%;top:46%;--tx: -6px;--ty:-36px;animation-delay:.20s}
+    .heart-particle:nth-child(4){left:22%;top:50%;--tx:-28px;--ty:-20px;animation-delay:.05s}
+    .heart-particle:nth-child(5){left:72%;top:48%;--tx: 28px;--ty:-22px;animation-delay:.15s}
+
+
+    /* ─── STYLE BAND ─── */
+    .style-band {
+      position: relative;
+      height: 50vh; min-height: 320px;
+      overflow: hidden;
+      background: #0d0905;
+    }
+    .style-band-photo {
+      position: absolute; inset: 0;
+      background: url('../img/meringue_roll_bg.webp') center/cover no-repeat;
+      opacity: 0.08;
+    }
+    .style-band-grid {
+      position: absolute; inset: -15%;
+      background-image:
+        linear-gradient(rgba(201,147,74,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,147,74,0.07) 1px, transparent 1px);
+      background-size: 48px 48px;
+      transform: rotate(-8deg) scale(1.4);
+    }
+    .style-band-vignette {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 80% at 50% 50%, transparent 35%, rgba(13,9,5,0.88) 100%);
+    }
+    .style-band-fade-t {
+      position: absolute; top: 0; left: 0; right: 0; height: 80px;
+      background: linear-gradient(to bottom, var(--dark), transparent);
+    }
+    .style-band-fade-b {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
+      background: linear-gradient(to top, var(--surface), transparent);
+    }
+    .style-band-content {
+      position: absolute; inset: 0; z-index: 2;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 0 24px;
+    }
+    .style-band-line {
+      width: 40px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      margin-bottom: 24px;
+    }
+    .style-band-quote {
+      font-family: var(--serif); font-style: italic; font-weight: 300;
+      font-size: clamp(28px, 4vw, 58px);
+      color: rgba(245,237,224,0.9);
+      letter-spacing: 0.03em; line-height: 1.15;
+      margin-bottom: 18px;
+      text-shadow: 0 4px 40px rgba(0,0,0,0.4);
+    }
+    .style-band-quote em { font-style: italic; color: var(--gold2); }
+    .style-band-sub {
+      font-family: var(--sans); font-size: 10px; font-weight: 500;
+      letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+      opacity: 0.85; cursor: default; display: inline-block;
+      transition: letter-spacing 0.4s, color 0.4s, opacity 0.4s;
+    }
+    .style-band-sub:hover { letter-spacing: 0.4em; color: var(--gold2); opacity: 1; }
+
+    /* ─── PARALLAX BAND ─── */
+    .parallax-band {
+      position: relative;
+      height: 50vh; min-height: 340px;
+      overflow: hidden;
+    }
+    .parallax-img {
+      position: absolute; inset: -20%;
+      background-size: cover; background-position: center;
+      will-change: transform;
+    }
+    .parallax-band::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(11,8,6,0.55) 0%, rgba(11,8,6,0.2) 50%, rgba(11,8,6,0.55) 100%);
+      z-index: 1;
+    }
+    .parallax-label {
+      position: absolute; inset: 0; z-index: 2;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 0 24px;
+    }
+    .parallax-quote {
+      font-family: var(--serif); font-style: italic;
+      font-size: clamp(28px, 4vw, 58px); font-weight: 300;
+      color: rgba(245,237,224,0.9);
+      letter-spacing: 0.03em;
+      text-shadow: 0 4px 40px rgba(0,0,0,0.4);
+      margin-bottom: 16px;
+    }
+    .parallax-sub {
+      font-family: var(--sans); font-size: 10px; font-weight: 500;
+      letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold);
+    }
+
+    /* ─── ORDER SECTION ─── */
+    .order-section {
+      background: var(--ink);
+      padding: 120px 72px;
+      position: relative;
+      overflow: hidden;
+    }
+    .order-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 120px;
+      background: linear-gradient(to bottom, var(--dark), transparent);
+      pointer-events: none;
+      z-index: 2;
+    }
+    @media (max-width: 1024px) {
+      .order-section::after { display: none; }
+    }
+    .order-inner {
+      max-width: 760px; margin: 0 auto; text-align: center;
+    }
+    .order-divider {
+      width: 1px; height: 60px;
+      background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+      margin: 0 auto 48px;
+    }
+    .price-card {
+      position: relative;
+      display: inline-flex; flex-direction: column; align-items: center;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(201,147,74,0.2);
+      border-radius: 24px;
+      padding: 56px 80px;
+      margin: 40px 0 56px;
+      overflow: hidden;
+      transition: border-color 0.5s ease, background 0.5s ease, box-shadow 0.5s ease;
+      cursor: default;
+    }
+    .price-card:hover {
+      border-color: rgba(201,147,74,0.45);
+      background: rgba(255,255,255,0.02);
+      box-shadow: none;
+    }
+    .price-card::before {
+      content: '';
+      position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
+      width: 60%; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      transition: width 0.5s ease, opacity 0.5s ease;
+    }
+    .price-card:hover::before {
+      width: 85%;
+      opacity: 0.6;
+      filter: brightness(1.0);
+    }
+    .price-card::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(201,147,74,0.06), transparent 65%);
+      transition: opacity 0.5s ease;
+    }
+    .price-card:hover::after {
+      opacity: 0.15;
+    }
+    .price-card-label {
+      font-size: 10px; font-weight: 500; letter-spacing: 0.28em;
+      text-transform: uppercase; color: var(--gold);
+      margin-bottom: 16px; position: relative; z-index: 1;
+      transition: letter-spacing 0.4s ease, color 0.4s ease;
+    }
+    .price-card:hover .price-card-label {
+      letter-spacing: 0.36em;
+      color: var(--gold2);
+    }
+    .price-card-num {
+      font-family: var(--serif); font-size: 80px; font-weight: 600;
+      color: var(--gold); line-height: 1; position: relative; z-index: 1;
+      transition: transform 0.4s cubic-bezier(.16,1,.3,1), color 0.4s ease, text-shadow 0.4s ease;
+    }
+    .price-card:hover .price-card-num {
+      transform: scale(1.06);
+      color: var(--gold3);
+      text-shadow: 0 0 30px rgba(201,147,74,0.35);
+    }
+    .price-card-rub { font-size: 40px; vertical-align: super; }
+    .price-card-note {
+      font-size: 13px; color: var(--muted); margin-top: 12px; position: relative; z-index: 1;
+      transition: transform 0.4s cubic-bezier(.16,1,.3,1) 0.05s, color 0.4s ease, letter-spacing 0.4s ease;
+    }
+    .price-card:hover .price-card-note {
+      transform: scale(1.04);
+      color: rgba(237,224,204,0.75);
+      letter-spacing: 0.04em;
+    }
+    .price-card-tags {
+      display: flex; gap: 8px; margin-top: 20px; position: relative; z-index: 1;
+      transition: transform 0.4s cubic-bezier(.16,1,.3,1) 0.1s;
+    }
+    .price-card:hover .price-card-tags {
+      transform: scale(1.04);
+    }
+    .pct {
+      font-size: 10px; letter-spacing: 0.14em; color: var(--gold2);
+      padding: 4px 12px; border: 1px solid rgba(201,147,74,0.25); border-radius: 20px;
+      transition: border-color 0.3s ease, color 0.3s ease, background 0.3s ease,
+                  transform 0.3s cubic-bezier(.16,1,.3,1), box-shadow 0.3s ease, letter-spacing 0.3s ease;
+      cursor: default;
+      position: relative;
+    }
+    .price-card:hover .pct {
+      border-color: rgba(201,147,74,0.5);
+      color: var(--gold3);
+      background: rgba(201,147,74,0.06);
+    }
+    .pct:hover {
+      transform: translateY(-3px) scale(1.08);
+      border-color: rgba(201,147,74,0.75) !important;
+      color: var(--gold3) !important;
+      background: rgba(201,147,74,0.12) !important;
+      box-shadow: 0 4px 16px rgba(201,147,74,0.15), 0 0 12px rgba(201,147,74,0.08);
+      letter-spacing: 0.18em;
+    }
+    .pc-ingredient {
+      transition: color 0.25s ease, text-shadow 0.25s ease;
+      cursor: default;
+    }
+    .pc-ingredient:hover {
+      color: rgba(245,237,224,0.95);
+      text-shadow: 0 0 12px rgba(245,237,224,0.3);
+    }
+
+    .brand-premium {
+      font-style: italic;
+      color: var(--gold2);
+      display: inline-block;
+      cursor: default;
+      position: relative;
+      transition: letter-spacing 0.5s ease, filter 0.5s ease;
+    }
+    .brand-premium::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: -3px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(201,147,74,0.6), transparent);
+      transform: scaleX(0);
+      transition: transform 0.5s cubic-bezier(.16,1,.3,1);
+    }
+    .brand-premium::before {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; top: -3px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(201,147,74,0.6), transparent);
+      transform: scaleX(0);
+      transition: transform 0.5s cubic-bezier(.16,1,.3,1) 0.08s;
+    }
+    .brand-premium:hover::before {
+      transform: scaleX(1);
+    }
+    .brand-premium:hover {
+      letter-spacing: 0.06em;
+      filter: drop-shadow(0 0 12px rgba(201,147,74,0.35)) drop-shadow(0 0 28px rgba(201,147,74,0.15));
+      animation: brandPremium 1.8s ease forwards;
+    }
+    .brand-premium:hover::after {
+      transform: scaleX(1);
+    }
+    @keyframes brandPremium {
+      0%   { color: var(--gold2); }
+      30%  { color: #f5dba0; }
+      60%  { color: var(--gold3); }
+      100% { color: #f5dba0; }
+    }
+
+    /* ─── REVIEWS ─── */
+    .reviews-section {
+      background: var(--dark);
+      padding: 100px 72px;
+      position: relative;
+    }
+    .reviews-section::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 120px;
+      background: linear-gradient(to bottom, transparent, var(--dark));
+      pointer-events: none;
+      z-index: 2;
+    }
+    .reviews-header { text-align: center; margin-bottom: 64px; }
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+    }
+    .review-card {
+      background: rgba(255,255,255,0.02);
+      padding: 40px 36px;
+      border: 1px solid rgba(201,147,74,0.06);
+      transition: border-color 0.3s, background 0.3s, transform 0.4s cubic-bezier(.16,1,.3,1), box-shadow 0.4s;
+      cursor: default;
+    }
+    .review-card:hover {
+      border-color: rgba(201,147,74,0.18);
+      background: rgba(255,255,255,0.035);
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,147,74,0.12);
+    }
+    .review-stars { color: var(--gold); font-size: 14px; letter-spacing: 2px; margin-bottom: 18px; }
+    .review-text { font-size: 14px; line-height: 1.8; color: var(--muted); margin-bottom: 24px; font-style: italic; }
+    .review-author { display: flex; align-items: center; gap: 12px; }
+    .review-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--serif); font-size: 17px; color: #fff; flex-shrink: 0;
+      transition: transform 0.3s cubic-bezier(.16,1,.3,1), box-shadow 0.3s;
+    }
+    .review-card:hover .review-avatar { transform: scale(1.08); box-shadow: 0 0 12px rgba(201,147,74,0.2); }
+    .review-name {
+      font-family: var(--serif); font-size: 16px; font-weight: 400; color: var(--cream);
+      transition: color 0.3s, text-shadow 0.3s; cursor: default;
+    }
+    .review-card:hover .review-name { color: rgba(245,237,224,0.97); text-shadow: 0 0 16px rgba(245,237,224,0.1); }
+    .review-date { font-size: 11px; letter-spacing: 0.08em; color: var(--muted); transition: color 0.3s, letter-spacing 0.3s; cursor: default; }
+    .review-card:hover .review-date { color: var(--gold2); letter-spacing: 0.12em; }
+
+    /* ─── DELIVERY ─── */
+    .delivery-section {
+      position: relative;
+      padding: 100px 72px;
+      overflow: hidden;
+    }
+    .delivery-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 120px;
+      background: linear-gradient(to bottom, var(--dark), transparent);
+      pointer-events: none;
+      z-index: 2;
+    }
+    .delivery-section::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 120px;
+      background: linear-gradient(to bottom, transparent, var(--ink));
+      pointer-events: none;
+      z-index: 2;
+    }
+    .delivery-bg {
+      position: absolute; inset: 0;
+      background: url('../img/meringue_roll_4.webp') center / cover no-repeat;
+      filter: brightness(0.12) saturate(0.5);
+    }
+    .delivery-inner { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; }
+    .delivery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 56px;
+    }
+    .dc {
+      background: rgba(11,8,6,0.8);
+      backdrop-filter: blur(8px);
+      padding: 44px 36px;
+      border: 1px solid rgba(201,147,74,0.1);
+      transition: border-color 0.3s, background 0.3s, transform 0.4s cubic-bezier(.16,1,.3,1), box-shadow 0.4s;
+      cursor: default;
+    }
+    .dc:hover {
+      border-color: rgba(201,147,74,0.3);
+      background: rgba(28,18,12,0.95);
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,147,74,0.18);
+    }
+    .dc-icon {
+      width: 48px; height: 48px;
+      background: rgba(201,147,74,0.12);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
+    }
+    .dc-title {
+      font-family: var(--serif); font-size: 21px; margin-bottom: 10px; color: var(--cream);
+      transition: color 0.3s, text-shadow 0.3s; cursor: default;
+    }
+    .dc:hover .dc-title { color: rgba(245,237,224,0.97); text-shadow: 0 0 20px rgba(245,237,224,0.08); }
+    .dc-text { font-size: 13px; line-height: 1.75; color: var(--muted); }
+
+    /* ─── CITIES ─── */
+    .cities-section {
+      background: var(--ink);
+      padding: 80px 72px;
+      position: relative;
+    }
+    .cities-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 100px;
+      background: linear-gradient(to bottom, var(--ink), transparent);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .cities-header { text-align: center; margin-bottom: 56px; }
+    .cities-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      border: 1px solid rgba(201,147,74,0.1);
+      gap: 0;
+    }
+    .city-item {
+      padding: 24px 20px;
+      background: rgba(255,255,255,0.015);
+      border: 1px solid transparent;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .city-item:hover { background: rgba(201,147,74,0.05); border-color: rgba(201,147,74,0.18); }
+    .city-name {
+      font-family: var(--serif); font-size: 16px; margin-bottom: 4px; color: var(--cream);
+      transition: color 0.3s ease, letter-spacing 0.3s ease;
+    }
+    .city-item:hover .city-name {
+      color: #fff;
+      letter-spacing: 0.03em;
+    }
+    .city-dist {
+      font-size: 10px; color: var(--gold); letter-spacing: 0.1em;
+      transition: color 0.3s ease, letter-spacing 0.3s ease;
+    }
+    .city-item:hover .city-dist {
+      color: var(--gold3);
+      letter-spacing: 0.14em;
+    }
+
+    /* ─── FOOTER ─── */
+    .site-footer {
+      background: var(--dark);
+      border-top: 1px solid rgba(201,147,74,0.1);
+      padding: 56px 72px;
+    }
+    .footer-inner {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+    .footer-brand-name {
+      font-family: var(--serif); font-size: 20px; letter-spacing: 0.18em; color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 4px; cursor: default; display: inline-block;
+      transition: text-shadow 0.4s ease, letter-spacing 0.4s ease;
+      background: linear-gradient(90deg, #a07030 0%, #c9934a 40%, #d9a45a 55%, #c9934a 65%, #a07030 100%);
+      background-size: 300% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .footer-brand-name:hover {
+      letter-spacing: 0.26em;
+      text-shadow: none;
+      animation: brandShimmer 1.6s ease forwards;
+      filter: drop-shadow(0 0 8px rgba(201,147,74,0.4));
+    }
+    @keyframes brandShimmer {
+      0%   { background-position: 100% center; }
+      100% { background-position: 0% center; }
+    }
+    .footer-brand-desc { font-size: 13px; line-height: 1.7; color: var(--muted); }
+    .footer-socials { display: flex; gap: 14px; margin-top: 24px; }
+    .footer-social {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 1px solid rgba(201,147,74,0.2);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted); text-decoration: none;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    .footer-social:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,147,74,0.08); }
+    .footer-col-title {
+      font-family: var(--serif); font-size: 15px; letter-spacing: 0.06em; color: var(--cream);
+      margin-bottom: 18px; cursor: default; display: inline-block;
+      transition: color 0.35s, letter-spacing 0.35s, text-shadow 0.35s;
+    }
+    .footer-col-title:hover {
+      color: var(--gold2);
+      letter-spacing: 0.1em;
+      text-shadow: 0 0 14px rgba(201,147,74,0.2);
+    }
+    .footer-col a, .footer-col p {
+      display: block; font-size: 13px; color: var(--muted); text-decoration: none;
+      margin-bottom: 10px; line-height: 1.5;
+      transition: color 0.25s ease, padding-left 0.25s ease;
+    }
+    .footer-col a:hover { color: var(--gold2); padding-left: 4px; }
+    .footer-bottom {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 28px;
+      border-top: 1px solid rgba(201,147,74,0.08);
+      font-size: 12px; letter-spacing: 0.08em; color: rgba(237,224,204,0.3);
+    }
+    .footer-bottom a { color: rgba(237,224,204,0.3); text-decoration: none; transition: color 0.4s, letter-spacing 0.4s; }
+    .footer-bottom a:hover { color: var(--gold2); letter-spacing: 0.06em; }
+
+    /* [NM-4 FIXED] ~35 lines of dead .bottom-nav CSS removed.
+       nav.js builds .mc-nav, not .bottom-nav — no element in this page uses .bottom-nav.
+       These styles were parsed by the browser on every load without applying to anything. */
+
+    /* ─── MOBILE STICKY CTA ─── */
+    .mobile-sticky-cta {
+      display: none; position: fixed;
+      bottom: calc(76px + env(safe-area-inset-bottom)); right: 16px; z-index: 90;
+      background: #25D366; color: #fff; padding: 12px 20px; border-radius: 50px;
+      font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 500;
+      text-decoration: none; align-items: center; gap: 8px;
+      box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.3s, transform 0.3s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    @media (max-width: 768px) {
+      .mobile-sticky-cta { display: flex; }
+      .mobile-sticky-cta.visible { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── BACK TO TOP ─── */
+    .back-top {
+      position: fixed; bottom: 32px; right: 32px;
+      width: 48px; height: 48px; border-radius: 50%;
+      background: rgba(201,147,74,0.12);
+      border: 1px solid rgba(201,147,74,0.3);
+      color: var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 100;
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s, background 0.2s, transform 0.2s;
+    }
+    .back-top.show { opacity: 1; visibility: visible; }
+    .back-top:hover { background: rgba(201,147,74,0.25); transform: translateY(-3px); }
+
+    .order-btns {
+      display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+    }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── MOBILE ─── */
+    @media (max-width: 1024px) {
+      .hero { grid-template-columns: 1fr; min-height: auto; }
+      .hero-photo { height: 55vw; min-height: 320px; }
+      .hero-photo img {
+        position: absolute; /* оставляем absolute — правильнее чем static для cover */
+        inset: 0;
+        width: 100%; height: 100%;
+        object-fit: cover;
+        animation: none; /* убираем zoom-анимацию на мобиле */
+        transform: scale(1);
+      }
+      .hero-photo-overlay { background: linear-gradient(to bottom, rgba(11,8,6,0) 40%, var(--ink) 100%); }
+      .hero-content { padding: 40px 32px 72px; }
+      .gallery-strip { grid-template-columns: 1fr 1fr; grid-template-rows: 200px 200px 200px; height: auto; }
+      .gallery-item:first-child { grid-column: 1 / 3; grid-row: 1 / 2; }
+      .split { grid-template-columns: 1fr; }
+      .split-photo { height: 60vw; min-height: 260px; }
+      .split-text { padding: 56px 32px; }
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .reviews-grid { grid-template-columns: 1fr; }
+      .delivery-grid { grid-template-columns: 1fr; }
+      .cities-grid { grid-template-columns: repeat(4, 1fr); }
+      .footer-inner { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      /* [NM-26] iOS Safari stacking-context bug: filter on position:absolute inside
+         overflow:hidden causes image to leak outside container (WebKit #240958).
+         Removing filter entirely on mobile for roll-float and box-float. */
+      .roll-float, .box-float { filter: none; }
+
+      /* ── Header ── */
+      /* [NM-25 FIXED] Added safe-area horizontal padding — without it the logo
+         and Order button could be hidden behind the notch in landscape on iPhone 12+. */
+      .site-hdr {
+        height: 60px;
+        padding-left:  max(20px, env(safe-area-inset-left));
+        padding-right: max(20px, env(safe-area-inset-right));
+      }
+      .hdr-back { display: none; }
+      .breadcrumb { top: 70px; left: 20px; }
+
+      /* ── Hero — iOS Safari dvh fix ── */
+      .hero { min-height: 100vh; min-height: 100dvh; min-height: -webkit-fill-available; }
+      .hero-title { font-size: clamp(36px, 9vw, 56px); }
+      .hero-content { padding: 28px 20px 60px; }
+
+      /* ── Gallery ── */
+      .gallery-strip { grid-template-columns: 1fr 1fr; grid-template-rows: 160px 130px 130px; height: auto; gap: 2px; }
+      .gallery-item:first-child { grid-column: 1 / 3; grid-row: 1 / 2; }
+
+      /* ── Split блоки ── */
+      .split { grid-template-columns: 1fr; }
+      .split-photo { height: 60vw; min-height: 240px; }
+      .split-text { padding: 48px 20px; }
+
+      /* ── PNG рулеты — мобильная версия ── */
+      .split-right-rolls {
+        min-height: 60vw;
+        overflow: hidden; /* явно, на случай если родитель теряет overflow из-за transform */
+      }
+      .roll-float {
+        width: 90%;          /* было 120% — вылезало за контейнер */
+        left: 50%;
+        top: 0%;
+        bottom: auto;
+        transform: translateX(-50%);
+        /* [NM-26 FIXED] filter:brightness on position:absolute inside overflow:hidden
+           creates a new stacking context in iOS Safari (WebKit #240958) — image "leaks"
+           outside the container. Removed filter entirely on mobile. */
+        animation: none;
+        filter: none;
+        opacity: 0.75;
+      }
+      .box-float {
+        width: 44%;
+        left: 50%;
+        top: auto;
+        bottom: 4%;          /* было top:72% — уезжало за низ контейнера */
+        transform: translateX(-25%);
+        right: auto;
+        /* [NM-26 FIXED] Same iOS Safari stacking context bug — filter removed. */
+        animation: none;
+        filter: none;
+        opacity: 0.5;
+      }
+
+      /* ── Секции — отступы ── */
+      .features-section { padding: 60px 20px; }
+      .reviews-section, .order-section,
+      .delivery-section, .cities-section { padding: 60px 20px; }
+
+      /* ── Feature grid — 1 колонка ── */
+      .features-grid { grid-template-columns: 1fr; gap: 1px; }
+      .feature-card { padding: 32px 24px; }
+
+      /* ── Карточки hover — на touch триггер по tap ── */
+      .feature-card:hover { transform: none; box-shadow: none; }
+      .feature-card:active { background: var(--surface); transform: scale(0.98); }
+
+      /* ── Отзывы — 1 колонка ── */
+      .reviews-grid { grid-template-columns: 1fr; }
+      .review-card:hover { transform: none; box-shadow: none; }
+      .review-card:active { background: rgba(255,255,255,0.04); }
+
+      /* ── Доставка — 1 колонка ── */
+      .delivery-grid { grid-template-columns: 1fr; }
+      .dc:hover { transform: none; box-shadow: none; }
+      .dc:active { background: rgba(28,18,12,0.95); transform: scale(0.98); }
+
+      /* ── Города — 2 колонки ── */
+      .cities-grid { grid-template-columns: repeat(2, 1fr); }
+
+      /* ── Footer ── */
+      .footer-inner { grid-template-columns: 1fr; gap: 32px; }
+      .site-footer { padding: 48px 20px calc(48px + env(safe-area-inset-bottom)); }
+      .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+
+      /* ── Price card ── */
+      .price-card { padding: 40px 24px; }
+      .price-card-num { font-size: 60px; }
+
+      /* ── Кнопки — touch target 44px min ── */
+      .btn-primary, .btn-ghost, .btn-wa-green, .hdr-order {
+        min-height: 44px;
+        padding-top: 12px;
+        padding-bottom: 12px;
+      }
+      .order-btns { flex-direction: column; align-items: center; }
+      .order-btns a { width: 100%; max-width: 360px; justify-content: center; }
+
+      /* ── Back to top — выше bottom-nav ── */
+      .back-top { bottom: calc(76px + env(safe-area-inset-bottom)); right: 20px; }
+
+      /* ── Style band текст ── */
+      .style-band-quote { font-size: clamp(24px, 7vw, 40px); }
+
+      /* ── Отступ под bottom-nav ── */
+      body { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
+
+      /* Коробка под списком деталей — мобиль */
+      .box-float-mobile-wrap {
+        display: block;
+        width: 140px;
+        margin: 20px auto 0;
+        position: relative;
+        overflow: hidden;
+        border-radius: 6px;
+        animation: boxPulse 3.2s ease-in-out infinite;
+      }
+      .box-float-mobile-wrap::after {
+        content: '';
+        position: absolute;
+        top: -60%;
+        left: -75%;
+        width: 50%;
+        height: 220%;
+        background: linear-gradient(105deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.36) 50%, rgba(255,255,255,0) 100%);
+        transform: skewX(-15deg);
+        animation: boxShine 3.2s ease-in-out infinite;
+        pointer-events: none;
+        z-index: 2;
+      }
+      .box-float-mobile {
+        display: block;
+        width: 140px;
+        position: relative;
+        z-index: 1;
+      }
+
+    /* ── iOS Safari — 100vh fix ── */
+    @supports (-webkit-touch-callout: none) {
+      .hero { min-height: -webkit-fill-available; }
+    }
+
+    /* ── Убираем hover-анимации на touch-устройствах ── */
+    @media (hover: none) {
+      .feature-card:hover,
+      .review-card:hover,
+      .dc:hover { transform: none; box-shadow: none; background: inherit; }
+      .card-heart:hover .heart-svg { animation: none; }
+      .card-clock:hover .clock-min-g,
+      .card-clock:hover .clock-hour-g { animation: none; }
+      .card-box:hover .box-lid { animation: none; }
+      .card-taste:hover .heart-particle { animation: none; }
+      .split:hover .roll-float,
+      .split:hover .box-float { transform: none; }
+      /* filter-анимации ломают overflow:hidden на iOS — отключаем */
+      .roll-float { animation: none; }
+      .box-float  { animation: none; }
+      .gallery-item:hover img { transform: none; }
+      .btn-primary:hover, .btn-ghost:hover { transform: none; }
+    }
+
+    /* ── Reduced motion ── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+    } /* ← закрывает @media (max-width: 768px) */
+
+    .lb-overlay { display: none; position: fixed; inset: 0; z-index: 10000; }
+    .lb-overlay.active { display: block; }
+    .lb-backdrop { position: absolute; inset: 0; z-index: 1; background: rgba(11,8,6,0.96); cursor: pointer; }
+    .lb-x { position: absolute; top: 24px; right: 28px; z-index: 4; background: transparent; border: none; color: rgba(237,224,204,0.5); font-size: 22px; cursor: pointer; line-height: 1; padding: 8px; }
+    .lb-x:hover { color: #c9934a; }
+    .lb-box { position: absolute; inset: 0; z-index: 2; display: flex; align-items: center; justify-content: center; padding: 80px 60px 100px; }
+    .lb-box img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; pointer-events: none; user-select: none; }
+    .lb-arrows { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: 3; display: flex; align-items: center; gap: 20px; }
+    .lb-arr-btn { background: rgba(201,147,74,0.1); border: 1px solid rgba(201,147,74,0.2); color: #c9934a; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .lb-arr-counter { font-size: 12px; letter-spacing: 0.12em; color: rgba(237,224,204,0.5); }
+    @media (max-width: 600px) {
+      .lb-box { padding: 70px 12px 80px; }
+      .lb-x { top: 16px; right: 16px; font-size: 26px; padding: 10px; }
+    }
+  .skip-link {
+    position: absolute;
+    top: -999px;
+    left: -999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .skip-link:focus {
+    top: 0;
+    left: 0;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  </style>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Сколько стоит меренговый рулет на заказ в Санкт-Петербурге?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Меренговый рулет с малиной и крем чизом стоит 2 500 ₽. В стоимость входит фирменная коробка с окошком. Вес одного рулета — 1 100 г, рассчитан на 6–8 порций."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Из чего сделан меренговый рулет Milovi Cake?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Состав: воздушная меренга (взбитые белки, сахарная пудра), нежный крем чиз (сливочный сыр, сливки), свежая малина, декор из фисташек и шоколадных жемчужин. Рецепт безглютеновый."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Как заказать меренговый рулет с доставкой по СПб?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Заказать можно через WhatsApp, Telegram или по телефону +7 911 903 88 86. Принимаем заказы за 1–2 дня. Доставляем по всему Санкт-Петербургу и Ленинградской области."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Сколько хранится меренговый рулет?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Срок хранения — 48 часов в холодильнике. Рулет готовится в день доставки, поэтому всегда свежий."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Есть ли доставка меренгового рулета в пригороды Петербурга?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Да, доставляем в пригороды Санкт-Петербурга: Пушкин, Петергоф, Гатчину, Всеволожск, Мурино, Кудрово, Колпино, Сестрорецк и другие населённые пункты Ленобласти. Уточняйте стоимость и время при заказе."
+        }
+      }
+    ]
+  }
+  </script>
+
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-94ZZ5B8YNY"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-94ZZ5B8YNY');
+  </script>
+  <link rel="stylesheet" href="/css/premium-overrides.css?v=20260601" />
+</head>
+<body>
+<a href="#order" class="skip-link">Перейти к содержимому</a>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-line"></div>
+  <div class="loader-logo">Milovi Cake</div>
+  <div class="loader-line"></div>
+</div>
+
+<!-- ── SCROLL PROGRESS ── -->
+<div id="mrScrollProgress" style="position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,#c9934a,#d4a76a,#e8b87a);z-index:var(--z-nav,100);border-radius:0 2px 2px 0;transition:width 0.08s linear;box-shadow:0 0 8px rgba(201,147,74,0.5);pointer-events:none;"></div>
+
+<!-- ── MOBILE STICKY CTA ── -->
+<a href="https://wa.me/79119038886?text=Здравствуйте!%20Хочу%20заказать%20меренговый%20рулет" target="_blank" rel="noopener noreferrer" class="mobile-sticky-cta" id="mobileStickyWa" aria-label="Заказать меренговый рулет в WhatsApp" style="display:none;">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  Заказать рулет
+</a>
+
+<header class="site-hdr" id="siteHdr">
+  <a href="https://milovicake.ru/" class="hdr-logo">
+    Milovi Cake
+    <span class="hdr-logo-sub"><span class="sub-w">Частный кондитер</span> <span class="sub-w">·</span> <span class="sub-w">СПб</span></span>
+  </a>
+  <div class="hdr-right">
+    <a href="https://milovicake.ru/" class="hdr-back">← На главную</a>
+    <a href="#order" class="hdr-order">Заказать</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <!-- Breadcrumb inside hero -->
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="https://milovicake.ru/">Главная</a>
+    <span>›</span>
+    <span class="breadcrumb-current">Меренговый рулет</span>
+  </nav>
+
+  <!-- Photo side -->
+  <div class="hero-photo">
+    <img src="../img/meringue_roll.webp"
+         alt="Меренговый рулет с малиной от Milovi Cake — Санкт-Петербург"
+         fetchpriority="high" decoding="async" width="960" height="1080" />
+    <div class="hero-photo-overlay"></div>
+  </div>
+
+  <!-- Content side -->
+  <div class="hero-content">
+    <div class="hero-eyebrow"><span class="ht-word" style="transition:color 0.4s,letter-spacing 0.4s,text-shadow 0.4s;cursor:default;" onmouseenter="this.style.color='#e8b87a';this.style.letterSpacing='0.38em';this.style.textShadow='0 0 14px rgba(201,147,74,0.2)'" onmouseleave="this.style.color='';this.style.letterSpacing='';this.style.textShadow=''">Milovi Cake</span> · <span class="ht-word" style="transition:color 0.4s,letter-spacing 0.4s,text-shadow 0.4s;cursor:default;" onmouseenter="this.style.color='#e8b87a';this.style.letterSpacing='0.38em';this.style.textShadow='0 0 14px rgba(201,147,74,0.2)'" onmouseleave="this.style.color='';this.style.letterSpacing='';this.style.textShadow=''">Санкт-Петербург</span></div>
+    <h1 class="hero-title">
+      <span class="ht-word">Меренговый</span><br>
+      <em class="ht-em">рулет</em><br>
+      <span class="ht-word">на заказ <span class="spb-v">в</span>&nbsp;<span class="spb-tag" id="spbTag">СПб</span></span>
+    </h1>
+    <div class="hero-divider"></div>
+    <p class="hero-desc wave-text" id="heroDesc">
+      Воздушная меренга, нежный крем чиз и свежая малина — тает во рту, как облако. Ручная работа, безглютеновый рецепт, доставка по всему СПб и Ленобласти.
+    </p>
+
+    <div class="hero-price-block">
+      <div class="hero-price-num">2 500 ₽</div>
+      <div class="hero-price-meta">
+        <span class="hero-price-weight">1 100 г · один рулет</span>
+        <span class="hero-price-portions">≈ 6–8 порций</span>
+      </div>
+    </div>
+
+    <div class="hero-tags">
+      <span class="hero-tag">Безглютеновый</span>
+      <span class="hero-tag">Ручная работа</span>
+      <span class="hero-tag">Свежие ягоды</span>
+      <span class="hero-tag">Заказ за 1–2 дня</span>
+    </div>
+
+    <div class="hero-cta-group">
+      <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D1%8C%20%D0%BC%D0%B5%D1%80%D0%B5%D0%BD%D0%B3%D0%BE%D0%B2%D1%8B%D0%B9%20%D1%80%D1%83%D0%BB%D0%B5%D1%82%20%F0%9F%8D%B0"
+         target="_blank" rel="noopener noreferrer" class="btn-primary btn-wa-green"
+         aria-label="Заказать меренговый рулет через WhatsApp" title="Написать в WhatsApp и заказать меренговый рулет">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp
+      </a>
+      <a href="https://t.me/MiloviCake" target="_blank" rel="noopener noreferrer" class="btn-ghost"
+         aria-label="Заказать меренговый рулет в Telegram" title="Написать в Telegram Milovi Cake">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        Telegram
+      </a>
+      <a href="https://max.ru/+79119038886" target="_blank" rel="noopener noreferrer" class="btn-ghost">
+        <svg width="17" height="17" viewBox="0 0 135 151" fill="currentColor" aria-hidden="true"><g transform="translate(0,151) scale(0.1,-0.1)"><path d="M635 1183 c-113 -15 -227 -81 -295 -172 -94 -125 -112 -270 -61 -487 17 -72 31 -147 31 -166 0 -19 5 -39 12 -46 26 -26 111 -7 161 36 15 14 22 13 70 -14 48 -27 60 -29 153 -29 96 0 103 2 177 38 183 90 282 277 249 468 -42 244 -255 404 -497 372z m126 -225 c52 -15 117 -73 140 -122 11 -24 19 -64 19 -96 0 -154 -164 -262 -310 -204 -38 15 -42 15 -60 -1 -53 -48 -84 20 -78 170 3 77 9 109 25 140 54 103 155 146 264 113z"/></g></svg>
+        MAX
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- PHOTO GALLERY -->
+<div class="gallery-strip">
+  <div class="gallery-item" data-src="../img/meringue_roll_2.webp">
+    <img src="../img/meringue_roll_2.webp" alt="Меренговый рулет на заказ в СПб — срез, видна малина и крем чиз" loading="lazy" width="800" height="600" />
+    <div class="gallery-item-overlay"></div>
+  </div>
+  <div class="gallery-item" data-src="../img/meringue_roll_3.webp">
+    <img src="../img/meringue_roll_3.webp" alt="Воздушная меренга — текстура безе ручной работы, Milovi Cake" loading="lazy" width="800" height="600" />
+    <div class="gallery-item-overlay"></div>
+  </div>
+  <div class="gallery-item" data-src="../img/meringue_roll_5.webp">
+    <img src="../img/meringue_roll_5.webp" alt="Меренговый рулет с фисташками и малиной — крупный план, безглютеновый" loading="lazy" width="800" height="600" />
+    <div class="gallery-item-overlay"></div>
+  </div>
+  <div class="gallery-item" data-src="../img/meringue_roll_4.webp">
+    <img src="../img/meringue_roll_4.webp" alt="Меренговый рулет готов к подаче — авторский десерт на заказ в Петербурге" loading="lazy" width="800" height="600" />
+    <div class="gallery-item-overlay"></div>
+  </div>
+  <div class="gallery-item" data-src="../img/meringue_roll_6.webp">
+    <img src="../img/meringue_roll_6.webp" alt="Меренговый рулет в фирменной подарочной упаковке Milovi Cake" loading="lazy" width="800" height="600" />
+    <div class="gallery-item-overlay"></div>
+  </div>
+</div>
+
+<!-- SPLIT: COMPOSITION -->
+<div class="split">
+  <div class="split-text">
+    <span class="sec-label reveal" style="display:inline-block;transition:color 0.4s,letter-spacing 0.4s,text-shadow 0.4s;cursor:default;" onmouseenter="this.style.color='#e8b87a';this.style.letterSpacing='0.4em';this.style.textShadow='0 0 16px rgba(201,147,74,0.2)'" onmouseleave="this.style.color='';this.style.letterSpacing='';this.style.textShadow=''">Состав</span>
+    <h2 class="sec-title reveal rd1">
+      <span class="ht-word">Малина и крем чиз</span><br>
+      <em class="ht-em" style="font-size:0.6em;letter-spacing:0.04em;">— начинка меренгового рулета</em>
+    </h2>
+    <p class="sec-body wave-text reveal rd2">
+      Каждый рулет — это нежная, почти невесомая меренга, тающая во рту, с лёгким сливочным кремом чиз и свежей малиной. Никакой лишней сладости — только чистый, воздушный вкус.
+    </p>
+    <div class="ingredients reveal rd3">
+      <div class="ingredient">
+        <div class="ingredient-num">01</div>
+        <div class="ingredient-name">Меренга</div>
+        <div class="ingredient-desc">взбитые белки · сахарная пудра</div>
+      </div>
+      <div class="ingredient">
+        <div class="ingredient-num">02</div>
+        <div class="ingredient-name">Крем чиз</div>
+        <div class="ingredient-desc">сливочный сыр · сливки</div>
+      </div>
+      <div class="ingredient">
+        <div class="ingredient-num">03</div>
+        <div class="ingredient-name">Малина</div>
+        <div class="ingredient-desc">свежая ягода</div>
+      </div>
+      <div class="ingredient">
+        <div class="ingredient-num">04</div>
+        <div class="ingredient-name">Фисташки</div>
+        <div class="ingredient-desc">декор</div>
+      </div>
+      <div class="ingredient">
+        <div class="ingredient-num">05</div>
+        <div class="ingredient-name">Шоколадные жемчужины</div>
+        <div class="ingredient-desc">décor final</div>
+      </div>
+    </div>
+  </div>
+  <div class="split-photo">
+    <img src="../img/meringue_roll_5.webp" alt="Меренговый рулет — состав и текстура" loading="lazy" width="800" height="600" />
+    <div class="split-overlay"></div>
+  </div>
+</div>
+
+<!-- QUOTE BAND -->
+<div class="style-band">
+  <div class="style-band-photo"></div>
+  <div class="style-band-grid"></div>
+  <div class="style-band-vignette"></div>
+  <div class="style-band-fade-t"></div>
+  <div class="style-band-fade-b"></div>
+  <div class="style-band-content">
+    <div class="style-band-line"></div>
+    <div class="style-band-quote" style="text-shadow:0 2px 20px rgba(0,0,0,0.8),0 4px 60px rgba(0,0,0,0.6);"><span class="ht-word">Нежный,</span> <em class="ht-em">воздушный,</em><br><span class="ht-word">тает во рту</span></div>
+    <div class="style-band-line" style="margin-top:24px;margin-bottom:0;"></div>
+  </div>
+</div>
+
+<!-- SPLIT: DETAILS -->
+<div class="split">
+  <div class="split-photo">
+    <img src="../img/meringue_roll_6.webp" alt="Меренговый рулет в фирменной коробке" loading="lazy" width="800" height="600" />
+    <div class="split-overlay"></div>
+  </div>
+  <div class="split-text split-text--light" style="position:relative;overflow:hidden;">
+    <img class="roll-float" src="../img/meringue_rolls_cut.webp" alt="" aria-hidden="true" width="800" height="500" />
+    <img class="box-float" src="../img/meringue_box_nobg.webp" alt="" aria-hidden="true" width="600" height="600" />
+    <span class="sec-label reveal" style="display:inline-block;transition:color 0.4s,letter-spacing 0.4s,text-shadow 0.4s;cursor:default;" onmouseenter="this.style.color='#e8b87a';this.style.letterSpacing='0.4em';this.style.textShadow='0 0 16px rgba(201,147,74,0.2)'" onmouseleave="this.style.color='';this.style.letterSpacing='';this.style.textShadow=''">Детали заказа</span>
+    <h2 class="sec-title reveal rd1">
+      <span class="ht-word ht-word-wide">Вес и цена</span><br><em class="ht-em">меренгового рулета</em>
+    </h2>
+    <p class="sec-body wave-text reveal rd2">
+      Один рулет весит 1 100 г — этого хватит на 6–8 порций. Идеален для семейного чаепития, дня рождения или в качестве подарка.
+    </p>
+    <div class="ingredients reveal rd3">
+      <div class="ingredient">
+        <div class="ingredient-num" style="font-size:18px">₽</div>
+        <div class="ingredient-name" style="color:var(--gold)">2 500 ₽ — один рулет</div>
+        <div class="ingredient-desc">1 100 г</div>
+      </div>
+      <div class="ingredient">
+        <div class="ingredient-num">📦</div>
+        <div class="ingredient-name">Фирменная коробка</div>
+        <div class="ingredient-desc">с окошком</div>
+      </div>
+      <div class="ingredient">
+        <div class="ingredient-num">⏱</div>
+        <div class="ingredient-name">Срок хранения</div>
+        <div class="ingredient-desc">48 часов · холодильник</div>
+      </div>
+      <div class="ingredient">
+        <div class="ingredient-num">📅</div>
+        <div class="ingredient-name">Принимаем заказы</div>
+        <div class="ingredient-desc">за 1–2 дня</div>
+      </div>
+    </div>
+    <!-- Коробка — только мобиль, под списком -->
+    <div class="box-float-mobile-wrap">
+      <img class="box-float-mobile" src="../img/meringue_box_nobg.webp" alt="Фирменная коробка Milovi Cake" width="600" height="600" />
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="features-section">
+  <div class="features-header">
+    <h2 class="sec-title reveal rd1" style="text-align:center;"><span class="ht-word">Почему выбирают</span> <span class="brand-premium">Milovi Cake</span></h2>
+  </div>
+  <div class="features-grid-wrap"><div class="features-grid">
+    <!-- Ручная работа — тортик -->
+    <div class="feature-card card-heart reveal">
+      <div class="feature-icon" style="transition: transform 0.5s cubic-bezier(.16,1,.3,1), border-color 0.5s, box-shadow 0.5s;">
+        <img src="../img/icon-loading.webp" alt="" aria-hidden="true" width="30" height="30" style="width:30px;height:30px;object-fit:cover;border-radius:50%;opacity:0.85;transition:opacity 0.5s,transform 0.5s cubic-bezier(.16,1,.3,1);" class="heart-svg"/>
+      </div>
+      <h3 class="feature-title"><span class="ht-word">Ручная работа</span></h3>
+      <div class="feature-text wave-text">Каждый рулет создаётся вручную — никакого конвейера и полуфабрикатов</div>
+    </div>
+    <!-- Фирменная упаковка — открывается крышка -->
+    <div class="feature-card card-box reveal rd1">
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9934a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <g class="box-lid"><rect x="2" y="3" width="20" height="5" rx="1"/></g>
+          <rect x="3" y="8" width="18" height="13" rx="1"/>
+          <line x1="12" y1="8" x2="12" y2="21"/>
+        </svg>
+      </div>
+      <h3 class="feature-title"><span class="ht-word">Фирменная упаковка</span></h3>
+      <div class="feature-text wave-text">Рулет приедет в красивой коробке — готовый подарок, ничего не нужно дополнительно оформлять</div>
+    </div>
+    <!-- Тот самый вкус — разлетаются сердечки -->
+    <div class="feature-card card-taste reveal rd2">
+      <span class="heart-particle">♥</span>
+      <span class="heart-particle">♥</span>
+      <span class="heart-particle">♥</span>
+      <span class="heart-particle">♥</span>
+      <span class="heart-particle">♥</span>
+      <div class="feature-icon">
+        <svg class="heart-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9934a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      </div>
+      <h3 class="feature-title"><span class="ht-word">Тот самый вкус меренгового рулета</span></h3>
+      <div class="feature-text wave-text">Такую нежную меренгу с малиной сложно найти даже в хорошем кафе</div>
+    </div>
+    <!-- Свежесть — тикают часы -->
+    <div class="feature-card card-clock reveal rd3">
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9934a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <g transform="translate(12,12)">
+            <g class="clock-min-g"><line x1="0" y1="0" x2="0" y2="-5.5" stroke-width="1.8"/></g>
+            <g class="clock-hour-g"><line x1="0" y1="0" x2="3.5" y2="0" stroke-width="1.8"/></g>
+          </g>
+        </svg>
+      </div>
+      <h3 class="feature-title"><span class="ht-word">Свежесть</span></h3>
+      <div class="feature-text wave-text">Готовим в день доставки — всегда свежий десерт прямо к вашему столу</div>
+    </div>
+  </div></div>
+</section>
+
+<!-- STYLE BAND -->
+<div class="style-band">
+  <div class="style-band-photo"></div>
+  <div class="style-band-grid"></div>
+  <div class="style-band-vignette"></div>
+  <div class="style-band-fade-t"></div>
+  <div class="style-band-fade-b"></div>
+  <div class="style-band-content">
+    <div class="style-band-line"></div>
+    <div class="style-band-quote"><span class="ht-word">Создано</span><br><em class="ht-em">с любовью</em></div>
+    <div class="style-band-sub">5 лет опыта · 300+ довольных клиентов</div>
+  </div>
+</div>
+
+<!-- REVIEWS -->
+<section class="reviews-section">
+  <div class="reviews-header">
+    <span class="sec-label reveal" style="text-align:center;display:inline-block;transition:color 0.4s,letter-spacing 0.4s,text-shadow 0.4s;cursor:default;" onmouseenter="this.style.color='#e8b87a';this.style.letterSpacing='0.4em';this.style.textShadow='0 0 16px rgba(201,147,74,0.2)'" onmouseleave="this.style.color='';this.style.letterSpacing='';this.style.textShadow=''">Отзывы</span>
+    <h2 class="sec-title reveal rd1" style="text-align:center;"><span class="ht-word">Читайте отзывы</span><br><em class="ht-em">на картах</em></h2>
+    <p class="sec-body wave-text reveal rd2" style="text-align:center;max-width:420px;margin:16px auto 0;">
+      Все отзывы о наших десертах — на Яндекс Картах и Google Maps.
+    </p>
+  </div>
+  <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;" class="reveal rd3">
+    <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/reviews/"
+       target="_blank" rel="noopener noreferrer" class="btn-ghost" style="display:inline-flex;align-items:center;gap:10px;font-size:13px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#FC3F1D"/><path d="M13.18 7.2h-.92c-1.2 0-1.84.58-1.84 1.54 0 1.1.48 1.62 1.44 2.28l.8.54-2.28 3.44H8.9l2-3.13c-1.2-.9-1.76-1.76-1.76-3.16 0-1.86 1.22-2.92 3.16-2.92h2.3V17h-1.38V7.2z" fill="#fff"/></svg>
+      Яндекс Карты · ★ 4.8
+    </a>
+    <a href="https://maps.app.goo.gl/R3mdjxpnebUYMQES6"
+       target="_blank" rel="noopener noreferrer" class="btn-ghost" style="display:inline-flex;align-items:center;gap:10px;font-size:13px;">
+      <svg width="20" height="20" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-1 7.28-2.69l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      Google Maps · ★ 4.7
+    </a>
+  </div>
+</section>
+
+<!-- ORDER -->
+<section class="order-section" id="order">
+  <div class="order-inner">
+    <div class="order-divider reveal"></div>
+    <span class="sec-label reveal" style="text-align:center;display:inline-block;transition:color 0.4s,letter-spacing 0.4s,text-shadow 0.4s;cursor:default;" onmouseenter="this.style.color='#e8b87a';this.style.letterSpacing='0.4em';this.style.textShadow='0 0 16px rgba(201,147,74,0.2)'" onmouseleave="this.style.color='';this.style.letterSpacing='';this.style.textShadow=''">Оформить заказ</span>
+    <h2 class="sec-title reveal rd1" style="text-align:center;"><span class="ht-word">Готовы</span> <em class="ht-em">заказать?</em></h2>
+    <p class="sec-body wave-text reveal rd2" style="text-align:center;max-width:440px;margin:0 auto 0;">
+      Напишите нам удобным способом — ответим и согласуем дату и время доставки.
+    </p>
+
+    <div class="price-card reveal rd2">
+      <div class="price-card-label">Меренговый рулет · 1 100 г</div>
+      <div class="price-card-num"><span class="price-card-rub">₽</span>2 500</div>
+      <div class="price-card-note"><span class="pc-ingredient">Малина</span> · <span class="pc-ingredient">Крем чиз</span> · <span class="pc-ingredient">Фисташки</span></div>
+      <div class="price-card-tags">
+        <span class="pct">Безглютеновый</span>
+        <span class="pct">6–8 порций</span>
+        <span class="pct">48 ч хранения</span>
+      </div>
+    </div>
+
+    <div class="order-btns reveal rd3">
+      <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D1%8C%20%D0%BC%D0%B5%D1%80%D0%B5%D0%BD%D0%B3%D0%BE%D0%B2%D1%8B%D0%B9%20%D1%80%D1%83%D0%BB%D0%B5%D1%82%20%F0%9F%8D%B0"
+         target="_blank" rel="noopener noreferrer" class="btn-primary btn-wa-green">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp
+      </a>
+      <a href="https://t.me/MiloviCake" target="_blank" rel="noopener noreferrer" class="btn-ghost">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        Telegram
+      </a>
+      <a href="https://max.ru/+79119038886" target="_blank" rel="noopener noreferrer" class="btn-ghost">
+        <svg width="17" height="17" viewBox="0 0 135 151" fill="currentColor" aria-hidden="true"><g transform="translate(0,151) scale(0.1,-0.1)"><path d="M635 1183 c-113 -15 -227 -81 -295 -172 -94 -125 -112 -270 -61 -487 17 -72 31 -147 31 -166 0 -19 5 -39 12 -46 26 -26 111 -7 161 36 15 14 22 13 70 -14 48 -27 60 -29 153 -29 96 0 103 2 177 38 183 90 282 277 249 468 -42 244 -255 404 -497 372z m126 -225 c52 -15 117 -73 140 -122 11 -24 19 -64 19 -96 0 -154 -164 -262 -310 -204 -38 15 -42 15 -60 -1 -53 -48 -84 20 -78 170 3 77 9 109 25 140 54 103 155 146 264 113z"/></g></svg>
+        MAX
+      </a>
+      <a href="tel:+79119038886" class="btn-ghost">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c9934a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.07 2.18 2 2 0 012.03 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        +7 911 903 88 86
+      </a>
+    </div>
+    <p style="margin-top:20px;font-size:12px;color:var(--muted);text-align:center;" class="wave-text reveal">
+      Принимаем заказы за 1–2 дня · Ежедневно 10:00–20:00
+    </p>
+  </div>
+</section>
+
+<!-- DELIVERY -->
+<section class="delivery-section" itemscope itemtype="https://schema.org/Service">
+  <div class="delivery-bg"></div>
+  <div class="delivery-inner">
+    <h2 class="sec-title reveal rd1" style="text-align:center;"><span class="ht-word">Самовывоз</span><br>и <em class="ht-em">доставка</em></h2>
+    <div class="delivery-grid">
+      <div class="dc reveal">
+        <div class="dc-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c9934a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+          </svg>
+        </div>
+        <div class="dc-title">Яндекс Курьер</div>
+        <div class="dc-text wave-text">Можем оформить доставку через Яндекс Курьер — быстро и удобно. Стоимость зависит от адреса</div>
+      </div>
+      <div class="dc reveal rd1">
+        <div class="dc-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c9934a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </div>
+        <div class="dc-title">Наша доставка</div>
+        <div class="dc-text wave-text">При необходимости доставим сами — по СПб и ближайшим пригородам. Стоимость обсуждается индивидуально</div>
+      </div>
+      <div class="dc reveal rd2">
+        <div class="dc-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c9934a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
+        <div class="dc-title">Самовывоз</div>
+        <div class="dc-text wave-text">Пулковская ул., 19 — рядом с м. Звёздная. Удобное время согласуем при заказе</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- CITIES — Premium v2 (clickable links to /prigorody/) -->
+<section class="mr-cities" id="cities" aria-labelledby="mrCitiesTitle">
+  <div class="mr-cities__inner">
+    <span class="mr-cities__eyebrow reveal">Доставка по СПб и пригородам</span>
+    <h2 id="mrCitiesTitle" class="mr-cities__title reveal">Меренговый рулет — в любую точку <em style="font-style:italic;color:var(--gold,#c9934a)">Петербурга</em> и Ленобласти</h2>
+    <p class="mr-cities__sub reveal">Привезём сами или организуем доставку — обсудим удобный способ при оформлении заказа. Ниже — стоимость доставки в основные пригороды.</p>
+
+    <div class="mr-cities__grid reveal">
+    <span class="mr-city-tag" aria-label="Меренговый рулет на заказ в Санкт-Петербурге"><span class="mr-city-tag__name">Санкт-Петербург</span><span class="mr-city-tag__price">весь город</span></span>
+    <a href="/prigorody/pushkin/" class="mr-city-tag" data-slug="pushkin" aria-label="Меренговый рулет с доставкой в Пушкин"><span class="mr-city-tag__name">Пушкин</span><span class="mr-city-tag__price">от 1 000 ₽</span></a>
+    <a href="/prigorody/peterhof/" class="mr-city-tag" data-slug="peterhof" aria-label="Меренговый рулет с доставкой в Петергоф"><span class="mr-city-tag__name">Петергоф</span><span class="mr-city-tag__price">от 1 500 ₽</span></a>
+    <a href="/prigorody/gatchina/" class="mr-city-tag" data-slug="gatchina" aria-label="Меренговый рулет с доставкой в Гатчина"><span class="mr-city-tag__name">Гатчина</span><span class="mr-city-tag__price">от 1 500 ₽</span></a>
+    <a href="/prigorody/murino/" class="mr-city-tag" data-slug="murino" aria-label="Меренговый рулет с доставкой в Мурино"><span class="mr-city-tag__name">Мурино</span><span class="mr-city-tag__price">от 1 200 ₽</span></a>
+    <a href="/prigorody/kudrovo/" class="mr-city-tag" data-slug="kudrovo" aria-label="Меренговый рулет с доставкой в Кудрово"><span class="mr-city-tag__name">Кудрово</span><span class="mr-city-tag__price">от 900 ₽</span></a>
+    <a href="/prigorody/vsevolozhsk/" class="mr-city-tag" data-slug="vsevolozhsk" aria-label="Меренговый рулет с доставкой в Всеволожск"><span class="mr-city-tag__name">Всеволожск</span><span class="mr-city-tag__price">от 1 500 ₽</span></a>
+    <a href="/prigorody/pavlovsk/" class="mr-city-tag" data-slug="pavlovsk" aria-label="Меренговый рулет с доставкой в Павловск"><span class="mr-city-tag__name">Павловск</span><span class="mr-city-tag__price">от 1 000 ₽</span></a>
+    <a href="/prigorody/kolpino/" class="mr-city-tag" data-slug="kolpino" aria-label="Меренговый рулет с доставкой в Колпино"><span class="mr-city-tag__name">Колпино</span><span class="mr-city-tag__price">от 1 000 ₽</span></a>
+    <a href="/prigorody/kronshtadt/" class="mr-city-tag" data-slug="kronshtadt" aria-label="Меренговый рулет с доставкой в Кронштадт"><span class="mr-city-tag__name">Кронштадт</span><span class="mr-city-tag__price">от 1 500 ₽</span></a>
+    <a href="/prigorody/sestroretsk/" class="mr-city-tag" data-slug="sestroretsk" aria-label="Меренговый рулет с доставкой в Сестрорецк"><span class="mr-city-tag__name">Сестрорецк</span><span class="mr-city-tag__price">от 1 500 ₽</span></a>
+    <a href="/prigorody/lomonosov/" class="mr-city-tag" data-slug="lomonosov" aria-label="Меренговый рулет с доставкой в Ломоносов"><span class="mr-city-tag__name">Ломоносов</span><span class="mr-city-tag__price">от 1 500 ₽</span></a>
+    <a href="/prigorody/tosno/" class="mr-city-tag" data-slug="tosno" aria-label="Меренговый рулет с доставкой в Тосно"><span class="mr-city-tag__name">Тосно</span><span class="mr-city-tag__price">от 1 500 ₽</span></a>
+    <a href="/prigorody/krasnoe-selo/" class="mr-city-tag" data-slug="krasnoe-selo" aria-label="Меренговый рулет с доставкой в Красное Село"><span class="mr-city-tag__name">Красное Село</span><span class="mr-city-tag__price">от 800 ₽</span></a>
+    <a href="/prigorody/shushary/" class="mr-city-tag" data-slug="shushary" aria-label="Меренговый рулет с доставкой в Шушары"><span class="mr-city-tag__name">Шушары</span><span class="mr-city-tag__price">от 600 ₽</span></a>
+    </div>
+
+    <p class="mr-cities__note reveal">
+      Самовывоз с Пулковской ул., 19 — <strong style="font-weight:500;color:var(--brown,#3d2b1f)">бесплатно</strong>.
+      Не нашли свой район? <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%9C%D0%BE%D0%B6%D0%BD%D0%BE%20%D0%BB%D0%B8%20%D0%B4%D0%BE%D1%81%D1%82%D0%B0%D0%B2%D0%B8%D1%82%D1%8C%20%D0%BC%D0%B5%D1%80%D0%B5%D0%BD%D0%B3%D0%BE%D0%B2%D1%8B%D0%B9%20%D1%80%D1%83%D0%BB%D0%B5%D1%82" target="_blank" rel="noopener">Спросите в WhatsApp</a> — обсудим.
+    </p>
+  </div>
+
+  <script>
+    // Подсветить выбранный город при ?city=slug
+    (function(){
+      try {
+        var qs = new URLSearchParams(window.location.search);
+        var city = qs.get('city');
+        if (!city) return;
+        var el = document.querySelector('.mr-city-tag[data-slug="' + city.replace(/[^a-z\-]/g,'') + '"]');
+        if (el) {
+          el.classList.add('is-target');
+          // плавно скроллим к городу через 300мс
+          setTimeout(function(){
+            el.scrollIntoView({behavior:'smooth', block:'center'});
+          }, 350);
+        }
+      } catch(e){}
+    })();
+  </script>
+</section>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand-name">Milovi Cake</div>
+      <p class="footer-brand-desc wave-text">Авторские торты и десерты ручной работы в Санкт-Петербурге. Доставка по СПб и Ленобласти</p>
+      <div class="footer-socials">
+        <a href="https://wa.me/79119038886" target="_blank" rel="noopener noreferrer" class="footer-social" aria-label="WhatsApp">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </a>
+        <a href="https://t.me/MiloviCake" target="_blank" rel="noopener noreferrer" class="footer-social" aria-label="Telegram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        </a>
+        <a href="https://max.ru/+79119038886" target="_blank" rel="noopener noreferrer" class="footer-social" aria-label="MAX">
+          <svg width="16" height="16" viewBox="0 0 135 151" fill="currentColor" aria-hidden="true"><g transform="translate(0,151) scale(0.1,-0.1)"><path d="M635 1183 c-113 -15 -227 -81 -295 -172 -94 -125 -112 -270 -61 -487 17 -72 31 -147 31 -166 0 -19 5 -39 12 -46 26 -26 111 -7 161 36 15 14 22 13 70 -14 48 -27 60 -29 153 -29 96 0 103 2 177 38 183 90 282 277 249 468 -42 244 -255 404 -497 372z m126 -225 c52 -15 117 -73 140 -122 11 -24 19 -64 19 -96 0 -154 -164 -262 -310 -204 -38 15 -42 15 -60 -1 -53 -48 -84 20 -78 170 3 77 9 109 25 140 54 103 155 146 264 113z"/></g></svg>
+        </a>
+        <a href="https://vk.com/milovi_cake" target="_blank" rel="noopener noreferrer" class="footer-social" aria-label="ВКонтакте Milovi Cake" title="Milovi Cake ВКонтакте — торты и десерты на заказ в СПб">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.05-1.727-1.033-1-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C5.044 10.8 4.06 8.494 4.06 8.087c0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.677.863 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.203.17-.407.44-.407h2.744c.373 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.253-1.406 2.151-3.574 2.151-3.574.119-.254.322-.491.762-.491h1.744c.525 0 .644.27.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.779 1.203 1.253.745.847 1.32 1.558 1.473 2.05.17.49-.085.745-.576.745z"/></svg>
+        </a>
+        <a href="https://www.youtube.com/@milovi_cake" target="_blank" rel="noopener noreferrer" class="footer-social" aria-label="YouTube Milovi Cake" title="YouTube канал Milovi Cake — рецепты и процесс приготовления">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Навигация</div>
+      <a href="https://milovicake.ru/">Главная</a>
+      <a href="https://milovicake.ru/#catalog">Каталог тортов</a>
+      <a href="https://milovicake.ru/#fillings">Начинки и цены</a>
+      <a href="https://milovicake.ru/#reviews">Отзывы</a>
+      <a href="https://milovicake.ru/#contacts">Контакты</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Доставка в пригороды</div>
+      <a href="https://milovicake.ru/prigorody/pushkin/">Пушкин</a>
+      <a href="https://milovicake.ru/prigorody/peterhof/">Петергоф</a>
+      <a href="https://milovicake.ru/prigorody/gatchina/">Гатчина</a>
+      <a href="https://milovicake.ru/prigorody/vsevolozhsk/">Всеволожск</a>
+      <a href="https://milovicake.ru/prigorody/murino/">Мурино</a>
+      <a href="https://milovicake.ru/prigorody/kolpino/">Колпино</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Контакты</div>
+      <a href="tel:+79119038886">+7 911 903 88 86</a>
+      <a href="https://wa.me/79119038886" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+      <a href="https://t.me/MiloviCake" target="_blank" rel="noopener noreferrer">Telegram</a>
+      <a href="https://max.ru/+79119038886" target="_blank" rel="noopener noreferrer">MAX</a>
+      <p>Пн–Вс, 10:00–20:00</p>
+      <p style="margin-top:4px">Пулковская ул., 19, СПб</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="wave-text wave-gold">© 2020–2026 Milovi Cake. Все права защищены.</span>
+    <a href="https://milovicake.ru/">milovicake.ru</a>
+    <span style="color:rgba(237,224,204,0.25);font-size:11px;">Самозанятая · Милованова Виктория · ИНН: 263006403654</span>
+  </div>
+</footer>
+
+<!-- BACK TO TOP -->
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Наверх">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<script>
+  // [M-1 FIXED] Loader flash fix: immediately hide loader on repeat/cached visits.
+  // On first visit the loader shows until window.load + 350ms. On subsequent visits
+  // sessionStorage flag causes instant hide, avoiding the flash entirely.
+  (function() {
+    var ld = document.getElementById('loader');
+    if (!ld) return;
+    if (sessionStorage.getItem('meringueLoaded')) {
+      ld.classList.add('gone'); // instant — no transition needed for cached visit
+    }
+  })();
+  sessionStorage.setItem('meringueLoaded', '1');
+  sessionStorage.setItem('fromMeringue', '1');
+  window.addEventListener('load', () => {
+    setTimeout(() => document.getElementById('loader').classList.add('gone'), 350);
+  });
+  setTimeout(() => document.getElementById('loader').classList.add('gone'), 4000);
+
+  // ── Bottom nav + progress bar + mobile CTA (mobile only) ──
+  (function() {
+    var isMobile = window.matchMedia('(max-width: 768px)');
+    var mrCta  = document.getElementById('mobileStickyWa');
+    var mrProg = document.getElementById('mrScrollProgress');
+
+    function initMobile(mq) {
+      if (mq.matches) {
+        if (mrCta)  mrCta.style.display  = '';
+      } else {
+        if (mrCta)  mrCta.style.display  = 'none';
+      }
+    }
+    initMobile(isMobile);
+    if (isMobile.addEventListener) isMobile.addEventListener('change', initMobile);
+    else isMobile.addListener(initMobile);
+
+    // Progress bar + CTA show/hide on scroll
+    var lastY = 0;
+    window.addEventListener('scroll', function() {
+      var y = window.scrollY;
+      var total = document.body.scrollHeight - window.innerHeight;
+      // Progress
+      if (mrProg) mrProg.style.width = (total > 0 ? (y / total * 100) : 0) + '%';
+      // CTA появляется после 300px
+      if (mrCta && isMobile.matches) {
+        mrCta.classList.toggle('visible', y > 300);
+      }
+      lastY = y;
+    }, { passive: true });
+  })();
+
+  // Header scroll
+  const hdr = document.getElementById('siteHdr');
+  window.addEventListener('scroll', () => {
+    hdr.classList.toggle('scrolled', window.scrollY > 48);
+  }, { passive: true });
+
+  // Parallax
+  function updateParallax() {
+    const bands = document.querySelectorAll('.parallax-img');
+    bands.forEach(b => {
+      const rect = b.closest('.parallax-band').getBoundingClientRect();
+      const pct = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
+      b.style.transform = `translateY(${(pct - 0.5) * 50}px)`;
+    });
+  }
+  // [NM-22 FIXED] Was firing querySelectorAll+getBoundingClientRect on every scroll event.
+  // On 120Hz screens (iPhone Pro, Samsung S21+) = 120 DOM queries/sec → battery drain.
+  // [NM-27 FIXED] Added orientationchange listener — parallax was frozen after rotation.
+  let _pTicking = false;
+  window.addEventListener('scroll', function() {
+    if (_pTicking) return;
+    _pTicking = true;
+    requestAnimationFrame(function() { updateParallax(); _pTicking = false; });
+  }, { passive: true });
+  window.addEventListener('orientationchange', function() {
+    setTimeout(updateParallax, 350);
+  });
+  window.addEventListener('resize', function() {
+    requestAnimationFrame(updateParallax);
+  });
+  updateParallax();
+  // Пауза параллакса при уходе в фон
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) updateParallax();
+  });
+
+  // Reveal on scroll
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // Price card mouse parallax
+  const priceCard = document.querySelector('.price-card');
+  if (priceCard) {
+    const pcLabel = priceCard.querySelector('.price-card-label');
+    const pcNum   = priceCard.querySelector('.price-card-num');
+    const pcNote  = priceCard.querySelector('.price-card-note');
+    const pcTags  = priceCard.querySelector('.price-card-tags');
+
+    priceCard.addEventListener('mousemove', e => {
+      const r = priceCard.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width  - 0.5; // -0.5 .. 0.5
+      const y = (e.clientY - r.top)  / r.height - 0.5;
+      if (pcLabel) pcLabel.style.transform = `translate(${x * 6}px, ${y * 4}px)`;
+      if (pcNum)   pcNum.style.transform   = `scale(1.06) translate(${x * 10}px, ${y * 7}px)`;
+      if (pcNote)  pcNote.style.transform  = `scale(1.04) translate(${x * 5}px, ${y * 3}px)`;
+      if (pcTags)  pcTags.style.transform  = `scale(1.04) translate(${x * 3}px, ${y * 2}px)`;
+    });
+
+    priceCard.addEventListener('mouseleave', () => {
+      [pcLabel, pcNum, pcNote, pcTags].forEach(el => {
+        if (el) el.style.transform = '';
+      });
+    });
+  }
+  const btn = document.getElementById('backTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('show', window.scrollY > 400);
+  }, { passive: true });
+
+  // Wave text — all .wave-text paragraphs
+  (function() {
+    document.querySelectorAll('.wave-text').forEach(function(el) {
+      var words = el.textContent.trim().split(/(\s+)/);
+      el.innerHTML = words.map(function(w) {
+        if (/^\s+$/.test(w)) return w;
+        return '<span class="w">' + w + '</span>';
+      }).join('');
+      var spans = el.querySelectorAll('.w');
+      spans.forEach(function(span, i) {
+        span.addEventListener('mouseenter', function() {
+          if (spans[i-1]) spans[i-1].classList.add('near');
+          if (spans[i+1]) spans[i+1].classList.add('near');
+        });
+        span.addEventListener('mouseleave', function() {
+          if (spans[i-1]) spans[i-1].classList.remove('near');
+          if (spans[i+1]) spans[i+1].classList.remove('near');
+        });
+      });
+    });
+  })();
+</script>
+
+<!-- PWA Service Worker -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    });
+  }
+</script>
+
+<!-- Yandex Metrika loads after cookie consent (see main.js) -->
+<!-- Gallery lightbox HTML -->
+<div class="lb-overlay" id="lbOverlay" style="display:none">
+  <div class="lb-backdrop" id="lbBg"></div>
+  <button class="lb-x" id="lbX" aria-label="Закрыть">✕</button>
+  <div class="lb-box" id="lbBox">
+    <img id="lbImg" src="" alt="">
+  </div>
+  <div class="lb-arrows" id="lbArrows">
+    <button class="lb-arr-btn" id="lbPrev" aria-label="Назад">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <span class="lb-arr-counter" id="lbArrCounter">1 / 5</span>
+    <button class="lb-arr-btn" id="lbNext" aria-label="Вперёд">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- Gallery lightbox -->
+<script>
+(function() {
+  var GALLERY_SRCS = [
+    '../img/meringue_roll_2.webp',
+    '../img/meringue_roll_3.webp',
+    '../img/meringue_roll_5.webp',
+    '../img/meringue_roll_4.webp',
+    '../img/meringue_roll_6.webp',
+  ];
+  var curIdx = 0;
+
+  function openGallery(idx) {
+    curIdx = idx;
+    var overlay = document.getElementById('lbOverlay');
+    var img = document.getElementById('lbImg');
+    var counter = document.getElementById('lbArrCounter');
+    var lbX = document.getElementById('lbX');
+    if (!overlay || !img) return;
+    img.src = GALLERY_SRCS[curIdx];
+    img.style.opacity = '1';
+    img.style.transform = 'scale(1)';
+    if (counter) counter.textContent = (curIdx + 1) + ' / ' + GALLERY_SRCS.length;
+    if (lbX) { lbX.style.opacity = '1'; lbX.style.pointerEvents = ''; }
+    overlay.style.display = 'block'; /* block — не flex, иначе webkit ломает stacking context дочерних absolute */
+    overlay.classList.add('active');
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    window._galleryLbActive = true;
+  }
+
+  function closeGallery() {
+    var overlay = document.getElementById('lbOverlay');
+    if (overlay) { overlay.classList.remove('active'); overlay.style.display = 'none'; }
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
+    window._galleryLbActive = false;
+  }
+
+  function navGallery(dir) {
+    if (!window._galleryLbActive) return;
+    curIdx = (curIdx + dir + GALLERY_SRCS.length) % GALLERY_SRCS.length;
+    var img = document.getElementById('lbImg');
+    var counter = document.getElementById('lbArrCounter');
+    if (img) { img.style.opacity='0'; setTimeout(function(){ img.src = GALLERY_SRCS[curIdx]; img.style.opacity='1'; }, 150); }
+    if (counter) counter.textContent = (curIdx + 1) + ' / ' + GALLERY_SRCS.length;
+  }
+
+  // Bind clicks on gallery items
+  document.querySelectorAll('.gallery-item[data-src]').forEach(function(item, idx) {
+    item.addEventListener('click', function() { openGallery(idx); });
+  });
+
+  // Prev/Next — intercept only when gallery is active
+  var lbPrev = document.getElementById('lbPrev');
+  var lbNext = document.getElementById('lbNext');
+  if (lbPrev) lbPrev.addEventListener('click', function(e) { if (window._galleryLbActive) { e.stopPropagation(); navGallery(-1); } }, true);
+  if (lbNext) lbNext.addEventListener('click', function(e) { if (window._galleryLbActive) { e.stopPropagation(); navGallery(1); } }, true);
+
+  // Close
+  var lbBg = document.getElementById('lbBg');
+  var lbBox = document.getElementById('lbBox');
+  var lbX2 = document.getElementById('lbX');
+  [lbBg, lbX2].forEach(function(el) { if (el) el.addEventListener('click', function() { if (window._galleryLbActive) closeGallery(); }); });
+  // [NM-5 FIXED] Was handling only Escape — added ArrowLeft/Right for desktop keyboard nav.
+  // Main page lightbox supports arrows; now meringue is consistent.
+  document.addEventListener('keydown', function(e) {
+    if (!window._galleryLbActive) return;
+    if (e.key === 'Escape')     closeGallery();
+    if (e.key === 'ArrowRight') navGallery(1);
+    if (e.key === 'ArrowLeft')  navGallery(-1);
+  });
+
+  // Swipe on mobile
+  var sx = 0;
+  var overlay2 = document.getElementById('lbOverlay');
+  if (overlay2) {
+    overlay2.addEventListener('touchstart', function(e) { sx = e.touches[0].clientX; }, { passive: true });
+    overlay2.addEventListener('touchend', function(e) {
+      if (!window._galleryLbActive) return;
+      var dx = e.changedTouches[0].clientX - sx;
+      if (Math.abs(dx) > 50) navGallery(dx < 0 ? 1 : -1);
+    }, { passive: true });
+  }
+})();
+</script>
+
+
+<!-- COOKIE BANNER -->
+<div id="cookieBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:rgba(19,12,7,0.97);backdrop-filter:blur(12px);border-top:1px solid rgba(201,147,74,0.2);padding:14px 24px;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'Jost',sans-serif;font-size:13px;color:rgba(237,224,204,0.75);transform:translateY(100%);transition:transform 0.4s cubic-bezier(.16,1,.3,1);">
+  <span>Мы используем файлы cookie для аналитики и улучшения сайта.&nbsp;
+    <a href="#" onclick="openCookiePrivacy(); return false;" style="color:#c9934a;text-decoration:underline;cursor:pointer;">Политика конфиденциальности</a>
+  </span>
+  <div style="display:flex;gap:10px;flex-shrink:0;">
+    <button onclick="declineCookie()" style="background:transparent;border:1px solid rgba(201,147,74,0.3);color:rgba(237,224,204,0.5);padding:7px 18px;border-radius:30px;cursor:pointer;font-size:12px;font-family:'Jost',sans-serif;letter-spacing:0.1em;transition:border-color 0.3s,color 0.3s;">Отказаться</button>
+    <button onclick="acceptCookie()" style="background:#c9934a;border:none;color:#0b0806;padding:7px 22px;border-radius:30px;cursor:pointer;font-size:12px;font-weight:600;font-family:'Jost',sans-serif;letter-spacing:0.1em;transition:background 0.3s;">Принять</button>
+  </div>
+</div>
+
+<!-- PRIVACY MODAL (meringue) -->
+<div id="cookiePrivacyOverlay" style="display:none;position:fixed;inset:0;z-index:10001;background:rgba(11,8,6,0.92);overflow-y:auto;" onclick="if(event.target===this)closeCookiePrivacy()">
+  <div style="max-width:600px;margin:60px auto;background:#1c1108;border:1px solid rgba(201,147,74,0.2);border-radius:16px;padding:48px 40px;color:rgba(237,224,204,0.8);font-family:'Jost',sans-serif;font-size:14px;line-height:1.7;position:relative;">
+    <button onclick="closeCookiePrivacy()" aria-label="Закрыть" style="position:absolute;top:20px;right:20px;background:transparent;border:none;color:rgba(237,224,204,0.4);font-size:22px;cursor:pointer;transition:color 0.3s;" onmouseover="this.style.color='#c9934a'" onmouseout="this.style.color='rgba(237,224,204,0.4)'">×</button>
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:26px;color:#e8b87a;margin-bottom:24px;">Политика конфиденциальности</h2>
+    <h3 style="font-size:14px;color:#c9934a;margin:20px 0 8px;">1. Общие положения</h3>
+    <p>Настоящая Политика конфиденциальности определяет порядок обработки и защиты персональных данных пользователей сайта milovicake.ru, осуществляемой частным кондитером Milovi Cake. Политика разработана в соответствии с требованиями ФЗ от 27.07.2006 № 152-ФЗ «О персональных данных».</p>
+    <h3 style="font-size:14px;color:#c9934a;margin:20px 0 8px;">2. Какие данные мы собираем</h3>
+    <p>При оформлении заказа через формы или мессенджеры: имя, номер телефона, адрес и дата доставки, комментарии к заказу.</p>
+    <h3 style="font-size:14px;color:#c9934a;margin:20px 0 8px;">3. Цели обработки</h3>
+    <p>Данные обрабатываются исключительно для оформления и выполнения заказа, связи с клиентом и уведомлений о доставке.</p>
+    <h3 style="font-size:14px;color:#c9934a;margin:20px 0 8px;">4. Хранение и защита</h3>
+    <p>Данные не передаются третьим лицам, за исключением случаев, предусмотренных законодательством РФ.</p>
+    <h3 style="font-size:14px;color:#c9934a;margin:20px 0 8px;">5. Cookies</h3>
+    <p>Сайт использует cookie для аналитики (Яндекс.Метрика) и улучшения работы сайта. Cookie не содержат персональных данных. Вы можете отказаться от cookie, нажав «Отказаться» в баннере.</p>
+    <h3 style="font-size:14px;color:#c9934a;margin:20px 0 8px;">6. Контакты</h3>
+    <p>Телефон: +7 911 903 88 86 · Telegram: @MiloviCake</p>
+    <button onclick="closeCookiePrivacy()" style="margin-top:24px;background:#c9934a;border:none;color:#0b0806;padding:10px 28px;border-radius:30px;cursor:pointer;font-size:13px;font-weight:600;font-family:'Jost',sans-serif;">Закрыть</button>
+  </div>
+</div>
+
+<script>
+(function() {
+  var COOKIE_KEY = 'cookieAccepted';
+  var COOKIE_DECLINE = 'cookieDeclined';
+
+  // [M-2 FIXED] Recalculate banner bottom on resize/orientation change so it
+  // always sits above mc-nav (60px + safe-area) even after device rotation.
+  function _updateBannerBottom() {
+    var b = document.getElementById('cookieBanner');
+    if (!b || b.style.display === 'none' || b.style.display === '') return;
+    b.style.bottom = window.innerWidth <= 768
+      ? 'calc(60px + env(safe-area-inset-bottom, 0px))'
+      : '0';
+  }
+  window.addEventListener('resize', _updateBannerBottom, { passive: true });
+  window.addEventListener('orientationchange', function() {
+    setTimeout(_updateBannerBottom, 350);
+  });
+
+  function showBanner() {
+    var b = document.getElementById('cookieBanner');
+    if (!b) return;
+    // Push banner above mc-nav (60px) on mobile so nav buttons remain tappable
+    b.style.bottom = window.innerWidth <= 768
+      ? 'calc(60px + env(safe-area-inset-bottom, 0px))'
+      : '0';
+    b.style.display = 'flex';
+    setTimeout(function() { b.style.transform = 'translateY(0)'; }, 100);
+  }
+
+  function hideBanner() {
+    var b = document.getElementById('cookieBanner');
+    if (!b) return;
+    b.style.transform = 'translateY(100%)';
+    b.addEventListener('transitionend', function() { b.style.display = 'none'; }, { once: true });
+  }
+
+  window.acceptCookie = function() {
+    localStorage.setItem(COOKIE_KEY, Date.now() + 365 * 24 * 60 * 60 * 1000);
+    localStorage.removeItem(COOKIE_DECLINE);
+    hideBanner();
+    loadMetrika();
+  };
+
+  window.declineCookie = function() {
+    localStorage.setItem(COOKIE_DECLINE, '1');
+    hideBanner();
+  };
+
+  window.openCookiePrivacy = function() {
+    var o = document.getElementById('cookiePrivacyOverlay');
+    if (o) { o.style.display = 'block'; document.documentElement.style.overflow = 'hidden'; }
+  };
+
+  window.closeCookiePrivacy = function() {
+    var o = document.getElementById('cookiePrivacyOverlay');
+    if (o) { o.style.display = 'none'; document.documentElement.style.overflow = ''; }
+  };
+
+  function loadMetrika() {
+    if (window._metrikaLoaded) return;
+    window._metrikaLoaded = true;
+    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+    m[i].l=1*new Date();
+    k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+    (window,document,'script','https://mc.yandex.ru/metrika/tag.js','ym');
+    ym(106945185,'init',{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
+  }
+
+  // Init
+  var stored = localStorage.getItem(COOKIE_KEY);
+  var declined = localStorage.getItem(COOKIE_DECLINE);
+  if (stored && Date.now() < parseInt(stored)) {
+    loadMetrika(); // already accepted
+  } else if (!declined) {
+    setTimeout(showBanner, 800);
+  }
+})();
+</script>
+
+<script>
+(function() {
+  document.addEventListener('click', function(e) {
+    var a = e.target.closest('a');
+    if (!a) return;
+    var href = a.getAttribute('href') || '';
+    var isMain = href === 'https://milovicake.ru/' || href === '/' || href === '../' || href === '../index.html';
+    if (isMain) {
+      try { sessionStorage.setItem('fromMeringue', '1'); } catch(err) {}
+    }
+  });
+})();
+</script>
+
+<script src="../js/nav.js?v=20260601" defer></script>
+<script>
+  /* ── Яндекс.Метрика: цели ── */
+  (function() {
+    var YM_ID = 106945185;
+    function reach(goal) {
+      if (typeof ym === 'function') ym(YM_ID, 'reachGoal', goal);
+    }
+    // WhatsApp clicks
+    document.querySelectorAll('a[href*="wa.me"]').forEach(function(el) {
+      el.addEventListener('click', function() { reach('wa_click'); });
+    });
+    // Telegram clicks
+    document.querySelectorAll('a[href*="t.me"]').forEach(function(el) {
+      el.addEventListener('click', function() { reach('tg_click'); });
+    });
+    // Phone clicks
+    document.querySelectorAll('a[href^="tel:"]').forEach(function(el) {
+      el.addEventListener('click', function() { reach('phone_click'); });
+    });
+    // Form submit (contact form)
+    document.querySelectorAll('form').forEach(function(form) {
+      form.addEventListener('submit', function() { reach('form_submit'); });
+    });
+    // Cart open
+    var cartBtn = document.getElementById('cartBtn');
+    if (cartBtn) cartBtn.addEventListener('click', function() { reach('cart_open'); });
+    // Order button in catalog
+    document.querySelectorAll('.card-order-btn, .catalog-order-btn').forEach(function(el) {
+      el.addEventListener('click', function() { reach('catalog_order_click'); });
+    });
+  })();
+</script>
+</body>
+</html>
