@@ -161,21 +161,34 @@
 <div class="toast" id="toast"></div>
 
 <!-- ══════════ HEADER ══════════ -->
-<header class="site-header header-city" id="siteHeader">
-  <div class="hdr-main-row">
-  <a href="#home" class="header-logo">Milovi Cake<span class="header-logo-sub">частный кондитер · СПб</span></a>
+<header class="site-header" id="siteHeader">
+  <div class="header-logo-wrap" style="display:flex;align-items:center;gap:12px;">
+    <a href="../../" class="header-logo">Milovi Cake<span class="header-logo-sub">Главная</span></a>
+    <nav class="header-crumb-inline" aria-label="Breadcrumb" style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:6px;opacity:0.8;margin-top:2px;">
+      <span class="hcs-sep" style="color:var(--gold);">›</span>
+      <span style="letter-spacing:0.04em;">Торты в Петергофе</span>
+    </nav>
+  </div>
   <nav class="header-nav">
     <a href="#catalog">Каталог</a>
     <a href="#fillings">Начинки</a>
     <a href="#reviews">Отзывы</a>
     <a href="#contacts">Контакты</a>
     <a href="#catalog" class="header-order">Заказать</a>
+    <button id="themeToggleBtn" class="theme-toggle" onclick="toggleTheme()" aria-label="Переключить тему">
+      <div class="theme-icon-wrap">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </div>
+    </button>
+    <button class="header-cart-btn" id="cartBtn" onclick="openCart()" aria-label="Корзина">
+      🛒
+      <span class="cart-badge" id="cartBadge">0</span>
+    </button>
   </nav>
   <button class="burger-btn" id="burgerBtn" aria-label="Меню" aria-expanded="false" aria-controls="mobileMenu">
     <span></span><span></span><span></span>
   </button>
-  </div>
-  <nav class="header-crumb-strip" aria-label="Breadcrumb"><a href="../../">Главная</a><span class="hcs-sep">›</span><span>Торты в Петергофе</span></nav>
 </header>
 
 <!-- ── MOBILE MENU ── -->
@@ -587,144 +600,48 @@
 <div class="section-fade-divider" aria-hidden="true"></div>
 <section id="reviews">
   <div class="sc-field" id="scField"></div>
-
   <div style="position:relative;z-index:2;padding:0 24px">
-    <h2 class="section-title reveal">Отзывы Клиентов<span class="visually-hidden"> о тортах на заказ в СПб — Milovi Cake</span></h2>
-    <p class="section-sub reveal">Нам пишут — мы очень стараемся 🤍</p>
+    <h2 class="section-title reveal"><span class="ht-word">Отзывы</span> <span class="ht-em">Клиентов</span></h2>
+    <p class="section-sub reveal wave-text">Нам пишут — мы очень стараемся 🤍</p>
   </div>
-
   <div class="carousel-stage" id="stage">
-    <div class="carousel-row">
+    <div class="carousel-row"><div class="reviews-track" id="track"><!-- [W-2 FIXED] Skeleton slides shown before JS populates reviews — prevents empty white strip on slow connections -->
+      <div class="review-slide active skeleton-review" aria-hidden="true"><div class="review-card"><div class="review-q">❝</div><p class="review-text skeleton-text" style="height:4em;background:linear-gradient(90deg,rgba(201,147,74,.08) 25%,rgba(201,147,74,.18) 50%,rgba(201,147,74,.08) 75%);border-radius:4px;animation:shimmer 1.6s infinite"></p></div></div>
+    </div></div>
+    <div class="carousel-nav">
       <button class="rev-arrow" id="btnPrev" aria-label="Назад">&#8592;</button>
-      <div class="reviews-track" id="track"></div>
       <button class="rev-arrow" id="btnNext" aria-label="Вперёд">&#8594;</button>
     </div>
-    <div class="rev-dots" id="dots"></div>
+    <div class="rev-dots" id="dots" style="display:none"></div>
   </div>
-
-  <div class="mobile-strip" id="mobileStrip"></div>
-
-    <!-- ══ КИНОЛЕНТА СКРИНОВ ══ -->
+  <div class="review-filmstrip-wrap">
     <div class="review-filmstrip reveal">
-      <button class="review-filmstrip-item" onclick="openChatLightbox(0)" aria-label="Отзыв 1"><img src="../../img/review_1.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 1" loading="lazy" width="280" height="497"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(1)" aria-label="Отзыв 2"><img src="../../img/review_2.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 2" loading="lazy" width="280" height="497"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(2)" aria-label="Отзыв 3"><img src="../../img/review_3.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 3" loading="lazy" width="280" height="497"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(3)" aria-label="Отзыв 4"><img src="../../img/review_4.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 4" loading="lazy" width="280" height="497"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(4)" aria-label="Отзыв 5"><img src="../../img/review_5.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 5" loading="lazy" width="280" height="497"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(5)" aria-label="Отзыв 6"><img src="../../img/review_6.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 6" loading="lazy" width="280" height="497"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(6)" aria-label="Отзыв 7"><img src="../../img/review_7.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 7" loading="lazy" width="280" height="497"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(7)" aria-label="Отзыв 8"><img src="../../img/review_8.webp" alt="Отзыв клиента о торте Milovi Cake — скриншот переписки 8" loading="lazy" width="280" height="497"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(0)" aria-label="Открыть скриншот отзыва 1 в полном размере"><img src="../../img/review_1.webp" alt="Скриншот отзыва покупателя 1" loading="lazy" width="280" height="497"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(1)" aria-label="Открыть скриншот отзыва 2 в полном размере"><img src="../../img/review_2.webp" alt="Скриншот отзыва покупателя 2" loading="lazy" width="280" height="497"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(2)" aria-label="Открыть скриншот отзыва 3 в полном размере"><img src="../../img/review_3.webp" alt="Скриншот отзыва покупателя 3" loading="lazy" width="280" height="497"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(3)" aria-label="Открыть скриншот отзыва 4 в полном размере"><img src="../../img/review_4.webp" alt="Скриншот отзыва покупателя 4" loading="lazy" width="280" height="497"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(4)" aria-label="Открыть скриншот отзыва 5 в полном размере"><img src="../../img/review_5.webp" alt="Скриншот отзыва покупателя 5" loading="lazy" width="280" height="497"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(5)" aria-label="Открыть скриншот отзыва 6 в полном размере"><img src="../../img/review_6.webp" alt="Скриншот отзыва покупателя 6" loading="lazy" width="280" height="497"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(6)" aria-label="Открыть скриншот отзыва 7 в полном размере"><img src="../../img/review_7.webp" alt="Скриншот отзыва покупателя 7" loading="lazy" width="280" height="497"></button>
+      <button class="review-filmstrip-item" onclick="openChatLightbox(7)" aria-label="Открыть скриншот отзыва 8 в полном размере"><img src="../../img/review_8.webp" alt="Скриншот отзыва покупателя 8" loading="lazy" width="280" height="497"></button>
     </div>
-
-    <!-- ══ ОТЗЫВЫ НА КАРТАХ ══ -->
-    <div class="map-reviews reveal" id="mapReviews">
-      <div class="map-reviews-header">
-        <span class="map-reviews-title">Нас находят на картах</span>
-        <div class="map-reviews-badges">
-          <button class="map-badge map-badge-yandex" onclick="openReviewsModal('yandex')" aria-label="Отзывы на Яндекс Картах" id="btnYandex">
-            <svg class="map-badge-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#FC3F1D"/><path d="M13.18 7.2h-.92c-1.2 0-1.84.58-1.84 1.54 0 1.1.48 1.62 1.44 2.28l.8.54-2.28 3.44H8.9l2.08-3.12c-1.2-.86-1.88-1.7-1.88-3.06 0-1.76 1.22-2.92 3.16-2.92h2.3V17h-1.38V7.2z" fill="#fff"/></svg>
-            <span>Яндекс Карты</span>
-            <span class="map-badge-rating">★ 4.8</span>
-            <svg class="map-badge-chevron" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <button class="map-badge map-badge-google" onclick="openReviewsModal('google')" aria-label="Отзывы в Google Maps" id="btnGoogle">
-            <svg class="map-badge-icon" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-            <span>Google Maps</span>
-            <span class="map-badge-rating">★ 4.7</span>
-            <svg class="map-badge-chevron" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- Яндекс отзывы -->
-      <div class="map-reviews-panel" id="panelYandex" hidden>
-        <div class="map-panel-inner">
-          <div class="map-panel-top">
-            <div class="map-panel-score">
-              <span class="map-score-num">4.8</span>
-              <div class="map-score-stars">★★★★☆</div>
-              <span class="map-score-count">на Яндекс Картах · 18 оценок</span>
-            </div>
-            <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/reviews/" target="_blank" rel="noopener noreferrer" class="map-link-btn map-link-yandex">
-              Все отзывы →
-            </a>
-          </div>
-          <div class="map-review-list">
-            <div class="map-review-item">
-              <div class="map-reviewer-row">
-                <div class="map-reviewer-avatar" style="background:#c0604a;">Е</div>
-                <div class="map-reviewer-info">
-                  <span class="map-reviewer-name">Евгения Монтихо</span>
-                  <span class="map-reviewer-date"><time datetime="2025-12-20">20 декабря 2025</time></span>
-                  <span class="map-reviewer-stars">★★★★★</span>
-                </div>
-              </div>
-              <p class="map-reviewer-text map-text-clamp">Дважды заказывали торты. Первый раз сделали в стиле Острова с ярким вкусом тропических фруктов, второй в выдержанном стиле с начинкой «вишня в шоколаде». Оба торта шикарные, ваше творчество дарит эстетическое и гастрономическое удовольствие. Благодарим от всего сердца 💕🎂😍</p>
-              <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/reviews/" target="_blank" rel="noopener noreferrer" class="map-review-source">Читать на Яндекс Картах →</a>
-            </div>
-            <div class="map-review-item">
-              <div class="map-reviewer-row">
-                <div class="map-reviewer-avatar" style="background:#d4a030;">Ж</div>
-                <div class="map-reviewer-info">
-                  <span class="map-reviewer-name">Жанель</span>
-                  <span class="map-reviewer-date"><time datetime="2026-02-02">2 февраля 2026</time></span>
-                  <span class="map-reviewer-stars">★★★★★</span>
-                </div>
-              </div>
-              <p class="map-reviewer-text map-text-clamp">Огромное спасибо, Виктория! За оперативность, внимательный подход, рекомендации по вкусам и работу! Торт получился отличным, именинница довольна. Обязательно закажу снова!</p>
-              <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/reviews/" target="_blank" rel="noopener noreferrer" class="map-review-source">Читать на Яндекс Картах →</a>
-            </div>
-          </div>
-
-          </div>
-        </div>
-      </div>
-
-      <!-- Google отзывы -->
-      <div class="map-reviews-panel" id="panelGoogle" hidden>
-        <div class="map-panel-inner">
-          <div class="map-panel-top">
-            <div class="map-panel-score">
-              <span class="map-score-num">4.7</span>
-              <div class="map-score-stars">★★★★☆</div>
-              <span class="map-score-count">в Google Maps · 14 отзывов</span>
-            </div>
-            <a href="https://maps.app.goo.gl/R3mdjxpnebUYMQES6" target="_blank" rel="noopener noreferrer" class="map-link-btn map-link-google">
-              Все отзывы →
-            </a>
-          </div>
-          <div class="map-review-list">
-            <div class="map-review-item">
-              <div class="map-reviewer-row">
-                <div class="map-reviewer-avatar" style="background:#4285F4;">Л</div>
-                <div class="map-reviewer-info">
-                  <span class="map-reviewer-name">Liras Магазин</span>
-                  <span class="map-reviewer-date"><time datetime="2023-05-01">2 года назад</time></span>
-                  <span class="map-reviewer-stars">★★★★★</span>
-                </div>
-              </div>
-              <p class="map-reviewer-text map-text-clamp">Спасибо огромное! 🤗 Все остались в восторге, было очень вкусно. Зефирное покрытие просто прекрасное, гораздо лучше мастики! 🌷</p>
-              <a href="https://maps.app.goo.gl/R3mdjxpnebUYMQES6" target="_blank" rel="noopener noreferrer" class="map-review-source">Читать в Google Maps →</a>
-            </div>
-            <div class="map-review-item">
-              <div class="map-reviewer-row">
-                <div class="map-reviewer-avatar" style="background:#34A853;">И</div>
-                <div class="map-reviewer-info">
-                  <span class="map-reviewer-name">Ирина Силантьева</span>
-                  <span class="map-reviewer-date"><time datetime="2024-05-01">год назад</time></span>
-                  <span class="map-reviewer-stars">★★★★★</span>
-                </div>
-              </div>
-              <p class="map-reviewer-text map-text-clamp">Спасибо за прекрасную работу к 40-летию свадьбы! Всё на высшем уровне — вкусовые качества, дизайн тортика, внешнее оформление коробочки. И мы, и гости были в восторге.</p>
-              <a href="https://maps.app.goo.gl/R3mdjxpnebUYMQES6" target="_blank" rel="noopener noreferrer" class="map-review-source">Читать в Google Maps →</a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- /.map-reviews -->
+  </div>
+  <div class="map-badges-center reveal">
+    <button class="map-badge map-badge-yandex" onclick="openReviewsModal('yandex')" aria-label="Отзывы на Яндекс Картах">
+      <svg class="map-badge-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#FC3F1D"/><path d="M13.18 7.2h-.92c-1.2 0-1.84.58-1.84 1.54 0 1.1.48 1.62 1.44 2.28l.8.54-2.28 3.44H8.9l2.08-3.12c-1.2-.86-1.88-1.7-1.88-3.06 0-1.76 1.22-2.92 3.16-2.92h2.3V17h-1.38V7.2z" fill="#fff"/></svg>
+      <span>Яндекс Карты</span>
+      <span class="map-badge-rating">★ 4.8</span>
+      <svg class="map-badge-chevron" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="map-badge map-badge-google" onclick="openReviewsModal('google')" aria-label="Отзывы в Google Maps">
+      <svg class="map-badge-icon" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      <span>Google Maps</span>
+      <span class="map-badge-rating">★ 4.7</span>
+      <svg class="map-badge-chevron" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
   </div>
 </section>
+
 <!-- ══════════ STATS ══════════ -->
 <div class="section-fade-divider" aria-hidden="true"></div>
 <div class="stats-section">
