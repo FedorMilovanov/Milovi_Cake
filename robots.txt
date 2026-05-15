@@ -10,7 +10,10 @@ User-agent: Yandex
 Disallow: /call/
 Allow: /
 Host: milovicake.ru
-Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term
+Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term&yclid&gclid
 
+# Sitemaps
 Sitemap: https://milovicake.ru/sitemap.xml
-Sitemap: https://milovicake.ru/sitemap-videos.xml
+# Видео-sitemap отключен до загрузки реальных VK/YouTube embed ID.
+# При активации — раскомментируйте строку ниже:
+# Sitemap: https://milovicake.ru/sitemap-videos.xml

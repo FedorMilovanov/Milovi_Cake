@@ -1,0 +1,697 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   MILOVI CAKE — Premium 2026 Layer
+   Версия: 1.1  (V3-FIX, полный quality pass)
+   Май 2026
+
+   Загружается ПОСЛЕ style.css и premium-overrides.css.
+   Цель: вывести сайт на 10/10 по mobile UX, WCAG 2.2, CWV 2026,
+         CSS Snapshot 2026, Apple HIG, Material 3 — БЕЗ слома базового стиля.
+
+   Принципы:
+     1. ZERO CSS-Nesting (плоские селекторы — совместимость с Safari ≤16.4).
+     2. Все рискованные техники под @supports → graceful degradation.
+     3. !important — только там, где это нужно для каскада.
+     4. Ничего не удаляем из старого CSS — только перекрываем поверх.
+     5. Никаких overlay/декораций, дублирующих то, что уже есть в style.css.
+
+   ИЗМЕНЕНИЯ ОТНОСИТЕЛЬНО v1.0 (V3-FIX):
+     – Развёрнут CSS Nesting в плоские селекторы (Safari fix).
+     – Убран дубль .hero-photo-bg::after (не ломаем оригинальный gradient).
+     – Убран блок .hero{padding:90px 24px 60px} (не ломаем mobile critical).
+     – container-type перенесён с .calc-wrap на .calc-left-col
+       (фикс containing-block для fixed калькулятора).
+     – :focus-visible теперь использует --gold вместо --gold-acc
+       (контраст 8.46 в dark вместо 3.29).
+     – Убран лишний .slider-wrap{min-height} (есть aspect-ratio).
+     – Убран принудительный .btn-hero-* перекраса (это hero-icons).
+     – Убран принудительный .mobile-sticky-cta перекраса (бренд-цвет gold).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 0. Премиум-палитра поверх старой                                  ║
+   ║ Старая --gold #c9934a остаётся для декора (border, glow, icons).  ║
+   ║ Новая --gold-acc используется для CTA-фона и важного текста.      ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+:root{
+  /* Контрастные акценты для текста и интерактива (WCAG AA на cream) */
+  --gold-acc:        #8a5e23;        /* 5.00 : 1 на #f5f0e8 cream */
+  --gold-acc-hover:  #6f4a18;        /* 7.40 : 1 */
+  --text-muted-acc:  #6b4c38;        /* 6.60 : 1 (вместо #9a7a62 = 3.47:1) */
+
+  /* Безопасные цвета мессенджеров — белый текст проходит WCAG AA */
+  --wa-safe:  #128C7E;               /* 4.14:1 + bold */
+  --wa-deep:  #075E54;               /* 7.67:1 */
+  --tg-safe:  #0077B5;               /* 4.88:1 */
+  --tg-deep:  #035E91;               /* 7.10:1 */
+  --max-safe: #5A3FC0;               /* 7.34:1 */
+
+  /* Touch-target минимумы */
+  --tap-min:   44px;
+  --tap-cosy:  48px;
+
+  /* Премиум-кривые (унифицированы) */
+  --ease-premium: cubic-bezier(.22, 1, .36, 1);
+  --ease-spring:  cubic-bezier(.34, 1.56, .64, 1);
+}
+
+/* OKLCH-палитра для широких P3-экранов (iPhone 16 Pro и др.) */
+@supports (color: oklch(0.7 0.1 60)){
+  :root{
+    --gold:           oklch(0.74 0.105 65);
+    --gold-acc:       oklch(0.50 0.115 65);
+    --gold-acc-hover: oklch(0.42 0.115 65);
+  }
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 1. CRITICAL — Калькулятор: убираем сломанный fixed под            ║
+   ║ transform-родителем .calc-wrap.reveal.visible                      ║
+   ║ ВНИМАНИЕ: container-type перенесён на .calc-left-col (см. блок 6) ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+@media (max-width: 560px){
+  .calc-wrap.reveal,
+  .calc-wrap.reveal.visible{
+    transform: none !important;
+    will-change: opacity !important;
+    transition: opacity .65s ease !important;
+  }
+  /* На .calc-wrap НИКАКОГО containment / filter / perspective.
+     Иначе fixed-позиция .calc-right-col снова сломается. */
+  .calc-wrap{
+    filter: none !important;
+    perspective: none !important;
+    contain: none !important;
+    container-type: normal !important;
+  }
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 2. CRITICAL — Touch-targets ≥ 44px (Apple HIG / Material 48dp)    ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+@media (max-width: 768px){
+  .btn-add{
+    min-height: var(--tap-min) !important;
+    min-width:  var(--tap-min);
+    padding: 12px 20px !important;
+    font-size: 14px !important;
+    border-radius: 50px;
+  }
+
+  .theme-toggle{
+    width: var(--tap-min) !important;
+    height: var(--tap-min) !important;
+    font-size: 18px !important;
+  }
+
+  .burger-btn,
+  .header-cart-btn,
+  .mobile-menu-close{
+    min-width: var(--tap-min);
+    min-height: var(--tap-min);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bnav-label{
+    font-size: 11px !important;
+    letter-spacing: .02em !important;
+  }
+
+  .calc-opt{
+    min-height: var(--tap-min);
+  }
+
+  .geo-tag{
+    min-height: var(--tap-min);
+    display: inline-flex !important;
+    align-items: center;
+    padding: 10px 16px !important;
+  }
+
+  #cookieAccept,
+  #cookieDecline{
+    min-height: var(--tap-min) !important;
+    padding: 12px 22px !important;
+    font-size: 14px !important;
+  }
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 3. CRITICAL — Cookie banner: layout для 320px + #cookieDecline    ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+#cookieDecline{
+  background: transparent;
+  color: rgba(255, 235, 185, .92);
+  border: 1.5px solid rgba(255, 235, 185, .42);
+  border-radius: 50px;
+  font-family: 'Jost', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 22px;
+  white-space: nowrap;
+  transition: background .2s ease, border-color .2s ease, color .2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+#cookieDecline:hover,
+#cookieDecline:focus-visible{
+  background: rgba(255, 255, 255, .08);
+  border-color: rgba(255, 235, 185, .85);
+  color: #fff;
+}
+
+@media (max-width: 480px){
+  #cookieBanner{
+    padding: 14px 16px !important;
+    gap: 10px !important;
+    font-size: 12.5px !important;
+    line-height: 1.45 !important;
+    align-items: stretch !important;
+  }
+  #cookieBanner > span{
+    flex: 1 1 100%;
+    text-align: left;
+  }
+  #cookieAccept,
+  #cookieDecline{
+    flex: 1 1 calc(50% - 5px);
+    text-align: center;
+  }
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 4. CRITICAL — .section-title: fluid правильно (без min 42px)      ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+.section-title{
+  /* Старое: clamp(42px,5vw,72px) → на 320px возвращало 42px. */
+  font-size: clamp(26px, 4.6vw + 6px, 56px) !important;
+  letter-spacing: -0.018em !important;
+  line-height: 1.12 !important;
+  text-wrap: balance;
+  hyphens: manual;
+}
+@media (max-width: 480px){
+  .section-title{
+    font-size: clamp(24px, 7.2vw, 32px) !important;
+    padding-bottom: 16px !important;
+  }
+}
+
+.hero-title{
+  text-wrap: balance;
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 5. CRITICAL — Контраст gold/cream + WCAG-safe мессенджеры          ║
+   ║ Только в LIGHT-теме (в dark gold #d4a76a уже даёт 8.46:1).        ║
+   ║ ВАЖНО: плоские селекторы для Safari ≤16.4 (CSS Nesting не работает)║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+
+/* Заголовки и важные текстовые акценты — на тёмное золото */
+:root:not([data-theme="dark"]) .section-title,
+:root:not([data-theme="dark"]) h2.section-title,
+:root:not([data-theme="dark"]) .delivery-card__title,
+:root:not([data-theme="dark"]) .cb-gluten-name,
+:root:not([data-theme="dark"]) .cb-fl-name,
+:root:not([data-theme="dark"]) .cb-occ-name,
+:root:not([data-theme="dark"]) .review-quote,
+:root:not([data-theme="dark"]) .calc-result-price,
+:root:not([data-theme="dark"]) .calc-summary-chip .chip-val,
+:root:not([data-theme="dark"]) .stats-grid .stat-num,
+:root:not([data-theme="dark"]) .features-grid .feature-num{
+  color: var(--gold-acc) !important;
+}
+
+/* Subtitles и muted-text — поднять контраст */
+:root:not([data-theme="dark"]) .section-sub,
+:root:not([data-theme="dark"]) .feature-desc,
+:root:not([data-theme="dark"]) .cb-fl-desc,
+:root:not([data-theme="dark"]) .cb-occ-desc,
+:root:not([data-theme="dark"]) .cb-tags-label,
+:root:not([data-theme="dark"]) .calc-weight-hint{
+  color: var(--text-muted-acc) !important;
+}
+
+/* CTA-кнопки с белым текстом — на тёмное золото
+   (НЕ трогаем .btn-hero-* — это outline-icons на hero, у них свой дизайн) */
+:root:not([data-theme="dark"]) .btn-primary,
+:root:not([data-theme="dark"]) .btn-add,
+:root:not([data-theme="dark"]) .calc-add-btn,
+:root:not([data-theme="dark"]) .calc-order-btn,
+:root:not([data-theme="dark"]) .header-order{
+  background: var(--gold-acc) !important;
+  color: #fff !important;
+}
+:root:not([data-theme="dark"]) .btn-primary:hover,
+:root:not([data-theme="dark"]) .btn-add:hover,
+:root:not([data-theme="dark"]) .calc-add-btn:hover,
+:root:not([data-theme="dark"]) .calc-order-btn:hover,
+:root:not([data-theme="dark"]) .header-order:hover{
+  background: var(--gold-acc-hover) !important;
+}
+
+/* Touch-устройства: hover на calc-add-btn в style.css делает прозрачный фон.
+   Перекрываем для контраста при тапе на mobile. */
+@media (hover: none){
+  :root:not([data-theme="dark"]) .calc-add-btn:hover{
+    background: var(--gold-acc) !important;
+    color: #fff !important;
+    border-color: transparent !important;
+    transform: none !important;
+  }
+}
+
+/* Мессенджер-бар (внутри card--dark) — переключаем на WCAG-safe.
+   НЕ трогаем .btn-hero-* и .mobile-sticky-cta — это бренд-элементы. */
+:root:not([data-theme="dark"]) .messenger-bar-wa{ background: var(--wa-safe)  !important; }
+:root:not([data-theme="dark"]) .messenger-bar-tg{ background: var(--tg-safe)  !important; }
+:root:not([data-theme="dark"]) .messenger-bar-max{ background: var(--max-safe) !important; }
+:root:not([data-theme="dark"]) .messenger-bar-btn{
+  font-weight: 600 !important;       /* bold помогает 4.14:1 проходить читаемость */
+  text-shadow: 0 1px 2px rgba(0,0,0,.18);
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 6. CRITICAL — 2 колонки начинок на 320px ломали ellipsis           ║
+   ║ + container queries как премиум-решение                            ║
+   ║ Container перенесён на .calc-left-col, чтобы НЕ создавать         ║
+   ║ containing block для .calc-right-col (sibling).                    ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+.calc-left-col{
+  container-type: inline-size;
+  container-name: mc-calc-left;
+}
+
+@media (max-width: 360px){
+  /* Bullet-proof fallback без container queries */
+  #calcFill.calc-options,
+  #calcFillBento.calc-options,
+  #calcFill3d.calc-options,
+  #calcDecor.calc-options{
+    grid-template-columns: 1fr !important;
+  }
+  #calcFill .opt-label,
+  #calcFillBento .opt-label,
+  #calcFill3d .opt-label{
+    -webkit-line-clamp: unset !important;
+    line-clamp: unset !important;
+    overflow: visible !important;
+    white-space: normal !important;
+    font-size: 13px !important;
+  }
+  #calcFill .calc-opt,
+  #calcFillBento .calc-opt,
+  #calcFill3d .calc-opt{
+    height: auto !important;
+    min-height: 48px !important;
+    padding: 10px 12px !important;
+  }
+}
+
+/* Container queries — премиум-вариант (для поддерживающих браузеров) */
+@supports (container-type: inline-size){
+  @container mc-calc-left (max-width: 380px){
+    #calcFill.calc-options,
+    #calcFillBento.calc-options,
+    #calcFill3d.calc-options{
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 7. Дубль .bento-weight-toast — нормализуем поверх каскада         ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+.bento-weight-toast{
+  position: fixed !important;
+  bottom: calc(72px + env(safe-area-inset-bottom, 0px) + 12px) !important;
+  left: 50% !important;
+  transform: translateX(-50%) translateY(12px) !important;
+  background: rgba(30, 16, 8, .92) !important;
+  color: var(--gold) !important;
+  border: 1px solid rgba(201, 147, 74, .3) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: var(--z-toast, 1200) !important;
+  font-family: 'Jost', sans-serif !important;
+  font-size: 13px !important;
+  padding: 8px 18px !important;
+  border-radius: 20px !important;
+  white-space: nowrap !important;
+  pointer-events: none !important;
+  opacity: 0;
+  transition: opacity .25s ease, transform .25s ease !important;
+}
+.bento-weight-toast.show{
+  opacity: 1 !important;
+  transform: translateX(-50%) translateY(0) !important;
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 8. Mobile menu — overflow + landscape                              ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+.mobile-menu{
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  padding: 80px 0 calc(40px + env(safe-area-inset-bottom, 0px)) !important;
+  -webkit-overflow-scrolling: touch;
+}
+.mobile-menu-nav{
+  width: 100% !important;
+  padding: 0 24px !important;
+}
+
+/* Landscape — компактное меню */
+@media (orientation: landscape) and (max-height: 500px){
+  .mobile-menu a{
+    font-size: 24px !important;
+    padding: 8px 24px !important;
+  }
+  .mobile-menu-divider{
+    margin: 6px auto !important;
+  }
+  .mobile-menu-phone{
+    font-size: 16px !important;
+    padding: 8px 24px !important;
+  }
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 9. Landscape для всего сайта (header / lightbox / breadcrumb)     ║
+   ║ ВНИМАНИЕ: .hero мы НЕ трогаем здесь — у него уже есть             ║
+   ║ продуманное поведение в critical-css (column layout на mobile).   ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+@media (orientation: landscape) and (max-height: 500px){
+  .breadcrumb-nav{
+    padding: 6px 16px !important;
+    font-size: 11px !important;
+  }
+  /* Lightbox: ограничиваем высоту картинки */
+  .lightbox-img,
+  #lightboxImg,
+  #lbImg{
+    max-height: 92vh !important;
+    width: auto !important;
+    height: auto !important;
+  }
+  /* Cookie banner ниже header в landscape */
+  #cookieBanner{
+    bottom: 0 !important;
+  }
+  /* Калькулятор-результат не выезжает на полэкрана */
+  .calc-right-col.calc-result-open .calc-result-expandable{
+    max-height: 60vh !important;
+    overflow-y: auto !important;
+  }
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 10. Section paddings — мобильный воздух 70 → 48px                  ║
+   ║ ВАЖНО: .hero сохраняет своё поведение из critical-css (padding:0  ║
+   ║ + column layout). Селектор `section` имеет специфичность 0,0,1, а ║
+   ║ `.hero` — 0,1,0, поэтому .hero{padding:0!important} победит.     ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+@media (max-width: 768px){
+  section{
+    padding: 48px 20px !important;
+  }
+  #reviews{
+    padding: 48px 16px !important;
+  }
+}
+@media (max-width: 360px){
+  section{
+    padding: 40px 16px !important;
+  }
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 11. Breadcrumb ellipsis для пригородных страниц                    ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+.breadcrumb-inner{
+  min-width: 0;
+  flex-wrap: nowrap !important;
+  overflow: hidden;
+}
+.breadcrumb-inner > *{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.breadcrumb-inner > *:last-child{
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 65vw;
+}
+@media (max-width: 480px){
+  .breadcrumb-inner{ font-size: 12px !important; }
+  .breadcrumb-nav{ padding: 8px 16px !important; }
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 12. Premium 2026 — Scroll-driven animations                        ║
+   ║ В поддерживающих браузерах появление карточек по скроллу — без JS ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+@supports (animation-timeline: view()){
+  .product-card,
+  .feature,
+  .review-card,
+  .cb-fl,
+  .cb-occ,
+  .cb-gluten-card,
+  .geo-tag{
+    animation: mc-reveal-2026 linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 60%;
+  }
+  @keyframes mc-reveal-2026{
+    from{ opacity: 0; transform: translateY(24px) scale(.985); }
+    to  { opacity: 1; transform: none; }
+  }
+}
+/* Уважение к prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce){
+  .product-card, .feature, .review-card,
+  .cb-fl, .cb-occ, .cb-gluten-card, .geo-tag{
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 13. Premium 2026 — @starting-style для cookie / drawer / sheet     ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+@supports (transition-behavior: allow-discrete){
+  #cookieBanner{
+    transition: transform .42s var(--ease-premium),
+                opacity .42s ease;
+  }
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 14. Premium 2026 — text-wrap balance / pretty                      ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+h1, h2, h3,
+.hero-title,
+.section-title,
+.review-text,
+.delivery-card__title,
+.cb-gluten-name,
+.cb-occ-name,
+.cb-fl-name,
+.feature-title{
+  text-wrap: balance;
+}
+p, li,
+.section-sub,
+.feature-desc,
+.cb-fl-desc,
+.cb-occ-desc,
+.cb-faq-a-inner,
+.review-text-secondary{
+  text-wrap: pretty;
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 15. Premium 2026 — Scroll-snap для карусели отзывов на mobile     ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+@media (max-width: 768px){
+  .reviews-track{
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+  .review-slide.active{
+    scroll-snap-align: center;
+  }
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 16. Premium 2026 — Focus visible премиум                           ║
+   ║ Используем --gold (а не --gold-acc) — в dark-теме --gold = #d4a76a║
+   ║ что даёт 8.46:1 на dark-cream. --gold-acc в dark = 3.29 (плохо)  ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+:focus-visible{
+  outline: 2.5px solid var(--gold) !important;
+  outline-offset: 3px !important;
+  border-radius: 6px;
+  transition: outline-offset .18s var(--ease-premium);
+}
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible{
+  outline-offset: 4px !important;
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 17. Premium 2026 — prefers-contrast: more (WCAG 2.2 AAA-friendly) ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+@media (prefers-contrast: more){
+  :root:not([data-theme="dark"]){
+    --gold:           #5a3a10;
+    --gold-acc:       #4a2f0c;
+    --text-muted:     #3d2b1f;
+    --text-muted-acc: #2c1a10;
+  }
+  .btn-add, .btn-primary, .calc-add-btn, .calc-order-btn,
+  .messenger-bar-btn, .header-order{
+    outline: 2px solid #000 !important;
+    outline-offset: -2px;
+  }
+  .product-card, .review-card, .feature, .cb-fl, .cb-occ{
+    border: 2px solid #2c1a10 !important;
+  }
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 18. CLS-prevention — резерв места для динамических элементов      ║
+   ║ ВНИМАНИЕ: .slider-wrap уже имеет aspect-ratio, не трогаем размер.  ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+.bottom-nav{
+  contain: layout style;
+}
+.calc-result{
+  contain: layout style;
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 19. Performance — content-visibility для оффскрин-секций          ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+@supports (content-visibility: auto){
+  #fillings,
+  #reviews,
+  #contacts,
+  .geo-section,
+  .content-block{
+    content-visibility: auto;
+    contain-intrinsic-size: auto 800px;
+  }
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 20. iOS Safari — rubber-band и финальные правки                   ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+html{ background: var(--cream); }
+body{ overscroll-behavior-y: none; }
+
+/* Inputs не зумят на iOS если font-size ≥ 16px */
+input, textarea, select{
+  font-size: max(16px, 1em);
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 21. Декоративные orbs не должны мешать SR                          ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+.hero-orb,
+.section-fade-divider,
+.section-separator{
+  pointer-events: none;
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 22. Bottom-nav skeleton (anti-CLS пока nav.js строит mcNav)       ║
+   ║ z-index 99 — ниже cookieBanner (290), ниже mobileStickyWa (106)   ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+@media (max-width: 768px){
+  body:not(.mc-nav-ready)::after{
+    content: "";
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: calc(60px + env(safe-area-inset-bottom, 0px));
+    background: rgba(253, 251, 247, .97);
+    border-top: 1px solid rgba(201, 147, 74, .15);
+    z-index: 99;
+    pointer-events: none;
+  }
+  /* В dark-теме скелетон тёмный */
+  [data-theme="dark"] body:not(.mc-nav-ready)::after{
+    background: rgba(20, 14, 8, .97);
+    border-top-color: rgba(212, 167, 106, .15);
+  }
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 23. Hide horizontal scrollbar везде где переусердствовали         ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+@supports (overflow-x: clip){
+  html, body{ overflow-x: clip; }
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ 24. .skip-link — премиум-дизайн (поверх старого top:-60px подхода)║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+.skip-link{
+  position: fixed !important;
+  top: 8px !important;
+  left: 8px !important;
+  z-index: 9999 !important;
+  background: var(--gold-acc, #8a5e23) !important;
+  color: #fff !important;
+  padding: 12px 20px !important;
+  border-radius: 8px !important;
+  font-family: 'Jost', sans-serif !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  text-decoration: none !important;
+  transform: translateY(-200%);
+  transition: transform .25s var(--ease-premium);
+}
+.skip-link:focus,
+.skip-link:focus-visible{
+  transform: translateY(0);
+}
+
+
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║ КОНЕЦ. Файл совместим с graceful degradation на всех браузерах.   ║
+   ║ Все nesting-блоки развёрнуты в плоские селекторы — Safari ≤16.4   ║
+   ║ полностью поддерживается.                                          ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */

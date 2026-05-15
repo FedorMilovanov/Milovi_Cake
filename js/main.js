@@ -356,7 +356,7 @@ function switchBentoTab(pid, mode) {
     const variantEmoji = (isMaxi ? p.emoji : p.emoji) || '🎂';
     slides.forEach((src, i) => {
       const active = i === 0 ? ' active' : '';
-      newSlidesHtml += `<div class="slide-img${active}"><img src="${src}" alt="${variant.name}" loading="lazy" onerror="this.closest('.slide-img').innerHTML='<div class=\\'slide-img-fallback\\'>${variantEmoji}</div>'" style="object-position:${positions[i]};transform:scale(${scales[i]});transform-origin:${positions[i]};"></div>`;
+      newSlidesHtml += `<div class="slide-img${active}"><img src="${src}" alt="${variant.name}" width="600" height="800" decoding="async" loading="lazy" onerror="this.closest('.slide-img').innerHTML='<div class=\\'slide-img-fallback\\'>${variantEmoji}</div>'" style="object-position:${positions[i]};transform:scale(${scales[i]});transform-origin:${positions[i]};"></div>`;
     });
     if (dotsEl) {
       dotsEl.insertAdjacentHTML('beforebegin', newSlidesHtml);
@@ -1308,7 +1308,7 @@ function renderCatalogNav() {
   nav.innerHTML = products.map(p => {
     const thumbSrc = (p.slides && p.slides.length) ? p.slides[0] : '';
     const thumbHtml = thumbSrc
-      ? `<div class="catalog-nav-thumb"><img src="${thumbSrc}" alt="" loading="lazy"></div>`
+      ? `<div class="catalog-nav-thumb"><img src="${thumbSrc}" alt="" width="48" height="48" decoding="async" loading="lazy"></div>`
       : `<div class="catalog-nav-emoji">${p.emoji}</div>`;
 
     const shortName = shortNames[p.name] || p.name;

@@ -66,23 +66,17 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="dns-prefetch" href="https://wa.me" />
   <link rel="dns-prefetch" href="https://mc.yandex.ru" />
-  <link rel="preload" as="image" href="img/head_desktop.webp" media="(min-width:769px)" fetchpriority="high" />
-  <link rel="preload" as="image" href="img/head_mobile.webp" media="(max-width:768px)" fetchpriority="high" />
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/></noscript>
+  <link rel="dns-prefetch" href="https://wa.me" />
+  <link rel="dns-prefetch" href="https://t.me" />
+  <link rel="dns-prefetch" href="https://yandex.ru" />
+  <link rel="preload" as="image" type="image/avif" href="img/head_desktop.avif" media="(min-width:769px)" fetchpriority="high" />
+  <link rel="preload" as="image" type="image/avif" href="img/head_mobile.avif" media="(max-width:768px)" fetchpriority="high" />
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Jost:wght@400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Jost:wght@400;500&display=swap" rel="stylesheet"/></noscript>
 
 
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {"@type": "ListItem", "position": 1, "name": "Главная", "item": "https://milovicake.ru/"}
-    ]
-  }
-  </script>
+  <!-- breadcrumb перемещён ниже с полной цепочкой -->
 
   <script type="application/ld+json">
   {
@@ -337,6 +331,7 @@
 
   <link rel="stylesheet" href="css/style.css?v=20260601" />
   <link rel="stylesheet" href="css/premium-overrides.css?v=20260601" />
+  <link rel="stylesheet" href="css/mc-2026.css?v=20260601" />
   <link rel="prefetch" href="img/bento_maxi.webp" as="image" />
   <link rel="prefetch" href="img/cake_3d.webp" as="image" />
   <link rel="prefetch" href="img/cake_3d_2.webp" as="image" />
@@ -448,14 +443,69 @@
   }
   </script>
 
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-94ZZ5B8YNY"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-94ZZ5B8YNY');
+  <!-- Google tag (gtag.js) — ОТЛОЖЕНА: грузится из js/mc-2026.js после первого взаимодействия пользователя для уменьшения TBT/INP -->
+  <!-- prev sync gtag removed for Core Web Vitals 2026 compliance -->
+
+  <!-- HowTo schema: процесс заказа торта (для AI Overviews / Яндекс.Видео) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "Как заказать торт в Milovi Cake (СПб)",
+    "description": "5 простых шагов для заказа авторского торта с доставкой по Санкт-Петербургу.",
+    "totalTime": "PT3M",
+    "estimatedCost": { "@type": "MonetaryAmount", "currency": "RUB", "value": "2800" },
+    "image": "https://milovicake.ru/img/head.webp",
+    "step": [
+      { "@type": "HowToStep", "position": 1, "name": "Выберите тип торта в каталоге", "text": "Бисквитный, бенто, 3D-торт, меренговый рулет, Павлова или капкейки.", "url": "https://milovicake.ru/#catalog" },
+      { "@type": "HowToStep", "position": 2, "name": "Подберите вес и начинку в калькуляторе", "text": "Используйте интерактивный калькулятор: укажите вес, выберите начинку и декор — стоимость рассчитается мгновенно.", "url": "https://milovicake.ru/#calculator" },
+      { "@type": "HowToStep", "position": 3, "name": "Свяжитесь через WhatsApp / Telegram / MAX", "text": "Кнопки мессенджеров на сайте — обсудите детали заказа, дату и доставку." },
+      { "@type": "HowToStep", "position": 4, "name": "Согласуйте детали и подтвердите заказ", "text": "Кондитер подтвердит дату, итоговую стоимость и доставку (СПб + пригороды или самовывоз)." },
+      { "@type": "HowToStep", "position": 5, "name": "Получите торт в назначенное время", "text": "Доставка по СПб собственной службой или Яндекс.Доставка. Самовывоз также доступен." }
+    ]
+  }
   </script>
+
+  <!-- BreadcrumbList: расширенная навигация (Главная → Каталог) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Главная",  "item": "https://milovicake.ru/" },
+      { "@type": "ListItem", "position": 2, "name": "Каталог тортов и десертов", "item": "https://milovicake.ru/#catalog" },
+      { "@type": "ListItem", "position": 3, "name": "Калькулятор стоимости",     "item": "https://milovicake.ru/#calculator" }
+    ]
+  }
+  </script>
+
+  <!-- Organization schema (расширенная для E-E-A-T) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "https://milovicake.ru/#organization",
+    "name": "Milovi Cake",
+    "alternateName": ["Милови Кейк", "Milovi"],
+    "url": "https://milovicake.ru/",
+    "logo": "https://milovicake.ru/icon-512.png",
+    "image": "https://milovicake.ru/img/og-cover.jpg",
+    "description": "Частная кондитерская в Санкт-Петербурге. Авторские торты, бенто, 3D-торты, меренговые рулеты, Павлова, капкейки. Доставка по СПб и Ленобласти.",
+    "founder": { "@type": "Person", "name": "Милованова Виктория", "jobTitle": "Частный кондитер" },
+    "foundingDate": "2018",
+    "areaServed": [
+      { "@type": "City", "name": "Санкт-Петербург" },
+      { "@type": "AdministrativeArea", "name": "Ленинградская область" }
+    ],
+    "sameAs": [
+      "https://vk.com/milovi_cake",
+      "https://t.me/MiloviCake",
+      "https://www.youtube.com/@milovi_cake",
+      "https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/"
+    ]
+  }
+  </script>
+
 </head>
 
 <body>
@@ -553,9 +603,11 @@
 <section class="hero" id="home">
   <div class="hero-photo-bg" id="heroPhotoBg">
     <picture>
-      <source media="(max-width: 768px)" srcset="img/head_mobile.webp" />
-      <source media="(min-width: 769px)" srcset="img/head_desktop.webp" />
-      <img src="img/head.webp" alt="Авторский торт Milovi Cake" fetchpriority="high" decoding="async" width="1440" height="960" />
+      <source type="image/avif" media="(max-width: 768px)" srcset="img/head_mobile.avif" />
+      <source type="image/avif" media="(min-width: 769px)" srcset="img/head_desktop.avif" />
+      <source type="image/webp" media="(max-width: 768px)" srcset="img/head_mobile.webp" />
+      <source type="image/webp" media="(min-width: 769px)" srcset="img/head_desktop.webp" />
+      <img src="img/head_desktop.webp" alt="Авторский торт ручной работы — Milovi Cake, Санкт-Петербург" fetchpriority="high" decoding="async" width="1440" height="960" />
     </picture>
   </div>
   <div class="hero-content">
@@ -1476,6 +1528,7 @@
 
 
 <script src="js/nav.js?v=20260601" defer></script>
+<script src="js/mc-2026.js?v=20260601" defer></script>
 
 <script>
   /* ── Яндекс.Метрика: цели ── */
