@@ -24,8 +24,6 @@ function toggleTheme() {
   var next   = isDark ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', next);
   try { localStorage.setItem('mc_theme', next); } catch(e){}
-  var btn = document.getElementById('themeToggleBtn');
-  if (btn) btn.textContent = next === 'dark' ? '☀' : '☾';
 }
 window.toggleTheme = toggleTheme;
 
@@ -1595,13 +1593,7 @@ function initApp() {
     io.observe(hero);
   })();
 
-  // [UI-1] Синхронизируем иконку theme-toggle с текущей темой
-  (function syncThemeBtn() {
-    const btn = document.getElementById('themeToggleBtn');
-    if (!btn) return;
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    btn.textContent = isDark ? '☀' : '☾';
-  })();
+  // [UI-1] CSS-only theme sync (no JS manipulation needed for SVGs anymore)
 }
 
 if (document.readyState === 'loading') {
@@ -3064,6 +3056,7 @@ const arrows = [];
 
 // ── Guard: skip reviews DOM setup on pages without reviews section ──
 if (scField && trackEl && dotsEl && stageEl) {
+  trackEl.innerHTML = "";
 
 REVIEWS.forEach((rv, i) => {
   const lay = LAYOUTS[i];
@@ -3496,9 +3489,6 @@ const _revObserver = new IntersectionObserver(function(entries) {
     loopActive = true;
     if (!loopRunning) {
       loopRunning = true;
-      if (STATE === 'typing' && !typeTimer) {
-        setTimeout(function() { startTypewriter(); }, 400);
-      }
     }
     // Всегда перезапускаем loop — он мог умереть пока секция была вне экрана
     requestAnimationFrame(function(t) { lastT = t; requestAnimationFrame(loop); });
@@ -3511,11 +3501,24 @@ const _revObserver = new IntersectionObserver(function(entries) {
   threshold: 0
 });
 
+// Отдельный observer для старта печати отзыва, когда секция реально по центру экрана
+const _revTypeObserver = new IntersectionObserver(function(entries) {
+  if (entries[0].isIntersecting) {
+    if (STATE === 'typing' && !typeTimer) {
+      setTimeout(function() { startTypewriter(); }, 100);
+    }
+  }
+}, {
+  rootMargin: '-20% 0px -20% 0px',
+  threshold: 0
+});
+
 setTimeout(() => {
   const secEl = document.getElementById('reviews');
   if (secEl) {
     _sectionResizeObs.observe(secEl);
     _revObserver.observe(secEl);
+    _revTypeObserver.observe(secEl);
     cachedSectionWidth = secEl.offsetWidth;
     cachedSectionHeight = secEl.offsetHeight;
   }
