@@ -695,3 +695,66 @@ input, textarea, select{
    ║ Все nesting-блоки развёрнуты в плоские селекторы — Safari ≤16.4   ║
    ║ полностью поддерживается.                                          ║
    ╚═══════════════════════════════════════════════════════════════════╝ */
+
+/* ══ City Page Header with integrated breadcrumb ══ */
+.site-header.header-city {
+  height: auto !important;
+  padding: 0 !important;
+  flex-direction: column;
+  align-items: stretch;
+}
+.hdr-main-row {
+  height: 72px;
+  padding: 0 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
+}
+.header-crumb-strip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 60px 7px;
+  font-family: 'Jost', sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+  color: rgba(255,235,185,0.50);
+  letter-spacing: 0.04em;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+.header-crumb-strip a {
+  color: rgba(255,235,185,0.50);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.header-crumb-strip a:hover {
+  color: var(--gold-light, #d4a76a);
+}
+.header-crumb-strip span:last-child {
+  color: rgba(255,235,185,0.88);
+  font-weight: 400;
+}
+.hcs-sep {
+  opacity: 0.35;
+  font-size: 11px;
+}
+/* Keep hero top offset for taller header */
+.site-header.header-city ~ main > .hero,
+.header-city + .mobile-menu + main > .hero {
+  /* hero has position:relative and full-vh; header floats over it — fine */
+}
+/* Scrolled state: keep crumb strip visible */
+.site-header.header-city.scrolled .header-crumb-strip {
+  border-top-color: rgba(61,43,31,0.12);
+}
+/* Mobile */
+@media (max-width: 900px) {
+  .hdr-main-row { padding: 0 24px; height: 64px; }
+  .header-crumb-strip { padding: 4px 24px 6px; font-size: 11px; }
+}
+@media (max-width: 768px) {
+  .hdr-main-row { padding: 0 20px; }
+  .header-crumb-strip { padding: 4px 20px 5px; }
+}

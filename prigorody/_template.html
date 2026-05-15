@@ -162,6 +162,7 @@
 
 <!-- ══════════ HEADER ══════════ -->
 <header class="site-header header-city" id="siteHeader">
+  <div class="hdr-main-row">
   <a href="#home" class="header-logo">Milovi Cake<span class="header-logo-sub">частный кондитер · СПб</span></a>
   <nav class="header-nav">
     <a href="#catalog">Каталог</a>
@@ -173,6 +174,8 @@
   <button class="burger-btn" id="burgerBtn" aria-label="Меню" aria-expanded="false" aria-controls="mobileMenu">
     <span></span><span></span><span></span>
   </button>
+  </div>
+  <nav class="header-crumb-strip" aria-label="Breadcrumb"><a href="../../">Главная</a><span class="hcs-sep">›</span><span>{{nav_span_text}}</span></nav>
 </header>
 
 <!-- ── MOBILE MENU ── -->
@@ -193,16 +196,6 @@
   </div>
 </div>
 
-
-<!-- ══════════ BREADCRUMB ══════════ -->
-
-<nav class="breadcrumb-nav" aria-label="Breadcrumb">
-  <div class="breadcrumb-inner">
-    <a href="../../">Главная</a>
-    <span>›</span>
-    <span>{{nav_span_text}}</span>
-  </div>
-</nav>
 
 <main id="main-content">
 <!-- ══════════ HERO ══════════ -->
