@@ -1074,3 +1074,397 @@ form .btn-wa {
     transform: none !important;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   PATCH R6 — 2026.05.16 (final)
+   1) Восстанавливаем геометрию CTA (.btn-wa, .calc-order-btn)
+      после удаления outline-перебивателя из style.css.
+   2) Theme toggle: SVG-иконки центрируются (отключаем абсолютное
+      позиционирование из style.css — там нет .theme-icon-wrap).
+   3) header-order — outline-пилл с context-aware цветом.
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── 1) CTA buttons: финальная геометрия ── */
+.btn-wa,
+.calc-order-btn {
+  padding: 18px 32px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: none !important;
+  border-radius: 50px !important;
+  min-height: 56px !important;
+  line-height: 1.2 !important;
+}
+@media (max-width: 480px) {
+  .btn-wa, .calc-order-btn {
+    padding: 16px 24px !important;
+    font-size: 15px !important;
+    min-height: 52px !important;
+  }
+}
+
+/* .calc-order-btn — тёмно-янтарный градиент (как у .btn-wa) */
+.calc-order-btn {
+  color: #ffffff !important;
+  text-shadow:
+    0 1px 0 rgba(60, 30, 5, 0.55),
+    0 0 14px rgba(255, 220, 160, 0.28) !important;
+  background:
+    linear-gradient(135deg, #6b4426 0%, #8a5a30 38%, #b8853f 100%) !important;
+  border: 1px solid rgba(201,147,74,0.55) !important;
+  box-shadow:
+    0 14px 38px rgba(120, 80, 30, 0.40),
+    0 0 0 1px rgba(255,255,255,0.18) inset,
+    0 0 32px rgba(232, 184, 122, 0.22) !important;
+}
+.calc-order-btn:hover,
+.calc-order-btn:focus-visible {
+  color: #fff !important;
+  background:
+    linear-gradient(135deg, #7a4f2c 0%, #a06a38 38%, #d4a76a 100%) !important;
+  border-color: rgba(232,184,122,0.85) !important;
+  box-shadow:
+    0 18px 48px rgba(120, 80, 30, 0.50),
+    0 0 0 1px rgba(255,255,255,0.22) inset,
+    0 0 42px rgba(232, 184, 122, 0.32) !important;
+  transform: translateY(-2px);
+}
+[data-theme="dark"] .calc-order-btn {
+  background: linear-gradient(135deg, #8a5a30 0%, #c9934a 50%, #e8b87a 100%) !important;
+  color: #1a1108 !important;
+  text-shadow: 0 1px 0 rgba(255, 240, 210, 0.35) !important;
+}
+[data-theme="dark"] .calc-order-btn:hover {
+  color: #1a1108 !important;
+  background: linear-gradient(135deg, #a06a38 0%, #d4a76a 50%, #f0c98a 100%) !important;
+}
+
+/* ── 2) Theme toggle SVG centering ── */
+.theme-toggle > svg,
+.theme-toggle > .theme-icon,
+.theme-toggle > .sun-icon,
+.theme-toggle > .moon-icon {
+  position: static !important;
+  inset: auto !important;
+  top: auto !important;
+  left: auto !important;
+  width: 18px !important;
+  height: 18px !important;
+  flex-shrink: 0;
+}
+.site-header.scrolled .theme-toggle {
+  color: var(--brown-light, #6b4c38) !important;
+}
+.site-header.scrolled .theme-toggle:hover {
+  color: var(--gold, #c9934a) !important;
+}
+.site-header:not(.scrolled):not(.header-city) .theme-toggle {
+  color: rgba(255,232,190,0.92) !important;
+}
+.site-header:not(.scrolled):not(.header-city) .theme-toggle:hover {
+  color: var(--gold-light, #e8b87a) !important;
+}
+
+/* ── 3) header-order: контекстная outline-пилл ── */
+.header-order {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--gold);
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.site-header:not(.scrolled):not(.header-city) .header-order {
+  color: rgba(255,238,205,0.95);
+  border-color: rgba(232,184,122,0.6);
+}
+.site-header.scrolled .header-order {
+  color: var(--brown);
+  border-color: var(--gold);
+}
+.site-header.header-city .header-order {
+  color: #fff;
+  border-color: rgba(232,184,122,0.7);
+}
+.header-order:hover {
+  background: var(--gold) !important;
+  color: #fff !important;
+  border-color: var(--gold) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(201,147,74,0.35) !important;
+}
+[data-theme="dark"] .header-order:hover {
+  color: #1a1108 !important;
+}
+
+/* ── 4) Hero subtitle: внутренние wave-spans без отдельного hover-skew ── */
+.hero-subtitle .w {
+  display: inline-block;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+/* ── 5) Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .btn-wa, .calc-order-btn, .header-order {
+    transition: background 0.2s ease, color 0.2s ease !important;
+    transform: none !important;
+  }
+  .btn-wa:hover, .calc-order-btn:hover, .header-order:hover {
+    transform: none !important;
+  }
+}
+/* ══ END R6 ══ */
+
+/* ══════════════════════════════════════════════════════════════
+   PATCH R7 — 2026.05.16 (Apple-level polish)
+   Calculator UX, tooltip header, mobile feedback, focus rings,
+   sticky bottom bar safe-area, fill-toast glass, hover refinement.
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── 1) Tooltip начинок: показываем заголовок (<strong>) ── */
+.fill-tooltip strong {
+  display: block !important;
+  margin-bottom: 4px !important;
+  font-weight: 600 !important;
+  color: #fff !important;
+  font-size: 12.5px !important;
+  letter-spacing: 0.01em;
+}
+.fill-tooltip {
+  /* Чуть премиальнее: glass-feel + warmer tint */
+  background: linear-gradient(165deg, rgba(45,28,16,0.96), rgba(28,16,8,0.96)) !important;
+  border: 1px solid rgba(232,184,122,0.18) !important;
+  box-shadow:
+    0 18px 42px rgba(0,0,0,0.32),
+    0 2px 8px rgba(0,0,0,0.18),
+    0 0 0 1px rgba(255,255,255,0.04) inset !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  width: 240px !important;
+  padding: 11px 14px 10px !important;
+  border-radius: 14px !important;
+}
+/* Smooth fade-in (JS sets opacity:1) */
+.fill-tooltip[style*="opacity: 1"],
+.fill-tooltip[style*="opacity:1"] {
+  transform: translateY(-100%) translateY(-6px) !important;
+}
+
+/* ── 2) Калькулятор-карточки начинок: focus-ring корректный ── */
+/* На selected (золотой фон) обычный gold outline невидим — делаем белый */
+.calc-opt:focus-visible {
+  outline: 2px solid var(--gold, #c9934a) !important;
+  outline-offset: 2px !important;
+}
+.calc-opt.selected:focus-visible {
+  outline: 2px solid #fff !important;
+  outline-offset: 2px !important;
+  box-shadow:
+    0 4px 14px rgba(201,147,74,0.45),
+    0 0 0 4px rgba(255,255,255,0.18) !important;
+}
+/* Smooth tap response: лёгкий scale+brightness вместо резкого re-paint */
+.calc-opt {
+  transition:
+    border-color 0.22s ease,
+    background 0.22s ease,
+    color 0.22s ease,
+    transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.22s ease !important;
+}
+.calc-opt:active {
+  transform: scale(0.96);
+}
+@media (hover: hover) and (pointer: fine) {
+  .calc-opt:not(.selected):hover {
+    border-color: rgba(201,147,74,0.55);
+    background: rgba(201,147,74,0.06);
+    transform: translateY(-1px);
+  }
+}
+
+/* ── 3) Type-cards (Бисквитный/Бенто/3D): мягкий hover & active ── */
+.calc-type-card {
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease,
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s ease !important;
+}
+@media (hover: hover) and (pointer: fine) {
+  .calc-type-card:not(.selected):hover {
+    transform: translateY(-2px);
+    border-color: rgba(201,147,74,0.55);
+    box-shadow: 0 8px 22px rgba(201,147,74,0.14);
+  }
+}
+
+/* ── 4) .calc-add-btn hover: убираем «выключенный» вид ── */
+/* В style.css: .calc-add-btn:hover{background:transparent;...}
+   На светлом фоне это выглядит как disabled. Делаем мягкий
+   тёмно-янтарный, заметнее премиально. */
+@media (hover: hover) and (pointer: fine) {
+  .calc-add-btn:hover {
+    background: linear-gradient(135deg, #a06a38 0%, #c9934a 100%) !important;
+    color: #fff !important;
+    border-color: rgba(201,147,74,0.55) !important;
+    box-shadow:
+      0 14px 32px rgba(120, 80, 30, 0.35),
+      0 0 0 1px rgba(255,255,255,0.18) inset !important;
+    transform: translateY(-3px);
+    letter-spacing: 0.05em;
+  }
+  .calc-add-btn:hover .calc-add-btn-label {
+    color: #fff !important;
+  }
+}
+
+/* ── 5) Mobile sticky calc bar: гарантия z-index, safe-area ── */
+@media (max-width: 560px) {
+  .calc-right-col {
+    z-index: 105 !important;            /* ↑ выше mc-nav (104) и стикеров */
+    box-shadow: 0 -10px 32px rgba(0,0,0,0.18);
+  }
+  .calc-result-collapsed {
+    padding-top: 18px !important;       /* место для handle (полоска сверху) */
+    padding-bottom: max(14px, env(safe-area-inset-bottom, 0px)) !important;
+  }
+  /* Анимация раскрытия — премиально-плавная */
+  .calc-result-expandable {
+    transition:
+      max-height 0.46s cubic-bezier(0.22, 1, 0.36, 1) !important;
+  }
+}
+
+/* ── 6) Bento weight toast: всегда поверх mc-nav ── */
+.bento-weight-toast {
+  z-index: 1200 !important;
+}
+
+/* ── 7) Fill-toast (мобильный): glass + премиум ── */
+.fill-toast {
+  background: linear-gradient(165deg, rgba(45,28,16,0.96), rgba(28,16,8,0.96)) !important;
+  border: 1px solid rgba(232,184,122,0.22) !important;
+  box-shadow:
+    0 22px 48px rgba(0,0,0,0.38),
+    0 2px 10px rgba(0,0,0,0.22),
+    0 0 0 1px rgba(255,255,255,0.04) inset !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.fill-toast .fill-toast-title {
+  color: #fff8ee !important;
+  font-weight: 600 !important;
+  font-size: 13.5px !important;
+  letter-spacing: 0.01em;
+}
+.fill-toast .fill-toast-desc {
+  color: rgba(255,240,210,0.80) !important;
+  font-size: 12.5px !important;
+  line-height: 1.5 !important;
+}
+
+/* ── 8) Fill-desc-panel (десктоп): premium reveal ── */
+.fill-desc-panel {
+  transition:
+    opacity 0.32s ease,
+    transform 0.32s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transform: translateY(0);
+}
+.fill-desc-panel[style*="opacity: 0"],
+.fill-desc-panel[style*="opacity:0"] {
+  transform: translateY(-4px);
+}
+
+/* ── 9) Calc-summary-chip: безопасный wrap на мобиле ── */
+@media (max-width: 560px) {
+  .calc-summary-chip {
+    white-space: normal !important;
+    word-break: break-word !important;
+    max-width: 100% !important;
+    text-align: center !important;
+    justify-content: center !important;
+    padding: 4px 12px !important;
+  }
+}
+
+/* ── 10) Theme toggle на мобиле: 44px target, центр иконки ── */
+@media (max-width: 768px) {
+  .theme-toggle {
+    width: 44px !important;
+    height: 44px !important;
+    padding: 0 !important;
+    border-radius: 8px;
+  }
+  .theme-toggle > svg,
+  .theme-toggle > .theme-icon,
+  .theme-toggle > .sun-icon,
+  .theme-toggle > .moon-icon {
+    width: 20px !important;
+    height: 20px !important;
+  }
+}
+
+/* ── 11) Калькулятор-степпер (вес/количество): премиальный feedback ── */
+.calc-stepper-btn {
+  transition:
+    background 0.22s ease,
+    color 0.22s ease,
+    transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+.calc-stepper-btn:active {
+  transform: scale(0.88);
+}
+@media (hover: hover) and (pointer: fine) {
+  .calc-stepper-btn:hover {
+    background: var(--gold, #c9934a) !important;
+    color: #fff !important;
+  }
+}
+
+/* ── 12) Calc-result-collapsed-arrow: вращение строго при открытом ── */
+.calc-right-col.calc-result-open .calc-result-collapsed-arrow {
+  transform: rotate(180deg) !important;
+}
+
+/* ── 13) Calc-options grid: на 320-360px — карточки одной колонкой,
+   но с auto-height, чтобы не «плавились» ── */
+@media (max-width: 360px) {
+  .calc-type-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+  .calc-type-card {
+    padding: 12px 10px !important;
+    min-height: 64px;
+  }
+}
+
+/* ── 14) Reduced motion: сваливаем все CTA-анимации калькулятора ── */
+@media (prefers-reduced-motion: reduce) {
+  .calc-opt,
+  .calc-type-card,
+  .calc-add-btn,
+  .calc-stepper-btn,
+  .calc-result-collapsed-arrow,
+  .calc-summary-chip,
+  .fill-desc-panel,
+  .fill-tooltip,
+  .fill-toast {
+    transition: opacity 0.2s ease, color 0.2s ease, background 0.2s ease !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}
+
+/* ══ END R7 ══ */
