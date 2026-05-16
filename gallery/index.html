@@ -465,6 +465,7 @@
     .loader-text { margin-top: 20px; font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   </style>
+  <link rel="stylesheet" href="/css/final-fixes.css" />
 </head>
 <body>
   <!-- Premium Preloader -->
@@ -480,6 +481,22 @@
     </svg>
     <div class="loader-text">Milovi Cake</div>
   </div>
+  <script>
+    // Fallback: force-hide preloader after 5s if React hasn't done it
+    (function(){
+      var p = document.getElementById('preloader');
+      if (!p) return;
+      var timer = setTimeout(function(){
+        p.classList.add('hidden');
+        setTimeout(function(){ try{ p.remove(); }catch(e){} }, 700);
+      }, 5000);
+      // Cancel timer if preloader is hidden before 5s
+      var observer = new MutationObserver(function(){
+        if (p.classList.contains('hidden')) { clearTimeout(timer); observer.disconnect(); }
+      });
+      observer.observe(p, { attributes: true, attributeFilter: ['class'] });
+    })();
+  </script>
 
   <div class="blob blob-1"></div>
   <div class="blob blob-2"></div>
@@ -751,26 +768,49 @@
     };
 
     function App() {
+      // Hide preloader on mount
+      setTimeout(function(){ var p = document.getElementById("preloader"); if(p){p.classList.add("hidden");setTimeout(function(){try{p.remove()}catch(e){}},700);} }, 100);
       const [lbIndex, setLbIndex] = useState(null);
 
       const [itemsData, setItemsData] = useState([]);
       const [filter, setFilter] = useState('all');
 
       useEffect(() => {
-        import('/js/gallery/data.js').then(module => {
-          const mapped = module.GALLERY_ITEMS.map(it => ({
-            id: it.id,
-            type: it.type,
-            size: it.size === 'tall' ? '1x2' : it.size === 'wide' ? '2x1' : it.size === 'big' ? '2x2' : '1x1',
-            title: it.title,
-            desc: it.desc,
-            tags: it.tags || [],
-            src: it.poster || it.src,
-            vid: it.type === 'video' ? it.src : undefined,
-            full: it.full || it.src
-          }));
-          setItemsData(mapped);
-        }).catch(err => console.error("Failed to load gallery items:", err));
+        // Load gallery data with fallback chain
+        function processData(module) {
+          try {
+            const mapped = module.GALLERY_ITEMS.map(it => ({
+              id: it.id,
+              type: it.type,
+              size: it.size === 'tall' ? '1x2' : it.size === 'wide' ? '2x1' : it.size === 'big' ? '2x2' : '1x1',
+              title: it.title,
+              desc: it.desc,
+              tags: it.tags || [],
+              src: it.poster || it.src,
+              vid: it.type === 'video' ? it.src : undefined,
+              full: it.full || it.src
+            }));
+            setItemsData(mapped);
+          } catch(e) { console.error('Data processing error:', e); }
+        }
+        // Try 1: Dynamic ES module import
+        import('/js/gallery/data.js')
+          .then(function(module) { processData(module); })
+          .catch(function(err) {
+            console.warn('ESM import failed, trying classic script fallback:', err);
+            // Try 2: Inject as classic script tag
+            var s = document.createElement('script');
+            s.src = '/js/gallery/data.js';
+            s.onload = function() {
+              if (typeof GALLERY_ITEMS !== 'undefined') {
+                processData({ GALLERY_ITEMS: GALLERY_ITEMS });
+              } else {
+                console.error('GALLERY_ITEMS not found after script load');
+              }
+            };
+            s.onerror = function() { console.error('Fallback script load failed'); };
+            document.head.appendChild(s);
+          });
       }, []);
 
       const filteredItems = useMemo(() => {
@@ -852,6 +892,11 @@
       );
     }
 
+    // Hide preloader after successful React render
+    (function(){
+      var p = document.getElementById('preloader');
+      if (p) { p.classList.add('hidden'); setTimeout(function(){ try{ p.remove(); }catch(e){} }, 700); }
+    })();
     ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
 </body>

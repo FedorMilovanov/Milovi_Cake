@@ -1,0 +1,97 @@
+/* ═══════════════════════════════════════════════════════════════════
+   milovi-cake-fixes.css — Финальный патч всех багов
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── 1) ИСПРАВЛЕНИЕ: Контур на кнопке «Выбрать торт от 1600» ── */
+/* Убираем конфликт ::after на btn-primary--hero */
+.btn-primary--hero::after {
+  /* Убираем border: 1.5px solid transparent — он создавал контур */
+  border: none !important;
+  /* Убираем лишнюю animation heroBorderPulse, конфликтующую с shimmer */
+  animation: none !important;
+  inset: 0 !important;
+}
+/* Возвращаем conic-gradient только как визуальный акцент, без рамки */
+.btn-primary--hero::after {
+  content: '' !important;
+  position: absolute !important;
+  inset: -1px !important;
+  border-radius: 50px !important;
+  background: conic-gradient(from var(--_angle, 0deg), 
+    rgba(201,147,74,0) 0deg,
+    rgba(201,147,74,0.6) 60deg,
+    rgba(245,219,160,0.9) 120deg,
+    rgba(201,147,74,0.6) 180deg,
+    rgba(201,147,74,0) 240deg,
+    rgba(201,147,74,0) 360deg) !important;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0) !important;
+  -webkit-mask-composite: xor !important;
+  mask-composite: exclude !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+  opacity: 0 !important;
+  transition: opacity 0.4s ease !important;
+}
+.btn-primary--hero:hover::after {
+  opacity: 1 !important;
+}
+
+/* Чиним hover-состояние — убираем артефакты */
+.btn-primary--hero:hover {
+  background: var(--gold-light) !important;
+  transform: translateY(-2px) !important;
+}
+.btn-primary--hero:active {
+  transform: scale(0.97) !important;
+}
+
+/* Убираем shimmer-артефакты на btn-primary--hero */
+.btn-primary--hero::before {
+  display: none !important;
+}
+.btn-primary--hero:hover::before {
+  display: none !important;
+  animation: none !important;
+}
+
+/* Убираем outline при focus на всех кнопках .btn-primary (он и так есть на focus-visible) */
+.btn-primary:focus:not(:focus-visible) {
+  outline: none !important;
+}
+
+/* ── 2) ИСПРАВЛЕНИЕ: Прелоадер галереи — гарантированное скрытие ── */
+/* Добавляем fallback-таймер, который скроет прелоадер даже если React упал */
+#preloader.hidden {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* ── 3) ИСПРАВЛЕНИЕ: FAQ в пригородах — тёмная тема ── */
+/* Убираем ненужные рамки */
+[data-theme="dark"] .delivery-card {
+  border: 1px solid rgba(212, 167, 106, 0.15) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
+  background: rgba(26, 17, 8, 0.88) !important;
+  backdrop-filter: blur(12px) !important;
+}
+[data-theme="dark"] .delivery-card::before,
+[data-theme="dark"] .delivery-card::after {
+  display: none !important;
+}
+
+/* ── 4) ИСПРАВЛЕНИЕ: Чёрный прямоугольник на hero в тёмной теме ── */
+[data-theme="dark"] .hero-content::before,
+[data-theme="dark"] .hero-content::after {
+  display: none !important;
+}
+
+/* ── 5) ИСПРАВЛЕНИЕ: Размер всплывающих названий мессенджеров в шапке ── */
+.hero-flat-text {
+  font-size: 11px !important;
+  opacity: 0 !important;
+  transition: opacity 0.3s ease, transform 0.3s ease !important;
+}
+.btn-hero-ring:hover .hero-flat-text {
+  opacity: 1 !important;
+}
