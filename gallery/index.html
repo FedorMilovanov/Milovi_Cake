@@ -16,78 +16,39 @@
 <meta property="og:url" content="https://milovicake.ru/gallery/">
 <meta property="og:locale" content="ru_RU">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Галерея работ — Milovi Cake">
-<meta name="twitter:description" content="46 авторских работ кондитера в СПб — фото и видео.">
-<meta name="twitter:image" content="https://milovicake.ru/img/og-cover.jpg">
-<meta name="robots" content="index, follow">
 
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/icon-apple.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&amp;family=Jost:wght@300;400;500&amp;display=swap">
 
-<link rel="stylesheet" href="/css/gallery/gallery-2026.css?v=20260516r16">
-<meta name="view-transition" content="same-origin">
+<!-- Swiper for premium 3D Coverflow -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-<link rel="preload" as="image" href="/img/gallery/gallery-15.webp" fetchpriority="high">
-<link rel="preload" as="image" href="/img/gallery/gallery-01.webp">
+<link rel="stylesheet" href="/css/gallery/gallery-2026.css?v=20260516-premium-final">
+<link rel="stylesheet" href="/css/v20-dark-and-fixes.css">
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "ImageGallery",
-  "name": "Портфолио Milovi Cake",
-  "url": "https://milovicake.ru/gallery/",
-  "description": "Авторские торты, бенто, 3D, меренговые рулеты, Павлова — реальные работы кондитера в СПб.",
-  "image": ["https://milovicake.ru/img/og-cover.jpg","https://milovicake.ru/img/gallery/gallery-15.webp","https://milovicake.ru/img/gallery/gallery-01.webp"],
-  "creator": {"@type": "Person", "name": "Виктория Милованова", "url": "https://milovicake.ru/"},
-  "about": {"@type": "LocalBusiness", "@id": "https://milovicake.ru/#business"}
-}
-</script>
-
-<!-- Google Analytics — deferred (first interaction) -->
-<script>
-(function(){
-  function loadGA(){
-    if(window._gaLoaded) return; window._gaLoaded=true;
-    var s=document.createElement('script');
-    s.src='https://www.googletagmanager.com/gtag/js?id=G-94ZZ5B8YNY';
-    s.async=true; document.head.appendChild(s);
-    window.dataLayer=window.dataLayer||[];
-    window.gtag=function(){dataLayer.push(arguments);};
-    gtag('js',new Date()); gtag('config','G-94ZZ5B8YNY',{anonymize_ip:true});
-  }
-  ['scroll','click','touchstart'].forEach(function(e){
-    document.addEventListener(e,loadGA,{once:true,passive:true});
-  });
-  setTimeout(loadGA, 5000);
-})();
-</script>
-
-<link rel="stylesheet" href="/css/v20-fixes.css">
 </head>
-  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css">
-
 <body>
 
 <header class="gx-header">
   <a href="/" class="gx-back">← На главную</a>
   <h1 class="gx-title">Студия <em>Milovi Cake</em></h1>
   <div class="gx-divider"><span></span><i></i><span></span></div>
-  <p class="gx-sub">46 авторских работ. Реальные заказы из Санкт-Петербурга. Фото и видео.</p>
+  <p class="gx-sub">46 авторских работ • Реальные заказы Санкт-Петербурга • Фото и видео</p>
 
   <div class="gx-filter" role="tablist" aria-label="Фильтр галереи">
-    <button type="button" data-f="all"      aria-pressed="true">Все</button>
-    <button type="button" data-f="photo"    aria-pressed="false">Фото</button>
-    <button type="button" data-f="video"    aria-pressed="false">Видео</button>
-    <button type="button" data-f="3d"       aria-pressed="false">3D</button>
-    <button type="button" data-f="bento"    aria-pressed="false">Бенто</button>
+    <button type="button" data-f="all" aria-pressed="true">Все</button>
+    <button type="button" data-f="photo" aria-pressed="false">Фото</button>
+    <button type="button" data-f="video" aria-pressed="false">Видео</button>
+    <button type="button" data-f="3d" aria-pressed="false">3D</button>
+    <button type="button" data-f="bento" aria-pressed="false">Бенто</button>
     <button type="button" data-f="meringue" aria-pressed="false">Меренговые рулеты</button>
-    <button type="button" data-f="wedding"  aria-pressed="false">Свадебные</button>
-    <button type="button" data-f="pavlova"  aria-pressed="false">Павлова</button>
+    <button type="button" data-f="wedding" aria-pressed="false">Свадебные</button>
+    <button type="button" data-f="pavlova" aria-pressed="false">Павлова</button>
   </div>
 </header>
 
@@ -97,46 +58,44 @@
   <a href="/#contacts">Заказать торт →</a>
 </footer>
 
-<div class="gx-light" id="gxLight" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Просмотр работы">
-  <div class="gx-backdrop" id="gxBackdrop"></div>
-  <div class="gx-stage" id="gxStage"></div>
-
-  <button type="button" class="gx-ctrl gx-close" id="gxClose" aria-label="Закрыть">
-    <svg viewBox="0 0 24 24"><path d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.71 2.88 18.3 9.17 12 2.88 5.71 4.3 4.29l6.29 6.3 6.3-6.3z"/></svg>
-  </button>
-  <button type="button" class="gx-ctrl gx-share" id="gxShare" aria-label="Поделиться">
-    <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
-  </button>
-  <button type="button" class="gx-ctrl gx-fs" id="gxFS" aria-label="На весь экран">
-    <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
-  </button>
-  <button type="button" class="gx-ctrl gx-prev" id="gxPrev" aria-label="Предыдущая работа">
-    <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-  </button>
-  <button type="button" class="gx-ctrl gx-next" id="gxNext" aria-label="Следующая работа">
-    <svg viewBox="0 0 24 24"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
-  </button>
-
-  <div class="gx-meta">
-    <div class="gx-counter"><span id="gxCurrent">1</span> / <span id="gxTotal">46</span></div>
-    <h2 class="gx-title-v2" id="gxTitleV2"></h2>
-    <p class="gx-desc-v2" id="gxDescV2"></p>
+<!-- Premium Lightbox -->
+<div class="gx-light" id="gxLight">
+  <div class="lb-backdrop">
+    <div class="lb-backdrop-bg" id="lbBg"></div>
+    <div class="lb-backdrop-overlay"></div>
   </div>
 
-  <div class="gx-thumbs" id="gxThumbs" aria-label="Миниатюры"></div>
+  <div class="lb-header">
+    <div class="lb-brand">
+      Milovi Cake
+    </div>
+    <div class="lb-counter" id="lbCounter">01 / 46</div>
+    <button class="lb-close" id="gxClose">✕</button>
+  </div>
+
+  <button class="lb-nav lb-nav-prev" id="gxPrev">‹</button>
+  <button class="lb-nav lb-nav-next" id="gxNext">›</button>
+
+  <div class="lb-swiper-wrap">
+    <div class="swiper" id="lbSwiper">
+      <div class="swiper-wrapper" id="swiperWrapper"></div>
+    </div>
+  </div>
+
+  <div class="lb-info">
+    <div class="lb-info-inner">
+      <h2 class="lb-title" id="lbTitle"></h2>
+      <p class="lb-desc" id="lbDesc"></p>
+    </div>
+  </div>
+
+  <div class="lb-thumbs" id="lbThumbs"></div>
 </div>
 
-<script type="module" src="/js/gallery/main.js?v=20260516r16"></script>
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
 
-<noscript>
-  <style>.gx-grid{display:none}</style>
-  <div style="text-align:center;padding:48px;font-family:serif">
-    Включите JavaScript, чтобы увидеть полную галерею из 46 работ.
-    <br><a href="/" style="color:#b8823a">← Вернуться на главную</a>
-  </div>
-</noscript>
-
-
+<script type="module" src="/js/gallery/main-premium.js?v=20260516-final"></script>
 <script defer src="/js/v20-faq-fix.js"></script>
 </body>
 </html>
