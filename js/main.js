@@ -1467,7 +1467,7 @@ function initSectionTitleWords() {
     if (state.raf) { cancelAnimationFrame(state.raf); state.raf = null; }
     var from = { ringOp: state.ringOp, ringY: state.ringY, flatOp: state.flatOp, flatY: state.flatY, flatSize: state.flatSize, flatGlow: state.flatGlow };
     var to = toHover
-      ? { ringOp: 0, ringY: -18, flatOp: 1, flatY: -12, flatSize: 12, flatGlow: 0.5 }
+      ? { ringOp: 0, ringY: -20, flatOp: 1, flatY: -16, flatSize: 12, flatGlow: 0.55 }
       : { ringOp: 1, ringY: 0,   flatOp: 0, flatY: 8,   flatSize: 6.5, flatGlow: 0 };
     var startTs = null;
     function step(ts) {
@@ -1497,9 +1497,12 @@ function initSectionTitleWords() {
     if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
     items.forEach(function(item) {
       var btn    = document.querySelector('.' + item.btnClass);
-      var ringEl = document.getElementById(item.ringId);
-      var flatEl = document.getElementById(item.flatId);
-      if (!btn || !ringEl || !flatEl) return;
+      if (!btn) return;
+      // R15: main page uses class-based SVG text; suburb pages use ids.
+      // Support both without changing the protected markup.
+      var ringEl = document.getElementById(item.ringId) || btn.querySelector('.hero-ring-text, [id^="ring-text-"]');
+      var flatEl = document.getElementById(item.flatId) || btn.querySelector('.hero-flat-text, [id^="flat-text-"]');
+      if (!ringEl || !flatEl) return;
       var state = { ringEl: ringEl, flatEl: flatEl, ringOp: 0.5, ringY: 0, flatOp: 0, flatY: 8, flatSize: 6.5, flatGlow: 0, raf: null };
       ringEl.setAttribute('opacity', 0.5);
       ringEl.setAttribute('transform', 'translate(0,0)');
@@ -2396,6 +2399,7 @@ function _setCalcBackdrop(show) {
     document.body.appendChild(bd);
   }
   bd.classList.toggle('visible', !!show);
+  document.body.classList.toggle('calc-panel-open', !!show);
 }
 
 // Закрыть панель при тапе вне её
@@ -4582,7 +4586,7 @@ window.cbFaq = cbFaq;
     '.faq-item',
     '.cart-step',
     '.dot',
-    '[onclick]:not(a):not(button):not(input):not(textarea):not(select)'
+    '[onclick]:not(a):not(button):not(input):not(textarea):not(select):not(.cart-overlay):not([id$=\"Overlay\"]):not([class*=\"overlay\"])'
   ].join(',');
 
   function labelFor(el) {

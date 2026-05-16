@@ -1875,3 +1875,790 @@ button[disabled] {
   }
 }
 /* ══ END R11 ══ */
+
+/* ══════════════════════════════════════════════════════════════
+   PATCH R12 — mobile calculator ergonomics + overlay a11y cleanup
+   Цель: калькулятор на телефоне не конфликтует с mc-nav, раскрывается
+   удобной bottom-sheet панелью и остаётся читаемым в обеих темах.
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 560px) {
+  .calc-right-col {
+    z-index: 160 !important; /* выше mc-nav/nav sheet backdrop и старых bottom bars */
+    left: max(0px, env(safe-area-inset-left, 0px)) !important;
+    right: max(0px, env(safe-area-inset-right, 0px)) !important;
+    width: auto !important;
+  }
+  .calc-right-col .calc-result {
+    border-radius: 22px 22px 0 0 !important;
+    max-height: calc(100dvh - 92px - env(safe-area-inset-top, 0px)) !important;
+    background: linear-gradient(165deg, rgba(46,29,17,.98), rgba(22,13,7,.98)) !important;
+    border: 1px solid rgba(232,184,122,.18) !important;
+    border-bottom: 0 !important;
+    box-shadow: 0 -18px 54px rgba(0,0,0,.42), 0 0 0 1px rgba(255,255,255,.035) inset !important;
+  }
+  .calc-result-collapsed {
+    min-height: 68px !important;
+    padding: 20px 18px 14px !important;
+    gap: 10px !important;
+  }
+  .calc-result-collapsed-handle {
+    top: 8px !important;
+    width: 44px !important;
+    height: 4px !important;
+    background: rgba(232,184,122,.38) !important;
+  }
+  .calc-result-collapsed-label {
+    font-size: 9.5px !important;
+    letter-spacing: .18em !important;
+  }
+  .calc-result-collapsed-price {
+    font-size: clamp(27px, 8vw, 34px) !important;
+    white-space: nowrap;
+  }
+  .calc-result-collapsed-arrow {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+  }
+  .calc-right-col.calc-result-open .calc-result-expandable {
+    max-height: min(58dvh, 430px) !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  .calc-result-expand-inner {
+    padding: 2px 18px max(18px, env(safe-area-inset-bottom, 0px)) !important;
+  }
+  .calc-right-col .calc-result-summary {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    max-width: 100% !important;
+  }
+  .calc-right-col .calc-summary-chip {
+    max-width: 100% !important;
+    min-height: 26px !important;
+  }
+  .calc-add-row {
+    position: sticky;
+    bottom: 0;
+    padding-top: 8px;
+    background: linear-gradient(180deg, rgba(22,13,7,0), rgba(22,13,7,.98) 38%);
+  }
+  .calc-add-btn,
+  .calc-order-btn {
+    min-height: 50px !important;
+    border-radius: 16px !important;
+  }
+  #calcPanelBackdrop {
+    z-index: 150 !important;
+    background: rgba(10,6,3,.58) !important;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  /* Когда калькулятор раскрыт, нижняя nav не должна конкурировать с CTA. */
+  body:has(.calc-right-col.calc-result-open) #mcNav,
+  body:has(.calc-right-col.calc-result-open) .mc-nav {
+    transform: translateY(110%) !important;
+  }
+}
+@supports not selector(:has(*)) {
+  @media (max-width: 560px) {
+    body.calc-panel-open #mcNav,
+    body.calc-panel-open .mc-nav {
+      transform: translateY(110%) !important;
+    }
+  }
+}
+[data-theme="dark"] .calc-right-col .calc-result {
+  background: linear-gradient(165deg, rgba(31,20,11,.99), rgba(9,6,3,.99)) !important;
+  border-color: rgba(232,184,122,.22) !important;
+  box-shadow: 0 -20px 60px rgba(0,0,0,.62), 0 0 30px rgba(212,167,106,.08) !important;
+}
+
+/* R12: overlays закрывают модалки по клику, но не должны становиться tab-кнопками. */
+.cart-overlay[role="button"],
+#privacyOverlay[role="button"],
+#cookiePrivacyOverlay[role="button"],
+[id$="Overlay"][role="button"] {
+  outline: none !important;
+}
+/* ══ END R12 ══ */
+
+/* ══════════════════════════════════════════════════════════════
+   PATCH R13 — Premium mobile TOC micro-polish
+   Без реформы структуры: только тонкая прорисовка, плавность,
+   tactile feedback и минималистичная glass-эстетика для burger TOC
+   + smart bottom TOC (#mcNav / #mcSheet).
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Bottom TOC: softer glass island, crisp but minimal */
+  #mcNav.mc-nav,
+  .mc-nav {
+    height: calc(62px + env(safe-area-inset-bottom, 0px)) !important;
+    padding: 0 max(6px, env(safe-area-inset-left, 0px)) env(safe-area-inset-bottom, 0px) max(6px, env(safe-area-inset-right, 0px)) !important;
+    background:
+      linear-gradient(180deg, rgba(253,251,247,.92), rgba(248,242,232,.985)) !important;
+    border-top: 1px solid rgba(201,147,74,.16) !important;
+    box-shadow:
+      0 -18px 46px rgba(61,43,31,.10),
+      0 -1px 0 rgba(255,255,255,.72) inset !important;
+    -webkit-backdrop-filter: blur(22px) saturate(155%) !important;
+            backdrop-filter: blur(22px) saturate(155%) !important;
+    gap: 2px;
+  }
+  #mcNav .mc-btn,
+  .mc-nav .mc-btn {
+    min-height: 60px !important;
+    border-radius: 18px !important;
+    margin: 2px 0 3px !important;
+    color: rgba(107,76,56,.70) !important;
+    transition:
+      transform .22s cubic-bezier(.34,1.56,.64,1),
+      color .22s ease,
+      background .22s ease,
+      opacity .22s ease !important;
+  }
+  #mcNav .mc-btn svg,
+  .mc-nav .mc-btn svg {
+    filter: drop-shadow(0 1px 0 rgba(255,255,255,.45));
+    transition: transform .25s cubic-bezier(.34,1.56,.64,1), filter .25s ease, color .22s ease !important;
+  }
+  #mcNav .mc-btn-label,
+  .mc-nav .mc-btn-label {
+    font-size: 9.8px !important;
+    letter-spacing: .045em !important;
+    transform: translateY(0);
+    transition: transform .22s ease, opacity .22s ease !important;
+  }
+  #mcNav .mc-btn.mc-active,
+  .mc-nav .mc-btn.mc-active {
+    color: var(--gold-acc, #8a5e23) !important;
+    background: linear-gradient(180deg, rgba(201,147,74,.09), rgba(201,147,74,.035)) !important;
+  }
+  #mcNav .mc-btn.mc-active::before,
+  .mc-nav .mc-btn.mc-active::before {
+    top: 5px !important;
+    width: 22px !important;
+    height: 3px !important;
+    border-radius: 99px !important;
+    background: linear-gradient(90deg, rgba(201,147,74,.30), var(--gold,#c9934a), rgba(201,147,74,.30)) !important;
+    box-shadow: 0 0 14px rgba(201,147,74,.28);
+  }
+  #mcNav .mc-btn.mc-active svg,
+  .mc-nav .mc-btn.mc-active svg {
+    transform: translateY(-1px) scale(1.04);
+    filter: drop-shadow(0 4px 10px rgba(201,147,74,.22));
+  }
+  #mcNav .mc-btn:active,
+  .mc-nav .mc-btn:active,
+  #mcNav .mc-btn.mc-press,
+  .mc-nav .mc-btn.mc-press {
+    transform: scale(.94) translateY(1px) !important;
+    background: rgba(201,147,74,.08) !important;
+  }
+  #mcNav .mc-btn--order,
+  .mc-nav .mc-btn--order {
+    color: var(--gold-acc, #8a5e23) !important;
+  }
+  #mcNav .mc-btn--order .mc-btn-circle,
+  .mc-nav .mc-btn--order .mc-btn-circle {
+    width: 48px !important;
+    height: 48px !important;
+    margin-top: -14px !important;
+    background:
+      radial-gradient(circle at 35% 25%, rgba(255,244,218,.55), transparent 34%),
+      linear-gradient(145deg, #8a5e23 0%, #c9934a 54%, #e8b87a 100%) !important;
+    box-shadow:
+      0 12px 28px rgba(201,147,74,.34),
+      0 0 0 1px rgba(255,255,255,.28) inset,
+      0 0 24px rgba(201,147,74,.18) !important;
+    transition: transform .24s cubic-bezier(.34,1.56,.64,1), box-shadow .24s ease, filter .24s ease !important;
+  }
+  #mcNav .mc-btn--order:active .mc-btn-circle,
+  .mc-nav .mc-btn--order:active .mc-btn-circle,
+  #mcNav .mc-btn--order.mc-press .mc-btn-circle,
+  .mc-nav .mc-btn--order.mc-press .mc-btn-circle {
+    transform: scale(.90) translateY(2px) !important;
+    filter: brightness(.98) saturate(1.04);
+  }
+  #mcNav .mc-sep,
+  .mc-nav .mc-sep {
+    width: 1px !important;
+    margin: 18px 2px 15px !important;
+    background: linear-gradient(180deg, transparent, rgba(201,147,74,.18), transparent) !important;
+  }
+
+  /* Slide-up TOC sheet: premium card, more air, smoother depth */
+  #mcBackdrop.mc-sheet-backdrop {
+    background: rgba(31,18,9,0) !important;
+    -webkit-backdrop-filter: blur(0px);
+            backdrop-filter: blur(0px);
+    transition: background .34s ease, backdrop-filter .34s ease, -webkit-backdrop-filter .34s ease !important;
+  }
+  #mcBackdrop.mc-sheet-backdrop.mc-open {
+    background: rgba(22,13,7,.42) !important;
+    -webkit-backdrop-filter: blur(5px) saturate(110%);
+            backdrop-filter: blur(5px) saturate(110%);
+  }
+  #mcSheet.mc-sheet {
+    left: max(10px, env(safe-area-inset-left, 0px)) !important;
+    right: max(10px, env(safe-area-inset-right, 0px)) !important;
+    bottom: calc(66px + env(safe-area-inset-bottom, 0px)) !important;
+    max-width: 560px;
+    margin: 0 auto;
+    max-height: min(70dvh, 560px);
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 26px 26px 20px 20px !important;
+    background:
+      radial-gradient(ellipse 80% 34% at 50% 0%, rgba(232,184,122,.13), transparent 68%),
+      linear-gradient(180deg, rgba(253,251,247,.975), rgba(246,239,229,.965)) !important;
+    border: 1px solid rgba(201,147,74,.18) !important;
+    box-shadow:
+      0 -18px 54px rgba(61,43,31,.14),
+      0 18px 60px rgba(61,43,31,.16),
+      0 0 0 1px rgba(255,255,255,.56) inset !important;
+    -webkit-backdrop-filter: blur(24px) saturate(145%) !important;
+            backdrop-filter: blur(24px) saturate(145%) !important;
+    transform: translateY(calc(100% + 18px)) scale(.985) !important;
+    transform-origin: 50% 100%;
+    transition:
+      transform .46s cubic-bezier(.22,1,.36,1),
+      opacity .34s ease,
+      filter .34s ease !important;
+    opacity: .92;
+  }
+  #mcSheet.mc-sheet.mc-open {
+    transform: translateY(0) scale(1) !important;
+    opacity: 1;
+  }
+  #mcSheet .mc-sheet-handle {
+    width: 46px !important;
+    height: 5px !important;
+    margin-top: 12px !important;
+    border-radius: 99px !important;
+    background: linear-gradient(90deg, rgba(201,147,74,.18), rgba(201,147,74,.44), rgba(201,147,74,.18)) !important;
+    box-shadow: 0 1px 8px rgba(201,147,74,.12);
+  }
+  #mcSheet .mc-sheet-head {
+    padding: 14px 18px 12px !important;
+  }
+  #mcSheet .mc-sheet-title {
+    color: var(--gold-acc, #8a5e23) !important;
+    font-size: 10.5px !important;
+    letter-spacing: .22em !important;
+  }
+  #mcSheet .mc-sheet-close {
+    width: 36px !important;
+    height: 36px !important;
+    background: rgba(201,147,74,.09) !important;
+    border: 1px solid rgba(201,147,74,.16) !important;
+    color: var(--brown-light,#6b4c38) !important;
+    transition: transform .22s cubic-bezier(.34,1.56,.64,1), background .22s ease, color .22s ease !important;
+  }
+  #mcSheet .mc-sheet-close:active,
+  #mcSheet .mc-sheet-close.mc-press {
+    transform: scale(.90) rotate(3deg) !important;
+    background: rgba(201,147,74,.16) !important;
+  }
+  #mcSheet .mc-section {
+    padding: 0 12px 14px !important;
+  }
+  #mcSheet .mc-section-label {
+    padding: 0 10px 7px !important;
+    color: rgba(107,76,56,.52) !important;
+    font-size: 9.5px !important;
+    letter-spacing: .20em !important;
+  }
+  #mcSheet .mc-row {
+    min-height: 62px !important;
+    padding: 12px 14px !important;
+    border-radius: 18px !important;
+    background: rgba(255,255,255,.22) !important;
+    border: 1px solid rgba(201,147,74,0) !important;
+    transition:
+      transform .28s cubic-bezier(.34,1.56,.64,1),
+      background .24s ease,
+      border-color .24s ease,
+      box-shadow .24s ease !important;
+  }
+  #mcSheet .mc-row + .mc-row { margin-top: 5px; }
+  #mcSheet .mc-row-icon {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 14px !important;
+    background: linear-gradient(145deg, rgba(201,147,74,.12), rgba(255,255,255,.35)) !important;
+    color: var(--gold-acc, #8a5e23) !important;
+    box-shadow: 0 8px 18px rgba(61,43,31,.055), 0 0 0 1px rgba(255,255,255,.35) inset;
+  }
+  #mcSheet .mc-row-name {
+    color: var(--brown, #3d2b1f) !important;
+    font-size: 15px !important;
+    letter-spacing: .01em;
+  }
+  #mcSheet .mc-row-sub {
+    color: var(--text-muted-acc, #6b4c38) !important;
+    font-size: 11.5px !important;
+    line-height: 1.35;
+  }
+  #mcSheet .mc-row-arrow {
+    color: rgba(201,147,74,.42) !important;
+    transition: transform .24s ease, opacity .24s ease !important;
+  }
+  #mcSheet .mc-row:active,
+  #mcSheet .mc-row.mc-press {
+    transform: scale(.985) translateY(1px) !important;
+    background: rgba(201,147,74,.09) !important;
+    border-color: rgba(201,147,74,.18) !important;
+  }
+  @media (hover:hover) and (pointer:fine) {
+    #mcSheet .mc-row:hover {
+      transform: translateY(-2px) !important;
+      background: rgba(255,255,255,.42) !important;
+      border-color: rgba(201,147,74,.16) !important;
+      box-shadow: 0 12px 26px rgba(61,43,31,.08) !important;
+    }
+    #mcSheet .mc-row:hover .mc-row-arrow { transform: translateX(2px); opacity: .9; }
+  }
+  #mcSheet .mc-sheet-divider {
+    margin: 8px 22px 12px !important;
+    background: linear-gradient(90deg, transparent, rgba(201,147,74,.20), transparent) !important;
+  }
+
+  /* Burger TOC: minimal premium drawing without changing markup */
+  .mobile-menu {
+    background:
+      radial-gradient(ellipse 85% 42% at 50% -10%, rgba(232,184,122,.18), transparent 62%),
+      radial-gradient(ellipse 70% 32% at 100% 12%, rgba(201,147,74,.08), transparent 58%),
+      linear-gradient(180deg, rgba(253,251,247,.985), rgba(244,237,226,.985)) !important;
+  }
+  .mobile-menu-head {
+    border-bottom-color: rgba(201,147,74,.13) !important;
+    background: linear-gradient(180deg, rgba(255,255,255,.34), rgba(255,255,255,0)) !important;
+  }
+  .mobile-menu-brand-name { letter-spacing: .16em !important; }
+  .mobile-menu-close {
+    width: 46px !important;
+    height: 46px !important;
+    background: rgba(201,147,74,.085) !important;
+    border-color: rgba(201,147,74,.20) !important;
+    box-shadow: 0 10px 24px rgba(61,43,31,.055), 0 0 0 1px rgba(255,255,255,.34) inset;
+  }
+  .mobile-menu-nav a {
+    position: relative;
+    margin: 0 16px !important;
+    padding: 15px 18px !important;
+    border-radius: 18px !important;
+    border-bottom: 0 !important;
+    background: transparent;
+    transition: transform .28s cubic-bezier(.34,1.56,.64,1), background .24s ease, color .24s ease, padding-left .28s ease !important;
+  }
+  .mobile-menu-nav a::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 50%;
+    width: 3px; height: 0;
+    border-radius: 99px;
+    background: linear-gradient(180deg, var(--gold-light,#d4a76a), var(--gold,#c9934a));
+    transform: translateY(-50%);
+    transition: height .24s ease;
+  }
+  .mobile-menu-nav a:hover,
+  .mobile-menu-nav a:active {
+    background: rgba(201,147,74,.075) !important;
+    color: var(--gold-acc,#8a5e23) !important;
+    padding-left: 28px !important;
+    transform: translateX(2px);
+  }
+  .mobile-menu-nav a:hover::before,
+  .mobile-menu-nav a:active::before { height: 56%; }
+  .mm-msg {
+    border-radius: 20px !important;
+    box-shadow: 0 12px 26px rgba(0,0,0,.12), 0 0 0 1px rgba(255,255,255,.22) inset !important;
+    transition: transform .24s cubic-bezier(.34,1.56,.64,1), box-shadow .24s ease, filter .2s ease !important;
+  }
+  .mm-msg:active { transform: scale(.94) translateY(1px) !important; }
+
+  /* Dark theme */
+  [data-theme="dark"] #mcNav.mc-nav,
+  [data-theme="dark"] .mc-nav {
+    background: linear-gradient(180deg, rgba(25,16,8,.90), rgba(13,8,4,.985)) !important;
+    border-top-color: rgba(232,184,122,.16) !important;
+    box-shadow: 0 -18px 52px rgba(0,0,0,.52), 0 -1px 0 rgba(232,184,122,.05) inset !important;
+  }
+  [data-theme="dark"] #mcNav .mc-btn,
+  [data-theme="dark"] .mc-nav .mc-btn { color: rgba(240,228,208,.66) !important; }
+  [data-theme="dark"] #mcNav .mc-btn.mc-active,
+  [data-theme="dark"] .mc-nav .mc-btn.mc-active {
+    color: var(--gold-light,#e8b87a) !important;
+    background: rgba(232,184,122,.075) !important;
+  }
+  [data-theme="dark"] #mcSheet.mc-sheet {
+    background:
+      radial-gradient(ellipse 80% 34% at 50% 0%, rgba(232,184,122,.12), transparent 68%),
+      linear-gradient(180deg, rgba(31,20,11,.985), rgba(11,7,4,.975)) !important;
+    border-color: rgba(232,184,122,.18) !important;
+    box-shadow: 0 -18px 60px rgba(0,0,0,.60), 0 0 0 1px rgba(232,184,122,.05) inset !important;
+  }
+  [data-theme="dark"] #mcSheet .mc-sheet-title,
+  [data-theme="dark"] #mcSheet .mc-row-icon { color: var(--gold-light,#e8b87a) !important; }
+  [data-theme="dark"] #mcSheet .mc-row {
+    background: rgba(255,255,255,.025) !important;
+    border-color: rgba(232,184,122,0) !important;
+  }
+  [data-theme="dark"] #mcSheet .mc-row:active,
+  [data-theme="dark"] #mcSheet .mc-row.mc-press {
+    background: rgba(232,184,122,.08) !important;
+    border-color: rgba(232,184,122,.16) !important;
+  }
+  [data-theme="dark"] #mcSheet .mc-row-name { color: #f7ead6 !important; }
+  [data-theme="dark"] #mcSheet .mc-row-sub,
+  [data-theme="dark"] #mcSheet .mc-section-label { color: #c8a880 !important; }
+  [data-theme="dark"] #mcSheet .mc-sheet-close {
+    color: #f0e4d0 !important;
+    background: rgba(232,184,122,.075) !important;
+    border-color: rgba(232,184,122,.16) !important;
+  }
+  [data-theme="dark"] .mobile-menu {
+    background:
+      radial-gradient(ellipse 85% 42% at 50% -10%, rgba(232,184,122,.11), transparent 62%),
+      linear-gradient(180deg, rgba(24,15,8,.992), rgba(10,6,3,.992)) !important;
+  }
+}
+@media (max-width: 360px) {
+  #mcSheet.mc-sheet { left: 6px !important; right: 6px !important; }
+  #mcSheet .mc-row { min-height: 58px !important; padding: 11px 12px !important; }
+  #mcNav .mc-btn-label, .mc-nav .mc-btn-label { font-size: 9.2px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #mcNav .mc-btn,
+  .mc-nav .mc-btn,
+  #mcSheet.mc-sheet,
+  #mcSheet .mc-row,
+  .mobile-menu-nav a,
+  .mm-msg {
+    transition: color .2s ease, background .2s ease, opacity .2s ease !important;
+    transform: none !important;
+  }
+}
+/* ══ END R13 ══ */
+
+/* ══════════════════════════════════════════════════════════════
+   PATCH R14 — Mobile TOC finishing touches
+   Ещё тоньше: active row semantics, edge light, focus elegance,
+   perceived depth without changing structure.
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  #mcSheet.mc-sheet {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(201,147,74,.32) transparent;
+  }
+  #mcSheet.mc-sheet::-webkit-scrollbar { width: 4px; }
+  #mcSheet.mc-sheet::-webkit-scrollbar-track { background: transparent; }
+  #mcSheet.mc-sheet::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(201,147,74,.16), rgba(201,147,74,.42), rgba(201,147,74,.16));
+    border-radius: 99px;
+  }
+  #mcSheet.mc-sheet::before {
+    content: '';
+    position: sticky;
+    top: 0;
+    display: block;
+    height: 1px;
+    margin: 0 24px;
+    background: linear-gradient(90deg, transparent, rgba(201,147,74,.28), transparent);
+    pointer-events: none;
+    z-index: 1;
+  }
+  #mcSheet.mc-sheet::after {
+    content: '';
+    position: sticky;
+    bottom: 0;
+    display: block;
+    height: 18px;
+    margin-top: -18px;
+    background: linear-gradient(180deg, transparent, rgba(246,239,229,.92));
+    pointer-events: none;
+  }
+  #mcSheet .mc-row--active,
+  #mcSheet .mc-row--current {
+    background:
+      linear-gradient(135deg, rgba(201,147,74,.14), rgba(255,255,255,.34)) !important;
+    border-color: rgba(201,147,74,.24) !important;
+    box-shadow:
+      0 12px 28px rgba(61,43,31,.075),
+      0 0 0 1px rgba(255,255,255,.44) inset !important;
+  }
+  #mcSheet .mc-row--active .mc-row-icon,
+  #mcSheet .mc-row--current .mc-row-icon {
+    background:
+      radial-gradient(circle at 35% 25%, rgba(255,244,218,.50), transparent 34%),
+      linear-gradient(145deg, rgba(201,147,74,.24), rgba(201,147,74,.10)) !important;
+    color: var(--gold-acc,#8a5e23) !important;
+  }
+  #mcSheet .mc-row--active .mc-row-name,
+  #mcSheet .mc-row--current .mc-row-name {
+    color: var(--gold-acc,#8a5e23) !important;
+  }
+  #mcSheet .mc-row--active .mc-row-arrow,
+  #mcSheet .mc-row--current .mc-row-arrow {
+    opacity: .18;
+  }
+
+  /* More graceful focus states for mobile TOC controls */
+  #mcNav .mc-btn:focus-visible,
+  .mc-nav .mc-btn:focus-visible,
+  #mcSheet .mc-row:focus-visible,
+  #mcSheet .mc-sheet-close:focus-visible,
+  .mobile-menu-nav a:focus-visible,
+  .mobile-menu-close:focus-visible,
+  .mm-msg:focus-visible {
+    outline: 2px solid rgba(201,147,74,.78) !important;
+    outline-offset: 3px !important;
+    box-shadow: 0 0 0 5px rgba(201,147,74,.12), 0 10px 24px rgba(61,43,31,.08) !important;
+  }
+
+  /* Tap-highlight replacement: subtle inner bloom */
+  #mcNav .mc-btn::after,
+  .mc-nav .mc-btn::after,
+  #mcSheet .mc-row::after,
+  .mobile-menu-nav a::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: inherit;
+    background: radial-gradient(circle at 50% 50%, rgba(201,147,74,.13), transparent 62%);
+    opacity: 0;
+    transform: scale(.96);
+    transition: opacity .22s ease, transform .22s ease;
+    pointer-events: none;
+  }
+  #mcNav .mc-btn.mc-press::after,
+  .mc-nav .mc-btn.mc-press::after,
+  #mcSheet .mc-row.mc-press::after,
+  .mobile-menu-nav a.mc-press::after {
+    opacity: 1;
+    transform: scale(1);
+  }
+  #mcSheet .mc-row,
+  .mobile-menu-nav a { isolation: isolate; }
+  #mcSheet .mc-row > *,
+  .mobile-menu-nav a > * { position: relative; z-index: 1; }
+
+  /* The full-screen burger menu feels lighter at the bottom. */
+  .mobile-menu::after {
+    content: '';
+    position: fixed;
+    left: 20px; right: 20px; bottom: calc(18px + env(safe-area-inset-bottom,0px));
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201,147,74,.22), transparent);
+    pointer-events: none;
+  }
+  .mobile-menu.open .mobile-menu-nav a {
+    animation: r14TocLinkIn .42s cubic-bezier(.22,1,.36,1) both;
+  }
+  .mobile-menu.open .mobile-menu-nav a:nth-child(1){ animation-delay: .02s; }
+  .mobile-menu.open .mobile-menu-nav a:nth-child(2){ animation-delay: .045s; }
+  .mobile-menu.open .mobile-menu-nav a:nth-child(3){ animation-delay: .07s; }
+  .mobile-menu.open .mobile-menu-nav a:nth-child(4){ animation-delay: .095s; }
+  .mobile-menu.open .mobile-menu-nav a:nth-child(5){ animation-delay: .12s; }
+  @keyframes r14TocLinkIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  [data-theme="dark"] #mcSheet.mc-sheet::after {
+    background: linear-gradient(180deg, transparent, rgba(11,7,4,.94));
+  }
+  [data-theme="dark"] #mcSheet .mc-row--active,
+  [data-theme="dark"] #mcSheet .mc-row--current {
+    background: linear-gradient(135deg, rgba(232,184,122,.115), rgba(255,255,255,.026)) !important;
+    border-color: rgba(232,184,122,.22) !important;
+    box-shadow: 0 14px 34px rgba(0,0,0,.34), 0 0 24px rgba(232,184,122,.055) !important;
+  }
+  [data-theme="dark"] #mcSheet .mc-row--active .mc-row-name,
+  [data-theme="dark"] #mcSheet .mc-row--current .mc-row-name {
+    color: var(--gold-light,#e8b87a) !important;
+  }
+  [data-theme="dark"] #mcNav .mc-btn:focus-visible,
+  [data-theme="dark"] .mc-nav .mc-btn:focus-visible,
+  [data-theme="dark"] #mcSheet .mc-row:focus-visible,
+  [data-theme="dark"] #mcSheet .mc-sheet-close:focus-visible,
+  [data-theme="dark"] .mobile-menu-nav a:focus-visible,
+  [data-theme="dark"] .mobile-menu-close:focus-visible,
+  [data-theme="dark"] .mm-msg:focus-visible {
+    outline-color: rgba(232,184,122,.84) !important;
+    box-shadow: 0 0 0 5px rgba(232,184,122,.12), 0 0 26px rgba(232,184,122,.08) !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu.open .mobile-menu-nav a { animation: none !important; }
+  #mcNav .mc-btn::after,
+  .mc-nav .mc-btn::after,
+  #mcSheet .mc-row::after,
+  .mobile-menu-nav a::after { transition: none !important; }
+}
+/* ══ END R14 ══ */
+
+/* ══════════════════════════════════════════════════════════════
+   PATCH R15 — Contacts polish + hero messenger lift + softer copy type
+   Точечно исправляет замечания: телефонная SVG-трубка, footer contacts,
+   высота подлёта названий WA/TG/MAX и менее «квадратную» типографику.
+   ══════════════════════════════════════════════════════════════ */
+
+/* 1) Contacts card: phone icon must be clean black, not white/gold-buggy */
+#contacts .contact-primary-icon {
+  color: #0f0d0a !important;
+  background:
+    radial-gradient(circle at 35% 25%, rgba(255,255,255,.98), rgba(255,248,235,.82) 58%, rgba(232,184,122,.18) 100%) !important;
+  border: 1px solid rgba(15,13,10,.10) !important;
+  box-shadow:
+    0 12px 26px rgba(15,13,10,.16),
+    0 0 0 1px rgba(255,255,255,.72) inset,
+    0 0 22px rgba(201,147,74,.16) !important;
+}
+#contacts .contact-primary-icon svg {
+  color: #0f0d0a !important;
+  stroke: currentColor !important;
+  filter:
+    drop-shadow(0 1px 0 rgba(255,255,255,.85))
+    drop-shadow(0 7px 12px rgba(15,13,10,.18));
+}
+#contacts .contact-primary-item:hover .contact-primary-icon,
+#contacts .contact-primary-item:focus-visible .contact-primary-icon {
+  color: #050403 !important;
+  box-shadow:
+    0 16px 34px rgba(15,13,10,.20),
+    0 0 0 1px rgba(255,255,255,.80) inset,
+    0 0 30px rgba(201,147,74,.24) !important;
+  transform: translateY(-1px) scale(1.025);
+}
+#contacts .contact-primary-icon {
+  transition: transform .28s cubic-bezier(.34,1.56,.64,1), box-shadow .28s ease, color .22s ease, background .28s ease !important;
+}
+[data-theme="dark"] #contacts .contact-primary-icon {
+  color: #0b0906 !important;
+  background:
+    radial-gradient(circle at 35% 25%, rgba(255,246,226,.98), rgba(232,184,122,.76) 62%, rgba(125,77,28,.32) 100%) !important;
+  border-color: rgba(232,184,122,.28) !important;
+  box-shadow:
+    0 14px 32px rgba(0,0,0,.42),
+    0 0 0 1px rgba(255,255,255,.20) inset,
+    0 0 30px rgba(232,184,122,.15) !important;
+}
+[data-theme="dark"] #contacts .contact-primary-icon svg { color: #0b0906 !important; }
+
+/* 2) Footer contacts: remove accidental-looking colored links; make neutral premium chips */
+.site-footer .footer-col address {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+}
+.site-footer .footer-col address a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  color: rgba(255,244,224,.88) !important;
+  background: rgba(255,255,255,.035) !important;
+  border: 1px solid rgba(232,184,122,.14) !important;
+  text-decoration: none !important;
+  font-family: 'Jost', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: .018em;
+  box-shadow: 0 8px 18px rgba(0,0,0,.10), 0 0 0 1px rgba(255,255,255,.025) inset;
+  transition: transform .24s cubic-bezier(.34,1.56,.64,1), background .22s ease, color .22s ease, border-color .22s ease, box-shadow .22s ease;
+}
+.site-footer .footer-col address a[href^="tel"] {
+  color: #fff2d8 !important;
+  border-color: rgba(232,184,122,.24) !important;
+  background: rgba(232,184,122,.065) !important;
+  font-weight: 500;
+}
+.site-footer .footer-col address a[href*="wa.me"],
+.site-footer .footer-col address a[href*="t.me"] {
+  color: rgba(255,244,224,.82) !important;
+  background: rgba(255,255,255,.028) !important;
+  border-color: rgba(232,184,122,.12) !important;
+}
+.site-footer .footer-col address a:hover,
+.site-footer .footer-col address a:focus-visible {
+  color: #fff8ea !important;
+  background: rgba(232,184,122,.10) !important;
+  border-color: rgba(232,184,122,.34) !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,.16), 0 0 24px rgba(232,184,122,.08) !important;
+  transform: translateY(-2px);
+}
+.site-footer .footer-hours,
+.site-footer .footer-address {
+  flex: 1 1 100%;
+  color: rgba(255,244,224,.62) !important;
+  letter-spacing: .02em;
+}
+@media (max-width: 520px) {
+  .site-footer .footer-col address a {
+    min-height: 36px;
+    padding: 8px 13px;
+  }
+}
+
+/* 3) Main hero messenger labels: match suburb-height lift, not tiny movement */
+.hero-actions .btn-hero-messenger:hover .hero-flat-text,
+.hero-actions .btn-hero-messenger:hover [id^="flat-text-"] {
+  transform: translateY(-13px) !important;
+  opacity: 1 !important;
+}
+.hero-actions .btn-hero-messenger:hover .hero-ring-text,
+.hero-actions .btn-hero-messenger:hover [id^="ring-text-"] {
+  transform: rotate(-18deg) translateY(-4px) scale(.94) !important;
+  opacity: .10 !important;
+}
+
+/* 4) Softer, less square premium copy typography — no italic */
+.hero-subtitle,
+.section-sub,
+.about-section .section-sub,
+#contacts .section-sub,
+.meringue-promo__text,
+.mr-cities__sub,
+.local-context__text {
+  font-family: 'Cormorant Garamond', Georgia, serif !important;
+  font-weight: 500 !important;
+  font-style: normal !important;
+  letter-spacing: .012em !important;
+  line-height: 1.48 !important;
+  text-wrap: balance;
+  font-kerning: normal;
+  font-feature-settings: "liga" 1, "kern" 1;
+}
+.hero-subtitle {
+  font-size: clamp(18px, 2.15vw, 25px) !important;
+  color: rgba(255,238,205,.88) !important;
+  text-shadow: 0 8px 26px rgba(0,0,0,.28), 0 0 22px rgba(201,147,74,.14) !important;
+}
+.section-sub {
+  font-size: clamp(17px, 1.6vw, 22px) !important;
+}
+.hero-subtitle .w,
+.section-sub .w {
+  font-family: inherit !important;
+  font-weight: inherit !important;
+  letter-spacing: inherit !important;
+}
+@media (max-width: 560px) {
+  .hero-subtitle {
+    font-size: clamp(17px, 5.2vw, 21px) !important;
+    line-height: 1.42 !important;
+  }
+  .section-sub { font-size: 17px !important; }
+}
+[data-theme="dark"] .section-sub,
+[data-theme="dark"] .local-context__text,
+[data-theme="dark"] .meringue-promo__text {
+  color: #d9c2a0 !important;
+}
+/* ══ END R15 ══ */

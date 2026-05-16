@@ -48,3 +48,9 @@ Primary URL: https://milovicake.ru
 - НЕ удалять catalog lightbox `#lightbox` из `prigorody/_template.html`: без него в пригородах не открываются фото тортов.
 - Страницы `prigorody/<city>/index.html` редактировать только через `prigorody/_template.html` + `python3 prigorody/build.py`.
 
+## R15 protected visual decisions
+
+- `#contacts .contact-primary-icon svg` должен оставаться чисто чёрным с мягкой premium-подсветкой. Не возвращать белую/случайную заливку телефонной трубки.
+- Footer-контакты (`.site-footer .footer-col address a`) должны оставаться спокойными neutral premium chips. Не раскрашивать WhatsApp/Telegram в яркие случайные цвета в футере.
+- Hero messenger hover на главной поддерживает class-based SVG (`.hero-ring-text`, `.hero-flat-text`) и id-based SVG пригородов. Не удалять fallback в `js/main.js` рядом с комментарием `R15: main page uses class-based SVG text`.
+- Subtitle/copy типографика (`.hero-subtitle`, `.section-sub` и родственные тексты) намеренно переведена на Cormorant Garamond normal без курсива, чтобы убрать квадратность. Не заменять обратно на грубый sans без согласования.

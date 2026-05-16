@@ -634,3 +634,163 @@
   });
 
 })();
+
+/* ══════════════════════════════════════════════════════════════
+   PATCH R13 — premium tactile feedback for mobile TOC
+   Без изменения структуры: только мягкий press-state и aria-current.
+   ══════════════════════════════════════════════════════════════ */
+(function r13MobileTocPolish(){
+  'use strict';
+  function ready(fn){ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }
+  ready(function(){
+    var pressSelector = '#mcNav .mc-btn, #mcSheet .mc-row, #mcSheet .mc-sheet-close, .mobile-menu-nav a, .mobile-menu-close, .mm-msg';
+
+    document.addEventListener('pointerdown', function(e){
+      var el = e.target && e.target.closest ? e.target.closest(pressSelector) : null;
+      if (!el) return;
+      el.classList.add('mc-press');
+    }, { passive: true });
+
+    ['pointerup','pointercancel','pointerleave','blur'].forEach(function(type){
+      document.addEventListener(type, function(e){
+        var el = e.target && e.target.closest ? e.target.closest(pressSelector) : null;
+        if (el) el.classList.remove('mc-press');
+      }, true);
+    });
+
+    function syncAriaCurrent(){
+      var nav = document.getElementById('mcNav');
+      if (!nav) return;
+      nav.querySelectorAll('.mc-btn').forEach(function(btn){
+        if (btn.classList.contains('mc-active')) btn.setAttribute('aria-current', 'page');
+        else btn.removeAttribute('aria-current');
+      });
+    }
+
+    var mo = new MutationObserver(syncAriaCurrent);
+    function attach(){
+      var nav = document.getElementById('mcNav');
+      if (!nav) return false;
+      mo.observe(nav, { attributes: true, subtree: true, attributeFilter: ['class'] });
+      syncAriaCurrent();
+      return true;
+    }
+    if (!attach()) {
+      var tries = 0;
+      var timer = setInterval(function(){
+        tries += 1;
+        if (attach() || tries > 20) clearInterval(timer);
+      }, 250);
+    }
+  });
+})();
+
+/* ══════════════════════════════════════════════════════════════
+   PATCH R14 — mobile TOC semantics + active row refinement
+   Тонкий слой: aria-hidden, focus return, active rows in sheet.
+   Структуру и существующую логику не меняем.
+   ══════════════════════════════════════════════════════════════ */
+(function r14MobileTocSemantics(){
+  'use strict';
+  function ready(fn){ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }
+
+  ready(function(){
+    var lastTrigger = null;
+    var closeFocusTimer = null;
+
+    function q(id){ return document.getElementById(id); }
+    function sheetOpen(){ var s = q('mcSheet'); return !!(s && s.classList.contains('mc-open')); }
+
+    function setInitialA11y(){
+      var sheet = q('mcSheet');
+      var backdrop = q('mcBackdrop');
+      if (sheet && !sheet.classList.contains('mc-open')) sheet.setAttribute('aria-hidden', 'true');
+      if (backdrop) backdrop.setAttribute('aria-hidden', 'true');
+    }
+
+    document.addEventListener('pointerdown', function(e){
+      var trigger = e.target && e.target.closest ? e.target.closest('#mcMoreBtn') : null;
+      if (trigger) lastTrigger = trigger;
+    }, { passive: true });
+
+    function syncSheetState(){
+      var sheet = q('mcSheet');
+      var backdrop = q('mcBackdrop');
+      var open = sheetOpen();
+      if (sheet) sheet.setAttribute('aria-hidden', open ? 'false' : 'true');
+      if (backdrop) backdrop.setAttribute('aria-hidden', 'true');
+
+      clearTimeout(closeFocusTimer);
+      if (open) {
+        closeFocusTimer = setTimeout(function(){
+          var close = q('mcSheetClose');
+          if (close && document.activeElement !== close) close.focus({ preventScroll: true });
+        }, 80);
+      } else if (lastTrigger && document.contains(lastTrigger)) {
+        closeFocusTimer = setTimeout(function(){
+          try { lastTrigger.focus({ preventScroll: true }); } catch(e) { lastTrigger.focus(); }
+        }, 120);
+      }
+    }
+
+    function currentSectionId(){
+      var candidates = Array.prototype.slice.call(document.querySelectorAll('section[id], main [id]'))
+        .filter(function(el){
+          var id = el.id || '';
+          return ['home','catalog','fillings','reviews','contacts','delivery','composition','gallery','order','why'].indexOf(id) !== -1;
+        });
+      if (!candidates.length) return (location.hash || '').replace('#','');
+      var best = null, bestScore = -Infinity;
+      var vh = window.innerHeight || 1;
+      candidates.forEach(function(el){
+        var r = el.getBoundingClientRect();
+        var visible = Math.min(r.bottom, vh) - Math.max(r.top, 0);
+        var centerBias = -Math.abs((r.top + r.bottom) / 2 - vh * 0.42) / vh;
+        var score = (visible > 0 ? visible / Math.max(1, r.height) : -1) + centerBias;
+        if (score > bestScore) { bestScore = score; best = el; }
+      });
+      return best ? best.id : (location.hash || '').replace('#','');
+    }
+
+    var activeRaf = 0;
+    function syncActiveRows(){
+      if (activeRaf) return;
+      activeRaf = requestAnimationFrame(function(){
+        activeRaf = 0;
+        var id = currentSectionId();
+        var sheet = q('mcSheet');
+        if (!sheet || !id) return;
+        sheet.querySelectorAll('.mc-row-anchor').forEach(function(row){
+          var href = row.getAttribute('href') || '';
+          var on = href === '#' + id;
+          row.classList.toggle('mc-row--active', on);
+          if (on) row.setAttribute('aria-current', 'location');
+          else row.removeAttribute('aria-current');
+        });
+      });
+    }
+
+    function attach(){
+      var sheet = q('mcSheet');
+      if (!sheet) return false;
+      setInitialA11y();
+      var mo = new MutationObserver(syncSheetState);
+      mo.observe(sheet, { attributes: true, attributeFilter: ['class'] });
+      syncSheetState();
+      syncActiveRows();
+      return true;
+    }
+
+    if (!attach()) {
+      var tries = 0;
+      var t = setInterval(function(){
+        tries += 1;
+        if (attach() || tries > 24) clearInterval(t);
+      }, 250);
+    }
+
+    window.addEventListener('scroll', syncActiveRows, { passive: true });
+    window.addEventListener('hashchange', syncActiveRows, { passive: true });
+    window.addEventListener('resize', syncActiveRows, { passive: true });
+  });
+})();
