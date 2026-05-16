@@ -1,0 +1,1632 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════╗
+ * ║  MILOVI CAKE — R19 DARK THEME ENGINE + PREMIUM LIGHT POLISH         ║
+ * ║  Загружается ПОСЛЕДНИМ, после premium-overrides.css                 ║
+ * ║  Закрывает все белые/кремовые «дыры» в dark mode                   ║
+ * ║  Добавляет голубовато-синий accent к золотой dark palette           ║
+ * ╚══════════════════════════════════════════════════════════════════════╝
+ */
+
+/* ════════════════════════════════════════════════════════════════════════
+   SECTION 0 — DARK THEME EXTENDED CSS VARIABLES
+   Добавляем deep navy/slate синие акценты к тёплой тёмной палитре
+   ════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] {
+  /* Базовые поверхности */
+  --cream:        #0e0905;
+  --cream-dark:   #120c06;
+  --white:        #1a1108;
+  --card-bg:      #1c1309;
+  --bg-dark:      #080503;
+  --text:         #f0e4d0;
+  --text-muted:   #c8a880;
+  --brown:        #f0e4d0;
+  --brown-light:  #e8c89a;
+
+  /* Синие акценты — добавляем в dark palette */
+  --blue-deep:    #0f1a2e;       /* фон секции с синеватым оттенком */
+  --blue-slate:   #1a2a42;       /* карточки с прохладным тоном */
+  --blue-accent:  #2d5a8e;       /* тёмно-синий акцент */
+  --blue-glow:    rgba(80,140,220,0.12);  /* glow для hero orbs */
+  --blue-border:  rgba(80,140,220,0.18); /* рамки с синеватым тоном */
+
+  /* Золото в dark чуть теплее */
+  --gold:         #d4a76a;
+  --gold-light:   #e8b87a;
+  --gold2:        #f0c98a;
+  --gold-glow:    rgba(212,167,106,0.45);
+
+  /* Scrollbar в dark */
+  --sb-track:     rgba(255,240,200,0.06);
+  --sb-thumb:     linear-gradient(180deg, rgba(212,167,106,0.6) 0%, rgba(180,120,50,0.75) 100%);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   SECTION 1 — GLOBAL BACKGROUNDS (закрываем все светлые дыры)
+   ════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] body {
+  background: #0e0905;
+  color: #f0e4d0;
+}
+
+[data-theme="dark"] html {
+  color-scheme: dark;
+  background: #0e0905;
+}
+
+/* ── Hero section ── */
+[data-theme="dark"] .hero-content {
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 0%, rgba(80,120,200,0.09) 0%, transparent 60%),
+    linear-gradient(160deg, #080503 0%, #0f0906 45%, #0a0603 100%) !important;
+  border-top-color: rgba(212,167,106,0.14) !important;
+}
+
+[data-theme="dark"] .hero-photo-bg::after {
+  background:
+    linear-gradient(to bottom, rgba(5,3,2,0.52) 0%, transparent 35%),
+    linear-gradient(to bottom, transparent 55%, rgba(8,5,2,0.65) 100%) !important;
+}
+
+/* Hero orbs — добавляем синеватое свечение */
+[data-theme="dark"] .hero-orb-1 {
+  background: radial-gradient(ellipse, rgba(201,147,74,0.28) 0%, rgba(80,120,200,0.08) 60%, transparent 80%) !important;
+  filter: blur(60px);
+}
+[data-theme="dark"] .hero-orb-2 {
+  background: radial-gradient(ellipse, rgba(212,167,106,0.20) 0%, rgba(40,80,160,0.10) 60%, transparent 80%) !important;
+  filter: blur(80px);
+}
+[data-theme="dark"] .hero-orb-3 {
+  background: radial-gradient(ellipse, rgba(100,160,240,0.10) 0%, transparent 70%) !important;
+  filter: blur(100px);
+}
+
+/* ── About section ── */
+[data-theme="dark"] #about {
+  background: #0e0905 !important;
+}
+[data-theme="dark"] .about-photo-wrap {
+  box-shadow: 0 24px 70px rgba(0,0,0,0.45), 0 4px 16px rgba(0,0,0,0.3), 0 0 0 1.5px rgba(212,167,106,0.20) !important;
+}
+
+/* ── Catalog section ── */
+[data-theme="dark"] #catalog {
+  background: linear-gradient(to bottom, #120c06 0, #1a1108 80px) !important;
+}
+
+[data-theme="dark"] .product-card {
+  background: #1c1309 !important;
+  border-color: rgba(212,167,106,0.12) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.32) !important;
+}
+[data-theme="dark"] .product-card:hover {
+  border-color: rgba(212,167,106,0.38) !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.45), 0 0 0 1px rgba(212,167,106,0.22) !important;
+}
+
+[data-theme="dark"] .product-title {
+  color: #f0e4d0 !important;
+}
+[data-theme="dark"] .product-desc {
+  color: #c8a880 !important;
+}
+[data-theme="dark"] .product-min {
+  color: #a08060 !important;
+}
+
+/* Bento tab switcher */
+[data-theme="dark"] .bento-tabs {
+  background: rgba(212,167,106,0.07) !important;
+  border-color: rgba(212,167,106,0.14) !important;
+}
+[data-theme="dark"] .bento-tab.active,
+[data-theme="dark"] .bento-seg-opt.active {
+  background: #2a1d10 !important;
+  color: #d4a76a !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.45) !important;
+}
+[data-theme="dark"] .bento-tab,
+[data-theme="dark"] .bento-seg-opt {
+  color: #c8a880 !important;
+}
+
+/* Catalog nav pills */
+[data-theme="dark"] .catalog-nav-item {
+  background: #1c1309 !important;
+  border-color: rgba(212,167,106,0.14) !important;
+  color: #c8a880 !important;
+}
+[data-theme="dark"] .catalog-nav-item:hover,
+[data-theme="dark"] .catalog-nav-item.active {
+  background: #2a1d10 !important;
+  border-color: rgba(212,167,106,0.40) !important;
+  color: #d4a76a !important;
+}
+
+/* ── Fillings section ── */
+[data-theme="dark"] #fillings {
+  background: linear-gradient(180deg, #120c06 0%, #0e0905 100%) !important;
+}
+
+[data-theme="dark"] .calc-opt {
+  background: #1c1309 !important;
+  border-color: rgba(212,167,106,0.14) !important;
+  color: #c8a880 !important;
+}
+[data-theme="dark"] .calc-opt:hover:not(.selected) {
+  background: #221508 !important;
+  border-color: rgba(212,167,106,0.38) !important;
+  color: #e0c090 !important;
+}
+[data-theme="dark"] .calc-opt.selected {
+  background: linear-gradient(135deg, #3a2510, #2a1c0c) !important;
+  border-color: rgba(212,167,106,0.55) !important;
+  color: #f0c98a !important;
+}
+
+[data-theme="dark"] .calc-type-card {
+  background: #1c1309 !important;
+  border-color: rgba(212,167,106,0.14) !important;
+  color: #c8a880 !important;
+}
+[data-theme="dark"] .calc-type-card.selected {
+  background: linear-gradient(135deg, #3a2510, #2a1c0c) !important;
+  border-color: rgba(212,167,106,0.55) !important;
+  color: #f0c98a !important;
+}
+
+/* ── Calculator section ── */
+[data-theme="dark"] #calculator {
+  background: linear-gradient(180deg, #120c06 0%, #0e0905 100%) !important;
+}
+
+[data-theme="dark"] .calc-wrap {
+  background: #1a1108 !important;
+  border-color: rgba(212,167,106,0.12) !important;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.40) !important;
+}
+
+[data-theme="dark"] .calc-left-col {
+  background: transparent !important;
+}
+
+[data-theme="dark"] .calc-right-col,
+[data-theme="dark"] .calc-result {
+  background: #1c1309 !important;
+  border-color: rgba(212,167,106,0.12) !important;
+}
+
+[data-theme="dark"] .calc-result-collapsed {
+  background: #1c1309 !important;
+  border-top-color: rgba(212,167,106,0.12) !important;
+}
+
+[data-theme="dark"] .calc-weight-hint {
+  color: #a08060 !important;
+}
+
+[data-theme="dark"] .calc-guests-badge {
+  color: #d4a76a !important;
+  background: rgba(212,167,106,0.09) !important;
+  border-color: rgba(212,167,106,0.22) !important;
+}
+
+[data-theme="dark"] .calc-stepper-btn {
+  background: #251a0c !important;
+  border-color: rgba(212,167,106,0.22) !important;
+  color: #d4a76a !important;
+}
+
+[data-theme="dark"] .calc-stepper-btn:hover {
+  background: #d4a76a !important;
+  color: #1a1108 !important;
+}
+
+[data-theme="dark"] #calcFixedWeightNote {
+  color: #7aa8d4 !important; /* синеватый — контраст к кремовому bg */
+}
+
+[data-theme="dark"] .calc-summary-chip {
+  background: rgba(212,167,106,0.09) !important;
+  border-color: rgba(212,167,106,0.22) !important;
+  color: #d4a76a !important;
+}
+
+[data-theme="dark"] .calc-add-btn {
+  background: linear-gradient(135deg, #8a5a30 0%, #c9934a 50%, #e8b87a 100%) !important;
+  color: #1a1108 !important;
+  border-color: rgba(232,184,122,0.6) !important;
+}
+[data-theme="dark"] .calc-add-btn:hover {
+  background: linear-gradient(135deg, #a06a38 0%, #d4a76a 50%, #f0c98a 100%) !important;
+}
+
+/* ── Reviews section ── */
+[data-theme="dark"] #reviews {
+  background: #0e0905 !important;
+}
+
+[data-theme="dark"] .review-card {
+  background: #1c1309 !important;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.38) !important;
+  border: 1px solid rgba(212,167,106,0.10);
+}
+
+[data-theme="dark"] .review-text {
+  color: #d8c4a8 !important;
+}
+
+[data-theme="dark"] .review-quote {
+  color: #d4a76a !important;
+  opacity: 0.35 !important;
+}
+
+[data-theme="dark"] .rev-arrow {
+  border-color: rgba(212,167,106,0.38) !important;
+  color: #d4a76a !important;
+  background: rgba(212,167,106,0.04) !important;
+}
+[data-theme="dark"] .rev-arrow:hover {
+  background: #d4a76a !important;
+  color: #1a1108 !important;
+}
+
+[data-theme="dark"] .rev-dot {
+  background: rgba(212,167,106,0.22) !important;
+}
+[data-theme="dark"] .rev-dot-active,
+[data-theme="dark"] .rev-dot.active {
+  background: #d4a76a !important;
+}
+
+/* Review filmstrip */
+[data-theme="dark"] .review-filmstrip-item {
+  background: #251a0c !important;
+  border-color: rgba(212,167,106,0.12) !important;
+}
+
+/* Reviews map badges */
+[data-theme="dark"] .map-badge-yandex,
+[data-theme="dark"] .map-badge-google {
+  background: #1c1309 !important;
+  border-color: rgba(212,167,106,0.18) !important;
+  color: #d4a76a !important;
+}
+
+/* ── Stats section ── */
+[data-theme="dark"] .stats-section {
+  background: #0a0603 !important;
+  border-top: 1px solid rgba(212,167,106,0.10);
+  border-bottom: 1px solid rgba(212,167,106,0.10);
+}
+
+/* ── Why section ── */
+[data-theme="dark"] #why {
+  background: linear-gradient(180deg, #0e0905 0%, #120c06 100%) !important;
+}
+
+[data-theme="dark"] .why-card,
+[data-theme="dark"] .feature-card {
+  background: #1c1309 !important;
+  border-color: rgba(212,167,106,0.12) !important;
+}
+[data-theme="dark"] .why-card:hover,
+[data-theme="dark"] .feature-card:hover {
+  border-color: rgba(212,167,106,0.38) !important;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.38) !important;
+}
+
+/* ── Delivery section ── */
+[data-theme="dark"] #delivery {
+  background: #120c06 !important;
+}
+
+[data-theme="dark"] .delivery-tag,
+[data-theme="dark"] .prigorod-tag {
+  background: #1c1309 !important;
+  border-color: rgba(212,167,106,0.18) !important;
+  color: #c8a880 !important;
+}
+[data-theme="dark"] .delivery-tag:hover,
+[data-theme="dark"] .prigorod-tag:hover {
+  border-color: rgba(212,167,106,0.45) !important;
+  color: #e8b87a !important;
+  background: #221508 !important;
+}
+
+/* ── Contacts section ── */
+[data-theme="dark"] #contacts {
+  background: #0e0905 !important;
+}
+
+[data-theme="dark"] #contacts .card,
+[data-theme="dark"] .contact-card {
+  background: #1c1309 !important;
+  border-color: rgba(212,167,106,0.12) !important;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.32) !important;
+}
+
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group textarea {
+  background: #120c06 !important;
+  border-color: rgba(212,167,106,0.20) !important;
+  color: #f0e4d0 !important;
+}
+[data-theme="dark"] .form-group input:focus,
+[data-theme="dark"] .form-group textarea:focus {
+  border-color: #d4a76a !important;
+  box-shadow: 0 0 0 3px rgba(212,167,106,0.12) !important;
+}
+[data-theme="dark"] .form-group input::placeholder,
+[data-theme="dark"] .form-group textarea::placeholder {
+  color: #7a5c38 !important;
+}
+[data-theme="dark"] .form-group label {
+  color: #c8a880 !important;
+}
+
+/* ── Cart drawer ── */
+[data-theme="dark"] .cart-drawer {
+  background: #1a1108 !important;
+  border-left-color: rgba(212,167,106,0.12) !important;
+}
+
+[data-theme="dark"] .cart-header {
+  background: #1c1309 !important;
+  border-bottom-color: rgba(212,167,106,0.12) !important;
+}
+
+[data-theme="dark"] .cart-item {
+  background: #221508 !important;
+  border-color: rgba(212,167,106,0.12) !important;
+}
+[data-theme="dark"] .cart-item:hover {
+  background: #2a1d10 !important;
+}
+
+[data-theme="dark"] .cart-item-name {
+  color: #f0e4d0 !important;
+}
+[data-theme="dark"] .cart-item-price {
+  color: #c8a880 !important;
+}
+
+[data-theme="dark"] .qty-btn {
+  background: #2a1d10 !important;
+  border-color: rgba(212,167,106,0.22) !important;
+  color: #d4a76a !important;
+}
+[data-theme="dark"] .qty-btn:hover {
+  background: #d4a76a !important;
+  color: #1a1108 !important;
+}
+
+[data-theme="dark"] .cart-footer {
+  background: #1c1309 !important;
+  border-top-color: rgba(212,167,106,0.14) !important;
+}
+
+[data-theme="dark"] .cart-inline-total,
+[data-theme="dark"] .cart-line-total {
+  color: #d4a76a !important;
+}
+
+[data-theme="dark"] .cart-total-row {
+  background: #221508 !important;
+  border-color: rgba(212,167,106,0.14) !important;
+}
+
+[data-theme="dark"] .cart-total-note {
+  color: #9a7a62 !important;
+}
+
+/* Cart steps */
+[data-theme="dark"] .cart-step {
+  background: #1c1309 !important;
+  border-color: rgba(212,167,106,0.14) !important;
+}
+[data-theme="dark"] .cart-step.active {
+  border-color: rgba(212,167,106,0.55) !important;
+}
+[data-theme="dark"] .step-num {
+  color: #c8a880 !important;
+  background: #2a1d10 !important;
+}
+[data-theme="dark"] .cart-step.active .step-num {
+  background: #d4a76a !important;
+  color: #1a1108 !important;
+}
+
+/* Cart select (начинка) */
+[data-theme="dark"] .cart-fill-select,
+[data-theme="dark"] select {
+  background: #1c1309 !important;
+  border-color: rgba(212,167,106,0.22) !important;
+  color: #d4a76a !important;
+}
+
+/* Cart confirm overlay */
+[data-theme="dark"] #cartClearConfirm {
+  background: rgba(26,17,8,0.97) !important;
+  color: #f0e4d0 !important;
+}
+
+/* ── Mc-sheet (slide-up nav) ── */
+[data-theme="dark"] .mc-sheet {
+  background: #1c1309 !important;
+  border-top-color: rgba(212,167,106,0.14) !important;
+  border-left-color: rgba(212,167,106,0.08) !important;
+  border-right-color: rgba(212,167,106,0.08) !important;
+}
+
+[data-theme="dark"] .mc-row {
+  color: #f0e4d0 !important;
+}
+[data-theme="dark"] .mc-row:active {
+  background: rgba(212,167,106,0.08) !important;
+}
+
+[data-theme="dark"] .mc-row-icon {
+  background: rgba(212,167,106,0.09) !important;
+  border-color: rgba(212,167,106,0.14) !important;
+  color: #d4a76a !important;
+}
+
+[data-theme="dark"] .mc-sheet-handle {
+  background: rgba(212,167,106,0.18) !important;
+}
+
+[data-theme="dark"] .mc-sheet-title {
+  color: rgba(200,168,128,0.6) !important;
+}
+
+/* Bottom nav bar */
+[data-theme="dark"] .mc-nav,
+[data-theme="dark"] #mcNav {
+  background: rgba(20,12,6,0.99) !important;
+  border-top-color: rgba(212,167,106,0.12) !important;
+  box-shadow: 0 -2px 20px rgba(0,0,0,0.32) !important;
+}
+
+[data-theme="dark"] .mc-btn {
+  color: rgba(200,168,128,0.55) !important;
+}
+[data-theme="dark"] .mc-btn.mc-active {
+  color: #d4a76a !important;
+}
+
+/* ── Lightbox ── */
+[data-theme="dark"] .lightbox {
+  background: rgba(4,2,1,0) !important;
+}
+[data-theme="dark"] .lightbox.open {
+  background: rgba(4,2,1,0.93) !important;
+  backdrop-filter: blur(20px) brightness(0.4) !important;
+  -webkit-backdrop-filter: blur(20px) brightness(0.4) !important;
+}
+
+[data-theme="dark"] .lightbox-close {
+  background: rgba(255,255,255,0.10) !important;
+  border-color: rgba(255,255,255,0.18) !important;
+  color: rgba(255,255,255,0.88) !important;
+}
+
+/* ── Fill popup (mobile) ── */
+[data-theme="dark"] .fill-popup,
+[data-theme="dark"] #fillPopup {
+  background: #1c1309 !important;
+  border-color: rgba(212,167,106,0.14) !important;
+}
+[data-theme="dark"] .fill-popup-header {
+  border-bottom-color: rgba(212,167,106,0.12) !important;
+  background: #221508 !important;
+}
+[data-theme="dark"] .fill-popup-title {
+  color: #f0e4d0 !important;
+}
+[data-theme="dark"] .fill-popup-close {
+  color: #c8a880 !important;
+  background: rgba(212,167,106,0.08) !important;
+}
+
+/* ── Cookie banner ── */
+[data-theme="dark"] .cookie-banner,
+[data-theme="dark"] #cookieBanner {
+  background: #1c1309 !important;
+  border-color: rgba(212,167,106,0.16) !important;
+  color: #c8a880 !important;
+  box-shadow: 0 -8px 24px rgba(0,0,0,0.32) !important;
+}
+
+/* ── Toast ── */
+[data-theme="dark"] .toast {
+  background: #2a1d10 !important;
+  color: #f0e4d0 !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.45) !important;
+}
+
+/* ── Scroll progress bar ── */
+[data-theme="dark"] #scroll-progress {
+  background: linear-gradient(90deg, #d4a76a, #e8b87a, rgba(80,140,220,0.8)) !important;
+  box-shadow: 0 0 8px rgba(212,167,106,0.4) !important;
+}
+
+/* ── Section dividers ── */
+[data-theme="dark"] .section-fade-divider::before {
+  background: linear-gradient(to right, transparent 0%, rgba(212,167,106,0.4) 25%, rgba(212,167,106,0.7) 50%, rgba(212,167,106,0.4) 75%, transparent 100%) !important;
+}
+
+/* ── Section titles ── */
+[data-theme="dark"] .section-title,
+[data-theme="dark"] .section-title h2 {
+  color: #f0e4d0 !important;
+}
+[data-theme="dark"] .section-eyebrow {
+  color: #d4a76a !important;
+}
+
+/* ── Back to top button ── */
+[data-theme="dark"] #backToTop {
+  background: #1c1309 !important;
+  border-color: rgba(212,167,106,0.28) !important;
+  color: #d4a76a !important;
+}
+[data-theme="dark"] #backToTop:hover {
+  background: #d4a76a !important;
+  color: #1a1108 !important;
+}
+
+/* ── Select dropdowns ── */
+[data-theme="dark"] select option {
+  background: #1c1309 !important;
+  color: #f0e4d0 !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   SECTION 2 — СИНЕВАТЫЙ АКЦЕНТ В DARK THEME
+   Добавляем прохладный blue/navy tint к отдельным секциям
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Hero orbs — синеватый glow */
+[data-theme="dark"] .hero {
+  background: #080503 !important;
+}
+
+/* Stats section — deep navy undertone */
+[data-theme="dark"] .stats-section {
+  background: linear-gradient(180deg, #0a0805 0%, #060408 60%, #0a0603 100%) !important;
+  position: relative;
+}
+[data-theme="dark"] .stats-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 0%, rgba(40,80,160,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 100%, rgba(212,167,106,0.04) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* Why section — прохладный тёмный */
+[data-theme="dark"] #why {
+  background: linear-gradient(180deg,
+    #0e0905 0%,
+    #0d0a10 40%,   /* <-- чуть синеватый */
+    #0e0905 100%
+  ) !important;
+}
+
+/* Delivery section — dark navy undertone */
+[data-theme="dark"] #delivery {
+  background: linear-gradient(180deg, #0d0a0f 0%, #120c06 100%) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   SECTION 3 — LIGHT THEME POLISH (дневная тема усиливается)
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Дневная тема: section bg чередование для чёткого визуального ритма */
+:root:not([data-theme="dark"]) #about {
+  background: linear-gradient(180deg, #f5f0e8 0%, #ede5d5 100%);
+}
+:root:not([data-theme="dark"]) #catalog {
+  background: linear-gradient(180deg, #ede5d5 0%, #f5f0e8 80px, #ffffff 100%);
+}
+:root:not([data-theme="dark"]) #fillings {
+  background: linear-gradient(180deg, #faf6ef 0%, #f0e8d8 100%);
+}
+:root:not([data-theme="dark"]) #calculator {
+  background: linear-gradient(180deg, #faf6ef 0%, #f0e6d4 100%);
+}
+:root:not([data-theme="dark"]) #reviews {
+  background: linear-gradient(180deg, #f5f0e8 0%, #ede5d5 100%);
+}
+:root:not([data-theme="dark"]) #why {
+  background: linear-gradient(180deg, #ede5d5 0%, #f5f0e8 100%);
+}
+:root:not([data-theme="dark"]) #contacts {
+  background: linear-gradient(180deg, #faf6ef 0%, #f0e8d8 100%);
+}
+
+/* Карточки в дневной теме: чуть больше глубины */
+:root:not([data-theme="dark"]) .product-card {
+  box-shadow:
+    0 2px 8px rgba(61,43,31,0.06),
+    0 8px 32px rgba(61,43,31,0.06),
+    0 0 0 1px rgba(201,147,74,0.08) !important;
+}
+:root:not([data-theme="dark"]) .product-card:hover {
+  box-shadow:
+    0 16px 48px rgba(61,43,31,0.12),
+    0 4px 16px rgba(61,43,31,0.08),
+    0 0 0 1.5px rgba(201,147,74,0.22) !important;
+}
+
+/* Why cards: light theme polish */
+:root:not([data-theme="dark"]) .why-card,
+:root:not([data-theme="dark"]) .feature-card {
+  background: rgba(255,255,255,0.75);
+  border: 1px solid rgba(201,147,74,0.14);
+  box-shadow: 0 4px 16px rgba(61,43,31,0.06);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+:root:not([data-theme="dark"]) .why-card:hover,
+:root:not([data-theme="dark"]) .feature-card:hover {
+  border-color: rgba(201,147,74,0.38);
+  box-shadow: 0 12px 32px rgba(61,43,31,0.10);
+  transform: translateY(-3px);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   SECTION 4 — GALLERY HOVER FIX (убираем тормоза)
+   CSS-only premium hover вместо WebGL/liquid.js
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Gallery grid cells — плавный премиум hover без JS тормозов */
+.gx-cell {
+  transition:
+    transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.32s ease !important;
+  will-change: transform;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .gx-cell:hover {
+    transform: scale(1.024) !important;
+    box-shadow:
+      0 20px 48px rgba(0,0,0,0.20),
+      0 0 0 2px rgba(201,147,74,0.35) !important;
+    z-index: 2;
+    position: relative;
+  }
+  [data-theme="dark"] .gx-cell:hover {
+    box-shadow:
+      0 20px 48px rgba(0,0,0,0.45),
+      0 0 0 2px rgba(212,167,106,0.40) !important;
+  }
+}
+
+/* Gallery caption: premium reveal */
+.gx-caption {
+  transition: opacity 0.28s ease, transform 0.32s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Gallery lightbox dark */
+[data-theme="dark"] #gxLight {
+  background: rgba(4,2,1,0.95) !important;
+}
+
+[data-theme="dark"] .gx-light-panel {
+  background: #1c1309 !important;
+  border-left-color: rgba(212,167,106,0.12) !important;
+}
+[data-theme="dark"] #gxTitleV2 {
+  color: #f0e4d0 !important;
+}
+[data-theme="dark"] #gxDescV2 {
+  color: #c8a880 !important;
+}
+[data-theme="dark"] .gx-ctrl {
+  background: rgba(255,255,255,0.08) !important;
+  border-color: rgba(255,255,255,0.16) !important;
+  color: rgba(255,255,255,0.82) !important;
+}
+[data-theme="dark"] .gx-ctrl:hover {
+  background: rgba(212,167,106,0.75) !important;
+  color: #1a1108 !important;
+}
+
+/* Gallery filter pills dark */
+[data-theme="dark"] .gx-filter button {
+  background: #1c1309 !important;
+  border-color: rgba(212,167,106,0.18) !important;
+  color: #c8a880 !important;
+}
+[data-theme="dark"] .gx-filter button[aria-pressed="true"] {
+  background: #d4a76a !important;
+  color: #1a1108 !important;
+  border-color: transparent !important;
+}
+
+/* Thumbnails */
+[data-theme="dark"] .gx-thumb {
+  background: #221508 !important;
+  border-color: rgba(212,167,106,0.12) !important;
+}
+[data-theme="dark"] .gx-thumb.active {
+  border-color: #d4a76a !important;
+  box-shadow: 0 0 0 2px rgba(212,167,106,0.35) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   SECTION 5 — SEO VISUAL INDICATORS (не мешают дизайну)
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Breadcrumb nav: dark override */
+[data-theme="dark"] .breadcrumb-nav {
+  background: rgba(10,6,3,0.85) !important;
+  border-bottom: 1px solid rgba(212,167,106,0.08) !important;
+}
+[data-theme="dark"] .breadcrumb-inner,
+[data-theme="dark"] .breadcrumb-inner a {
+  color: rgba(220,190,140,0.82) !important;
+}
+[data-theme="dark"] .breadcrumb-inner a:hover {
+  color: #d4a76a !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   SECTION 6 — MOBILE OPTIMIZATIONS
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Z-index fix: calc-right-col vs mc-nav */
+@media (max-width: 560px) {
+  .calc-right-col {
+    z-index: 104 !important; /* ниже mc-nav (105), но выше всего остального */
+  }
+}
+
+/* Safe area для iOS home indicator */
+[data-theme="dark"] .mc-nav,
+[data-theme="dark"] #mcNav {
+  background: rgba(14,9,5,0.99) !important;
+}
+
+/* Slider dots: dark */
+[data-theme="dark"] .dot {
+  background: rgba(212,167,106,0.25) !important;
+}
+[data-theme="dark"] .dot.active {
+  background: #d4a76a !important;
+}
+
+/* Slide buttons (prev/next) */
+[data-theme="dark"] .slide-btn {
+  background: rgba(0,0,0,0.45) !important;
+  color: rgba(255,255,255,0.88) !important;
+  border-color: rgba(255,255,255,0.14) !important;
+}
+[data-theme="dark"] .slide-btn:hover {
+  background: rgba(212,167,106,0.75) !important;
+  color: #1a1108 !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   SECTION 7 — MERINGUE ROLL PAGE DARK
+   ════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] .mr-cities {
+  background: linear-gradient(180deg, #120c06 0%, #0e0905 100%) !important;
+}
+[data-theme="dark"] .mr-city-tag {
+  background: #1c1309 !important;
+  border-color: rgba(212,167,106,0.18) !important;
+  color: #c8a880 !important;
+}
+[data-theme="dark"] .mr-city-tag:hover {
+  background: #221508 !important;
+  border-color: rgba(212,167,106,0.45) !important;
+  color: #e8b87a !important;
+}
+[data-theme="dark"] .mr-city-tag.is-target {
+  background: linear-gradient(135deg, rgba(212,167,106,0.14), rgba(212,167,106,0.06)) !important;
+  border-color: #d4a76a !important;
+}
+[data-theme="dark"] .mr-cities__title {
+  color: #f0e4d0 !important;
+}
+[data-theme="dark"] .mr-cities__sub {
+  color: #c8a880 !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   SECTION 8 — PRIGORODY PAGES DARK
+   ════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] .meringue-promo {
+  background: linear-gradient(135deg, #150f08 0%, #1a1208 100%) !important;
+}
+[data-theme="dark"] .meringue-promo__text {
+  color: #e0ccaa !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   SECTION 9 — HEADER SCROLLED STATE (light logo in dark)
+   ════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] .site-header.scrolled {
+  background: rgba(14,9,5,0.97) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+  box-shadow: 0 2px 24px rgba(0,0,0,0.32) !important;
+  border-bottom: 1px solid rgba(212,167,106,0.08) !important;
+}
+
+[data-theme="dark"] .site-header.scrolled .header-logo {
+  color: #f0e4d0 !important;
+}
+[data-theme="dark"] .site-header.scrolled .header-logo-sub {
+  color: rgba(200,168,128,0.6) !important;
+}
+[data-theme="dark"] .site-header.scrolled .header-nav a {
+  color: rgba(240,228,208,0.82) !important;
+}
+[data-theme="dark"] .site-header.scrolled .header-nav a:hover {
+  color: #d4a76a !important;
+}
+[data-theme="dark"] .site-header.scrolled .burger-btn span {
+  background: #f0e4d0 !important;
+}
+[data-theme="dark"] .site-header.scrolled::after {
+  background: linear-gradient(90deg, transparent 0%, rgba(212,167,106,0.28) 50%, transparent 100%) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   SECTION 10 — ACCESSIBILITY & REDUCED MOTION
+   ════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  .gx-cell,
+  .gx-cell:hover {
+    transform: none !important;
+    transition: box-shadow 0.2s ease !important;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   SECTION 11 — PREMIUM FINAL TOUCHES
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Section separator gold line: stronger in dark */
+[data-theme="dark"] .section-fade-divider::before {
+  opacity: 0.8 !important;
+}
+
+/* Scroll padding: учитываем bottom nav на мобиле */
+@media (max-width: 768px) {
+  html {
+    scroll-padding-bottom: 72px;
+  }
+}
+
+/* Touch feedback: все кнопки */
+@media (hover: none) {
+  button:active,
+  [role="button"]:active,
+  a:active {
+    opacity: 0.78;
+    transition: opacity 0.1s !important;
+  }
+}
+
+
+/* ═══════ V20 FIXES ═══════ */
+
+/*
+ * ╔══════════════════════════════════════════════════════════════════════╗
+ * ║  MILOVI CAKE — V20 FIXES                                            ║
+ * ║  Подключать ПОСЛЕДНИМ — после r19-dark-premium.css                  ║
+ * ║  Исправляет:                                                         ║
+ * ║  1. FAQ accordion — не открывается в пригородах, дрыгается           ║
+ * ║  2. Hero subtitle .hero-title-seo — резиновость вместо прыжков       ║
+ * ║  3. Messenger кнопки — уменьшены, текст не вылетает                  ║
+ * ║  4. Dark theme оставшиеся светлые дыры                               ║
+ * ╚══════════════════════════════════════════════════════════════════════╝
+ */
+
+/* ════════════════════════════════════════════════════════════════════════
+   FIX 1 — FAQ / ACCORDION
+   Работает на главной И в пригородах.
+   Причина бага в пригородах: CSS-only accordion (details/summary) работает
+   без JS, но стили анимации написаны только под .faq-item + JS-класс .open.
+   В пригородах используется <details>/<summary> — дрыгание из-за отсутствия
+   transition на height + нет smooth behavior.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ── Общий стиль FAQ контейнера ── */
+.faq-section,
+.faq-block,
+section:has(.faq-item),
+section:has(details.faq-item),
+[class*="faq"] {
+  --faq-radius: 16px;
+  --faq-border: rgba(201,147,74,0.18);
+  --faq-bg: rgba(255,255,255,0.62);
+  --faq-bg-open: rgba(255,255,255,0.88);
+  --faq-gold: #c9934a;
+  --faq-text: #3d2b1f;
+  --faq-muted: #9a7a62;
+}
+
+[data-theme="dark"] .faq-section,
+[data-theme="dark"] .faq-block,
+[data-theme="dark"] section:has(.faq-item),
+[data-theme="dark"] section:has(details.faq-item),
+[data-theme="dark"] [class*="faq"] {
+  --faq-bg: rgba(28,19,9,0.85);
+  --faq-bg-open: rgba(34,21,8,0.95);
+  --faq-border: rgba(212,167,106,0.18);
+  --faq-text: #f0e4d0;
+  --faq-muted: #c8a880;
+}
+
+/* ── JS-driven accordion (.faq-item с классом .open) ── */
+.faq-item {
+  border: 1px solid var(--faq-border, rgba(201,147,74,0.18));
+  border-radius: var(--faq-radius, 16px);
+  margin-bottom: 12px;
+  background: var(--faq-bg, rgba(255,255,255,0.62));
+  overflow: hidden;
+  /* КЛЮЧЕВОЙ ФИX: будет «дрыгаться», если margin анимируется вместе с height */
+  /* Убираем любые transform-based анимации, оставляем только height/opacity */
+  transition:
+    border-color 0.28s ease,
+    box-shadow 0.28s ease,
+    background 0.28s ease !important;
+  /* Никаких transform-переходов на самом .faq-item — они вызывают прыжок */
+  transform: none !important;
+  will-change: auto;
+}
+
+.faq-item:hover {
+  border-color: rgba(201,147,74,0.38) !important;
+  box-shadow: 0 4px 20px rgba(61,43,31,0.06) !important;
+}
+
+.faq-item.open {
+  border-color: rgba(201,147,74,0.42) !important;
+  background: var(--faq-bg-open, rgba(255,255,255,0.88)) !important;
+  box-shadow: 0 8px 28px rgba(61,43,31,0.08) !important;
+}
+
+[data-theme="dark"] .faq-item.open {
+  background: var(--faq-bg-open) !important;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.32) !important;
+}
+
+/* ── FAQ Question (кнопка-вопрос) ── */
+.faq-question,
+.faq-item summary,
+.faq-item > button,
+.faq-item > [role="button"],
+.faq-toggle {
+  width: 100%;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 20px 24px !important;
+  gap: 16px !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  text-align: left !important;
+  font-family: 'Cormorant Garamond', serif !important;
+  font-size: clamp(17px, 2vw, 20px) !important;
+  font-weight: 500 !important;
+  color: var(--faq-text, #3d2b1f) !important;
+  line-height: 1.4 !important;
+  letter-spacing: -0.01em !important;
+  -webkit-tap-highlight-color: transparent !important;
+  transition: color 0.2s ease !important;
+  /* НЕТ transform на вопросе — это и есть причина прыжка */
+  transform: none !important;
+  list-style: none !important; /* для <summary> */
+  outline: none !important;
+  position: relative;
+  user-select: none;
+}
+
+/* Убираем стандартный маркер у <summary> */
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::marker { display: none; }
+
+.faq-question:hover,
+.faq-item summary:hover {
+  color: #c9934a !important;
+}
+
+/* ── FAQ иконка +/- ── */
+.faq-icon,
+.faq-question .faq-plus,
+.faq-question span:last-child,
+.faq-item summary > span:last-child,
+.faq-item summary > .faq-arrow {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  border-radius: 50% !important;
+  border: 1.5px solid rgba(201,147,74,0.35) !important;
+  background: transparent !important;
+  color: #c9934a !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  font-size: 18px !important;
+  font-weight: 300 !important;
+  line-height: 1 !important;
+  font-family: 'Jost', sans-serif !important;
+  /* Только rotate — без translate, без scale */
+  transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1),
+              border-color 0.22s ease,
+              background 0.22s ease !important;
+  transform-origin: center !important;
+  will-change: transform !important;
+  user-select: none;
+}
+
+/* Поворот иконки когда открыто */
+.faq-item.open .faq-icon,
+.faq-item.open .faq-question span:last-child,
+.faq-item.open .faq-question .faq-plus,
+.faq-item[open] summary > span:last-child,
+.faq-item[open] summary > .faq-arrow {
+  transform: rotate(45deg) !important;
+  border-color: rgba(201,147,74,0.6) !important;
+  background: rgba(201,147,74,0.08) !important;
+}
+
+/* ── FAQ Answer (ответ) ── */
+.faq-answer,
+.faq-body,
+.faq-item > p,
+.faq-item > div:not(.faq-question):not([role="button"]),
+.faq-content {
+  /* КЛЮЧЕВОЙ FIX: height-based анимация без прыжков */
+  overflow: hidden !important;
+  /* Не трогаем display — управляем через max-height */
+  max-height: 0 !important;
+  opacity: 0 !important;
+  /* Плавный переход — обязательно указывать оба свойства */
+  transition:
+    max-height 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.32s ease !important;
+  /* НЕТ transform — без прыжка */
+  padding: 0 24px !important;
+  margin: 0 !important;
+  will-change: max-height, opacity;
+}
+
+.faq-item.open .faq-answer,
+.faq-item.open .faq-body,
+.faq-item.open .faq-content,
+.faq-item.open > p,
+.faq-item.open > div:not(.faq-question):not([role="button"]) {
+  max-height: 800px !important;
+  opacity: 1 !important;
+  padding: 0 24px 22px !important;
+}
+
+/* ── <details> native — для пригородов ── */
+/* В пригородах FAQ построен на <details>/<summary> */
+details.faq-item {
+  /* details не анимируется нативно — нужно CSS trick */
+  overflow: hidden;
+}
+
+details.faq-item > *:not(summary) {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  padding: 0 24px;
+  margin: 0;
+  transition:
+    max-height 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.32s ease,
+    padding 0.32s ease;
+  will-change: max-height, opacity;
+}
+
+details.faq-item[open] > *:not(summary) {
+  max-height: 800px;
+  opacity: 1;
+  padding: 0 24px 22px;
+}
+
+details.faq-item[open] {
+  border-color: rgba(201,147,74,0.42) !important;
+  background: var(--faq-bg-open, rgba(255,255,255,0.88)) !important;
+  box-shadow: 0 8px 28px rgba(61,43,31,0.08) !important;
+}
+
+details.faq-item[open] summary > span:last-child,
+details.faq-item[open] summary > .faq-arrow,
+details.faq-item[open] .faq-icon {
+  transform: rotate(45deg) !important;
+  border-color: rgba(201,147,74,0.6) !important;
+  background: rgba(201,147,74,0.08) !important;
+}
+
+/* Текст ответа */
+.faq-answer p,
+.faq-body p,
+.faq-content p,
+details.faq-item > p,
+details.faq-item > div > p {
+  font-family: 'Jost', sans-serif;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--faq-muted, #9a7a62);
+  margin: 0;
+  font-weight: 300;
+}
+
+[data-theme="dark"] .faq-answer p,
+[data-theme="dark"] .faq-body p,
+[data-theme="dark"] details.faq-item > p {
+  color: #c8a880 !important;
+}
+
+/* ── Дополнительный fallback — если структура просто .faq-q / .faq-a ── */
+.faq-q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  cursor: pointer;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(17px, 2vw, 20px);
+  font-weight: 500;
+  color: #3d2b1f;
+  line-height: 1.4;
+  gap: 16px;
+  transform: none !important;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+[data-theme="dark"] .faq-q {
+  color: #f0e4d0 !important;
+}
+
+.faq-a {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.42s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.32s ease;
+  padding: 0 24px;
+}
+
+.faq-item.open .faq-a {
+  max-height: 800px;
+  opacity: 1;
+  padding: 0 24px 22px;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════
+   FIX 2 — HERO SUBTITLE (.hero-title-seo)
+   Убираем прыжки слов вверх при hover.
+   Добавляем мягкую резиновость: scale + голубоватый цвет вместо белого.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Родитель — убираем transform */
+.hero-title-seo {
+  display: block !important;
+  /* УБИРАЕМ translateX + scale на весь блок — вызывали прыжок */
+  transform: none !important;
+  transition: none !important;
+  cursor: default !important;
+  will-change: auto !important;
+  position: relative;
+}
+
+/* Отдельные слова (.w) — только они реагируют на hover */
+.hero-title-seo .w {
+  display: inline-block !important;
+  /* Резиновость: scale + мягкий голубоватый цвет */
+  transition:
+    transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1),
+    color 0.3s ease !important;
+  transform-origin: center bottom !important;
+  will-change: transform !important;
+  cursor: default;
+  /* Начальный цвет — как у родителя */
+  color: inherit;
+  -webkit-text-fill-color: initial !important;
+  background: none !important;
+}
+
+/* Hover на слово: резиновый scale вверх + голубоватый акцент */
+@media (hover: hover) and (pointer: fine) {
+  .hero-title-seo .w:hover {
+    transform: scaleY(1.12) scaleX(1.04) translateY(-2px) !important;
+    color: rgba(160, 210, 255, 0.92) !important; /* голубоватый, не белый */
+    -webkit-text-fill-color: rgba(160, 210, 255, 0.92) !important;
+    background: none !important;
+  }
+
+  /* Соседи слова при hover — лёгкая sympathetic реакция */
+  .hero-title-seo .w.near {
+    transform: scaleY(1.05) scaleX(1.02) translateY(-1px) !important;
+    color: rgba(160, 210, 255, 0.60) !important;
+    -webkit-text-fill-color: rgba(160, 210, 255, 0.60) !important;
+    background: none !important;
+  }
+}
+
+/* На тач-устройствах — вообще никаких эффектов, только статика */
+@media (hover: none) {
+  .hero-title-seo .w:hover,
+  .hero-title-seo .w.near {
+    transform: none !important;
+    color: inherit !important;
+    -webkit-text-fill-color: initial !important;
+  }
+}
+
+/* Дополнительно: убираем shimmer-gradient который был на .w:hover в style.css */
+.hero-title-seo .w:hover,
+.hero-title-seo .w.w-auto,
+.hero-title-seo .w.w-auto-near {
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  animation: none !important;
+}
+
+/* Прочие .wave-text элементы оставляем как были — только .hero-title-seo трогаем */
+
+
+/* ════════════════════════════════════════════════════════════════════════
+   FIX 3 — MESSENGER RING BUTTONS (WA / TG / MAX)
+   Уменьшаем размер, чтобы текст кольца не вылетал за пределы
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Основной контейнер */
+.hero-actions .messenger-group,
+.hero-actions .messenger-group--ring {
+  gap: 10px !important;
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+}
+
+/* Кнопка-кружок — уменьшаем с 48px до 40px */
+.hero-actions .btn-hero-messenger {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: visible !important;    /* кольцо SVG должно выходить за border */
+  position: relative !important;
+  flex-shrink: 0 !important;
+  transform: translateZ(0);
+  transition:
+    transform 0.34s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s ease,
+    background 0.3s ease,
+    filter 0.2s ease !important;
+}
+
+/* SVG внутри кнопки — уменьшаем пропорционально */
+.hero-actions .btn-hero-messenger svg {
+  width: 40px !important;
+  height: 40px !important;
+  overflow: visible !important;
+  display: block !important;
+  flex-shrink: 0 !important;
+}
+
+/* Текст внутри SVG — уменьшаем размер шрифта кольца */
+/* ring-text (textPath по кругу) */
+.hero-actions .btn-hero-messenger .hero-ring-text text,
+.hero-actions .btn-hero-messenger [id^="ring-text-"] text {
+  font-size: 5.5px !important;   /* было ~7px, уменьшаем */
+}
+
+/* flat-text (название мессенджера при hover) */
+.hero-actions .btn-hero-messenger .hero-flat-text,
+.hero-actions .btn-hero-messenger [id^="flat-text-"] {
+  font-size: 6px !important;
+}
+
+/* Hover — меньший подъём */
+@media (hover: hover) and (pointer: fine) {
+  .hero-actions .btn-hero-messenger:hover {
+    transform: translateY(-3px) scale(1.08) !important;
+    filter: saturate(1.12);
+  }
+}
+
+/* ── Цвета кнопок остаются как в R9 ── */
+.hero-actions .btn-hero-wa {
+  color: #25D366 !important;
+  background: rgba(37,211,102,0.10) !important;
+  border-color: rgba(37,211,102,0.52) !important;
+  box-shadow: 0 8px 22px rgba(37,211,102,0.18), 0 0 0 1px rgba(255,255,255,0.04) inset !important;
+}
+.hero-actions .btn-hero-tg {
+  color: #229ED9 !important;
+  background: rgba(34,158,217,0.10) !important;
+  border-color: rgba(34,158,217,0.52) !important;
+  box-shadow: 0 8px 22px rgba(34,158,217,0.18), 0 0 0 1px rgba(255,255,255,0.04) inset !important;
+}
+.hero-actions .btn-hero-max {
+  color: #8e74ee !important;
+  background: rgba(123,94,232,0.12) !important;
+  border-color: rgba(123,94,232,0.52) !important;
+  box-shadow: 0 8px 22px rgba(123,94,232,0.18), 0 0 0 1px rgba(255,255,255,0.04) inset !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hero-actions .btn-hero-wa:hover  { box-shadow: 0 12px 28px rgba(37,211,102,.30), 0 0 20px rgba(37,211,102,.14) !important; }
+  .hero-actions .btn-hero-tg:hover  { box-shadow: 0 12px 28px rgba(34,158,217,.32), 0 0 20px rgba(34,158,217,.14) !important; }
+  .hero-actions .btn-hero-max:hover { box-shadow: 0 12px 28px rgba(123,94,232,.32), 0 0 20px rgba(123,94,232,.16) !important; }
+}
+
+/* span внутри скрыт */
+.hero-actions .btn-hero-messenger span { display: none !important; }
+
+/* ── Пригороды: hero-actions те же кнопки, но фон тёмного hero ── */
+/* Кнопки в пригородах идентичны главной — те же классы */
+.hero-city .hero-actions .btn-hero-messenger,
+.hero.hero-city .btn-hero-messenger {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+}
+.hero-city .hero-actions .btn-hero-messenger svg,
+.hero.hero-city .btn-hero-messenger svg {
+  width: 40px !important;
+  height: 40px !important;
+}
+
+/* ── Мобиль: не-ring версия (pill) — оставляем как есть, не трогаем ── */
+@media (max-width: 768px) {
+  .hero-actions .btn-hero-messenger {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+  }
+  .hero-actions .btn-hero-messenger svg {
+    width: 38px !important;
+    height: 38px !important;
+  }
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════
+   FIX 4 — ОСТАВШИЕСЯ DARK THEME ДЫРЫ (дополнение к r19-dark-premium.css)
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ── FAQ в dark ── */
+[data-theme="dark"] .faq-item {
+  background: #1c1309 !important;
+  border-color: rgba(212,167,106,0.14) !important;
+}
+
+[data-theme="dark"] .faq-item:hover {
+  border-color: rgba(212,167,106,0.35) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.28) !important;
+}
+
+[data-theme="dark"] .faq-item.open,
+[data-theme="dark"] details.faq-item[open] {
+  background: #221508 !important;
+  border-color: rgba(212,167,106,0.42) !important;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.35) !important;
+}
+
+[data-theme="dark"] .faq-question,
+[data-theme="dark"] .faq-item summary,
+[data-theme="dark"] .faq-q {
+  color: #f0e4d0 !important;
+}
+
+[data-theme="dark"] .faq-question:hover,
+[data-theme="dark"] .faq-item summary:hover,
+[data-theme="dark"] .faq-q:hover {
+  color: #d4a76a !important;
+}
+
+[data-theme="dark"] .faq-icon,
+[data-theme="dark"] .faq-question span:last-child,
+[data-theme="dark"] .faq-item summary > span:last-child,
+[data-theme="dark"] .faq-item summary > .faq-arrow {
+  border-color: rgba(212,167,106,0.35) !important;
+  color: #d4a76a !important;
+}
+
+[data-theme="dark"] .faq-answer p,
+[data-theme="dark"] .faq-body p,
+[data-theme="dark"] .faq-a,
+[data-theme="dark"] details.faq-item > *:not(summary) {
+  color: #c8a880 !important;
+}
+
+/* ── Delivery block dark ── */
+[data-theme="dark"] .delivery-info-block,
+[data-theme="dark"] .delivery-card {
+  background: #1c1309 !important;
+  border-color: rgba(212,167,106,0.14) !important;
+}
+
+/* ── Prigorod delivery grid dark ── */
+[data-theme="dark"] .delivery-grid-item,
+[data-theme="dark"] .delivery-stat {
+  background: #1c1309 !important;
+  color: #c8a880 !important;
+}
+
+[data-theme="dark"] .delivery-stat-label {
+  color: #a08060 !important;
+}
+[data-theme="dark"] .delivery-stat-value {
+  color: #f0e4d0 !important;
+}
+
+/* ── Prigorod "районы" dark ── */
+[data-theme="dark"] .districts-list,
+[data-theme="dark"] .prigorod-districts {
+  color: #c8a880 !important;
+}
+
+/* ── Contacts section в пригородах dark ── */
+[data-theme="dark"] .contact-card .card,
+[data-theme="dark"] #contacts .card {
+  background: #1c1309 !important;
+  border-color: rgba(212,167,106,0.12) !important;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════
+   FIX 5 — MAIN PAGE FAQ ДРЫГАНИЕ (доп.фикс для JS-accordion)
+   На главной FAQ работает через JS. Дрыгание было из-за того, что
+   при открытии одновременно менялись padding + max-height + opacity,
+   и браузер делал layout thrash.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Wrapper вопроса — без лишних transitions */
+.faq-question-wrap,
+.faq-item > .faq-question {
+  position: relative;
+  z-index: 1;
+}
+
+/* Smooth shadow для открытого элемента — без layout reflow */
+.faq-item {
+  contain: layout style; /* Предотвращает reflow родителя */
+}
+
+/* Убираем margin-bottom transition у .faq-item — главная причина прыжка */
+.faq-item {
+  margin-bottom: 12px !important;
+  /* НЕТ transition на margin */
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   FIX 6 — HERO SUBTITLE на мобиле: отключаем все hover/wave эффекты
+   На тач-экране .hero-title-seo слова не должны реагировать
+   ════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .hero-title-seo .w,
+  .hero-title-seo .w.near,
+  .hero-title-seo .w.w-auto,
+  .hero-title-seo .w.w-auto-near {
+    transform: none !important;
+    color: inherit !important;
+    -webkit-text-fill-color: initial !important;
+    background: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   FIX 7 — HERO-TITLE-SEO: убираем старый hover (translateX + scale на блок)
+   Этот override из r18/r19 вызывал прыжок всей строки
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Перебиваем старые правила из premium-overrides.css и r19 */
+.hero-title-seo:hover,
+.hero-subtitle:hover {
+  transform: none !important;
+  color: inherit !important;
+  text-shadow: none !important;
+  -webkit-text-fill-color: initial !important;
+}
+
+/* hero-subtitle слова */
+.hero-subtitle .w {
+  display: inline-block;
+  transition:
+    transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+    color 0.28s ease !important;
+  transform-origin: center bottom !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hero-subtitle .w:hover {
+    transform: scaleY(1.08) translateY(-1px) !important;
+    color: rgba(160, 210, 255, 0.80) !important;
+    -webkit-text-fill-color: rgba(160, 210, 255, 0.80) !important;
+    background: none !important;
+    animation: none !important;
+  }
+  .hero-subtitle .w.near {
+    transform: scaleY(1.04) !important;
+    color: rgba(160, 210, 255, 0.45) !important;
+    -webkit-text-fill-color: rgba(160, 210, 255, 0.45) !important;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   FIX 8 — PREMIUM FAQ: КАСТОМНЫЙ СТИЛЬ (единый для main + prigorody)
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* FAQ section wrapper */
+.faq-section {
+  padding: 80px 60px;
+}
+
+@media (max-width: 768px) {
+  .faq-section {
+    padding: 60px 20px;
+  }
+}
+
+/* Список вопросов */
+.faq-list {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Gold divider после последнего вопроса */
+.faq-list .faq-item:last-child {
+  margin-bottom: 0;
+}
+
+/* Plum gold shimmer на открытом вопросе */
+.faq-item.open .faq-question,
+.faq-item.open .faq-q,
+details.faq-item[open] summary {
+  color: var(--gold, #c9934a) !important;
+}
+
+[data-theme="dark"] .faq-item.open .faq-question,
+[data-theme="dark"] .faq-item.open .faq-q,
+[data-theme="dark"] details.faq-item[open] summary {
+  color: #d4a76a !important;
+}
+
+/* Тонкая золотая черта слева на открытом элементе */
+.faq-item.open,
+details.faq-item[open] {
+  border-left-width: 3px !important;
+  border-left-color: rgba(201,147,74,0.55) !important;
+}
+
+[data-theme="dark"] .faq-item.open,
+[data-theme="dark"] details.faq-item[open] {
+  border-left-color: rgba(212,167,106,0.65) !important;
+}

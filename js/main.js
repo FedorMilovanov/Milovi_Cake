@@ -912,16 +912,20 @@ function initWaveText() {
     el.innerHTML = '';
     el.appendChild(frag);
     const words = el.querySelectorAll('.w');
-    words.forEach(function(word, i) {
-      word.addEventListener('mouseenter', function() { if (words[i - 1]) words[i - 1].classList.add('near'); if (words[i + 1]) words[i + 1].classList.add('near'); });
-      word.addEventListener('mouseleave', function() { if (words[i - 1]) words[i - 1].classList.remove('near'); if (words[i + 1]) words[i + 1].classList.remove('near'); });
-    });
+    // v20: hero-title-seo hover handled by CSS only (no 'near' class to avoid jump)
+    if (!el.classList.contains('hero-title-seo')) {
+      words.forEach(function(word, i) {
+        word.addEventListener('mouseenter', function() { if (words[i - 1]) words[i - 1].classList.add('near'); if (words[i + 1]) words[i + 1].classList.add('near'); });
+        word.addEventListener('mouseleave', function() { if (words[i - 1]) words[i - 1].classList.remove('near'); if (words[i + 1]) words[i + 1].classList.remove('near'); });
+      });
+    }
   });
   var isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
   if (!isTouch) return;
   document.querySelectorAll('.wave-text').forEach(function(el) {
     if (el._autoWaveBound) return;
     el._autoWaveBound = true;
+    if (el.classList.contains('hero-title-seo')) return;
     var spans = el.querySelectorAll('.w');
     if (spans.length < 2) return;
     function runAutoWave() { var i = 0, total = spans.length; function step() { spans.forEach(function(s) { s.classList.remove('w-auto', 'w-auto-near'); }); if (i >= total) return; spans[i].classList.add('w-auto'); if (i > 0) spans[i - 1].classList.add('w-auto-near'); if (i < total - 1) spans[i + 1].classList.add('w-auto-near'); i++; setTimeout(step, 480); } step(); }
