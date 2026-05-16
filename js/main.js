@@ -625,11 +625,11 @@ function setCartStep(step) {
 
 function updateCartUI() {
   const totalItems = Object.keys(cart).length;
-  const badge = document.getElementById('cartBadge');
-  if (badge) {
+  // Update ALL cart badges (header, mc-nav, any future ones)
+  document.querySelectorAll('#cartBadge, [data-cart-badge]').forEach(badge => {
     badge.textContent = totalItems;
     badge.classList.toggle('visible', totalItems > 0);
-  }
+  });
   const countBadge = document.getElementById('cartCountBadge');
   if (countBadge) countBadge.textContent = totalItems;
 

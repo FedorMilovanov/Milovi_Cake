@@ -2,6 +2,17 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
+  <!-- Anti-FOUC: apply theme before render -->
+  <script>
+    (function(){
+      try {
+        var t = localStorage.getItem('mc_theme');
+        if (t) document.documentElement.setAttribute('data-theme', t);
+        else if (window.matchMedia('(prefers-color-scheme: dark)').matches)
+          document.documentElement.setAttribute('data-theme', 'dark');
+      } catch(e){}
+    })();
+  </script>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
   <meta name="format-detection" content="telephone=no" />
@@ -95,7 +106,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
   <!-- noscript fonts -->
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/></noscript>
-  <link rel="stylesheet" href="../../css/style.css?v=20260512" />
+  <link rel="stylesheet" href="../../css/style.css?v=20260516" />
+  <link rel="stylesheet" href="../../css/mc-2026.css?v=20260516" />
+  <link rel="stylesheet" href="../../css/premium-overrides.css?v=20260516" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -107,13 +120,31 @@
     ]
   }
   </script>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-94ZZ5B8YNY"></script>
+  <!-- Google Analytics — deferred until user consent -->
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-94ZZ5B8YNY');
+    window._gaPending = true;
+    function loadGA() {
+      if (!window._gaPending) return;
+      window._gaPending = false;
+      var s = document.createElement('script');
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-94ZZ5B8YNY';
+      s.async = true;
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', 'G-94ZZ5B8YNY', { 'anonymize_ip': true });
+    }
+    // Load GA on first interaction (scroll, click, touch)
+    ['scroll','click','touchstart','keydown'].forEach(function(ev){
+      document.addEventListener(ev, function fire() {
+        document.removeEventListener(ev, fire);
+        loadGA();
+      }, { once: true, passive: true });
+    });
+    // Also load after 5s regardless (for non-interacting users)
+    setTimeout(loadGA, 5000);
   </script>
 </head>
 
@@ -123,10 +154,6 @@
 <a href="#catalog" class="skip-link">Перейти к содержимому</a>
 
 <!-- ── STICKY MOBILE CTA (WhatsApp) ── -->
-<a href="https://wa.me/79119038886?text=Здравствуйте!%20Хочу%20сделать%20заказ" target="_blank" class="mobile-sticky-cta" id="mobileStickyWa" aria-label="Заказать торт через WhatsApp" rel="noopener noreferrer">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-  Заказать в WhatsApp
-</a>
 
 <!-- ── BOTTOM NAV (mobile) ── -->
 <nav class="bottom-nav" id="bottomNav" aria-label="Мобильная навигация">
@@ -342,43 +369,7 @@
   </div>
 </section>
 
-<section id="why">
-  <div class="container">
-    <h2 class="section-title reveal">Почему Выбирают Нас</h2>
-    <div class="features-grid">
-      <div class="feature reveal">
-        <div class="feature-icon">🤍</div>
-        <h4>Ручная Работа</h4>
-        <p>Каждый десерт создаётся с любовью и заботой вручную</p>
-      </div>
-      <div class="feature reveal">
-        <div class="feature-icon">🌿</div>
-        <h4>Натуральные Ингредиенты</h4>
-        <p>Только качественные продукты без искусственных добавок</p>
-      </div>
-      <div class="feature reveal">
-        <div class="feature-icon">🎯</div>
-        <h4>Свежесть Под Заказ</h4>
-        <p>Готовим специально для вас, всегда свежее</p>
-      </div>
-      <div class="feature reveal">
-        <div class="feature-icon">📦</div>
-        <h4>Доставка По СПб</h4>
-        <p>Аккуратная доставка в красивой упаковке</p>
-      </div>
-    </div>
-  </div>
-</section>
 
-<section id="reviews" style="background:var(--white);padding:100px 60px;">
-  <div class="container">
-    <h2 class="section-title reveal">Отзывы Клиентов</h2>
-    <p class="section-sub reveal">Доставляем радость в СПб и Кудрово 🤍</p>
-    <div class="catalog-grid" id="catalogGrid">
-      <!-- rendered by JS -->
-    </div>
-  </div>
-</section>
 
 <!-- ══════════ CROSS-PROMO: МЕРЕНГОВЫЙ РУЛЕТ ══════════ -->
 <div class="section-fade-divider" aria-hidden="true"></div>
@@ -847,7 +838,7 @@
 <!-- ══════════ CART BUTTON ══════════ -->
 <button class="cart-btn" onclick="openCart()" aria-label="Корзина">
   🛒
-  <span class="cart-badge" id="cartBadge">0</span>
+  <span class="cart-badge" data-cart-badge="count">0</span>
 </button>
 
 <!-- ══════════ CART DRAWER ══════════ -->
@@ -963,8 +954,9 @@
 
 
 <script>var IMG_BASE = '../../img';</script>
-<script src="../../js/main.js?v=20260512" defer></script>
-<script src="../../js/nav.js?v=20260512" defer></script>
+<script src="../../js/main.js?v=20260516" defer></script>
+<script src="../../js/nav.js?v=20260516" defer></script>
+<script src="../../js/mc-2026.js?v=20260516" defer></script>
 
 
 
@@ -1257,14 +1249,6 @@
 <div class="lb-box" id="lbBox"><img id="lbImg" src="" alt=""></div>
 <button class="lb-x" id="lbX" aria-label="Закрыть">✕</button>
 
-
-<script>
-function cbFaq(el){
-  var isOpen = el.classList.contains('open');
-  document.querySelectorAll('.faq-item.open').forEach(function(i){ i.classList.remove('open'); });
-  if(!isOpen) el.classList.add('open');
-}
-</script>
 
 </body>
 </html>

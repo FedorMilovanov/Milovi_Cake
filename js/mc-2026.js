@@ -82,29 +82,7 @@
   }
 
 
-  /* ═══════════════════════════════════════════════════════════════════
-     3. Защита от конкуренции #mobileStickyWa и #mcNav
-        Прячем sticky-WA когда калькулятор-результат развёрнут
-     ═══════════════════════════════════════════════════════════════════ */
-  function syncStickyWaVisibility(){
-    var sticky = document.getElementById('mobileStickyWa');
-    if (!sticky) return;
-    var calc = document.getElementById('calcRightCol');
-    if (calc && calc.classList.contains('calc-result-open')){
-      sticky.style.visibility = 'hidden';
-    } else {
-      sticky.style.visibility = '';
-    }
-  }
-  document.addEventListener('click', function(e){
-    if (e.target && e.target.closest && e.target.closest(
-      '#calcRightCol, .calc-result-collapsed, .calc-add-btn, .calc-result-collapsed-arrow'
-    )){
-      setTimeout(syncStickyWaVisibility, 60);
-    }
-  }, { passive: true });
-
-
+  /* [CLEANED] syncStickyWaVisibility removed — mobileStickyWa element no longer exists in DOM */
   /* ═══════════════════════════════════════════════════════════════════
      4. Декоративные SVG / orbs — aria-hidden для screen readers
      ═══════════════════════════════════════════════════════════════════ */

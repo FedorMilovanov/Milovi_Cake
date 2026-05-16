@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+  <meta charset="UTF-8" />
   <!-- [UI-1] Anti-flash dark mode: применяем тему ДО рендера -->
   <script>
     (function(){
@@ -27,10 +28,9 @@
       setTimeout(reveal,1200);
     })();
   </script>
-  <meta charset="UTF-8" />
-  <link rel="icon" href="favicon.svg?v=20260303" type="image/svg+xml">
-  <link rel="icon" href="icon-192.png?v=20260303" type="image/png" sizes="192x192">
-  <link rel="apple-touch-icon" href="icon-apple.png?v=20260303" />
+  <link rel="icon" href="favicon.svg?v=20260516" type="image/svg+xml">
+  <link rel="icon" href="icon-192.png?v=20260516" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="icon-apple.png?v=20260516" />
   <meta name="format-detection" content="telephone=no" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Milovi Cake — Торты и десерты на заказ в Санкт-Петербурге</title>
@@ -40,7 +40,7 @@
   <meta name="yandex-verification" content="9bde19424208d6ce" />
   <meta property="og:title" content="Milovi Cake — Авторские торты на заказ в СПб" />
   <meta property="og:description" content="Заказать торт СПб с доставкой на дом — свадебный, на день рождения, бенто, детский." />
-  <meta property="og:image" content="https://milovicake.ru/img/hero.jpg" />
+  <meta property="og:image" content="https://milovicake.ru/img/og-cover.jpg" />
   <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -72,6 +72,7 @@
   <link rel="dns-prefetch" href="https://yandex.ru" />
   <link rel="preload" as="image" type="image/avif" href="img/head_desktop.avif" media="(min-width:769px)" fetchpriority="high" />
   <link rel="preload" as="image" type="image/avif" href="img/head_mobile.avif" media="(max-width:768px)" fetchpriority="high" />
+  <link rel="preload" as="image" type="image/webp" href="img/head_mobile.webp" media="(max-width:768px)" />
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Jost:wght@400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Jost:wght@400;500&display=swap" rel="stylesheet"/></noscript>
 
@@ -86,7 +87,6 @@
     "jobTitle": "Частный кондитер",
     "worksFor": { "@id": "https://milovicake.ru/#business" },
     "url": "https://milovicake.ru/",
-    "sameAs": [],
     "address": {
       "@type": "PostalAddress",
       "addressLocality": "Санкт-Петербург",
@@ -329,9 +329,9 @@
   }
   </script>
 
-  <link rel="stylesheet" href="css/style.css?v=20260601" />
-  <link rel="stylesheet" href="css/premium-overrides.css?v=20260601" />
-  <link rel="stylesheet" href="css/mc-2026.css?v=20260601" />
+  <link rel="stylesheet" href="css/style.css?v=20260516" />
+  <link rel="stylesheet" href="css/mc-2026.css?v=20260516" />
+  <link rel="stylesheet" href="css/premium-overrides.css?v=20260516" />
   <link rel="prefetch" href="img/bento_maxi.webp" as="image" />
   <link rel="prefetch" href="img/cake_3d.webp" as="image" />
   <link rel="prefetch" href="img/cake_3d_2.webp" as="image" />
@@ -390,6 +390,8 @@
     "@type": "LocalBusiness",
     "@id": "https://milovicake.ru/#business",
     "name": "Milovi Cake",
+    "url": "https://milovicake.ru/",
+    "telephone": "+79119038886",
     "review": [
       {
         "@type": "Review",
@@ -513,12 +515,6 @@
 <!-- SKIP LINK -->
 <a href="#main-content" class="skip-link">Перейти к содержимому</a>
 
-<!-- [NM-2 FIXED] mobileStickyWa was missing from index.html entirely -->
-<a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D1%81%D0%B4%D0%B5%D0%BB%D0%B0%D1%82%D1%8C%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7" target="_blank" rel="noopener noreferrer" class="mobile-sticky-cta" id="mobileStickyWa" aria-label="Заказать торт через WhatsApp">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-  Заказать в WhatsApp
-</a>
-
 <div id="scroll-progress"></div>
 <div class="toast" id="toast"></div>
 
@@ -542,7 +538,19 @@
     <button id="themeToggleBtn"
             class="theme-toggle"
             onclick="toggleTheme()"
-            aria-label="Переключить тему">☾</button>
+            aria-label="Переключить тему (сейчас: светлая)"
+            title="Переключить тему">
+          <svg class="theme-icon theme-icon--moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+          <svg class="theme-icon theme-icon--sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+        </button>
     <button class="header-cart-btn" id="cartBtn" onclick="openCart()" aria-label="Корзина">
       🛒
       <span class="cart-badge" id="cartBadge">0</span>
@@ -553,28 +561,67 @@
   </button>
 </header>
 
-<!-- MOBILE MENU -->
+<!-- MOBILE MENU — Premium TOC v3 -->
 <div class="mobile-menu" id="mobileMenu" role="dialog" aria-label="Навигационное меню" aria-modal="true">
-  <button class="mobile-menu-close" onclick="closeMobileMenu()" aria-label="Закрыть меню">✕ Закрыть</button>
-  <div class="mobile-menu-nav">
-    <a href="#about" onclick="closeMobileMenu()">О нас</a>
-    <div class="mobile-menu-divider"></div>
-    <a href="#catalog" onclick="closeMobileMenu()">Каталог</a>
-    <div class="mobile-menu-divider"></div>
+  <header class="mobile-menu-head">
+    <span class="mobile-menu-brand">
+      <span class="mobile-menu-brand-name">Milovi Cake</span>
+      <span class="mobile-menu-brand-sub">Авторские торты · СПб</span>
+    </span>
+    <button class="mobile-menu-close" onclick="closeMobileMenu()" aria-label="Закрыть меню">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </header>
+  <nav class="mobile-menu-nav" aria-label="Разделы сайта">
+    <span class="mobile-menu-section-label">Навигация</span>
+    <a href="#about"    onclick="closeMobileMenu()">О нас</a>
+    <a href="#catalog"  onclick="closeMobileMenu()">Каталог</a>
     <a href="/gallery/" onclick="closeMobileMenu()">Галерея</a>
-    <div class="mobile-menu-divider"></div>
     <a href="#fillings" onclick="closeMobileMenu()">Начинки</a>
-    <div class="mobile-menu-divider"></div>
-    <a href="#reviews" onclick="closeMobileMenu()">Отзывы</a>
-    <div class="mobile-menu-divider"></div>
+    <a href="#reviews"  onclick="closeMobileMenu()">Отзывы</a>
     <a href="#contacts" onclick="closeMobileMenu()">Контакты</a>
-    <div class="mobile-menu-divider"></div>
-    <a href="tel:+79119038886" class="mobile-menu-phone" onclick="closeMobileMenu()">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.07 2.18 2 2 0 012.03 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+  </nav>
+  <div class="mobile-menu-divider-h"></div>
+  <div class="mobile-menu-messengers">
+    <span class="mobile-menu-section-label">Связаться</span>
+    <div class="mobile-menu-msg-grid">
+      <!-- WhatsApp -->
+      <a class="mm-msg mm-msg--wa"
+         href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D1%81%D0%B4%D0%B5%D0%BB%D0%B0%D1%82%D1%8C%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7"
+         target="_blank" rel="noopener noreferrer" aria-label="Написать в WhatsApp" onclick="closeMobileMenu()">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+        <span>WhatsApp</span>
+      </a>
+      <!-- Telegram -->
+      <a class="mm-msg mm-msg--tg"
+         href="https://t.me/+79119038886"
+         target="_blank" rel="noopener noreferrer" aria-label="Написать в Telegram" onclick="closeMobileMenu()">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path fill="currentColor" d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71l-4.13-3.05-1.99 1.93c-.23.23-.42.42-.84.42z"/>
+        </svg>
+        <span>Telegram</span>
+      </a>
+      <!-- MAX -->
+      <a class="mm-msg mm-msg--max"
+         href="https://max.ru/+79119038886"
+         target="_blank" rel="noopener noreferrer" aria-label="Написать в MAX" onclick="closeMobileMenu()">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path fill="currentColor" d="M3 4h2.4l3.1 7.6L11.6 4H14v16h-2V8.5L9.3 15H7.7L5 8.5V20H3V4zm14 0h2v10.2L21.4 20H19l-2-5.8V4z"/>
+        </svg>
+        <span>MAX</span>
+      </a>
+    </div>
+    <a href="tel:+79119038886" class="mobile-menu-phone" onclick="closeMobileMenu()" aria-label="Позвонить">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.07 2.18 2 2 0 012.03 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+      </svg>
       +7 911 903 88 86
     </a>
   </div>
 </div>
+
 
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox">
@@ -1528,11 +1575,11 @@
 </script>
 
 <script>var IMG_BASE = 'img';</script>
-<script src="js/main.js?v=20260601" defer></script>
+<script src="js/main.js?v=20260516" defer></script>
 
 
-<script src="js/nav.js?v=20260601" defer></script>
-<script src="js/mc-2026.js?v=20260601" defer></script>
+<script src="js/nav.js?v=20260516" defer></script>
+<script src="js/mc-2026.js?v=20260516" defer></script>
 
 <script>
   /* ── Яндекс.Метрика: цели ── */
@@ -1565,30 +1612,6 @@
       el.addEventListener('click', function() { reach('catalog_order_click'); });
     });
   })();
-</script>
-
-<!-- [NM-1/NM-2 FIXED] mobileStickyWa scroll activation — shows WA button after 300px scroll,
-     hides near bottom of page (contacts visible). Mirrors prigorody behavior. -->
-<script>
-(function() {
-  if (window.innerWidth > 768) return;
-  var cta = document.getElementById('mobileStickyWa');
-  if (!cta) return;
-  var shown = false;
-  function updateStickyCta() {
-    var y = window.scrollY || window.pageYOffset;
-    if (y > 300 && !shown) { cta.classList.add('visible'); shown = true; }
-    var nearBottom = (document.documentElement.scrollHeight - window.innerHeight - y) < 120;
-    cta.classList.toggle('near-bottom', nearBottom);
-    // Hide when cart is open
-    var cartOpen = document.body.classList.contains('cart-open') || document.body.classList.contains('fill-open');
-    cta.style.display = cartOpen ? 'none' : '';
-  }
-  window.addEventListener('scroll', updateStickyCta, { passive: true });
-  window.addEventListener('resize', function() {
-    if (window.innerWidth > 768) { cta.classList.remove('visible'); shown = false; }
-  });
-})();
 </script>
 
 </body>

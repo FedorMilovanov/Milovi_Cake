@@ -301,8 +301,11 @@ const Lightbox = (() => {
     });
 
     $('#gxFS').addEventListener('click', () => {
-      if (!document.fullscreenElement) root.requestFullscreen?.();
-      else document.exitFullscreen?.();
+      if (!document.fullscreenElement) {
+        (root.requestFullscreen || root.webkitRequestFullscreen || function(){}).call(root);
+      } else {
+        (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+      }
     });
 
     document.addEventListener('keydown', (e) => {
@@ -329,6 +332,13 @@ const Lightbox = (() => {
   }
 
   return { open, close, bind };
+
+  // Close lightbox on browser Back button
+  window.addEventListener('popstate', () => {
+    if (root.getAttribute('aria-hidden') === 'false') {
+      Lightbox.close();
+    }
+  });
 })();
 
 /* =====================================================================

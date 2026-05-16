@@ -357,33 +357,7 @@
 }
 
 
-/* ╔═══════════════════════════════════════════════════════════════════╗
-   ║ 8. Mobile menu — overflow + landscape                              ║
-   ╚═══════════════════════════════════════════════════════════════════╝ */
-.mobile-menu{
-  overflow-y: auto !important;
-  overscroll-behavior: contain;
-  padding: 80px 0 calc(40px + env(safe-area-inset-bottom, 0px)) !important;
-  -webkit-overflow-scrolling: touch;
-}
-.mobile-menu-nav{
-  width: 100% !important;
-  padding: 0 24px !important;
-}
-
-/* Landscape — компактное меню */
-@media (orientation: landscape) and (max-height: 500px){
-  .mobile-menu a{
-    font-size: 24px !important;
-    padding: 8px 24px !important;
-  }
-  .mobile-menu-divider{
-    margin: 6px auto !important;
-  }
-  .mobile-menu-phone{
-    font-size: 16px !important;
-    padding: 8px 24px !important;
-  }
+/* [CLEANED v2026.05.16] Block 8 mobile-menu landscape rules removed — see premium-overrides.css */
 }
 
 

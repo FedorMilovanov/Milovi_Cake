@@ -412,3 +412,32 @@ body.gx-lightbox-open .gx-cursor { opacity: 0 !important; }
   .gx-filter, .gx-cursor, .gx-light, .gx-vid-badge { display: none !important; }
   .gx-cell { break-inside: avoid; }
 }
+
+/* ── Keyboard accessibility: focus-visible ── */
+.gx-cell:focus-visible {
+  outline: 2px solid #b8823a;
+  outline-offset: 3px;
+  z-index: 4;
+}
+.gx-filter button:focus-visible {
+  outline: 2px solid #b8823a;
+  outline-offset: 3px;
+}
+.gx-ctrl:focus-visible,
+.gx-thumb:focus-visible {
+  outline: 2px solid rgba(212, 168, 92, 0.9);
+  outline-offset: 2px;
+}
+.gx-back:focus-visible {
+  outline: 2px solid #b8823a;
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+/* ── body.gx-lightbox-open: prevent background scroll ── */
+body.gx-lightbox-open {
+  overflow: hidden !important;
+  /* iOS Safari needs this: */
+  position: fixed;
+  width: 100%;
+}

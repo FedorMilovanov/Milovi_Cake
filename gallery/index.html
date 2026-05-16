@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Галерея работ — Milovi Cake | Премиум-торты СПб</title>
 <meta name="description" content="Портфолио Milovi Cake — 46 авторских работ: 3D-торты, бенто, меренговые рулеты, свадебные торты, Павлова. Реальные фото и видео из Санкт-Петербурга.">
-<meta name="theme-color" content="#f5f0e8">
+<meta name="theme-color" content="#f5f0e8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1a1108" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="https://milovicake.ru/gallery/">
 
 <meta property="og:title" content="Галерея работ — Milovi Cake">
@@ -13,13 +14,20 @@
 <meta property="og:image" content="https://milovicake.ru/img/og-cover.jpg">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://milovicake.ru/gallery/">
+<meta property="og:locale" content="ru_RU">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Галерея работ — Milovi Cake">
+<meta name="twitter:description" content="46 авторских работ кондитера в СПб — фото и видео.">
+<meta name="twitter:image" content="https://milovicake.ru/img/og-cover.jpg">
+<meta name="robots" content="index, follow">
 
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/icon-apple.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"></noscript>
 
 <link rel="stylesheet" href="/css/gallery/gallery-2026.css">
 <meta name="view-transition" content="same-origin">
@@ -34,8 +42,30 @@
   "name": "Портфолио Milovi Cake",
   "url": "https://milovicake.ru/gallery/",
   "description": "Авторские торты, бенто, 3D, меренговые рулеты, Павлова — реальные работы кондитера в СПб.",
-  "creator": { "@type": "Person", "name": "Виктория Милованова" }
+  "url": "https://milovicake.ru/gallery/",
+  "image": ["https://milovicake.ru/img/og-cover.jpg","https://milovicake.ru/img/gallery/gallery-15.webp","https://milovicake.ru/img/gallery/gallery-01.webp"],
+  "creator": {"@type": "Person", "name": "Виктория Милованова", "url": "https://milovicake.ru/"},
+  "about": {"@type": "LocalBusiness", "@id": "https://milovicake.ru/#business"}
 }
+</script>
+
+<!-- Google Analytics — deferred (first interaction) -->
+<script>
+(function(){
+  function loadGA(){
+    if(window._gaLoaded) return; window._gaLoaded=true;
+    var s=document.createElement('script');
+    s.src='https://www.googletagmanager.com/gtag/js?id=G-94ZZ5B8YNY';
+    s.async=true; document.head.appendChild(s);
+    window.dataLayer=window.dataLayer||[];
+    window.gtag=function(){dataLayer.push(arguments);};
+    gtag('js',new Date()); gtag('config','G-94ZZ5B8YNY',{anonymize_ip:true});
+  }
+  ['scroll','click','touchstart'].forEach(function(e){
+    document.addEventListener(e,loadGA,{once:true,passive:true});
+  });
+  setTimeout(loadGA, 5000);
+})();
 </script>
 </head>
 
