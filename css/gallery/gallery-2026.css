@@ -271,3 +271,59 @@ video.lb-media { background:#080402!important; }
   .lb-actions { margin-top: 10px; gap: 6px; }
   .lb-action { min-height: 30px; padding: 0 10px; font-size: 9px; letter-spacing: .08em; }
 }
+
+/* v25 — minimal messenger choice inside opened gallery work */
+.lb-order-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 7px 4px 12px;
+  min-height: 34px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.055);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.lb-order-label {
+  color: rgba(255,255,255,.72);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.lb-order-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,.76);
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  text-decoration: none;
+  transition: transform .24s ease, background .24s ease, border-color .24s ease, color .24s ease, box-shadow .24s ease;
+}
+.lb-order-icon svg {
+  width: 15px;
+  height: 15px;
+  display: block;
+  fill: currentColor;
+}
+.lb-order-icon:hover {
+  transform: translateY(-2px) scale(1.06);
+  color: #fff;
+}
+.lb-order-wa:hover { background: rgba(37,211,102,.22); border-color: rgba(37,211,102,.46); box-shadow: 0 0 18px rgba(37,211,102,.16); }
+.lb-order-tg:hover { background: rgba(34,158,217,.22); border-color: rgba(34,158,217,.46); box-shadow: 0 0 18px rgba(34,158,217,.16); }
+.lb-order-max:hover { background: rgba(123,94,232,.24); border-color: rgba(123,94,232,.50); box-shadow: 0 0 18px rgba(123,94,232,.18); }
+.lb-order-max svg { width: 17px; height: 17px; }
+@media (max-width:768px) {
+  .lb-order-choice { min-height: 30px; padding: 3px 5px 3px 9px; gap: 5px; }
+  .lb-order-label { font-size: 9px; letter-spacing: .08em; }
+  .lb-order-icon { width: 25px; height: 25px; }
+  .lb-order-icon svg { width: 13px; height: 13px; }
+  .lb-order-max svg { width: 15px; height: 15px; }
+}
