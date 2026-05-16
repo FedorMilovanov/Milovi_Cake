@@ -4565,3 +4565,95 @@ window.cbFaq = cbFaq;
     })();
 
 })();
+
+/* ══════════════════════════════════════════════════════════════
+   PATCH R11 — accessibility hardening for div/span controls
+   Makes legacy onclick-based visual controls keyboard reachable without
+   rewriting the whole static HTML/catalog renderer.
+   ══════════════════════════════════════════════════════════════ */
+(function r11InteractiveA11y(){
+  'use strict';
+
+  var SELECTOR = [
+    '.calc-opt',
+    '.calc-biscuit-opt',
+    '.calc-result-collapsed',
+    '.cb-faq-item',
+    '.faq-item',
+    '.cart-step',
+    '.dot',
+    '[onclick]:not(a):not(button):not(input):not(textarea):not(select)'
+  ].join(',');
+
+  function labelFor(el) {
+    if (!el) return 'Интерактивный элемент';
+    if (el.getAttribute('aria-label')) return el.getAttribute('aria-label');
+    var text = (el.textContent || '').replace(/\s+/g, ' ').trim();
+    if (text) return text.slice(0, 120);
+    if (el.classList && el.classList.contains('dot')) return 'Перейти к слайду';
+    return 'Интерактивный элемент';
+  }
+
+  function enhance(root) {
+    root = root || document;
+    if (!root.querySelectorAll) return;
+    root.querySelectorAll(SELECTOR).forEach(function(el) {
+      if (el.matches('a,button,input,textarea,select')) return;
+      if (!el.hasAttribute('role')) el.setAttribute('role', 'button');
+      if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
+      if (!el.hasAttribute('aria-label')) el.setAttribute('aria-label', labelFor(el));
+      if (el.classList && (el.classList.contains('calc-opt') || el.classList.contains('calc-biscuit-opt') || el.classList.contains('cart-step'))) {
+        el.setAttribute('aria-pressed', el.classList.contains('selected') || el.classList.contains('active') ? 'true' : 'false');
+      }
+    });
+  }
+
+  function syncPressed(el) {
+    if (!el || !el.classList) return;
+    var group = null;
+    if (el.classList.contains('calc-opt') || el.classList.contains('calc-biscuit-opt')) group = el.parentElement;
+    if (el.classList.contains('cart-step')) group = el.parentElement;
+    var nodes = group ? group.querySelectorAll('[role="button"]') : [el];
+    Array.prototype.forEach.call(nodes, function(n) {
+      if (n.classList && (n.classList.contains('calc-opt') || n.classList.contains('calc-biscuit-opt') || n.classList.contains('cart-step'))) {
+        n.setAttribute('aria-pressed', n.classList.contains('selected') || n.classList.contains('active') ? 'true' : 'false');
+      }
+    });
+  }
+
+  function init() {
+    enhance(document);
+
+    document.addEventListener('keydown', function(e) {
+      var el = e.target && e.target.closest ? e.target.closest(SELECTOR) : null;
+      if (!el || el.matches('a,button,input,textarea,select')) return;
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        el.click();
+        setTimeout(function(){ syncPressed(el); }, 0);
+      }
+    });
+
+    document.addEventListener('click', function(e) {
+      var el = e.target && e.target.closest ? e.target.closest(SELECTOR) : null;
+      if (el) setTimeout(function(){ syncPressed(el); }, 0);
+    }, true);
+
+    if ('MutationObserver' in window) {
+      var mo = new MutationObserver(function(muts) {
+        muts.forEach(function(m) {
+          m.addedNodes && Array.prototype.forEach.call(m.addedNodes, function(node) {
+            if (node.nodeType === 1) {
+              if (node.matches && node.matches(SELECTOR)) enhance({ querySelectorAll: function(){ return [node]; } });
+              enhance(node);
+            }
+          });
+        });
+      });
+      mo.observe(document.documentElement, { childList: true, subtree: true });
+    }
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();

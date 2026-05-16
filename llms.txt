@@ -39,3 +39,12 @@ Primary URL: https://milovicake.ru
 - Для UI-иконок использовать inline SVG.
 - Минимизировать infinite-анимации; функциональный motion с уважением к `prefers-reduced-motion`.
 - Перед деплоем поднимать `?v=` для CSS / JS и в `PRECACHE` в `sw.js`.
+## AI DO NOT TOUCH — R10 protected UI
+
+- НЕ МЕНЯТЬ hero-мессенджеры на главной: WhatsApp / Telegram / MAX должны оставаться круглыми inline-SVG иконками с кольцевым названием.
+- НЕ МЕНЯТЬ hover-поведение hero-мессенджеров: при наведении плоское название должно подлетать вверх, кольцевой текст должен мягко уходить.
+- НЕ ПЕРЕКРАШИВАТЬ hero-мессенджеры в белый: WhatsApp = зелёный `#25D366`, Telegram = голубой `#229ED9`, MAX = фиолетовый `#8e74ee` / `#7B5EE8`.
+- НЕ удалять `messenger-group--ring`, `btn-hero-ring`, `.hero-ring-text`, `.hero-flat-text` и R9/R10 CSS-блок в `css/premium-overrides.css`.
+- НЕ удалять catalog lightbox `#lightbox` из `prigorody/_template.html`: без него в пригородах не открываются фото тортов.
+- Страницы `prigorody/<city>/index.html` редактировать только через `prigorody/_template.html` + `python3 prigorody/build.py`.
+

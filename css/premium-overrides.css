@@ -1567,3 +1567,311 @@ button[disabled] {
 }
 
 /* ══ END R8 ══ */
+
+/*
+   AI DO NOT TOUCH — R10 PROTECTED BLOCK
+   The following R9/R10 rules intentionally protect the main-page hero messenger design:
+   circular inline-SVG ring icons, brand colors, and hover label lift.
+   Do not replace them with white pill buttons or text-only buttons.
+*/
+
+/* ══════════════════════════════════════════════════════════════
+   PATCH R9 — 2026.05.16
+   1) Возврат hero-мессенджеров к кольцевым иконкам с brand-цветами.
+   2) Пригороды: доставка без общей рамки, отдельные 3D-квадраты.
+   3) Dark mode: премиальные чёрные карточки вместо ярких белых пятен.
+   ══════════════════════════════════════════════════════════════ */
+
+/* Hero messengers — same premium ring behavior as suburb pages */
+.messenger-group--ring,
+.hero-actions .messenger-group {
+  display: flex;
+  align-items: center;
+  gap: 12px !important;
+  flex-wrap: nowrap;
+}
+.hero-actions .btn-hero-messenger {
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(255, 248, 236, 0.08) !important;
+  border: 1px solid currentColor !important;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.16), 0 0 0 1px rgba(255,255,255,0.05) inset !important;
+  overflow: visible !important;
+  transform: translateZ(0);
+  transition: transform .34s cubic-bezier(.34,1.56,.64,1), box-shadow .3s ease, background .3s ease, color .3s ease, filter .2s ease !important;
+}
+.hero-actions .btn-hero-messenger svg {
+  width: 48px !important;
+  height: 48px !important;
+  overflow: visible !important;
+  display: block !important;
+  flex-shrink: 0;
+}
+.hero-actions .btn-hero-messenger span { display: none !important; }
+.hero-actions .btn-hero-wa { color: #25D366 !important; background: rgba(37,211,102,0.10) !important; border-color: rgba(37,211,102,0.52) !important; }
+.hero-actions .btn-hero-tg { color: #229ED9 !important; background: rgba(34,158,217,0.10) !important; border-color: rgba(34,158,217,0.52) !important; }
+.hero-actions .btn-hero-max { color: #8e74ee !important; background: rgba(123,94,232,0.12) !important; border-color: rgba(123,94,232,0.52) !important; }
+.hero-actions .btn-hero-messenger .hero-ring-text,
+.hero-actions .btn-hero-messenger [id^="ring-text-"] {
+  opacity: .52 !important;
+  transform-origin: 24px 24px;
+  transition: opacity .28s ease, transform .42s cubic-bezier(.16,1,.3,1);
+}
+.hero-actions .btn-hero-messenger .hero-flat-text,
+.hero-actions .btn-hero-messenger [id^="flat-text-"] {
+  opacity: 0 !important;
+  transform: translateY(5px);
+  transform-origin: 24px 10px;
+  transition: opacity .28s ease, transform .42s cubic-bezier(.16,1,.3,1);
+}
+@media (hover:hover) and (pointer:fine) {
+  .hero-actions .btn-hero-messenger:hover {
+    transform: translateY(-4px) scale(1.08) !important;
+    background: rgba(255,255,255,0.14) !important;
+    filter: saturate(1.12);
+  }
+  .hero-actions .btn-hero-wa:hover { box-shadow: 0 14px 34px rgba(37,211,102,.28), 0 0 24px rgba(37,211,102,.16) !important; }
+  .hero-actions .btn-hero-tg:hover { box-shadow: 0 14px 34px rgba(34,158,217,.30), 0 0 24px rgba(34,158,217,.16) !important; }
+  .hero-actions .btn-hero-max:hover { box-shadow: 0 14px 34px rgba(123,94,232,.32), 0 0 24px rgba(123,94,232,.18) !important; }
+  .hero-actions .btn-hero-messenger:hover .hero-ring-text,
+  .hero-actions .btn-hero-messenger:hover [id^="ring-text-"] {
+    opacity: .16 !important;
+    transform: rotate(-16deg) scale(.96);
+  }
+  .hero-actions .btn-hero-messenger:hover .hero-flat-text,
+  .hero-actions .btn-hero-messenger:hover [id^="flat-text-"] {
+    opacity: 1 !important;
+    transform: translateY(-4px);
+  }
+}
+@media (max-width: 480px) {
+  .hero-actions .btn-hero-messenger,
+  .hero-actions .btn-hero-messenger svg {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+  }
+}
+
+/* Suburb delivery: remove outer frame, give each piece a 3D square premium card */
+.city-delivery {
+  padding: clamp(42px, 6vw, 82px) 24px clamp(40px, 5vw, 68px) !important;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(201,147,74,.10), transparent 62%),
+    linear-gradient(180deg, transparent 0%, rgba(201,147,74,.025) 100%);
+}
+.delivery-card {
+  max-width: 980px !important;
+  padding: 0 !important;
+  margin: 0 auto !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  perspective: 1100px;
+}
+.delivery-card__header {
+  justify-content: center !important;
+  text-align: center;
+  margin-bottom: 26px !important;
+  gap: 12px !important;
+}
+.delivery-card__title {
+  width: 100%;
+  font-size: clamp(28px, 4.5vw, 44px) !important;
+  letter-spacing: -.02em;
+}
+.delivery-card__badge {
+  background: rgba(201,147,74,.11) !important;
+  border: 1px solid rgba(201,147,74,.24);
+  box-shadow: 0 8px 24px rgba(201,147,74,.08);
+}
+.delivery-card__grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: clamp(12px, 1.8vw, 18px) !important;
+  margin-bottom: clamp(14px, 2vw, 20px) !important;
+}
+.delivery-card__item {
+  aspect-ratio: 1 / 1;
+  min-height: 150px;
+  padding: 18px 14px !important;
+  border-radius: 22px !important;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.92), rgba(250,247,242,.72)) !important;
+  border: 1px solid rgba(201,147,74,.18);
+  box-shadow:
+    0 18px 44px rgba(61,43,31,.10),
+    0 5px 14px rgba(61,43,31,.055),
+    0 0 0 1px rgba(255,255,255,.52) inset;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  transition: transform .42s cubic-bezier(.16,1,.3,1), box-shadow .42s ease, border-color .3s ease, background .3s ease;
+}
+.delivery-card__icon {
+  font-size: 30px !important;
+  margin-bottom: 12px !important;
+  transform: translateZ(24px);
+  filter: drop-shadow(0 8px 14px rgba(61,43,31,.12));
+}
+.delivery-card__label { transform: translateZ(18px); }
+.delivery-card__value {
+  font-size: 16px !important;
+  transform: translateZ(22px);
+}
+@media (hover:hover) and (pointer:fine) {
+  .delivery-card__item:hover {
+    transform: translateY(-8px) rotateX(6deg) rotateY(-5deg);
+    border-color: rgba(201,147,74,.42);
+    box-shadow:
+      0 28px 64px rgba(61,43,31,.16),
+      0 10px 22px rgba(201,147,74,.10),
+      0 0 0 1px rgba(255,255,255,.62) inset;
+  }
+}
+.delivery-card__note,
+.delivery-card__districts {
+  max-width: 760px;
+  margin: 18px auto 0 !important;
+  border-radius: 20px !important;
+  background: linear-gradient(135deg, rgba(201,147,74,.10), rgba(255,255,255,.45)) !important;
+  border: 1px solid rgba(201,147,74,.18) !important;
+  padding: 16px 20px !important;
+  box-shadow: 0 14px 38px rgba(61,43,31,.07);
+  text-align: center;
+}
+@media (max-width: 760px) {
+  .city-delivery { padding: 46px 18px 46px !important; }
+  .delivery-card__grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .delivery-card__item { min-height: 142px; border-radius: 18px !important; }
+}
+
+/* Premium dark mode — black glass cards with soft gold glow */
+[data-theme="dark"] body { background: #120b05; }
+[data-theme="dark"] .card,
+[data-theme="dark"] .card--light,
+[data-theme="dark"] .content-block,
+[data-theme="dark"] .product-card,
+[data-theme="dark"] .catalog-card,
+[data-theme="dark"] .review-card,
+[data-theme="dark"] .feature,
+[data-theme="dark"] .contact-primary-item,
+[data-theme="dark"] .local-context__inner,
+[data-theme="dark"] .nearby-city-card,
+[data-theme="dark"] .mr-city-tag,
+[data-theme="dark"] .map-badge,
+[data-theme="dark"] .map-review-item,
+[data-theme="dark"] .faq-item,
+[data-theme="dark"] .cb-fl,
+[data-theme="dark"] .cb-gluten-card,
+[data-theme="dark"] .cb-occ {
+  background: linear-gradient(145deg, rgba(32,21,11,.96), rgba(16,10,5,.94)) !important;
+  color: #f0e4d0 !important;
+  border-color: rgba(212,167,106,.18) !important;
+  box-shadow:
+    0 18px 46px rgba(0,0,0,.46),
+    0 0 0 1px rgba(232,184,122,.045) inset,
+    0 0 28px rgba(212,167,106,.045) !important;
+}
+[data-theme="dark"] .delivery-card__item {
+  background: linear-gradient(145deg, rgba(34,22,12,.98), rgba(12,8,4,.96)) !important;
+  border-color: rgba(212,167,106,.20) !important;
+  box-shadow:
+    0 22px 54px rgba(0,0,0,.52),
+    0 0 0 1px rgba(232,184,122,.055) inset,
+    0 0 30px rgba(212,167,106,.06) !important;
+}
+[data-theme="dark"] .delivery-card__item:hover {
+  border-color: rgba(232,184,122,.44) !important;
+  box-shadow:
+    0 30px 72px rgba(0,0,0,.62),
+    0 0 0 1px rgba(232,184,122,.08) inset,
+    0 0 34px rgba(212,167,106,.12) !important;
+}
+[data-theme="dark"] .delivery-card__note,
+[data-theme="dark"] .delivery-card__districts,
+[data-theme="dark"] .delivery-card__badge,
+[data-theme="dark"] .calc-weight-stepper-wrap,
+[data-theme="dark"] .social-divider span,
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group textarea {
+  background: linear-gradient(145deg, rgba(28,18,9,.94), rgba(13,8,4,.92)) !important;
+  color: #f0e4d0 !important;
+  border-color: rgba(212,167,106,.20) !important;
+  box-shadow: 0 12px 34px rgba(0,0,0,.38), 0 0 22px rgba(212,167,106,.045) !important;
+}
+[data-theme="dark"] .delivery-card__title,
+[data-theme="dark"] .delivery-card__value,
+[data-theme="dark"] .delivery-card__districts-list,
+[data-theme="dark"] .cb-fl-name,
+[data-theme="dark"] .cb-gluten-name,
+[data-theme="dark"] .cb-occ-name,
+[data-theme="dark"] .cb-faq-q span,
+[data-theme="dark"] .contact-primary-value {
+  color: #f7ead6 !important;
+}
+[data-theme="dark"] .delivery-card__label,
+[data-theme="dark"] .delivery-card__districts-label,
+[data-theme="dark"] .cb-fl-desc,
+[data-theme="dark"] .cb-gluten-desc,
+[data-theme="dark"] .cb-occ-desc,
+[data-theme="dark"] .cb-faq-a-inner,
+[data-theme="dark"] .contact-primary-label,
+[data-theme="dark"] .section-sub,
+[data-theme="dark"] .form-note,
+[data-theme="dark"] .consent-note {
+  color: #c8a880 !important;
+}
+[data-theme="dark"] .btn-hero-messenger {
+  background: rgba(255,255,255,.035) !important;
+  box-shadow: 0 12px 30px rgba(0,0,0,.38), 0 0 18px rgba(212,167,106,.06) !important;
+}
+
+/* ══ END R9 ══ */
+
+/* ══════════════════════════════════════════════════════════════
+   PATCH R11 — keyboard/a11y polish for legacy visual controls
+   ══════════════════════════════════════════════════════════════ */
+[role="button"]:focus-visible,
+.calc-biscuit-opt:focus-visible,
+.faq-item:focus-visible,
+.cb-faq-item:focus-visible,
+.cart-step:focus-visible,
+.dot:focus-visible {
+  outline: 2px solid var(--gold, #c9934a) !important;
+  outline-offset: 3px !important;
+  border-radius: 12px;
+}
+.dot[role="button"]:focus-visible {
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(201,147,74,.18);
+}
+[data-theme="dark"] [role="button"]:focus-visible,
+[data-theme="dark"] .calc-biscuit-opt:focus-visible,
+[data-theme="dark"] .faq-item:focus-visible,
+[data-theme="dark"] .cb-faq-item:focus-visible,
+[data-theme="dark"] .cart-step:focus-visible,
+[data-theme="dark"] .dot:focus-visible {
+  outline-color: var(--gold-light, #e8b87a) !important;
+  box-shadow: 0 0 0 4px rgba(232,184,122,.14), 0 0 24px rgba(232,184,122,.10);
+}
+@media (forced-colors: active) {
+  [role="button"]:focus-visible,
+  .calc-biscuit-opt:focus-visible,
+  .faq-item:focus-visible,
+  .cb-faq-item:focus-visible,
+  .cart-step:focus-visible,
+  .dot:focus-visible {
+    outline: 3px solid Highlight !important;
+    outline-offset: 2px !important;
+  }
+}
+/* ══ END R11 ══ */

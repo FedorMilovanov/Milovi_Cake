@@ -96,9 +96,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
   <!-- noscript fonts -->
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/></noscript>
-  <link rel="stylesheet" href="../../css/style.css?v=20260516r8" />
-  <link rel="stylesheet" href="../../css/mc-2026.css?v=20260516r8" />
-  <link rel="stylesheet" href="../../css/premium-overrides.css?v=20260516r8" />
+  <link rel="stylesheet" href="../../css/style.css?v=20260516r11" />
+  <link rel="stylesheet" href="../../css/mc-2026.css?v=20260516r11" />
+  <link rel="stylesheet" href="../../css/premium-overrides.css?v=20260516r11" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -211,6 +211,24 @@
   </div>
 </div>
 
+<!-- Catalog lightbox: required for opening cake photos on suburb pages -->
+<div class="lightbox" id="lightbox">
+  <button type="button" class="lightbox-close" onclick="closeLightbox()" aria-label="Закрыть">
+    <span></span><span></span>
+  </button>
+  <div class="lightbox-img-wrap" id="lightboxWrap">
+    <img id="lightboxImg" src="" alt="Фото торта Milovi Cake" width="1200" height="800" style="user-select:none; -webkit-user-drag:none; max-width:100%; height:auto; aspect-ratio:3/2;" decoding="async" />
+    <div class="lightbox-nav hidden" id="lbNav">
+      <button type="button" class="lightbox-arrow" onclick="lbNavigate(-1)" aria-label="Назад">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <span class="lightbox-counter" id="lbCounter">1 / 1</span>
+      <button type="button" class="lightbox-arrow" onclick="lbNavigate(1)" aria-label="Вперёд">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
 
 <main id="main-content">
 <!-- ══════════ HERO ══════════ -->
@@ -251,6 +269,7 @@
           Выбрать торт
           <span class="btn-price-hint">от 2 800 ₽/кг</span>
         </a>
+        <!-- AI DO NOT TOUCH R10: hero messengers must stay circular inline-SVG ring icons with brand colors: WA #25D366, TG #229ED9, MAX purple. Hover must lift the flat label upward. -->
         <div class="messenger-group" style="display:flex;gap:12px;align-items:center;">
           <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D1%81%D0%B4%D0%B5%D0%BB%D0%B0%D1%82%D1%8C%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7" target="_blank" rel="noopener noreferrer" class="btn-hero-messenger btn-hero-wa" aria-label="WhatsApp">
             <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible">
@@ -908,9 +927,9 @@
 
 
 <script>var IMG_BASE = '../../img';</script>
-<script src="../../js/main.js?v=20260516r8" defer></script>
-<script src="../../js/nav.js?v=20260516r8" defer></script>
-<script src="../../js/mc-2026.js?v=20260516r8" defer></script>
+<script src="../../js/main.js?v=20260516r11" defer></script>
+<script src="../../js/nav.js?v=20260516r11" defer></script>
+<script src="../../js/mc-2026.js?v=20260516r11" defer></script>
 
 
 
@@ -1051,7 +1070,7 @@
     webvisor: true
   });
 </script>
-<noscript><div><img src="https://mc.yandex.ru/watch/106945185" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<noscript><div><img src="https://mc.yandex.ru/watch/106945185" width="1" height="1" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 
 <!-- ══════════════════════════════════════════
      REVIEWS MODAL
@@ -1200,7 +1219,7 @@
 
 <!-- lightbox for new reviews section -->
 <div class="lb-bg" id="lbBg"></div>
-<div class="lb-box" id="lbBox"><img id="lbImg" src="" alt=""></div>
+<div class="lb-box" id="lbBox"><img id="lbImg" src="" alt="Отзыв клиента Milovi Cake" width="800" height="1000" style="max-width:100%;height:auto;aspect-ratio:4/5;" decoding="async" loading="lazy"></div>
 <button type="button" class="lb-x" id="lbX" aria-label="Закрыть">✕</button>
 
 
