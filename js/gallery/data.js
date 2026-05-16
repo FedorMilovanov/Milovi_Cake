@@ -57,7 +57,7 @@ export const GALLERY_ITEMS = [
   { id: 'p30', type: 'photo', src: '/img/gallery/gallery-30.webp', full: '/img/gallery/gallery-30-hd.webp', title: 'Меренговый рулет премиум',   desc: 'Авторский десерт с фисташкой и малиной', tags: ['meringue'] },
 ];
 
-// Dual-mode: supports both ES module import and classic <script> tag
+// Dual-mode: supports ES module import AND classic <script> tag
 if (typeof window !== "undefined") {
   window.GALLERY_ITEMS = GALLERY_ITEMS;
 }
