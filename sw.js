@@ -5,21 +5,21 @@
    Cache-bust через имя версии CACHE_NAME (увеличивайте при деплое CSS/JS).
    ═══════════════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'milovi-cake-v2026.05.16-r3';
+const CACHE_NAME = 'milovi-cake-v2026.05.16-r5';
 const PRECACHE = [
   '/',
-  '/css/style.css?v=20260516r3',
-  '/css/mc-2026.css?v=20260516r3',
-  '/css/premium-overrides.css?v=20260516r3',
-  '/js/main.js?v=20260516r3',
-  '/js/nav.js?v=20260516r3',
-  '/js/mc-2026.js?v=20260516r3',
+  '/css/style.css?v=20260516r5',
+  '/css/mc-2026.css?v=20260516r5',
+  '/css/premium-overrides.css?v=20260516r5',
+  '/js/main.js?v=20260516r5',
+  '/js/nav.js?v=20260516r5',
+  '/js/mc-2026.js?v=20260516r5',
   '/img/head_mobile.avif',
   '/img/head_desktop.avif',
   '/img/head_mobile.webp',
   '/img/head_desktop.webp',
   '/manifest.json',
-  '/favicon.svg?v=20260516r3'
+  '/favicon.svg?v=20260516r5'
 ];
 
 // ───── INSTALL ─────
