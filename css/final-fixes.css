@@ -160,3 +160,60 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
 .faq-answer {
   visibility: visible;
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   v22 micro-fixes
+   1) WA/TG/MAX labels: same size, shorter flight.
+   2) MAX glyph: force centered normalized SVG mark.
+   3) Hero subtitle: keep synesthesia hover, do NOT dim other words.
+   ═══════════════════════════════════════════════════════════════════ */
+@media (hover:hover) and (pointer:fine) {
+  .hero-actions .btn-hero-messenger:hover .hero-flat-text,
+  .hero-actions .btn-hero-messenger:hover [id^="flat-text-"] {
+    /* было -13px — чуть ближе к кружку */
+    transform: translateY(-10.5px) scale(1.055) !important;
+  }
+  .hero-actions .btn-hero-messenger:hover .hero-ring-text,
+  .hero-actions .btn-hero-messenger:hover [id^="ring-text-"] {
+    transform: translateY(-9.5px) rotate(-18deg) scale(.94) !important;
+  }
+}
+
+/* В текущих CSS был rule из v20: .btn-hero-max svg > g { transform: ... }
+   Он ломал MAX, когда SVG стал крупнее. Новый знак MAX — nested svg, его не трогаем. */
+.hero-actions .btn-hero-max > svg > g {
+  transform: none !important;
+}
+.hero-actions .btn-hero-max svg .max-mark-fixed,
+.hero-actions .btn-hero-max svg > svg.max-mark-fixed {
+  x: 12px;
+  y: 12px;
+  width: 24px;
+  height: 24px;
+  overflow: visible !important;
+  transform: none !important;
+}
+
+/* Не затемнять соседние слова в hero subtitle. Hover-слово остаётся с эффектом. */
+.hero-subtitle .w,
+.hero-subtitle .w.near,
+.hero-subtitle:hover .w,
+.hero-subtitle:hover .w:not(:hover) {
+  opacity: 1 !important;
+  filter: none !important;
+  color: inherit !important;
+  -webkit-text-fill-color: currentColor !important;
+  background: none !important;
+}
+@media (hover:hover) and (pointer:fine) {
+  .hero-subtitle .w:hover {
+    transform: scaleY(1.08) translateY(-1px) !important;
+    color: rgba(160, 210, 255, 0.82) !important;
+    -webkit-text-fill-color: rgba(160, 210, 255, 0.82) !important;
+  }
+  .hero-subtitle .w.near:not(:hover) {
+    transform: none !important;
+    color: inherit !important;
+    -webkit-text-fill-color: currentColor !important;
+  }
+}
