@@ -149,6 +149,7 @@ const Lightbox = (() => {
   let items = [];
   let index = 0;
   let touchStartX = 0;
+  let savedScrollY = 0;
 
   const root      = $('#gxLight');
   const stage     = $('#gxStage');
@@ -237,6 +238,8 @@ const Lightbox = (() => {
       buildThumbs();
       renderStage();
       root.setAttribute('aria-hidden', 'false');
+      savedScrollY = window.scrollY || window.pageYOffset || 0;
+      document.body.style.setProperty('--gx-lock-top', `-${savedScrollY}px`);
       document.body.style.overflow = 'hidden';
       document.body.classList.add('gx-lightbox-open');
     };
@@ -259,8 +262,10 @@ const Lightbox = (() => {
       root.setAttribute('aria-hidden', 'true');
       document.body.style.overflow = '';
       document.body.classList.remove('gx-lightbox-open');
+      document.body.style.removeProperty('--gx-lock-top');
       stage.innerHTML = '';
       history.replaceState(null, '', location.pathname);
+      window.scrollTo(0, savedScrollY || 0);
     };
 
     if (SUPPORTS_VT && !PREFERS_REDUCED) {
@@ -315,6 +320,14 @@ const Lightbox = (() => {
       if (e.key === 'ArrowRight') goTo(index + 1);
     });
 
+    window.addEventListener('popstate', () => {
+      if (root.getAttribute('aria-hidden') === 'false') close();
+    });
+
+    window.addEventListener('resize', () => {
+      if (root.getAttribute('aria-hidden') === 'false') renderStage();
+    }, { passive: true });
+
     stage.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
     stage.addEventListener('touchend', (e) => {
       const dx = e.changedTouches[0].clientX - touchStartX;
@@ -332,13 +345,6 @@ const Lightbox = (() => {
   }
 
   return { open, close, bind };
-
-  // Close lightbox on browser Back button
-  window.addEventListener('popstate', () => {
-    if (root.getAttribute('aria-hidden') === 'false') {
-      Lightbox.close();
-    }
-  });
 })();
 
 /* =====================================================================
@@ -383,7 +389,7 @@ function boot() {
 
   if (!PREFERS_REDUCED && !IS_TOUCH) {
     initMagneticCursor();
-    initLiquidHover('.gx-cell');
+    initLiquidHover('.gx-cell[data-type="photo"]');
   }
   if (!PREFERS_REDUCED) initScrollSkew('.gx-cell');
 
@@ -392,10 +398,6 @@ function boot() {
 
   document.documentElement.classList.toggle('vt-supported', SUPPORTS_VT);
   document.documentElement.classList.toggle('is-touch', IS_TOUCH);
-
-  // eslint-disable-next-line no-console
-  console.log('%c[Milovi Cake] Gallery 2026 — booted', 'color:#b8823a;font-weight:600',
-    { items: ordered.length, vt: SUPPORTS_VT, touch: IS_TOUCH, reducedMotion: PREFERS_REDUCED });
 }
 
 if (document.readyState === 'loading') {

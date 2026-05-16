@@ -37,13 +37,13 @@ void main() {
   float falloff = smoothstep(0.55, 0.0, dist);
   vec2 disp = normalize(d + 0.0001) * wave * falloff * uIntensity;
 
-  float ca = 0.0035 * uIntensity * falloff;
+  float ca = 0.0018 * uIntensity * falloff;
   float r = texture(uTex, uv - disp - vec2(ca, 0.0)).r;
   float g = texture(uTex, uv - disp).g;
   float b = texture(uTex, uv - disp + vec2(ca, 0.0)).b;
   vec3 col = vec3(r, g, b);
 
-  float hl = smoothstep(0.18, 0.0, dist) * 0.18 * uIntensity;
+  float hl = smoothstep(0.16, 0.0, dist) * 0.045 * uIntensity;
   col += vec3(hl);
 
   outColor = vec4(col, 1.0);
@@ -126,6 +126,7 @@ class LiquidScene {
     this.targetMouse = [0.5, 0.5];
     this.intensity = 0;
     this.targetIntensity = 0;
+    this.textureReady = false;
     this.t0 = performance.now();
     this.running = false;
 
@@ -149,11 +150,18 @@ class LiquidScene {
       const m = this.media;
       if (m.tagName === 'IMG' && !m.complete) {
         m.addEventListener('load', () => this.uploadTexture(), { once: true });
-        return;
+        this.textureReady = false;
+        return false;
+      }
+      if (m.tagName === 'VIDEO' && m.readyState < 2) {
+        this.textureReady = false;
+        return false;
       }
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, m);
-    } catch (_) { /* CORS / not ready */ }
+      this.textureReady = true;
+      return true;
+    } catch (_) { this.textureReady = false; return false; /* CORS / not ready */ }
   }
 
   start() {
@@ -192,8 +200,9 @@ class LiquidScene {
     cell.addEventListener('mouseenter', () => {
       this.resize();
       this.uploadTexture();
+      if (!this.textureReady) return;
       this.canvas.style.opacity = '1';
-      this.targetIntensity = 1;
+      this.targetIntensity = 0.82;
       this.start();
     });
     cell.addEventListener('mouseleave', () => {

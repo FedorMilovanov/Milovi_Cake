@@ -441,3 +441,61 @@ body.gx-lightbox-open {
   position: fixed;
   width: 100%;
 }
+
+
+/* ── Gallery stability patch v2026.05.16-r2 ───────────────────────────── */
+.gx-cell {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+.gx-cell-content,
+.gx-cell img,
+.gx-cell video,
+.gx-liquid-canvas {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.gx-liquid-canvas {
+  opacity: 0;
+  contain: paint;
+  transform: translateZ(0);
+}
+.gx-cell:hover img,
+.gx-cell:hover video {
+  filter: none !important;
+}
+
+/* Lightbox media: never stretch or squash */
+.gx-slide-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gx-slide-frame img,
+.gx-slide-frame video {
+  width: auto !important;
+  height: auto !important;
+  max-width: min(90vw, 1600px) !important;
+  max-height: min(78vh, 1000px) !important;
+  aspect-ratio: auto;
+  object-fit: contain !important;
+  flex: 0 1 auto;
+}
+.gx-slide-frame video {
+  background: #000;
+}
+
+body.gx-lightbox-open {
+  top: var(--gx-lock-top, 0px);
+  left: 0;
+  right: 0;
+}
+
+@media (max-width: 768px) {
+  .gx-slide-frame img,
+  .gx-slide-frame video {
+    max-width: 96vw !important;
+    max-height: 62vh !important;
+  }
+}
