@@ -6,114 +6,59 @@
   <title>Галерея Milovi Cake — Авторские торты на заказ в СПб</title>
   <meta name="description" content="Портфолио кондитера Milovi Cake — фото и видео тортов, бенто и десертов. Премиальный дизайн, ручная работа." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%23f1d49b'/%3E%3Cstop offset='1' stop-color='%23b8823a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='14' y='28' width='36' height='18' rx='5' fill='%23f5f0e8' stroke='%233d2b1f' stroke-width='2'/%3E%3Cpath d='M18 30c5 4 9 4 14 0s9-4 14 0' fill='none' stroke='url(%23g)' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M32 14v12' stroke='%23b8823a' stroke-width='3' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='13' r='3' fill='url(%23g)'/%3E%3C/svg%3E" />
-
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
-
-  <!-- Swiper CDN -->
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
-
-  <!-- Стили -->
   <link rel="stylesheet" href="/css/gallery/gallery-2026.css" />
   <link rel="stylesheet" href="/css/final-fixes.css" />
-
-  <!-- Страховочный таймер прелоадера -->
-  <script>
-    (function(){
-      function h(){ try{ var p=document.getElementById('preloader'); if(p){ p.classList.add('hidden'); setTimeout(function(){ try{ p.remove(); }catch(e){} }, 700); } } catch(e){} }
-      setTimeout(h, 5000);
-      if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(h, 5000); });
-    })();
-  </script>
 </head>
 <body>
-
-  <!-- Прелоадер -->
   <div id="preloader">
-    <svg class="loader-seal" viewBox="0 0 100 100">
-      <defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f5e6c0"/><stop offset="50%" stop-color="#d4a85c"/><stop offset="100%" stop-color="#8e5e20"/></linearGradient></defs>
-      <circle cx="50" cy="50" r="46" fill="none" stroke="url(#sg)" stroke-width="1" opacity="0.5"/>
-      <path d="M50 18 L54 30 L66 32 L57 40 L59 52 L50 47 L41 52 L43 40 L34 32 L46 30 Z" fill="url(#sg)" opacity="0.8"/>
+    <svg class="loader-seal" viewBox="0 0 100 100" aria-hidden="true">
+      <defs><linearGradient id="loaderGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f5e6c0"/><stop offset="50%" stop-color="#d4a85c"/><stop offset="100%" stop-color="#8e5e20"/></linearGradient></defs>
+      <circle cx="50" cy="50" r="46" fill="none" stroke="url(#loaderGold)" stroke-width="1" opacity="0.5"/>
+      <path d="M50 18 L54 30 L66 32 L57 40 L59 52 L50 47 L41 52 L43 40 L34 32 L46 30 Z" fill="url(#loaderGold)" opacity="0.8"/>
     </svg>
     <div class="loader-text">Milovi Cake</div>
   </div>
 
-  <div class="blob blob-1"></div>
-  <div class="blob blob-2"></div>
-
-  <!-- ════════════════ СТРАНИЦА ════════════════ -->
   <div class="gx-page">
-
-    <!-- Шапка -->
-    <header class="gx-header">
+    <header class="gx-header animate-header">
       <a href="/" class="gx-back-link">
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 15l-5-5 5-5"/></svg>
+        <svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><path d="M12.5 15l-5-5 5-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
         На главную
       </a>
-      <div class="gx-seal-wrap">
-        <svg class="gx-seal-svg" viewBox="0 0 100 100">
-          <defs><linearGradient id="sg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f5e6c0"/><stop offset="50%" stop-color="#d4a85c"/><stop offset="100%" stop-color="#8e5e20"/></linearGradient></defs>
-          <circle cx="50" cy="50" r="46" fill="none" stroke="url(#sg2)" stroke-width="1" opacity="0.5"/>
-          <path d="M50 18 L54 30 L66 32 L57 40 L59 52 L50 47 L41 52 L43 40 L34 32 L46 30 Z" fill="url(#sg2)" opacity="0.8"/>
-        </svg>
-      </div>
+      <div class="gx-seal-wrap" aria-hidden="true" id="gxSeal"></div>
       <h1 class="gx-heading">Студия <em>Milovi Cake</em></h1>
       <div class="gx-divider"><span></span><i></i><span></span></div>
-      <p class="gx-subtitle">Галерея авторских работ · Санкт-Петербург</p>
-
-      <!-- Фильтры -->
-      <div class="gx-filters" role="group" aria-label="Фильтр">
-        <button class="gx-chip gx-chip-active" data-filter="all" aria-pressed="true" type="button">Все</button>
-        <button class="gx-chip" data-filter="photo" aria-pressed="false" type="button">Фото</button>
-        <button class="gx-chip" data-filter="video" aria-pressed="false" type="button">Видео</button>
-        <button class="gx-chip" data-filter="wedding" aria-pressed="false" type="button">Свадебные</button>
-        <button class="gx-chip" data-filter="bento" aria-pressed="false" type="button">Бенто</button>
-        <button class="gx-chip" data-filter="3d" aria-pressed="false" type="button">3D</button>
-        <button class="gx-chip" data-filter="bday" aria-pressed="false" type="button">День рождения</button>
-        <button class="gx-chip" data-filter="meringue" aria-pressed="false" type="button">Меренга</button>
-        <button class="gx-chip" data-filter="pavlova" aria-pressed="false" type="button">Павлова</button>
-      </div>
-
-      <!-- Счётчики -->
-      <div class="gx-counter-row">
-        <span class="gx-counter-item">
-          <span id="photoCount">0</span>
-          <span class="gx-counter-dot"></span>
-          фото
-        </span>
-        <span class="gx-counter-item">
-          <span id="videoCount">0</span>
-          <span class="gx-counter-dot"></span>
-          видео
-        </span>
+      <p class="gx-subtitle">Каждый торт — авторская работа. Реальные фото и видео <span id="gxTotalCount">46</span> заказов из Санкт-Петербурга.</p>
+      <div class="gx-filter-row" id="gxFilters" role="group" aria-label="Фильтр галереи"></div>
+      <div class="gx-counter-row" aria-live="polite">
+        <span class="gx-counter-item" id="photoCount">0 фото</span>
+        <span class="gx-counter-dot" aria-hidden="true"></span>
+        <span class="gx-counter-item" id="videoCount">0 видео</span>
       </div>
     </header>
 
-    <!-- Сетка -->
     <main class="gx-main">
       <div class="gallery-grid" id="galleryGrid" role="list"></div>
-      <div class="gx-empty" id="gxEmpty" hidden>
-        <p>По выбранному фильтру ничего не найдено</p>
-        <button id="resetFilter" type="button">Показать все работы</button>
+      <div class="gx-empty-state" id="gxEmpty" hidden>
+        <div class="gx-empty-wrap" aria-hidden="true" id="gxEmptyGlyph"></div>
+        <p>В этой категории работы обновляются</p>
+        <button type="button" id="resetFilter">Показать все</button>
       </div>
     </main>
 
-    <!-- Футер -->
     <footer class="gx-footer">
-      <svg viewBox="0 0 260 12" fill="none" aria-hidden="true">
-        <path d="M0 6h30l4-4 4 4h30l4-4 4 4h30l4-4 4 4h30l4-4 4 4h30l4-4 4 4h30" stroke="currentColor" stroke-width="0.5" opacity="0.5"/>
-      </svg>
-      <a href="https://wa.me/79119038886" target="_blank" rel="noopener noreferrer" class="gx-cta">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        Заказать в WhatsApp
-      </a>
-      <p>© 2026 Milovi Cake Studio</p>
+      <svg viewBox="0 0 400 12" class="gx-footer-line" aria-hidden="true" preserveAspectRatio="xMidYMid meet"><line x1="0" y1="6" x2="170" y2="6" stroke="var(--gold-light)" stroke-width="0.8"/><path d="M186 6l7-4 7 4-7 4z" fill="var(--gold)" fill-opacity="0.6"/><circle cx="200" cy="6" r="2" fill="var(--gold)"/><path d="M214 6l-7-4-7 4 7 4z" fill="var(--gold)" fill-opacity="0.6"/><line x1="230" y1="6" x2="400" y2="6" stroke="var(--gold-light)" stroke-width="0.8"/></svg>
+      <a href="/#contacts" class="gx-cta">Заказать торт в СПб <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M5 10h10M11 6l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <div class="gx-footer-bottom"><a href="https://t.me/+79119038886" class="gx-footer-link" target="_blank" rel="noopener noreferrer">Telegram</a><span aria-hidden="true">·</span><a href="tel:+79119038886" class="gx-footer-link">+7 911 903-88-86</a></div>
+      <p class="gx-copy">© 2026 Milovi Cake · Авторские торты · Санкт-Петербург</p>
     </footer>
   </div>
 
-  <!-- ════════════════ Vanilla JS ════════════════ -->
   <script type="module" src="/js/gallery/main.js"></script>
 </body>
 </html>

@@ -1,100 +1,162 @@
 /* ═══════════════════════════════════════════════════════════════════
-   milovi-cake-fixes.css — Финальный хирургический патч
-   ЗАГРУЖАТЬ ПОСЛЕДНИМ (перед </head>)
+   Milovi Cake — final surgical fixes v21
+   ДОЛЖЕН подключаться последним. Исправляет hero CTA, WA/TG/MAX labels,
+   dark hero, prigorody FAQ/delivery. Галерею не ломает.
    ═══════════════════════════════════════════════════════════════════ */
 
-/* ── 1) КНОПКА «ВЫБРАТЬ ТОРТ» — полное устранение рамки внутри ── */
-
-/* (A) overflow: visible — чтобы ::after не резался по внутреннему краю.
-   Отключаем shimmer на ::before (он добавлял артефакты). */
-.btn-primary--hero {
+/* 1) HERO CTA под блоком “Изготовление / Доставка / Натуральные продукты”.
+   Полностью убираем внутреннюю рамку: старые ::before/::after, conic-ring,
+   shimmer, ripple/gold-ripple визуальные круги и inner outline. */
+.hero .btn-primary.btn-primary--hero,
+.hero-actions .btn-primary.btn-primary--hero,
+:root:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero,
+html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero,
+[data-theme="dark"] .hero .btn-primary.btn-primary--hero {
+  position: relative !important;
   overflow: visible !important;
+  isolation: isolate !important;
+  outline: 0 !important;
+  border: 0 !important;
+  box-shadow: 0 8px 24px rgba(201,147,74,.24) !important;
 }
-.btn-primary--hero::before {
+
+.hero .btn-primary.btn-primary--hero::before,
+.hero .btn-primary.btn-primary--hero::after,
+.hero-actions .btn-primary.btn-primary--hero::before,
+.hero-actions .btn-primary.btn-primary--hero::after,
+.hero .btn-primary.btn-primary--hero:hover::before,
+.hero .btn-primary.btn-primary--hero:hover::after,
+.hero-actions .btn-primary.btn-primary--hero:hover::before,
+.hero-actions .btn-primary.btn-primary--hero:hover::after,
+.hero .btn-primary.btn-primary--hero:focus::before,
+.hero .btn-primary.btn-primary--hero:focus::after,
+.hero .btn-primary.btn-primary--hero:active::before,
+.hero .btn-primary.btn-primary--hero:active::after {
+  content: none !important;
   display: none !important;
-}
-
-/* (B) Свой ::after — аккуратная внешняя золотая окантовка.
-   Только на hover. Без рамок, без лишних анимаций. */
-.btn-primary--hero::after {
-  content: '' !important;
-  position: absolute !important;
-  inset: -2px !important;
-  border-radius: 52px !important;
-  padding: 1.5px !important;
-  background: conic-gradient(from var(--_angle, 0deg),
-    rgba(201,147,74,0)    0deg,
-    rgba(201,147,74,0.8) 60deg,
-    rgba(245,219,160,1) 120deg,
-    rgba(201,147,74,0.8) 180deg,
-    rgba(201,147,74,0)   240deg,
-    rgba(201,147,74,0)   360deg) !important;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box,
-                linear-gradient(#fff 0 0) !important;
-  -webkit-mask-composite: xor !important;
-  mask-composite: exclude !important;
-  pointer-events: none !important;
-  z-index: 0 !important;
   opacity: 0 !important;
-  transition: opacity 0.4s ease !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  inset: auto !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background: none !important;
   animation: none !important;
-  border: none !important;
-}
-.btn-primary--hero:hover::after {
-  opacity: 1 !important;
+  transition: none !important;
+  transform: none !important;
+  -webkit-mask: none !important;
+  mask: none !important;
 }
 
-/* (C) Фон на hover — перебиваем любой !important из mc-2026.css.
-   Повышаем специфичность через html:not() и [data-theme]. */
-html:not([data-theme="dark"]) .btn-primary--hero:hover {
+.hero .btn-primary.btn-primary--hero .ripple-circle,
+.hero .btn-primary.btn-primary--hero .gold-ripple-circle,
+.hero-actions .btn-primary.btn-primary--hero .ripple-circle,
+.hero-actions .btn-primary.btn-primary--hero .gold-ripple-circle {
+  display: none !important;
+  opacity: 0 !important;
+  animation: none !important;
+}
+
+/* Перебиваем mc-2026.css: :root:not([data-theme="dark"]) .btn-primary:hover */
+:root:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
+html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
+[data-theme="dark"] .hero .btn-primary.btn-primary--hero:hover,
+.hero .btn-primary.btn-primary--hero:hover {
   background: var(--gold-light, #d4a76a) !important;
+  color: #fff !important;
   transform: translateY(-2px) !important;
-}
-[data-theme="dark"] .btn-primary--hero:hover {
-  background: var(--gold-light, #e8b87a) !important;
-  transform: translateY(-2px) !important;
-}
-.btn-primary--hero:active {
-  transform: scale(0.97) !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow:
+    0 16px 36px rgba(201,147,74,.30),
+    0 5px 14px rgba(61,43,31,.12) !important;
 }
 
-/* (D) Убираем outline на focus с мыши (не трогаем focus-visible) */
-.btn-primary:focus:not(:focus-visible),
-.btn-primary--hero:focus:not(:focus-visible) {
-  outline: none !important;
+.hero .btn-primary.btn-primary--hero:focus:not(:focus-visible),
+.hero-actions .btn-primary.btn-primary--hero:focus:not(:focus-visible) {
+  outline: 0 !important;
+}
+.hero .btn-primary.btn-primary--hero:focus-visible {
+  outline: 2px solid var(--gold-light, #e8b87a) !important;
+  outline-offset: 5px !important;
+}
+@media (prefers-contrast: more) {
+  .hero .btn-primary.btn-primary--hero,
+  .hero .btn-primary.btn-primary--hero:hover {
+    outline: 0 !important;
+    outline-offset: 5px !important;
+  }
 }
 
-/* ── 2) ПРЕЛОАДЕР ГАЛЕРЕИ ── */
+/* 2) Hero WA / TG / MAX: увеличиваем именно всплывающую ВВЕРХ надпись.
+   Расстояние подъёма и размер иконок не меняем. */
+.hero-actions .btn-hero-messenger .hero-flat-text,
+.hero-actions .btn-hero-messenger [id^="flat-text-"] {
+  font-size: 13.2px !important;
+  font-weight: 700 !important;
+  letter-spacing: .15px !important;
+  opacity: 0 !important;
+  paint-order: stroke fill !important;
+  stroke: rgba(8,5,2,.26) !important;
+  stroke-width: .42px !important;
+  transform-origin: 24px 10px !important;
+  transition: opacity .28s ease, transform .42s cubic-bezier(.16,1,.3,1) !important;
+}
+@media (hover:hover) and (pointer:fine) {
+  .hero-actions .btn-hero-messenger:hover .hero-flat-text,
+  .hero-actions .btn-hero-messenger:hover [id^="flat-text-"] {
+    opacity: 1 !important;
+    transform: translateY(-13px) scale(1.06) !important;
+  }
+  .hero-actions .btn-hero-messenger:hover .hero-ring-text,
+  .hero-actions .btn-hero-messenger:hover [id^="ring-text-"] {
+    opacity: 0 !important;
+    transform: translateY(-12px) rotate(-18deg) scale(.94) !important;
+  }
+}
+
+/* MAX icon micro-centering without changing its size */
+.hero-actions .btn-hero-max svg g[transform] {
+  transform-origin: 24px 24px !important;
+}
+
+/* 3) Галерея — страховка прелоадера */
 #preloader.hidden {
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
 }
 
-/* ── 3) FAQ В ПРИГОРОДАХ — тёмная тема, glassmorphism ── */
+/* 4) Тёмная тема hero — убираем чёрный прямоугольник */
+[data-theme="dark"] .hero-content::before,
+[data-theme="dark"] .hero-content::after {
+  content: none !important;
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  background: none !important;
+}
+
+/* 5) Пригороды: delivery glassmorphism без “коробочных” рамок */
 [data-theme="dark"] .delivery-card {
-  border: 1px solid rgba(212, 167, 106, 0.15) !important;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
-  background: rgba(26, 17, 8, 0.88) !important;
-  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(212,167,106,.15) !important;
+  background: rgba(26,17,8,.88) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,.30) !important;
+  backdrop-filter: blur(12px) saturate(135%) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(135%) !important;
 }
 [data-theme="dark"] .delivery-card::before,
 [data-theme="dark"] .delivery-card::after {
+  content: none !important;
   display: none !important;
 }
-
-/* ── 4) ЧЁРНЫЙ ПРЯМОУГОЛЬНИК НА HERO В ТЁМНОЙ ТЕМЕ ── */
-[data-theme="dark"] .hero-content::before,
-[data-theme="dark"] .hero-content::after {
-  display: none !important;
-}
-
-/* ── 5) РАЗМЕР ВСПЛЫВАЮЩИХ НАЗВАНИЙ МЕССЕНДЖЕРОВ ── */
-.hero-flat-text {
-  font-size: 11px !important;
-  opacity: 0 !important;
-  transition: opacity 0.3s ease !important;
-}
-.btn-hero-ring:hover .hero-flat-text {
-  opacity: 1 !important;
+.faq-list,
+.delivery-faq,
+.faq-item,
+.faq-answer {
+  visibility: visible;
 }
