@@ -195,12 +195,7 @@ html, body {
 }
 .gx-cursor.visible { opacity: 1; }
 .gx-cursor.hover-mini { width: 36px; height: 36px; }
-.gx-cursor.hover {
-  width: 96px; height: 96px;
-  background: var(--gold-light);
-  mix-blend-mode: normal;
-  box-shadow: 0 12px 40px rgba(184,130,58,.55);
-}
+/* [R5] removed old 96px cursor hover — see patch block below */
 .gx-cursor-label {
   font: 500 10.5px/1 'Jost', sans-serif;
   letter-spacing: .22em; text-transform: uppercase;

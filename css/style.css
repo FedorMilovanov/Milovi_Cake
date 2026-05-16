@@ -273,23 +273,33 @@
     background: transparent !important;
 }
 
-.hero-subtitle, .hero-title-seo {
-  font-family: 'Cormorant Garamond', serif !important;
-  font-size: 20px;
-  font-style: italic;
-  font-weight: 400;
-  letter-spacing: 0.03em;
-  opacity: 0.9;
+.hero-title-seo {
+  font-family: 'Jost', sans-serif;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 300;
+  letter-spacing: 0.09em;
+  opacity: 0.82;
+  color: rgba(255, 238, 205, 0.88);
 }
-@media (min-width: 768px) {
-  .hero-subtitle {
-    font-size: 24px;
-  }
+.hero-subtitle {
+  font-family: 'Jost', sans-serif;
+  font-size: 14.5px;
+  font-style: normal;
+  font-weight: 300;
+  letter-spacing: 0.10em;
+  line-height: 1.65;
+  opacity: 0.74;
+  color: rgba(255, 238, 205, 0.78);
+}
+@media (min-width: 769px) {
+  .hero-title-seo { font-size: 20px; }
+  .hero-subtitle  { font-size: 16px; }
 }
 
 /* PREMIUM THEME TOGGLE */
-.theme-toggle { position: relative; width: 36px; height: 36px; border-radius: 50%; border: none; background: transparent; color: var(--gold); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); overflow: hidden; padding: 0; flex-shrink: 0; }
-.theme-toggle:hover { background: rgba(201, 147, 74, 0.08); transform: scale(1.05); }
+.theme-toggle { position: relative; width: 30px; height: 30px; border-radius: 8px; border: none; background: transparent; color: rgba(255,230,175,0.80); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: color 0.3s ease, transform 0.3s cubic-bezier(0.34,1.56,0.64,1); overflow: visible; padding: 0; flex-shrink: 0; }
+.theme-toggle:hover { background: transparent; color: var(--gold); transform: scale(1.10) rotate(15deg); }
 .theme-icon-wrap { position: relative; width: 20px; height: 20px; }
 .theme-toggle svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); transform-origin: center center; }
 /* LIGHT MODE (Default) */
@@ -316,3 +326,10 @@ html[data-theme="dark"] .moon-icon { opacity: 0; transform: rotate(-90deg) scale
 [data-theme="dark"] .section-fade-divider::before {
   background: linear-gradient(to right, transparent 0%, rgba(212,167,106,0.6) 25%, rgba(212,167,106,1) 50%, rgba(212,167,106,0.6) 75%, transparent 100%) !important;
 }
+
+/* THEME-R5-SCROLLED */
+.site-header.scrolled .theme-toggle { color: var(--brown-light, #6b4c38); }
+.site-header.scrolled .theme-toggle:hover { color: var(--gold); }
+.site-header.header-city .theme-toggle { color: rgba(255,230,175,0.80); }
+[data-theme="dark"] .theme-toggle { color: rgba(212,167,106,0.82); }
+[data-theme="dark"] .theme-toggle:hover { color: var(--gold); }

@@ -43,8 +43,9 @@ void main() {
   float b = texture(uTex, uv - disp + vec2(ca, 0.0)).b;
   vec3 col = vec3(r, g, b);
 
-  float hl = smoothstep(0.16, 0.0, dist) * 0.045 * uIntensity;
-  col += vec3(hl);
+  /* [R5] warm amber highlight (removes whitening) */
+  float hl = smoothstep(0.13, 0.0, dist) * 0.025 * uIntensity;
+  col += vec3(hl * 1.0, hl * 0.70, hl * 0.25);
 
   outColor = vec4(col, 1.0);
 }`;
@@ -202,7 +203,7 @@ class LiquidScene {
       this.uploadTexture();
       if (!this.textureReady) return;
       this.cell.classList.add("gx-liquid-on"); this.canvas.style.opacity = "0.85";
-      this.targetIntensity = 0.82;
+      this.targetIntensity = 0.62; /* [R5] reduced for subtlety */
       this.start();
     });
     cell.addEventListener('mouseleave', () => {
