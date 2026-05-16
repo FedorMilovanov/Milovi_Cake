@@ -1745,6 +1745,7 @@ const ZOOM_IN_SPD = 0.006, ZOOM_OUT_SPD = 0.07, ZOOM_DIST = 75, WAIT_DURATION = 
 let waitTimer = null, typeTimer = null;
 const scField = document.getElementById('scField'), trackEl = document.getElementById('track'), dotsEl = document.getElementById('dots'), stageEl = document.getElementById('stage');
 const thumbs = [], arrows = [];
+let reviewsGoTo = null;
 
 if (scField && trackEl && dotsEl && stageEl) {
   trackEl.innerHTML = "";
@@ -1905,6 +1906,8 @@ if (scField && trackEl && dotsEl && stageEl) {
     }
     if(!skipTypewriter) startTypewriter(); else startWaiting();
   }
+
+  reviewsGoTo = goTo;
 
   const _btnPrev = document.getElementById('btnPrev'), _btnNext = document.getElementById('btnNext');
   if (_btnPrev) _btnPrev.addEventListener('click', ()=> { if (!_goToBusy) goTo(cur-1); });
@@ -2114,10 +2117,11 @@ window.addCalcToCartOnly = addCalcToCartOnly;
 window.updateCalcCartBadge = updateCalcCartBadge;
 window.stepQty = stepQty;
 window.goSlide = goSlide;
-window.goTo = goTo;
+window.goTo = function(n, skipTypewriter) { if (typeof reviewsGoTo === 'function') return reviewsGoTo(n, skipTypewriter); };
 window.scrollToProduct = scrollToProduct;
 window.lbNavigate = lbNavigate;
 window.navigateToStep = navigateToStep;
+window.navigateFill = navigateFill;
 window.openCart = openCart;
 window.openChatLightbox = openChatLightbox;
 window.openLightbox = openLightbox;

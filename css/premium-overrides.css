@@ -2665,7 +2665,7 @@ button[disabled] {
 
 
 /* ═══════════════════════════════════════════════════════
-   r18.2 FINAL HOTFIX OVERRIDES — theme + messenger sync
+   r18.3 FINAL HARDENING OVERRIDES — theme + messenger sync
    ═══════════════════════════════════════════════════════ */
 .theme-toggle > .theme-icon,
 .theme-toggle .theme-icon { display: none !important; }
