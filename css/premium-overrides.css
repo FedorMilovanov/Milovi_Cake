@@ -520,3 +520,98 @@ body.menu-open {
 /* Dark mode: show sun (to switch to light) */
 [data-theme="dark"] .theme-icon--moon { display: none; }
 [data-theme="dark"] .theme-icon--sun  { display: block; }
+
+/* ══════════════════════════════════════════════════════════════
+   BUGFIX PATCH 2026.05.16 (round 2 — пост-аудит)
+   Точечные исправления без переписывания структуры.
+   ══════════════════════════════════════════════════════════════ */
+
+/* Fix: #catalog в style.css содержит сломанный градиент
+   (закрывающая скобка стоит после комментария). Перезаписываем
+   валидным градиентом и даём корректный вариант для тёмной темы. */
+#catalog {
+  background: linear-gradient(to bottom, var(--cream-dark, #e8dece) 0, var(--white, #ffffff) 80px);
+}
+[data-theme="dark"] #catalog {
+  background: linear-gradient(to bottom, #1b1208 0, #1e1408 80px);
+}
+
+/* Fix: .cb-ftab.cb-on в тёмной теме получала почти невидимую
+   активную таблетку через var(--white). Фиксируем контраст. */
+[data-theme="dark"] .cb-ftab.cb-on {
+  background: #2a1d10;
+  color: var(--gold, #d4a76a);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.45);
+}
+[data-theme="dark"] .cb-flavor-tabs {
+  background: rgba(212,167,106,0.07);
+}
+
+/* Fix: карточки контент-блока в тёмной теме — устойчивые тени и борда. */
+[data-theme="dark"] .cb-fl,
+[data-theme="dark"] .cb-gluten-card,
+[data-theme="dark"] .cb-occ {
+  background: #1f1509;
+  border-color: rgba(212,167,106,0.16);
+}
+[data-theme="dark"] .cb-fl:hover,
+[data-theme="dark"] .cb-gluten-card:hover,
+[data-theme="dark"] .cb-occ:hover {
+  border-color: rgba(212,167,106,0.45);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.55);
+}
+
+/* Fix: .calc-add-btn-badge — белый фон в dark создавал яркую вспышку. */
+[data-theme="dark"] .calc-add-btn-badge {
+  background: #1f1509;
+  color: var(--gold-light, #e8b87a);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.55);
+}
+
+/* Fix: header header-city в тёмной теме — синхронизация цвета. */
+[data-theme="dark"] .site-header.header-city {
+  background: rgba(14,9,4,0.92);
+}
+[data-theme="dark"] .site-header.header-city.scrolled {
+  background: rgba(10,6,3,0.97);
+}
+
+/* Fix: .about-photo-badge — единый стиль в обеих темах. */
+[data-theme="dark"] .about-photo-badge {
+  background: rgba(15,9,4,0.82);
+  color: var(--gold-light, #e8b87a);
+  border-color: rgba(212,167,106,0.30);
+}
+
+/* Fix: убираем потенциальный белый фон у .cart-clear-btn в dark. */
+[data-theme="dark"] .cart-clear-btn {
+  background: transparent;
+  color: var(--text-muted, #c8a880);
+}
+[data-theme="dark"] .cart-clear-btn:hover {
+  background: rgba(255,90,80,0.10);
+  color: #ff8077;
+}
+
+/* Fix: точечные светлые утечки в dark — закрываем. */
+[data-theme="dark"] .about-compact-block {
+  background: #1f1509;
+  border-color: rgba(212,167,106,0.14);
+  color: var(--text);
+}
+[data-theme="dark"] .bento-seg-opt.active {
+  background: #2a1d10;
+  color: var(--gold, #d4a76a);
+}
+[data-theme="dark"] .dot.active {
+  background: var(--gold, #d4a76a);
+}
+[data-theme="dark"] .map-badge-yandex[aria-expanded="true"] {
+  background: #2a1208;
+  color: #f0d6b0;
+}
+
+/* Fix: .messenger-bar-btn — в dark уменьшаем тени для аккуратности. */
+[data-theme="dark"] .messenger-bar-btn {
+  text-shadow: 0 1px 1px rgba(0,0,0,0.45);
+}
