@@ -44,8 +44,19 @@ function buildCartKey(numId, mode, hasMaxi, fillName, decorName) {
 
 // ── РАЗБОР КЛЮЧА КОРЗИНЫ ──
 function parseCartKey(key) {
-  const parts = key.split(':');
+  const parts = String(key).split(':');
   return { numId: parseInt(parts[0]), mode: parts[1] || 'regular', fill: parts.slice(2).filter((_,i) => i%2===0)[0] || '', decor: parts.slice(2).filter((_,i) => i%2===1)[0] || '' };
+}
+
+function normalizeCartKey(key, entry) {
+  const parsed = parseCartKey(key);
+  if (!parsed.numId) return key;
+  const p = products.find(x => x.id === parsed.numId);
+  if (!p) return key;
+  const mode = (entry && entry.mode) || parsed.mode || 'regular';
+  const fill = (entry && entry.fill) || parsed.fill || '';
+  const decor = (entry && entry.decor) || parsed.decor || '';
+  return buildCartKey(parsed.numId, mode, !!p.hasMaxi, fill, decor);
 }
 
 function setCartItemFill(oldCartKey, fill) {
@@ -301,18 +312,25 @@ function saveCartToStorage() {
 function loadCartFromStorage() {
   try {
     const saved = localStorage.getItem('milovicake_cart');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      Object.keys(parsed).forEach(key => {
-        const parsedKey = parseCartKey(key);
-        if (products.find(p => p.id === parsedKey.numId)) {
-          cart[key] = parsed[key];
-          if (parsed[key].mode) bentoModes[parsedKey.numId] = parsed[key].mode;
-        }
-      });
-    }
+    if (!saved) return;
+    const parsed = JSON.parse(saved);
+    Object.keys(parsed).forEach(key => {
+      const entry = parsed[key] || {};
+      const parsedKey = parseCartKey(key);
+      if (!products.find(p => p.id === parsedKey.numId)) return;
+      const normalizedKey = normalizeCartKey(key, entry);
+      if (cart[normalizedKey]) {
+        cart[normalizedKey].qty = Math.round(((cart[normalizedKey].qty || 0) + (entry.qty || 0)) * 10) / 10;
+      } else {
+        cart[normalizedKey] = entry;
+      }
+      if (!cart[normalizedKey].mode) cart[normalizedKey].mode = parsedKey.mode || 'regular';
+      if (cart[normalizedKey].mode) bentoModes[parsedKey.numId] = cart[normalizedKey].mode;
+    });
+    saveCartToStorage();
   } catch(e) {}
 }
+
 
 // ── Confetti ──
 function confettiBurst(x, y) {
@@ -1614,6 +1632,7 @@ document.querySelectorAll('.btn-primary, .btn-wa, .calc-order-btn, .btn-add, .he
 })();
 
 // ── CHAT GALLERY LIGHTBOX ──
+let _lbReviewIdx = 0;
 const CHAT_SRCS = [IMG_BASE + '/review_1.webp', IMG_BASE + '/review_2.webp', IMG_BASE + '/review_3.webp', IMG_BASE + '/review_4.webp', IMG_BASE + '/review_5.webp', IMG_BASE + '/review_6.webp', IMG_BASE + '/review_7.webp', IMG_BASE + '/review_8.webp'];
 
 function openChatLightbox(idx) {
@@ -1970,7 +1989,7 @@ if (scField && trackEl && dotsEl && stageEl) {
   const lbOverlay = document.getElementById('lbOverlay'), lbBg = document.getElementById('lbBg'), lbBox = document.getElementById('lbBox');
   const lbImg = document.getElementById('lbImg'), lbX = document.getElementById('lbX'), lbArrows = document.getElementById('lbArrows');
   const lbPrevBtn = document.getElementById('lbPrev'), lbNextBtn = document.getElementById('lbNext'), lbArrCounter = document.getElementById('lbArrCounter');
-  let lbIsOpen = false, lbBusy = false, fromRect = null, _lbReviewIdx = 0;
+  let lbIsOpen = false, lbBusy = false, fromRect = null;
 
   function _lbReviewNav(dir) {
     _lbReviewIdx = (_lbReviewIdx + dir + REVIEWS.length) % REVIEWS.length;
@@ -2239,7 +2258,7 @@ window.cbFlavor = cbFlavor; window.cbFaq = cbFaq;
   var style = document.createElement('style');
   style.textContent = '@keyframes goldStarFly{0%{transform:translate(0,0) scale(1) rotate(0deg);opacity:1;}60%{opacity:0.8;}100%{transform:translate(var(--sx),var(--sy)) scale(0) rotate(var(--sr));opacity:0;}}.gold-star{position:fixed;pointer-events:none;z-index:99998;font-style:normal;line-height:1;animation:goldStarFly var(--sd) cubic-bezier(.25,.46,.45,.94) forwards;will-change:transform,opacity;}';
   document.head.appendChild(style);
-  function burst(cx, cy) { var count = 18; for (var i = 0; i < count; i++) { (function(i) { var delay = Math.random() * 80; setTimeout(function() { var el = document.createElement('span'); el.className = 'gold-star'; var angle = (i/count)*360+(Math.random()-0.5)*28; var rad = angle*Math.PI/180; var dist = 38+Math.random()*40; var sx = Math.cos(rad)*dist; var sy = Math.sin(rad)*dist-(Math.random()*18+8); var size = 10+Math.random()*8; var dur = (0.75+Math.random()*0.45)+'s'; var rot = (Math.random()-0.5)*200+'deg'; var color = COLORS[Math.floor(Math.random()*COLORS.length)]; var char = CHARS[Math.floor(Math.random()*CHARS.length)]; el.style.cssText = 'left:'+(cx-size/2)+'px;top:'+(cy-size/2)+'px;font-size:'+size+'px;color:'+color+';--sx:'+sx+'px;--sy:'+sy+'px;--sd:'+dur+';--sr:'+rot;'; el.textContent = char; document.body.appendChild(el); var ms = parseFloat(dur)*1000+100; setTimeout(function() { if(el.parentNode) el.remove(); }, ms); }, delay); })(i); } }
+  function burst(cx, cy) { var count = 18; for (var i = 0; i < count; i++) { (function(i) { var delay = Math.random() * 80; setTimeout(function() { var el = document.createElement('span'); el.className = 'gold-star'; var angle = (i/count)*360+(Math.random()-0.5)*28; var rad = angle*Math.PI/180; var dist = 38+Math.random()*40; var sx = Math.cos(rad)*dist; var sy = Math.sin(rad)*dist-(Math.random()*18+8); var size = 10+Math.random()*8; var dur = (0.75+Math.random()*0.45)+'s'; var rot = (Math.random()-0.5)*200+'deg'; var color = COLORS[Math.floor(Math.random()*COLORS.length)]; var char = CHARS[Math.floor(Math.random()*CHARS.length)]; el.style.cssText = 'left:'+(cx-size/2)+'px;top:'+(cy-size/2)+'px;font-size:'+size+'px;color:'+color+';--sx:'+sx+'px;--sy:'+sy+'px;--sd:'+dur+';--sr:'+rot+';'; el.textContent = char; document.body.appendChild(el); var ms = parseFloat(dur)*1000+100; setTimeout(function() { if(el.parentNode) el.remove(); }, ms); }, delay); })(i); } }
   function bindStars(el) { if (el._goldStarBound) return; el._goldStarBound = true; el.addEventListener('touchstart', function(e) { var t = e.touches[0]; burst(t.clientX, t.clientY); }, { passive: true }); el.addEventListener('click', function(e) { if (e.isTrusted) burst(e.clientX, e.clientY); }); }
   function init() { var mcOrder = document.querySelector('.mc-btn--order'); if (mcOrder) bindStars(mcOrder); var bnOrder = document.querySelector('.bottom-nav-item--order'); if (bnOrder) bindStars(bnOrder); var heroBtn = document.querySelector('.btn-primary--hero'); if (heroBtn) bindStars(heroBtn); var calcBtn = document.querySelector('.calc-add-btn'); if (calcBtn) bindStars(calcBtn); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();

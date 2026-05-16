@@ -2662,3 +2662,25 @@ button[disabled] {
   color: #d9c2a0 !important;
 }
 /* ══ END R15 ══ */
+
+
+/* ═══════════════════════════════════════════════════════
+   r18.2 FINAL HOTFIX OVERRIDES — theme + messenger sync
+   ═══════════════════════════════════════════════════════ */
+.theme-toggle > .theme-icon,
+.theme-toggle .theme-icon { display: none !important; }
+html:not([data-theme="dark"]) .theme-toggle > .theme-icon--moon { display: block !important; }
+html:not([data-theme="dark"]) .theme-toggle > .theme-icon--sun  { display: none !important; }
+html[data-theme="dark"] .theme-toggle > .theme-icon--moon { display: none !important; }
+html[data-theme="dark"] .theme-toggle > .theme-icon--sun  { display: block !important; }
+.hero-actions .btn-hero-messenger {
+  width: 68px !important; height: 68px !important; min-width: 68px !important;
+  padding: 0 !important; border-radius: 50% !important;
+}
+.hero-actions .btn-hero-messenger svg { width: 68px !important; height: 68px !important; overflow: visible; }
+@media (hover:hover) and (pointer:fine) {
+  .hero-actions .btn-hero-messenger:hover .hero-flat-text,
+  .hero-actions .btn-hero-messenger:hover [id^="flat-text-"] { opacity: 1 !important; transform: translateY(-13px) scale(1.04) !important; }
+  .hero-actions .btn-hero-messenger:hover .hero-ring-text,
+  .hero-actions .btn-hero-messenger:hover [id^="ring-text-"] { opacity: 0 !important; transform: translateY(-12px) !important; }
+}
