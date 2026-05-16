@@ -1,74 +1,77 @@
 /* ═══════════════════════════════════════════════════════════════════
-   milovi-cake-fixes.css — Финальный патч всех багов
+   milovi-cake-fixes.css — Финальный хирургический патч
+   ЗАГРУЖАТЬ ПОСЛЕДНИМ (перед </head>)
    ═══════════════════════════════════════════════════════════════════ */
 
-/* ── 1) ИСПРАВЛЕНИЕ: Контур на кнопке «Выбрать торт от 1600» ── */
-/* Убираем конфликт ::after на btn-primary--hero */
-.btn-primary--hero::after {
-  /* Убираем border: 1.5px solid transparent — он создавал контур */
-  border: none !important;
-  /* Убираем лишнюю animation heroBorderPulse, конфликтующую с shimmer */
-  animation: none !important;
-  inset: 0 !important;
+/* ── 1) КНОПКА «ВЫБРАТЬ ТОРТ» — полное устранение рамки внутри ── */
+
+/* (A) overflow: visible — чтобы ::after не резался по внутреннему краю.
+   Отключаем shimmer на ::before (он добавлял артефакты). */
+.btn-primary--hero {
+  overflow: visible !important;
 }
-/* Возвращаем conic-gradient только как визуальный акцент, без рамки */
+.btn-primary--hero::before {
+  display: none !important;
+}
+
+/* (B) Свой ::after — аккуратная внешняя золотая окантовка.
+   Только на hover. Без рамок, без лишних анимаций. */
 .btn-primary--hero::after {
   content: '' !important;
   position: absolute !important;
-  inset: -1px !important;
-  border-radius: 50px !important;
-  background: conic-gradient(from var(--_angle, 0deg), 
-    rgba(201,147,74,0) 0deg,
-    rgba(201,147,74,0.6) 60deg,
-    rgba(245,219,160,0.9) 120deg,
-    rgba(201,147,74,0.6) 180deg,
-    rgba(201,147,74,0) 240deg,
-    rgba(201,147,74,0) 360deg) !important;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0) !important;
+  inset: -2px !important;
+  border-radius: 52px !important;
+  padding: 1.5px !important;
+  background: conic-gradient(from var(--_angle, 0deg),
+    rgba(201,147,74,0)    0deg,
+    rgba(201,147,74,0.8) 60deg,
+    rgba(245,219,160,1) 120deg,
+    rgba(201,147,74,0.8) 180deg,
+    rgba(201,147,74,0)   240deg,
+    rgba(201,147,74,0)   360deg) !important;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0) !important;
   -webkit-mask-composite: xor !important;
   mask-composite: exclude !important;
   pointer-events: none !important;
   z-index: 0 !important;
   opacity: 0 !important;
   transition: opacity 0.4s ease !important;
+  animation: none !important;
+  border: none !important;
 }
 .btn-primary--hero:hover::after {
   opacity: 1 !important;
 }
 
-/* Чиним hover-состояние — убираем артефакты */
-.btn-primary--hero:hover {
-  background: var(--gold-light) !important;
+/* (C) Фон на hover — перебиваем любой !important из mc-2026.css.
+   Повышаем специфичность через html:not() и [data-theme]. */
+html:not([data-theme="dark"]) .btn-primary--hero:hover {
+  background: var(--gold-light, #d4a76a) !important;
+  transform: translateY(-2px) !important;
+}
+[data-theme="dark"] .btn-primary--hero:hover {
+  background: var(--gold-light, #e8b87a) !important;
   transform: translateY(-2px) !important;
 }
 .btn-primary--hero:active {
   transform: scale(0.97) !important;
 }
 
-/* Убираем shimmer-артефакты на btn-primary--hero */
-.btn-primary--hero::before {
-  display: none !important;
-}
-.btn-primary--hero:hover::before {
-  display: none !important;
-  animation: none !important;
-}
-
-/* Убираем outline при focus на всех кнопках .btn-primary (он и так есть на focus-visible) */
-.btn-primary:focus:not(:focus-visible) {
+/* (D) Убираем outline на focus с мыши (не трогаем focus-visible) */
+.btn-primary:focus:not(:focus-visible),
+.btn-primary--hero:focus:not(:focus-visible) {
   outline: none !important;
 }
 
-/* ── 2) ИСПРАВЛЕНИЕ: Прелоадер галереи — гарантированное скрытие ── */
-/* Добавляем fallback-таймер, который скроет прелоадер даже если React упал */
+/* ── 2) ПРЕЛОАДЕР ГАЛЕРЕИ ── */
 #preloader.hidden {
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
 }
 
-/* ── 3) ИСПРАВЛЕНИЕ: FAQ в пригородах — тёмная тема ── */
-/* Убираем ненужные рамки */
+/* ── 3) FAQ В ПРИГОРОДАХ — тёмная тема, glassmorphism ── */
 [data-theme="dark"] .delivery-card {
   border: 1px solid rgba(212, 167, 106, 0.15) !important;
   box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
@@ -80,17 +83,17 @@
   display: none !important;
 }
 
-/* ── 4) ИСПРАВЛЕНИЕ: Чёрный прямоугольник на hero в тёмной теме ── */
+/* ── 4) ЧЁРНЫЙ ПРЯМОУГОЛЬНИК НА HERO В ТЁМНОЙ ТЕМЕ ── */
 [data-theme="dark"] .hero-content::before,
 [data-theme="dark"] .hero-content::after {
   display: none !important;
 }
 
-/* ── 5) ИСПРАВЛЕНИЕ: Размер всплывающих названий мессенджеров в шапке ── */
+/* ── 5) РАЗМЕР ВСПЛЫВАЮЩИХ НАЗВАНИЙ МЕССЕНДЖЕРОВ ── */
 .hero-flat-text {
   font-size: 11px !important;
   opacity: 0 !important;
-  transition: opacity 0.3s ease, transform 0.3s ease !important;
+  transition: opacity 0.3s ease !important;
 }
 .btn-hero-ring:hover .hero-flat-text {
   opacity: 1 !important;
