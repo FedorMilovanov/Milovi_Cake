@@ -96,9 +96,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
   <!-- noscript fonts -->
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/></noscript>
-  <link rel="stylesheet" href="../../css/style.css?v=20260516r16" />
-  <link rel="stylesheet" href="../../css/mc-2026.css?v=20260516r16" />
-  <link rel="stylesheet" href="../../css/premium-overrides.css?v=20260516r16" />
+  <link rel="stylesheet" href="../../css/style.css?v=20260516r17" />
+  <link rel="stylesheet" href="../../css/mc-2026.css?v=20260516r17" />
+  <link rel="stylesheet" href="../../css/premium-overrides.css?v=20260516r17" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -927,9 +927,9 @@
 
 
 <script>var IMG_BASE = '../../img';</script>
-<script src="../../js/main.js?v=20260516r16" defer></script>
-<script src="../../js/nav.js?v=20260516r16" defer></script>
-<script src="../../js/mc-2026.js?v=20260516r16" defer></script>
+<script src="../../js/main.js?v=20260516r17" defer></script>
+<script src="../../js/nav.js?v=20260516r17" defer></script>
+<script src="../../js/mc-2026.js?v=20260516r17" defer></script>
 
 
 
@@ -1231,5 +1231,29 @@ function cbFaq(el){
 }
 </script>
 
+
+<!-- APP-LIKE JS -->
+<script>
+(function() {
+  'use strict';
+  function _mcPageLoaded(){ document.body.classList.add('page-loaded'); }
+  if (document.readyState !== 'loading') _mcPageLoaded();
+  else document.addEventListener('DOMContentLoaded', _mcPageLoaded);
+  var header = document.getElementById('siteHeader');
+  var lastScrollY = 0, ticking = false, scrollDelta = 0;
+  function updateHeader() {
+    var currentY = window.scrollY;
+    if (header) header.classList.toggle('scrolled', currentY > 60);
+    if (window.innerWidth <= 768 && header) {
+      if (currentY < 60) { header.classList.remove('header-hidden'); scrollDelta = 0; }
+      else if (currentY > lastScrollY + 3) { scrollDelta += (currentY - lastScrollY); if (scrollDelta > 80) header.classList.add('header-hidden'); }
+      else if (currentY < lastScrollY - 3) { scrollDelta = 0; header.classList.remove('header-hidden'); }
+    } else if (header) { header.classList.remove('header-hidden'); }
+    lastScrollY = currentY; ticking = false;
+  }
+  window.addEventListener('scroll', function() { if (!ticking) { requestAnimationFrame(updateHeader); ticking = true; } }, { passive: true });
+  if (header && window.scrollY > 60) header.classList.add('scrolled');
+})();
+</script>
 </body>
 </html>

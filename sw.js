@@ -5,22 +5,22 @@
    Cache-bust через имя версии CACHE_NAME (увеличивайте при деплое CSS/JS).
    ═══════════════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'milovi-cake-v2026.05.16-r16';
+const CACHE_NAME = 'milovi-cake-v2026.05.16-r17';
 const PRECACHE = [
   '/',
-  '/css/style.css?v=20260516r16',
-  '/css/mc-2026.css?v=20260516r16',
-  '/css/premium-overrides.css?v=20260516r16',
-  '/css/gallery/gallery-2026.css?v=20260516r16',
-  '/js/main.js?v=20260516r16',
-  '/js/nav.js?v=20260516r16',
-  '/js/mc-2026.js?v=20260516r16',
+  '/css/style.css?v=20260516r17',
+  '/css/mc-2026.css?v=20260516r17',
+  '/css/premium-overrides.css?v=20260516r17',
+  '/css/gallery/gallery-2026.css?v=20260516r17',
+  '/js/main.js?v=20260516r17',
+  '/js/nav.js?v=20260516r17',
+  '/js/mc-2026.js?v=20260516r17',
   '/img/head_mobile.avif',
   '/img/head_desktop.avif',
   '/img/head_mobile.webp',
   '/img/head_desktop.webp',
   '/manifest.json',
-  '/favicon.svg?v=20260516r16'
+  '/favicon.svg?v=20260516r17'
 ];
 
 // ───── INSTALL ─────

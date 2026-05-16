@@ -1467,7 +1467,7 @@ function initSectionTitleWords() {
     if (state.raf) { cancelAnimationFrame(state.raf); state.raf = null; }
     var from = { ringOp: state.ringOp, ringY: state.ringY, flatOp: state.flatOp, flatY: state.flatY, flatSize: state.flatSize, flatGlow: state.flatGlow };
     var to = toHover
-      ? { ringOp: 0, ringY: -20, flatOp: 1, flatY: -16, flatSize: 12, flatGlow: 0.55 }
+      ? { ringOp: 0, ringY: -12, flatOp: 1, flatY: -10, flatSize: 12, flatGlow: 0.55 }
       : { ringOp: 1, ringY: 0,   flatOp: 0, flatY: 8,   flatSize: 6.5, flatGlow: 0 };
     var startTs = null;
     function step(ts) {
