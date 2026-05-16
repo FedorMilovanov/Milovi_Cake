@@ -499,3 +499,115 @@ body.gx-lightbox-open {
     max-height: 62vh !important;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   PATCH r3 — gallery polish 2026.05.16
+   Fix: white-flash on hover + video squish on resize
+   ══════════════════════════════════════════════════════════════ */
+
+/* Magnetic cursor: меньше, мягче, без "белого пятна" поверх медиа */
+.gx-cursor.hover {
+  width: 56px !important;
+  height: 56px !important;
+  background: rgba(255, 255, 255, 0.18) !important;   /* было var(--gold-light) — слишком белит */
+  mix-blend-mode: difference !important;              /* возвращаем difference чтобы не выбеливать */
+  box-shadow:
+    0 8px 24px rgba(0,0,0,0.35),
+    0 0 0 1px rgba(255,255,255,0.18) inset !important;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+.gx-cursor.hover .gx-cursor-label {
+  color: #fff !important;
+  font-size: 9.5px !important;
+  letter-spacing: .18em !important;
+  opacity: 0.85 !important;
+}
+
+/* Caption gradient — мягче, чтобы не было "белого" эффекта при hover */
+.gx-cell:hover .gx-caption {
+  background: linear-gradient(to top,
+    rgba(20,12,6,.92) 0%,
+    rgba(20,12,6,.45) 55%,
+    transparent 100%) !important;
+}
+
+/* Fix: WebGL liquid canvas не должен выбеливать → opacity ниже */
+.gx-liquid-canvas {
+  mix-blend-mode: normal;
+  opacity: 0;
+}
+.gx-cell.gx-liquid-on .gx-liquid-canvas {
+  opacity: 0.85;
+}
+
+/* ── Видео в карточках: всегда object-fit: cover, без сплющивания ── */
+.gx-cell {
+  overflow: hidden;
+}
+.gx-cell-content {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+.gx-cell img,
+.gx-cell video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  display: block;
+  /* убираем skew который реально плющил видео при ресайзе */
+  transform: scale(var(--zoom, 1)) !important;
+}
+
+/* Lightbox: media не плющится при ресайзе, держит реальные пропорции */
+.gx-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 88px 40px 130px;
+  overflow: hidden;
+}
+.gx-slide-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto !important;
+  height: auto !important;
+  max-width: min(90vw, 1600px);
+  max-height: min(78vh, 1000px);
+  background: #0a0604;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow:
+    0 40px 120px rgba(0,0,0,.7),
+    0 0 0 1px rgba(255,255,255,.05);
+}
+.gx-slide-frame img,
+.gx-slide-frame video {
+  display: block;
+  width: auto !important;
+  height: auto !important;
+  max-width: min(90vw, 1600px) !important;
+  max-height: min(78vh, 1000px) !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  flex: 0 1 auto;
+}
+
+@media (max-width: 768px) {
+  .gx-stage { padding: 72px 12px 110px; }
+  .gx-slide-frame img,
+  .gx-slide-frame video {
+    max-width: 96vw !important;
+    max-height: 64vh !important;
+  }
+}
+
+/* Reduced motion: убираем skew/scale чтобы НИЧЕГО не плющило */
+@media (prefers-reduced-motion: reduce) {
+  .gx-cell img,
+  .gx-cell video { transform: none !important; }
+}

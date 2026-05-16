@@ -763,3 +763,231 @@ body.menu-open {
   background: linear-gradient(135deg, rgba(212,167,106,0.12), rgba(255,255,255,0.02)) !important;
   border-color: rgba(212,167,106,0.22) !important;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   PATCH r3 — 2026.05.16
+   Final visibility, brand colors, theme toggle, gallery polish
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── 1) THEME TOGGLE: чистая, миниатюрная иконка без круга/фона ── */
+#themeToggleBtn.theme-toggle,
+.theme-toggle {
+  width: 32px !important;
+  height: 32px !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 4px !important;
+  box-shadow: none !important;
+  color: var(--brown, #3d2b1f);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color .25s ease, transform .25s ease;
+}
+.theme-toggle:hover {
+  background: transparent !important;
+  color: var(--gold, #c9934a) !important;
+  transform: rotate(-12deg) scale(1.08);
+}
+.theme-toggle:active {
+  transform: scale(0.92);
+}
+.theme-toggle svg,
+.theme-toggle .theme-icon,
+.theme-toggle .sun-icon,
+.theme-toggle .moon-icon {
+  width: 18px !important;
+  height: 18px !important;
+  display: none;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.6 !important;
+}
+.theme-toggle .theme-icon-wrap {
+  width: 18px;
+  height: 18px;
+  position: relative;
+  display: inline-block;
+}
+.theme-toggle .theme-icon-wrap svg {
+  position: absolute; inset: 0;
+  width: 18px !important; height: 18px !important;
+}
+
+/* SHOW the right one based on data-theme */
+:root:not([data-theme="dark"]) .theme-toggle .theme-icon--moon,
+:root:not([data-theme="dark"]) .theme-toggle .moon-icon {
+  display: block !important;
+}
+:root:not([data-theme="dark"]) .theme-toggle .theme-icon--sun,
+:root:not([data-theme="dark"]) .theme-toggle .sun-icon {
+  display: none !important;
+}
+[data-theme="dark"] .theme-toggle .theme-icon--moon,
+[data-theme="dark"] .theme-toggle .moon-icon {
+  display: none !important;
+}
+[data-theme="dark"] .theme-toggle .theme-icon--sun,
+[data-theme="dark"] .theme-toggle .sun-icon {
+  display: block !important;
+}
+
+[data-theme="dark"] .theme-toggle {
+  color: var(--gold-light, #e8b87a);
+}
+[data-theme="dark"] .theme-toggle:hover {
+  color: var(--gold3, #e8c080) !important;
+}
+
+/* На "header-city" (тёмный хедер пригородов) — белая иконка */
+.site-header.header-city .theme-toggle {
+  color: rgba(255,255,255,0.92);
+}
+.site-header.header-city .theme-toggle:hover {
+  color: var(--gold-light, #e8b87a) !important;
+}
+
+/* ── 2) "ОТПРАВИТЬ ЗАКАЗ" — реально читаемая кнопка ── */
+/* Тёмный градиент → белый текст с премиум-свечением. */
+.btn-wa,
+button.btn-wa,
+form .btn-wa {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase;
+  text-shadow:
+    0 1px 0 rgba(60, 30, 5, 0.55),
+    0 0 14px rgba(255, 220, 160, 0.28) !important;
+  background:
+    linear-gradient(135deg, #6b4426 0%, #8a5a30 38%, #b8853f 100%) !important;
+  border: 1px solid rgba(201,147,74,0.55) !important;
+  box-shadow:
+    0 14px 38px rgba(120, 80, 30, 0.40),
+    0 0 0 1px rgba(255,255,255,0.18) inset,
+    0 0 32px rgba(232, 184, 122, 0.22) !important;
+}
+.btn-wa::before {
+  background: linear-gradient(135deg,
+    rgba(255,224,170,0.25) 0%,
+    rgba(255,255,255,0.0) 60%) !important;
+}
+.btn-wa:hover,
+.btn-wa:focus-visible {
+  color: #fff !important;
+  background:
+    linear-gradient(135deg, #7a4f2c 0%, #a06a38 38%, #d4a76a 100%) !important;
+  border-color: rgba(232,184,122,0.85) !important;
+  box-shadow:
+    0 18px 48px rgba(120, 80, 30, 0.50),
+    0 0 0 1px rgba(255,255,255,0.22) inset,
+    0 0 42px rgba(232, 184, 122, 0.32) !important;
+  transform: translateY(-2px);
+}
+.btn-wa:active {
+  transform: translateY(0) scale(0.99);
+}
+
+[data-theme="dark"] .btn-wa {
+  background: linear-gradient(135deg, #8a5a30 0%, #c9934a 50%, #e8b87a 100%) !important;
+  color: #1a1108 !important;
+  text-shadow: 0 1px 0 rgba(255, 240, 210, 0.35) !important;
+  border-color: rgba(232,184,122,0.6) !important;
+}
+[data-theme="dark"] .btn-wa:hover {
+  color: #1a1108 !important;
+  background: linear-gradient(135deg, #a06a38 0%, #d4a76a 50%, #f0c98a 100%) !important;
+}
+
+/* ── 3) КОНТАКТЫ → социальные пилюли: аутентичные, чистые цвета ── */
+.social-link.wa,
+.social-links a.social-link.wa {
+  background: rgba(37,211,102,0.10) !important;
+  color: #16A85B !important;            /* чуть глубже — лучше читается на кремовом */
+  border: 1px solid rgba(37,211,102,0.32) !important;
+}
+[data-theme="dark"] .social-link.wa {
+  background: rgba(37,211,102,0.16) !important;
+  color: #25D366 !important;
+  border-color: rgba(37,211,102,0.45) !important;
+}
+.social-link.tg {
+  background: rgba(34,158,217,0.10) !important;
+  color: #1B82B5 !important;
+  border-color: rgba(34,158,217,0.30) !important;
+}
+[data-theme="dark"] .social-link.tg {
+  color: #4FB7E5 !important;
+  background: rgba(34,158,217,0.18) !important;
+}
+.social-link.max {
+  background: rgba(123,94,232,0.10) !important;
+  color: #6243d4 !important;
+  border-color: rgba(123,94,232,0.32) !important;
+}
+[data-theme="dark"] .social-link.max {
+  color: #9c84ee !important;
+  background: rgba(123,94,232,0.18) !important;
+}
+.social-link.yt {
+  background: rgba(255,0,0,0.08) !important;
+  color: #d32f2f !important;
+  border-color: rgba(255,0,0,0.25) !important;
+}
+[data-theme="dark"] .social-link.yt {
+  color: #ff5252 !important;
+  background: rgba(255,0,0,0.16) !important;
+}
+
+.social-link {
+  font-weight: 500 !important;
+  transition: transform .25s ease, box-shadow .25s ease, filter .2s ease !important;
+}
+.social-link:hover {
+  filter: saturate(1.15);
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.10);
+}
+
+/* messenger-bar (mobile / footer): true brand colors (already set, но укрепим SVG) */
+.messenger-bar-btn {
+  font-weight: 600 !important;
+  letter-spacing: 0.03em !important;
+}
+.messenger-bar-btn svg {
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.18));
+}
+
+/* form-note и согласие — заметнее, без потери лёгкости */
+.form-note,
+.consent-note,
+.contacts-form .form-note {
+  color: var(--text-muted-acc, #6b4c38) !important;
+  font-size: 12px !important;
+  line-height: 1.55 !important;
+  margin: 8px 0 14px !important;
+}
+.form-note a,
+.consent-note a {
+  color: var(--gold-acc, #8a5e23) !important;
+  border-bottom: 1px solid rgba(138,94,35,0.35);
+  text-decoration: none !important;
+  padding-bottom: 1px;
+  transition: border-color .2s ease, color .2s ease;
+}
+.form-note a:hover,
+.consent-note a:hover {
+  color: var(--gold, #c9934a) !important;
+  border-bottom-color: var(--gold, #c9934a);
+}
+[data-theme="dark"] .form-note,
+[data-theme="dark"] .consent-note { color: #c8a880 !important; }
+[data-theme="dark"] .form-note a,
+[data-theme="dark"] .consent-note a { color: #e8b87a !important; border-bottom-color: rgba(232,184,122,0.4); }
+
+/* ── 4) Hero мессенджеры: чуть больше брендовости ── */
+.btn-hero-wa { color: #25D366 !important; }
+.btn-hero-tg { color: #229ED9 !important; }
+.btn-hero-max { color: #8e74ee !important; }
+

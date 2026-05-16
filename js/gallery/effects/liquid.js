@@ -187,7 +187,7 @@ class LiquidScene {
 
       if (this.intensity < 0.005 && this.targetIntensity === 0) {
         this.running = false;
-        this.canvas.style.opacity = '0';
+        this.cell.classList.remove("gx-liquid-on"); this.canvas.style.opacity = "0";
         return;
       }
       requestAnimationFrame(tick);
@@ -201,7 +201,7 @@ class LiquidScene {
       this.resize();
       this.uploadTexture();
       if (!this.textureReady) return;
-      this.canvas.style.opacity = '1';
+      this.cell.classList.add("gx-liquid-on"); this.canvas.style.opacity = "0.85";
       this.targetIntensity = 0.82;
       this.start();
     });
