@@ -119,9 +119,11 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   }
 }
 
-/* MAX icon micro-centering without changing its size */
-.hero-actions .btn-hero-max svg g[transform] {
-  transform-origin: 24px 24px !important;
+/* MAX icon: original direct glyph, centered inside the ring */
+.hero-actions .btn-hero-max > svg > g {
+  transform: translate(6px, 3.5px) scale(0.27) !important;
+  transform-origin: 0 0 !important;
+  transform-box: view-box !important;
 }
 
 /* 3) Галерея — страховка прелоадера */
@@ -177,21 +179,6 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   .hero-actions .btn-hero-messenger:hover [id^="ring-text-"] {
     transform: translateY(-9.5px) rotate(-18deg) scale(.94) !important;
   }
-}
-
-/* В текущих CSS был rule из v20: .btn-hero-max svg > g { transform: ... }
-   Он ломал MAX, когда SVG стал крупнее. Новый знак MAX — nested svg, его не трогаем. */
-.hero-actions .btn-hero-max > svg > g {
-  transform: none !important;
-}
-.hero-actions .btn-hero-max svg .max-mark-fixed,
-.hero-actions .btn-hero-max svg > svg.max-mark-fixed {
-  x: 12px;
-  y: 12px;
-  width: 24px;
-  height: 24px;
-  overflow: visible !important;
-  transform: none !important;
 }
 
 /* Не затемнять соседние слова в hero subtitle. Hover-слово остаётся с эффектом. */
