@@ -5,22 +5,22 @@
    Cache-bust через имя версии CACHE_NAME (увеличивайте при деплое CSS/JS).
    ═══════════════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'milovi-cake-v2026.05.16-r7';
+const CACHE_NAME = 'milovi-cake-v2026.05.16-r8';
 const PRECACHE = [
   '/',
-  '/css/style.css?v=20260516r7',
-  '/css/mc-2026.css?v=20260516r7',
-  '/css/premium-overrides.css?v=20260516r7',
-  '/css/gallery/gallery-2026.css?v=20260516r7',
-  '/js/main.js?v=20260516r7',
-  '/js/nav.js?v=20260516r7',
-  '/js/mc-2026.js?v=20260516r7',
+  '/css/style.css?v=20260516r8',
+  '/css/mc-2026.css?v=20260516r8',
+  '/css/premium-overrides.css?v=20260516r8',
+  '/css/gallery/gallery-2026.css?v=20260516r8',
+  '/js/main.js?v=20260516r8',
+  '/js/nav.js?v=20260516r8',
+  '/js/mc-2026.js?v=20260516r8',
   '/img/head_mobile.avif',
   '/img/head_desktop.avif',
   '/img/head_mobile.webp',
   '/img/head_desktop.webp',
   '/manifest.json',
-  '/favicon.svg?v=20260516r7'
+  '/favicon.svg?v=20260516r8'
 ];
 
 // ───── INSTALL ─────
@@ -67,10 +67,11 @@ self.addEventListener('fetch', (event) => {
   const acceptHeader = req.headers.get('accept') || '';
 
   // HTML — network first (всегда свежий контент)
+  // Кешируем только успешные basic-ответы (не opaqueredirect, не error)
   if (req.mode === 'navigate' || acceptHeader.indexOf('text/html') !== -1){
     event.respondWith(
       fetch(req).then((res) => {
-        if (res && res.status === 200){
+        if (res && res.status === 200 && res.type === 'basic'){
           const copy = res.clone();
           caches.open(CACHE_NAME).then((c) => c.put(req, copy));
         }

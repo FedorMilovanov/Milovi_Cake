@@ -154,8 +154,8 @@ function renderCatalog() {
             </div>`;
           }).join('')}
           ${totalSlides > 1 ? `
-            <button class="slide-btn slide-prev" onclick="sliderStep('${p.id}',-1,${totalSlides})" aria-label="Предыдущее фото — ${p.name}">&#8249;</button>
-            <button class="slide-btn slide-next" onclick="sliderStep('${p.id}',1,${totalSlides})" aria-label="Следующее фото — ${p.name}">&#8250;</button>
+            <button type="button" class="slide-btn slide-prev" onclick="sliderStep('${p.id}',-1,${totalSlides})" aria-label="Предыдущее фото — ${p.name}">&#8249;</button>
+            <button type="button" class="slide-btn slide-next" onclick="sliderStep('${p.id}',1,${totalSlides})" aria-label="Следующее фото — ${p.name}">&#8250;</button>
             <div class="slide-dots">${p.slides.map((_,i) => `<span class="dot${i===0?' active':''}" onclick="goSlide('${p.id}',${i})"></span>`).join('')}</div>
           ` : ''}
         </div>`;
@@ -184,7 +184,7 @@ function renderCatalog() {
         <p class="min-order" id="min-${p.id}">${p.min || '\u00a0'}</p>
         <div class="product-footer">
           <span class="price" id="price-${p.id}">${p.price}</span>
-          <button class="btn-add" onclick="addToCart(${p.id}, event)">Добавить в корзину</button>
+          <button type="button" class="btn-add" onclick="addToCart(${p.id}, event)">Добавить в корзину</button>
         </div>
       </div>
     </div>`;
@@ -531,14 +531,14 @@ function clearCart() {
       Очистить корзину?
     </div>
     <div style="display:flex;gap:12px">
-      <button id="cartClearNo" style="
+      <button type="button" id="cartClearNo" style="
         background: none; border: 1.5px solid var(--cream-dark);
         border-radius: 50px; padding: 10px 28px;
         font-family: 'Jost',sans-serif; font-size: 14px;
         color: var(--text-muted); cursor: pointer;
         transition: border-color 0.2s, color 0.2s;
       ">Нет</button>
-      <button id="cartClearYes" style="
+      <button type="button" id="cartClearYes" style="
         background: var(--brown); border: none;
         border-radius: 50px; padding: 10px 28px;
         font-family: 'Jost',sans-serif; font-size: 14px;
@@ -683,11 +683,11 @@ function updateCartUI() {
       <div style="margin-top:8px;">
         <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
           <span style="font-size:11px;color:var(--text-muted);letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;">Тип:</span>
-          <button onclick="setCartItemDessertType('${cartKey}','base')"
+          <button type="button" onclick="setCartItemDessertType('${cartKey}','base')"
             style="font-size:12px;font-family:'Jost',sans-serif;padding:3px 10px;border-radius:20px;border:1px solid ${isBase ? 'var(--gold)' : 'var(--cream-dark)'};background:${isBase ? 'var(--gold)' : 'transparent'};color:${isBase ? '#fff' : 'var(--text-muted)'};cursor:pointer;transition:all .2s;">
             Базовый
           </button>
-          <button onclick="setCartItemDessertType('${cartKey}','author')"
+          <button type="button" onclick="setCartItemDessertType('${cartKey}','author')"
             style="font-size:12px;font-family:'Jost',sans-serif;padding:3px 10px;border-radius:20px;border:1px solid ${!isBase ? 'var(--gold)' : 'var(--cream-dark)'};background:${!isBase ? 'var(--gold)' : 'transparent'};color:${!isBase ? '#fff' : 'var(--text-muted)'};cursor:pointer;transition:all .2s;">
             Авторский
           </button>
@@ -718,13 +718,13 @@ function updateCartUI() {
           ${dessertToggle}
         </div>
         <div class="qty-ctrl">
-          <button class="qty-btn" onclick="changeQty('${cartKey}', -1)" ${atMin ? 'title="Минимальный заказ"' : ''}>−</button>
+          <button type="button" class="qty-btn" onclick="changeQty('${cartKey}', -1)" ${atMin ? 'title="Минимальный заказ"' : ''}>−</button>
           <span class="qty-val">${qtyLabel}</span>
-          <button class="qty-btn" onclick="changeQty('${cartKey}', 1)">+</button>
+          <button type="button" class="qty-btn" onclick="changeQty('${cartKey}', 1)">+</button>
         </div>
         <div class="cart-item-right">
           <div class="cart-line-total">${lineTotalFmt}</div>
-          <button class="del-btn" onclick="removeFromCart('${cartKey}')" aria-label="Удалить">🗑</button>
+          <button type="button" class="del-btn" onclick="removeFromCart('${cartKey}')" aria-label="Удалить">🗑</button>
         </div>
       </div>`;
   }).join('');
@@ -740,7 +740,7 @@ function updateCartUI() {
         <span class="cart-inline-total">${totalFmt}</span>
       </div>
       <p style="font-size:11px;color:var(--text-muted);margin-bottom:14px;line-height:1.5;">Окончательная цена согласовывается после обсуждения декора — каждый торт индивидуален.</p>
-      <button onclick="goToFormStep()" style="width:100%;background:var(--gold);color:#fff;border:none;border-radius:50px;padding:14px 24px;font-size:15px;font-family:'Jost',sans-serif;font-weight:500;cursor:pointer;box-shadow:0 6px 20px rgba(201,147,74,0.35);">
+      <button type="button" onclick="goToFormStep()" style="width:100%;background:var(--gold);color:#fff;border:none;border-radius:50px;padding:14px 24px;font-size:15px;font-family:'Jost',sans-serif;font-weight:500;cursor:pointer;box-shadow:0 6px 20px rgba(201,147,74,0.35);">
         Далее →
       </button>
     </div>`;
@@ -3114,7 +3114,7 @@ REVIEWS.forEach((rv, i) => {
   trackEl.appendChild(slide);
   // clicks handled by thumb, not card
 
-  const dot = document.createElement('button');
+  const dot = document.createElement('button'); dot.type = 'button';
   dot.className='rev-dot'+(i===0?' on':'');
   dot.setAttribute('aria-label',`Отзыв ${i+1}`);
   dot.addEventListener('click',()=> { if (!_goToBusy) goTo(i); });

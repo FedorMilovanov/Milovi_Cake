@@ -28,9 +28,9 @@
       setTimeout(reveal,1200);
     })();
   </script>
-  <link rel="icon" href="favicon.svg?v=20260516r7" type="image/svg+xml">
-  <link rel="icon" href="icon-192.png?v=20260516r7" type="image/png" sizes="192x192">
-  <link rel="apple-touch-icon" href="icon-apple.png?v=20260516r7" />
+  <link rel="icon" href="favicon.svg?v=20260516r8" type="image/svg+xml">
+  <link rel="icon" href="icon-192.png?v=20260516r8" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="icon-apple.png?v=20260516r8" />
   <meta name="format-detection" content="telephone=no" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Milovi Cake — Торты и десерты на заказ в Санкт-Петербурге</title>
@@ -329,9 +329,9 @@
   }
   </script>
 
-  <link rel="stylesheet" href="css/style.css?v=20260516r7" />
-  <link rel="stylesheet" href="css/mc-2026.css?v=20260516r7" />
-  <link rel="stylesheet" href="css/premium-overrides.css?v=20260516r7" />
+  <link rel="stylesheet" href="css/style.css?v=20260516r8" />
+  <link rel="stylesheet" href="css/mc-2026.css?v=20260516r8" />
+  <link rel="stylesheet" href="css/premium-overrides.css?v=20260516r8" />
   <link rel="prefetch" href="img/bento_maxi.webp" as="image" />
   <link rel="prefetch" href="img/cake_3d.webp" as="image" />
   <link rel="prefetch" href="img/cake_3d_2.webp" as="image" />
@@ -535,7 +535,7 @@
     <a href="#reviews">Отзывы</a>
     <a href="#contacts">Контакты</a>
     <a href="#catalog" class="header-order">Заказать</a>
-        <button id="themeToggleBtn"
+        <button type="button" id="themeToggleBtn"
             class="theme-toggle"
             onclick="toggleTheme()"
             aria-label="Переключить тему"
@@ -543,12 +543,12 @@
       <svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       <svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
     </button>
-    <button class="header-cart-btn" id="cartBtn" onclick="openCart()" aria-label="Корзина">
+    <button type="button" class="header-cart-btn" id="cartBtn" onclick="openCart()" aria-label="Корзина">
       🛒
       <span class="cart-badge" id="cartBadge">0</span>
     </button>
   </nav>
-  <button class="burger-btn" id="burgerBtn" aria-label="Меню" aria-expanded="false">
+  <button type="button" class="burger-btn" id="burgerBtn" aria-label="Меню" aria-expanded="false">
     <span></span><span></span><span></span>
   </button>
 </header>
@@ -560,7 +560,7 @@
       <span class="mobile-menu-brand-name">Milovi Cake</span>
       <span class="mobile-menu-brand-sub">Авторские торты · СПб</span>
     </span>
-    <button class="mobile-menu-close" onclick="closeMobileMenu()" aria-label="Закрыть меню">
+    <button type="button" class="mobile-menu-close" onclick="closeMobileMenu()" aria-label="Закрыть меню">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
     </button>
   </header>
@@ -617,18 +617,18 @@
 
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox">
-  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Закрыть">
+  <button type="button" class="lightbox-close" onclick="closeLightbox()" aria-label="Закрыть">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
     Закрыть
   </button>
   <div class="lightbox-img-wrap" id="lightboxWrap">
-    <img id="lightboxImg" src="" alt="Фото торта Milovi Cake" style="user-select:none; -webkit-user-drag:none;" />
+    <img id="lightboxImg" src="" alt="Фото торта Milovi Cake" width="1200" height="800" style="user-select:none; -webkit-user-drag:none; max-width:100%; height:auto; aspect-ratio:3/2;" decoding="async" />
     <div class="lightbox-nav hidden" id="lbNav">
-      <button class="lightbox-arrow" onclick="lbNavigate(-1)" aria-label="Назад">
+      <button type="button" class="lightbox-arrow" onclick="lbNavigate(-1)" aria-label="Назад">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
       <span class="lb-counter" id="lbCounter">1 / 8</span>
-      <button class="lightbox-arrow" onclick="lbNavigate(1)" aria-label="Вперёд">
+      <button type="button" class="lightbox-arrow" onclick="lbNavigate(1)" aria-label="Вперёд">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
     </div>
@@ -785,9 +785,9 @@
             <span class="calc-label" id="calcWeightLabel">Вес торта</span>
             <div class="calc-weight-stepper-wrap">
               <div class="calc-weight-stepper">
-                <button class="calc-stepper-btn" id="calcWeightMinus" onclick="stepWeight(-1)" aria-label="Уменьшить вес">−</button>
+                <button type="button" class="calc-stepper-btn" id="calcWeightMinus" onclick="stepWeight(-1)" aria-label="Уменьшить вес">−</button>
                 <div class="calc-stepper-val" id="calcWeightVal">2 кг</div>
-                <button class="calc-stepper-btn" id="calcWeightPlus" onclick="stepWeight(1)" aria-label="Увеличить вес">+</button>
+                <button type="button" class="calc-stepper-btn" id="calcWeightPlus" onclick="stepWeight(1)" aria-label="Увеличить вес">+</button>
               </div>
               <span class="calc-weight-hint" id="guestsPopup"><span id="guestsCount"></span></span>
             </div>
@@ -800,9 +800,9 @@
           <div class="calc-row calc-row--hidden" id="calcQtyRow">
             <span class="calc-label">Количество</span>
             <div class="calc-weight-stepper">
-              <button class="calc-stepper-btn" id="calcQtyMinus" onclick="stepQty(-1)" aria-label="Уменьшить">−</button>
+              <button type="button" class="calc-stepper-btn" id="calcQtyMinus" onclick="stepQty(-1)" aria-label="Уменьшить">−</button>
               <div class="calc-stepper-val" id="calcQtyVal">1 шт</div>
-              <button class="calc-stepper-btn" id="calcQtyPlus" onclick="stepQty(1)" aria-label="Увеличить">+</button>
+              <button type="button" class="calc-stepper-btn" id="calcQtyPlus" onclick="stepQty(1)" aria-label="Увеличить">+</button>
             </div>
           </div>
 
@@ -895,10 +895,10 @@
                 <div class="calc-result-summary" id="calcSummary"></div>
                 <div class="calc-result-note" id="calcNote">Точная цена согласовывается при заказе</div>
                 <div class="calc-add-row">
-                  <button class="calc-add-btn" onclick="addCalcToCartOnly(this)">
+                  <button type="button" class="calc-add-btn" onclick="addCalcToCartOnly(this)">
                     <span class="calc-add-btn-label">Добавить в корзину</span>
                   </button>
-                  <button class="calc-open-cart-btn" id="calcOpenCartBtn" onclick="openCart()" aria-label="Открыть корзину">
+                  <button type="button" class="calc-open-cart-btn" id="calcOpenCartBtn" onclick="openCart()" aria-label="Открыть корзину">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
                       <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
@@ -928,31 +928,31 @@
       <div class="review-slide active skeleton-review" aria-hidden="true"><div class="review-card"><div class="review-q">❝</div><p class="review-text skeleton-text" style="height:4em;background:linear-gradient(90deg,rgba(201,147,74,.08) 25%,rgba(201,147,74,.18) 50%,rgba(201,147,74,.08) 75%);border-radius:4px;animation:shimmer 1.6s infinite"></p></div></div>
     </div></div>
     <div class="carousel-nav">
-      <button class="rev-arrow" id="btnPrev" aria-label="Назад">&#8592;</button>
-      <button class="rev-arrow" id="btnNext" aria-label="Вперёд">&#8594;</button>
+      <button type="button" class="rev-arrow" id="btnPrev" aria-label="Назад">&#8592;</button>
+      <button type="button" class="rev-arrow" id="btnNext" aria-label="Вперёд">&#8594;</button>
     </div>
     <div class="rev-dots" id="dots" style="display:none"></div>
   </div>
   <div class="review-filmstrip-wrap">
     <div class="review-filmstrip reveal">
-      <button class="review-filmstrip-item" onclick="openChatLightbox(0)" aria-label="Открыть скриншот отзыва 1 в полном размере"><img src="img/review_1.webp" alt="Скриншот отзыва покупателя 1" loading="lazy" width="280" height="497"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(1)" aria-label="Открыть скриншот отзыва 2 в полном размере"><img src="img/review_2.webp" alt="Скриншот отзыва покупателя 2" loading="lazy" width="280" height="497"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(2)" aria-label="Открыть скриншот отзыва 3 в полном размере"><img src="img/review_3.webp" alt="Скриншот отзыва покупателя 3" loading="lazy" width="280" height="497"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(3)" aria-label="Открыть скриншот отзыва 4 в полном размере"><img src="img/review_4.webp" alt="Скриншот отзыва покупателя 4" loading="lazy" width="280" height="497"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(4)" aria-label="Открыть скриншот отзыва 5 в полном размере"><img src="img/review_5.webp" alt="Скриншот отзыва покупателя 5" loading="lazy" width="280" height="497"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(5)" aria-label="Открыть скриншот отзыва 6 в полном размере"><img src="img/review_6.webp" alt="Скриншот отзыва покупателя 6" loading="lazy" width="280" height="497"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(6)" aria-label="Открыть скриншот отзыва 7 в полном размере"><img src="img/review_7.webp" alt="Скриншот отзыва покупателя 7" loading="lazy" width="280" height="497"></button>
-      <button class="review-filmstrip-item" onclick="openChatLightbox(7)" aria-label="Открыть скриншот отзыва 8 в полном размере"><img src="img/review_8.webp" alt="Скриншот отзыва покупателя 8" loading="lazy" width="280" height="497"></button>
+      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(0)" aria-label="Открыть скриншот отзыва 1 в полном размере"><img src="img/review_1.webp" alt="Скриншот отзыва покупателя 1" loading="lazy" width="280" height="497"></button>
+      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(1)" aria-label="Открыть скриншот отзыва 2 в полном размере"><img src="img/review_2.webp" alt="Скриншот отзыва покупателя 2" loading="lazy" width="280" height="497"></button>
+      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(2)" aria-label="Открыть скриншот отзыва 3 в полном размере"><img src="img/review_3.webp" alt="Скриншот отзыва покупателя 3" loading="lazy" width="280" height="497"></button>
+      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(3)" aria-label="Открыть скриншот отзыва 4 в полном размере"><img src="img/review_4.webp" alt="Скриншот отзыва покупателя 4" loading="lazy" width="280" height="497"></button>
+      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(4)" aria-label="Открыть скриншот отзыва 5 в полном размере"><img src="img/review_5.webp" alt="Скриншот отзыва покупателя 5" loading="lazy" width="280" height="497"></button>
+      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(5)" aria-label="Открыть скриншот отзыва 6 в полном размере"><img src="img/review_6.webp" alt="Скриншот отзыва покупателя 6" loading="lazy" width="280" height="497"></button>
+      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(6)" aria-label="Открыть скриншот отзыва 7 в полном размере"><img src="img/review_7.webp" alt="Скриншот отзыва покупателя 7" loading="lazy" width="280" height="497"></button>
+      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(7)" aria-label="Открыть скриншот отзыва 8 в полном размере"><img src="img/review_8.webp" alt="Скриншот отзыва покупателя 8" loading="lazy" width="280" height="497"></button>
     </div>
   </div>
   <div class="map-badges-center reveal">
-    <button class="map-badge map-badge-yandex" onclick="openReviewsModal('yandex')" aria-label="Отзывы на Яндекс Картах">
+    <button type="button" class="map-badge map-badge-yandex" onclick="openReviewsModal('yandex')" aria-label="Отзывы на Яндекс Картах">
       <svg class="map-badge-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#FC3F1D"/><path d="M13.18 7.2h-.92c-1.2 0-1.84.58-1.84 1.54 0 1.1.48 1.62 1.44 2.28l.8.54-2.28 3.44H8.9l2.08-3.12c-1.2-.86-1.88-1.7-1.88-3.06 0-1.76 1.22-2.92 3.16-2.92h2.3V17h-1.38V7.2z" fill="#fff"/></svg>
       <span>Яндекс Карты</span>
       <span class="map-badge-rating">★ 4.8</span>
       <svg class="map-badge-chevron" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
-    <button class="map-badge map-badge-google" onclick="openReviewsModal('google')" aria-label="Отзывы в Google Maps">
+    <button type="button" class="map-badge map-badge-google" onclick="openReviewsModal('google')" aria-label="Отзывы в Google Maps">
       <svg class="map-badge-icon" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
       <span>Google Maps</span>
       <span class="map-badge-rating">★ 4.7</span>
@@ -1022,9 +1022,9 @@
     <!-- Вкусы -->
     <div class="cb-section-label"><span>Наши фирменные вкусы</span></div>
     <div class="cb-flavor-tabs">
-      <button class="cb-ftab cb-on" onclick="cbFlavor('vanilla',this)">🍓 Ванильные</button>
-      <button class="cb-ftab" onclick="cbFlavor('choco',this)">🍫 Шоколадные</button>
-      <button class="cb-ftab" onclick="cbFlavor('classic',this)">👑 Классика</button>
+      <button type="button" class="cb-ftab cb-on" onclick="cbFlavor('vanilla',this)">🍓 Ванильные</button>
+      <button type="button" class="cb-ftab" onclick="cbFlavor('choco',this)">🍫 Шоколадные</button>
+      <button type="button" class="cb-ftab" onclick="cbFlavor('classic',this)">👑 Классика</button>
     </div>
 
     <div class="cb-flavor-wrap">
@@ -1239,18 +1239,18 @@
 
     <div class="reviews-modal-header">
       <h3 class="reviews-modal-title">Отзывы клиентов</h3>
-      <button class="reviews-modal-close" onclick="closeReviewsModal()" aria-label="Закрыть">
+      <button type="button" class="reviews-modal-close" onclick="closeReviewsModal()" aria-label="Закрыть">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
     </div>
 
     <div class="reviews-modal-tabs">
-      <button class="reviews-tab active" onclick="switchReviewsTab('yandex')" id="tabYandex">
+      <button type="button" class="reviews-tab active" onclick="switchReviewsTab('yandex')" id="tabYandex">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#FC3F1D"/><path d="M13.18 7.2h-.92c-1.2 0-1.84.58-1.84 1.54 0 1.1.48 1.62 1.44 2.28l.8.54-2.28 3.44H8.9l2-3.13c-1.2-.9-1.76-1.76-1.76-3.16 0-1.86 1.22-2.92 3.16-2.92h2.3V17h-1.38V7.2z" fill="#fff"/></svg>
         <span>Яндекс</span>
         <span class="tab-rating">4.8</span>
       </button>
-      <button class="reviews-tab" onclick="switchReviewsTab('google')" id="tabGoogle">
+      <button type="button" class="reviews-tab" onclick="switchReviewsTab('google')" id="tabGoogle">
         <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-1 7.28-2.69l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
         <span>Google</span>
         <span class="tab-rating">4.7</span>
@@ -1377,19 +1377,19 @@
 <!-- LIGHTBOX for reviews -->
 <div class="lb-overlay" id="lbOverlay">
   <div class="lb-backdrop" id="lbBg"></div>
-  <button class="lb-x" id="lbX" aria-label="Закрыть">✕</button>
-  <div class="lb-box" id="lbBox"><img id="lbImg" src="" alt="Отзыв клиента Milovi Cake"></div>
+  <button type="button" class="lb-x" id="lbX" aria-label="Закрыть">✕</button>
+  <div class="lb-box" id="lbBox"><img id="lbImg" src="" alt="Отзыв клиента Milovi Cake" width="800" height="1000" style="max-width:100%; height:auto; aspect-ratio:4/5;" decoding="async" loading="lazy"></div>
   <div class="lb-arrows" id="lbArrows">
-    <button class="lb-arr-btn" id="lbPrev" aria-label="Назад"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <button type="button" class="lb-arr-btn" id="lbPrev" aria-label="Назад"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
     <span class="lb-arr-counter" id="lbArrCounter">1 / 8</span>
-    <button class="lb-arr-btn" id="lbNext" aria-label="Вперёд"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <button type="button" class="lb-arr-btn" id="lbNext" aria-label="Вперёд"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
   </div>
 </div>
 
 <!-- PRIVACY MODAL -->
 <div id="privacyOverlay" onclick="if(event.target===this)closePrivacy()">
   <div id="privacyModal">
-    <button id="privacyClose" onclick="closePrivacy()" aria-label="Закрыть">×</button>
+    <button type="button" id="privacyClose" onclick="closePrivacy()" aria-label="Закрыть">×</button>
     <h2>Политика конфиденциальности</h2>
     <h3>1. Общие положения</h3>
     <p>Настоящая Политика определяет порядок обработки и защиты персональных данных пользователей сайта milovicake.ru.</p>
@@ -1414,17 +1414,17 @@
   </div>
   <div class="fill-sheet-divider"></div>
   <div class="fill-sheet-nav">
-    <button class="fill-nav-btn" id="fillNavPrev" onclick="navigateFill(-1)" aria-label="Предыдущая начинка">
+    <button type="button" class="fill-nav-btn" id="fillNavPrev" onclick="navigateFill(-1)" aria-label="Предыдущая начинка">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
     <span class="fill-nav-counter" id="fillNavCounter" aria-live="polite"></span>
-    <button class="fill-nav-btn" id="fillNavNext" onclick="navigateFill(1)" aria-label="Следующая начинка">
+    <button type="button" class="fill-nav-btn" id="fillNavNext" onclick="navigateFill(1)" aria-label="Следующая начинка">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
     </button>
   </div>
   <div class="fill-sheet-cta">
-    <button class="fill-sheet-btn-select" id="fillSheetSelect" onclick="confirmFillSelection()">Выбрать начинку</button>
-    <button class="fill-sheet-btn-dismiss" onclick="closeFillPopup()" aria-label="Закрыть">Закрыть</button>
+    <button type="button" class="fill-sheet-btn-select" id="fillSheetSelect" onclick="confirmFillSelection()">Выбрать начинку</button>
+    <button type="button" class="fill-sheet-btn-dismiss" onclick="closeFillPopup()" aria-label="Закрыть">Закрыть</button>
   </div>
 </div>
 
@@ -1443,11 +1443,11 @@
 <!-- COOKIE BANNER -->
 <div id="cookieBanner">
   <span>Мы используем файлы cookie для улучшения работы сайта. <a href="#" onclick="openPrivacy(); return false;">Политика конфиденциальности</a></span>
-  <button id="cookieDecline" onclick="declineCookie()">Отказаться</button>
-  <button id="cookieAccept" onclick="acceptCookie()">Принять</button>
+  <button type="button" id="cookieDecline" onclick="declineCookie()">Отказаться</button>
+  <button type="button" id="cookieAccept" onclick="acceptCookie()">Принять</button>
 </div>
 
-<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Наверх">
+<button type="button" class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Наверх">
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
 </button>
 
@@ -1461,8 +1461,8 @@
   <div class="cart-header">
     <h3 id="cartDrawerTitle">🛒 Ваш заказ <span class="cart-count-badge" id="cartCountBadge">0</span></h3>
     <div class="cart-header-right">
-      <button class="cart-clear-btn" id="cartClearBtn" onclick="clearCart()" aria-label="Очистить корзину" style="display:none">🗑 Очистить</button>
-      <button class="cart-close" onclick="closeCart()" aria-label="Закрыть корзину">
+      <button type="button" class="cart-clear-btn" id="cartClearBtn" onclick="clearCart()" aria-label="Очистить корзину" style="display:none">🗑 Очистить</button>
+      <button type="button" class="cart-close" onclick="closeCart()" aria-label="Закрыть корзину">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
     </div>
@@ -1539,11 +1539,11 @@
 </script>
 
 <script>var IMG_BASE = 'img';</script>
-<script src="js/main.js?v=20260516r7" defer></script>
+<script src="js/main.js?v=20260516r8" defer></script>
 
 
-<script src="js/nav.js?v=20260516r7" defer></script>
-<script src="js/mc-2026.js?v=20260516r7" defer></script>
+<script src="js/nav.js?v=20260516r8" defer></script>
+<script src="js/mc-2026.js?v=20260516r8" defer></script>
 
 <script>
   /* ── Яндекс.Метрика: цели ── */

@@ -1254,11 +1254,7 @@ form .btn-wa {
   padding: 11px 14px 10px !important;
   border-radius: 14px !important;
 }
-/* Smooth fade-in (JS sets opacity:1) */
-.fill-tooltip[style*="opacity: 1"],
-.fill-tooltip[style*="opacity:1"] {
-  transform: translateY(-100%) translateY(-6px) !important;
-}
+/* (R8 simplified) JS already controls transform/opacity inline. */
 
 /* ── 2) Калькулятор-карточки начинок: focus-ring корректный ── */
 /* На selected (золотой фон) обычный gold outline невидим — делаем белый */
@@ -1468,3 +1464,106 @@ form .btn-wa {
 }
 
 /* ══ END R7 ══ */
+
+/* ══════════════════════════════════════════════════════════════
+   PATCH R8 — 2026.05.16 (Apple+Google final polish)
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── 1) Lightbox image: lock aspect ratio to prevent CLS ── */
+#lightboxImg, #lbImg {
+  background: rgba(20, 12, 6, 0.45);
+  border-radius: 8px;
+}
+
+/* ── 2) Dynamically-rendered buttons (cart/qty/del/slider) — премиальный focus ── */
+.btn-add:focus-visible,
+.qty-btn:focus-visible,
+.del-btn:focus-visible,
+.slide-btn:focus-visible,
+.lightbox-arrow:focus-visible,
+.lightbox-close:focus-visible,
+.mc-btn:focus-visible,
+.mc-sheet-close:focus-visible,
+.gx-ctrl:focus-visible,
+.rev-dot:focus-visible {
+  outline: 2px solid var(--gold, #c9934a) !important;
+  outline-offset: 3px !important;
+}
+
+/* ── 3) Link underline-on-focus для accessibility (без overrid'а декоративных) ── */
+a:focus-visible:not(.btn-primary):not(.btn-wa):not(.header-order):not(.calc-add-btn):not(.btn-hero-messenger) {
+  outline: 2px solid var(--gold, #c9934a);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ── 4) Reduce CLS: catalog-card aspect-ratio для slider-wrap уже есть в style.css.
+   Дополнительно — img placeholder background, чтобы не было «прыжка» цвета. */
+.slide img {
+  background: linear-gradient(135deg, rgba(232,184,122,0.06), rgba(245,240,232,0.10));
+}
+
+/* ── 5) iOS safe-area для bottom-nav (mc-nav) ── */
+.mc-nav,
+#mcNav {
+  padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+}
+
+/* ── 6) iOS callout suppression на интерактивных элементах ── */
+.calc-opt,
+.calc-type-card,
+.calc-stepper-btn,
+.calc-add-btn,
+.calc-result-collapsed,
+.btn-add,
+.btn-primary,
+.btn-wa,
+.header-order,
+.theme-toggle,
+.btn-hero-messenger {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* ── 7) Button cursor pointer (default UA inconsistency) ── */
+button:not([disabled]),
+[role="button"]:not([disabled]) {
+  cursor: pointer;
+}
+button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* ── 8) High-contrast mode: focus-ring визуальнее (Windows HC) ── */
+@media (forced-colors: active) {
+  .calc-opt:focus-visible,
+  .calc-type-card:focus-visible,
+  button:focus-visible,
+  a:focus-visible {
+    outline: 3px solid Highlight !important;
+    outline-offset: 2px !important;
+  }
+}
+
+/* ── 9) Print styles: убираем фиксированные элементы ── */
+@media print {
+  .site-header,
+  #scroll-progress,
+  .mc-nav, #mcNav,
+  .mobile-menu, .mobile-menu-overlay,
+  .floating-cta, .mobile-sticky-cta,
+  .calc-right-col,
+  .cookie-banner, #cookieBanner,
+  .lightbox, #lightbox,
+  .fill-toast, #fillToast,
+  .fill-mobile-popup, #fillPopup,
+  .gx-cursor {
+    display: none !important;
+  }
+  body { background: #fff !important; color: #000 !important; }
+  .hero { min-height: auto !important; padding: 20px !important; }
+}
+
+/* ══ END R8 ══ */

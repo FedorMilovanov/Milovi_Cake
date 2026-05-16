@@ -313,7 +313,7 @@
     }
 
     // Центральная кнопка — заказать (WA) или открыть корзину
-    var orderBtn = document.createElement('button');
+    var orderBtn = document.createElement('button'); orderBtn.type = 'button';
     orderBtn.className = 'mc-btn mc-btn--order';
     orderBtn.setAttribute('aria-label', 'Заказать');
     orderBtn.innerHTML = '<div class="mc-btn-circle">' +
@@ -341,7 +341,7 @@
     nav.appendChild(Object.assign(document.createElement('div'), { className: 'mc-sep' }));
 
     // Кнопка "Ещё" — открывает панель
-    var moreBtn = document.createElement('button');
+    var moreBtn = document.createElement('button'); moreBtn.type = 'button';
     moreBtn.className = 'mc-btn';
     moreBtn.id = 'mcMoreBtn';
     moreBtn.setAttribute('aria-label', 'Ещё');
@@ -377,7 +377,7 @@
     var html = '<div class="mc-sheet-handle"></div>';
     html += '<div class="mc-sheet-head">';
     html += '<span class="mc-sheet-title">Навигация</span>';
-    html += '<button class="mc-sheet-close" id="mcSheetClose" aria-label="Закрыть">✕</button>';
+    html += '<button type="button" class="mc-sheet-close" id="mcSheetClose" aria-label="Закрыть">✕</button>';
     html += '</div>';
 
     // Секция "Страницы"
