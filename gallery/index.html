@@ -1,101 +1,107 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Галерея работ — Milovi Cake | Премиум-торты СПб</title>
-<meta name="description" content="Портфолио Milovi Cake — 46 авторских работ: 3D-торты, бенто, меренговые рулеты, свадебные торты, Павлова. Реальные фото и видео из Санкт-Петербурга.">
-<meta name="theme-color" content="#f5f0e8" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1a1108" media="(prefers-color-scheme: dark)">
-<link rel="canonical" href="https://milovicake.ru/gallery/">
-
-<meta property="og:title" content="Галерея работ — Milovi Cake">
-<meta property="og:description" content="46 авторских работ кондитера в СПб — фото и видео.">
-<meta property="og:image" content="https://milovicake.ru/img/og-cover.jpg">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://milovicake.ru/gallery/">
-<meta property="og:locale" content="ru_RU">
-<meta name="twitter:card" content="summary_large_image">
-
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/icon-apple.png">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&amp;family=Jost:wght@300;400;500&amp;display=swap">
-
-<!-- Swiper for premium 3D Coverflow -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
-<link rel="stylesheet" href="/css/gallery/gallery-2026.css?v=20260516-premium-final">
-<link rel="stylesheet" href="/css/v20-dark-and-fixes.css">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Галерея Milovi Cake — Авторские торты на заказ в СПб</title>
+  <meta name="description" content="Портфолио Milovi Cake — реальные фото и видео авторских тортов, бенто, свадебных тортов, меренговых рулетов и десертов." />
+  <link rel="canonical" href="https://milovicake.ru/gallery/" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="/css/gallery/gallery-2026.css?v=20260516-exact-final" />
+  <script defer src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 </head>
 <body>
-
-<header class="gx-header">
-  <a href="/" class="gx-back">← На главную</a>
-  <h1 class="gx-title">Студия <em>Milovi Cake</em></h1>
-  <div class="gx-divider"><span></span><i></i><span></span></div>
-  <p class="gx-sub">46 авторских работ • Реальные заказы Санкт-Петербурга • Фото и видео</p>
-
-  <div class="gx-filter" role="tablist" aria-label="Фильтр галереи">
-    <button type="button" data-f="all" aria-pressed="true">Все</button>
-    <button type="button" data-f="photo" aria-pressed="false">Фото</button>
-    <button type="button" data-f="video" aria-pressed="false">Видео</button>
-    <button type="button" data-f="3d" aria-pressed="false">3D</button>
-    <button type="button" data-f="bento" aria-pressed="false">Бенто</button>
-    <button type="button" data-f="meringue" aria-pressed="false">Меренговые рулеты</button>
-    <button type="button" data-f="wedding" aria-pressed="false">Свадебные</button>
-    <button type="button" data-f="pavlova" aria-pressed="false">Павлова</button>
-  </div>
-</header>
-
-<main class="gx-grid" id="gxGrid" role="list" aria-label="Галерея работ"></main>
-
-<footer class="gx-footer">
-  <a href="/#contacts">Заказать торт →</a>
-</footer>
-
-<!-- Premium Lightbox -->
-<div class="gx-light" id="gxLight">
-  <div class="lb-backdrop">
-    <div class="lb-backdrop-bg" id="lbBg"></div>
-    <div class="lb-backdrop-overlay"></div>
+  <div id="preloader" aria-hidden="true">
+    <svg class="loader-seal" viewBox="0 0 100 100">
+      <defs>
+        <linearGradient id="loaderSealGold" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#f5e6c0"/><stop offset="50%" stop-color="#d4a85c"/><stop offset="100%" stop-color="#8e5e20"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="46" fill="none" stroke="url(#loaderSealGold)" stroke-width="1" opacity="0.5"/>
+      <path d="M50 18 L54 30 L66 32 L57 40 L59 52 L50 47 L41 52 L43 40 L34 32 L46 30 Z" fill="url(#loaderSealGold)" opacity="0.8"/>
+    </svg>
+    <div class="loader-text">Milovi Cake</div>
   </div>
 
-  <div class="lb-header">
-    <div class="lb-brand">
-      Milovi Cake
-    </div>
-    <div class="lb-counter" id="lbCounter">01 / 46</div>
-    <button class="lb-close" id="gxClose">✕</button>
+  <div class="blob blob-1" aria-hidden="true"></div>
+  <div class="blob blob-2" aria-hidden="true"></div>
+
+  <div class="gx-page">
+    <header class="gx-header">
+      <a href="/" class="gx-back-link" aria-label="Вернуться на главную">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 15l-5-5 5-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        На главную
+      </a>
+
+      <div class="gx-seal-wrap" aria-hidden="true">
+        <svg viewBox="0 0 100 100" class="gx-seal-svg">
+          <defs>
+            <linearGradient id="sealGold" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#f5e6c0" />
+              <stop offset="50%" stop-color="#d4a85c" />
+              <stop offset="100%" stop-color="#8e5e20" />
+            </linearGradient>
+            <radialGradient id="sealGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="rgba(212,168,92,0.45)" />
+              <stop offset="100%" stop-color="rgba(212,168,92,0)" />
+            </radialGradient>
+          </defs>
+          <circle cx="50" cy="50" r="46" fill="url(#sealGlow)" />
+          <circle cx="50" cy="50" r="38" fill="none" stroke="url(#sealGold)" stroke-width="1" opacity="0.7" />
+          <circle cx="50" cy="50" r="32" fill="none" stroke="url(#sealGold)" stroke-width="0.8" opacity="0.5" />
+          <path d="M50 18 L54 30 L66 32 L57 40 L59 52 L50 47 L41 52 L43 40 L34 32 L46 30 Z" fill="url(#sealGold)" fill-opacity="0.85" />
+          <circle cx="50" cy="50" r="3.5" fill="url(#sealGold)" />
+        </svg>
+      </div>
+
+      <h1 class="gx-heading">Студия <em>Milovi Cake</em></h1>
+      <div class="gx-divider"><span></span><i></i><span></span></div>
+      <p class="gx-subtitle">Каждый торт — авторская работа. Реальные фото и видео заказов из Санкт-Петербурга.</p>
+
+      <div class="gx-filters" role="tablist" aria-label="Фильтр галереи">
+        <button type="button" class="gx-chip gx-chip-active" data-filter="all" aria-pressed="true">Все</button>
+        <button type="button" class="gx-chip" data-filter="photo" aria-pressed="false">Фото</button>
+        <button type="button" class="gx-chip" data-filter="video" aria-pressed="false">Видео</button>
+        <button type="button" class="gx-chip" data-filter="wedding" aria-pressed="false">Свадебные</button>
+        <button type="button" class="gx-chip" data-filter="bento" aria-pressed="false">Бенто</button>
+        <button type="button" class="gx-chip" data-filter="3d" aria-pressed="false">3D</button>
+        <button type="button" class="gx-chip" data-filter="meringue" aria-pressed="false">Рулеты</button>
+        <button type="button" class="gx-chip" data-filter="pavlova" aria-pressed="false">Павлова</button>
+      </div>
+
+      <div class="gx-counter-row" aria-live="polite">
+        <span class="gx-counter-item"><span id="photoCount">0</span> фото</span>
+        <span class="gx-counter-dot" aria-hidden="true"></span>
+        <span class="gx-counter-item"><span id="videoCount">0</span> видео</span>
+      </div>
+    </header>
+
+    <main class="gx-main">
+      <div class="gallery-grid" id="galleryGrid" role="list" aria-label="Галерея работ Milovi Cake"></div>
+      <div class="gx-empty" id="gxEmpty" hidden>
+        <p>В этой категории работы обновляются</p>
+        <button type="button" id="resetFilter">Показать все</button>
+      </div>
+    </main>
+
+    <footer class="gx-footer">
+      <svg viewBox="0 0 400 12" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
+        <line x1="0" y1="6" x2="170" y2="6" stroke="var(--gold-light)" stroke-width="0.8" />
+        <path d="M186 6l7-4 7 4-7 4z" fill="var(--gold)" fill-opacity="0.6" />
+        <circle cx="200" cy="6" r="2" fill="var(--gold)" />
+        <path d="M214 6l-7-4-7 4 7 4z" fill="var(--gold)" fill-opacity="0.6" />
+        <line x1="230" y1="6" x2="400" y2="6" stroke="var(--gold-light)" stroke-width="0.8" />
+      </svg>
+      <a href="/#contacts" class="gx-cta">Заказать торт в СПб <span aria-hidden="true">→</span></a>
+      <p>© 2026 Milovi Cake · Авторские торты · Санкт-Петербург</p>
+    </footer>
   </div>
 
-  <button class="lb-nav lb-nav-prev" id="gxPrev">‹</button>
-  <button class="lb-nav lb-nav-next" id="gxNext">›</button>
-
-  <div class="lb-swiper-wrap">
-    <div class="swiper" id="lbSwiper">
-      <div class="swiper-wrapper" id="swiperWrapper"></div>
-    </div>
-  </div>
-
-  <div class="lb-info">
-    <div class="lb-info-inner">
-      <h2 class="lb-title" id="lbTitle"></h2>
-      <p class="lb-desc" id="lbDesc"></p>
-    </div>
-  </div>
-
-  <div class="lb-thumbs" id="lbThumbs"></div>
-</div>
-
-<div class="blob blob-1"></div>
-<div class="blob blob-2"></div>
-
-<script type="module" src="/js/gallery/main-premium.js?v=20260516-final"></script>
-<script defer src="/js/v20-faq-fix.js"></script>
+  <script type="module" src="/js/gallery/main.js?v=20260516-exact-final"></script>
 </body>
 </html>

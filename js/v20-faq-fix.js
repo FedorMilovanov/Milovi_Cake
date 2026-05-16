@@ -39,6 +39,7 @@
       item.querySelector('.faq-answer') ||
       item.querySelector('.faq-body') ||
       item.querySelector('.faq-content') ||
+      item.querySelector('.cb-faq-a') ||
       item.querySelector('.faq-a') ||
       (function() {
         var children = Array.from(item.children);
@@ -54,6 +55,7 @@
     return (
       item.querySelector('.faq-question') ||
       item.querySelector('.faq-q') ||
+      item.querySelector('.cb-faq-q') ||
       item.querySelector('.faq-toggle') ||
       item.querySelector('button:first-child') ||
       item.querySelector('[role="button"]')

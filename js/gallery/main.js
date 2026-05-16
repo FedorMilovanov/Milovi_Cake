@@ -1,405 +1,382 @@
-/* ===========================================================================
- * Milovi Cake — Gallery 2026 PREMIUM
- * Полная переработка: адаптация AI-демо (Swiper Coverflow + mouse-glow +
- * hover-blur соседей) + сохранение оригинальной архитектуры проекта.
- * Все баги переноса исправлены. Оптимизирован для 46 работ (16 видео).
- * ===========================================================================*/
-
 import { GALLERY_ITEMS } from './data.js';
-import { editorialShuffle } from './shuffle.js';
 
 const $ = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
 
-const PREFERS_REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const IS_TOUCH = matchMedia('(hover: none), (pointer: coarse)').matches;
+const SIZE_MAP = {
+  tall: '1x2',
+  wide: '2x1',
+  big: '2x2',
+  m: '1x1'
+};
 
-/* ─── Throttle helper ──────────────────────────────────────────────────── */
-function throttle(fn, ms) {
-  let t; return function(...a) { if (!t) { fn.apply(this, a); t = setTimeout(() => t = null, ms); } };
+const state = {
+  filter: 'all',
+  items: [],
+  visible: [],
+  swiper: null,
+  lbIndex: 0,
+  observer: null,
+  bgTimer: null
+};
+
+function normalizeItem(item) {
+  const isVideo = item.type === 'video';
+  const poster = isVideo ? (item.poster || item.full || item.src) : item.src;
+  return {
+    id: item.id,
+    type: item.type,
+    size: SIZE_MAP[item.size] || item.size || '1x1',
+    tags: item.tags || [],
+    title: item.title || 'Работа Milovi Cake',
+    desc: item.desc || '',
+    src: poster,
+    fullSrc: item.full || poster,
+    videoSrc: isVideo ? item.src : null
+  };
 }
 
-/* =====================================================================
- * 1. RENDER GRID
- * ===================================================================== */
-function renderGrid(items) {
+function buildInterleavedItems() {
+  const all = GALLERY_ITEMS.map(normalizeItem);
+  const photos = all.filter(i => i.type === 'photo');
+  const videos = all.filter(i => i.type === 'video');
+  const out = [];
+  let pi = 0, vi = 0;
+  while (pi < photos.length || vi < videos.length) {
+    if (pi < photos.length) out.push(photos[pi++]);
+    if (vi < videos.length) out.push(videos[vi++]);
+    if (pi < photos.length) out.push(photos[pi++]);
+  }
+  return out;
+}
+
+function filteredItems() {
+  if (state.filter === 'all') return state.items;
+  return state.items.filter(item => {
+    if (state.filter === 'photo') return item.type === 'photo';
+    if (state.filter === 'video') return item.type === 'video';
+    return item.tags.includes(state.filter);
+  });
+}
+
+function sizeClasses(size) {
+  if (size === '2x2') return 'col-span-2 row-span-2';
+  if (size === '2x1') return 'col-span-2';
+  if (size === '1x2') return 'row-span-2';
+  return '';
+}
+
+function renderGrid() {
   const grid = $('#galleryGrid');
+  const empty = $('#gxEmpty');
+  state.visible = filteredItems();
+
+  $('#photoCount').textContent = state.visible.filter(i => i.type === 'photo').length;
+  $('#videoCount').textContent = state.visible.filter(i => i.type === 'video').length;
+
   grid.innerHTML = '';
+  empty.hidden = state.visible.length !== 0;
+  if (!state.visible.length) return;
+
   const frag = document.createDocumentFragment();
+  state.visible.forEach((item, index) => {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = `card ${sizeClasses(item.size)}`.trim();
+    card.dataset.index = String(index);
+    card.dataset.id = item.id;
+    card.dataset.type = item.type;
+    card.dataset.title = item.title;
+    card.dataset.desc = item.desc;
+    card.style.animationDelay = `${Math.min(index * 0.04, 1.2)}s`;
+    card.setAttribute('role', 'listitem');
+    card.setAttribute('aria-label', `${item.title}. Открыть в 3D-галерее`);
 
-  items.forEach((item, idx) => {
-    const card = document.createElement('figure');
-    card.className = `card${item.size ? ' s-' + item.size : ''}`;
-    card.dataset.id    = item.id;
-    card.dataset.type  = item.type;
-    card.dataset.tags  = ['all', item.type, ...(item.tags || [])].join(' ');
-    card.dataset.title = item.title || '';
-    card.dataset.desc  = item.desc  || '';
-    if (item.full)   card.dataset.full   = item.full;
-    if (item.poster) card.dataset.poster = item.poster;
-    if (item.type === 'video') card.dataset.src = item.src;
-
-    card.setAttribute('role',       'button');
-    card.setAttribute('tabindex',   '0');
-    card.setAttribute('aria-label', `${item.title} — открыть ${item.type === 'video' ? 'видео' : 'фото'}`);
-
-    const inner = document.createElement('div');
-    inner.className = 'card-inner';
-
-    if (item.type === 'photo') {
-      const img = document.createElement('img');
-      img.src          = item.src;
-      img.alt          = item.title;
-      img.loading      = idx < 8 ? 'eager' : 'lazy';
-      img.decoding     = 'async';
-      if (idx < 3) img.fetchPriority = 'high';
-      inner.appendChild(img);
-    } else {
+    if (item.type === 'video') {
       const video = document.createElement('video');
-      video.src       = item.src;
-      video.muted     = true;
-      video.loop      = true;
+      video.className = 'card-media';
+      video.poster = item.src;
+      video.muted = true;
+      video.loop = true;
       video.playsInline = true;
-      video.preload   = 'metadata';
-      video.poster    = item.poster || '';
-      inner.appendChild(video);
-
-      const badge = document.createElement('div');
-      badge.className = 'vid-badge';
-      badge.innerHTML = `<svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg>`;
-      inner.appendChild(badge);
+      video.preload = index < 8 ? 'metadata' : 'none';
+      video.dataset.src = item.videoSrc;
+      if (index < 8) video.src = item.videoSrc;
+      card.appendChild(video);
+      card.insertAdjacentHTML('beforeend', '<svg class="play-badge" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>');
+    } else {
+      const img = document.createElement('img');
+      img.className = 'card-media';
+      img.src = item.src;
+      img.alt = item.title;
+      img.loading = index < 8 ? 'eager' : 'lazy';
+      img.decoding = 'async';
+      card.appendChild(img);
     }
 
-    const cap = document.createElement('figcaption');
-    cap.className = 'card-caption';
-    cap.textContent = item.title;
-    inner.appendChild(cap);
+    const overlay = document.createElement('div');
+    overlay.className = 'card-overlay';
+    overlay.innerHTML = `<span class="card-title"></span>`;
+    overlay.querySelector('.card-title').textContent = item.title;
+    card.appendChild(overlay);
 
-    card.appendChild(inner);
+    card.addEventListener('click', () => openLightbox(index));
+    attachCardTilt(card);
     frag.appendChild(card);
   });
-
   grid.appendChild(frag);
-  initCardInteractions();
+  setupVideoObserver();
 }
 
-/* =====================================================================
- * 2. CARD INTERACTIONS — 3D tilt + mouse-glow
- * ===================================================================== */
-function initCardInteractions() {
-  if (IS_TOUCH || PREFERS_REDUCED) return; // only on hover devices
-
-  $$('.card').forEach(card => {
-    const inner = card.querySelector('.card-inner');
-
-    const onMove = throttle(e => {
-      const r = card.getBoundingClientRect();
-      const x = ((e.clientX - r.left) / r.width)  * 100;
-      const y = ((e.clientY - r.top)  / r.height) * 100;
-      card.style.setProperty('--mouse-x', `${x}%`);
-      card.style.setProperty('--mouse-y', `${y}%`);
-      // Subtle 3D tilt
-      const rx = (y - 50) * -0.12;
-      const ry = (x - 50) *  0.15;
-      inner.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.04)`;
-    }, 14);
-
-    card.addEventListener('mousemove', onMove);
-    card.addEventListener('mouseleave', () => {
-      inner.style.transform = '';
+function attachCardTilt(card) {
+  if (matchMedia('(hover: none), (pointer: coarse)').matches) return;
+  let raf = 0;
+  card.addEventListener('mousemove', (e) => {
+    if (raf) return;
+    raf = requestAnimationFrame(() => {
+      raf = 0;
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateX = ((y - centerY) / centerY) * -10;
+      const rotateY = ((x - centerX) / centerX) * 10;
+      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+      card.style.setProperty('--mouse-x', `${x}px`);
+      card.style.setProperty('--mouse-y', `${y}px`);
+      card.classList.add('is-active');
     });
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
+    card.classList.remove('is-active');
   });
 }
 
-/* =====================================================================
- * 3. FILTERS
- * ===================================================================== */
-function initFilters() {
-  const buttons = $$('.filters button');
-  buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const f = btn.dataset.f;
-      buttons.forEach(b => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
-      $$('.card').forEach(cell => {
-        const tags = (cell.dataset.tags || '').split(/\s+/);
-        const show = f === 'all' || tags.includes(f);
-        cell.toggleAttribute('hidden', !show);
-      });
-    });
-  });
-}
-
-/* =====================================================================
- * 4. VIDEO AUTOPLAY IN VIEWPORT
- * ===================================================================== */
-function initVideoAutoplay() {
+function setupVideoObserver() {
+  if (state.observer) state.observer.disconnect();
   if (!('IntersectionObserver' in window)) return;
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      const v = e.target.querySelector('video');
-      if (!v) return;
-      if (e.isIntersecting) v.play().catch(() => {});
+  state.observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const v = entry.target;
+      if (!v.src && v.dataset.src) v.src = v.dataset.src;
+      if (entry.isIntersecting) v.play().catch(() => {});
       else v.pause();
     });
-  }, { rootMargin: '100px', threshold: 0.2 });
-  $$('.card[data-type="video"]').forEach(c => io.observe(c));
+  }, { threshold: 0.25, rootMargin: '160px 0px' });
+  $$('#galleryGrid video').forEach(v => state.observer.observe(v));
 }
 
-/* =====================================================================
- * 5. LIGHTBOX — Swiper Coverflow + Ambient backdrop
- *    ФИКСЫ ВСПЫШЕК:
- *    • lb-backdrop-bg без animation (только transition)
- *    • backface-visibility: hidden на слайдах
- *    • явный dark background на .swiper-slide
- *    • смена backdrop через opacity вместо мгновенной замены
- * ===================================================================== */
-const LB = (() => {
-  let items      = [];
-  let idx        = 0;
-  let swiper     = null;
-  let touchStartX = 0;
-  let scrollY    = 0;
-
-  const root    = $('#lightbox');
-  const bg      = $('#lbBg');
-  const titleEl = $('#lbTitle');
-  const descEl  = $('#lbDesc');
-  const counter = $('#lbCounter');
-  const thumbs  = $('#lbThumbs');
-
-  /* Build Swiper slides */
-  function buildSwiper() {
-    if (swiper) { swiper.destroy(true, true); swiper = null; }
-    const wrapper = $('#lbWrapper');
-    wrapper.innerHTML = '';
-
-    items.forEach((card, i) => {
-      const slide = document.createElement('div');
-      slide.className = 'swiper-slide';
-      // Фикс вспышек: явный тёмный фон на каждом слайде
-      slide.style.cssText = 'background:transparent;';
-
-      const isVideo = card.dataset.type === 'video';
-      if (isVideo) {
-        const v = document.createElement('video');
-        v.className   = 'lb-media';
-        v.src         = card.dataset.src || card.querySelector('video')?.src || '';
-        v.poster      = card.dataset.poster || '';
-        v.controls    = true;
-        v.loop        = true;
-        v.playsInline = true;
-        v.muted       = false;
-        // Фикс: не autoplay — запускаем только на активном слайде
-        slide.appendChild(v);
-      } else {
-        const img = document.createElement('img');
-        img.className = 'lb-media';
-        img.src = card.dataset.full || card.querySelector('img')?.src || '';
-        img.alt = card.dataset.title || '';
-        img.loading = i === idx ? 'eager' : 'lazy';
-        slide.appendChild(img);
-      }
-      wrapper.appendChild(slide);
+function bindFilters() {
+  $$('.gx-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.filter = btn.dataset.filter;
+      $$('.gx-chip').forEach(b => {
+        const active = b === btn;
+        b.classList.toggle('gx-chip-active', active);
+        b.setAttribute('aria-pressed', String(active));
+      });
+      renderGrid();
+      $('#galleryGrid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
+  });
+  $('#resetFilter')?.addEventListener('click', () => {
+    $('.gx-chip[data-filter="all"]')?.click();
+  });
+}
 
-    swiper = new Swiper('#lbSwiper', {
+function lightboxTemplate() {
+  return `
+    <div class="lb-root" id="lbRoot" role="dialog" aria-modal="true" aria-label="3D-галерея Milovi Cake">
+      <div class="lb-backdrop" aria-hidden="true">
+        <div class="lb-backdrop-bg" id="lbBackdropBg"></div>
+        <div class="lb-backdrop-overlay"></div>
+      </div>
+      <div class="lb-header">
+        <div class="lb-brand">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"/><path d="M9 22V12h6v10"/></svg>
+          Milovi Cake
+        </div>
+        <div class="lb-counter" id="lbCounter"></div>
+        <button class="lb-close" id="lbClose" type="button" aria-label="Закрыть">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <button class="lb-nav lb-nav-prev" id="lbPrev" type="button" aria-label="Предыдущая работа">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="lb-nav lb-nav-next" id="lbNext" type="button" aria-label="Следующая работа">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <div class="lb-swiper-wrap">
+        <div class="swiper lb-swiper" id="lbSwiper">
+          <div class="swiper-wrapper" id="lbWrapper"></div>
+        </div>
+      </div>
+      <div class="lb-info">
+        <div class="lb-info-inner">
+          <h2 class="lb-title" id="lbTitle"></h2>
+          <p class="lb-desc" id="lbDesc"></p>
+        </div>
+      </div>
+      <div class="lb-thumbs" id="lbThumbs"></div>
+    </div>`;
+}
+
+function openLightbox(index) {
+  state.lbIndex = index;
+  document.body.insertAdjacentHTML('beforeend', lightboxTemplate());
+  document.body.style.overflow = 'hidden';
+
+  const wrapper = $('#lbWrapper');
+  const thumbs = $('#lbThumbs');
+  const frag = document.createDocumentFragment();
+  const thumbFrag = document.createDocumentFragment();
+
+  state.visible.forEach((item, i) => {
+    const slide = document.createElement('div');
+    slide.className = 'swiper-slide';
+    const wrap = document.createElement('div');
+    wrap.className = 'lb-media-wrap';
+    if (item.type === 'video') {
+      const v = document.createElement('video');
+      v.className = 'lb-media';
+      v.src = item.videoSrc;
+      v.poster = item.src;
+      v.muted = true;
+      v.loop = true;
+      v.playsInline = true;
+      v.preload = Math.abs(i - index) <= 1 ? 'auto' : 'metadata';
+      if (i === index) v.controls = true;
+      wrap.appendChild(v);
+      const hint = document.createElement('div');
+      hint.className = 'lb-video-hint';
+      hint.textContent = 'Видео';
+      wrap.appendChild(hint);
+    } else {
+      const img = document.createElement('img');
+      img.className = 'lb-media';
+      img.src = item.fullSrc || item.src;
+      img.alt = item.title;
+      img.loading = Math.abs(i - index) <= 1 ? 'eager' : 'lazy';
+      img.onerror = () => { if (img.src !== item.src) img.src = item.src; };
+      wrap.appendChild(img);
+    }
+    slide.appendChild(wrap);
+    frag.appendChild(slide);
+
+    const th = document.createElement('button');
+    th.className = 'lb-thumb';
+    th.type = 'button';
+    th.setAttribute('aria-label', item.title);
+    th.innerHTML = `<img src="${item.src}" alt="">${item.type === 'video' ? '<span class="thumb-play"><svg viewBox="0 0 12 12"><path d="M3.5 2v8l6.5-4z"/></svg></span>' : ''}`;
+    th.addEventListener('click', (e) => { e.stopPropagation(); state.swiper?.slideTo(i); });
+    thumbFrag.appendChild(th);
+  });
+
+  wrapper.appendChild(frag);
+  thumbs.appendChild(thumbFrag);
+
+  $('#lbRoot').addEventListener('click', (e) => { if (e.target.id === 'lbRoot') closeLightbox(); });
+  $('#lbClose').addEventListener('click', closeLightbox);
+  $('#lbPrev').addEventListener('click', (e) => { e.stopPropagation(); state.swiper?.slidePrev(); });
+  $('#lbNext').addEventListener('click', (e) => { e.stopPropagation(); state.swiper?.slideNext(); });
+
+  initSwiperWhenReady(index);
+  updateLightbox(index, true);
+  window.addEventListener('keydown', onLightboxKey);
+}
+
+function initSwiperWhenReady(index) {
+  const init = () => {
+    if (!window.Swiper) { setTimeout(init, 50); return; }
+    const mobile = window.innerWidth < 768;
+    state.swiper = new Swiper('#lbSwiper', {
       effect: 'coverflow',
       grabCursor: true,
       centeredSlides: true,
       slidesPerView: 'auto',
-      initialSlide: idx,
-      speed: 700,
-      loop: false,
+      initialSlide: index,
+      speed: 600,
       keyboard: { enabled: true },
       coverflowEffect: {
-        rotate: 30,
-        stretch: 0,
-        depth: 280,
-        modifier: 1,
-        slideShadows: false,   // отключаем тени Swiper — они вызывают вспышки
+        rotate: mobile ? 18 : 28,
+        stretch: mobile ? -20 : 0,
+        depth: mobile ? 150 : 280,
+        modifier: 1.3,
+        slideShadows: false
       },
       on: {
-        slideChange() {
-          idx = this.activeIndex;
-          updateMeta();
-          updateThumbs();
-          // Пауза всех видео, старт только активного
-          $$('.swiper-slide video', root).forEach((v, i) => {
-            if (i === idx) v.play().catch(() => {});
-            else { v.pause(); v.currentTime = 0; }
-          });
-        }
+        slideChange() { updateLightbox(this.activeIndex); },
+        init() { updateLightbox(this.activeIndex, true); }
       }
     });
-  }
-
-  /* Build thumbnails */
-  function buildThumbs() {
-    thumbs.innerHTML = '';
-    items.forEach((card, i) => {
-      const btn = document.createElement('button');
-      btn.className = 'lb-thumb';
-      btn.type = 'button';
-      btn.setAttribute('aria-label', card.dataset.title || `Слайд ${i+1}`);
-      const img = document.createElement('img');
-      img.src     = card.querySelector('img')?.src || card.dataset.poster || '';
-      img.alt     = '';
-      img.loading = 'lazy';
-      img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
-      btn.appendChild(img);
-      btn.addEventListener('click', () => {
-        idx = i;
-        swiper?.slideTo(i);
-        updateMeta();
-        updateThumbs();
-      });
-      thumbs.appendChild(btn);
-    });
-  }
-
-  /* Update counter, title, desc, ambient bg */
-  function updateMeta() {
-    const card = items[idx];
-    if (!card) return;
-    titleEl.textContent = card.dataset.title || '';
-    descEl.textContent  = card.dataset.desc  || '';
-    counter.textContent = `${String(idx + 1).padStart(2, '0')} / ${String(items.length).padStart(2, '0')}`;
-
-    // Ambient: меняем через opacity чтобы не было вспышки
-    const src = card.querySelector('img')?.src || card.dataset.poster || card.dataset.full || '';
-    if (src) {
-      bg.style.opacity = '0';
-      setTimeout(() => {
-        bg.style.backgroundImage = `url("${src}")`;
-        bg.style.opacity = '1';
-      }, 150);
-    }
-  }
-
-  /* Update thumbnail active state */
-  function updateThumbs() {
-    $$('.lb-thumb', thumbs).forEach((t, i) => t.classList.toggle('active', i === idx));
-    thumbs.children[idx]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-  }
-
-  /* Open */
-  function open(originCard) {
-    items = $$('.card:not([hidden])');
-    idx   = items.indexOf(originCard);
-    if (idx < 0) idx = 0;
-
-    buildThumbs();
-    buildSwiper();
-    updateMeta();
-    updateThumbs();
-
-    root.setAttribute('aria-hidden', 'false');
-    root.classList.add('active');
-    scrollY = window.scrollY || 0;
-    document.body.style.overflow = 'hidden';
-
-    // Старт видео активного слайда
-    requestAnimationFrame(() => {
-      const activeVid = $$('.swiper-slide', root)[idx]?.querySelector('video');
-      activeVid?.play().catch(() => {});
-    });
-  }
-
-  /* Close */
-  function close() {
-    // Pause all videos first
-    $$('.swiper-slide video', root).forEach(v => { v.pause(); v.currentTime = 0; });
-
-    root.classList.remove('active');
-    root.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
-    window.scrollTo(0, scrollY);
-
-    setTimeout(() => {
-      if (swiper) { swiper.destroy(true, true); swiper = null; }
-      $('#lbWrapper').innerHTML = '';
-      thumbs.innerHTML = '';
-      bg.style.backgroundImage = '';
-      bg.style.opacity = '1';
-    }, 400);
-  }
-
-  /* Bind controls */
-  function bind() {
-    $('#lbClose').addEventListener('click', close);
-    $('#lbPrev').addEventListener('click', () => swiper?.slidePrev());
-    $('#lbNext').addEventListener('click', () => swiper?.slideNext());
-
-    // Close on backdrop click
-    root.addEventListener('click', e => {
-      if (e.target === root || e.target.classList.contains('lb-backdrop')) close();
-    });
-
-    // Keyboard
-    document.addEventListener('keydown', e => {
-      if (root.getAttribute('aria-hidden') === 'true') return;
-      if (e.key === 'Escape')      close();
-      if (e.key === 'ArrowLeft')   swiper?.slidePrev();
-      if (e.key === 'ArrowRight')  swiper?.slideNext();
-    });
-
-    // Touch swipe on lightbox
-    root.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
-    root.addEventListener('touchend',   e => {
-      const dx = e.changedTouches[0].clientX - touchStartX;
-      if (Math.abs(dx) > 55) dx < 0 ? swiper?.slideNext() : swiper?.slidePrev();
-    });
-
-    // Popstate
-    window.addEventListener('popstate', () => {
-      if (root.getAttribute('aria-hidden') === 'false') close();
-    });
-  }
-
-  return { open, close, bind };
-})();
-
-/* =====================================================================
- * 6. CLICK / KEYBOARD on grid cells
- * ===================================================================== */
-function bindGrid() {
-  const grid = $('#galleryGrid');
-  grid.addEventListener('click', e => {
-    const card = e.target.closest('.card');
-    if (card) LB.open(card);
-  });
-  grid.addEventListener('keydown', e => {
-    if (e.key !== 'Enter' && e.key !== ' ') return;
-    const card = e.target.closest('.card');
-    if (card) { e.preventDefault(); LB.open(card); }
-  });
+  };
+  init();
 }
 
-/* =====================================================================
- * BOOT
- * ===================================================================== */
+function updateLightbox(index, immediate = false) {
+  state.lbIndex = index;
+  const item = state.visible[index];
+  if (!item) return;
+
+  $('#lbTitle').textContent = item.title;
+  $('#lbDesc').textContent = item.desc;
+  $('#lbCounter').textContent = `${String(index + 1).padStart(2, '0')} / ${String(state.visible.length).padStart(2, '0')}`;
+  $('#lbPrev').style.display = index > 0 ? 'flex' : 'none';
+  $('#lbNext').style.display = index < state.visible.length - 1 ? 'flex' : 'none';
+
+  $$('#lbThumbs .lb-thumb').forEach((t, i) => t.classList.toggle('active', i === index));
+  $('#lbThumbs').children[index]?.scrollIntoView({ behavior: immediate ? 'auto' : 'smooth', block: 'nearest', inline: 'center' });
+
+  const bg = $('#lbBackdropBg');
+  const setBg = () => { bg.style.backgroundImage = `url("${item.src}")`; bg.classList.remove('is-switching'); };
+  if (immediate) setBg();
+  else {
+    bg.classList.add('is-switching');
+    clearTimeout(state.bgTimer);
+    state.bgTimer = setTimeout(setBg, 90);
+  }
+
+  $$('#lbWrapper video').forEach((v, i) => {
+    v.controls = i === index;
+    if (i === index) v.play().catch(() => {});
+    else v.pause();
+  });
+
+  history.replaceState(null, '', `#${item.id}`);
+}
+
+function onLightboxKey(e) {
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') state.swiper?.slidePrev();
+  if (e.key === 'ArrowRight') state.swiper?.slideNext();
+}
+
+function closeLightbox() {
+  window.removeEventListener('keydown', onLightboxKey);
+  $$('#lbWrapper video').forEach(v => { v.pause(); v.removeAttribute('src'); v.load(); });
+  if (state.swiper) { state.swiper.destroy(true, true); state.swiper = null; }
+  $('#lbRoot')?.remove();
+  document.body.style.overflow = '';
+  history.replaceState(null, '', location.pathname + location.search);
+}
+
 function boot() {
-  // Hide preloader
-  const preloader = $('#preloader');
+  state.items = buildInterleavedItems();
+  bindFilters();
+  renderGrid();
 
-  const ordered = editorialShuffle(GALLERY_ITEMS, 7);
-  renderGrid(ordered);
-  initFilters();
-  bindGrid();
-  LB.bind();
-  initVideoAutoplay();
+  setTimeout(() => $('#preloader')?.classList.add('hidden'), 650);
+  setTimeout(() => $('#preloader')?.remove(), 1400);
 
-  // Remove preloader after first paint
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      preloader.classList.add('hidden');
-      setTimeout(() => preloader.remove(), 900);
-    });
-  });
+  const hash = decodeURIComponent(location.hash.replace('#', ''));
+  if (hash) {
+    const idx = state.visible.findIndex(item => item.id === hash);
+    if (idx >= 0) setTimeout(() => openLightbox(idx), 300);
+  }
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', boot);
-} else {
-  boot();
-}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+else boot();

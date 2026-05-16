@@ -1630,3 +1630,345 @@ details.faq-item[open] {
 [data-theme="dark"] details.faq-item[open] {
   border-left-color: rgba(212,167,106,0.65) !important;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   PATCH R20 — 2026.05.16 FINAL BY ARENA
+   Точечный профессиональный фикс после переноса галереи:
+   1) hero WA/TG/MAX: читаемые hover-названия + MAX строго по центру.
+   2) dark hero: убран чёрный прямоугольник на центральном фото desktop.
+   3) prigorody FAQ: вопросы снова видны, ответы открываются.
+   4) prigorody delivery: premium dark cards без внешней «колхозной» рамки.
+   ══════════════════════════════════════════════════════════════ */
+
+/* 1) Hero messenger ring labels — bigger, readable, same visual lift distance */
+.hero-actions .btn-hero-messenger .hero-flat-text,
+.hero-actions .btn-hero-messenger [id^="flat-text-"] {
+  font-size: 8.6px !important;
+  font-weight: 600 !important;
+  letter-spacing: .38px !important;
+  paint-order: stroke fill;
+  stroke: rgba(8, 5, 2, .18);
+  stroke-width: .55px;
+}
+.hero-actions .btn-hero-messenger .hero-ring-text,
+.hero-actions .btn-hero-messenger [id^="ring-text-"] {
+  font-size: 7.2px !important;
+  letter-spacing: 1.65px !important;
+}
+@media (hover:hover) and (pointer:fine) {
+  .hero-actions .btn-hero-messenger:hover .hero-flat-text,
+  .hero-actions .btn-hero-messenger:hover [id^="flat-text-"] {
+    opacity: 1 !important;
+    transform: translateY(-13px) scale(1.03) !important;
+  }
+  .hero-actions .btn-hero-messenger:hover .hero-ring-text,
+  .hero-actions .btn-hero-messenger:hover [id^="ring-text-"] {
+    opacity: 0 !important;
+    transform: translateY(-12px) rotate(-18deg) scale(.94) !important;
+  }
+}
+/* MAX glyph was visually lower because the original path has lower-heavy bounds. Lift only inner glyph, not text/ring. */
+.hero-actions .btn-hero-max svg > g {
+  transform: translate(6px, 3.2px) scale(.27) !important;
+  transform-origin: 0 0 !important;
+  transform-box: view-box !important;
+}
+/* Contact/social MAX icons: normalize vertical alignment as well. */
+.social-link.max svg,
+.messenger-bar-max svg,
+.mm-msg--max svg {
+  transform: translateY(-1px) !important;
+}
+
+/* 2) Dark theme hero: desktop photo must remain a photo, not black rectangular panel. */
+@media (min-width: 769px) {
+  html[data-theme="dark"] .hero .hero-content,
+  [data-theme="dark"] .hero .hero-content {
+    background: transparent !important;
+    border-top: 0 !important;
+    box-shadow: none !important;
+  }
+  html[data-theme="dark"] .hero,
+  [data-theme="dark"] .hero {
+    background: transparent !important;
+  }
+  html[data-theme="dark"] .hero-photo-bg,
+  [data-theme="dark"] .hero-photo-bg {
+    background: #080503 !important;
+  }
+  html[data-theme="dark"] .hero-photo-bg::after,
+  [data-theme="dark"] .hero-photo-bg::after {
+    background:
+      linear-gradient(to bottom, rgba(5,3,2,.52) 0%, transparent 26%),
+      linear-gradient(to right, rgba(5,3,2,.78) 0%, rgba(8,5,2,.58) 31%, rgba(8,5,2,.16) 56%, transparent 78%) !important;
+  }
+}
+@media (max-width: 768px) {
+  html[data-theme="dark"] .hero .hero-content,
+  [data-theme="dark"] .hero .hero-content {
+    background:
+      radial-gradient(ellipse 80% 55% at 20% 0%, rgba(212,167,106,.10) 0%, transparent 58%),
+      linear-gradient(160deg,#0d0805 0%,#1a1009 45%,#110b05 100%) !important;
+    border-top: 1px solid rgba(212,167,106,.18) !important;
+  }
+}
+
+/* 3) Prigorody delivery FAQ: previous broad selector hid .cb-faq-q. Force correct structure. */
+.delivery-faq .faq-list {
+  max-width: 820px !important;
+}
+.delivery-faq .faq-item {
+  overflow: hidden !important;
+  contain: none !important;
+}
+.delivery-faq .faq-item > .cb-faq-q,
+.delivery-faq .faq-item > .faq-q,
+.delivery-faq .faq-item > .faq-question {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  width: 100% !important;
+  max-height: none !important;
+  opacity: 1 !important;
+  overflow: visible !important;
+  padding: 20px 24px !important;
+  margin: 0 !important;
+  cursor: pointer !important;
+  transform: none !important;
+  background: transparent !important;
+  color: var(--brown, #3d2b1f) !important;
+}
+.delivery-faq .faq-item > .cb-faq-q span,
+.delivery-faq .faq-item > .faq-q span,
+.delivery-faq .faq-item > .faq-question span {
+  color: inherit !important;
+  font-family: 'Cormorant Garamond', Georgia, serif !important;
+  font-size: clamp(18px, 2vw, 21px) !important;
+  font-weight: 500 !important;
+  line-height: 1.34 !important;
+}
+.delivery-faq .faq-item > .cb-faq-q .cb-faq-ico,
+.delivery-faq .faq-item > .faq-q .cb-faq-ico,
+.delivery-faq .faq-item .faq-icon {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  border-radius: 50% !important;
+  border: 1px solid rgba(201,147,74,.32) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: var(--gold, #c9934a) !important;
+  background: rgba(201,147,74,.055) !important;
+  transform: rotate(0deg) !important;
+  transition: transform .32s cubic-bezier(.34,1.56,.64,1), background .22s ease, border-color .22s ease !important;
+}
+.delivery-faq .faq-item.open > .cb-faq-q .cb-faq-ico,
+.delivery-faq .faq-item.open > .faq-q .cb-faq-ico,
+.delivery-faq .faq-item.open .faq-icon {
+  transform: rotate(45deg) !important;
+  border-color: rgba(201,147,74,.62) !important;
+  background: rgba(201,147,74,.12) !important;
+}
+.delivery-faq .faq-item > .cb-faq-a,
+.delivery-faq .faq-item > .faq-a,
+.delivery-faq .faq-item > .faq-answer {
+  overflow: hidden !important;
+  max-height: 0 !important;
+  opacity: 0 !important;
+  padding: 0 24px !important;
+  margin: 0 !important;
+  transition: max-height .42s cubic-bezier(.22,1,.36,1), opacity .32s ease, padding-bottom .32s ease !important;
+}
+.delivery-faq .faq-item.open > .cb-faq-a,
+.delivery-faq .faq-item.open > .faq-a,
+.delivery-faq .faq-item.open > .faq-answer {
+  max-height: 640px !important;
+  opacity: 1 !important;
+  padding: 0 24px 22px !important;
+}
+.delivery-faq .cb-faq-a-inner,
+.delivery-faq .faq-a-inner,
+.delivery-faq .faq-answer p {
+  font-family: 'Jost', system-ui, sans-serif !important;
+  font-size: 15px !important;
+  line-height: 1.78 !important;
+  font-weight: 300 !important;
+  color: var(--text-muted, #9a7a62) !important;
+}
+html[data-theme="dark"] .delivery-faq .faq-item > .cb-faq-q,
+[data-theme="dark"] .delivery-faq .faq-item > .cb-faq-q,
+html[data-theme="dark"] .delivery-faq .faq-item > .faq-q,
+[data-theme="dark"] .delivery-faq .faq-item > .faq-q {
+  color: #f7ead6 !important;
+}
+html[data-theme="dark"] .delivery-faq .cb-faq-a-inner,
+[data-theme="dark"] .delivery-faq .cb-faq-a-inner {
+  color: #c8a880 !important;
+}
+
+/* 4) Suburb delivery premium layout — especially dark mode. No outer frame, no edge-border artifact. */
+.prigorody-page .city-delivery,
+.city-delivery {
+  padding: clamp(46px, 6vw, 86px) 24px clamp(44px, 5vw, 72px) !important;
+  background:
+    radial-gradient(ellipse 72% 52% at 50% 0%, rgba(201,147,74,.10), transparent 64%),
+    linear-gradient(180deg, transparent 0%, rgba(201,147,74,.022) 100%) !important;
+  overflow: hidden;
+}
+.prigorody-page .delivery-card,
+.delivery-card {
+  max-width: 1020px !important;
+  padding: 0 !important;
+  margin: 0 auto !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+  perspective: 1200px;
+}
+.prigorody-page .delivery-card::before,
+.prigorody-page .delivery-card::after,
+.delivery-card::before,
+.delivery-card::after {
+  display: none !important;
+}
+.delivery-card__header {
+  justify-content: center !important;
+  text-align: center !important;
+  margin-bottom: 28px !important;
+}
+.delivery-card__title {
+  width: 100% !important;
+  font-size: clamp(30px, 4.5vw, 46px) !important;
+  letter-spacing: -.025em !important;
+}
+.delivery-card__badge {
+  background: rgba(201,147,74,.11) !important;
+  border: 1px solid rgba(201,147,74,.24) !important;
+  box-shadow: 0 8px 24px rgba(201,147,74,.08) !important;
+}
+.delivery-card__grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: clamp(12px, 1.8vw, 18px) !important;
+  margin-bottom: clamp(16px, 2vw, 22px) !important;
+}
+.delivery-card__item {
+  aspect-ratio: 1 / 1 !important;
+  min-height: 154px !important;
+  padding: 18px 14px !important;
+  border-radius: 24px !important;
+  background: linear-gradient(145deg, rgba(255,255,255,.92), rgba(250,247,242,.72)) !important;
+  border: 1px solid rgba(201,147,74,.18) !important;
+  box-shadow:
+    0 18px 44px rgba(61,43,31,.10),
+    0 5px 14px rgba(61,43,31,.055),
+    0 0 0 1px rgba(255,255,255,.52) inset !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transform-style: preserve-3d;
+  transition: transform .42s cubic-bezier(.16,1,.3,1), box-shadow .42s ease, border-color .3s ease, background .3s ease !important;
+}
+.delivery-card__icon { font-size: 31px !important; margin-bottom: 12px !important; transform: translateZ(24px); filter: drop-shadow(0 8px 14px rgba(61,43,31,.12)); }
+.delivery-card__label { transform: translateZ(18px); }
+.delivery-card__value { font-size: 16px !important; transform: translateZ(22px); }
+@media (hover:hover) and (pointer:fine) {
+  .delivery-card__item:hover {
+    transform: translateY(-8px) rotateX(6deg) rotateY(-5deg) !important;
+    border-color: rgba(201,147,74,.42) !important;
+    box-shadow:
+      0 28px 64px rgba(61,43,31,.16),
+      0 10px 22px rgba(201,147,74,.10),
+      0 0 0 1px rgba(255,255,255,.62) inset !important;
+  }
+}
+.delivery-card__districts,
+.delivery-card__note {
+  max-width: 780px !important;
+  margin: 20px auto 0 !important;
+  padding: 17px 22px !important;
+  border-radius: 22px !important;
+  text-align: center !important;
+  background: linear-gradient(135deg, rgba(201,147,74,.10), rgba(255,255,255,.42)) !important;
+  border: 1px solid rgba(201,147,74,.18) !important;
+  box-shadow: 0 14px 38px rgba(61,43,31,.07) !important;
+}
+html[data-theme="dark"] .city-delivery,
+[data-theme="dark"] .city-delivery {
+  background:
+    radial-gradient(ellipse 76% 52% at 50% 0%, rgba(212,167,106,.12), transparent 66%),
+    linear-gradient(180deg, rgba(10,6,3,.10), rgba(16,10,5,.94)) !important;
+}
+html[data-theme="dark"] .delivery-card,
+[data-theme="dark"] .delivery-card {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+html[data-theme="dark"] .delivery-card__item,
+[data-theme="dark"] .delivery-card__item {
+  background:
+    radial-gradient(circle at 35% 18%, rgba(232,184,122,.12), transparent 34%),
+    linear-gradient(145deg, rgba(34,22,12,.98), rgba(12,8,4,.96)) !important;
+  border-color: rgba(232,184,122,.20) !important;
+  box-shadow:
+    0 22px 54px rgba(0,0,0,.52),
+    0 0 0 1px rgba(232,184,122,.055) inset,
+    0 0 30px rgba(212,167,106,.06) !important;
+}
+html[data-theme="dark"] .delivery-card__districts,
+html[data-theme="dark"] .delivery-card__note,
+html[data-theme="dark"] .delivery-card__badge,
+[data-theme="dark"] .delivery-card__districts,
+[data-theme="dark"] .delivery-card__note,
+[data-theme="dark"] .delivery-card__badge {
+  background:
+    radial-gradient(ellipse 70% 80% at 50% 0%, rgba(232,184,122,.08), transparent 62%),
+    linear-gradient(145deg, rgba(28,18,9,.94), rgba(13,8,4,.92)) !important;
+  border-color: rgba(232,184,122,.20) !important;
+  box-shadow: 0 16px 42px rgba(0,0,0,.42), 0 0 24px rgba(212,167,106,.055) !important;
+}
+html[data-theme="dark"] .delivery-card__title,
+html[data-theme="dark"] .delivery-card__value,
+html[data-theme="dark"] .delivery-card__districts-list,
+[data-theme="dark"] .delivery-card__title,
+[data-theme="dark"] .delivery-card__value,
+[data-theme="dark"] .delivery-card__districts-list {
+  color: #f7ead6 !important;
+}
+html[data-theme="dark"] .delivery-card__label,
+html[data-theme="dark"] .delivery-card__districts-label,
+[data-theme="dark"] .delivery-card__label,
+[data-theme="dark"] .delivery-card__districts-label {
+  color: #c8a880 !important;
+}
+@media (max-width: 760px) {
+  .city-delivery { padding: 46px 18px !important; }
+  .delivery-card__grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .delivery-card__item { min-height: 142px !important; border-radius: 20px !important; }
+}
+
+/* 5) Dark framed blocks globally: softer Apple-like black glass, not hard rectangular frames. */
+html[data-theme="dark"] .content-block,
+html[data-theme="dark"] .local-context__inner,
+html[data-theme="dark"] .nearby-city-card,
+html[data-theme="dark"] .cb-fl,
+html[data-theme="dark"] .cb-gluten-card,
+html[data-theme="dark"] .cb-occ,
+[data-theme="dark"] .content-block,
+[data-theme="dark"] .local-context__inner,
+[data-theme="dark"] .nearby-city-card,
+[data-theme="dark"] .cb-fl,
+[data-theme="dark"] .cb-gluten-card,
+[data-theme="dark"] .cb-occ {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(232,184,122,.075), transparent 62%),
+    linear-gradient(145deg, rgba(32,21,11,.96), rgba(16,10,5,.94)) !important;
+  border-color: rgba(232,184,122,.16) !important;
+  box-shadow: 0 18px 46px rgba(0,0,0,.46), 0 0 0 1px rgba(232,184,122,.045) inset !important;
+}
+/* ══ END PATCH R20 ══ */
