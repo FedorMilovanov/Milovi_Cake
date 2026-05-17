@@ -42,13 +42,14 @@ ALLOWED_CSS = {
     "css/gallery/gallery-2026.css",
 }
 
-# Allowed JS files (AI_DO_NOT_TOUCH §9: 5 files)
+# Allowed JS files (AI_DO_NOT_TOUCH §9: 6 files)
 ALLOWED_JS = {
     "js/main.js",
     "js/nav.js",
     "js/mc-2026.js",
     "js/v20-faq-fix.js",
     "js/gallery/main.js",
+    "js/gallery/data.js",
 }
 
 # Size budgets (bytes)
@@ -356,8 +357,10 @@ with R.section("3. Version Sync (sw.js ↔ HTML)"):
 with R.section("4. SEO Validation"):
     seo_issues = []
 
+    # Skip technical files: 404, search-engine verification files
+    SEO_SKIP_PREFIXES = ("404.html", "google", "yandex")
     for rel, path in html_pages:
-        if "404.html" in rel:
+        if any(rel.startswith(p) for p in SEO_SKIP_PREFIXES):
             continue
 
         parsed = parse_html(path)
@@ -723,36 +726,66 @@ with R.section("14. Resource Integrity"):
     missing_resources = []
     checked_resources = set()
 
+    def _resolve_url(url, page_rel):
+        """Resolve URL against page location. Absolute (/foo) → ROOT/foo;
+        Relative (../foo, ./foo, foo) → ROOT/<page_dir>/foo (normalized)."""
+        clean = unquote(url.split("?")[0].split("#")[0])
+        if not clean:
+            return None
+        if clean.startswith("/"):
+            target = ROOT / clean.lstrip("/")
+        else:
+            page_dir = (ROOT / page_rel).parent
+            target = (page_dir / clean).resolve()
+        # Normalize to detect duplicates
+        try:
+            key = str(target.relative_to(ROOT))
+        except ValueError:
+            key = str(target)
+        return target, key
+
     for rel, path in html_pages[:10]:
         parsed = parse_html(path)
 
         for href in parsed.stylesheets:
-            if href.startswith(("http://", "https://")):
+            if href.startswith(("http://", "https://", "data:")):
                 continue
-            clean = unquote(href.split("?")[0].split("#")[0]).lstrip("/")
-            if clean and clean not in checked_resources:
-                checked_resources.add(clean)
-                if not (ROOT / clean).exists():
-                    missing_resources.append(f"{rel} → {clean} (CSS)")
+            resolved = _resolve_url(href, rel)
+            if not resolved:
+                continue
+            target, key = resolved
+            if key in checked_resources:
+                continue
+            checked_resources.add(key)
+            if not target.exists():
+                missing_resources.append(f"{rel} → {href} (CSS)")
 
         for src in parsed.scripts:
-            if src.startswith(("http://", "https://")):
+            if src.startswith(("http://", "https://", "data:")):
                 continue
-            clean = unquote(src.split("?")[0].split("#")[0]).lstrip("/")
-            if clean and clean not in checked_resources:
-                checked_resources.add(clean)
-                if not (ROOT / clean).exists():
-                    missing_resources.append(f"{rel} → {clean} (JS)")
+            resolved = _resolve_url(src, rel)
+            if not resolved:
+                continue
+            target, key = resolved
+            if key in checked_resources:
+                continue
+            checked_resources.add(key)
+            if not target.exists():
+                missing_resources.append(f"{rel} → {src} (JS)")
 
         for img in parsed.images[:20]:
             src = img["src"]
             if src.startswith(("http://", "https://", "data:")):
                 continue
-            clean = unquote(src.split("?")[0].split("#")[0]).lstrip("/")
-            if clean and clean not in checked_resources:
-                checked_resources.add(clean)
-                if not (ROOT / clean).exists():
-                    missing_resources.append(f"{rel}:{img['line']} → {clean} (img)")
+            resolved = _resolve_url(src, rel)
+            if not resolved:
+                continue
+            target, key = resolved
+            if key in checked_resources:
+                continue
+            checked_resources.add(key)
+            if not target.exists():
+                missing_resources.append(f"{rel}:{img['line']} → {src} (img)")
 
     for mr in missing_resources[:30]:
         R.err(f"Missing resource: {mr}")

@@ -122,9 +122,9 @@ python3 prigorody/build.py
 - `v20-dark-and-fixes.css`, `v20-fixes.css`, `final-fixes.css`
 - `gallery/gallery-2026.css`
 
-**Запрещено создавать новые JS-файлы**. Есть ровно 5:
+**Файловая структура JS — ровно 6 файлов:**
 - `main.js`, `nav.js`, `mc-2026.js`, `v20-faq-fix.js`
-- `gallery/main.js`
+- `gallery/main.js`, `gallery/data.js`
 
 ## История
 
