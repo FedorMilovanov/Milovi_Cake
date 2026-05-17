@@ -1,4 +1,4 @@
-import { GALLERY_ITEMS } from './data.js?v=20260518r24';
+import { GALLERY_ITEMS } from './data.js?v=20260518r25';
 
 const $ = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
@@ -9,7 +9,9 @@ const filterButtons = [
   { id: 'meringue', label: 'Рулеты' }, { id: 'pavlova', label: 'Павлова' },
   { id: 'bday', label: 'День рождения' },
 ];
-const state = { filter:'all', items:[], visible:[], swiper:null, lbIndex:0, observer:null, bgTimer:null, isNavigating: false };
+const CONTACT_PHONE = '79119038886';
+const state = { filter:'all', items:[], visible:[], swiper:null, lbIndex:0, observer:null, bgTimer:null, isNavigating: false, mediaWarmupTimer: null };
+
 
 function esc(s=''){ return String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
 function normalizeItem(item) {
@@ -226,20 +228,20 @@ function openLightbox(index){
   state.visible.forEach((item,i)=>{ 
     const slide=document.createElement('div'); 
     slide.className='swiper-slide'; 
+    slide.dataset.index = String(i);
     const wrap=document.createElement('div'); 
     wrap.className='lb-media-wrap'; 
     if(item.type==='video'){ 
       const v=document.createElement('video'); 
       v.className='lb-media'; 
-      // Lazy load video src
-      if(Math.abs(i-index) <= 1) v.src=item.videoSrc;
+      if(i === index) v.src=item.videoSrc;
       else v.dataset.pendingSrc = item.videoSrc;
-      
       v.poster=item.src; 
       v.muted=true; 
       v.loop=true; 
       v.playsInline=true; 
-      v.preload='metadata'; 
+      v.preload=i === index ? 'auto' : 'metadata'; 
+      v.setAttribute('playsinline', '');
       wrap.appendChild(v); 
       const hint=document.createElement('div'); 
       hint.className='lb-video-hint'; 
@@ -247,11 +249,17 @@ function openLightbox(index){
       wrap.appendChild(hint);
     } else { 
       const img=document.createElement('img'); 
-      img.className='lb-media'; 
-      img.src=item.fullSrc||item.src; 
+      img.className='lb-media lb-media-photo'; 
+      img.src=item.src; 
       img.alt=item.title; 
       img.loading=Math.abs(i-index)<=1?'eager':'lazy'; 
-      img.onerror=()=>{ if(img.src!==item.src) img.src=item.src; }; 
+      img.decoding='async';
+      img.fetchPriority = i === index ? 'high' : 'auto';
+      img.dataset.previewSrc = item.src;
+      img.dataset.fullSrc = item.fullSrc || item.src;
+      img.dataset.resolved = (item.fullSrc && item.fullSrc !== item.src) ? 'preview' : 'full';
+      if (img.dataset.resolved === 'preview') img.classList.add('is-preview');
+      img.onerror=()=>{ if(img.src!==item.src) img.src=item.src; wrap.classList.remove('is-loading'); }; 
       wrap.appendChild(img); 
     } 
     slide.appendChild(wrap); 
@@ -260,7 +268,7 @@ function openLightbox(index){
     th.className='lb-thumb'; 
     th.type='button'; 
     th.setAttribute('aria-label',item.title); 
-    th.innerHTML=`<img src="${item.src}" alt="">${item.type==='video'?'<span class="thumb-play"><svg viewBox="0 0 12 12"><path d="M3.5 2v8l6.5-4z"/></svg></span>':''}`; 
+    th.innerHTML=`<img src="${item.src}" alt="" loading="lazy" decoding="async">${item.type==='video'?'<span class="thumb-play"><svg viewBox="0 0 12 12"><path d="M3.5 2v8l6.5-4z"/></svg></span>':''}`; 
     th.addEventListener('click',e=>{e.stopPropagation(); state.swiper?.slideTo(i);}); 
     thumbs.appendChild(th); 
   });
@@ -272,19 +280,21 @@ function openLightbox(index){
   $('#lbNext').addEventListener('click',e=>{e.stopPropagation(); state.swiper?.slideNext();}); 
   $('#lbShare')?.addEventListener('click', e=>{ e.stopPropagation(); shareCurrentWork(); }); 
   $('#lbCopy')?.addEventListener('click', e=>{ e.stopPropagation(); copyCurrentLink(); }); 
-  // FIX r24: Prevent double-fire (link open + clipboard copy firing simultaneously).
-  // Pass clicked element so animation appears on correct button, not hardcoded #lbWantTg.
+  // FIX r25: copy wish text without delaying popup navigation; delayed window.open on mobile
+  // can be treated as a popup and blocked. Also Telegram now goes to private contact, not channel.
   $$('#lbRoot [data-copy-msg]').forEach(a => a.addEventListener('click', e => {
     e.preventDefault();
     copyWishText(a.dataset.msg || '', a);
     const href = a.getAttribute('href');
-    if (href) setTimeout(() => window.open(href, '_blank', 'noopener,noreferrer'), 80);
+    if (href) window.open(href, '_blank', 'noopener,noreferrer');
   })); 
   
   initSwiperWhenReady(index); 
   updateLightbox(index,true); 
+  requestAnimationFrame(() => warmupLightboxMedia(index));
   window.addEventListener('keydown',onLightboxKey);
   window.addEventListener('popstate', onPopState);
+  window.addEventListener('resize', onLightboxResize, { passive: true });
   
   // Focus trap
   $('#lbClose').focus();
@@ -313,22 +323,29 @@ function initSwiperWhenReady(index){
       effect:'coverflow',
       grabCursor:true,
       centeredSlides:true,
-      slidesPerView:'auto',
+      slidesPerView: mobile ? 1.08 : 1.65,
       initialSlide:index,
-      speed:600,
-      keyboard:false, // Managed by onLightboxKey to avoid double nav
-      observer:true,
-      observeParents:true,
-      coverflowEffect:{rotate:mobile?18:28,stretch:mobile?-20:0,depth:mobile?150:280,modifier:1.3,slideShadows:false},
+      speed:520,
+      spaceBetween: mobile ? 6 : 18,
+      keyboard:false,
+      watchSlidesProgress:true,
+      updateOnWindowResize:true,
+      resistanceRatio:.82,
+      roundLengths:true,
+      coverflowEffect:{rotate:mobile?14:22,stretch:0,depth:mobile?110:180,modifier:1,scale:0.92,slideShadows:false},
       on:{
         slideChange(){updateLightbox(this.activeIndex);},
-        init(){
-          // updateLightbox already called in openLightbox
+        afterInit(){
+          centerThumb(index, 'auto');
+          requestAnimationFrame(() => this.update());
+        },
+        resize(){
+          centerThumb(this.activeIndex, 'auto');
         }
       }
     }); 
   }; 
-  init(); 
+  requestAnimationFrame(init); 
 }
 function updateLightbox(index, immediate=false){ 
   state.lbIndex=index; 
@@ -340,14 +357,7 @@ function updateLightbox(index, immediate=false){
   $('#lbPrev').style.display=index>0?'flex':'none'; 
   $('#lbNext').style.display=index<state.visible.length-1?'flex':'none'; 
   $$('#lbThumbs .lb-thumb').forEach((t,i)=>t.classList.toggle('active',i===index)); 
-  
-  if(!immediate && !state.isNavigating) {
-    state.isNavigating = true;
-    $('#lbThumbs').children[index]?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
-    setTimeout(() => { state.isNavigating = false; }, 500);
-  } else if (immediate) {
-    $('#lbThumbs').children[index]?.scrollIntoView({behavior:'auto',block:'nearest',inline:'center'});
-  }
+  centerThumb(index, immediate ? 'auto' : 'smooth');
 
   const bg=$('#lbBackdropBg'); 
   const setBg=()=>{
@@ -362,22 +372,7 @@ function updateLightbox(index, immediate=false){
     state.bgTimer=setTimeout(setBg,90);
   } 
 
-  // Lazy load video src and handle play/pause
-  $$('#lbWrapper .swiper-slide').forEach((slide, i) => {
-    const v = $('video', slide);
-    if (!v) return;
-    
-    if (Math.abs(i - index) <= 1) {
-      if (!v.src && v.dataset.pendingSrc) {
-        v.src = v.dataset.pendingSrc;
-        delete v.dataset.pendingSrc;
-      }
-    }
-    
-    v.controls = (i === index);
-    if (i === index) v.play().catch(()=>{});
-    else v.pause();
-  });
+  warmupLightboxMedia(index);
 
   const url = `${location.origin}${location.pathname}#${encodeURIComponent(item.id)}`; 
   const wishText = buildWishText(item, url);
@@ -398,10 +393,11 @@ function buildWishText(item, url = currentWorkUrl(item)) {
 }
 function buildContactUrl(channel, item, url = currentWorkUrl(item)) {
   const text = buildWishText(item, url);
-  if (channel === 'wa') return `https://wa.me/79119038886?text=${encodeURIComponent(text)}`;
-  // FIX r24: t.me/+PHONE ignores ?text= param. Use @username which supports pre-filled text.
-  if (channel === 'tg') return `https://t.me/MiloviCake?text=${encodeURIComponent(text)}`;
-  // FIX r24: MAX has no ?text= support. Clipboard copy is handled by data-copy-msg handler.
+  if (channel === 'wa') return `https://wa.me/${CONTACT_PHONE}?text=${encodeURIComponent(text)}`;
+  // FIX r25: @MiloviCake is a public channel, not a private dialog. Order CTA must open
+  // the personal Telegram contact link by phone, otherwise users land on the channel preview.
+  if (channel === 'tg') return `https://t.me/+${CONTACT_PHONE}?text=${encodeURIComponent(text)}`;
+  // MAX still relies on clipboard copy because not all clients support prefilled text.
   if (channel === 'max') return `https://max.ru/MiloviCake`;
   return url;
 }
@@ -444,6 +440,82 @@ async function copyCurrentLink() {
   catch(e) { prompt('Скопируйте ссылку на работу:', url); }
 }
 
+function centerThumb(index, behavior = 'smooth') {
+  const strip = $('#lbThumbs');
+  const thumb = strip?.children?.[index];
+  if (!strip || !thumb) return;
+  const left = Math.max(0, thumb.offsetLeft - ((strip.clientWidth - thumb.offsetWidth) / 2));
+  if (typeof strip.scrollTo === 'function') strip.scrollTo({ left, behavior });
+  else strip.scrollLeft = left;
+}
+function ensurePhotoUpgrade(photo, priority = 'auto') {
+  if (!photo || photo.dataset.resolved === 'full') return;
+  const fullSrc = photo.dataset.fullSrc;
+  if (!fullSrc || photo.dataset.loadingFull === fullSrc) return;
+  const wrap = photo.closest('.lb-media-wrap');
+  wrap?.classList.add('is-loading');
+  photo.dataset.loadingFull = fullSrc;
+  const loader = new Image();
+  loader.decoding = 'async';
+  loader.fetchPriority = priority;
+  loader.onload = () => {
+    if (!document.body.contains(photo)) return;
+    photo.src = fullSrc;
+    photo.dataset.resolved = 'full';
+    photo.classList.remove('is-preview');
+    delete photo.dataset.loadingFull;
+    wrap?.classList.remove('is-loading');
+    requestAnimationFrame(() => state.swiper?.update());
+  };
+  loader.onerror = () => {
+    delete photo.dataset.loadingFull;
+    wrap?.classList.remove('is-loading');
+  };
+  loader.src = fullSrc;
+}
+function ensureVideoReady(video, shouldPlay = false) {
+  if (!video) return;
+  if (!video.src && video.dataset.pendingSrc) {
+    video.src = video.dataset.pendingSrc;
+    delete video.dataset.pendingSrc;
+    video.load();
+  }
+  video.preload = shouldPlay ? 'auto' : 'metadata';
+  video.controls = shouldPlay;
+  if (shouldPlay) video.play().catch(()=>{});
+  else video.pause();
+}
+function ensureSlideMedia(index, priority = 'auto') {
+  const slide = $$('#lbWrapper .swiper-slide')[index];
+  if (!slide) return;
+  const photo = $('.lb-media-photo', slide);
+  if (photo) ensurePhotoUpgrade(photo, priority);
+  const video = $('video.lb-media', slide);
+  if (video) ensureVideoReady(video, index === state.lbIndex);
+}
+function warmupLightboxMedia(index) {
+  clearTimeout(state.mediaWarmupTimer);
+  ensureSlideMedia(index, 'high');
+  ensureSlideMedia(index - 1, 'auto');
+  ensureSlideMedia(index + 1, 'auto');
+  // Warm up the next ring in idle time to keep swipe smooth without flooding the network.
+  state.mediaWarmupTimer = setTimeout(() => {
+    ensureSlideMedia(index - 2, 'low');
+    ensureSlideMedia(index + 2, 'low');
+  }, 180);
+  $$('#lbWrapper .swiper-slide').forEach((slide, i) => {
+    const v = $('video.lb-media', slide);
+    if (v && i !== index) {
+      v.controls = false;
+      v.pause();
+    }
+  });
+}
+function onLightboxResize() {
+  state.swiper?.update();
+  centerThumb(state.lbIndex, 'auto');
+}
+
 function onLightboxKey(e){ 
   if(e.key==='Escape') closeLightbox(); 
   if(e.key==='ArrowLeft') state.swiper?.slidePrev(); 
@@ -460,7 +532,9 @@ function closeLightbox(updateState = true){
   state._swiperAbort = null; // abort pending Swiper init
   window.removeEventListener('keydown',onLightboxKey); 
   window.removeEventListener('popstate', onPopState);
+  window.removeEventListener('resize', onLightboxResize);
   clearTimeout(state.bgTimer);
+  clearTimeout(state.mediaWarmupTimer);
   $$('#lbWrapper video').forEach(v=>{v.pause(); v.removeAttribute('src'); v.load();}); 
   if(state.swiper){state.swiper.destroy(true,true); state.swiper=null;} 
   $('#lbRoot')?.remove(); 
