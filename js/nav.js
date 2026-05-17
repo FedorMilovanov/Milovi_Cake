@@ -274,7 +274,11 @@
         /* Нижняя безопасная зона панели */
         '.mc-sheet-safe{height:env(safe-area-inset-bottom,0px);}',
       '}', /* end @media */
-    ].join('');
+  
+  /* has-mc-nav: CSS class approach for body bottom-padding (no inline style) */
+  '.has-mc-nav{padding-bottom:calc(60px + env(safe-area-inset-bottom,0px)) !important;}',
+  '@media(min-width:769px){.has-mc-nav{padding-bottom:0 !important;}}',
+  ].join('');
     document.head.appendChild(style);
 
     // ── Определить пункты нижнего бара ──
@@ -351,10 +355,8 @@
     nav.appendChild(moreBtn);
 
     document.body.appendChild(nav);
-    // FIX: ensure body has bottom padding for mc-nav (fallback for CSS :has() rule)
-    if (!document.body.style.paddingBottom) {
-      document.body.style.paddingBottom = 'calc(60px + env(safe-area-inset-bottom, 0px))';
-    }
+    // FIX: use CSS class instead of inline style — inline style blocks CSS overrides
+    document.body.classList.add('has-mc-nav');
 
     // ── Построить slide-up панель ──
     var backdrop = document.createElement('div');

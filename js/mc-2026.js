@@ -44,7 +44,7 @@
   }
   // Прогон при старте
   patchDynamicImages(document);
-  // И при любых вставках
+  // Наблюдаем только за catalogGrid — не за всем body (performance fix)
   try {
     var mo = new MutationObserver(function(muts){
       for (var i = 0; i < muts.length; i++){
@@ -55,7 +55,21 @@
         }
       }
     });
-    mo.observe(document.body, { childList: true, subtree: true });
+    var _targetGrid = document.getElementById('catalogGrid');
+    if (_targetGrid) {
+      // Каталог уже в DOM — наблюдаем только за ним
+      mo.observe(_targetGrid, { childList: true, subtree: true });
+    } else {
+      // Каталог ещё не создан — ждём его появления в body (без subtree)
+      var _gridWatcher = new MutationObserver(function(){
+        var g = document.getElementById('catalogGrid');
+        if (g) {
+          _gridWatcher.disconnect();
+          mo.observe(g, { childList: true, subtree: true });
+        }
+      });
+      _gridWatcher.observe(document.body, { childList: true });
+    }
   } catch(e){ /* ignore */ }
 
 

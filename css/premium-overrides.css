@@ -526,15 +526,8 @@ body.menu-open {
    Точечные исправления без переписывания структуры.
    ══════════════════════════════════════════════════════════════ */
 
-/* Fix: #catalog в style.css содержит сломанный градиент
-   (закрывающая скобка стоит после комментария). Перезаписываем
-   валидным градиентом и даём корректный вариант для тёмной темы. */
-#catalog {
-  background: linear-gradient(to bottom, var(--cream-dark, #e8dece) 0, var(--white, #ffffff) 80px);
-}
-[data-theme="dark"] #catalog {
-  background: linear-gradient(to bottom, #1b1208 0, #1e1408 80px);
-}
+/* #catalog light-mode gradient fixed directly in style.css (bug fix).
+   Dark override kept in v20-dark-and-fixes.css where dark theme lives. */
 
 /* Fix: .cb-ftab.cb-on в тёмной теме получала почти невидимую
    активную таблетку через var(--white). Фиксируем контраст. */

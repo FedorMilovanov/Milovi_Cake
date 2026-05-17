@@ -10,40 +10,8 @@ html[data-theme="dark"] .hero-content,
   border: none !important;
 }
 
-/* 2. Premium Dark Mode for Delivery Cards (Пригороды) */
-html[data-theme="dark"] .delivery-card,
-[data-theme="dark"] .delivery-card {
-  background: rgba(26, 17, 8, 0.4) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  border: 1px solid rgba(212, 167, 106, 0.15) !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4) !important;
-  border-radius: 20px !important;
-  overflow: hidden !important;
-}
-html[data-theme="dark"] .delivery-card::before,
-[data-theme="dark"] .delivery-card::before,
-html[data-theme="dark"] .delivery-card::after,
-[data-theme="dark"] .delivery-card::after {
-  display: none !important;
-}
-html[data-theme="dark"] .delivery-card__item,
-[data-theme="dark"] .delivery-card__item {
-  border-bottom: 1px solid rgba(212, 167, 106, 0.1) !important;
-}
-html[data-theme="dark"] .delivery-card__item:last-child,
-[data-theme="dark"] .delivery-card__item:last-child {
-  border-bottom: none !important;
-}
-html[data-theme="dark"] .delivery-card__item-title,
-[data-theme="dark"] .delivery-card__item-title {
-  color: #c8a880 !important;
-}
-html[data-theme="dark"] .delivery-card__item-value,
-[data-theme="dark"] .delivery-card__item-value {
-  color: #f0e4d0 !important;
-  font-weight: 500 !important;
-}
+/* 2. Dark Mode for Delivery Cards: consolidated in final-fixes.css to avoid cascade conflicts.
+   Do not add .delivery-card dark overrides here — managed in final-fixes.css only. */
 
 /* 3. Force FAQ visibility */
 .delivery-faq,

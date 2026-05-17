@@ -144,6 +144,7 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
 }
 
 /* 5) Пригороды: delivery glassmorphism без “коробочных” рамок */
+/* ЕДИНСТВЕННОЕ определение dark .delivery-card (consolidated, удалены дубли из v20-fixes.css и premium-overrides.css) */
 [data-theme="dark"] .delivery-card {
   border: 1px solid rgba(212,167,106,.15) !important;
   background: rgba(26,17,8,.88) !important;

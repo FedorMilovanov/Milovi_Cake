@@ -2,18 +2,18 @@
    MILOVI CAKE — Service Worker v1.3 (V20260517-FAST)
    ═══════════════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'milovi-cake-v2026.05.17-r19';
+const CACHE_NAME = 'milovi-cake-v2026.05.17-r20fix';
 const PRECACHE = [
   '/',
-  '/css/style.css?v=20260516r18',
-  '/css/mc-2026.css?v=20260516r18',
-  '/css/premium-overrides.css?v=20260516r18',
+  '/css/style.css?v=20260517r20',
+  '/css/mc-2026.css?v=20260517r20',
+  '/css/premium-overrides.css?v=20260517r20',
   '/css/gallery/gallery-2026.css',
   '/css/final-fixes.css',
-  '/js/main.js?v=20260516r18',
+  '/js/main.js?v=20260517r20',
   '/js/gallery/main.js',
-  '/js/nav.js?v=20260516r18',
-  '/js/mc-2026.js?v=20260516r18',
+  '/js/nav.js?v=20260517r20',
+  '/js/mc-2026.js?v=20260517r20',
   '/img/head_mobile.avif',
   '/img/head_desktop.avif',
   '/img/head_mobile.webp',

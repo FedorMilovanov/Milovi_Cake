@@ -73,7 +73,7 @@ function renderGrid(){
   const grid=$('#galleryGrid'), empty=$('#gxEmpty'); 
   grid.innerHTML=''; 
   if(empty) {
-    empty.style.display = state.visible.length > 0 ? 'none' : 'flex';
+    empty.hidden = state.visible.length > 0; // boolean hidden attr; CSS controls display type
   }
   if(!state.visible.length) return;
   const frag=document.createDocumentFragment();
@@ -201,7 +201,10 @@ function lightboxTemplate(){
   </div>`; 
 }
 function openLightbox(index){
-  if ($('#lbRoot')) closeLightbox();
+  if ($('#lbRoot')) {
+    closeLightbox._skipObserverRestore = true; // don't rebuild observer, we'll disconnect it immediately
+    closeLightbox();
+  }
   // Pause grid videos
   if(state.observer) state.observer.disconnect();
   $$('#galleryGrid video').forEach(v => v.pause());
@@ -277,8 +280,16 @@ function onPopState() {
 }
 
 function initSwiperWhenReady(index){ 
+  let _swiperTries = 0;
+  const _swiperToken = {};
+  state._swiperAbort = _swiperToken;
   const init=()=>{ 
+    if(state._swiperAbort !== _swiperToken) return;
     if(!window.Swiper){ 
+      if(++_swiperTries >= 120){
+        console.warn('[Milovi] Swiper CDN timeout');
+        return;
+      }
       setTimeout(init,50); 
       return; 
     } 
@@ -382,7 +393,7 @@ async function copyWishText(text) {
   try { 
     await navigator.clipboard?.writeText(text); 
     const tgBtn = $('#lbWantTg');
-    const originalLabel = tgBtn.getAttribute('aria-label');
+    if (!tgBtn) return; // null-guard: lightbox may close during async clipboard write
     tgBtn.classList.add('copy-success');
     setTimeout(() => tgBtn.classList.remove('copy-success'), 1500);
   }
@@ -427,6 +438,7 @@ function onLightboxKey(e){
   }
 }
 function closeLightbox(updateState = true){ 
+  state._swiperAbort = null; // abort pending Swiper init
   window.removeEventListener('keydown',onLightboxKey); 
   window.removeEventListener('popstate', onPopState);
   clearTimeout(state.bgTimer);
@@ -435,7 +447,8 @@ function closeLightbox(updateState = true){
   $('#lbRoot')?.remove(); 
   document.body.style.overflow=''; 
   if (updateState) history.replaceState(null,'',location.pathname+location.search); 
-  setupVideoObserver(); // Re-enable grid videos
+  if (!closeLightbox._skipObserverRestore) setupVideoObserver(); // Re-enable grid videos
+  closeLightbox._skipObserverRestore = false;
 }
 function hidePreloader(delay=650){ 
   const p = $('#preloader');
