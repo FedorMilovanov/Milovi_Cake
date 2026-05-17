@@ -1,35 +1,35 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   MILOVI CAKE — Service Worker v1.1 (V3-FIX)
-   Стратегия: stale-while-revalidate для статики (img/css/js/font),
-              network-first для HTML.
-   Cache-bust через имя версии CACHE_NAME (увеличивайте при деплое CSS/JS).
+   MILOVI CAKE — Service Worker v1.2 (V20260517-FIX)
    ═══════════════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'milovi-cake-v2026.05.16-r17';
+const CACHE_NAME = 'milovi-cake-v2026.05.17';
 const PRECACHE = [
   '/',
-  '/css/style.css?v=20260516r17',
-  '/css/mc-2026.css?v=20260516r17',
-  '/css/premium-overrides.css?v=20260516r17',
-  '/css/gallery/gallery-2026.css?v=20260516r17',
-  '/js/main.js?v=20260516r17',
-  '/js/nav.js?v=20260516r17',
-  '/js/mc-2026.js?v=20260516r17',
+  '/css/style.css',
+  '/css/mc-2026.css',
+  '/css/premium-overrides.css',
+  '/css/gallery/gallery-2026.css',
+  '/css/final-fixes.css',
+  '/js/main.js',
+  '/js/gallery/main.js',
+  '/js/gallery/data.js',
+  '/js/nav.js',
+  '/js/mc-2026.js',
   '/img/head_mobile.avif',
   '/img/head_desktop.avif',
   '/img/head_mobile.webp',
   '/img/head_desktop.webp',
   '/manifest.json',
-  '/favicon.svg?v=20260516r17'
+  '/favicon.svg',
+  '/gallery/'
 ];
 
 // ───── INSTALL ─────
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      // addAll fail-fast → используем individual add с .catch для отказоустойчивости
       return Promise.all(PRECACHE.map((url) =>
-        cache.add(url).catch(() => { /* tolerate misses (404) */ })
+        cache.add(url).catch(() => { /* tolerate misses */ })
       ));
     }).then(() => self.skipWaiting())
   );
@@ -50,24 +50,17 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
-
   const url = new URL(req.url);
-
-  // Не кешируем сторонние домены — пропускаем для нативного fetch
   if (url.origin !== location.origin) return;
 
-  // Не кешируем аналитику и API
   if (
     url.pathname.startsWith('/api/') ||
     url.pathname.includes('/mc.yandex.ru') ||
-    url.pathname.includes('/googletagmanager') ||
-    url.pathname.includes('/gtag/')
+    url.pathname.includes('/googletagmanager')
   ) return;
 
   const acceptHeader = req.headers.get('accept') || '';
 
-  // HTML — network first (всегда свежий контент)
-  // Кешируем только успешные basic-ответы (не opaqueredirect, не error)
   if (req.mode === 'navigate' || acceptHeader.indexOf('text/html') !== -1){
     event.respondWith(
       fetch(req).then((res) => {
@@ -81,7 +74,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Статика — stale-while-revalidate
   event.respondWith(
     caches.match(req).then((cached) => {
       const fetched = fetch(req).then((res) => {
@@ -96,7 +88,6 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// ───── MESSAGE (для принудительного обновления) ─────
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING'){
     self.skipWaiting();

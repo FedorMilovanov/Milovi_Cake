@@ -92,6 +92,38 @@ function setCartItemDessertType(cartKey, type) {
 }
 window.setCartItemDessertType = setCartItemDessertType;
 
+
+const slideTimers = {};
+const sliderCurrentIdx = {};
+
+function startProductSlider(pid, total) {
+  stopProductSlider(pid);
+  if (total <= 1) return;
+  slideTimers[pid] = setInterval(() => {
+    if (document.hidden) return;
+    const wrap = document.getElementById('slider-' + pid);
+    if (wrap && wrap.matches(':hover')) return;
+    goSlide(pid, (sliderCurrentIdx[pid] || 0) + 1);
+  }, 3000);
+}
+
+function stopProductSlider(pid) {
+  if (slideTimers[pid]) { clearInterval(slideTimers[pid]); delete slideTimers[pid]; }
+}
+
+function goSlide(pid, idx) {
+  const wrap = document.getElementById('slider-' + pid);
+  if (!wrap) return;
+  const slides = wrap.querySelectorAll('.slide-img');
+  const dots = wrap.querySelectorAll('.dot');
+  const total = slides.length;
+  if (total === 0) return;
+  const next = (idx + total) % total;
+  sliderCurrentIdx[pid] = next;
+  slides.forEach((el, i) => el.classList.toggle('active', i === next));
+  dots.forEach((el, i) => el.classList.toggle('active', i === next));
+}
+
 // ── DATA ──
 const products = [
   { id: 1, name: 'Бисквитный торт', fillGroup: 'biscuit', desc: 'Воздушный торт с нежнейшим кремом и авторским декором', min: 'Заказ от 2 кг, декор рассчитывается отдельно', price: 'от 2 800 ₽/кг', priceNum: 2800, unit: 'кг', minKg: 2, emoji: '🎂',
@@ -119,11 +151,10 @@ const products = [
 ];
 
 let cart = {};
-const slideTimers = {};
+
 
 function renderCatalog() {
-  Object.values(slideTimers).forEach(id => clearInterval(id));
-  Object.keys(slideTimers).forEach(k => delete slideTimers[k]);
+  products.forEach(p => stopProductSlider(p.id));
 
   const grid = document.getElementById('catalogGrid');
   if (!grid) return;
@@ -175,21 +206,15 @@ function renderCatalog() {
 
   products.forEach(p => {
     if (p.slides && p.slides.length > 1) {
-      let cur = 0;
-      function startTimer() { stopTimer(); slideTimers[p.id] = setInterval(() => { if (document.hidden) return; cur = (cur + 1) % p.slides.length; goSlide(p.id, cur); }, 3000); }
-      function stopTimer() { if (slideTimers[p.id]) { clearInterval(slideTimers[p.id]); delete slideTimers[p.id]; } }
-      startTimer();
-      setTimeout(() => {
-        const wrap = document.getElementById('slider-' + p.id);
-        if (wrap) {
-          wrap.addEventListener('mouseenter', () => { stopTimer(); cur = sliderCurrentIdx[p.id] || 0; });
-          wrap.addEventListener('mouseleave', () => { cur = sliderCurrentIdx[p.id] || 0; startTimer(); });
-        }
-        addSliderTouch(p.id, p.slides.length);
-      }, 100);
+      const wrap = document.getElementById('slider-' + p.id);
+      if (wrap) {
+        wrap.addEventListener('mouseenter', () => stopProductSlider(p.id));
+        wrap.addEventListener('mouseleave', () => startProductSlider(p.id, p.slides.length));
+      }
+      addSliderTouch(p.id, p.slides.length);
+      startProductSlider(p.id, p.slides.length);
     }
   });
-
   observeReveal();
   initPriceGlowObserver();
 }
@@ -202,14 +227,9 @@ function goSlide(pid, idx) {
   wrap.querySelectorAll('.dot').forEach((el, i) => el.classList.toggle('active', i === idx));
 }
 
-const sliderCurrentIdx = {};
 
-function sliderStep(pid, dir, total) {
-  const current = sliderCurrentIdx[pid] || 0;
-  const next = (current + dir + total) % total;
-  sliderCurrentIdx[pid] = next;
-  goSlide(pid, next);
-  if (slideTimers[pid]) { clearInterval(slideTimers[pid]); delete slideTimers[pid]; }
+
+function sliderStep(pid, dir, total) { goSlide(pid, (sliderCurrentIdx[pid] || 0) + dir); }
   const wrap = document.getElementById('slider-' + pid);
   if (total > 1 && wrap && !wrap.matches(':hover')) {
     slideTimers[pid] = setInterval(() => {
@@ -233,12 +253,7 @@ const CAKE_CONFIGS = {
 };
 
 // ── PRODUCT SLIDER TOUCH ──
-function addSliderTouch(pid, total) {
-  const wrap = document.getElementById('slider-' + pid);
-  if (!wrap || wrap._touchBound) return;
-  wrap._touchBound = true;
-  let startX = 0;
-  wrap.addEventListener('touchstart', e => { startX = e.touches[0].clientX; wrap._wasSwiped = false; }, { passive: true });
+function addSliderTouch(pid, total) { const wrap = document.getElementById('slider-' + pid); if (!wrap || wrap._touchBound) return; wrap._touchBound = true; let startX = 0; wrap.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true }); wrap.addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - startX; if (Math.abs(dx) < 40) return; goSlide(pid, (sliderCurrentIdx[pid] || 0) + (dx < 0 ? 1 : -1)); }, { passive: true }); }, { passive: true });
   wrap.addEventListener('touchend', e => {
     const dx = e.changedTouches[0].clientX - startX;
     if (Math.abs(dx) < 40) return;
@@ -1045,17 +1060,7 @@ function initApp() {
 
 if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initApp); } else { initApp(); }
 
-// ── PAUSE SLIDERS WHEN OFF-SCREEN ──
-setTimeout(() => {
-  const sliderIO = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      const match = entry.target.id && entry.target.id.match(/^slider-(\d+)$/);
-      if (!match) return;
-      const pid = parseInt(match[1]);
-      if (!entry.isIntersecting) { if (slideTimers[pid]) { clearInterval(slideTimers[pid]); delete slideTimers[pid]; } }
-      else if (!slideTimers[pid]) {
-        const p = products.find(x => x.id === pid);
-        if (p && p.slides && p.slides.length > 1) { let cur = sliderCurrentIdx[pid] || 0; slideTimers[pid] = setInterval(() => { cur = (cur + 1) % p.slides.length; sliderCurrentIdx[pid] = cur; goSlide(pid, cur); }, 3000); }
+ }
       }
     });
   }, { threshold: 0.1 });
