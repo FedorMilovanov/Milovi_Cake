@@ -1,4 +1,4 @@
-import { GALLERY_ITEMS } from './data.js';
+import { GALLERY_ITEMS } from './data.js?v=20260517r22';
 
 const $ = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
