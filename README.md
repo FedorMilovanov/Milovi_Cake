@@ -1,5 +1,10 @@
 # Milovi Cake — сайт кондитера
 
+[![Cake Sanity](https://github.com/FedorMilovanov/Milovi_Cake/actions/workflows/cake-sanity.yml/badge.svg)](https://github.com/FedorMilovanov/Milovi_Cake/actions/workflows/cake-sanity.yml)
+[![Production Smoke](https://github.com/FedorMilovanov/Milovi_Cake/actions/workflows/production-smoke.yml/badge.svg)](https://github.com/FedorMilovanov/Milovi_Cake/actions/workflows/production-smoke.yml)
+[![Domain](https://img.shields.io/badge/domain-milovicake.ru-c9934a)](https://milovicake.ru/)
+[![Stack](https://img.shields.io/badge/stack-vanilla_HTML%2FCSS%2FJS-8a5a2b)](#)
+
 Премиальный статический сайт авторских тортов и десертов ручной работы — [milovicake.ru](https://milovicake.ru).
 
 Без сборщика, без npm-зависимостей в runtime: чистый HTML / CSS / JS + один Python-скрипт для генерации страниц пригородов. Хостинг — GitHub Pages.
