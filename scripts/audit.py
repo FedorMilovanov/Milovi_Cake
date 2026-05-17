@@ -347,6 +347,47 @@ with R.section("3. Version Sync (sw.js ↔ HTML)"):
                 R.err(f"... and {len(version_mismatches) - 25} more")
         else:
             R.ok("?v= cache-bust synchronized across all HTML ↔ sw.js")
+
+        # ESM relative imports are a separate browser cache path: an HTML script
+        # may be versioned while its imported module is not. This previously hit
+        # js/gallery/data.js, so make it a permanent guardrail.
+        esm_import_issues = []
+        expected_versions = set(sw_versions)
+        import_re = re.compile(
+            r"\bimport\s+(?:[^;'\"]*?\s+from\s+)?['\"]([^'\"]+\.js(?:\?v=([^'\"]+))?)['\"]"
+        )
+        for asset_rel in sorted(ALLOWED_JS):
+            js_path = ROOT / asset_rel
+            if not js_path.exists():
+                continue
+            js_text = js_path.read_text(encoding="utf-8", errors="replace")
+            for m in import_re.finditer(js_text):
+                spec = m.group(1)
+                import_ver = m.group(2)
+                if not spec.startswith("."):
+                    continue
+                target_rel = spec.split("?", 1)[0]
+                target_path = (js_path.parent / target_rel).resolve()
+                try:
+                    target_path.relative_to(ROOT)
+                except ValueError:
+                    continue
+                if not target_path.exists():
+                    continue
+                if not import_ver:
+                    esm_import_issues.append(f"{asset_rel}: relative import lacks ?v=: {spec}")
+                elif expected_versions and import_ver not in expected_versions:
+                    esm_import_issues.append(
+                        f"{asset_rel}: import version {import_ver} not in sw.js: {spec}"
+                    )
+
+        if esm_import_issues:
+            for issue in esm_import_issues[:25]:
+                R.err(f"ESM cache-bust: {issue}")
+            if len(esm_import_issues) > 25:
+                R.err(f"... and {len(esm_import_issues) - 25} more ESM import issues")
+        else:
+            R.ok("ESM relative imports are cache-busted")
     else:
         R.err("sw.js not found in project root")
 
@@ -810,6 +851,7 @@ with R.section("15. SW Strategy"):
             "skipWaiting": "skipWaiting" in sw_text,
             "clients.claim": "clients.claim" in sw_text,
             "network-first pattern": ("cache.match" in sw_text or "caches.match" in sw_text) and "fetch(" in sw_text,
+            "video/range bypass": "headers.has('range')" in sw_text and "destination === 'video'" in sw_text,
         }
 
         for name, passed in checks.items():

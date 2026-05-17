@@ -1,6 +1,6 @@
 ./404.html
 ./FILES_INCLUDED.txt
-./README_R22_STABILIZATION.md
+./README_R23_STABILIZATION.md
 ./SERIOUS_TECH_DEBT_AUDIT.md
 ./audit.py
 ./call/index.html
@@ -26,5 +26,6 @@
 ./prigorody/shushary/index.html
 ./prigorody/tosno/index.html
 ./prigorody/vsevolozhsk/index.html
+./scripts/audit.py
 ./scripts/check_prigorody_idempotent.py
 ./sw.js

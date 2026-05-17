@@ -1,4 +1,4 @@
-import { GALLERY_ITEMS } from './data.js?v=20260517r22';
+import { GALLERY_ITEMS } from './data.js?v=20260517r23';
 
 const $ = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
@@ -94,9 +94,8 @@ function renderGrid(){
       v.autoplay=true; 
       v.loop=true; 
       v.playsInline=true; 
-      v.preload=index<8?'auto':'metadata'; 
+      v.preload='metadata'; 
       v.dataset.src=item.videoSrc; 
-      if(index<8) v.src=item.videoSrc; 
       card.appendChild(v); 
       card.insertAdjacentHTML('beforeend', playIcon()); 
     }

@@ -1,28 +1,28 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   MILOVI CAKE — Service Worker v1.4 (V20260517-R22)
+   MILOVI CAKE — Service Worker v1.4 (V20260517-R23)
    Strategy:
      - HTML (navigate): network-first, fallback to cache, fallback to "/"
-     - Static (CSS/JS/img): stale-while-revalidate
+     - Static (CSS/JS/img): stale-while-revalidate; video/range: browser-native
      - skipWaiting + clients.claim → обновления подхватываются мгновенно
    ═══════════════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'milovi-cake-v2026.05.17-r22';
+const CACHE_NAME = 'milovi-cake-v2026.05.17-r23';
 
 const PRECACHE = [
   '/',
-  '/css/style.css?v=20260517r22',
-  '/css/mc-2026.css?v=20260517r22',
-  '/css/premium-overrides.css?v=20260517r22',
-  '/css/v20-dark-and-fixes.css?v=20260517r22',
-  '/css/v20-fixes.css?v=20260517r22',
-  '/css/final-fixes.css?v=20260517r22',
-  '/css/gallery/gallery-2026.css?v=20260517r22',
-  '/js/main.js?v=20260517r22',
-  '/js/nav.js?v=20260517r22',
-  '/js/mc-2026.js?v=20260517r22',
-  '/js/v20-faq-fix.js?v=20260517r22',
-  '/js/gallery/main.js?v=20260517r22',
-  '/js/gallery/data.js?v=20260517r22',
+  '/css/style.css?v=20260517r23',
+  '/css/mc-2026.css?v=20260517r23',
+  '/css/premium-overrides.css?v=20260517r23',
+  '/css/v20-dark-and-fixes.css?v=20260517r23',
+  '/css/v20-fixes.css?v=20260517r23',
+  '/css/final-fixes.css?v=20260517r23',
+  '/css/gallery/gallery-2026.css?v=20260517r23',
+  '/js/main.js?v=20260517r23',
+  '/js/nav.js?v=20260517r23',
+  '/js/mc-2026.js?v=20260517r23',
+  '/js/v20-faq-fix.js?v=20260517r23',
+  '/js/gallery/main.js?v=20260517r23',
+  '/js/gallery/data.js?v=20260517r23',
   '/img/head_mobile.avif',
   '/img/head_desktop.avif',
   '/img/head_mobile.webp',
@@ -57,6 +57,15 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== location.origin) return;
 
   if (url.pathname.startsWith('/api/') || url.pathname.includes('/mc.yandex.ru')) return;
+
+  // Large media and Range requests are intentionally not stored in Cache Storage.
+  // This prevents gallery .webm files from bloating the SW cache and keeps native
+  // browser streaming/partial-content behavior intact.
+  if (
+    req.headers.has('range') ||
+    req.destination === 'video' ||
+    /\.(?:webm|mp4|mov|m4v)$/i.test(url.pathname)
+  ) return;
 
   const acceptHeader = req.headers.get('accept') || '';
 

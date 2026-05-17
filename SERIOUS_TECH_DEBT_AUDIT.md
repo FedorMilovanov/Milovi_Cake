@@ -2,7 +2,7 @@
 
 **Дата:** 2026-05-17  
 **База проверки:** `main` после r21 cleanup + hotfix 404  
-**Текущая версия после стабилизации:** `20260517r22` / `milovi-cake-v2026.05.17-r22`
+**Текущая версия после стабилизации:** `20260517r23` / `milovi-cake-v2026.05.17-r23`
 
 Этот файл — не список косметики. Здесь только то, что реально может повлиять на кэш, стабильность деплоя, скорость, поддержку темы и будущие правки.
 
@@ -29,16 +29,16 @@ import { GALLERY_ITEMS } from './data.js';
 ### Что сделано
 
 ```js
-import { GALLERY_ITEMS } from './data.js?v=20260517r22';
+import { GALLERY_ITEMS } from './data.js?v=20260517r23';
 ```
 
 И в `sw.js` добавлено:
 
 ```js
-'/js/gallery/data.js?v=20260517r22',
+'/js/gallery/data.js?v=20260517r23',
 ```
 
-Также подняты все версии HTML/SW до `20260517r22` и `CACHE_NAME` до `milovi-cake-v2026.05.17-r22`.
+Также подняты все версии HTML/SW до `20260517r23` и `CACHE_NAME` до `milovi-cake-v2026.05.17-r23`.
 
 ### Почему это важно
 
@@ -278,9 +278,23 @@ python3 scripts/check_prigorody_idempotent.py
 
 Результат:
 
-- official audit: **31 passed / 10 warnings / 0 errors**;
+- official audit: **33 passed / 10 warnings / 0 errors**;
 - root audit wrapper: работает;
 - JS syntax: все файлы валидны;
 - пригороды: 14 страниц генерируются без diff;
-- версии: **213 вхождения `?v=20260517r22`**, все синхронны;
-- Service Worker: `CACHE_NAME = milovi-cake-v2026.05.17-r22`, PRECACHE = 21 URL.
+- версии: **213 вхождения `?v=20260517r23`**, все синхронны;
+- Service Worker: `CACHE_NAME = milovi-cake-v2026.05.17-r23`, PRECACHE = 21 URL + video/range bypass.
+
+---
+
+## 9. r23 — первый реальный шаг по performance/stability без ломки архитектуры
+
+Сделано после этого аудита:
+
+1. **SW video/range bypass** — Service Worker больше не runtime-cache-ит `.webm/mp4/mov/m4v` и Range-запросы. Это снижает риск раздувания Cache Storage из-за галереи и сохраняет нативное поведение потокового видео.
+2. **Gallery video lazy network** — первые видео-карточки больше не получают `src` сразу. Видео остаются с poster и начинают грузиться через существующий `IntersectionObserver`, когда попадают близко к viewport.
+3. **Audit guardrails** — `scripts/audit.py` теперь проверяет:
+   - ESM relative imports должны иметь `?v=`;
+   - SW должен иметь video/range bypass.
+
+Это специально выбранный первый шаг: он не трогает защищённые visual-блоки, не дробит JS/CSS и не переписывает галерею, но убирает реальный источник нестабильности кэша и лишней сетевой нагрузки.
