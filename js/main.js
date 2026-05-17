@@ -205,7 +205,33 @@ const CAKE_CONFIGS = {
 };
 
 // ── PRODUCT SLIDER TOUCH ──
-// ── BENTO TAB ──
+function addSliderTouch(pid, total) {
+  const wrap = document.getElementById('slider-' + pid);
+  if (!wrap || wrap._touchBound) return;
+  wrap._touchBound = true;
+  let startX = 0;
+  wrap.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+    wrap._wasSwiped = false;
+  }, { passive: true });
+  wrap.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) < 40) return;
+    wrap._wasSwiped = true;
+    const dots = wrap.querySelectorAll('.dot');
+    let cur = 0;
+    dots.forEach((d, i) => { if (d.classList.contains('active')) cur = i; });
+    const next = dx < 0 ? (cur + 1) % total : (cur - 1 + total) % total;
+    goSlide(pid, next);
+    if (slideTimers[pid]) {
+      clearInterval(slideTimers[pid]);
+      let c = next;
+      slideTimers[pid] = setInterval(() => { if (document.hidden) return; c = (c + 1) % total; goSlide(pid, c); }, 3000);
+    }
+    // Reset swipe flag after click event fires
+    setTimeout(() => { wrap._wasSwiped = false; }, 300);
+  }, { passive: true });
+}
 const bentoModes = {};
 
 function switchBentoTab(pid, mode) {
