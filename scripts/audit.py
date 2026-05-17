@@ -809,7 +809,7 @@ with R.section("15. SW Strategy"):
             "fetch handler": "addEventListener('fetch'" in sw_text,
             "skipWaiting": "skipWaiting" in sw_text,
             "clients.claim": "clients.claim" in sw_text,
-            "network-first pattern": "cache.match" in sw_text and "fetch(" in sw_text,
+            "network-first pattern": ("cache.match" in sw_text or "caches.match" in sw_text) and "fetch(" in sw_text,
         }
 
         for name, passed in checks.items():
@@ -825,6 +825,9 @@ with R.section("15. SW Strategy"):
 with R.section("16. HTML Validation"):
     html_issues = []
     for rel, path in html_pages[:15]:
+        # Skip search-engine verification files
+        if rel.startswith(("google", "yandex")):
+            continue
         text = path.read_text(encoding="utf-8", errors="replace")
 
         if not text.strip().lower().startswith("<!doctype"):
