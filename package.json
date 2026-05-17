@@ -1,0 +1,18 @@
+{
+  "name": "milovi-cake",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Milovi Cake — Торты на заказ. Professional audit tooling, zero runtime deps.",
+  "scripts": {
+    "audit": "python3 scripts/audit.py",
+    "audit:js": "node --check js/main.js && node --check js/nav.js && node --check js/mc-2026.js && node --check js/v20-faq-fix.js && node --check js/gallery/main.js && node --check sw.js && echo '✅ All JS valid'",
+    "audit:prigorody": "python3 prigorody/build.py && git diff --exit-code prigorody/*/index.html || (echo '❌ Prigorody pages stale. Run: python3 prigorody/build.py' && exit 1)",
+    "audit:all": "npm run audit:js && npm run audit:prigorody && npm run audit",
+    "build:prigorody": "python3 prigorody/build.py"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["cakes", "milovi", "static-site"],
+  "license": "UNLICENSED"
+}
