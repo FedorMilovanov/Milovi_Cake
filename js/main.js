@@ -93,8 +93,8 @@ function setCartItemDessertType(cartKey, type) {
 window.setCartItemDessertType = setCartItemDessertType;
 
 
-const slideTimers = {};
-const sliderCurrentIdx = {};
+
+
 
 function startProductSlider(pid, total) {
   stopProductSlider(pid);
@@ -111,17 +111,23 @@ function stopProductSlider(pid) {
   if (slideTimers[pid]) { clearInterval(slideTimers[pid]); delete slideTimers[pid]; }
 }
 
-function goSlide(pid, idx) {
-  const wrap = document.getElementById('slider-' + pid);
-  if (!wrap) return;
-  const slides = wrap.querySelectorAll('.slide-img');
-  const dots = wrap.querySelectorAll('.dot');
-  const total = slides.length;
-  if (total === 0) return;
-  const next = (idx + total) % total;
-  sliderCurrentIdx[pid] = next;
-  slides.forEach((el, i) => el.classList.toggle('active', i === next));
-  dots.forEach((el, i) => el.classList.toggle('active', i === next));
+
+const slideTimers = {};
+const sliderCurrentIdx = {};
+
+function startProductSlider(pid, total) {
+  stopProductSlider(pid);
+  if (total <= 1) return;
+  slideTimers[pid] = setInterval(() => {
+    if (document.hidden) return;
+    const wrap = document.getElementById('slider-' + pid);
+    if (wrap && wrap.matches(':hover')) return;
+    goSlide(pid, (sliderCurrentIdx[pid] || 0) + 1);
+  }, 3000);
+}
+
+function stopProductSlider(pid) {
+  if (slideTimers[pid]) { clearInterval(slideTimers[pid]); delete slideTimers[pid]; }
 }
 
 // ── DATA ──
@@ -155,55 +161,20 @@ let cart = {};
 
 function renderCatalog() {
   products.forEach(p => stopProductSlider(p.id));
-
   const grid = document.getElementById('catalogGrid');
   if (!grid) return;
   grid.innerHTML = products.map(p => {
     let imgHtml;
     if (p.slides && p.slides.length) {
       const totalSlides = p.slides.length;
-      imgHtml = `
-        <div class="slider-wrap" id="slider-${p.id}">
-          ${p.slides.map((src, i) => {
-            const active = i === 0 ? ' active' : '';
-            return `<div class="slide-img${active}">
-              <img src="${src}" alt="${p.name}" width="600" height="800" loading="lazy" decoding="async" onerror="this.closest('.slide-img').innerHTML='<div class=\\'slide-img-fallback\\\\'>${p.emoji || '🎂'}</div>'" />
-            </div>`;
-          }).join('')}
-          ${totalSlides > 1 ? `
-            <button type="button" class="slide-btn slide-prev" onclick="sliderStep('${p.id}',-1,${totalSlides})" aria-label="Предыдущее фото — ${p.name}">&#8249;</button>
-            <button type="button" class="slide-btn slide-next" onclick="sliderStep('${p.id}',1,${totalSlides})" aria-label="Следующее фото — ${p.name}">&#8250;</button>
-            <div class="slide-dots">${p.slides.map((_,i) => `<span class="dot${i===0?' active':''}" onclick="goSlide('${p.id}',${i})"></span>`).join('')}</div>
-          ` : ''}
-        </div>`;
-    } else {
-      imgHtml = `<div class="product-img-ph">${p.emoji}</div>`;
-    }
-    const titleHtml = p.hasMaxi
-      ? `<div class="bento-header-row">
-           <h3 id="name-${p.id}">${p.name}</h3>
-           <div class="bento-seg" id="bento-pill-${p.id}">
-             <span class="bento-seg-opt active" id="tab-regular-${p.id}" onclick="switchBentoTab(${p.id}, 'regular')" data-tip="~350 гр">Стандарт</span>
-             <span class="bento-seg-opt" id="tab-maxi-${p.id}" onclick="switchBentoTab(${p.id}, 'maxi')" data-tip="~1100 гр">Макси</span>
-           </div>
-         </div>`
-      : `<h3 id="name-${p.id}">${p.name}</h3>`;
-
-    return `
-    <div class="product-card reveal" id="card-${p.id}">
-      ${imgHtml}
-      <div class="product-info">
-        ${titleHtml}
-        <p class="desc" id="desc-${p.id}">${p.desc}</p>
-        <p class="min-order" id="min-${p.id}">${p.min || '\u00a0'}</p>
-        <div class="product-footer">
-          <span class="price" id="price-${p.id}">${p.price}</span>
-          <button type="button" class="btn-add" onclick="addToCart(${p.id}, event)">Добавить в корзину</button>
-        </div>
-      </div>
-    </div>`;
+      imgHtml = `<div class="slider-wrap" id="slider-${p.id}">` +
+          p.slides.map((src, i) => `<div class="slide-img${i === 0 ? ' active' : ''}"><img src="${src}" alt="${p.name}" width="600" height="800" loading="lazy" decoding="async" onerror="this.closest('.slide-img').innerHTML='<div class=\'slide-img-fallback\'>${p.emoji || '🎂'}</div>'" /></div>`).join('') +
+          (totalSlides > 1 ? `<button type="button" class="slide-btn slide-prev" onclick="sliderStep('${p.id}',-1,${totalSlides})" aria-label="Предыдущее фото — ${p.name}">&#8249;</button><button type="button" class="slide-btn slide-next" onclick="sliderStep('${p.id}',1,${totalSlides})" aria-label="Следующее фото — ${p.name}">&#8250;</button><div class="slide-dots">${p.slides.map((_,i) => `<span class="dot${i===0?' active':''}" onclick="goSlide('${p.id}',${i})"></span>`).join('')}</div>` : '') +
+          `</div>`;
+    } else { imgHtml = `<div class="product-img-ph">${p.emoji}</div>`; }
+    const titleHtml = p.hasMaxi ? `<div class="bento-header-row"><h3 id="name-${p.id}">${p.name}</h3><div class="bento-seg" id="bento-pill-${p.id}"><span class="bento-seg-opt active" id="tab-regular-${p.id}" onclick="switchBentoTab(${p.id}, 'regular')" data-tip="~350 гр">Стандарт</span><span class="bento-seg-opt" id="tab-maxi-${p.id}" onclick="switchBentoTab(${p.id}, 'maxi')" data-tip="~1100 гр">Макси</span></div></div>` : `<h3 id="name-${p.id}">${p.name}</h3>`;
+    return `<div class="product-card reveal" id="card-${p.id}">${imgHtml}<div class="product-info">${titleHtml}<p class="desc" id="desc-${p.id}">${p.desc}</p><p class="min-order" id="min-${p.id}">${p.min || '\u00a0'}</p><div class="product-footer"><span class="price" id="price-${p.id}">${p.price}</span><button type="button" class="btn-add" onclick="addToCart(${p.id}, event)">Добавить в корзину</button></div></div></div>`;
   }).join('');
-
   products.forEach(p => {
     if (p.slides && p.slides.length > 1) {
       const wrap = document.getElementById('slider-' + p.id);
@@ -219,26 +190,7 @@ function renderCatalog() {
   initPriceGlowObserver();
 }
 
-function goSlide(pid, idx) {
-  const wrap = document.getElementById('slider-' + pid);
-  if (!wrap) return;
-  sliderCurrentIdx[pid] = idx;
-  wrap.querySelectorAll('.slide-img').forEach((el, i) => el.classList.toggle('active', i === idx));
-  wrap.querySelectorAll('.dot').forEach((el, i) => el.classList.toggle('active', i === idx));
-}
 
-
-
-function sliderStep(pid, dir, total) { goSlide(pid, (sliderCurrentIdx[pid] || 0) + dir); }
-  const wrap = document.getElementById('slider-' + pid);
-  if (total > 1 && wrap && !wrap.matches(':hover')) {
-    slideTimers[pid] = setInterval(() => {
-      if (document.hidden) return;
-      sliderCurrentIdx[pid] = ((sliderCurrentIdx[pid] || 0) + 1) % total;
-      goSlide(pid, sliderCurrentIdx[pid]);
-    }, 3000);
-  }
-}
 
 // ── CALCULATOR STATE ──
 let _calcWeight = 2;
@@ -253,20 +205,6 @@ const CAKE_CONFIGS = {
 };
 
 // ── PRODUCT SLIDER TOUCH ──
-function addSliderTouch(pid, total) { const wrap = document.getElementById('slider-' + pid); if (!wrap || wrap._touchBound) return; wrap._touchBound = true; let startX = 0; wrap.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true }); wrap.addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - startX; if (Math.abs(dx) < 40) return; goSlide(pid, (sliderCurrentIdx[pid] || 0) + (dx < 0 ? 1 : -1)); }, { passive: true }); }, { passive: true });
-  wrap.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - startX;
-    if (Math.abs(dx) < 40) return;
-    wrap._wasSwiped = true;
-    let cur = 0;
-    wrap.querySelectorAll('.dot').forEach((d, i) => { if (d.classList.contains('active')) cur = i; });
-    const next = dx < 0 ? (cur + 1) % total : (cur - 1 + total) % total;
-    goSlide(pid, next);
-    if (slideTimers[pid]) { clearInterval(slideTimers[pid]); let c = next; slideTimers[pid] = setInterval(() => { if (document.hidden) return; c = (c + 1) % total; goSlide(pid, c); }, 3000); }
-    setTimeout(() => { wrap._wasSwiped = false; }, 300);
-  }, { passive: true });
-}
-
 // ── BENTO TAB ──
 const bentoModes = {};
 
@@ -305,17 +243,7 @@ function switchBentoTab(pid, mode) {
       dotsEl.insertAdjacentHTML('beforebegin', newSlidesHtml);
       dotsEl.innerHTML = slides.map((s, i) => `<span class="dot${i === 0 ? ' active' : ''}" onclick="goSlide(${pid},${i})"></span>`).join('');
     }
-    sliderCurrentIdx[pid] = 0;
-    if (slideTimers[pid]) { clearInterval(slideTimers[pid]); delete slideTimers[pid]; }
-    if (slides.length > 1 && !wrap.matches(':hover')) {
-      slideTimers[pid] = setInterval(() => {
-        if (document.hidden) return;
-        sliderCurrentIdx[pid] = ((sliderCurrentIdx[pid] || 0) + 1) % slides.length;
-        goSlide(pid, sliderCurrentIdx[pid]);
-      }, 3000);
-    }
-    wrap._touchBound = false;
-    addSliderTouch(pid, slides.length);
+    sliderCurrentIdx[pid] = 0; startProductSlider(pid, slides.length);
   }
 }
 
@@ -590,7 +518,7 @@ function buildTG(e) {
   const btn = document.getElementById('btnTG');
   if (btn) btn.classList.add('loading');
   navigator.clipboard.writeText(msg).then(() => { showToast('Скопировано! Вставьте в чат Telegram (Ctrl+V)'); }).catch(() => {});
-  setTimeout(() => { window.open('https://t.me/MiloviCake', '_blank'); if (btn) btn.classList.remove('loading'); }, 300);
+  setTimeout(() => { window.open('https://t.me/+79119038886', '_blank'); if (btn) btn.classList.remove('loading'); }, 300);
 }
 
 function sendFormWA() {
@@ -1060,536 +988,7 @@ function initApp() {
 
 if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initApp); } else { initApp(); }
 
- }
-      }
-    });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('[id^="slider-"]').forEach(el => sliderIO.observe(el));
-}, 300);
 
-// ── SCROLL HANDLER ──
-const _scrollEl = document.getElementById('scroll-progress');
-const backToTopEl = document.getElementById('backToTop');
-let _scrollTicking = false;
-function _onScroll() {
-  if (_scrollTicking) return;
-  _scrollTicking = true;
-  requestAnimationFrame(() => {
-    const y = window.scrollY, total = document.body.scrollHeight - window.innerHeight;
-    if (_scrollEl) _scrollEl.style.width = (y / total * 100) + '%';
-    if (backToTopEl) backToTopEl.classList.toggle('visible', y > 600);
-    _scrollTicking = false;
-  });
-}
-window.addEventListener('scroll', _onScroll, { passive: true });
-
-// ── TOAST ──
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  if (!t) return;
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.remove('show'), 2800);
-}
-
-// ── ANIMATED COUNTERS ──
-function animateCounter(el) {
-  const target = +el.dataset.target, suffix = el.dataset.suffix || '', duration = 1800, start = performance.now();
-  function step(now) { const progress = Math.min((now - start) / duration, 1); el.textContent = Math.floor((1 - Math.pow(1 - progress, 3)) * target) + suffix; if (progress < 1) requestAnimationFrame(step); }
-  requestAnimationFrame(step);
-}
-const counterObserver = new IntersectionObserver(entries => { entries.forEach(e => { if (e.isIntersecting) { animateCounter(e.target); counterObserver.unobserve(e.target); } }); }, { threshold: 0.1, rootMargin: '0px 0px 40px 0px' });
-document.querySelectorAll('.stat-num').forEach(el => counterObserver.observe(el));
-
-// ── BURGER MENU ──
-const burgerBtn = document.getElementById('burgerBtn'), mobileMenu = document.getElementById('mobileMenu');
-function closeMobileMenu() {
-  if (!burgerBtn || !mobileMenu) return;
-  burgerBtn.classList.remove('open'); mobileMenu.classList.remove('open');
-  burgerBtn.setAttribute('aria-expanded', 'false');
-  document.body.classList.remove('menu-open');
-}
-if (burgerBtn && mobileMenu) {
-  burgerBtn.addEventListener('click', () => { const isOpen = burgerBtn.classList.toggle('open'); mobileMenu.classList.toggle('open', isOpen); burgerBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false'); document.body.classList.toggle('menu-open', isOpen); });
-  document.addEventListener('click', (e) => { if (mobileMenu.classList.contains('open') && !mobileMenu.contains(e.target) && !burgerBtn.contains(e.target)) closeMobileMenu(); });
-}
-
-// ── LIGHTBOX ──
-let _lbSrcs = [], _lbIdx = 0;
-function _lbAltFromSrc(src) { const file = (src || '').split('/').pop().replace(/\.[^.]+$/, '').replace(/[_-]/g, ' '); return file ? 'Фото торта Milovi Cake — ' + file : 'Фото торта Milovi Cake'; }
-
-function openLightbox(src, srcs) {
-  if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
-  closeCalcPanel();
-  const lb = document.getElementById('lightbox'), lbImg = document.getElementById('lightboxImg');
-  if (!lb || !lbImg) return;
-  _lbSrcs = srcs || [src];
-  _lbIdx = _lbSrcs.findIndex(s => src.endsWith(s) || s.endsWith(src) || src === s);
-  if (_lbIdx < 0) _lbIdx = 0;
-  lbImg.src = _lbSrcs[_lbIdx]; lbImg.alt = _lbAltFromSrc(_lbSrcs[_lbIdx]);
-  lb.classList.add('open'); lockBody();
-  _lbUpdateArrows();
-}
-
-function lbNavigate(dir) {
-  if (_lbSrcs.length < 2) return;
-  _lbIdx = (_lbIdx + dir + _lbSrcs.length) % _lbSrcs.length;
-  const img = document.getElementById('lightboxImg');
-  if (!img) return;
-  img.style.opacity = '0'; img.style.transition = 'opacity 0.15s';
-  setTimeout(() => { img.src = _lbSrcs[_lbIdx]; img.alt = _lbAltFromSrc(_lbSrcs[_lbIdx]); img.style.opacity = '1'; }, 150);
-  _lbUpdateArrows();
-}
-function _lbUpdateArrows() {
-  const lbNav = document.getElementById('lbNav');
-  if (!lbNav) return;
-  const show = _lbSrcs.length > 1;
-  lbNav.classList.toggle('hidden', !show);
-  const counter = document.getElementById('lbCounter');
-  if (counter) counter.textContent = (_lbIdx + 1) + ' / ' + _lbSrcs.length;
-}
-function closeLightbox() {
-  const lb = document.getElementById('lightbox');
-  if (!lb) return;
-  lb.classList.remove('open'); unlockBody();
-  _lbSrcs = []; _lbIdx = 0;
-}
-
-(function() { const _lbEl = document.getElementById('lightbox'); if (_lbEl) _lbEl.addEventListener('click', function(e) { if (e.target === this) closeLightbox(); }); })();
-
-(function() { const lb = document.getElementById('lightbox'); if (!lb) return; let sx = 0; lb.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true }); lb.addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 50) lbNavigate(dx < 0 ? 1 : -1); }, { passive: true }); })();
-
-setTimeout(() => {
-  const reviewImgs = Array.from(document.querySelectorAll('.review-img-wrap img'));
-  const reviewSrcs = reviewImgs.map(img => img.src);
-  reviewImgs.forEach(img => { img.style.cursor = 'zoom-in'; img.addEventListener('click', () => openLightbox(img.src, reviewSrcs)); });
-}, 100);
-
-function wireProductLightbox() {
-  products.forEach(p => {
-    if (!p.slides || p.slides.length === 0) return;
-    const wrap = document.getElementById('slider-' + p.id);
-    if (!wrap || wrap._lbBound) return;
-    wrap._lbBound = true;
-    wrap.addEventListener('click', (e) => {
-      if (wrap._wasSwiped) return;
-      const img = e.target.closest('.slide-img');
-      if (!img || img.classList.contains('slide-video')) return;
-      const activeIdx = (typeof sliderCurrentIdx !== 'undefined' && sliderCurrentIdx[p.id]) ? sliderCurrentIdx[p.id] : 0;
-      const mode = typeof bentoModes !== 'undefined' && bentoModes[p.id];
-      const currentSlides = (mode === 'maxi' && p.maxiVariant) ? p.maxiVariant.slides : p.slides;
-      openLightbox(currentSlides[activeIdx], currentSlides);
-    });
-  });
-}
-
-// ══════════════════════════════════════════
-// CALCULATOR
-// ══════════════════════════════════════════
-
-function selectCakeType(el, type) {
-  document.querySelectorAll('.fill-tooltip').forEach(function(t) { if (!t.closest('.calc-opt')) t.remove(); });
-  document.querySelectorAll('#calcType .calc-opt').forEach(o => o.classList.remove('selected'));
-  el.classList.add('selected');
-  _cakeType = type;
-  const cfg = CAKE_CONFIGS[type];
-  function setRowVisible(el, visible) { if (!el) return; el.classList.toggle('calc-row--hidden', !visible); }
-  const weightRow = document.getElementById('calcWeightRow'), qtyRow = document.getElementById('calcQtyRow');
-  setRowVisible(weightRow, cfg.hasWeight); setRowVisible(qtyRow, cfg.hasQty);
-  const minus = document.getElementById('calcWeightMinus'), plus = document.getElementById('calcWeightPlus');
-  if (type === 'bento' || type === 'bentomaxi') { setRowVisible(weightRow, false); }
-  else {
-    setRowVisible(weightRow, true);
-    if (minus) minus.style.display = ''; if (plus) plus.style.display = '';
-    const noteWrap = document.getElementById('calcFixedWeightNote')?.parentElement;
-    if (noteWrap) noteWrap.classList.remove('visible');
-    const valEl = document.getElementById('calcWeightVal');
-    if (valEl) valEl.style.display = '';
-    const lbl = document.getElementById('calcWeightLabel');
-    if (lbl) lbl.textContent = 'Вес торта';
-  }
-  if (cfg.hasWeight && type !== 'bento' && type !== 'bentomaxi') {
-    if (_calcWeight < cfg.weightMin) { _calcWeight = cfg.weightMin; const v = document.getElementById('calcWeightVal'); if (v) v.textContent = _calcWeight + ' кг'; const i = document.getElementById('calcWeight'); if (i) i.value = _calcWeight; }
-    if (minus) minus.disabled = _calcWeight <= cfg.weightMin;
-    if (plus) plus.disabled = _calcWeight >= cfg.weightMax;
-  }
-  ['calcFillRow','calcFillBentoRow','calcFill3dRow'].forEach(id => { const row = document.getElementById(id); if (!row) return; setRowVisible(row, (row.dataset.for || '').includes(type)); });
-  const activeGroup = document.getElementById(cfg.fillGroup);
-  if (activeGroup) { activeGroup.querySelectorAll('.calc-opt').forEach((o, i) => { o.classList.toggle('selected', i === 0); }); }
-  const decorRow = document.getElementById('calcDecor')?.closest('.calc-row');
-  setRowVisible(decorRow, true);
-  updateCalc();
-}
-
-function stepQty(dir) {
-  const newVal = _calcQty + dir;
-  if (newVal < 1 || newVal > 20) return;
-  _calcQty = newVal;
-  const valEl = document.getElementById('calcQtyVal');
-  if (valEl) valEl.textContent = _calcQty + ' шт';
-  const minus = document.getElementById('calcQtyMinus'), plus = document.getElementById('calcQtyPlus');
-  if (minus) minus.disabled = _calcQty <= 1;
-  if (plus) plus.disabled = _calcQty >= 20;
-  updateCalc();
-}
-
-function stepWeight(dir) {
-  const cfg = CAKE_CONFIGS[_cakeType] || CAKE_CONFIGS.biscuit;
-  const step = cfg.weightStep || 0.5;
-  const newVal = Math.round((_calcWeight + dir * step) * 10) / 10;
-  if (newVal < cfg.weightMin || newVal > cfg.weightMax) return;
-  _calcWeight = newVal;
-  const _cwEl = document.getElementById('calcWeight');
-  if (_cwEl) _cwEl.value = _calcWeight;
-  const minus = document.getElementById('calcWeightMinus'), plus = document.getElementById('calcWeightPlus');
-  if (minus) minus.disabled = _calcWeight <= cfg.weightMin;
-  if (plus) plus.disabled = _calcWeight >= cfg.weightMax;
-  updateCalc();
-}
-
-function enforceSingleSelected(groupId) {
-  const items = Array.from(document.querySelectorAll(`#${groupId} .calc-opt`));
-  if (!items.length) return;
-  const selected = items.filter(x => x.classList.contains('selected'));
-  if (selected.length <= 1) { if (selected.length === 0) items[0].classList.add('selected'); return; }
-  selected.forEach((x, i) => i > 0 && x.classList.remove('selected'));
-}
-
-function selectOpt(el, groupId) {
-  const opt = el && el.closest ? el.closest('.calc-opt') : el;
-  if (!opt) return;
-  const _fillGroups = ['calcFill', 'calcFillBento', 'calcFill3d', 'calcDecor'];
-  if (_fillGroups.indexOf(groupId) !== -1 && window.innerWidth < 768) {
-    document.querySelectorAll(`#${groupId} .calc-opt.selected`).forEach(x => x.classList.remove('selected'));
-    opt.classList.add('selected');
-    if (groupId === 'calcDecor') { const hint = document.getElementById('calcDecorHint'); if (hint) { const price = parseInt(opt.dataset.price || 0); hint.classList.toggle('visible', price > 0); } }
-    updateCalc && updateCalc();
-    showFillToast(opt, groupId);
-    const _inner = opt.querySelector('.opt-inner');
-    if (_inner) { _inner.classList.remove('rubber-click'); void _inner.offsetWidth; _inner.classList.add('rubber-click'); _inner.addEventListener('animationend', () => _inner.classList.remove('rubber-click'), { once: true }); }
-    return;
-  }
-  document.querySelectorAll(`#${groupId} .calc-opt.selected`).forEach(x => x.classList.remove('selected'));
-  opt.classList.add('selected');
-  if (groupId === 'calcDecor') { const hint = document.getElementById('calcDecorHint'); if (hint) { const price = parseInt(opt.dataset.price || 0); hint.classList.toggle('visible', price > 0); } }
-  const inner = opt.querySelector('.opt-inner');
-  if (inner) { inner.classList.remove('rubber-click'); void inner.offsetWidth; inner.classList.add('rubber-click'); inner.addEventListener('animationend', () => inner.classList.remove('rubber-click'), { once: true }); }
-  const label = opt.querySelector('.opt-label');
-  if (label) { label.classList.remove('opt-label-shake'); void label.offsetWidth; label.classList.add('opt-label-shake'); label.addEventListener('animationend', () => label.classList.remove('opt-label-shake'), { once: true }); }
-  if (groupId === 'calcType') { const _w = document.getElementById('calcWeightRow'); const _f = document.getElementById('calcFillRow'); if (_w) _w.style.display = 'block'; if (_f) _f.style.display = 'block'; }
-  if (groupId === 'calcFill' || groupId === 'calcFillBento' || groupId === 'calcFill3d') {
-    const panel = document.getElementById('fillDescPanel'), text = document.getElementById('fillDescText');
-    if (panel && text) {
-      const tooltipEl = opt.querySelector('.fill-tooltip');
-      const desc = tooltipEl ? Array.from(tooltipEl.childNodes).filter(n => !(n.nodeName === 'STRONG')).map(n => n.textContent).join('').trim() : '';
-      if (desc) { text.textContent = desc; panel.style.opacity = '1'; } else { panel.style.opacity = '0'; }
-    }
-  }
-  updateCalc();
-}
-
-function updateCalc() {
-  const cfg = CAKE_CONFIGS[_cakeType] || CAKE_CONFIGS.biscuit;
-  const fillEl = document.querySelector('#' + cfg.fillGroup + ' .selected');
-  const decorEl = document.querySelector('#calcDecor .selected');
-  const fillPrice  = +(fillEl?.dataset.price  || 0);
-  const decorPrice = (_cakeType === 'bento') ? 0 : +(decorEl?.dataset.price || 0);
-  let total, noteText = 'Точная цена согласовывается при заказе';
-  if (cfg.fixedPrice !== null) { total = cfg.fixedPrice * _calcQty + fillPrice; noteText = 'Декор рассчитывается отдельно'; }
-  else {
-    const weight = _calcWeight;
-    total = cfg.pricePerKg * weight + fillPrice + decorPrice;
-    const valEl = document.getElementById('calcWeightVal');
-    if (valEl) valEl.textContent = weight % 1 === 0 ? weight + ' кг' : weight.toFixed(1) + ' кг';
-    const guestsPopupEl = document.getElementById('guestsPopup');
-    if (guestsPopupEl) { const n = Math.round(weight / 0.2); guestsPopupEl.textContent = '≈ ' + n + ' чел.'; }
-    if (decorPrice > 0) noteText = '* Стоимость авторского декора рассчитывается индивидуально';
-  }
-  if (_cakeType === 'cake3d') noteText = 'Сложный декор рассчитывается отдельно';
-  else if (_cakeType === 'bento' || _cakeType === 'bentomaxi') noteText = 'Декор рассчитывается отдельно';
-  else noteText = (noteText === 'Точная цена согласовывается при заказе' ? 'Дополнительный декор рассчитывается отдельно' : noteText + '. Дополнительный декор рассчитывается отдельно');
-  const isApprox = decorPrice > 0 || _cakeType === 'cake3d' || _cakeType === 'bento' || _cakeType === 'bentomaxi';
-  const prefix = isApprox ? '~ ' : '';
-  const calcResultEl = document.getElementById('calcResult');
-  if (calcResultEl) calcResultEl.textContent = prefix + total.toLocaleString('ru') + ' ₽';
-  const collapsedPrice = document.getElementById('calcResultCollapsed');
-  if (collapsedPrice) collapsedPrice.textContent = prefix + total.toLocaleString('ru') + ' ₽';
-  const calcNoteEl = document.getElementById('calcNote');
-  if (calcNoteEl) calcNoteEl.textContent = noteText;
-  const badge = document.getElementById('calcApproxBadge');
-  if (badge) badge.classList.toggle('visible', isApprox);
-  const summaryEl = document.getElementById('calcSummary');
-  if (summaryEl) {
-    const typeNames = { biscuit: 'Бисквитный', bento: 'Бенто', bentomaxi: 'Макси Бенто', cake3d: '3D Торт' };
-    const typeIcons = { biscuit: '🎂', bento: '🍰', bentomaxi: '🍰', cake3d: '✨' };
-    const fillName = fillEl?.querySelector('.opt-label')?.textContent?.trim() || '';
-    const decorName = decorEl?.querySelector('.opt-label')?.textContent?.trim() || '';
-    let chips = [];
-    chips.push({ icon: typeIcons[_cakeType], label: 'Тип', val: typeNames[_cakeType] });
-    if (cfg.hasQty && _cakeType === 'bento') { chips.push({ icon: '⚖️', label: 'Вес', val: '~350 гр / шт' }); chips.push({ icon: '🔢', label: 'Количество', val: _calcQty + ' шт' }); }
-    else if (cfg.hasQty && _cakeType === 'bentomaxi') { chips.push({ icon: '⚖️', label: 'Вес', val: '~1100 гр / шт' }); chips.push({ icon: '🔢', label: 'Количество', val: _calcQty + ' шт' }); }
-    else { const w = _calcWeight; const wStr = w % 1 === 0 ? w + ' кг' : w.toFixed(1) + ' кг'; const guests = Math.round(w / 0.2); chips.push({ icon: '⚖️', label: 'Вес', val: wStr + ' · ~' + guests + ' чел' }); }
-    if (fillName) chips.push({ icon: '🍓', label: 'Начинка', val: fillName });
-    if (_cakeType !== 'bento' && decorName) chips.push({ icon: '🎨', label: 'Декор', val: decorName });
-    summaryEl.innerHTML = chips.map(c => `<span class="calc-summary-chip"><span class="chip-icon">${c.icon}</span>${c.label}: <span class="chip-val">${c.val}</span></span>`).join('');
-  }
-}
-
-// ── Legacy reviews carousel ──
-(function initLegacyReviewsCarousel() {
-  const legacyTrack = document.getElementById('reviewsTrack');
-  if (!legacyTrack) return;
-  let currentReview = 0;
-  function goReview(idx) {
-    const slides = legacyTrack.querySelectorAll('.review-slide'), dots = document.querySelectorAll('.rev-dot');
-    if (!slides.length || !dots.length) return;
-    if (slides[currentReview]) slides[currentReview].classList.remove('active');
-    if (dots[currentReview]) dots[currentReview].classList.remove('rev-dot-active');
-    currentReview = (idx + slides.length) % slides.length;
-    if (slides[currentReview]) slides[currentReview].classList.add('active');
-    if (dots[currentReview]) dots[currentReview].classList.add('rev-dot-active');
-  }
-  function shiftReview(dir) { goReview(currentReview + dir); }
-  let reviewAutoplay = null, reviewPaused = false;
-  function startReviewAutoplay() { if (reviewAutoplay) clearInterval(reviewAutoplay); reviewAutoplay = setInterval(() => { if (!reviewPaused && !document.hidden) shiftReview(1); }, 5000); }
-  function stopReviewAutoplay() { if (reviewAutoplay) { clearInterval(reviewAutoplay); reviewAutoplay = null; } }
-  startReviewAutoplay();
-  const reviewsCarousel = document.querySelector('.reviews-carousel');
-  if (reviewsCarousel) { reviewsCarousel.addEventListener('mouseenter', () => { reviewPaused = true; }); reviewsCarousel.addEventListener('mouseleave', () => { reviewPaused = false; }); }
-  document.addEventListener('visibilitychange', () => { if (document.hidden) stopReviewAutoplay(); else startReviewAutoplay(); });
-  let touchStartX = 0;
-  legacyTrack.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
-  legacyTrack.addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - touchStartX; if (Math.abs(dx) > 40) shiftReview(dx < 0 ? 1 : -1); }, { passive: true });
-})();
-
-let bentoToastTimer = null;
-function showBentoWeightToast(text) {
-  if (window.matchMedia('(hover: hover)').matches) return;
-  const toast = document.getElementById('bentoWeightToast');
-  if (!toast) return;
-  toast.textContent = text;
-  toast.classList.add('show');
-  clearTimeout(bentoToastTimer);
-  bentoToastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
-}
-
-// ── Яндекс.Метрика ──
-function loadMetrika() {
-  if (window._metrikaLoaded) return;
-  window._metrikaLoaded = true;
-  (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)}; m[i].l=1*new Date(); k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js','ym');
-  ym(106945185,'init',{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
-}
-
-// ── Cookie banner ──
-function _lsGet(key) { try { return localStorage.getItem(key); } catch(e) { return null; } }
-function _lsSet(key, val) { try { localStorage.setItem(key, val); } catch(e) {} }
-
-function acceptCookie() {
-  _lsSet('cookieAccepted', Date.now() + 365 * 24 * 60 * 60 * 1000);
-  const banner = document.getElementById('cookieBanner');
-  if (!banner) return;
-  banner.classList.remove('visible');
-  banner.style.transform = 'translateY(100%)';
-  banner.addEventListener('transitionend', () => banner.remove(), { once: true });
-  const pc = document.createElement('link'); pc.rel = 'preconnect'; pc.href = 'https://mc.yandex.ru'; document.head.appendChild(pc);
-  if (typeof gtag !== 'undefined') {} // reserved for future
-  loadMetrika();
-}
-function declineCookie() {
-  _lsSet('cookieAccepted', 'denied:' + (Date.now() + 30 * 24 * 60 * 60 * 1000));
-  const banner = document.getElementById('cookieBanner');
-  if (!banner) return;
-  banner.classList.remove('visible');
-  banner.style.transform = 'translateY(100%)';
-  banner.addEventListener('transitionend', () => banner.remove(), { once: true });
-}
-function initCookieBanner() {
-  const stored = _lsGet('cookieAccepted');
-  if (stored) {
-    const isDenied = stored.startsWith('denied:');
-    const expiry = parseInt(isDenied ? stored.slice(7) : stored);
-    if (Date.now() < expiry) { if (!isDenied) loadMetrika(); return; }
-  }
-  const banner = document.getElementById('cookieBanner');
-  if (!banner) return;
-  setTimeout(() => { banner.style.transform = 'translateY(0)'; banner.classList.add('visible'); }, 800);
-}
-initCookieBanner();
-
-// ── Privacy modal ──
-function openPrivacy() {
-  if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
-  closeCalcPanel();
-  const el = document.getElementById('privacyOverlay');
-  if (!el) return;
-  el.classList.add('open');
-  if (window.innerWidth <= 900) lockBody();
-}
-function closePrivacy() {
-  const el = document.getElementById('privacyOverlay');
-  if (!el) return;
-  el.classList.remove('open');
-  if (window.innerWidth <= 900) unlockBody();
-}
-
-// ══════════════════════════════════════════
-// FILL BOTTOM SHEET
-// ══════════════════════════════════════════
-
-let _fillSheetPendingEl = null, _fillSheetPendingGroupId = null;
-
-function _fillPopupRender(optEl) {
-  if (!optEl) return;
-  const title = optEl.querySelector('.opt-label')?.textContent?.trim() || '';
-  const tooltipEl = optEl.querySelector('.fill-tooltip');
-  const desc = tooltipEl ? Array.from(tooltipEl.childNodes).filter(n => !(n.nodeName === 'STRONG')).map(n => n.textContent).join('').trim() : (optEl.dataset.desc || '');
-  const tagEls = optEl.querySelectorAll('.fill-tag');
-  const tagsHTML = Array.from(tagEls).map(t => { const cls = t.classList.contains('hit') ? 'tag-hit' : t.classList.contains('nuts') ? 'tag-nuts' : ''; return `<span class="fill-sheet-tag ${cls}">${t.textContent.trim()}</span>`; }).join('');
-  const _fillSheetTagsEl = document.getElementById('fillSheetTags'), _fillPopupTitleEl = document.getElementById('fillPopupTitle'), _fillPopupTextEl = document.getElementById('fillPopupText');
-  if (_fillSheetTagsEl) _fillSheetTagsEl.innerHTML = tagsHTML;
-  if (_fillPopupTitleEl) _fillPopupTitleEl.textContent = title;
-  if (_fillPopupTextEl) _fillPopupTextEl.textContent = desc;
-  const groupId = _fillSheetPendingGroupId || 'calcFill';
-  const allOpts = Array.from(document.querySelectorAll(`#${groupId} .calc-opt`));
-  const idx = allOpts.indexOf(optEl), total = allOpts.length;
-  const counterEl = document.getElementById('fillNavCounter'), prevBtn = document.getElementById('fillNavPrev'), nextBtn = document.getElementById('fillNavNext');
-  if (counterEl) counterEl.textContent = total > 1 ? `${idx + 1} / ${total}` : '';
-  if (prevBtn) prevBtn.disabled = (idx <= 0);
-  if (nextBtn) nextBtn.disabled = (idx >= total - 1);
-  const selectBtn = document.getElementById('fillSheetSelect');
-  if (selectBtn) selectBtn.textContent = (groupId === 'calcDecor') ? 'Выбрать оформление' : 'Выбрать начинку';
-}
-
-// ── Раскрывающаяся панель стоимости ──
-function toggleCalcPanel() {
-  if (window.innerWidth > 560) return;
-  const col = document.getElementById('calcRightCol');
-  if (!col) return;
-  const isOpen = col.classList.toggle('calc-result-open');
-  _setCalcBackdrop(isOpen);
-}
-function closeCalcPanel() {
-  const col = document.getElementById('calcRightCol');
-  if (col) col.classList.remove('calc-result-open');
-  _setCalcBackdrop(false);
-}
-function _setCalcBackdrop(show) {
-  if (window.innerWidth > 560) return;
-  let bd = document.getElementById('calcPanelBackdrop');
-  if (!bd) { bd = document.createElement('div'); bd.id = 'calcPanelBackdrop'; bd.setAttribute('aria-hidden', 'true'); bd.addEventListener('click', closeCalcPanel); document.body.appendChild(bd); }
-  bd.classList.toggle('visible', !!show);
-  document.body.classList.toggle('calc-panel-open', !!show);
-}
-
-document.addEventListener('click', function(e) { if (window.innerWidth > 560) return; const col = document.getElementById('calcRightCol'); if (!col || !col.classList.contains('calc-result-open')) return; if (!col.contains(e.target)) closeCalcPanel(); }, { passive: true });
-
-window.addEventListener('scroll', function() { if (window.innerWidth > 560) return; const col = document.getElementById('calcRightCol'); if (col && col.classList.contains('calc-result-open')) closeCalcPanel(); }, { passive: true });
-
-let _fillToastTimer = null;
-function showFillToast(optEl, groupId) {
-  if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
-  closeCalcPanel();
-  const title = optEl.querySelector('.opt-label')?.textContent?.trim() || '';
-  const tooltipEl = optEl.querySelector('.fill-tooltip');
-  const desc = tooltipEl ? Array.from(tooltipEl.childNodes).filter(n => n.nodeName !== 'STRONG').map(n => n.textContent).join('').trim() : '';
-  let toast = document.getElementById('fillToast');
-  if (!toast) return;
-  const titleEl = toast.querySelector('.fill-toast-title'), descEl = toast.querySelector('.fill-toast-desc');
-  if (titleEl) titleEl.textContent = title;
-  if (descEl) descEl.textContent = desc;
-  clearTimeout(_fillToastTimer);
-  toast.classList.remove('fill-toast--out');
-  toast.classList.add('fill-toast--in');
-  _fillToastTimer = setTimeout(() => { toast.classList.add('fill-toast--out'); toast.addEventListener('animationend', () => { toast.classList.remove('fill-toast--in', 'fill-toast--out'); }, { once: true }); }, 2800);
-}
-
-function openFillPopup(optEl, groupId) {
-  if (!optEl) return;
-  _fillSheetPendingEl = optEl; _fillSheetPendingGroupId = groupId || 'calcFill';
-  _fillPopupRender(optEl);
-  const popup = document.getElementById('fillPopup'), overlay = document.getElementById('fillOverlay');
-  if (!popup || !overlay) return;
-  popup.classList.add('open'); overlay.classList.add('open');
-  document.body.classList.add('fill-open');
-  popup.style.willChange = 'transform';
-  lockBody();
-  var _mcNavFill = document.getElementById('mcNav');
-  if (_mcNavFill) { _mcNavFill.classList.add('mc-nav--hidden'); document.body.classList.add('mc-nav-hidden'); }
-  setTimeout(() => document.getElementById('fillSheetSelect')?.focus({ preventScroll: true }), 80);
-}
-
-function closeFillPopup() {
-  const popup = document.getElementById('fillPopup'), overlay = document.getElementById('fillOverlay');
-  if (popup) popup.classList.remove('open');
-  if (overlay) overlay.classList.remove('open');
-  document.body.classList.remove('fill-open');
-  // [r18] Удалён dead code fill-open-ios (логика переведена на lockBody)
-  unlockBody();
-  var _mcNavFill = document.getElementById('mcNav');
-  if (_mcNavFill) { _mcNavFill.classList.remove('mc-nav--hidden'); document.body.classList.remove('mc-nav-hidden'); }
-  _fillSheetPendingEl = null; _fillSheetPendingGroupId = null;
-  if (popup) { popup.style.transform = ''; popup.style.willChange = 'auto'; }
-}
-
-function confirmFillSelection() {
-  if (_fillSheetPendingEl) {
-    const groupId = _fillSheetPendingGroupId || 'calcFill';
-    document.querySelectorAll(`#${groupId} .calc-opt`).forEach(o => o.classList.remove('selected'));
-    _fillSheetPendingEl.classList.add('selected');
-    const inner = _fillSheetPendingEl.querySelector('.opt-inner');
-    if (inner) { inner.classList.remove('rubber-click'); void inner.offsetWidth; inner.classList.add('rubber-click'); inner.addEventListener('animationend', () => inner.classList.remove('rubber-click'), { once: true }); }
-    updateCalc();
-  }
-  closeFillPopup();
-  setTimeout(() => { const result = document.getElementById('calcResult'); if (result) result.closest('.calc-result')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 200);
-}
-
-function navigateFill(dir) {
-  if (!_fillSheetPendingEl || !_fillSheetPendingGroupId) return;
-  const allOpts = Array.from(document.querySelectorAll(`#${_fillSheetPendingGroupId} .calc-opt`));
-  const idx = allOpts.indexOf(_fillSheetPendingEl), next = allOpts[idx + dir];
-  if (!next) return;
-  _fillSheetPendingEl = next;
-  _fillPopupRender(next);
-}
-
-(function initSheetSwipe() {
-  const popup = document.getElementById('fillPopup'), handle = document.getElementById('fillSheetHandle');
-  if (!popup || !handle) return;
-  let startY = 0, currentY = 0, dragging = false;
-  function onStart(e) { startY = e.touches ? e.touches[0].clientY : e.clientY; currentY = 0; dragging = true; popup.classList.add('dragging'); }
-  function onMove(e) { if (!dragging) return; const y = e.touches ? e.touches[0].clientY : e.clientY; currentY = Math.max(0, y - startY); popup.style.transform = `translateY(${currentY}px)`; const overlay = document.getElementById('fillOverlay'); if (overlay) overlay.style.opacity = Math.max(0, 1 - currentY / 220); }
-  function onEnd() { if (!dragging) return; dragging = false; popup.classList.remove('dragging'); popup.style.transform = ''; const overlay = document.getElementById('fillOverlay'); if (overlay) overlay.style.opacity = ''; if (currentY > 100) closeFillPopup(); currentY = 0; }
-  handle.addEventListener('touchstart', onStart, { passive: true }); handle.addEventListener('touchmove', onMove, { passive: true }); handle.addEventListener('touchend', onEnd, { passive: true });
-  const overlayEl = document.getElementById('fillOverlay');
-  if (overlayEl) { overlayEl.addEventListener('click', closeFillPopup); overlayEl.addEventListener('touchend', () => { closeFillPopup(); }, { passive: true }); }
-})();
-
-// [r18] Unified keydown — всё в одном обработчике
-document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight') lbNavigate(1);
-  if (e.key === 'ArrowLeft')  lbNavigate(-1);
-  if (e.key === 'Escape') {
-    if (typeof closeLightbox === 'function') closeLightbox();
-    if (typeof lbIsOpen !== 'undefined' && lbIsOpen && typeof closeLB === 'function') closeLB();
-    closePrivacy(); closeFillPopup(); closeCalcPanel();
-    const _cartDr = document.getElementById('cartDrawer');
-    if (_cartDr && _cartDr.classList.contains('open')) closeCart();
-  }
-});
-
-// ── Динамический минимум даты ──
-(function() { const dateInput = document.getElementById('cdate'); if (dateInput) { const minDate = new Date(); minDate.setDate(minDate.getDate() + 2); dateInput.min = minDate.toISOString().split('T')[0]; } })();
-
-// ── Mouse-tracking glow ──
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.product-card').forEach(card => {
-    if (card._glowBound) return;
-    card._glowBound = true;
-    card.addEventListener('mousemove', (e) => { const r = card.getBoundingClientRect(); card.style.setProperty('--mouse-x', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%'); card.style.setProperty('--mouse-y', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%'); });
-  });
-});
 
 // ── LIGHTBOX SWIPE DOWN ──
 (function() { const lbWrap = document.getElementById('lightboxWrap'); if (!lbWrap) return; let startY = 0; lbWrap.addEventListener('touchstart', e => { startY = e.changedTouches[0].clientY; }, { passive: true }); lbWrap.addEventListener('touchend', e => { if (e.changedTouches[0].clientY - startY > 90) closeLightbox(); }, { passive: true }); })();
@@ -2289,4 +1688,40 @@ window.cbFlavor = cbFlavor; window.cbFaq = cbFaq;
   function syncPressed(el) { if (!el||!el.classList) return; var group = null; if (el.classList.contains('calc-opt')||el.classList.contains('calc-biscuit-opt')) group = el.parentElement; if (el.classList.contains('cart-step')) group = el.parentElement; var nodes = group ? group.querySelectorAll('[role="button"]') : [el]; Array.prototype.forEach.call(nodes,function(n){ if (n.classList&&(n.classList.contains('calc-opt')||n.classList.contains('calc-biscuit-opt')||n.classList.contains('cart-step'))) n.setAttribute('aria-pressed',n.classList.contains('selected')||n.classList.contains('active')?'true':'false'); }); }
   function init() { enhance(document); document.addEventListener('keydown',function(e){ var el = e.target&&e.target.closest?e.target.closest(SELECTOR):null; if(!el||el.matches('a,button,input,textarea,select')) return; if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); setTimeout(function(){syncPressed(el);},0); } }); document.addEventListener('click',function(e){ var el = e.target&&e.target.closest?e.target.closest(SELECTOR):null; if(el) setTimeout(function(){syncPressed(el);},0); },true); if('MutationObserver' in window){ var mo = new MutationObserver(function(muts){ muts.forEach(function(m){ m.addedNodes&&Array.prototype.forEach.call(m.addedNodes,function(node){ if(node.nodeType===1){ if(node.matches&&node.matches(SELECTOR)) enhance({querySelectorAll:function(){return[node];}}); enhance(node); } }); }); }); mo.observe(document.documentElement,{childList:true,subtree:true}); } }
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
+
+// ── PAUSE SLIDERS WHEN OFF-SCREEN ──
+(function initSliderObserver() {
+  if (typeof IntersectionObserver === 'undefined') return;
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const match = entry.target.id && entry.target.id.match(/^slider-(\d+)$/);
+      if (!match) return;
+      const pid = parseInt(match[1]);
+      const p = products.find(x => x.id === pid);
+      if (!p) return;
+      if (entry.isIntersecting) { startProductSlider(pid, p.slides ? p.slides.length : 0); } 
+      else { stopProductSlider(pid); }
+    });
+  }, { threshold: 0.1 });
+  setTimeout(() => { document.querySelectorAll('.slider-wrap').forEach(el => observer.observe(el)); }, 1500);
+})();
+
+
+// ── PAUSE SLIDERS WHEN OFF-SCREEN ──
+(function initSliderObserver() {
+  if (typeof IntersectionObserver === 'undefined') return;
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const match = entry.target.id && entry.target.id.match(/^slider-(\d+)$/);
+      if (!match) return;
+      const pid = parseInt(match[1]);
+      const p = products.find(x => x.id === pid);
+      if (!p) return;
+      if (entry.isIntersecting) { startProductSlider(pid, p.slides ? p.slides.length : 0); } 
+      else { stopProductSlider(pid); }
+    });
+  }, { threshold: 0.1 });
+  setTimeout(() => { document.querySelectorAll('.slider-wrap').forEach(el => observer.observe(el)); }, 1500);
+})();
+
 })();

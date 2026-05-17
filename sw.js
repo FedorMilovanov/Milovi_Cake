@@ -1,20 +1,19 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   MILOVI CAKE — Service Worker v1.2 (V20260517-FIX)
+   MILOVI CAKE — Service Worker v1.3 (V20260517-FAST)
    ═══════════════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'milovi-cake-v2026.05.17';
+const CACHE_NAME = 'milovi-cake-v2026.05.17-r19';
 const PRECACHE = [
   '/',
-  '/css/style.css',
-  '/css/mc-2026.css',
-  '/css/premium-overrides.css',
+  '/css/style.css?v=20260516r18',
+  '/css/mc-2026.css?v=20260516r18',
+  '/css/premium-overrides.css?v=20260516r18',
   '/css/gallery/gallery-2026.css',
   '/css/final-fixes.css',
-  '/js/main.js',
+  '/js/main.js?v=20260516r18',
   '/js/gallery/main.js',
-  '/js/gallery/data.js',
-  '/js/nav.js',
-  '/js/mc-2026.js',
+  '/js/nav.js?v=20260516r18',
+  '/js/mc-2026.js?v=20260516r18',
   '/img/head_mobile.avif',
   '/img/head_desktop.avif',
   '/img/head_mobile.webp',
@@ -24,40 +23,31 @@ const PRECACHE = [
   '/gallery/'
 ];
 
-// ───── INSTALL ─────
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return Promise.all(PRECACHE.map((url) =>
-        cache.add(url).catch(() => { /* tolerate misses */ })
+        cache.add(url).catch(() => { console.log('SW Miss:', url); })
       ));
     }).then(() => self.skipWaiting())
   );
 });
 
-// ───── ACTIVATE ─────
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(
-        keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))
-      )
+      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
     ).then(() => self.clients.claim())
   );
 });
 
-// ───── FETCH ─────
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== location.origin) return;
 
-  if (
-    url.pathname.startsWith('/api/') ||
-    url.pathname.includes('/mc.yandex.ru') ||
-    url.pathname.includes('/googletagmanager')
-  ) return;
+  if (url.pathname.startsWith('/api/') || url.pathname.includes('/mc.yandex.ru')) return;
 
   const acceptHeader = req.headers.get('accept') || '';
 
@@ -89,7 +79,5 @@ self.addEventListener('fetch', (event) => {
 });
 
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING'){
-    self.skipWaiting();
-  }
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
