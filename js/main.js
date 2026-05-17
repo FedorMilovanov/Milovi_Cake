@@ -96,24 +96,64 @@ window.setCartItemDessertType = setCartItemDessertType;
 
 
 
-function startProductSlider(pid, total) {
-  stopProductSlider(pid);
-  if (total <= 1) return;
-  slideTimers[pid] = setInterval(() => {
-    if (document.hidden) return;
-    const wrap = document.getElementById('slider-' + pid);
-    if (wrap && wrap.matches(':hover')) return;
-    goSlide(pid, (sliderCurrentIdx[pid] || 0) + 1);
-  }, 3000);
-}
-
-function stopProductSlider(pid) {
-  if (slideTimers[pid]) { clearInterval(slideTimers[pid]); delete slideTimers[pid]; }
-}
 
 
 const slideTimers = {};
 const sliderCurrentIdx = {};
+
+// ── SLIDER NAVIGATION (restored) ──
+function goSlide(pid, idx) {
+  const wrap = document.getElementById('slider-' + pid);
+  if (!wrap) return;
+  const slides = wrap.querySelectorAll('.slide-img');
+  if (!slides.length) return;
+  const total = slides.length;
+  const n = ((idx % total) + total) % total;
+  sliderCurrentIdx[pid] = n;
+  slides.forEach((el, i) => el.classList.toggle('active', i === n));
+  const dots = wrap.querySelectorAll('.slide-dots .dot');
+  dots.forEach((d, i) => d.classList.toggle('active', i === n));
+}
+
+function sliderStep(pid, dir, total) {
+  const cur = sliderCurrentIdx[pid] || 0;
+  goSlide(pid, cur + dir);
+  // На ручное взаимодействие — перезапускаем автопрокрутку
+  startProductSlider(pid, total);
+}
+
+function addSliderTouch(pid, total) {
+  const wrap = document.getElementById('slider-' + pid);
+  if (!wrap) return;
+  let startX = 0, startY = 0, moved = false;
+  const THRESHOLD = 40;
+
+  wrap.addEventListener('touchstart', (e) => {
+    if (!e.touches || !e.touches.length) return;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    moved = false;
+    stopProductSlider(pid);
+  }, { passive: true });
+
+  wrap.addEventListener('touchmove', (e) => {
+    if (!e.touches || !e.touches.length) return;
+    const dx = e.touches[0].clientX - startX;
+    const dy = e.touches[0].clientY - startY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10) moved = true;
+  }, { passive: true });
+
+  wrap.addEventListener('touchend', (e) => {
+    if (!moved) { startProductSlider(pid, total); return; }
+    const endX = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientX : startX;
+    const dx = endX - startX;
+    if (Math.abs(dx) >= THRESHOLD) {
+      sliderStep(pid, dx < 0 ? 1 : -1, total);
+    } else {
+      startProductSlider(pid, total);
+    }
+  }, { passive: true });
+}
 
 function startProductSlider(pid, total) {
   stopProductSlider(pid);
@@ -205,33 +245,7 @@ const CAKE_CONFIGS = {
 };
 
 // ── PRODUCT SLIDER TOUCH ──
-function addSliderTouch(pid, total) {
-  const wrap = document.getElementById('slider-' + pid);
-  if (!wrap || wrap._touchBound) return;
-  wrap._touchBound = true;
-  let startX = 0;
-  wrap.addEventListener('touchstart', e => {
-    startX = e.touches[0].clientX;
-    wrap._wasSwiped = false;
-  }, { passive: true });
-  wrap.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - startX;
-    if (Math.abs(dx) < 40) return;
-    wrap._wasSwiped = true;
-    const dots = wrap.querySelectorAll('.dot');
-    let cur = 0;
-    dots.forEach((d, i) => { if (d.classList.contains('active')) cur = i; });
-    const next = dx < 0 ? (cur + 1) % total : (cur - 1 + total) % total;
-    goSlide(pid, next);
-    if (slideTimers[pid]) {
-      clearInterval(slideTimers[pid]);
-      let c = next;
-      slideTimers[pid] = setInterval(() => { if (document.hidden) return; c = (c + 1) % total; goSlide(pid, c); }, 3000);
-    }
-    // Reset swipe flag after click event fires
-    setTimeout(() => { wrap._wasSwiped = false; }, 300);
-  }, { passive: true });
-}
+// ── BENTO TAB ──
 const bentoModes = {};
 
 function switchBentoTab(pid, mode) {
