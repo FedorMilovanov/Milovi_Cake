@@ -546,7 +546,8 @@ function buildMessage() {
     const dessertLabel = entry.dessertType === 'author' ? 'авторский' : 'базовый';
     let details = [`десерт: ${dessertLabel}`];
     if (entry.fill)  details.push(`начинка: ${entry.fill}`);
-    if ((parsed.numId === 2) && window._calcBiscuit) details.push(`бисквит: ${window._calcBiscuit === 'vanilla' ? 'ванильный' : 'шоколадный'}`);
+    // FIX r24: was incorrectly checking numId===2 (Бенто). Biscuit type belongs to id===1 (Бисквитный торт).
+    if ((parsed.numId === 1) && window._calcBiscuit) details.push(`бисквит: ${window._calcBiscuit === 'vanilla' ? 'ванильный' : 'шоколадный'}`);
     if (entry.decor) details.push(`декор: ${entry.decor}`);
     return `• ${p.name} — ${label} (${p.price})\n  ${details.join(' · ')}`;
   }).filter(Boolean).join('\n');

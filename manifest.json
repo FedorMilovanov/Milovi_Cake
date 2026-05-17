@@ -43,14 +43,14 @@
   "screenshots": [
     {
       "src": "/img/head.webp",
-      "sizes": "1536x1024",
+      "sizes": "1440x960",
       "type": "image/webp",
       "form_factor": "wide",
       "label": "Milovi Cake — главная страница"
     },
     {
       "src": "/img/head_mobile.webp",
-      "sizes": "750x500",
+      "sizes": "768x512",
       "type": "image/webp",
       "form_factor": "narrow",
       "label": "Milovi Cake — мобильная версия"

@@ -1,4 +1,4 @@
-import { GALLERY_ITEMS } from './data.js?v=20260517r23';
+import { GALLERY_ITEMS } from './data.js?v=20260518r24';
 
 const $ = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
@@ -73,7 +73,15 @@ function renderGrid(){
   const grid=$('#galleryGrid'), empty=$('#gxEmpty'); 
   grid.innerHTML=''; 
   if(empty) {
-    empty.hidden = state.visible.length > 0; // boolean hidden attr; CSS controls display type
+    // FIX r24: HTML has inline style="display:none". JS was only toggling .hidden attr,
+    // but inline style overrides CSS rules. Fix: removeProperty so CSS takes full control.
+    if (state.visible.length > 0) {
+      empty.hidden = true;
+      empty.style.removeProperty('display');
+    } else {
+      empty.hidden = false;
+      empty.style.removeProperty('display');
+    }
   }
   if(!state.visible.length) return;
   const frag=document.createDocumentFragment();
@@ -86,6 +94,7 @@ function renderGrid(){
     card.dataset.index=String(index); 
     card.dataset.id=item.id; 
     card.setAttribute('aria-label',`${item.title}. Открыть в 3D-галерее`);
+    card.setAttribute('role', 'listitem'); // FIX r24: galleryGrid role=list requires listitem on children
     if(item.type==='video') { 
       const v=document.createElement('video'); 
       v.className='card-media'; 
@@ -263,7 +272,14 @@ function openLightbox(index){
   $('#lbNext').addEventListener('click',e=>{e.stopPropagation(); state.swiper?.slideNext();}); 
   $('#lbShare')?.addEventListener('click', e=>{ e.stopPropagation(); shareCurrentWork(); }); 
   $('#lbCopy')?.addEventListener('click', e=>{ e.stopPropagation(); copyCurrentLink(); }); 
-  $$('#lbRoot [data-copy-msg]').forEach(a=>a.addEventListener('click',()=>copyWishText(a.dataset.msg||''))); 
+  // FIX r24: Prevent double-fire (link open + clipboard copy firing simultaneously).
+  // Pass clicked element so animation appears on correct button, not hardcoded #lbWantTg.
+  $$('#lbRoot [data-copy-msg]').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault();
+    copyWishText(a.dataset.msg || '', a);
+    const href = a.getAttribute('href');
+    if (href) setTimeout(() => window.open(href, '_blank', 'noopener,noreferrer'), 80);
+  })); 
   
   initSwiperWhenReady(index); 
   updateLightbox(index,true); 
@@ -383,18 +399,22 @@ function buildWishText(item, url = currentWorkUrl(item)) {
 function buildContactUrl(channel, item, url = currentWorkUrl(item)) {
   const text = buildWishText(item, url);
   if (channel === 'wa') return `https://wa.me/79119038886?text=${encodeURIComponent(text)}`;
-  if (channel === 'tg') return `https://t.me/+79119038886?text=${encodeURIComponent(text)}`;
-  if (channel === 'max') return `https://max.ru/+79119038886`;
+  // FIX r24: t.me/+PHONE ignores ?text= param. Use @username which supports pre-filled text.
+  if (channel === 'tg') return `https://t.me/MiloviCake?text=${encodeURIComponent(text)}`;
+  // FIX r24: MAX has no ?text= support. Clipboard copy is handled by data-copy-msg handler.
+  if (channel === 'max') return `https://max.ru/MiloviCake`;
   return url;
 }
-async function copyWishText(text) {
+// FIX r24: Accept btn param — the element clicked — to animate the correct button.
+// Previously always animated #lbWantTg even when MAX was clicked.
+async function copyWishText(text, btn) {
   if (!text) return;
   try { 
     await navigator.clipboard?.writeText(text); 
-    const tgBtn = $('#lbWantTg');
-    if (!tgBtn) return; // null-guard: lightbox may close during async clipboard write
-    tgBtn.classList.add('copy-success');
-    setTimeout(() => tgBtn.classList.remove('copy-success'), 1500);
+    const target = btn || $('#lbWantTg');
+    if (!target) return; // null-guard: lightbox may close during async clipboard write
+    target.classList.add('copy-success');
+    setTimeout(() => target.classList.remove('copy-success'), 1500);
   }
   catch(e) {}
 }
