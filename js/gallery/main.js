@@ -1,4 +1,4 @@
-import { GALLERY_ITEMS } from './data.js?v=20260519r34';
+import { GALLERY_ITEMS } from './data.js?v=20260519r35';
 
 var _gLockY = 0; /* r31: gallery scroll lock state */
 const $ = (s, c = document) => c.querySelector(s);
@@ -314,7 +314,7 @@ function initSwiperWhenReady(index){
     if(state._swiperAbort !== _swiperToken) return;
     if(!window.Swiper){ 
       if(++_swiperTries >= 40){ /* r34: #29 — reduced from 120 (6s) to 40 (2s) */
-        console.warn('[Milovi] Swiper CDN timeout');
+        /* Swiper CDN timeout — silent in prod */
         return;
       }
       setTimeout(init,50); 

@@ -24,8 +24,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
-  <link rel="stylesheet" href="/css/gallery/gallery-2026.css?v=20260519r34" />
-  <link rel="stylesheet" href="/css/final-fixes.css?v=20260519r34" />
+  <link rel="stylesheet" href="/css/gallery/gallery-2026.css?v=20260519r35" />
+  <link rel="stylesheet" href="/css/final-fixes.css?v=20260519r35" />
 </head>
 <body>
   <div id="preloader">
@@ -75,7 +75,7 @@
     </footer>
   </div>
 
-  <script type="module" src="/js/gallery/main.js?v=20260519r34"></script>
+  <script type="module" src="/js/gallery/main.js?v=20260519r35"></script>
   <script>
     /* FIX r24: Register Service Worker for gallery page.
        Previously SW was only registered on index.html. Direct visits to /gallery/
@@ -84,8 +84,7 @@
       navigator.serviceWorker.register('/sw.js').catch(function() {});
     }
   </script>
-
-<!-- ══════════ Google Analytics — defer on interaction (r30: bug #39) ══════════ -->
+<!-- ══════ Google Analytics — defer on interaction ══════ -->
 <script>
   (function(){
     if (window.gtag || document.querySelector('script[src*="googletagmanager.com/gtag/js"]')) return;
@@ -105,7 +104,7 @@
   })();
 </script>
 
-<!-- ══════════ Yandex Metrika (r30: bug #39) ══════════ -->
+<!-- ══════ Yandex Metrika ══════ -->
 <script type="text/javascript">
   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
   m[i].l=1*new Date();

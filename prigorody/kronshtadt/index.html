@@ -96,10 +96,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
   <!-- noscript fonts -->
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/></noscript>
-  <link rel="stylesheet" href="../../css/style.css?v=20260519r34" />
-  <link rel="stylesheet" href="../../css/mc-2026.css?v=20260519r34" />
-  <link rel="stylesheet" href="../../css/premium-overrides.css?v=20260519r34" />
-  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260519r34">
+  <link rel="stylesheet" href="../../css/style.css?v=20260519r35" />
+  <link rel="stylesheet" href="../../css/mc-2026.css?v=20260519r35" />
+  <link rel="stylesheet" href="../../css/premium-overrides.css?v=20260519r35" />
+  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260519r35">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -111,30 +111,8 @@
     ]
   }
   </script>
-  <!-- GA: moved to defer-on-interaction before 
-<!-- ══════════ Google Analytics — defer on interaction (r30: bug #8) ══════════ -->
-<script>
-  (function(){
-    if (window.gtag || document.querySelector('script[src*="googletagmanager.com/gtag/js"]')) return;
-    function loadGA(){
-      var s=document.createElement('script');
-      s.src='https://www.googletagmanager.com/gtag/js?id=G-94ZZ5B8YNY';
-      s.async=true; document.head.appendChild(s);
-      window.dataLayer=window.dataLayer||[];
-      window.gtag=function(){dataLayer.push(arguments);};
-      gtag('js',new Date()); gtag('config','G-94ZZ5B8YNY',{transport_type:'beacon'});
-    }
-    var f=false;
-    ['scroll','keydown','mousedown','touchstart','pointerdown'].forEach(function(e){
-      window.addEventListener(e,function h(){if(f)return;f=true;window.removeEventListener(e,h);loadGA();},{passive:true,once:true});
-    });
-    setTimeout(function(){if(!f){f=true;loadGA();}},5000);
-  })();
-</script>
-
-</body> (r30: bug #8) -->
-  <link rel="stylesheet" href="/css/v20-fixes.css?v=20260519r34">
-  <link rel="stylesheet" href="/css/final-fixes.css?v=20260519r34" />
+  <link rel="stylesheet" href="/css/v20-fixes.css?v=20260519r35">
+  <link rel="stylesheet" href="/css/final-fixes.css?v=20260519r35" />
 </head>
 
 <body class="prigorody-page">
@@ -325,8 +303,6 @@
   </div>
 </section>
 
-
-
 <!-- ══════════ DELIVERY CARD ══════════ -->
 <div class="section-fade-divider" aria-hidden="true"></div>
 <section class="city-delivery" id="delivery">
@@ -366,7 +342,6 @@
     </div>
   </div>
 </section>
-
 
 <!-- ══════════ CATALOG ══════════ -->
 <div class="section-fade-divider" aria-hidden="true"></div>
@@ -564,7 +539,6 @@
   </div>
 </section>
 
-
 <!-- ══════════ WHY US ══════════ -->
 <div class="section-fade-divider" aria-hidden="true"></div>
 <section id="why">
@@ -594,7 +568,6 @@
     </div>
   </div>
 </section>
-
 
 <!-- ══════════ REVIEWS ══════════ -->
 <div class="section-fade-divider" aria-hidden="true"></div>
@@ -666,8 +639,6 @@
 </div>
 <div class="section-fade-divider" aria-hidden="true"></div>
 
-
-
 <!-- ══════════ DELIVERY FAQ ══════════ -->
 <div class="section-fade-divider" aria-hidden="true"></div>
 <section class="delivery-faq" id="faq">
@@ -689,7 +660,6 @@
     </div>
   </div>
 </section>
-
 
 <!-- ══════════ CONTACTS ══════════ -->
 <div class="section-fade-divider" aria-hidden="true"></div>
@@ -811,7 +781,6 @@
   </div>
 </section>
 
-
 <!-- ══════════ GEO / SEO ══════════ -->
 <section class="geo-section">
   <div class="container">
@@ -841,7 +810,6 @@
     </div>
   </div>
 </section>
-
 
 <!-- ══════════ CART BUTTON ══════════ -->
 <button type="button" class="cart-btn" onclick="openCart()" aria-label="Корзина">
@@ -957,16 +925,10 @@
   </div>
 </section>
 
-
-
-
-
 <script>var IMG_BASE = '../../img';</script>
-<script src="../../js/main.js?v=20260519r34" defer></script>
-<script src="../../js/nav.js?v=20260519r34" defer></script>
-<script src="../../js/mc-2026.js?v=20260519r34" defer></script>
-
-
+<script src="../../js/main.js?v=20260519r35" defer></script>
+<script src="../../js/nav.js?v=20260519r35" defer></script>
+<script src="../../js/mc-2026.js?v=20260519r35" defer></script>
 
 <!-- ══════════ BOTTOM SHEET: Начинка ══════════ -->
 <div class="fill-mobile-overlay" id="fillOverlay"></div>
@@ -1025,8 +987,6 @@
   </div>
 </div>
 
-
-
 <!-- FAQPage разметка перенесена в JSON-LD выше -->
 
 <button type="button" class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Наверх">
@@ -1034,8 +994,6 @@
     <polyline points="18 15 12 9 6 15"/>
   </svg>
 </button>
-
-
 
 <!-- PWA Service Worker -->
 <script>
@@ -1257,7 +1215,6 @@
 <div class="lb-box" id="lbBox"><img id="lbImg" src="" alt="Отзыв клиента Milovi Cake" width="800" height="1000" style="max-width:100%;height:auto;aspect-ratio:4/5;" decoding="async" loading="lazy"></div>
 <button type="button" class="lb-x" id="lbX" aria-label="Закрыть">✕</button>
 
-
 <script>
 function cbFaq(el){
   var isOpen = el.classList.contains('open');
@@ -1265,7 +1222,6 @@ function cbFaq(el){
   if(!isOpen) el.classList.add('open');
 }
 </script>
-
 
 <!-- APP-LIKE JS -->
 <script>
@@ -1291,9 +1247,8 @@ function cbFaq(el){
 })();
 </script>
 
-<script defer src="/js/v20-faq-fix.js?v=20260519r34"></script>
-
-<!-- ══════════ Google Analytics — defer on interaction (r30: bug #8) ══════════ -->
+<script defer src="/js/v20-faq-fix.js?v=20260519r35"></script>
+<!-- ══════ Google Analytics — defer on interaction ══════ -->
 <script>
   (function(){
     if (window.gtag || document.querySelector('script[src*="googletagmanager.com/gtag/js"]')) return;
