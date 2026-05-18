@@ -261,8 +261,7 @@
         var entries = list.getEntries();
         for (var i = 0; i < entries.length; i++){
           var e = entries[i];
-          // eslint-disable-next-line no-console
-          console.log('[MC]', e.entryType, Math.round(e.startTime || e.duration), e);
+          /* debug removed r28 */
         }
       }).observe({ type: 'largest-contentful-paint', buffered: true });
 
@@ -272,8 +271,7 @@
         for (var i = 0; i < entries.length; i++){
           if (!entries[i].hadRecentInput) clsTotal += entries[i].value;
         }
-        // eslint-disable-next-line no-console
-        console.log('[MC] CLS', clsTotal.toFixed(4));
+        /* debug removed r28 */
       }).observe({ type: 'layout-shift', buffered: true });
 
       if (PerformanceObserver.supportedEntryTypes &&
@@ -282,8 +280,7 @@
           var entries = list.getEntries();
           for (var i = 0; i < entries.length; i++){
             if (entries[i].duration > 100){
-              // eslint-disable-next-line no-console
-              console.log('[MC] INP candidate:', entries[i].name, Math.round(entries[i].duration), 'ms');
+              /* debug removed r28 */
             }
           }
         }).observe({ type: 'event', buffered: true, durationThreshold: 100 });
