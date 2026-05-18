@@ -686,17 +686,47 @@
     }
   </style>
 
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-94ZZ5B8YNY"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-94ZZ5B8YNY');
-  </script>
-  <link rel="stylesheet" href="/css/premium-overrides.css?v=20260519r29" />
-  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260519r29">
-  <link rel="stylesheet" href="/css/v20-fixes.css?v=20260519r29">
+  <!-- GA: moved to defer-on-interaction before 
+<!-- ══════════ Google Analytics — defer on interaction (r30: bug #8) ══════════ -->
+<script>
+  (function(){
+    if (window.gtag || document.querySelector('script[src*="googletagmanager.com/gtag/js"]')) return;
+    function loadGA(){
+      var s=document.createElement('script');
+      s.src='https://www.googletagmanager.com/gtag/js?id=G-94ZZ5B8YNY';
+      s.async=true; document.head.appendChild(s);
+      window.dataLayer=window.dataLayer||[];
+      window.gtag=function(){dataLayer.push(arguments);};
+      gtag('js',new Date()); gtag('config','G-94ZZ5B8YNY',{transport_type:'beacon'});
+    }
+    var f=false;
+    ['scroll','keydown','mousedown','touchstart','pointerdown'].forEach(function(e){
+      window.addEventListener(e,function h(){if(f)return;f=true;window.removeEventListener(e,h);loadGA();},{passive:true,once:true});
+    });
+    setTimeout(function(){if(!f){f=true;loadGA();}},5000);
+  })();
+</script>
+
+<!-- ══════════ Yandex Metrika (r30: bug #9) ══════════ -->
+<script type="text/javascript">
+  (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+  m[i].l=1*new Date();
+  for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+  k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+  (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+  ym(106945185, "init", {
+    clickmap: true,
+    trackLinks: true,
+    accurateTrackBounce: true,
+    webvisor: true
+  });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/106945185" width="1" height="1" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+
+</body> (r30: bug #8) -->
+  <link rel="stylesheet" href="/css/premium-overrides.css?v=20260519r30" />
+  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260519r30">
+  <link rel="stylesheet" href="/css/v20-fixes.css?v=20260519r30">
 </head>
 <body>
 
@@ -954,6 +984,43 @@
     });
   </script>
 
-<script defer src="/js/v20-faq-fix.js?v=20260519r29"></script>
+<script defer src="/js/v20-faq-fix.js?v=20260519r30"></script>
+
+<!-- ══════════ Google Analytics — defer on interaction (r30: bug #8) ══════════ -->
+<script>
+  (function(){
+    if (window.gtag || document.querySelector('script[src*="googletagmanager.com/gtag/js"]')) return;
+    function loadGA(){
+      var s=document.createElement('script');
+      s.src='https://www.googletagmanager.com/gtag/js?id=G-94ZZ5B8YNY';
+      s.async=true; document.head.appendChild(s);
+      window.dataLayer=window.dataLayer||[];
+      window.gtag=function(){dataLayer.push(arguments);};
+      gtag('js',new Date()); gtag('config','G-94ZZ5B8YNY',{transport_type:'beacon'});
+    }
+    var f=false;
+    ['scroll','keydown','mousedown','touchstart','pointerdown'].forEach(function(e){
+      window.addEventListener(e,function h(){if(f)return;f=true;window.removeEventListener(e,h);loadGA();},{passive:true,once:true});
+    });
+    setTimeout(function(){if(!f){f=true;loadGA();}},5000);
+  })();
+</script>
+
+<!-- ══════════ Yandex Metrika (r30: bug #9) ══════════ -->
+<script type="text/javascript">
+  (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+  m[i].l=1*new Date();
+  for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+  k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+  (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+  ym(106945185, "init", {
+    clickmap: true,
+    trackLinks: true,
+    accurateTrackBounce: true,
+    webvisor: true
+  });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/106945185" width="1" height="1" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+
 </body>
 </html>

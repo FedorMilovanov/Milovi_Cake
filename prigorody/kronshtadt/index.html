@@ -96,10 +96,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
   <!-- noscript fonts -->
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/></noscript>
-  <link rel="stylesheet" href="../../css/style.css?v=20260519r29" />
-  <link rel="stylesheet" href="../../css/mc-2026.css?v=20260519r29" />
-  <link rel="stylesheet" href="../../css/premium-overrides.css?v=20260519r29" />
-  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260519r29">
+  <link rel="stylesheet" href="../../css/style.css?v=20260519r30" />
+  <link rel="stylesheet" href="../../css/mc-2026.css?v=20260519r30" />
+  <link rel="stylesheet" href="../../css/premium-overrides.css?v=20260519r30" />
+  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260519r30">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -111,16 +111,30 @@
     ]
   }
   </script>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-94ZZ5B8YNY"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-94ZZ5B8YNY');
-  </script>
-  <link rel="stylesheet" href="/css/v20-fixes.css?v=20260519r29">
-  <link rel="stylesheet" href="/css/final-fixes.css?v=20260519r29" />
+  <!-- GA: moved to defer-on-interaction before 
+<!-- ══════════ Google Analytics — defer on interaction (r30: bug #8) ══════════ -->
+<script>
+  (function(){
+    if (window.gtag || document.querySelector('script[src*="googletagmanager.com/gtag/js"]')) return;
+    function loadGA(){
+      var s=document.createElement('script');
+      s.src='https://www.googletagmanager.com/gtag/js?id=G-94ZZ5B8YNY';
+      s.async=true; document.head.appendChild(s);
+      window.dataLayer=window.dataLayer||[];
+      window.gtag=function(){dataLayer.push(arguments);};
+      gtag('js',new Date()); gtag('config','G-94ZZ5B8YNY',{transport_type:'beacon'});
+    }
+    var f=false;
+    ['scroll','keydown','mousedown','touchstart','pointerdown'].forEach(function(e){
+      window.addEventListener(e,function h(){if(f)return;f=true;window.removeEventListener(e,h);loadGA();},{passive:true,once:true});
+    });
+    setTimeout(function(){if(!f){f=true;loadGA();}},5000);
+  })();
+</script>
+
+</body> (r30: bug #8) -->
+  <link rel="stylesheet" href="/css/v20-fixes.css?v=20260519r30">
+  <link rel="stylesheet" href="/css/final-fixes.css?v=20260519r30" />
 </head>
 
 <body class="prigorody-page">
@@ -948,9 +962,9 @@
 
 
 <script>var IMG_BASE = '../../img';</script>
-<script src="../../js/main.js?v=20260519r29" defer></script>
-<script src="../../js/nav.js?v=20260519r29" defer></script>
-<script src="../../js/mc-2026.js?v=20260519r29" defer></script>
+<script src="../../js/main.js?v=20260519r30" defer></script>
+<script src="../../js/nav.js?v=20260519r30" defer></script>
+<script src="../../js/mc-2026.js?v=20260519r30" defer></script>
 
 
 
@@ -1277,6 +1291,27 @@ function cbFaq(el){
 })();
 </script>
 
-<script defer src="/js/v20-faq-fix.js?v=20260519r29"></script>
+<script defer src="/js/v20-faq-fix.js?v=20260519r30"></script>
+
+<!-- ══════════ Google Analytics — defer on interaction (r30: bug #8) ══════════ -->
+<script>
+  (function(){
+    if (window.gtag || document.querySelector('script[src*="googletagmanager.com/gtag/js"]')) return;
+    function loadGA(){
+      var s=document.createElement('script');
+      s.src='https://www.googletagmanager.com/gtag/js?id=G-94ZZ5B8YNY';
+      s.async=true; document.head.appendChild(s);
+      window.dataLayer=window.dataLayer||[];
+      window.gtag=function(){dataLayer.push(arguments);};
+      gtag('js',new Date()); gtag('config','G-94ZZ5B8YNY',{transport_type:'beacon'});
+    }
+    var f=false;
+    ['scroll','keydown','mousedown','touchstart','pointerdown'].forEach(function(e){
+      window.addEventListener(e,function h(){if(f)return;f=true;window.removeEventListener(e,h);loadGA();},{passive:true,once:true});
+    });
+    setTimeout(function(){if(!f){f=true;loadGA();}},5000);
+  })();
+</script>
+
 </body>
 </html>
