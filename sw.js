@@ -1,28 +1,28 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   MILOVI CAKE — Service Worker v1.5 (V20260519-R28)
+   MILOVI CAKE — Service Worker v1.5 (V20260519-R29)
    Strategy:
      - HTML (navigate): network-first, fallback to cache, fallback to "/"
      - Static (CSS/JS/img): stale-while-revalidate; video/range: browser-native
      - skipWaiting + clients.claim → обновления подхватываются мгновенно
    ═══════════════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'milovi-cake-v2026.05.19-r28';
+const CACHE_NAME = 'milovi-cake-v2026.05.19-r29';
 
 const PRECACHE = [
   '/',
-  '/css/style.css?v=20260519r28',
-  '/css/mc-2026.css?v=20260519r28',
-  '/css/premium-overrides.css?v=20260519r28',
-  '/css/v20-dark-and-fixes.css?v=20260519r28',
-  '/css/v20-fixes.css?v=20260519r28',
-  '/css/final-fixes.css?v=20260519r28',
-  '/css/gallery/gallery-2026.css?v=20260519r28',
-  '/js/main.js?v=20260519r28',
-  '/js/nav.js?v=20260519r28',
-  '/js/mc-2026.js?v=20260519r28',
-  '/js/v20-faq-fix.js?v=20260519r28',
-  '/js/gallery/main.js?v=20260519r28',
-  '/js/gallery/data.js?v=20260519r28',
+  '/css/style.css?v=20260519r29',
+  '/css/mc-2026.css?v=20260519r29',
+  '/css/premium-overrides.css?v=20260519r29',
+  '/css/v20-dark-and-fixes.css?v=20260519r29',
+  '/css/v20-fixes.css?v=20260519r29',
+  '/css/final-fixes.css?v=20260519r29',
+  '/css/gallery/gallery-2026.css?v=20260519r29',
+  '/js/main.js?v=20260519r29',
+  '/js/nav.js?v=20260519r29',
+  '/js/mc-2026.js?v=20260519r29',
+  '/js/v20-faq-fix.js?v=20260519r29',
+  '/js/gallery/main.js?v=20260519r29',
+  '/js/gallery/data.js?v=20260519r29',
   '/img/head_mobile.avif',
   '/img/head_desktop.avif',
   '/img/head_mobile.webp',
@@ -35,9 +35,12 @@ const PRECACHE = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
+      var misses = 0;
       return Promise.all(PRECACHE.map((url) =>
-        cache.add(url).catch(() => { console.log('SW Miss:', url); })
-      ));
+        cache.add(url).catch(() => { misses++; console.warn('SW precache miss:', url); })
+      )).then(() => {
+        if (misses > 3) { console.error('SW: too many precache misses (' + misses + '), not activating'); throw new Error('precache-failed'); }
+      });
     }).then(() => self.skipWaiting())
   );
 });

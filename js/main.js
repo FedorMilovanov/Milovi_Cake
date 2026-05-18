@@ -433,7 +433,8 @@ function changeQty(cartKey, delta) {
   if (p.hasMaxi && entry.mode === 'maxi') p = { ...p, ...p.maxiVariant };
   const step = p.unit === 'кг' ? 0.5 : 1;
   const minQty = p.minQty || (p.unit === 'кг' ? (p.minKg || 1) : 1);
-  entry.qty = Math.round((entry.qty + delta * step) * 10) / 10;
+  var maxQty = p.unit === 'кг' ? (p.maxiVariant ? 5 : 20) : 20; /* r29: bug #16 */
+  entry.qty = Math.min(Math.round((entry.qty + delta * step) * 10) / 10, maxQty);
   if (entry.qty < minQty) delete cart[cartKey];
   updateCartUI();
   saveCartToStorage();
@@ -579,7 +580,8 @@ function buildTG(e) {
   setCartStep(3);
   const btn = document.getElementById('btnTG');
   if (btn) btn.classList.add('loading');
-  navigator.clipboard.writeText(msg).then(() => { showToast('Скопировано! Вставьте в чат Telegram (Ctrl+V)'); }).catch(() => {});
+  /* r29: bug #17 — clipboard fallback */
+  (function(text){ try { navigator.clipboard.writeText(text).then(function(){ showToast("Скопировано! Вставьте в чат Telegram (Ctrl+V)"); }).catch(function(){ var ta=document.createElement("textarea"); ta.value=text; ta.style.cssText="position:fixed;left:-9999px"; document.body.appendChild(ta); ta.select(); try{document.execCommand("copy");showToast("Скопировано! Вставьте в чат Telegram")}catch(e){showToast("Не удалось скопировать — выделите и скопируйте текст вручную")} document.body.removeChild(ta); }); } catch(e){ showToast("Не удалось скопировать текст"); } })(msg);
   setTimeout(() => { window.open('https://t.me/MiloviCake', '_blank'); if (btn) btn.classList.remove('loading'); }, 300);
 }
 
@@ -613,10 +615,16 @@ function goBackToCart() {
   updateCartUI();
 }
 
-// ── iOS-safe scroll lock ──
+// ── iOS-safe scroll lock (r29: bug #21 — position:fixed trick for iOS Safari) ──
+var _lockScrollY = 0;
 function lockBody() {
   var count = parseInt(document.body.dataset.lockCount || '0');
   if (count === 0) {
+    _lockScrollY = window.scrollY || window.pageYOffset || 0;
+    document.body.style.position = 'fixed';
+    document.body.style.top = (-_lockScrollY) + 'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
   }
@@ -624,10 +632,14 @@ function lockBody() {
 }
 function unlockBody() {
   var count = parseInt(document.body.dataset.lockCount || '0');
-  if (count <= 0) { document.body.style.overflow = ''; document.documentElement.style.overflow = ''; return; }
+  if (count <= 0) { document.body.style.position = ''; document.body.style.top = ''; document.body.style.left = ''; document.body.style.right = ''; document.body.style.overflow = ''; document.documentElement.style.overflow = ''; return; }
   var newCount = count - 1;
   document.body.dataset.lockCount = newCount;
-  if (newCount === 0) { document.body.style.overflow = ''; document.documentElement.style.overflow = ''; delete document.body.dataset.scrollY; }
+  if (newCount === 0) {
+    document.body.style.position = ''; document.body.style.top = ''; document.body.style.left = ''; document.body.style.right = '';
+    document.body.style.overflow = ''; document.documentElement.style.overflow = '';
+    window.scrollTo(0, _lockScrollY);
+  }
 }
 window.lockBody = lockBody;
 window.unlockBody = unlockBody;
@@ -810,12 +822,12 @@ window.addEventListener('pageshow', function(e) {
 })();
 
 // ── SMOOTH IMAGE FADE ──
-document.querySelectorAll('img').forEach(function(img) {
+document.querySelectorAll('img:not(.hero-img):not([class*="head"])').forEach(function(img) {
   if (img.complete || img.naturalWidth > 0) return;
   img.style.opacity = '0'; img.style.transition = 'opacity 0.5s ease';
   img.addEventListener('load', function() { img.style.opacity = '1'; });
   img.addEventListener('error', function() { img.style.opacity = '1'; });
-  setTimeout(function() { if (img.style.opacity === '0') img.style.opacity = '1'; }, 5000);
+  setTimeout(function() { if (img.style.opacity === '0') img.style.opacity = '1'; }, 2000 /* r29: bug #14 — reduced from 5s */);
 });
 
 // ── CART OVERLAY CLICK-OUTSIDE ──
@@ -885,7 +897,7 @@ function scrollToProduct(id) {
   const top = card.getBoundingClientRect().top + window.scrollY - offset;
   window.scrollTo({ top, behavior: 'smooth' });
   document.querySelectorAll('.catalog-nav-item').forEach(el => { el.classList.toggle('active', el.dataset.target === 'card-' + id); });
-  setTimeout(() => { document.querySelectorAll('.catalog-nav-item.active').forEach(el => el.classList.remove('active')); }, 2000);
+  /* r29: bug #35 — removed destructive 2s timeout, IO handles active state */
 }
 
 function initCatalogNavScroll() {
@@ -1010,7 +1022,8 @@ function initSectionTitleWords() {
 })();
 
 function initApp() {
-  if (typeof window._calcBiscuit === 'undefined') window._calcBiscuit = 'vanilla';
+  /* r29: bug #5 — restore biscuit from localStorage */
+  if (typeof window._calcBiscuit === "undefined") { try { window._calcBiscuit = localStorage.getItem("milovicake_biscuit") || "vanilla"; } catch(e) { window._calcBiscuit = "vanilla"; } }
   renderCatalogNav();
   renderCatalog();
   if (typeof requestIdleCallback !== 'undefined') { requestIdleCallback(wireProductLightbox, { timeout: 500 }); }
@@ -1189,7 +1202,7 @@ function wireProductLightbox() {
 // ══════════════════════════════════════════
 
 function selectCakeType(el, type) {
-  document.querySelectorAll('.fill-tooltip').forEach(function(t) { if (!t.closest('.calc-opt')) t.remove(); });
+  /* r29: removed destructive tooltip cleanup — tooltips now persist in body (bug #15) */
   document.querySelectorAll('#calcType .calc-opt').forEach(o => o.classList.remove('selected'));
   el.classList.add('selected');
   _cakeType = type;
@@ -2257,7 +2270,7 @@ if (typeof updateCalcCartBadge === 'function') {
 })();
 
 // ── Content block helpers ──
-function selectBiscuit(el, type) { document.querySelectorAll('#calcBiscuitSeg .calc-biscuit-opt').forEach(o => o.classList.remove('active')); el.classList.add('active'); window._calcBiscuit = type; }
+function selectBiscuit(el, type) { document.querySelectorAll('#calcBiscuitSeg .calc-biscuit-opt').forEach(o => o.classList.remove('active')); el.classList.add('active'); window._calcBiscuit = type; try { localStorage.setItem("milovicake_biscuit", type); } catch(e){} /* r29: bug #5 */ }
 window.selectBiscuit = selectBiscuit;
 
 function cbFlavor(id, btn) { document.querySelectorAll('.cb-fp').forEach(p => p.classList.remove('cb-on')); document.querySelectorAll('.cb-ftab').forEach(t => t.classList.remove('cb-on')); const el = document.getElementById('cb-'+id); if (el) el.classList.add('cb-on'); if (btn) btn.classList.add('cb-on'); }
