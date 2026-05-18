@@ -1,4 +1,4 @@
-import { GALLERY_ITEMS } from './data.js?v=20260518r25';
+import { GALLERY_ITEMS } from './data.js?v=20260518r27';
 
 const $ = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
@@ -10,6 +10,7 @@ const filterButtons = [
   { id: 'bday', label: 'День рождения' },
 ];
 const CONTACT_PHONE = '79119038886';
+const TELEGRAM_USERNAME = 'milovi_cake';
 const state = { filter:'all', items:[], visible:[], swiper:null, lbIndex:0, observer:null, bgTimer:null, isNavigating: false, mediaWarmupTimer: null };
 
 
@@ -280,8 +281,8 @@ function openLightbox(index){
   $('#lbNext').addEventListener('click',e=>{e.stopPropagation(); state.swiper?.slideNext();}); 
   $('#lbShare')?.addEventListener('click', e=>{ e.stopPropagation(); shareCurrentWork(); }); 
   $('#lbCopy')?.addEventListener('click', e=>{ e.stopPropagation(); copyCurrentLink(); }); 
-  // FIX r25: copy wish text without delaying popup navigation; delayed window.open on mobile
-  // can be treated as a popup and blocked. Also Telegram now goes to private contact, not channel.
+  // FIX r25/r26: copy wish text without delaying popup navigation; delayed window.open on mobile
+  // can be treated as a popup and blocked. Telegram opens the personal @milovi_cake chat, never the old channel preview.
   $$('#lbRoot [data-copy-msg]').forEach(a => a.addEventListener('click', e => {
     e.preventDefault();
     copyWishText(a.dataset.msg || '', a);
@@ -319,20 +320,31 @@ function initSwiperWhenReady(index){
       return; 
     } 
     const mobile=window.innerWidth<768; 
+    const tablet=window.innerWidth<1024;
     state.swiper=new Swiper('#lbSwiper',{
       effect:'coverflow',
       grabCursor:true,
       centeredSlides:true,
-      slidesPerView: mobile ? 1.08 : 1.65,
+      slidesPerView:'auto',
+      slideToClickedSlide:true,
       initialSlide:index,
-      speed:520,
-      spaceBetween: mobile ? 6 : 18,
+      speed:560,
+      spaceBetween: mobile ? -34 : (tablet ? -76 : -132),
       keyboard:false,
       watchSlidesProgress:true,
       updateOnWindowResize:true,
-      resistanceRatio:.82,
+      resistanceRatio:.78,
+      threshold:4,
+      longSwipesRatio:.18,
       roundLengths:true,
-      coverflowEffect:{rotate:mobile?14:22,stretch:0,depth:mobile?110:180,modifier:1,scale:0.92,slideShadows:false},
+      coverflowEffect:{
+        rotate: mobile ? 16 : 26,
+        stretch: mobile ? -10 : -36,
+        depth: mobile ? 135 : 240,
+        modifier: mobile ? 1.05 : 1.12,
+        scale: mobile ? .86 : .82,
+        slideShadows:false
+      },
       on:{
         slideChange(){updateLightbox(this.activeIndex);},
         afterInit(){
@@ -394,9 +406,10 @@ function buildWishText(item, url = currentWorkUrl(item)) {
 function buildContactUrl(channel, item, url = currentWorkUrl(item)) {
   const text = buildWishText(item, url);
   if (channel === 'wa') return `https://wa.me/${CONTACT_PHONE}?text=${encodeURIComponent(text)}`;
-  // FIX r25: @MiloviCake is a public channel, not a private dialog. Order CTA must open
-  // the personal Telegram contact link by phone, otherwise users land on the channel preview.
-  if (channel === 'tg') return `https://t.me/+${CONTACT_PHONE}?text=${encodeURIComponent(text)}`;
+  // FIX r27: @milovi_cake is the personal Telegram username for orders.
+  // We still copy the wish text to clipboard because Telegram does not reliably
+  // prefill message text for ordinary user chats opened via t.me/username.
+  if (channel === 'tg') return `https://t.me/${TELEGRAM_USERNAME}`;
   // MAX still relies on clipboard copy because not all clients support prefilled text.
   if (channel === 'max') return `https://max.ru/MiloviCake`;
   return url;
