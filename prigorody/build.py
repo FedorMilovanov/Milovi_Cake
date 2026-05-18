@@ -257,6 +257,19 @@ def render_city(template, p):
 
 
 def main():
+    # ── r34: bug #34 — CSV structure validation ──
+    with open(CSV_PATH, encoding='utf-8') as vf:
+        vreader = csv.DictReader(vf)
+        required_cols = ['slug', 'title', 'meta_desc', 'h1_city', 'hero_p', 'delivery_price']
+        for col in required_cols:
+            if col not in vreader.fieldnames:
+                print(f'ОШИБКА: столбец "{col}" отсутствует в CSV')
+                exit(1)
+        for rn, row in enumerate(vreader, 2):
+            if not row.get('slug', '').strip():
+                print(f'ОШИБКА: строка {rn} — пустой slug')
+                exit(1)
+
     with open(TEMPLATE_PATH, encoding='utf-8') as f:
         template = f.read()
     with open(CSV_PATH, encoding='utf-8') as f:

@@ -1,4 +1,4 @@
-import { GALLERY_ITEMS } from './data.js?v=20260519r33';
+import { GALLERY_ITEMS } from './data.js?v=20260519r34';
 
 var _gLockY = 0; /* r31: gallery scroll lock state */
 const $ = (s, c = document) => c.querySelector(s);
@@ -313,7 +313,7 @@ function initSwiperWhenReady(index){
   const init=()=>{ 
     if(state._swiperAbort !== _swiperToken) return;
     if(!window.Swiper){ 
-      if(++_swiperTries >= 120){
+      if(++_swiperTries >= 40){ /* r34: #29 — reduced from 120 (6s) to 40 (2s) */
         console.warn('[Milovi] Swiper CDN timeout');
         return;
       }
@@ -509,6 +509,13 @@ function ensureSlideMedia(index, priority = 'auto') {
 }
 function warmupLightboxMedia(index) {
   clearTimeout(state.mediaWarmupTimer);
+  /* r34: #27 — cancel stale video preloads from previous slides */
+  $$('#lbWrapper .swiper-slide').forEach(function(slide, i) {
+    if (Math.abs(i - index) > 2) {
+      var v = slide.querySelector('video[preload="low"]');
+      if (v && !v.paused) { v.pause(); }
+    }
+  });
   ensureSlideMedia(index, 'high');
   ensureSlideMedia(index - 1, 'auto');
   ensureSlideMedia(index + 1, 'auto');
@@ -549,7 +556,8 @@ function closeLightbox(updateState = true){
   window.removeEventListener('resize', onLightboxResize);
   clearTimeout(state.bgTimer);
   clearTimeout(state.mediaWarmupTimer);
-  $$('#lbWrapper video').forEach(v=>{v.pause(); v.removeAttribute('src'); v.load();}); 
+  /* r34: #26 — pause+clear without .load() to avoid Safari error events */
+  $$('#lbWrapper video').forEach(v=>{v.pause(); v.removeAttribute('src'); v.textContent=''; }); 
   if(state.swiper){state.swiper.destroy(true,true); state.swiper=null;} 
   $('#lbRoot')?.remove(); 
   /* r31: bug #40 — iOS-safe scroll unlock */ document.body.style.position=''; document.body.style.top=''; document.body.style.left=''; document.body.style.right=''; document.body.style.overflow=''; window.scrollTo(0,_gLockY||0); 

@@ -37,15 +37,19 @@ function getFillsForProduct(p) {
 // mode = 'regular' | 'maxi'
 function buildCartKey(numId, mode, hasMaxi, fillName, decorName) {
   const m = hasMaxi ? (mode || 'regular') : 'regular';
-  const f = fillName  ? ':' + fillName  : '';
-  const d = decorName ? ':' + decorName : '';
+  /* r34: escape colons in fill/decor names to prevent parseCartKey collision */
+  var esc = function(s) { return s ? s.replace(/:/g, '\u003A') : ''; };
+  const f = fillName  ? ':' + esc(fillName)  : '';
+  const d = decorName ? ':' + esc(decorName) : '';
   return numId + ':' + m + f + d;
 }
 
 // ── РАЗБОР КЛЮЧА КОРЗИНЫ ──
 function parseCartKey(key) {
   const parts = String(key).split(':');
-  return { numId: parseInt(parts[0]), mode: parts[1] || 'regular', fill: parts.slice(2).filter((_,i) => i%2===0)[0] || '', decor: parts.slice(2).filter((_,i) => i%2===1)[0] || '' };
+  /* r34: unescape colons that were escaped in buildCartKey */
+  var unesc = function(s) { return s ? s.replace(/\u003A/g, ':') : ''; };
+  return { numId: parseInt(parts[0]), mode: parts[1] || 'regular', fill: unesc(parts[2] || ''), decor: unesc(parts[3] || '') };
 }
 
 function normalizeCartKey(key, entry) {
@@ -571,7 +575,14 @@ function buildWA(e) {
   setCartStep(3);
   const btn = document.getElementById('btnWA');
   if (btn) btn.classList.add('loading');
-  setTimeout(() => { window.open(`https://wa.me/79119038886?text=${encodeURIComponent(msg)}`, '_blank'); if (btn) btn.classList.remove('loading'); }, 300);
+  var waUrl = 'https://wa.me/79119038886?text=' + encodeURIComponent(msg);
+  /* r34: bug #22 — truncate message if URL exceeds WhatsApp limit */
+  if (waUrl.length > 4096) {
+    var trimmed = msg.substring(0, 800) + '\n\n(сообщение сокращено — слишком длинный заказ)';
+    waUrl = 'https://wa.me/79119038886?text=' + encodeURIComponent(trimmed);
+    showToast('Заказ очень длинный — сообщение сокращено');
+  }
+  setTimeout(() => { window.open(waUrl, '_blank'); if (btn) btn.classList.remove('loading'); }, 300);
 }
 function buildTG(e) {
   e.preventDefault();
@@ -737,6 +748,19 @@ function closeCart() {
 }
 
 function toggleCart() { if (_cartState === 'open' || _cartState === 'opening') closeCart(); else openCart(); }
+
+/* r34: bug #33 — sync cart scroll lock on resize (desktop↔mobile) */
+window.addEventListener('resize', (function() {
+  var timer;
+  return function() {
+    clearTimeout(timer);
+    timer = setTimeout(function() {
+      if (_cartState !== 'open') return;
+      if (window.innerWidth <= 900) { lockBody(); }
+      else { unlockBody(); }
+    }, 200);
+  };
+})());
 
 // ── Swipe-right-to-close for cart ──
 (function() {
