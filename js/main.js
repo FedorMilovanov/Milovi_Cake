@@ -694,6 +694,8 @@ function openCart() {
   setCartStep(1);
   updateCartUI();
   setTimeout(function() { var closeBtn = drawer.querySelector('.cart-close, [aria-label="Закрыть"], [onclick="closeCart()"]'); if (closeBtn) closeBtn.focus(); }, 100);
+  /* r32: bug #38 — focus trap for cart */
+  if (window._trapFocus) { window._cartTrapRelease = window._trapFocus(drawer); }
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.add('hidden');
   var mcn = document.getElementById('mcNav');
@@ -705,6 +707,8 @@ function closeCart() {
   var overlay = document.getElementById('cartOverlay');
   if (!drawer || !overlay) return;
   if (_cartState === 'closed' || _cartState === 'closing') return;
+  /* r32: bug #38 — release cart focus trap */
+  if (window._cartTrapRelease) { window._cartTrapRelease(); window._cartTrapRelease = null; }
   if (drawer._scrollClose) { window.removeEventListener('scroll', drawer._scrollClose); drawer._scrollClose = null; }
   _cartClearTimer();
   _cartState = 'closing';
@@ -1143,6 +1147,9 @@ function openLightbox(src, srcs) {
   lbImg.src = _lbSrcs[_lbIdx]; lbImg.alt = _lbAltFromSrc(_lbSrcs[_lbIdx]);
   lb.classList.add('open'); lockBody();
   _lbUpdateArrows();
+  /* r32: bug #38 — focus trap for lightbox */
+  if (window._trapFocus) { window._lbTrapRelease = window._trapFocus(lb); }
+  setTimeout(function(){ var c = lb.querySelector('.lightbox-close'); if (c) c.focus(); }, 100);
 }
 
 function lbNavigate(dir) {
@@ -1165,6 +1172,8 @@ function _lbUpdateArrows() {
 function closeLightbox() {
   const lb = document.getElementById('lightbox');
   if (!lb) return;
+  /* r32: bug #38 — release focus trap */
+  if (window._lbTrapRelease) { window._lbTrapRelease(); window._lbTrapRelease = null; }
   lb.classList.remove('open'); unlockBody();
   _lbSrcs = []; _lbIdx = 0;
 }
@@ -1439,10 +1448,15 @@ function openPrivacy() {
   if (!el) return;
   el.classList.add('open');
   if (window.innerWidth <= 900) lockBody();
+  /* r32: bug #38 — focus trap for privacy */
+  if (window._trapFocus) { window._privTrapRelease = window._trapFocus(el); }
+  var privClose = el.querySelector('#privacyClose'); if (privClose) setTimeout(function(){ privClose.focus(); }, 100);
 }
 function closePrivacy() {
   const el = document.getElementById('privacyOverlay');
   if (!el) return;
+  /* r32: bug #38 — release privacy focus trap */
+  if (window._privTrapRelease) { window._privTrapRelease(); window._privTrapRelease = null; }
   el.classList.remove('open');
   if (window.innerWidth <= 900) unlockBody();
 }

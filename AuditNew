@@ -1,105 +1,80 @@
 # БАГИ МИЛОВИ и АУДИТ
 
-**Последнее обновление:** 2026-05-19 (r31)
-**Формат:** Единый реестр багов, статус, и план дальнейшей работы.
+**Последнее обновление:** 2026-05-19 (r32)
 
 ---
 
 ## ✅ ИСПРАВЛЕНО
 
 ### r28 — Синхронизация версий
-
 | # | Баг | Что сделано |
 |---|-----|-------------|
-| 1 | **CACHE_NAME/PRECACHE рассинхрон** | Все `?v=` → единая версия, CACHE_NAME синхронизирован |
-| 3 | **console.log в mc-2026.js** | 3 debug-лога удалены |
-| 11 | **SW комментарий ≠ CACHE_NAME** | Синхронизированы |
+| 1 | CACHE_NAME/PRECACHE рассинхрон | Все `?v=` → единая версия |
+| 3 | console.log в mc-2026.js | 3 debug-лога удалены |
+| 11 | SW комментарий ≠ CACHE_NAME | Синхронизированы |
 
 ### r29 — Критические баги JS
-
 | # | Баг | Что сделано |
 |---|-----|-------------|
 | 15 | **КРИТИЧНО: selectCakeType уничтожает тултипы** | Убрана деструктивная строка |
-| 16 | **changeQty(+) без верхней границы** | Добавлен maxQty (20 шт / 5 кг maxi) |
-| 17 | **buildTG — clipboard пустой catch** | Fallback через execCommand + toast |
-| 5 | **_calcBiscuit сбрасывается** | localStorage `milovicake_biscuit` |
-| 21 | **lockBody — iOS Safari scroll-through** | position:fixed trick с сохранением scrollY |
-| 14 | **img fade — hero opacity:0** | Hero исключены, таймаут 5с → 2с |
-| 35 | **scrollToProduct — таймаут сносит active** | Убран деструктивный таймаут |
-| 2 | **SW install глотает ошибки precache** | При >3 miss — SW не активируется |
+| 16 | changeQty(+) без верхней границы | maxQty (20 шт / 5 кг maxi) |
+| 17 | buildTG — clipboard пустой catch | Fallback через execCommand + toast |
+| 5 | _calcBiscuit сбрасывается | localStorage `milovicake_biscuit` |
+| 21 | lockBody — iOS Safari scroll-through | position:fixed trick |
+| 14 | img fade — hero opacity:0 | Hero исключены, таймаут 5с→2с |
+| 35 | scrollToProduct — таймаут сносит active | Убран деструктивный таймаут |
+| 2 | SW install глотает ошибки precache | При >3 miss — SW не активируется |
 
-### r30 — Аналитика: единый подход
-
+### r30 — Аналитика
 | # | Баг | Что сделано |
 |---|-----|-------------|
-| 8 | **GA sync в `<head>`** | Единый defer-on-interaction на ВСЕХ страницах |
-| 9/19 | **Нет Yandex Metrika** на certificates, call, gallery, 404 | Metrika (106945185) добавлена на все |
-| 39 | **Gallery без аналитики** | GA defer + Metrika добавлены |
+| 8 | GA sync в `<head>` | Единый defer-on-interaction на ВСЕХ страницах |
+| 9/19 | Нет Yandex Metrika | Metrika добавлена на все 23 страницы |
+| 39 | Gallery без аналитики | GA + Metrika добавлены |
 
-**Карта аналитики (r30+):**
-
-| Страница | GA | Metrika |
-|----------|----|---------|
-| index.html | ✅ defer (mc-2026.js) | ✅ (main.js) |
-| gallery/index.html | ✅ defer | ✅ |
-| certificates/index.html | ✅ defer | ✅ |
-| call/index.html | ✅ defer | ✅ |
-| meringue-roll/index.html | ✅ defer | ✅ |
-| prigorody (14 + хаб) | ✅ defer | ✅ |
-| 404.html | ✅ defer | ✅ |
-
-### r31 — Accessibility + Gallery iOS
-
+### r31 — A11y + Gallery iOS
 | # | Баг | Что сделано |
 |---|-----|-------------|
-| 37 | **lightbox без role="dialog"** | Добавлены `role="dialog" aria-modal="true"` на `#lightbox` (index + template) и `#privacyOverlay` (index + template). Пригороды перегенерированы. |
-| 40 | **Gallery lockBody без iOS trick** | gallery/main.js: overflow:hidden → position:fixed trick с _gLockY (аналогично баг 21) |
+| 37 | lightbox без role="dialog" | `role="dialog" aria-modal="true"` на #lightbox и #privacyOverlay |
+| 40 | Gallery lockBody без iOS trick | position:fixed trick в gallery/main.js |
+
+### r32 — CSS-токенизация + Фокус-ловушки
+| # | Баг | Что сделано |
+|---|-----|-------------|
+| 38 | **Фокус-ловушка только для mobileMenu** | `trapFocus()` экспортирован через `window._trapFocus`. Фокус-ловушки добавлены для: lightbox (`_lbTrapRelease`), cart drawer (`_cartTrapRelease`), privacy modal (`_privTrapRelease`). При открытии — trap + фокус на кнопку закрытия. При закрытии — release. WCAG 2.4.3 / 2.1.2. |
+| (CSS) | **123 hardcoded hex → var() в v20-dark-and-fixes.css** | `#1c1309`→`var(--card-bg)` (27x), `#221508`→`var(--card-bg-elevated)` (8x), `#2a1d10`→`var(--card-bg-hover)` (6x), `#d4a76a`→`var(--gold)` (31x), `#c8a880`→`var(--text-muted)` (21x), `#f0e4d0`→`var(--text)` (16x), `#1a1108`→`var(--cream)` (11x), `#0e0905`→`var(--bg-dark)` (3x). Количество `!important` не изменилось (1453). |
+| (CSS) | **3 новых CSS-токена в [data-theme="dark"]** | `--card-bg-elevated: #221508`, `--card-bg-hover: #2a1d10`, `--surface-deep: #120c06`. Добавлены в `:root` (light) и `[data-theme="dark"]` в style.css. |
+
+**Результат CSS-токенизации:**
+- Hardcoded hex в v20-dark-and-fixes.css (background/color): **154 → 31** (−80%)
+- Теперь при смене цветовой схемы тёмной темы достаточно изменить токены в одном месте
 
 ---
 
-## 🔶 ИЗВЕСТНЫЕ ПРОБЛЕМЫ — будущие этапы
+## 🔶 ОСТАВШИЕСЯ ПРОБЛЕМЫ
 
-### Accessibility (a11y)
-| # | Баг | Приоритет | Примечание |
-|---|-----|-----------|------------|
-| 38 | Фокус-ловушка только для mobileMenu | Средний | Cart drawer, lightbox, fill popup, privacy — без trap. WCAG 2.4.3 |
+### JS-архитектура
+| # | Приоритет | Описание |
+|---|-----------|----------|
+| 13 | Низкий | parseCartKey — нет защиты от `:` в данных |
+| 22 | Низкий | buildWA — нет проверки длины URL |
+| 25 | Низкий | Dark theme объявлен дважды в style.css |
+| 33 | Низкий | toggleCart _cartState при resize |
+| 34 | Низкий | CSV build.py — нет валидации |
 
-### JS-архитектура (main.js)
-| # | Баг | Приоритет | Примечание |
-|---|-----|-----------|------------|
-| 13 | parseCartKey — нет защиты от `:` в данных | Низкий | Данных с двоеточием пока нет |
-| 22 | buildWA — нет проверки длины URL | Низкий | URL >4096 может обрезаться |
-| 25 | Dark theme объявлен дважды в style.css | Низкий | Дублирование правил |
-| 33 | toggleCart — _cartState не сбрасывается при resize | Низкий | Desktop→mobile resize |
-| 34 | CSV build.py — нет валидации структуры | Низкий | CSV без кавычек может сломать генерацию |
+### Галерея
+| # | Приоритет | Описание |
+|---|-----------|----------|
+| 26 | Низкий | closeLightbox v.load() после removeAttribute('src') |
+| 27 | Низкий | warmupLightboxMedia — фоновые запросы |
+| 29 | Низкий | initSwiperWhenReady — накопление таймеров |
 
-### Галерея (gallery/main.js)
-| # | Баг | Приоритет | Примечание |
-|---|-----|-----------|------------|
-| 26 | closeLightbox — v.load() после removeAttribute('src') | Низкий | Error event в старом Safari |
-| 27 | warmupLightboxMedia — фоновые запросы не отменяются | Низкий | Незначительная утечка |
-| 29 | initSwiperWhenReady — 120 таймеров при быстром open/close | Низкий | Накопление |
-
-### CSS tech debt
-| Проблема | Масштаб | Рекомендация |
-|----------|---------|--------------|
-| 1614 `!important` | 658 в premium-overrides, 600 в v20-dark-and-fixes | Нормализация каскада по компонентам |
-| Hardcoded цвета | 360 hex в style.css, 202 в premium-overrides | CSS-токены → `:root` + `[data-theme="dark"]` |
-| JS budget 249KB raw | main.js = 146KB (58.7%) | Feature-map → DOM-gates |
-
----
-
-## 📋 ПОРЯДОК ДАЛЬНЕЙШЕЙ РАБОТЫ
-
-### Этап 5: CSS нормализация
-- Карта слоёв CSS (base → UX → overrides → dark → hotfixes)
-- Токенизация цветов: brand gold, card bg, text, border → `:root` + `[data-theme="dark"]`
-- Поэтапное снижение `!important` по компонентам
-- Регресс-тест: dark/light + desktop/mobile после каждого компонента
-
-### Этап 6: JS оптимизация (при разрешении владельца)
-- Feature-map main.js → DOM-gates для тяжёлых блоков
-- Обсуждение дробления (запрещено AGENTS.md без разрешения)
+### CSS tech debt (оставшееся)
+| Проблема | Текущее | Следующий шаг |
+|----------|---------|---------------|
+| `!important` count | 1453 | Поэтапно убирать через специфичность селекторов по компонентам |
+| Hardcoded hex в v20-dark | 31 осталось | Градиенты и rgba — требуют отдельных токенов |
+| Hardcoded hex в premium-overrides | ~200 | Следующий этап токенизации |
 
 ---
 
@@ -107,10 +82,9 @@
 
 | Дата | Версия | Ключевое |
 |------|--------|----------|
-| 2026-05-17 | r21 | Первая синхронизация ?v= |
-| 2026-05-17 | r22 | gallery data.js cache-bust |
-| 2026-05-17 | r23 | SW video/range bypass |
-| 2026-05-19 | r28 | Полная ресинхронизация ?v= |
-| 2026-05-19 | r29 | 8 JS-багов (тултипы, корзина, clipboard, iOS, SW) |
-| 2026-05-19 | r30 | Аналитика: GA defer + Metrika на всех 23 страницах |
-| 2026-05-19 | r31 | A11y: role="dialog" на lightbox/privacy. Gallery iOS scroll-lock |
+| 2026-05-17 | r21–r23 | Синхронизация, audit tooling, SW video bypass |
+| 2026-05-19 | r28 | Ресинхронизация ?v= |
+| 2026-05-19 | r29 | 8 JS-багов |
+| 2026-05-19 | r30 | Аналитика на всех 23 страницах |
+| 2026-05-19 | r31 | A11y: role="dialog", gallery iOS scroll-lock |
+| 2026-05-19 | r32 | CSS: 123 hex→var(), 3 новых токена. A11y: фокус-ловушки для lightbox, cart, privacy |

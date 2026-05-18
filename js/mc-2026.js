@@ -145,6 +145,7 @@
     return function release(){ container.removeEventListener('keydown', handler); };
   }
 
+  window._trapFocus = trapFocus; /* r32: export for focus-trap in main.js (bug #38) */
   var menuTrapRelease = null;
   var menuReturnFocus = null;
   function syncMobileMenuTrap(){
