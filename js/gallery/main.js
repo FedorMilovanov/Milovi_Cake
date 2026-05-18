@@ -1,5 +1,6 @@
-import { GALLERY_ITEMS } from './data.js?v=20260519r30';
+import { GALLERY_ITEMS } from './data.js?v=20260519r31';
 
+var _gLockY = 0; /* r31: gallery scroll lock state */
 const $ = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
 const SIZE_MAP = { tall: '1x2', wide: '2x1', big: '2x2', m: '1x1' };
@@ -223,7 +224,7 @@ function openLightbox(index){
   index = Math.max(0, Math.min(Number(index) || 0, state.visible.length - 1));
   state.lbIndex=index; 
   document.body.insertAdjacentHTML('beforeend',lightboxTemplate()); 
-  document.body.style.overflow='hidden'; 
+  /* r31: bug #40 — iOS-safe scroll lock */ _gLockY=window.scrollY||0; document.body.style.position='fixed'; document.body.style.top=(-_gLockY)+'px'; document.body.style.left='0'; document.body.style.right='0'; document.body.style.overflow='hidden'; 
   const wrapper=$('#lbWrapper'), thumbs=$('#lbThumbs');
   
   state.visible.forEach((item,i)=>{ 
@@ -551,7 +552,7 @@ function closeLightbox(updateState = true){
   $$('#lbWrapper video').forEach(v=>{v.pause(); v.removeAttribute('src'); v.load();}); 
   if(state.swiper){state.swiper.destroy(true,true); state.swiper=null;} 
   $('#lbRoot')?.remove(); 
-  document.body.style.overflow=''; 
+  /* r31: bug #40 — iOS-safe scroll unlock */ document.body.style.position=''; document.body.style.top=''; document.body.style.left=''; document.body.style.right=''; document.body.style.overflow=''; window.scrollTo(0,_gLockY||0); 
   if (updateState) history.replaceState(null,'',location.pathname+location.search); 
   if (!closeLightbox._skipObserverRestore) setupVideoObserver(); // Re-enable grid videos
   closeLightbox._skipObserverRestore = false;

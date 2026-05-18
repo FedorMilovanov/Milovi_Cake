@@ -1,142 +1,116 @@
 # БАГИ МИЛОВИ и АУДИТ
 
-**Последнее обновление:** 2026-05-19 (r30)
+**Последнее обновление:** 2026-05-19 (r31)
 **Формат:** Единый реестр багов, статус, и план дальнейшей работы.
 
 ---
 
 ## ✅ ИСПРАВЛЕНО
 
-### r28 (2026-05-19) — Синхронизация версий
+### r28 — Синхронизация версий
 
-| # | Баг | Что было | Что сделано |
-|---|-----|----------|-------------|
-| 1 | **CACHE_NAME/PRECACHE рассинхрон** | CACHE_NAME=r27, PRECACHE микс r24/r27, HTML на r24 | Все 212 вхождений `?v=` → единая версия, CACHE_NAME синхронизирован |
-| 3 | **console.log в mc-2026.js** | 3 CWV debug-лога в продакшене | Удалены (заменены на `/* debug removed */`) |
-| 11 | **SW комментарий ≠ CACHE_NAME** | Заголовок SW: R25, CACHE_NAME: r27 | Синхронизированы |
+| # | Баг | Что сделано |
+|---|-----|-------------|
+| 1 | **CACHE_NAME/PRECACHE рассинхрон** | Все `?v=` → единая версия, CACHE_NAME синхронизирован |
+| 3 | **console.log в mc-2026.js** | 3 debug-лога удалены |
+| 11 | **SW комментарий ≠ CACHE_NAME** | Синхронизированы |
 
-### r29 (2026-05-19) — Критические баги JS
+### r29 — Критические баги JS
 
-| # | Баг | Что было | Что сделано |
-|---|-----|----------|-------------|
-| 15 | **КРИТИЧНО: selectCakeType уничтожает все тултипы** | `querySelectorAll('.fill-tooltip').forEach(t => t.remove())` удаляло все body-appended тултипы при смене типа торта. После первого нажатия — описания начинок исчезали навсегда. | Убрана деструктивная строка. Тултипы живут в body, управляются через mouseenter/mouseleave. |
-| 16 | **changeQty(+) без верхней границы** | Кнопка + в корзине не ограничивала количество сверху. | Добавлен `maxQty` (20 шт или 5 кг для maxi). |
-| 17 | **buildTG — clipboard пустой catch** | `navigator.clipboard.writeText(msg).catch(() => {})` — Telegram открывается без текста. | Fallback через `document.execCommand('copy')` + toast при ошибке. |
-| 5 | **_calcBiscuit сбрасывается после перезагрузки** | Тип бисквита не сохранялся. После перезагрузки всегда vanilla. | localStorage `milovicake_biscuit`. |
-| 21 | **lockBody — iOS Safari scroll-through** | `overflow: hidden` не блокирует скролл на iOS Safari. | `position:fixed` trick с сохранением/восстановлением scrollY. |
-| 14 | **img fade — hero остаётся opacity:0** | ВСЕ img получали opacity:0 + fallback 5 секунд. | Hero исключены. Таймаут: 5с → 2с. |
-| 35 | **scrollToProduct — таймаут сносит active** | setTimeout 2000ms конфликтовал с IntersectionObserver. | Убран деструктивный таймаут. |
-| 2 | **SW install глотает ошибки precache** | SW активировался с пустым кэшем, уничтожая старый рабочий. | При >3 ошибках precache — SW не активируется, старый остаётся. |
+| # | Баг | Что сделано |
+|---|-----|-------------|
+| 15 | **КРИТИЧНО: selectCakeType уничтожает тултипы** | Убрана деструктивная строка |
+| 16 | **changeQty(+) без верхней границы** | Добавлен maxQty (20 шт / 5 кг maxi) |
+| 17 | **buildTG — clipboard пустой catch** | Fallback через execCommand + toast |
+| 5 | **_calcBiscuit сбрасывается** | localStorage `milovicake_biscuit` |
+| 21 | **lockBody — iOS Safari scroll-through** | position:fixed trick с сохранением scrollY |
+| 14 | **img fade — hero opacity:0** | Hero исключены, таймаут 5с → 2с |
+| 35 | **scrollToProduct — таймаут сносит active** | Убран деструктивный таймаут |
+| 2 | **SW install глотает ошибки precache** | При >3 miss — SW не активируется |
 
-### r30 (2026-05-19) — Аналитика: единый подход
+### r30 — Аналитика: единый подход
 
-| # | Баг | Что было | Что сделано |
-|---|-----|----------|-------------|
-| 8 | **GA sync в `<head>`** | На certificates, meringue-roll, prigorody, 404 — GA грузился синхронно, блокируя рендер. На главной — defer. Три разных подхода. | **Единый подход на ВСЕХ страницах**: defer-on-interaction (грузится при первом scroll/click/touch, fallback 5 секунд). Sync GA из `<head>` удалён. |
-| 9/19 | **Нет Yandex Metrika** на certificates, call, gallery, 404 | Конверсии с этих страниц были невидимы. | Metrika добавлена на ВСЕ страницы (ID 106945185, webvisor, clickmap, trackLinks). |
-| 39 | **Gallery без аналитики** | Центральная витрина работ — 0 аналитики (ни GA, ни Metrika). | GA defer + Metrika добавлены. |
+| # | Баг | Что сделано |
+|---|-----|-------------|
+| 8 | **GA sync в `<head>`** | Единый defer-on-interaction на ВСЕХ страницах |
+| 9/19 | **Нет Yandex Metrika** на certificates, call, gallery, 404 | Metrika (106945185) добавлена на все |
+| 39 | **Gallery без аналитики** | GA defer + Metrika добавлены |
 
-**Итоговая карта аналитики r30:**
+**Карта аналитики (r30+):**
 
 | Страница | GA | Metrika |
 |----------|----|---------|
-| index.html (главная) | ✅ defer (mc-2026.js) | ✅ (main.js, cookie consent) |
+| index.html | ✅ defer (mc-2026.js) | ✅ (main.js) |
 | gallery/index.html | ✅ defer | ✅ |
 | certificates/index.html | ✅ defer | ✅ |
 | call/index.html | ✅ defer | ✅ |
 | meringue-roll/index.html | ✅ defer | ✅ |
-| prigorody/_template + 14 городов | ✅ defer | ✅ |
-| prigorody/index.html (хаб) | ✅ defer | ✅ |
+| prigorody (14 + хаб) | ✅ defer | ✅ |
 | 404.html | ✅ defer | ✅ |
 
----
+### r31 — Accessibility + Gallery iOS
 
-## 🗑 МУСОРНЫЕ ФАЙЛЫ — УДАЛИТЬ ИЗ РЕПО
-
-Эти файлы не подключены нигде в коде, дублируют информацию или устарели:
-
-| Файл | Причина удаления |
-|------|-----------------|
-| `README_R22_STABILIZATION.md` | Историческая документация r22, информация уже здесь |
-| `README_R23_STABILIZATION.md` | Историческая документация r23, информация уже здесь |
-| `README_v21_CLEANUP.md` | Историческая документация r21, информация уже здесь |
-| `README_R28_SYNC.md` | Историческая документация r28, информация уже здесь |
-| `README_R29_BUGFIX.md` | Историческая документация r29, информация уже здесь |
-| `BADGES_README_SNIPPET.md` | Инструкция для бейджей — одноразовая |
-| `INSTALL_CAKE_BADGES.md` | Тоже про бейджи — одноразовая |
-| `AUDIT_README.md` | Описание аудита — всё есть в AGENTS.md и в audit.py |
-| `SERIOUS_TECH_DEBT_AUDIT.md` | Объединено в этот файл |
-| `FILES_INCLUDED.txt` | Список файлов из ZIP — не нужен в репо |
-| `БАГИ МИЛОВИ и АУДИТ.md` | Старый файл с кириллическим именем — заменён на AuditNew |
-
-**Как удалить:**
-```bash
-git rm "README_R22_STABILIZATION.md" "README_R23_STABILIZATION.md" "README_v21_CLEANUP.md" "README_R28_SYNC.md" "README_R29_BUGFIX.md" "BADGES_README_SNIPPET.md" "INSTALL_CAKE_BADGES.md" "AUDIT_README.md" "SERIOUS_TECH_DEBT_AUDIT.md" "FILES_INCLUDED.txt" "БАГИ МИЛОВИ и АУДИТ.md"
-git add .
-git commit -m "chore(r30): analytics unified, cleanup obsolete docs"
-git push origin main
-```
+| # | Баг | Что сделано |
+|---|-----|-------------|
+| 37 | **lightbox без role="dialog"** | Добавлены `role="dialog" aria-modal="true"` на `#lightbox` (index + template) и `#privacyOverlay` (index + template). Пригороды перегенерированы. |
+| 40 | **Gallery lockBody без iOS trick** | gallery/main.js: overflow:hidden → position:fixed trick с _gLockY (аналогично баг 21) |
 
 ---
 
-## 🔶 ИЗВЕСТНЫЕ ПРОБЛЕМЫ — НЕ СРОЧНЫЕ (будущие этапы)
-
-### JS-архитектура (main.js)
-| # | Баг | Приоритет | Примечание |
-|---|-----|-----------|------------|
-| 13 | parseCartKey — нет защиты от `:` в данных | Низкий | Сейчас данных с двоеточием нет |
-| 22 | buildWA — нет проверки длины URL | Низкий | WhatsApp URL >4096 может обрезаться |
-| 25 | Dark theme объявлен дважды в style.css | Низкий | Дублирование правил |
-| 33 | toggleCart — _cartState не сбрасывается при resize | Низкий | Desktop→mobile resize при открытой корзине |
-| 34 | CSV build.py — нет валидации структуры | Низкий | Аудит проверяет `{{}}` в HTML, но не CSV |
-
-### Галерея (gallery/main.js)
-| # | Баг | Приоритет | Примечание |
-|---|-----|-----------|------------|
-| 26 | closeLightbox — `v.load()` после removeAttribute('src') | Низкий | Error event в некоторых браузерах |
-| 27 | warmupLightboxMedia — фоновые запросы не отменяются | Низкий | Незначительная утечка сети |
-| 29 | initSwiperWhenReady — 120 таймеров при быстром open/close | Низкий | Накопление таймеров |
-| 40 | Gallery lockBody без iOS trick | Низкий | Аналогично баг 21, но в gallery scope |
+## 🔶 ИЗВЕСТНЫЕ ПРОБЛЕМЫ — будущие этапы
 
 ### Accessibility (a11y)
 | # | Баг | Приоритет | Примечание |
 |---|-----|-----------|------------|
-| 37 | lightbox без role="dialog" | **Частично** | mobileMenu, reviewsModal, fillPopup — OK. `#lightbox` — нет. |
-| 38 | Фокус-ловушка только для mobileMenu | Средний | Cart, lightbox, fill popup, privacy — без trap |
+| 38 | Фокус-ловушка только для mobileMenu | Средний | Cart drawer, lightbox, fill popup, privacy — без trap. WCAG 2.4.3 |
+
+### JS-архитектура (main.js)
+| # | Баг | Приоритет | Примечание |
+|---|-----|-----------|------------|
+| 13 | parseCartKey — нет защиты от `:` в данных | Низкий | Данных с двоеточием пока нет |
+| 22 | buildWA — нет проверки длины URL | Низкий | URL >4096 может обрезаться |
+| 25 | Dark theme объявлен дважды в style.css | Низкий | Дублирование правил |
+| 33 | toggleCart — _cartState не сбрасывается при resize | Низкий | Desktop→mobile resize |
+| 34 | CSV build.py — нет валидации структуры | Низкий | CSV без кавычек может сломать генерацию |
+
+### Галерея (gallery/main.js)
+| # | Баг | Приоритет | Примечание |
+|---|-----|-----------|------------|
+| 26 | closeLightbox — v.load() после removeAttribute('src') | Низкий | Error event в старом Safari |
+| 27 | warmupLightboxMedia — фоновые запросы не отменяются | Низкий | Незначительная утечка |
+| 29 | initSwiperWhenReady — 120 таймеров при быстром open/close | Низкий | Накопление |
 
 ### CSS tech debt
 | Проблема | Масштаб | Рекомендация |
 |----------|---------|--------------|
 | 1614 `!important` | 658 в premium-overrides, 600 в v20-dark-and-fixes | Нормализация каскада по компонентам |
-| Hardcoded цвета | 360 hex в style.css, 202 в premium-overrides | CSS-токены в `:root` и `[data-theme="dark"]` |
+| Hardcoded цвета | 360 hex в style.css, 202 в premium-overrides | CSS-токены → `:root` + `[data-theme="dark"]` |
 | JS budget 249KB raw | main.js = 146KB (58.7%) | Feature-map → DOM-gates |
 
 ---
 
 ## 📋 ПОРЯДОК ДАЛЬНЕЙШЕЙ РАБОТЫ
 
-### Этап 4: Accessibility (баги 37, 38)
-- `role="dialog" aria-modal="true"` на `#lightbox`, `#privacyOverlay`
-- Фокус-трап для cart drawer, lightbox, fill popup, privacy modal
-
 ### Этап 5: CSS нормализация
-- Карта слоёв CSS
-- Токенизация цветов → `:root` + `[data-theme="dark"]`
-- Поэтапное снижение `!important`
+- Карта слоёв CSS (base → UX → overrides → dark → hotfixes)
+- Токенизация цветов: brand gold, card bg, text, border → `:root` + `[data-theme="dark"]`
+- Поэтапное снижение `!important` по компонентам
+- Регресс-тест: dark/light + desktop/mobile после каждого компонента
 
 ### Этап 6: JS оптимизация (при разрешении владельца)
-- Feature-map main.js → DOM-gates
+- Feature-map main.js → DOM-gates для тяжёлых блоков
 - Обсуждение дробления (запрещено AGENTS.md без разрешения)
 
 ---
 
-## 📝 ИСТОРИЯ АУДИТОВ
+## 📝 ИСТОРИЯ
 
-| Дата | Версия | Ключевые изменения |
-|------|--------|--------------------|
-| 2026-05-17 | r21 | Первая синхронизация ?v=, SEO-фиксы |
-| 2026-05-17 | r22 | gallery data.js cache-bust, audit tooling |
-| 2026-05-17 | r23 | SW video/range bypass, ESM guardrails |
-| 2026-05-19 | r28 | Полная ресинхронизация ?v= (r24/r27 split fix) |
-| 2026-05-19 | r29 | 8 JS-багов: тултипы, корзина, clipboard, iOS scroll, SW hardening |
-| 2026-05-19 | r30 | Аналитика: GA defer на всех страницах, Metrika на всех страницах, 11 мусорных файлов к удалению |
+| Дата | Версия | Ключевое |
+|------|--------|----------|
+| 2026-05-17 | r21 | Первая синхронизация ?v= |
+| 2026-05-17 | r22 | gallery data.js cache-bust |
+| 2026-05-17 | r23 | SW video/range bypass |
+| 2026-05-19 | r28 | Полная ресинхронизация ?v= |
+| 2026-05-19 | r29 | 8 JS-багов (тултипы, корзина, clipboard, iOS, SW) |
+| 2026-05-19 | r30 | Аналитика: GA defer + Metrika на всех 23 страницах |
+| 2026-05-19 | r31 | A11y: role="dialog" на lightbox/privacy. Gallery iOS scroll-lock |
