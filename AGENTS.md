@@ -340,6 +340,7 @@ grep -E "CACHE_NAME|\?v=" sw.js
 |---|---|---|
 | AGENTS-r1 | 2026-05-17 | Создан на основе аудита репо (204 файла, 1458 !important, 7 мёртвых JS) |
 | AGENTS-r2 | 2026-05-17 | Версия `?v=20260517r21` синхронизирована (HTML+sw.js). data.js легализован (используется gallery/main.js через ESM-импорт). |
+| AGENTS-r2 (обновление) | 2026-05-19 | r40: hero пригородов — убран inline padding-top:0, CSS-компенсация 112px для desktop, лого «авторские торты», H1 реструктурирован (--brand span), wave-text kill для hero-subtitle, SEO-текст главной улучшен. r41: исправлен баг мобильного hero (padding-top:90px создавал пустой зазор), hero-subtitle:hover — !important добавлен чтобы override R5 из premium-overrides. |
 
 ---
 

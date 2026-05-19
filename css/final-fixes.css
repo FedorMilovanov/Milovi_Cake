@@ -214,8 +214,11 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
    ═══════════════════════════════════════════════════════════════════ */
 
 /* ── 1) Hero subtitle: smooth whole-text stretch, kill per-word blue ── */
+/* Note: premium-overrides.css R5 has .hero-subtitle:hover { transform: translateX(4px) !important }
+   Since final-fixes.css loads last, same-specificity !important rules here win. */
 .hero-subtitle {
   display: inline-block;
+  transform-origin: left center; /* match R5 origin */
   transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94),
               letter-spacing 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94),
               text-shadow 0.45s ease;
@@ -223,9 +226,10 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
 }
 @media (hover: hover) and (pointer: fine) {
   .hero-subtitle:hover {
-    transform: scaleX(1.018) scaleY(1.018);
+    transform: scaleX(1.018) scaleY(1.018) !important; /* important: overrides R5 translateX */
+    color: rgba(255, 238, 205, 0.92) !important;        /* warm, not dark; overrides R5 */
     letter-spacing: 0.035em;
-    text-shadow: 0 0 18px rgba(201,147,74,0.22);
+    text-shadow: 0 0 18px rgba(201,147,74,0.22) !important;
   }
 }
 .hero-subtitle .w,
@@ -327,6 +331,116 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   .hero-subtitle:hover,
   .hero-title .hero-title-brand:hover,
   .hero-title-line--city:hover {
+    transform: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   v24 — Professional fixes (r40) — 2026-05-19
+   1) City hero: padding-top compensates for header-city full height.
+   2) hero-subtitle: zero wave-text colour effects, stretch only.
+   3) hero-title--geo: compact size, .hero-title-line--brand styling.
+   4) header-logo-sub city: brand tagline, no "Главная".
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── 1) City pages: push hero content below fixed header (72px row + ~40px crumb) ── */
+.site-header.header-city ~ main > .hero {
+  padding-top: 112px !important;
+  /* important: inline style="padding-top:0" removed from template r40 */
+}
+@media (max-width: 900px) {
+  .site-header.header-city ~ main > .hero {
+    padding-top: 100px !important; /* 64px hdr-main-row + ~36px crumb */
+  }
+}
+@media (max-width: 768px) {
+  .site-header.header-city ~ main > .hero {
+    /* Mobile: flex-column layout — photo-bg first, hero-content below.
+       Header overlaps the photo naturally (by design). No padding needed.
+       important: v24 wrongly added 90px here, creating white gap. */
+    padding-top: 0 !important;
+    padding-bottom: 0 !important; /* hero-content has own 40px bottom padding */
+  }
+}
+
+/* ── 2) hero-subtitle: FULL wave-text kill — whole-element stretch only ── */
+/* All word-level effects (color, opacity, transform) killed for .hero-subtitle.
+   Whole-element hover stretch from v23 stays intact. */
+.hero-subtitle .w,
+.hero-subtitle .w.near,
+.hero-subtitle .w:hover,
+.hero-subtitle .w.w-auto,
+.hero-subtitle .w.w-auto-near,
+.hero-subtitle:hover .w,
+.hero-subtitle:hover .w.near,
+.hero-subtitle:hover .w:hover,
+.hero-subtitle:hover .w.w-auto,
+.hero-subtitle:hover .w.w-auto-near {
+  color: inherit !important;
+  -webkit-text-fill-color: currentColor !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  opacity: 1 !important;
+  filter: none !important;
+  transform: none !important;
+  text-shadow: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* ── 3) hero-title--geo: tighter, 3-line layout ── */
+.hero-title--geo {
+  font-size: clamp(38px, 4.6vw, 66px) !important;
+  line-height: 1.08 !important;
+  margin-bottom: 16px !important;
+}
+/* "от Milovi Cake" combined line: warm gold, no italic */
+.hero-title-line--brand {
+  display: block;
+  font-style: normal;
+  color: rgba(245, 225, 175, 0.82) !important;
+  -webkit-text-fill-color: rgba(245, 225, 175, 0.82) !important;
+  transition: color 0.4s ease,
+              -webkit-text-fill-color 0.4s ease,
+              transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+[data-theme="dark"] .hero-title-line--brand {
+  color: rgba(248, 232, 195, 0.78) !important;
+  -webkit-text-fill-color: rgba(248, 232, 195, 0.78) !important;
+}
+@media (hover: hover) and (pointer: fine) {
+  .hero-title-line--brand:hover {
+    transform: scaleX(1.012);
+    color: rgba(248, 230, 190, 0.95) !important;
+    -webkit-text-fill-color: rgba(248, 230, 190, 0.95) !important;
+  }
+}
+/* Tighten gap between lines inside geo-hero */
+.hero-title--geo .hero-title-line,
+.hero-title--geo .hero-title-line--city,
+.hero-title--geo .hero-title-line--brand {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+/* ── 4) header-logo-sub in city mode: ensure brand tone ── */
+.site-header.header-city .header-logo-sub {
+  color: rgba(255, 235, 185, 0.38) !important;
+  font-size: 10px !important;
+  letter-spacing: 0.10em !important;
+  text-transform: lowercase !important;
+}
+.site-header.header-city.scrolled .header-logo-sub {
+  color: rgba(201, 147, 74, 0.55) !important;
+}
+
+/* ── Reduced-motion: no transforms on geo lines ── */
+@media (prefers-reduced-motion: reduce) {
+  .hero-title-line--brand {
+    transition: none !important;
+  }
+  .hero-title-line--brand:hover {
     transform: none !important;
   }
 }
