@@ -152,6 +152,11 @@ REVIEW_SETS = {
 }
 
 
+def _pre(word):
+    """Вернуть 'во' если слово начинается на В/в, иначе 'в'."""
+    return 'во' if word and word[0] in ('В', 'в') else 'в'
+
+
 def build_nearby_html(slug):
     cards = []
     for nb in NEARBY.get(slug, []):
@@ -185,12 +190,12 @@ def render_city(template, p):
     html = html.replace('{{canonical_url}}', f'https://milovicake.ru/prigorody/{slug}/')
 
     # LD+JSON
-    html = html.replace('{{ld_breadcrumb_name}}', f'"name": "Торты в {p["breadcrumb_name"]}"'  )
+    html = html.replace('{{ld_breadcrumb_name}}', f'"name": "Торты {_pre(p["breadcrumb_name"])} {p["breadcrumb_name"]}"')
     html = html.replace('{{ld_description}}',
         f'"description": "Авторские торты, меренговые рулеты и десерты на заказ '
-        f'с доставкой в {p["ld_city"]} от частного кондитера.",'
+        f'с доставкой {_pre(p["ld_city"])} {p["ld_city"]} от частного кондитера.",'
     )
-    html = html.replace('{{ld_area_name}}', f'"name": "{p["ld_area"]}"'  )
+    html = html.replace('{{ld_area_name}}', f'"name": "{p["ld_area"]}"')
 
     # Delivery note block
     note = p.get('delivery_note', '').strip()
@@ -200,12 +205,16 @@ def render_city(template, p):
     # Nearby cities
     html = html.replace('{{nearby_cities_html}}', build_nearby_html(slug))
 
+    # Предлог "в"/"во" перед городом (для шаблонных мест, где не используется hero_city_pre)
+    city_acc = p.get('ld_city', p['breadcrumb_name'])
+    html = html.replace('{{city_pre}}', _pre(city_acc))
+
     # Delivery city = accusative = ld_city
-    html = html.replace('{{delivery_city}}', p['ld_city'])
+    html = html.replace('{{delivery_city}}', city_acc)
 
     # Slug + city in accusative for meringue-promo and ?city= queries
     html = html.replace('{{slug}}', slug)
-    html = html.replace('{{city_acc_label}}', p.get('ld_city', p['breadcrumb_name']))
+    html = html.replace('{{city_acc_label}}', city_acc)
 
     # Simple replacements
     simple = {

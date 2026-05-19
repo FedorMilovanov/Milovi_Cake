@@ -317,7 +317,7 @@
   <div class="container">
     <div class="delivery-card reveal">
       <div class="delivery-card__header">
-        <h2 class="delivery-card__title">Доставка в {{delivery_city}}</h2>
+        <h2 class="delivery-card__title">Доставка {{city_pre}} {{delivery_city}}</h2>
         <span class="delivery-card__badge">{{delivery_km}} от кондитерской</span>
       </div>
       <div class="delivery-card__grid">
@@ -365,13 +365,13 @@
 
 <!-- ══════════ CROSS-PROMO: МЕРЕНГОВЫЙ РУЛЕТ ══════════ -->
 <div class="section-fade-divider" aria-hidden="true"></div>
-<section class="meringue-promo" aria-label="Меренговый рулет с доставкой в {{city_acc_label}}" data-city="{{slug}}">
+<section class="meringue-promo" aria-label="Меренговый рулет с доставкой {{city_pre}} {{city_acc_label}}" data-city="{{slug}}">
   <div class="container">
     <p class="meringue-promo__text reveal">
       Также принимаем заказы на
       <a href="/meringue-roll/?city={{slug}}" class="meringue-promo__link">меренговый рулет и пирожное Павлова</a>
       — безглютеновые десерты с хрустящей меренгой и свежими ягодами с доставкой
-      <span class="meringue-promo__city">в {{city_acc_label}}</span> 🤍
+      <span class="meringue-promo__city">{{city_pre}} {{city_acc_label}}</span> 🤍
     </p>
   </div>
 </section>
@@ -651,7 +651,7 @@
 <div class="section-fade-divider" aria-hidden="true"></div>
 <section class="delivery-faq" id="faq">
   <div class="container">
-    <h2 class="section-title reveal">Вопросы о доставке в {{delivery_city}}</h2>
+    <h2 class="section-title reveal">Вопросы о доставке {{city_pre}} {{delivery_city}}</h2>
     <div class="faq-list">
       <div class="faq-item" onclick="cbFaq(this)">
         <div class="cb-faq-q"><span>{{faq_q1}}</span><div class="cb-faq-ico">+</div></div>
