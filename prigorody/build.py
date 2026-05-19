@@ -217,6 +217,8 @@ def render_city(template, p):
         '{{nav_span}}':      f'<span>Торты в {p["nav_span"]}</span>',
         '{{geo_label}}':     p['geo_label'],
         '{{h1}}':            f'Торты на заказ в {p["h1_city"]}',
+        '{{hero_city_pre}}':  'во' if p['h1_city'].startswith('В') else 'в',
+        '{{h1_city}}':      p['h1_city'],
         '{{hero_p}}':        p['hero_p'],
         '{{hero_span}}':     p['hero_span'],
         '{{catalog_h2}}':    'Торты и Десерты с Доставкой ' +
