@@ -207,15 +207,14 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   v23 — Hero heading & suburb fixes
+   v23 — Hero heading & suburb fixes (rev2)
    1) Hero subtitle (.wave-text): smooth whole-text stretch instead of per-word blue.
-   2) Suburb hero h1: multi-line layout, city bluish accent, interactive Milovi Cake brand.
-   3) .hero-title-brand interactive stretch+glare (both main + suburbs).
+   2) Suburb hero h1: multi-line layout, city bluish italic, interactive Milovi Cake brand.
+   3) .hero-title-brand interactive stretch (no glare — as originally intended).
    ═══════════════════════════════════════════════════════════════════ */
 
 /* ── 1) Hero subtitle: whole-text smooth stretch, kill per-word blue ── */
 
-/* Parent: smooth stretch on whole element */
 .hero-subtitle {
   display: inline-block;
   transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94),
@@ -259,9 +258,10 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   line-height: 1.2;
 }
 
-/* City name line — bluish accent */
+/* City name line — bluish italic accent */
 .hero-title-line--city {
   display: block;
+  font-style: italic;
   color: rgba(140, 195, 240, 0.88);
   -webkit-text-fill-color: rgba(140, 195, 240, 0.88);
   transition: color 0.4s ease,
@@ -283,28 +283,13 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   }
 }
 
-/* ── 3) .hero-title-brand interactive stretch + glare ── */
+/* ── 3) .hero-title-brand interactive stretch (no glare) ── */
 .hero-title .hero-title-brand {
-  position: relative;
-  display: inline-block;
-  overflow: hidden;
+  display: inline;
   transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
               letter-spacing 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
               text-shadow 0.45s ease;
   cursor: default;
-}
-
-/* Glare sweep pseudo-element */
-.hero-title .hero-title-brand::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 60%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,220,150,0.35), transparent);
-  transition: left 0.65s ease;
-  pointer-events: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -313,18 +298,12 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
     letter-spacing: 0.04em;
     text-shadow: 0 0 22px rgba(201,147,74,0.35);
   }
-  .hero-title .hero-title-brand:hover::after {
-    left: 130%;
-  }
 }
 
 /* On touch devices — no effects */
 @media (hover: none) {
   .hero-title .hero-title-brand:hover {
     transform: none;
-  }
-  .hero-title .hero-title-brand::after {
-    display: none;
   }
 }
 
@@ -339,8 +318,5 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   .hero-title .hero-title-brand:hover,
   .hero-title-line--city:hover {
     transform: none !important;
-  }
-  .hero-title .hero-title-brand::after {
-    display: none;
   }
 }
