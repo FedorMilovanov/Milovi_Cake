@@ -218,6 +218,7 @@ def render_city(template, p):
         '{{geo_label}}':     p['geo_label'],
         '{{h1}}':            f'Торты на заказ в {p["h1_city"]}',
         '{{hero_city_pre}}':  'во' if p['h1_city'].startswith('В') else 'в',
+        '{{breadcrumb_name}}': p['breadcrumb_name'],
         '{{h1_city}}':      p['h1_city'],
         '{{hero_p}}':        p['hero_p'],
         '{{hero_span}}':     p['hero_span'],

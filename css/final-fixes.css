@@ -207,14 +207,13 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   v23 — Hero heading & suburb fixes (rev2)
-   1) Hero subtitle (.wave-text): smooth whole-text stretch instead of per-word blue.
-   2) Suburb hero h1: multi-line layout, city bluish italic, interactive Milovi Cake brand.
-   3) .hero-title-brand interactive stretch (no glare — as originally intended).
+   v23 — Hero heading & suburb fixes (rev3)
+   1) Hero subtitle: smooth whole-text stretch instead of per-word blue.
+   2) Suburb hero h1: multi-line layout, city bluish italic, blue "от", interactive brand.
+   3) .hero-title-brand: interactive stretch (no glare).
    ═══════════════════════════════════════════════════════════════════ */
 
-/* ── 1) Hero subtitle: whole-text smooth stretch, kill per-word blue ── */
-
+/* ── 1) Hero subtitle: smooth whole-text stretch, kill per-word blue ── */
 .hero-subtitle {
   display: inline-block;
   transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94),
@@ -229,8 +228,6 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
     text-shadow: 0 0 18px rgba(201,147,74,0.22);
   }
 }
-
-/* Kill per-word wave effects on hero-subtitle — all words stay uniform */
 .hero-subtitle .w,
 .hero-subtitle .w.near,
 .hero-subtitle:hover .w,
@@ -258,21 +255,25 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   line-height: 1.2;
 }
 
-/* City name line — bluish italic accent */
+/* All lines blue by default inside geo h1 */
+.hero-title--geo .hero-title-line {
+  color: rgba(140, 195, 240, 0.88);
+  -webkit-text-fill-color: rgba(140, 195, 240, 0.88);
+}
+[data-theme="dark"] .hero-title--geo .hero-title-line {
+  color: rgba(140, 200, 245, 0.82);
+  -webkit-text-fill-color: rgba(140, 200, 245, 0.82);
+}
+
+/* "в Мурино" — bluish italic */
 .hero-title-line--city {
   display: block;
   font-style: italic;
-  color: rgba(140, 195, 240, 0.88);
-  -webkit-text-fill-color: rgba(140, 195, 240, 0.88);
   transition: color 0.4s ease,
               -webkit-text-fill-color 0.4s ease,
               text-shadow 0.4s ease,
               transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   cursor: default;
-}
-[data-theme="dark"] .hero-title-line--city {
-  color: rgba(140, 200, 245, 0.82);
-  -webkit-text-fill-color: rgba(140, 200, 245, 0.82);
 }
 @media (hover: hover) and (pointer: fine) {
   .hero-title-line--city:hover {
@@ -283,7 +284,20 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   }
 }
 
-/* ── 3) .hero-title-brand interactive stretch (no glare) ── */
+/* "от" — same blue, no italic, subtle */
+.hero-title-line--accent {
+  display: block;
+  transition: color 0.4s ease, -webkit-text-fill-color 0.4s ease;
+  cursor: default;
+}
+@media (hover: hover) and (pointer: fine) {
+  .hero-title-line--accent:hover {
+    color: rgba(140, 195, 240, 0.92);
+    -webkit-text-fill-color: rgba(140, 195, 240, 0.92);
+  }
+}
+
+/* ── 3) .hero-title-brand: interactive stretch (no glare) ── */
 .hero-title .hero-title-brand {
   display: inline;
   transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
@@ -291,7 +305,6 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
               text-shadow 0.45s ease;
   cursor: default;
 }
-
 @media (hover: hover) and (pointer: fine) {
   .hero-title .hero-title-brand:hover {
     transform: scaleX(1.035) scaleY(1.025);
@@ -299,19 +312,16 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
     text-shadow: 0 0 22px rgba(201,147,74,0.35);
   }
 }
-
-/* On touch devices — no effects */
 @media (hover: none) {
   .hero-title .hero-title-brand:hover {
     transform: none;
   }
 }
-
-/* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .hero-subtitle,
   .hero-title .hero-title-brand,
-  .hero-title-line--city {
+  .hero-title-line--city,
+  .hero-title-line--accent {
     transition: none !important;
   }
   .hero-subtitle:hover,
