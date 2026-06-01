@@ -130,7 +130,7 @@ function goSlide(pid, idx) {
 
 // ── DATA ──
 const products = [
-  { id: 1, name: 'Бисквитный торт', fillGroup: 'biscuit', desc: 'Воздушный торт с нежнейшим кремом и авторским декором', min: 'Заказ от 2 кг, декор рассчитывается отдельно', price: 'от 2 800 ₽/кг', priceNum: 2800, unit: 'кг', minKg: 2, emoji: '🎂',
+  { id: 1, name: 'Бисквитный торт', fillGroup: 'biscuit', desc: 'Воздушный торт с нежнейшим кремом и авторским декором', min: 'Заказ от 2 кг, декор рассчитывается отдельно', price: 'от 2 800 ₽/кг', priceNum: 2800, unit: 'кг', minKg: 2, emoji: '🎂', badge: 'Популярно',
     slides: [IMG_BASE + '/cake_biscuit_0.webp', IMG_BASE + '/cake_biscuit_1.webp', IMG_BASE + '/cake_biscuit_2.webp', IMG_BASE + '/cake_biscuit_3.webp', IMG_BASE + '/cake_biscuit_4.webp', IMG_BASE + '/cake_biscuit_5.webp'],
     slidePos: ['center 30%', 'center 25%', 'center 20%', 'center 30%', 'center 20%', 'center 25%'] },
   { id: 2, name: 'Бенто торт', fillGroup: 'bento', desc: 'Миниатюрный торт — идеальный подарок для особенного момента', min: '', price: '1 600 ₽', priceNum: 1600, unit: 'шт', emoji: '🍰',
