@@ -883,3 +883,162 @@ input, textarea, select{
   box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
   pointer-events: none !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   PREMIUM 2026 — Advanced Reveal System v4
+   Professional animations without hacks
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Base reveal - improved with GPU acceleration */
+.reveal, .reveal-photo {
+  opacity: 0;
+  transform: translateY(24px) scale(0.97);
+  filter: blur(6px);
+  transition: 
+    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.reveal.visible, .reveal-photo.visible {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+}
+
+/* Staggered children - professional cascade */
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-stagger.visible > *:nth-child(1) { transition-delay: 0.05s; }
+.reveal-stagger.visible > *:nth-child(2) { transition-delay: 0.12s; }
+.reveal-stagger.visible > *:nth-child(3) { transition-delay: 0.19s; }
+.reveal-stagger.visible > *:nth-child(4) { transition-delay: 0.26s; }
+.reveal-stagger.visible > *:nth-child(5) { transition-delay: 0.33s; }
+.reveal-stagger.visible > *:nth-child(6) { transition-delay: 0.40s; }
+
+.reveal-stagger.visible > * {
+  opacity: 1;
+  transform: none;
+}
+
+/* Premium product card entrance */
+@media (min-width: 769px) {
+  .product-card.reveal {
+    transform: translateY(32px) scale(0.96) rotateX(8deg);
+    transform-origin: center bottom;
+    filter: blur(8px) brightness(0.9);
+  }
+  
+  .product-card.reveal.visible {
+    transform: none;
+    filter: blur(0) brightness(1);
+  }
+}
+
+/* Scroll-driven animations for modern browsers */
+@supports (animation-timeline: view()) {
+  .product-card,
+  .feature,
+  .cb-fl,
+  .cb-occ {
+    animation: mc-enter linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 25%;
+  }
+  
+  @keyframes mc-enter {
+    from {
+      opacity: 0;
+      transform: translateY(40px) scale(0.94);
+      filter: blur(10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+    }
+  }
+  
+  /* Disable JS transitions when native scroll-driven is active */
+  .product-card.reveal,
+  .feature.reveal {
+    transition: none !important;
+  }
+}
+
+/* Magnetic hover for desktop - premium feel */
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary,
+  .btn-add,
+  .calc-add-btn {
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  .btn-primary:hover,
+  .btn-add:hover {
+    transform: translateY(-2px) scale(1.02);
+  }
+  
+  .product-card {
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.5s ease;
+  }
+  
+  .product-card:hover {
+    transform: translateY(-8px) scale(1.01);
+  }
+}
+
+/* Mobile tap feedback - haptic-like */
+@media (hover: none) {
+  .btn-add:active,
+  .btn-primary:active,
+  .product-card:active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal-photo,
+  .reveal-stagger > *,
+  .product-card {
+    transition: opacity 0.3s ease !important;
+    transform: none !important;
+    filter: none !important;
+    animation: none !important;
+  }
+}
+
+/* Performance: content-visibility for long pages */
+@supports (content-visibility: auto) {
+  .catalog-grid,
+  .features-grid,
+  .cb-flavor-wrap {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 1000px;
+  }
+}
+
+/* Optimize paint for mobile */
+@media (max-width: 768px) {
+  .product-card,
+  .feature,
+  .reveal {
+    will-change: auto !important;
+  }
+  
+  .product-card.reveal.visible {
+    will-change: auto;
+  }
+}
