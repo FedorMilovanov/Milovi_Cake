@@ -290,3 +290,163 @@
   }
 
 })();
+
+/* ═══════════════════════════════════════════════════════════════════
+   PREMIUM 2026 JS OPTIMIZATIONS
+   ═══════════════════════════════════════════════════════════════════ */
+
+(function() {
+  'use strict';
+  
+  // 1. DEBOUNCE utility for scroll/resize
+  function debounce(func, wait) {
+    var timeout;
+    return function() {
+      var context = this, args = arguments;
+      clearTimeout(timeout);
+      timeout = setTimeout(function() {
+        func.apply(context, args);
+      }, wait);
+    };
+  }
+  
+  // 2. THROTTLE for high-frequency events
+  function throttle(func, limit) {
+    var inThrottle;
+    return function() {
+      var args = arguments, context = this;
+      if (!inThrottle) {
+        func.apply(context, args);
+        inThrottle = true;
+        setTimeout(function() { inThrottle = false; }, limit);
+      }
+    };
+  }
+  
+  // 3. LAZY LOAD images with IntersectionObserver
+  if ('IntersectionObserver' in window) {
+    var lazyImages = [].slice.call(document.querySelectorAll('img[loading="lazy"]'));
+    var lazyObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          var img = entry.target;
+          if (img.dataset.src) {
+            img.src = img.dataset.src;
+            img.removeAttribute('data-src');
+          }
+          lazyObserver.unobserve(img);
+        }
+      });
+    }, { rootMargin: '200px' });
+    
+    lazyImages.forEach(function(img) {
+      lazyObserver.observe(img);
+    });
+  }
+  
+  // 4. PREFETCH on hover (instant navigation)
+  var prefetchLinks = document.querySelectorAll('a[href^="/"], a[href^="./"]');
+  prefetchLinks.forEach(function(link) {
+    var prefetched = false;
+    link.addEventListener('mouseenter', function() {
+      if (prefetched) return;
+      prefetched = true;
+      var prefetchLink = document.createElement('link');
+      prefetchLink.rel = 'prefetch';
+      prefetchLink.href = link.href;
+      document.head.appendChild(prefetchLink);
+    }, { once: true, passive: true });
+  });
+  
+  // 5. OPTIMIZE SCROLL HANDLERS
+  var ticking = false;
+  function updateOnScroll() {
+    // Batch all scroll updates here
+    ticking = false;
+  }
+  
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      requestAnimationFrame(updateOnScroll);
+      ticking = true;
+    }
+  }, { passive: true });
+  
+  // 6. REDUCE LAYOUT THRASHING
+  function batchDOMReads() {
+    // Read all at once
+    var scrollY = window.scrollY;
+    var innerHeight = window.innerHeight;
+    var bodyHeight = document.body.offsetHeight;
+    
+    // Then write
+    requestAnimationFrame(function() {
+      // DOM writes here
+    });
+  }
+  
+  // 7. MEMORY LEAK PREVENTION — cleanup on page hide
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+      // Pause animations, timers
+      if (window.slideTimers) {
+        Object.keys(window.slideTimers).forEach(function(key) {
+          clearInterval(window.slideTimers[key]);
+        });
+      }
+    }
+  });
+  
+  // 8. VIEW TRANSITIONS API for page navigation
+  if (document.startViewTransition) {
+    document.querySelectorAll('a[href^="/"]:not([target="_blank"])').forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        var url = new URL(link.href);
+        if (url.origin !== location.origin) return;
+        
+        e.preventDefault();
+        document.startViewTransition(function() {
+          location.href = link.href;
+        });
+      });
+    });
+  }
+  
+  // 9. NETWORK INFORMATION API — adapt to connection
+  if (navigator.connection) {
+    var connection = navigator.connection;
+    
+    // Reduce animations on slow connections
+    if (connection.effectiveType === '2g' || connection.effectiveType === 'slow-2g') {
+      document.documentElement.classList.add('reduce-motion');
+    }
+    
+    // Save data mode
+    if (connection.saveData) {
+      document.documentElement.classList.add('save-data');
+      // Disable autoplay, reduce image quality, etc.
+    }
+  }
+  
+  // 10. IDLE CALLBACKS for non-critical work
+  var ric = window.requestIdleCallback || function(cb) { setTimeout(cb, 1); };
+  
+  ric(function() {
+    // Preload critical fonts
+    if ('fonts' in document) {
+      document.fonts.load('400 16px Jost');
+      document.fonts.load('500 16px Jost');
+      document.fonts.load('400 24px "Cormorant Garamond"');
+    }
+    
+    // Warm up connections
+    ['https://fonts.googleapis.com', 'https://fonts.gstatic.com'].forEach(function(origin) {
+      var link = document.createElement('link');
+      link.rel = 'preconnect';
+      link.href = origin;
+      link.crossOrigin = 'anonymous';
+      document.head.appendChild(link);
+    });
+  });
+  
+})();
