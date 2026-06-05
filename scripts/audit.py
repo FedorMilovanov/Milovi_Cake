@@ -842,6 +842,57 @@ with R.section("10. Forbidden Patterns"):
             if count > 0:
                 R.warn(f"console.log in {rel}: {count} occurrences")
 
+    # Protected UI contracts: static guard for elements that are historically fragile.
+    protected_issues = []
+    protected_files = {
+        "index.html": (ROOT / "index.html").read_text(encoding="utf-8", errors="replace"),
+        "prigorody/_template.html": (ROOT / "prigorody" / "_template.html").read_text(encoding="utf-8", errors="replace"),
+        "css/premium-overrides.css": (ROOT / "css" / "premium-overrides.css").read_text(encoding="utf-8", errors="replace"),
+        "css/final-fixes.css": (ROOT / "css" / "final-fixes.css").read_text(encoding="utf-8", errors="replace"),
+        "js/main.js": (ROOT / "js" / "main.js").read_text(encoding="utf-8", errors="replace"),
+    }
+
+    def require_contains(rel, needle, label=None):
+        if needle not in protected_files.get(rel, ""):
+            protected_issues.append(f"{rel}: missing {label or needle}")
+
+    def require_count(rel, needle, min_count, label=None):
+        count = protected_files.get(rel, "").count(needle)
+        if count < min_count:
+            protected_issues.append(f"{rel}: {label or needle} count {count}, expected ≥ {min_count}")
+
+    # Hero messengers: round SVG ring icons with flat label hover must remain intact.
+    for needle in ("messenger-group--ring", "btn-hero-ring", "btn-hero-wa", "btn-hero-tg", "btn-hero-max"):
+        require_contains("index.html", needle)
+    require_count("index.html", "hero-ring-text", 3, "hero ring text SVG labels")
+    require_count("index.html", "hero-flat-text", 3, "hero flat text SVG labels")
+    require_contains("css/premium-overrides.css", "AI DO NOT TOUCH — R10 PROTECTED BLOCK", "R10 protected CSS marker")
+    require_contains("css/premium-overrides.css", "PATCH R9", "R9/R10 protected CSS marker")
+    require_contains("css/final-fixes.css", ".hero-actions .btn-hero-messenger:hover .hero-flat-text", "final hero messenger hover override")
+    require_contains("css/final-fixes.css", ".hero-actions .btn-hero-messenger:hover .hero-ring-text", "final hero ring hover override")
+    require_contains("js/main.js", ".hero-ring-text, [id^=\"ring-text-\"]", "class/id hero ring fallback")
+    require_contains("js/main.js", ".hero-flat-text, [id^=\"flat-text-\"]", "class/id hero flat fallback")
+    require_contains("js/main.js", "function initMessengerRings", "messenger ring JS initializer")
+
+    # Premium reviews carousel and modals.
+    for needle in ("id=\"reviews\"", "id=\"stage\"", "id=\"track\"", "id=\"btnPrev\"", "id=\"btnNext\"", "id=\"reviewsModal\""):
+        require_contains("index.html", needle)
+    for needle in ("function openReviewsModal", "window.openReviewsModal = openReviewsModal", "reviewsGoTo = goTo", "function startTypewriter"):
+        require_contains("js/main.js", needle)
+
+    # Prigorody lightbox and cart/theme protected contracts.
+    require_contains("prigorody/_template.html", "class=\"lightbox\" id=\"lightbox\"", "prigorody catalog lightbox")
+    for needle in ("function buildCartKey", "function parseCartKey"):
+        require_contains("js/main.js", needle)
+    for needle in ("theme-icon--moon", "theme-icon--sun"):
+        require_contains("index.html", needle)
+
+    if protected_issues:
+        for issue in protected_issues:
+            R.err(f"Protected UI contract: {issue}")
+    else:
+        R.ok("Protected UI contracts intact (hero messengers, reviews, cart, theme, prigorody lightbox)")
+
     # TODO / FIXME / HACK
     for rel in list(ALLOWED_CSS) + list(ALLOWED_JS):
         p = ROOT / rel

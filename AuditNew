@@ -192,6 +192,15 @@
 - Workflow `production-smoke.yml` теперь запускает `python3 scripts/production_smoke.py --retries 6 --delay 30`.
   Добавлена локальная команда `npm run smoke:prod:retry`.
 
+## Static protected UI contract audit
+
+- `scripts/audit.py` получил статический guard для исторически ломаемых UI-контрактов:
+  hero WhatsApp/Telegram/MAX ring SVG, flat/ring labels, R10 CSS markers, JS fallback,
+  premium reviews carousel/modal, `buildCartKey`/`parseCartKey`, theme icons и prigorody lightbox.
+
+- Теперь audit ловит не только runtime-ошибки Playwright, но и удаление protected-классов/маркеров на уровне кода.
+  Текущий результат: `Protected UI contracts intact`.
+
 ## Открытые warnings (не блокируют деплой)
 
 - Размер CSS/JS по сырым байтам выше бюджета (по gzip ~87/68 КБ — приемлемо).
