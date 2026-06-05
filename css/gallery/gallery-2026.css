@@ -362,3 +362,85 @@ video.lb-media { background:#080402!important; }
 /* === r19 FIX: добавлен .gx-chip-icon (был непокрыт) === */
 .gx-chip-icon { display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; margin-right:6px; opacity:0.85; }
 .gx-chip-icon svg { width:100%; height:100%; }
+
+
+/* r47 — premium SEO/AI facts block for gallery; placed below the interactive grid, does not touch lightbox/filter logic */
+.gx-seo-panel {
+  position: relative;
+  max-width: 920px;
+  margin: 56px auto 0;
+  padding: clamp(26px, 4vw, 42px);
+  border: 1px solid rgba(184, 130, 58, .18);
+  border-radius: 28px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.58), rgba(255,255,255,.26)),
+    radial-gradient(circle at 14% 0%, rgba(212,168,92,.16), transparent 34%),
+    radial-gradient(circle at 86% 100%, rgba(61,43,31,.08), transparent 34%);
+  box-shadow: 0 24px 70px rgba(61,43,31,.08), inset 0 1px 0 rgba(255,255,255,.54);
+  overflow: hidden;
+  text-align: center;
+}
+.gx-seo-panel::before {
+  content: '';
+  position: absolute;
+  inset: 14px;
+  border: 1px solid rgba(212,168,92,.13);
+  border-radius: 22px;
+  pointer-events: none;
+}
+.gx-seo-kicker {
+  position: relative;
+  margin-bottom: 10px;
+  color: var(--gold);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+}
+.gx-seo-panel h2 {
+  position: relative;
+  max-width: 760px;
+  margin: 0 auto 14px;
+  color: var(--text);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(26px, 4vw, 42px);
+  font-weight: 400;
+  line-height: 1.08;
+}
+.gx-seo-panel p {
+  position: relative;
+  max-width: 760px;
+  margin: 0 auto;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.75;
+}
+.gx-seo-facts {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+.gx-seo-facts span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 14px;
+  border: 1px solid rgba(61,43,31,.12);
+  border-radius: 999px;
+  background: rgba(255,255,255,.42);
+  color: var(--brown);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+@media (max-width: 768px) {
+  .gx-seo-panel { margin-top: 34px; border-radius: 22px; }
+  .gx-seo-panel::before { inset: 10px; border-radius: 17px; }
+  .gx-seo-panel p { font-size: 13px; line-height: 1.65; }
+  .gx-seo-facts span { width: 100%; justify-content: center; min-height: 34px; }
+}

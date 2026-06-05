@@ -13,11 +13,25 @@
 ## Исправлено 2026-06-05 (было 26 errors → 0)
 
 - Рассинхрон версий: HTML был `r45`, sw.js — `r41` (SW прекэшировал несуществующие URL).
-  Всё сведено к `20260605r46`: HTML, sw.js (PRECACHE + CACHE_NAME + шапка), ESM-импорт data.js.
+  Всё сведено к `20260605r47`: HTML, sw.js (PRECACHE + CACHE_NAME + шапка), ESM-импорт data.js.
 
 - 404.html: удалён дублирующий `<meta robots>` (оставлен `noindex, follow`).
 
 - Schema AggregateRating: reviewCount 8 → 6 (по числу реальных Review).
+
+## SEO cleanup 2026-06-05 r47
+
+- Галерея усилена без изменения JS-логики: добавлены умеренные meta keywords, robots/theme-color,
+  OpenGraph-дополя, JSON-LD `CollectionPage` + `ImageGallery` + `BreadcrumbList`, а также
+  премиальный видимый факт-блок под сеткой.
+
+- `sitemap.xml`: обновлены `lastmod` до 2026-06-05; `/call/` удалён из sitemap,
+  так как страница закрыта `noindex` и `Disallow`.
+
+- Добавлен IndexNow: публичный key-file в корне и GitHub Action `.github/workflows/indexnow.yml`
+  для отправки URL из sitemap в IndexNow/Bing/Yandex после push.
+
+- Cache-bust поднят синхронно до `20260605r47` / `milovi-cake-v2026.06.05-r47`.
 
 ## Открытые warnings (не блокируют деплой)
 
