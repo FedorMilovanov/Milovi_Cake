@@ -152,6 +152,13 @@
 - `scripts/production_smoke.py` больше не хранит версию вручную: актуальный cache-bust определяется из `sw.js`,
   чтобы future rXX не требовал отдельной правки smoke-скрипта.
 
+## Structured data audit hardening
+
+- `scripts/audit.py` усилен проверкой JSON-LD: все индексируемые страницы должны иметь валидную schema-разметку,
+  внутри страницы не должно быть дублей `@id`, а главная обязана иметь единый consolidated `@graph` с ключевыми типами.
+
+- Текущий результат: `JSON-LD validation passed for 28 indexable pages`.
+
 ## Открытые warnings (не блокируют деплой)
 
 - Размер CSS/JS по сырым байтам выше бюджета (по gzip ~87/68 КБ — приемлемо).

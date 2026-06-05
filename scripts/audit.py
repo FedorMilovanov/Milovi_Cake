@@ -174,6 +174,30 @@ def parse_html(path: Path) -> TagCollector:
     return p
 
 
+def extract_json_ld(text: str) -> list[str]:
+    """Return raw JSON-LD script payloads from an HTML document."""
+    return re.findall(
+        r"<script[^>]+type=[\"']application/ld\+json[\"'][^>]*>\s*(.*?)\s*</script>",
+        text,
+        flags=re.I | re.S,
+    )
+
+
+def iter_schema_nodes(data):
+    """Yield top-level schema nodes, expanding @graph and JSON arrays."""
+    if isinstance(data, dict):
+        yield data
+        graph = data.get("@graph")
+        if isinstance(graph, list):
+            for item in graph:
+                if isinstance(item, dict):
+                    yield item
+    elif isinstance(data, list):
+        for item in data:
+            if isinstance(item, dict):
+                yield item
+
+
 # ─── Reporting ────────────────────────────────────────────────────────────
 
 class AuditReport:
@@ -479,6 +503,66 @@ with R.section("4. SEO Validation"):
 
     if not seo_issues:
         R.ok(f"SEO validation passed for {len(html_pages)} pages")
+
+# ═══════════════════════════════════════════════════════════════════════════
+# CHECK 4b: Structured Data JSON-LD Integrity
+# ═══════════════════════════════════════════════════════════════════════════
+
+with R.section("4b. Structured Data JSON-LD Integrity"):
+    schema_issues = []
+    schema_pages = 0
+
+    for rel, path in html_pages:
+        if any(rel.startswith(p) for p in ("404.html", "google", "yandex")):
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        parsed = parse_html(path)
+        robots_meta = parsed.metas.get("robots", "").lower()
+        if "noindex" in robots_meta:
+            continue
+
+        blocks = extract_json_ld(text)
+        if not blocks:
+            schema_issues.append(f"{rel}: missing JSON-LD on indexable page")
+            continue
+
+        schema_pages += 1
+        page_ids = []
+        page_types = []
+        for idx, block in enumerate(blocks, start=1):
+            try:
+                data = json.loads(block)
+            except json.JSONDecodeError as exc:
+                schema_issues.append(f"{rel}: invalid JSON-LD block {idx}: {exc.msg}")
+                continue
+            for node in iter_schema_nodes(data):
+                node_type = node.get("@type")
+                if node_type:
+                    if isinstance(node_type, list):
+                        page_types.extend(str(t) for t in node_type)
+                    else:
+                        page_types.append(str(node_type))
+                node_id = node.get("@id")
+                if node_id:
+                    page_ids.append(str(node_id))
+
+        duplicate_ids = sorted({sid for sid in page_ids if page_ids.count(sid) > 1})
+        if duplicate_ids:
+            schema_issues.append(f"{rel}: duplicate JSON-LD @id within page: {duplicate_ids[:5]}")
+
+        if rel == "index.html":
+            required = {"Organization", "Person", "LocalBusiness", "Bakery", "WebSite", "WebPage", "ItemList", "FAQPage", "HowTo", "BreadcrumbList"}
+            missing = sorted(required - set(page_types))
+            if missing:
+                schema_issues.append(f"index.html: homepage schema missing required types: {missing}")
+            if len(blocks) != 1:
+                schema_issues.append(f"index.html: homepage should use one consolidated JSON-LD @graph, found {len(blocks)} blocks")
+
+    if schema_issues:
+        for issue in schema_issues:
+            R.err(f"Schema: {issue}")
+    else:
+        R.ok(f"JSON-LD validation passed for {schema_pages} indexable pages")
 
 # ═══════════════════════════════════════════════════════════════════════════
 # CHECK 5: Accessibility (a11y) Basics
