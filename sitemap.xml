@@ -333,4 +333,34 @@
       <image:title>Свадебные торты на заказ в СПб — Milovi Cake</image:title>
     </image:image>
   </url>
+  <url>
+    <loc>https://milovicake.ru/o-konditere/</loc>
+    <changefreq>monthly</changefreq>
+    <lastmod>2026-06-05</lastmod>
+    <priority>0.75</priority>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/viktoria.webp</image:loc>
+      <image:title>О кондитере Milovi Cake — Виктория Милованова</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://milovicake.ru/dostavka-i-oplata/</loc>
+    <changefreq>monthly</changefreq>
+    <lastmod>2026-06-05</lastmod>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/og-cover.jpg</image:loc>
+      <image:title>Доставка и оплата тортов в СПб — Milovi Cake</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://milovicake.ru/otzyvy/</loc>
+    <changefreq>monthly</changefreq>
+    <lastmod>2026-06-05</lastmod>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/review_1.webp</image:loc>
+      <image:title>Отзывы о Milovi Cake — торты на заказ в СПб</image:title>
+    </image:image>
+  </url>
 </urlset>

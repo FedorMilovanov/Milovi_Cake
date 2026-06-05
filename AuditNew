@@ -53,6 +53,16 @@
 
 - `sitemap.xml` обновлён новыми URL; cache-bust поднят до `20260605r48` / `milovi-cake-v2026.06.05-r48`.
 
+## Trust/commercial factors r48
+
+- Добавлены страницы доверия и коммерческих факторов для Яндекса/Google/AI:
+  `/o-konditere/`, `/dostavka-i-oplata/`, `/otzyvy/`.
+  На страницах есть видимый контент, внутренняя перелинковка, JSON-LD AboutPage/WebPage/CollectionPage/Person/FAQ/Review/LocalBusiness.
+
+- Главная усилена ссылками на эти страницы в footer-навигации и блоке проектов.
+
+- `sitemap.xml` обновлён новыми URL; IndexNow workflow отправит обновлённый sitemap после push.
+
 ## Открытые warnings (не блокируют деплой)
 
 - Размер CSS/JS по сырым байтам выше бюджета (по gzip ~87/68 КБ — приемлемо).
