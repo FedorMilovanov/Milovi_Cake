@@ -1,0 +1,20 @@
+name: Production Smoke
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Daily morning check in Moscow timezone equivalent (06:30 UTC = 09:30 MSK).
+    - cron: '30 6 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  production-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run production smoke checks
+        run: python3 scripts/production_smoke.py
