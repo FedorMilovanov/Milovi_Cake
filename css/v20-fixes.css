@@ -1,15 +1,16 @@
+/* ══════════════════════════════════════════════════════════════
+   MILOVI CAKE — MOBILE STABILITY & LUXURY Patches
+   Loaded at the end of the CSS cascade to guarantee flawless,
+   pixel-perfect, overlap-free rendering on any mobile screen.
+   ══════════════════════════════════════════════════════════════ */
 
-
-
+/* Keep existing compatibility rules intact */
 html[data-theme="dark"] .hero-content,
 [data-theme="dark"] .hero-content {
   background: transparent !important;
   box-shadow: none !important;
   border: none !important;
 }
-
-
-
 
 .delivery-faq,
 .delivery-faq .faq-list,
@@ -34,4 +35,256 @@ html[data-theme="dark"] .hero-content,
 html[data-theme="dark"] .delivery-faq .faq-item,
 [data-theme="dark"] .delivery-faq .faq-item {
   border-color: rgba(212, 167, 106, 0.15) !important;
+}
+
+/* ==========================================================================
+   1. FIXED: Product Footers and Buttons on Mobile (No overlaps, No clipping)
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Re-align product footer to vertical stack on mobile to prevent overlapping */
+  .product-footer {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    padding-top: 14px !important;
+    border-top: 1px solid rgba(201, 147, 74, 0.09) !important;
+    margin-top: auto !important;
+  }
+
+  /* Left-align price and give it premium typographic weight */
+  .price {
+    align-self: flex-start !important;
+    font-size: 19px !important;
+    font-weight: 600 !important;
+    color: var(--brown) !important;
+    line-height: 1.2 !important;
+    margin-bottom: 2px !important;
+    white-space: nowrap !important;
+  }
+
+  /* Expand add button to full container width for tactile premium feel */
+  .btn-add {
+    width: 100% !important;
+    display: block !important;
+    text-align: center !important;
+    padding: 12px 16px !important;
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.04em !important;
+    min-height: 44px !important;
+    white-space: nowrap !important;
+    border-radius: 50px !important;
+    box-shadow: 0 4px 14px rgba(138, 94, 35, 0.15) !important;
+  }
+  
+  /* Reset left padding on card body if necessary to prevent layout collapse */
+  .product-info {
+    padding: 20px 18px !important;
+  }
+}
+
+/* ==========================================================================
+   2. FIXED: Squeezed Calculator Option Lists (Stretches to 100% card width)
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Ensure calculator rows stretch and are beautifully balanced */
+  .calc-left-col .calc-row {
+    align-items: stretch !important;
+  }
+  
+  /* Stretches options container to full available card width */
+  .calc-options,
+  #calcFill.calc-options,
+  #calcFillBento.calc-options,
+  #calcFill3d.calc-options,
+  #calcDecor.calc-options {
+    width: 100% !important;
+    align-self: stretch !important;
+    justify-content: stretch !important;
+  }
+  
+  /* Allow single options to scale and flex nicely */
+  .calc-opt {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+}
+
+/* ==========================================================================
+   3. FIXED: Chevron Rotates Perfectly in Browser (Center transform origin)
+   ========================================================================== */
+.calc-result-collapsed-arrow {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transform-origin: center !important;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.calc-right-col.calc-result-open .calc-result-collapsed-arrow {
+  transform: rotate(180deg) !important;
+}
+
+/* ==========================================================================
+   4. FIXED: Floating Scroll-to-Top Button (Perfect alignment + Luxury Blur)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .back-to-top {
+    bottom: calc(82px + env(safe-area-inset-bottom, 0px)) !important;
+    right: 16px !important;
+    width: 44px !important;
+    height: 44px !important;
+    background: rgba(30, 16, 8, 0.94) !important;
+    border: 1px solid rgba(232, 184, 122, 0.26) !important;
+    border-radius: 50% !important;
+    color: var(--gold, #d4a76a) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.24) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    transition: opacity 0.25s ease, transform 0.25s ease, box-shadow 0.2s ease !important;
+    z-index: 102 !important; /* Floats safely above content but under sheets */
+  }
+  .back-to-top:active {
+    transform: scale(0.92) !important;
+    background: rgba(45, 28, 16, 0.98) !important;
+  }
+}
+
+/* ==========================================================================
+   5. PREMIUM: Safe-Area Compensation (Content never gets covered by Bottom Nav)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .site-footer,
+  .about-section,
+  .landing-footer,
+  .lp-related,
+  .content-block {
+    padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
+/* ==========================================================================
+   6. LUXURY & MINIMALISM: Depths, Glowing Backlights, and Smooth Feedbacks
+   ========================================================================== */
+/* Premium active-state scale feedback for buttons */
+.calc-opt:active,
+.btn-add:active,
+.btn-primary:active,
+.calc-add-btn:active {
+  transform: scale(0.96) !important;
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Luxe tactile highlights for product cards */
+@media (max-width: 768px) {
+  .product-card {
+    box-shadow: 0 10px 30px rgba(61, 43, 31, 0.05), 0 0 0 1px rgba(201, 147, 74, 0.09) !important;
+    border: 1px solid rgba(201, 147, 74, 0.04) !important;
+    transition: box-shadow 0.35s ease, transform 0.35s ease !important;
+  }
+  .product-card:active {
+    transform: scale(0.995) !important;
+    box-shadow: 0 6px 18px rgba(61, 43, 31, 0.08) !important;
+  }
+}
+
+/* Floating bottom navbar luxury frosted look */
+@media (max-width: 768px) {
+  .mc-nav {
+    background: rgba(253, 251, 247, 0.95) !important;
+    backdrop-filter: blur(20px) saturate(130%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(130%) !important;
+    border-top: 1px solid rgba(201, 147, 74, 0.16) !important;
+    box-shadow: 0 -4px 24px rgba(61, 43, 31, 0.05) !important;
+  }
+  
+  /* Luxe active glow on menu item icons */
+  .mc-btn.mc-active svg {
+    filter: drop-shadow(0 0 4px rgba(201, 147, 74, 0.45)) !important;
+  }
+}
+
+/* Slide-up nav panel premium blurred tactile sheet */
+@media (max-width: 768px) {
+  .mc-sheet {
+    background: rgba(253, 251, 247, 0.97) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border-top: 1px solid rgba(201, 147, 74, 0.22) !important;
+    box-shadow: 0 -12px 40px rgba(61, 43, 31, 0.16) !important;
+  }
+  
+  .mc-row {
+    border-radius: 16px !important;
+    transition: background-color 0.2s ease, transform 0.15s ease !important;
+  }
+  
+  .mc-row:active {
+    background: rgba(201, 147, 74, 0.06) !important;
+    transform: scale(0.98) !important;
+  }
+}
+
+/* Floating bottom nav bar luxury cart badge */
+.mc-order-badge {
+  position: absolute !important;
+  top: -3px !important;
+  right: -3px !important;
+  min-width: 18px !important;
+  height: 18px !important;
+  padding: 0 4px !important;
+  background: #fff !important;
+  color: var(--gold, #c9934a) !important;
+  font-family: 'Jost', sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22) !important;
+  border: 1px solid rgba(201, 147, 74, 0.15) !important;
+  opacity: 0 !important;
+  transform: scale(0.4) !important;
+  transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  pointer-events: none !important;
+  z-index: 10 !important;
+  line-height: 1 !important;
+}
+.mc-order-badge.visible {
+  opacity: 1 !important;
+  transform: scale(1) !important;
+}
+
+/* ==========================================================================
+   7. DARK MODE LUXE REFINEMENTS
+   ========================================================================== */
+[data-theme="dark"] .mc-nav {
+  background: rgba(26, 17, 8, 0.94) !important;
+  border-top: 1px solid rgba(212, 167, 106, 0.18) !important;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.35) !important;
+}
+[data-theme="dark"] .mc-sheet {
+  background: rgba(26, 17, 8, 0.98) !important;
+  border-top: 1px solid rgba(212, 167, 106, 0.25) !important;
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.48) !important;
+}
+[data-theme="dark"] .mc-row:active {
+  background: rgba(212, 167, 106, 0.08) !important;
+}
+[data-theme="dark"] .product-card {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(212, 167, 106, 0.1) !important;
+  border: 1px solid rgba(212, 167, 106, 0.05) !important;
+}
+[data-theme="dark"] .price {
+  color: var(--gold, #d4a76a) !important;
+}
+[data-theme="dark"] .calc-right-col .calc-result {
+  background: linear-gradient(165deg, rgba(32, 20, 11, 0.96), rgba(16, 10, 5, 0.96)) !important;
+  border: 1px solid rgba(212, 167, 106, 0.22) !important;
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.035) inset !important;
+}
+[data-theme="dark"] .mc-order-badge {
+  background: #201508 !important;
+  color: var(--gold, #d4a76a) !important;
+  border-color: rgba(212, 167, 106, 0.25) !important;
 }

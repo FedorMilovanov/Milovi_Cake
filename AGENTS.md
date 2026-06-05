@@ -23,7 +23,7 @@
 
 ## 0.1 Текущее состояние r51 — обязательный контекст
 
-- Production cache-bust: `20260605r60`; Service Worker: `milovi-cake-v2026.06.05-r60`.
+- Production cache-bust: `20260606r01`; Service Worker: `milovi-cake-v2026.06.06-r01`.
 - Режим работы по всему проекту: `Пн–Сб, 10:00–20:00` / JSON-LD `Mo-Sa`.
 - Основная проверка перед push: `npm run qa`.
 - Live-проверка после публикации: `npm run smoke:prod:retry`.
