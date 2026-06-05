@@ -1239,6 +1239,133 @@ with R.section("18. Repo Hygiene"):
         R.ok("No files > 5 MB in repo")
 
 # ═══════════════════════════════════════════════════════════════════════════
+# CHECK 18b: File Hygiene Guards
+#   - unreferenced media (img/* not mentioned anywhere)
+#   - duplicate file content by SHA1 (with documented whitelist)
+#   - stale patch/zip/bak artefacts in repo
+#   - .gitignore drift: tracked files that match ignore rules
+# ═══════════════════════════════════════════════════════════════════════════
+
+with R.section("18b. File Hygiene Guards"):
+    import hashlib
+    import subprocess
+
+    # ── Build a single haystack of all textual referenceable content ─────
+    referenceable_exts = {
+        ".html", ".css", ".js", ".cjs", ".mjs", ".json",
+        ".xml", ".txt", ".md", ".py", ".svg", ".yml", ".yaml",
+    }
+    haystack_parts = []
+    for p in ROOT.rglob("*"):
+        if is_excluded_path(p) or not p.is_file():
+            continue
+        if p.suffix.lower() in referenceable_exts:
+            try:
+                haystack_parts.append(p.read_text(encoding="utf-8", errors="ignore"))
+            except OSError:
+                pass
+    haystack = "\n".join(haystack_parts)
+
+    # ── 1. Unreferenced media in img/ ─────────────────────────────────────
+    # Documented exceptions (whitelist) — empty for now.
+    unref_whitelist: set[str] = set()
+    img_root = ROOT / "img"
+    unreferenced = []
+    if img_root.exists():
+        media_exts = {".webp", ".png", ".jpg", ".jpeg", ".svg",
+                      ".avif", ".gif", ".webm", ".mp4", ".mov"}
+        for p in img_root.rglob("*"):
+            if not p.is_file() or p.suffix.lower() not in media_exts:
+                continue
+            rel = relpath(p)
+            if rel in unref_whitelist:
+                continue
+            name = p.name
+            if name not in haystack:
+                unreferenced.append((rel, p.stat().st_size))
+
+    if unreferenced:
+        for rel, sz in sorted(unreferenced, key=lambda x: -x[1])[:10]:
+            R.warn(f"Unreferenced media: {rel} ({sz:,} bytes)")
+    else:
+        R.ok("All img/ media files are referenced from runtime code")
+
+    # ── 2. Duplicate file content by SHA1 inside img/ ─────────────────────
+    # Documented exception: head.webp and head_desktop.webp are
+    # intentionally kept as twins.
+    #   - head.webp is referenced from indexed JSON-LD (schema.org image)
+    #     and PWA manifest. Renaming would break already-indexed Google
+    #     and Yandex image URLs and registered PWA installs.
+    #   - head_desktop.webp is the <picture> source for the hero on the
+    #     home page and is in the SW precache.
+    # Cost of the duplicate: ~104 KB on disk, zero runtime impact
+    # (each is fetched at most once and cached separately). Acceptable.
+    dup_whitelist = frozenset({
+        frozenset({"img/head.webp", "img/head_desktop.webp"}),
+    })
+    hashes: dict[str, list[str]] = {}
+    if img_root.exists():
+        for p in img_root.rglob("*"):
+            if not p.is_file():
+                continue
+            try:
+                h = hashlib.sha1(p.read_bytes()).hexdigest()
+                hashes.setdefault(h, []).append(relpath(p))
+            except OSError:
+                pass
+    unexpected_dups = []
+    for h, files in hashes.items():
+        if len(files) < 2:
+            continue
+        pair = frozenset(files)
+        if pair not in dup_whitelist:
+            unexpected_dups.append(tuple(sorted(files)))
+    if unexpected_dups:
+        for pair in unexpected_dups[:10]:
+            R.warn(f"Duplicate file content: {' == '.join(pair)}")
+    else:
+        R.ok("No unexpected duplicate media (whitelist applied)")
+
+    # ── 3. Stale patch / archive / backup artefacts ──────────────────────
+    stale_patterns = (
+        "*.patch", "*.diff", "*.zip", "*.tar", "*.tar.gz", "*.tgz",
+        "*.bak", "*.orig", "*.old", "*~",
+    )
+    stale_found = []
+    for pat in stale_patterns:
+        for p in ROOT.rglob(pat):
+            if is_excluded_path(p) or not p.is_file():
+                continue
+            stale_found.append(relpath(p))
+    # uploads/ directory itself must not exist (it was used for one-off
+    # patch dumps and reappeared once already — see commit 6adac35).
+    uploads_dir = ROOT / "uploads"
+    if uploads_dir.exists() and uploads_dir.is_dir():
+        stale_found.append("uploads/ (entire directory)")
+    if stale_found:
+        for f in sorted(set(stale_found))[:10]:
+            R.err(f"Stale artefact in repo: {f}")
+    else:
+        R.ok("No stale patch/archive/backup files in repo")
+
+    # ── 4. .gitignore drift: tracked files that match an ignore rule ─────
+    try:
+        proc = subprocess.run(
+            ["git", "ls-files", "--error-unmatch", "-i", "-c",
+             "--exclude-standard"],
+            cwd=str(ROOT), capture_output=True, text=True, timeout=10,
+        )
+        drift = [ln for ln in proc.stdout.splitlines() if ln.strip()]
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        drift = []
+    if drift:
+        for f in drift[:10]:
+            R.warn(f".gitignore drift (tracked but ignored): {f}")
+    else:
+        R.ok("No .gitignore drift (no tracked-but-ignored files)")
+
+
+# ═══════════════════════════════════════════════════════════════════════════
 # CHECK 19: Mixed Content & Security Patterns
 # ═══════════════════════════════════════════════════════════════════════════
 
