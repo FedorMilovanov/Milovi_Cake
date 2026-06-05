@@ -233,6 +233,13 @@
 - Raw CSS уменьшен примерно на 72 KB: ~474 KB → ~402 KB. CSS gzip уменьшен примерно до ~72 KB.
   Cache-bust поднят до `20260605r52` / `milovi-cake-v2026.06.05-r52`.
 
+## CSS cleanup phase 2
+
+- Безопасно удалены точные дубли CSS-правил в `css/style.css` без изменения protected-зон:
+  header-order dark, menu-open, bento toast, bottom-nav icon, sc-thumb will-change, shared body rule.
+
+- Raw CSS дополнительно снижен примерно до ~401 KB; CSS gzip ~70.3 KB. Cache-bust поднят до `20260605r53` / `milovi-cake-v2026.06.05-r53`.
+
 ## Открытые warnings (не блокируют деплой)
 
 - Размер CSS/JS по сырым байтам выше бюджета (по gzip ~87/68 КБ — приемлемо).
