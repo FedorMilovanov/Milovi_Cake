@@ -167,6 +167,15 @@
 - Текущий бюджет проходит: CSS gzip ~90.6 KB / 100 KB, JS gzip ~68.3 KB / 80 KB,
   total CSS+JS gzip ~158.8 KB / 180 KB. Warnings снижены с 8 до 5; остались только реальные debt-warning по `!important`.
 
+## Protected interaction QA
+
+- Добавлен Playwright-тест `tests/protected-interactions.spec.js` для защищённых UI-зон:
+  hover-анимация hero WhatsApp/Telegram/MAX на desktop (flat label подлетает, ring text уходит),
+  стрелки premium reviews carousel, модалка отзывов Яндекс/Google, FAQ и video controls на wedding landing.
+
+- Добавлен light/dark UI smoke без ложных срабатываний на intentional overlays главной/галереи.
+  Текущий `npm run test:playwright` → 61 passed, 1 skipped (desktop-only hover on mobile).
+
 ## Открытые warnings (не блокируют деплой)
 
 - Размер CSS/JS по сырым байтам выше бюджета (по gzip ~87/68 КБ — приемлемо).
