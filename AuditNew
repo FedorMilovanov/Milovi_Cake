@@ -8,7 +8,59 @@
 
 ## Текущий статус
 
-`python3 scripts/audit.py` → PASSED, 0 errors, 9 warnings (2026-06-05).
+`python3 scripts/audit.py` → PASSED, 0 errors, 0 warnings (2026-06-05 r57).
+
+## Repo hygiene cleanup r57
+
+- Удалено 6 файлов мусора (~1.35 MB) без runtime-ссылок:
+  `uploads/final_power_patch.patch` (старый r41 diff на 404.html, попал в репо при
+  коммите `6adac35` под маскирующим сообщением "chore: cleanup patch file"),
+  `img/meringue_rolls_cut.png` (1.25 MB PNG при наличии оптимизированного webp),
+  `img/viktoria2.webp` (альтернативный кроп, нигде не используется),
+  `img/max_icon.svg` (MAX-иконка рендерится inline SVG в hero, см. R10),
+  `img/README.txt` (артефакт code-only patch package),
+  `audit/audit-2026-05-17_2252.md` (устаревший отчёт до добавления audit/ в .gitignore).
+
+- `scripts/audit.py` усилен секцией `18b. File Hygiene Guards` с 4 проверками:
+  unreferenced media (warning), duplicate file content by SHA1 (warning, с
+  явным whitelist для пары head.webp/head_desktop.webp и документацией почему
+  её нельзя унифицировать без потери проиндексированных Schema.org/PWA URL),
+  stale patch/zip/bak artefacts (error), .gitignore drift (warning).
+  Negative-test подтвердил срабатывание всех 4 проверок.
+
+## AVIF media tier r57
+
+- Сгенерированы AVIF-версии (quality=60, speed=4, PSNR ~38–40 dB — визуально
+  неотличимо) для 31 webp, которые подключаются как `<img>` или `<source>` на
+  landing-страницах, главной и prigorody-шаблоне: hero hero hero, viktoria,
+  bento, cake, cupcakes, meringue_*, и 11 gallery-XX, используемых в media-
+  showcase коммерческих лендингов. AVIF лежат рядом с webp как близнецы.
+
+- В 9 страницах (index, 9 landings, meringue-roll, _template + 14 пригородов)
+  52 одиночных тега `<img src="...webp">` обёрнуты в `<picture>` с
+  `<source type="image/avif" srcset="...avif">`. Уже существовавшие `<picture>`
+  (hero главной) не тронуты. Скрипт идемпотентный (повторный запуск ничего
+  не меняет).
+
+- prigorody/_template.html усилен AVIF source для hero (head_mobile.avif +
+  head_desktop.avif). 14 страниц регенерированы через `build.py`,
+  идемпотентность подтверждена (`scripts/check_prigorody_idempotent.py` OK).
+
+- Cache-bust поднят синхронно до `20260605r57` / `milovi-cake-v2026.06.05-r57`
+  во всех 35 файлах (HTML + sw.js + ESM data.js import).
+
+- Что НЕ сделано (отдельная волна, требует визуальной верификации):
+  AVIF для динамической галереи (`js/gallery/main.js` создаёт `<img>` через
+  createElement, поддержка AVIF потребует обёртки в `<picture>` в JS-логике
+  и проверки что вёрстка не плывёт). AVIF-файлы для gallery-XX-hd.webp
+  не генерировались — они используются только внутри галерейного JS.
+
+- audit.py исключает `audit/` из haystack при unreferenced-media сканировании,
+  чтобы наши же auto-generated отчёты не давали false-positive «упомянут».
+
+## Историческое состояние до r57
+
+`python3 scripts/audit.py` → PASSED, 0 errors, 0 warnings (2026-06-05 r56).
 
 ## Исправлено 2026-06-05 (было 26 errors → 0)
 

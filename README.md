@@ -12,7 +12,7 @@
 ## Текущий production-статус
 
 - Режим работы: **Пн–Сб, 10:00–20:00**.
-- Cache-bust / SW: **`20260605r56` / `milovi-cake-v2026.06.05-r56`**.
+- Cache-bust / SW: **`20260605r57` / `milovi-cake-v2026.06.05-r57`**.
 - `npm run qa` — полный локальный QA: JS, пригороды, Python-аудит, Playwright desktop/mobile.
 - `npm run smoke:prod` — smoke live-сайта `milovicake.ru`.
 - `scripts/audit.py` проверяет SEO, JSON-LD, sitemap coverage, business hours, protected UI contracts, gzip budgets, ссылки, a11y basics, PWA/SW.

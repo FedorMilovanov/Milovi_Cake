@@ -96,10 +96,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
   <!-- noscript fonts -->
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/></noscript>
-  <link rel="stylesheet" href="../../css/style.css?v=20260605r56" />
-  <link rel="stylesheet" href="../../css/mc-2026.css?v=20260605r56" />
-  <link rel="stylesheet" href="../../css/premium-overrides.css?v=20260605r56" />
-  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260605r56">
+  <link rel="stylesheet" href="../../css/style.css?v=20260605r57" />
+  <link rel="stylesheet" href="../../css/mc-2026.css?v=20260605r57" />
+  <link rel="stylesheet" href="../../css/premium-overrides.css?v=20260605r57" />
+  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260605r57">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -111,8 +111,8 @@
     ]
   }
   </script>
-  <link rel="stylesheet" href="/css/v20-fixes.css?v=20260605r56">
-  <link rel="stylesheet" href="/css/final-fixes.css?v=20260605r56" />
+  <link rel="stylesheet" href="/css/v20-fixes.css?v=20260605r57">
+  <link rel="stylesheet" href="/css/final-fixes.css?v=20260605r57" />
 </head>
 
 <body class="prigorody-page">
@@ -233,8 +233,10 @@
 <section class="hero" id="home">
   <div class="hero-photo-bg">
     <picture>
-      <source media="(max-width: 768px)" srcset="../../img/head_mobile.webp" />
-      <source media="(min-width: 769px)" srcset="../../img/head_desktop.webp" />
+      <source type="image/avif" media="(max-width: 768px)" srcset="../../img/head_mobile.avif" />
+      <source type="image/avif" media="(min-width: 769px)" srcset="../../img/head_desktop.avif" />
+      <source type="image/webp" media="(max-width: 768px)" srcset="../../img/head_mobile.webp" />
+      <source type="image/webp" media="(min-width: 769px)" srcset="../../img/head_desktop.webp" />
       <img src="../../img/head.webp" alt="Авторский торт Milovi Cake — ручная работа, Санкт-Петербург"
            fetchpriority="high" decoding="async" width="1200" height="800" />
     </picture>
@@ -933,9 +935,9 @@
 </section>
 
 <script>var IMG_BASE = '../../img';</script>
-<script src="../../js/main.js?v=20260605r56" defer></script>
-<script src="../../js/nav.js?v=20260605r56" defer></script>
-<script src="../../js/mc-2026.js?v=20260605r56" defer></script>
+<script src="../../js/main.js?v=20260605r57" defer></script>
+<script src="../../js/nav.js?v=20260605r57" defer></script>
+<script src="../../js/mc-2026.js?v=20260605r57" defer></script>
 
 <!-- ══════════ BOTTOM SHEET: Начинка ══════════ -->
 <div class="fill-mobile-overlay" id="fillOverlay"></div>
@@ -1254,7 +1256,7 @@ function cbFaq(el){
 })();
 </script>
 
-<script defer src="/js/v20-faq-fix.js?v=20260605r56"></script>
+<script defer src="/js/v20-faq-fix.js?v=20260605r57"></script>
 <!-- ══════ Google Analytics — defer on interaction ══════ -->
 <script>
   (function(){

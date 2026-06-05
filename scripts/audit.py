@@ -1256,9 +1256,18 @@ with R.section("18b. File Hygiene Guards"):
         ".xml", ".txt", ".md", ".py", ".svg", ".yml", ".yaml",
     }
     haystack_parts = []
+    # Каталог audit/ может содержать наши же auto-generated отчёты,
+    # которые цитируют имена файлов. Это даёт false-positive «файл
+    # упоминается». Исключаем его явно.
+    audit_dir = (ROOT / "audit").resolve()
     for p in ROOT.rglob("*"):
         if is_excluded_path(p) or not p.is_file():
             continue
+        try:
+            if audit_dir in p.resolve().parents:
+                continue
+        except OSError:
+            pass
         if p.suffix.lower() in referenceable_exts:
             try:
                 haystack_parts.append(p.read_text(encoding="utf-8", errors="ignore"))
