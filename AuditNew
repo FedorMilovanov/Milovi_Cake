@@ -10,8 +10,43 @@
 
 `python3 scripts/audit.py` → PASSED, 0 errors, 0 warnings (2026-06-05 r60).
 `npx playwright test` → 61 passed, 1 skipped (2026-06-05 r60).
-`Lighthouse CI` → workflow `lighthouse.yml`, активируется на каждый
+`npm run visual:snapshot && npm run visual:diff` → 12/12 stable pairs pixel-perfect.
+`Lighthouse CI` → workflow `lighthouse.yml`, mobile-профиль на каждый
 успешный deploy GitHub Pages.
+
+## Visual Regression Suite + R10 lift guard
+
+- Добавлены `scripts/visual_snapshot.cjs` и `scripts/visual_diff.py` —
+  единая страховка против невидимых визуальных регрессий. Любой
+  агент перед коммитом может снять до/после-скриншоты 14 ключевых
+  состояний (главная light/dark/mobile, hero WA/TG/MAX hover —
+  «подлётная надпись», галерея, lightbox, все коммерческие
+  лендинги, prigorody, reviews, otzyvy) и получить pixel-diff
+  таблицу. Порог 0.10 % значимых пикселей → FAIL.
+
+- npm-команды:
+    npm run visual:snapshot -- /tmp/snap-before [base-url]
+    npm run visual:snapshot -- /tmp/snap-after  [base-url]
+    npm run visual:diff     -- /tmp/snap-before /tmp/snap-after
+
+- 2 страницы (`gallery-desktop-top.png`, `reviews-area.png`)
+  объявлены `UNSTABLE_WHITELIST` — на них рандомизированный
+  контент (тасование карточек, автоплей карусели), их диф
+  печатается но не учитывается в вердикте.
+
+- `scripts/audit.py` усилен R10 lift-animation guard: статически
+  ищет правило `.hero-actions .btn-hero-messenger:hover
+  .hero-flat-text { … transform: translateY(-Npx) … }` в любом
+  CSS-файле. Если кто-то случайно занулит translateY — премиум-
+  «подлётная надпись» перестанет работать молча, и сейчас audit
+  это поймает ошибкой. Negative-test: при обнулении translateY
+  audit немедленно даёт `❌ AUDIT FAILED`, при восстановлении —
+  `✅ PASSED`.
+
+- Изменения в этой волне касаются только `scripts/`, `package.json`
+  и `AuditNew` — рендерящий слой не тронут. Visual diff между
+  baseline и after на самом себе: 13/14 pixel-perfect, reviews
+  unstable-ignored. Premium UI на 100 % не тронут.
 
 ## Lighthouse CI workflow
 

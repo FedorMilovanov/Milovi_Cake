@@ -18,7 +18,9 @@
     "indexnow:submit": "python3 scripts/submit_indexnow.py",
     "smoke:prod:retry": "python3 scripts/production_smoke.py --retries 6 --delay 30",
     "coverage:css": "node scripts/css_coverage.cjs",
-    "optimize:image": "python3 scripts/optimize_image.py"
+    "optimize:image": "python3 scripts/optimize_image.py",
+    "visual:snapshot": "node scripts/visual_snapshot.cjs",
+    "visual:diff": "python3 scripts/visual_diff.py"
   },
   "engines": {
     "node": ">=18.0.0"

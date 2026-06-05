@@ -202,6 +202,22 @@ npm run audit
 npm run test:playwright
 ```
 
+### Visual regression (для рискованных правок CSS/HTML)
+
+```bash
+# 1) до правки
+python3 -m http.server 8765 &
+npm run visual:snapshot -- /tmp/snap-before http://localhost:8765
+
+# 2) делаешь правку
+
+# 3) после
+npm run visual:snapshot -- /tmp/snap-after  http://localhost:8765
+npm run visual:diff     -- /tmp/snap-before /tmp/snap-after
+```
+
+Снимает 14 ключевых состояний: главная light/dark/mobile, hero WA/TG/MAX hover («подлётная надпись»), галерея, lightbox, коммерческие лендинги, prigorody, отзывы. Порог: > 0.1 % значимых пикселей = FAIL.
+
 ### Production smoke
 
 ```bash

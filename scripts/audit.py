@@ -908,6 +908,29 @@ with R.section("10. Forbidden Patterns"):
     require_contains("js/main.js", ".hero-flat-text, [id^=\"flat-text-\"]", "class/id hero flat fallback")
     require_contains("js/main.js", "function initMessengerRings", "messenger ring JS initializer")
 
+    # R10 "lift" animation guard (r61): the flat label MUST rise upward
+    # on hover via translateY(-Npx). If a future refactor accidentally
+    # zeroes the translate, the label sits in place and the premium
+    # micro-interaction silently dies. Scan all CSS files for an
+    # explicit hover rule on .hero-flat-text with negative translateY.
+    lift_re = re.compile(
+        r"\.hero-actions\s+\.btn-hero-messenger:hover\s+\.hero-flat-text[^{]*\{[^}]*"
+        r"transform\s*:\s*translateY\(\s*-\d+(?:\.\d+)?px\s*\)",
+        re.IGNORECASE | re.DOTALL,
+    )
+    lift_hits = 0
+    for css_rel in ("css/premium-overrides.css", "css/final-fixes.css", "css/style.css", "css/mc-2026.css"):
+        css_path = ROOT / css_rel
+        if css_path.exists():
+            css_text = css_path.read_text(encoding="utf-8", errors="replace")
+            lift_hits += len(lift_re.findall(css_text))
+    if lift_hits < 1:
+        protected_issues.append(
+            "R10 lift animation: no negative translateY on "
+            ".hero-flat-text:hover found in any CSS file — premium "
+            "'flat label flies up' micro-interaction is broken"
+        )
+
     # Premium reviews carousel and modals.
     for needle in ("id=\"reviews\"", "id=\"stage\"", "id=\"track\"", "id=\"btnPrev\"", "id=\"btnNext\"", "id=\"reviewsModal\""):
         require_contains("index.html", needle)
