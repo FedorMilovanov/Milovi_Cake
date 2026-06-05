@@ -12,9 +12,9 @@ permissions:
 jobs:
   production-smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run production smoke checks
-        run: python3 scripts/production_smoke.py
+      - name: Run production smoke checks with deploy retry window
+        run: python3 scripts/production_smoke.py --retries 6 --delay 30

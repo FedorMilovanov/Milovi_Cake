@@ -184,6 +184,14 @@
 
 - Текущий `python3 scripts/audit.py` → 0 errors, 0 warnings; CSS/JS gzip budgets проходят.
 
+## Production smoke retry hardening
+
+- `scripts/production_smoke.py` получил retry-режим: `--retries` и `--delay`.
+  Это защищает workflow от задержки публикации GitHub Pages после push.
+
+- Workflow `production-smoke.yml` теперь запускает `python3 scripts/production_smoke.py --retries 6 --delay 30`.
+  Добавлена локальная команда `npm run smoke:prod:retry`.
+
 ## Открытые warnings (не блокируют деплой)
 
 - Размер CSS/JS по сырым байтам выше бюджета (по gzip ~87/68 КБ — приемлемо).

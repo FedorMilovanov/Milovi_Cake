@@ -15,7 +15,8 @@
     "qa": "npm run audit:js && python3 scripts/check_prigorody_idempotent.py && npm run audit && npm run test:playwright",
     "smoke:prod": "python3 scripts/production_smoke.py",
     "indexnow:dry-run": "python3 scripts/submit_indexnow.py --dry-run",
-    "indexnow:submit": "python3 scripts/submit_indexnow.py"
+    "indexnow:submit": "python3 scripts/submit_indexnow.py",
+    "smoke:prod:retry": "python3 scripts/production_smoke.py --retries 6 --delay 30"
   },
   "engines": {
     "node": ">=18.0.0"
