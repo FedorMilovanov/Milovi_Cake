@@ -98,6 +98,18 @@ IMPORTANT_BUDGET = {
     "css/v20-fixes.css": 10,
 }
 
+LEAN_LANDING_PAGES = {
+    "zakazat-tort-spb/index.html",
+    "tort-s-dostavkoy/index.html",
+    "tort-na-den-rozhdeniya/index.html",
+    "bento-torty/index.html",
+    "detskie-torty/index.html",
+    "svadebnye-torty/index.html",
+    "o-konditere/index.html",
+    "dostavka-i-oplata/index.html",
+    "otzyvy/index.html",
+}
+
 
 def relpath(p: Path) -> str:
     return str(p.relative_to(ROOT)).replace(os.sep, "/")
@@ -311,6 +323,28 @@ with R.section("1. File Structure Guard"):
         R.err(f"Missing required JS files ({len(missing_js)}): {sorted(missing_js)}")
     if not forbidden_js and not missing_js:
         R.ok(f"JS structure: exactly {len(ALLOWED_JS)} files as specified in AGENTS.md")
+
+    # Lean landing pages intentionally load only shared style.css for performance.
+    # This protects the CSS payload trim from accidental regression.
+    landing_css_issues = []
+    for rel in sorted(LEAN_LANDING_PAGES):
+        path = ROOT / rel
+        if not path.exists():
+            landing_css_issues.append(f"{rel}: missing page")
+            continue
+        parsed = parse_html(path)
+        local_styles = sorted(
+            href.split("?")[0]
+            for href in parsed.stylesheets
+            if href.startswith("/css/") or href.startswith("css/") or href.startswith("../css/")
+        )
+        if local_styles != ["/css/style.css"]:
+            landing_css_issues.append(f"{rel}: expected only /css/style.css, got {local_styles}")
+    if landing_css_issues:
+        for issue in landing_css_issues:
+            R.err(f"Lean landing CSS: {issue}")
+    else:
+        R.ok(f"Lean landing CSS payload: {len(LEAN_LANDING_PAGES)} pages use only style.css")
 
 # ═══════════════════════════════════════════════════════════════════════════
 # CHECK 2: File Size Budget
