@@ -293,4 +293,44 @@
       <image:caption>Многоярусный авторский торт — авторская работа Milovi Cake, Санкт-Петербург</image:caption>
     </image:image>
   </url>
+  <url>
+    <loc>https://milovicake.ru/tort-s-dostavkoy/</loc>
+    <changefreq>weekly</changefreq>
+    <lastmod>2026-06-05</lastmod>
+    <priority>0.92</priority>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/head_desktop.webp</image:loc>
+      <image:title>Торт с доставкой на дом в СПб — Milovi Cake</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://milovicake.ru/bento-torty/</loc>
+    <changefreq>weekly</changefreq>
+    <lastmod>2026-06-05</lastmod>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/bento_1.webp</image:loc>
+      <image:title>Бенто-торты на заказ в СПб — Milovi Cake</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://milovicake.ru/detskie-torty/</loc>
+    <changefreq>weekly</changefreq>
+    <lastmod>2026-06-05</lastmod>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-03-hd.webp</image:loc>
+      <image:title>Детские торты на заказ в СПб — Milovi Cake</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://milovicake.ru/svadebnye-torty/</loc>
+    <changefreq>weekly</changefreq>
+    <lastmod>2026-06-05</lastmod>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/gallery/gallery-11-hd.webp</image:loc>
+      <image:title>Свадебные торты на заказ в СПб — Milovi Cake</image:title>
+    </image:image>
+  </url>
 </urlset>

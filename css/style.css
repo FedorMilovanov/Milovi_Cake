@@ -332,4 +332,4 @@ html[data-theme="dark"] .moon-icon { opacity: 0; transform: rotate(-90deg) scale
 .site-header.scrolled .theme-toggle:hover { color: var(--gold); }
 .site-header.header-city .theme-toggle { color: rgba(255,230,175,0.80); }
 [data-theme="dark"] .theme-toggle { color: rgba(212,167,106,0.82); }
-[data-theme="dark"] .theme-toggle:hover { color: var(--gold); }
+[data-theme="dark"] .theme-toggle:hover { color: var(--gold); }.cb-tags a{font-family:'Jost',sans-serif;font-size:12px;color:var(--brown-light,#6b4c38);background:rgba(201,147,74,.08);border:1px solid rgba(201,147,74,.18);border-radius:50px;padding:5px 14px;text-decoration:none;cursor:pointer;transition:all .25s cubic-bezier(.34,1.56,.64,1)}.cb-tags a:hover{background:rgba(201,147,74,.18);border-color:var(--gold);color:var(--brown);transform:translateY(-2px)}
