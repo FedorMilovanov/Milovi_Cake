@@ -63,6 +63,15 @@
 
 - `sitemap.xml` обновлён новыми URL; IndexNow workflow отправит обновлённый sitemap после push.
 
+## Media enrichment for commercial pages
+
+- Коммерческие посадочные `/zakazat-tort-spb/`, `/tort-s-dostavkoy/`, `/tort-na-den-rozhdeniya/`,
+  `/bento-torty/`, `/detskie-torty/`, `/svadebnye-torty/` усилены блоком реального портфолио:
+  фото и webm-видео из `img/gallery/` подобраны по интенту страницы.
+
+- На свадебной странице использованы только реальные материалы: один свадебный торт и близкие по премиальной эстетике работы,
+  без выдуманных кейсов. Добавлены ImageGallery/VideoObject в JSON-LD.
+
 ## Открытые warnings (не блокируют деплой)
 
 - Размер CSS/JS по сырым байтам выше бюджета (по gzip ~87/68 КБ — приемлемо).

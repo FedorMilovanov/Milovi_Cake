@@ -58,21 +58,222 @@
     .lp-related{max-width:1040px;margin:0 auto;padding:0 24px 32px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.lp-related a{text-decoration:none;color:var(--brown-light);border:1px solid rgba(201,147,74,.18);border-radius:999px;padding:8px 14px;background:rgba(255,255,255,.32);font-size:12px;letter-spacing:.08em;text-transform:uppercase}.lp-related a:hover{color:var(--gold);border-color:rgba(201,147,74,.45)}
     .lp-faq{max-width:880px;margin:0 auto}.lp-faq-item{border-top:1px solid rgba(201,147,74,.18);padding:18px 0}.lp-faq-item:last-child{border-bottom:1px solid rgba(201,147,74,.18)}.lp-faq-item summary{cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:23px;color:var(--brown)}.lp-faq-item p{margin:12px 0 0;color:var(--text-muted);line-height:1.75}
     .lp-final{text-align:center;padding:68px 24px 86px;background:linear-gradient(180deg,transparent,rgba(201,147,74,.10))}.lp-final h2{font-family:'Cormorant Garamond',serif;font-size:clamp(34px,5vw,58px);font-weight:400;margin:0 0 14px;color:var(--brown)}.lp-final p{max-width:640px;margin:0 auto 24px;color:var(--text-muted);line-height:1.7}
+
+    .lp-media-showcase{max-width:1180px;margin:0 auto;padding:40px 24px 62px}
+    .lp-media-head{max-width:760px;margin:0 auto 28px;text-align:center}.lp-media-head h2{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,4.8vw,54px);font-weight:400;color:var(--brown);margin:0 0 12px}.lp-media-head p{margin:0;color:var(--text-muted);line-height:1.7}
+    .lp-media-grid{display:grid;grid-template-columns:1.2fr .8fr;grid-auto-rows:250px;gap:8px}.lp-media-item{position:relative;overflow:hidden;border-radius:24px;background:#170d07;box-shadow:0 22px 70px rgba(61,43,31,.12),0 0 0 1px rgba(201,147,74,.16)}.lp-media-item:first-child{grid-row:span 2}.lp-media-item img,.lp-media-item video{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(1.04) contrast(1.02)}.lp-media-item::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(12,6,2,.72),transparent 58%);pointer-events:none}.lp-media-caption{position:absolute;left:18px;right:18px;bottom:16px;z-index:2;color:#fff}.lp-media-caption strong{display:block;font-family:'Cormorant Garamond',serif;font-size:clamp(20px,2.2vw,28px);font-weight:400;margin-bottom:4px}.lp-media-caption span{display:block;color:rgba(255,255,255,.72);font-size:12px;letter-spacing:.08em;text-transform:uppercase;line-height:1.45}.lp-media-play{position:absolute;top:16px;right:16px;z-index:3;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.20);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff;font-size:15px}.lp-media-note{max-width:760px;margin:18px auto 0;text-align:center;color:var(--text-muted);font-size:13px;line-height:1.7}
+    @media(max-width:860px){.lp-media-grid{grid-template-columns:1fr;grid-auto-rows:260px}.lp-media-item:first-child{grid-row:span 1}.lp-media-showcase{padding-top:24px}}
+
     @media(max-width:860px){.lp-hero{grid-template-columns:1fr;padding-top:112px}.lp-visual,.lp-visual img{min-height:360px}.lp-grid,.lp-text-grid{grid-template-columns:1fr}.lp-nav{display:none}}
   </style>
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@graph":[
-    {"@type":"WebPage","@id":"https://milovicake.ru/svadebnye-torty/#webpage","url":"https://milovicake.ru/svadebnye-torty/","name":"Свадебные торты на заказ в СПб — Milovi Cake","description":"Свадебные торты на заказ в Санкт-Петербурге: камерные и многоярусные торты, цветочный декор, нежные начинки и доставка по СПб.","inLanguage":"ru-RU","isPartOf":{"@id":"https://milovicake.ru/#website"},"about":{"@id":"https://milovicake.ru/#business"}},
-    {"@type":"BreadcrumbList","@id":"https://milovicake.ru/svadebnye-torty/#breadcrumbs","itemListElement":[{"@type":"ListItem","position":1,"name":"Главная","item":"https://milovicake.ru/"},{"@type":"ListItem","position":2,"name":"Свадебные торты на заказ","item":"https://milovicake.ru/svadebnye-torty/"}]},
-    {"@type":"ItemList","name":"Форматы Milovi Cake","url":"https://milovicake.ru/svadebnye-torty/","itemListElement":[{"@type":"ListItem","position":1,"item":{"@type":"Product","name":"Камерный свадебный торт","description":"Элегантный торт для небольшой свадьбы или семейного ужина.","image":"https://milovicake.ru/img/gallery/gallery-11.webp","brand":{"@type":"Brand","name":"Milovi Cake"},"offers":{"@type":"Offer","priceCurrency":"RUB","price":"2800","availability":"https://schema.org/InStock","url":"https://milovicake.ru/svadebnye-torty/","seller":{"@id":"https://milovicake.ru/#business"}}}},
-{"@type":"ListItem","position":2,"item":{"@type":"Product","name":"Многоярусный торт","description":"Праздничная композиция с несколькими ярусами, цветами и фактурой.","image":"https://milovicake.ru/img/gallery/gallery-07.webp","brand":{"@type":"Brand","name":"Milovi Cake"},"offers":{"@type":"Offer","priceCurrency":"RUB","price":"5000","availability":"https://schema.org/InStock","url":"https://milovicake.ru/svadebnye-torty/","seller":{"@id":"https://milovicake.ru/#business"}}}},
-{"@type":"ListItem","position":3,"item":{"@type":"Product","name":"Десерты к свадьбе","description":"Капкейки, Павлова или мини-десерты как дополнение к основному торту.","image":"https://milovicake.ru/img/cupcakes.webp","brand":{"@type":"Brand","name":"Milovi Cake"},"offers":{"@type":"Offer","priceCurrency":"RUB","price":"350","availability":"https://schema.org/InStock","url":"https://milovicake.ru/svadebnye-torty/","seller":{"@id":"https://milovicake.ru/#business"}}}}]},
-    {"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"За сколько времени заказывать свадебный торт?","acceptedAnswer":{"@type":"Answer","text":"Лучше обращаться заранее — минимум за 1–2 недели, чтобы согласовать стиль, начинку, вес, доставку и декор."}},
-{"@type":"Question","name":"Как рассчитать вес свадебного торта?","acceptedAnswer":{"@type":"Answer","text":"Обычно ориентируются на количество гостей и формат подачи. Мы подскажем вес после информации о банкете и десертном столе."}},
-{"@type":"Question","name":"Можно сделать торт под стиль свадьбы?","acceptedAnswer":{"@type":"Answer","text":"Да, учитываем палитру, цветы, оформление зала, референсы и пожелания пары."}},
-{"@type":"Question","name":"Доставляете торт к ресторану?","acceptedAnswer":{"@type":"Answer","text":"Да, доставка к месту торжества обсуждается заранее. Для сложных тортов важно согласовать время и условия приёмки."}}]},
-    {"@type":"LocalBusiness","@id":"https://milovicake.ru/#business","name":"Milovi Cake","url":"https://milovicake.ru/","telephone":"+79119038886","address":{"@type":"PostalAddress","streetAddress":"Пулковская ул., 19","addressLocality":"Санкт-Петербург","addressCountry":"RU"},"areaServed":["Санкт-Петербург","Ленинградская область"],"priceRange":"₽₽"}
-  ]}
+  {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://milovicake.ru/svadebnye-torty/#webpage",
+      "url": "https://milovicake.ru/svadebnye-torty/",
+      "name": "Свадебные торты на заказ в СПб — Milovi Cake",
+      "description": "Свадебные торты на заказ в Санкт-Петербурге: камерные и многоярусные торты, цветочный декор, нежные начинки и доставка по СПб.",
+      "inLanguage": "ru-RU",
+      "isPartOf": {
+        "@id": "https://milovicake.ru/#website"
+      },
+      "about": {
+        "@id": "https://milovicake.ru/#business"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://milovicake.ru/svadebnye-torty/#breadcrumbs",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Главная",
+          "item": "https://milovicake.ru/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Свадебные торты на заказ",
+          "item": "https://milovicake.ru/svadebnye-torty/"
+        }
+      ]
+    },
+    {
+      "@type": "ItemList",
+      "name": "Форматы Milovi Cake",
+      "url": "https://milovicake.ru/svadebnye-torty/",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "item": {
+            "@type": "Product",
+            "name": "Камерный свадебный торт",
+            "description": "Элегантный торт для небольшой свадьбы или семейного ужина.",
+            "image": "https://milovicake.ru/img/gallery/gallery-11.webp",
+            "brand": {
+              "@type": "Brand",
+              "name": "Milovi Cake"
+            },
+            "offers": {
+              "@type": "Offer",
+              "priceCurrency": "RUB",
+              "price": "2800",
+              "availability": "https://schema.org/InStock",
+              "url": "https://milovicake.ru/svadebnye-torty/",
+              "seller": {
+                "@id": "https://milovicake.ru/#business"
+              }
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "item": {
+            "@type": "Product",
+            "name": "Многоярусный торт",
+            "description": "Праздничная композиция с несколькими ярусами, цветами и фактурой.",
+            "image": "https://milovicake.ru/img/gallery/gallery-07.webp",
+            "brand": {
+              "@type": "Brand",
+              "name": "Milovi Cake"
+            },
+            "offers": {
+              "@type": "Offer",
+              "priceCurrency": "RUB",
+              "price": "5000",
+              "availability": "https://schema.org/InStock",
+              "url": "https://milovicake.ru/svadebnye-torty/",
+              "seller": {
+                "@id": "https://milovicake.ru/#business"
+              }
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "item": {
+            "@type": "Product",
+            "name": "Десерты к свадьбе",
+            "description": "Капкейки, Павлова или мини-десерты как дополнение к основному торту.",
+            "image": "https://milovicake.ru/img/cupcakes.webp",
+            "brand": {
+              "@type": "Brand",
+              "name": "Milovi Cake"
+            },
+            "offers": {
+              "@type": "Offer",
+              "priceCurrency": "RUB",
+              "price": "350",
+              "availability": "https://schema.org/InStock",
+              "url": "https://milovicake.ru/svadebnye-torty/",
+              "seller": {
+                "@id": "https://milovicake.ru/#business"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "За сколько времени заказывать свадебный торт?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Лучше обращаться заранее — минимум за 1–2 недели, чтобы согласовать стиль, начинку, вес, доставку и декор."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Как рассчитать вес свадебного торта?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Обычно ориентируются на количество гостей и формат подачи. Мы подскажем вес после информации о банкете и десертном столе."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Можно сделать торт под стиль свадьбы?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Да, учитываем палитру, цветы, оформление зала, референсы и пожелания пары."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Доставляете торт к ресторану?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Да, доставка к месту торжества обсуждается заранее. Для сложных тортов важно согласовать время и условия приёмки."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "LocalBusiness",
+      "@id": "https://milovicake.ru/#business",
+      "name": "Milovi Cake",
+      "url": "https://milovicake.ru/",
+      "telephone": "+79119038886",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Пулковская ул., 19",
+        "addressLocality": "Санкт-Петербург",
+        "addressCountry": "RU"
+      },
+      "areaServed": [
+        "Санкт-Петербург",
+        "Ленинградская область"
+      ],
+      "priceRange": "₽₽"
+    },
+    {
+      "@type": "ImageGallery",
+      "@id": "https://milovicake.ru/svadebnye-torty/#portfolio",
+      "name": "Портфолио Milovi Cake для страницы «svadebnye-torty»",
+      "image": [
+        {
+          "@type": "ImageObject",
+          "contentUrl": "https://milovicake.ru/img/gallery/gallery-11.webp",
+          "name": "Светлый свадебный торт",
+          "caption": "Камерный белый торт для нежной свадьбы"
+        },
+        {
+          "@type": "ImageObject",
+          "contentUrl": "https://milovicake.ru/img/gallery/gallery-07.webp",
+          "name": "Золотой торт с фактурным декором",
+          "caption": "Идея для торжества в золотой палитре"
+        },
+        {
+          "@type": "ImageObject",
+          "contentUrl": "https://milovicake.ru/img/gallery/gallery-18.webp",
+          "name": "Премиальный торт с золотом",
+          "caption": "Элегантная фактура и золотые акценты для праздника"
+        }
+      ]
+    },
+    {
+      "@type": "VideoObject",
+      "name": "Видео: свадебный торт с сердцем",
+      "description": "Светлый свадебный торт с минималистичным декором",
+      "thumbnailUrl": "https://milovicake.ru/img/gallery/gallery-11.webp",
+      "contentUrl": "https://milovicake.ru/img/gallery/videos/video-12-wedding-heart.webm",
+      "uploadDate": "2026-06-05",
+      "publisher": {
+        "@id": "https://milovicake.ru/#business"
+      }
+    }
+  ]
+}
   </script>
 </head>
 <body>
@@ -80,6 +281,7 @@
   <header class="lp-header"><a class="lp-logo" href="/">Milovi Cake</a><nav class="lp-nav" aria-label="Навигация"><a href="/gallery/">Галерея</a><a href="/zakazat-tort-spb/">Заказать</a><a href="/prigorody/">Доставка</a><a href="/#contacts">Контакты</a></nav></header>
   <main>
     <section class="lp-hero"><div><div class="lp-kicker">Milovi Cake · Санкт-Петербург</div><h1>Свадебные торты на заказ</h1><p class="lp-lead">Создаём свадебные торты для камерных и больших торжеств в Санкт-Петербурге: светлые минималистичные, цветочные, фактурные, многоярусные и индивидуальные композиции под стиль вашей свадьбы.</p><div class="lp-actions"><a class="lp-btn lp-btn-primary" href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D1%8C%3A%20%D0%A1%D0%B2%D0%B0%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D0%B5%20%D1%82%D0%BE%D1%80%D1%82%D1%8B%20%D0%BD%D0%B0%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7.%20%D0%9F%D0%BE%D0%B4%D1%81%D0%BA%D0%B0%D0%B6%D0%B8%D1%82%D0%B5%20%D0%B2%D0%B0%D1%80%D0%B8%D0%B0%D0%BD%D1%82%D1%8B%20%D0%B8%20%D1%81%D0%B2%D0%BE%D0%B1%D0%BE%D0%B4%D0%BD%D1%8B%D0%B5%20%D0%B4%D0%B0%D1%82%D1%8B%3F">Написать в WhatsApp</a><a class="lp-btn lp-btn-ghost" href="/gallery/">Смотреть работы</a></div><div class="lp-facts"><span>камерные и многоярусные</span><span>цветочный декор</span><span>доставка к банкету</span><span>согласование заранее</span></div></div><div class="lp-visual"><img src="/img/gallery/gallery-11.webp" alt="Свадебные торты на заказ — Milovi Cake" width="900" height="1200" fetchpriority="high" decoding="async"><div class="lp-badge">Ручная работа · доставка по СПб</div></div></section>
+<section class="lp-media-showcase" aria-labelledby="mediaShowcaseTitle"><div class="lp-media-head"><h2 id="mediaShowcaseTitle">Свадебная эстетика в портфолио</h2><p>Свадебных кадров пока немного, поэтому показываем реальный свадебный торт и близкие по стилю премиальные работы — фактуру, золото, чистые линии и торжественную подачу.</p></div><div class="lp-media-grid"><figure class="lp-media-item"><img src="/img/gallery/gallery-11.webp" alt="Светлый свадебный торт — Milovi Cake" width="900" height="700" loading="lazy" decoding="async"><figcaption class="lp-media-caption"><strong>Светлый свадебный торт</strong><span>Камерный белый торт для нежной свадьбы</span></figcaption></figure><figure class="lp-media-item"><video preload="metadata" controls muted playsinline poster="/img/gallery/gallery-11.webp" aria-label="Видео: свадебный торт с сердцем"><source src="/img/gallery/videos/video-12-wedding-heart.webm" type="video/webm"></video><div class="lp-media-play" aria-hidden="true">▶</div><figcaption class="lp-media-caption"><strong>Видео: свадебный торт с сердцем</strong><span>Светлый свадебный торт с минималистичным декором</span></figcaption></figure><figure class="lp-media-item"><img src="/img/gallery/gallery-07.webp" alt="Золотой торт с фактурным декором — Milovi Cake" width="900" height="700" loading="lazy" decoding="async"><figcaption class="lp-media-caption"><strong>Золотой торт с фактурным декором</strong><span>Идея для торжества в золотой палитре</span></figcaption></figure><figure class="lp-media-item"><img src="/img/gallery/gallery-18.webp" alt="Премиальный торт с золотом — Milovi Cake" width="900" height="700" loading="lazy" decoding="async"><figcaption class="lp-media-caption"><strong>Премиальный торт с золотом</strong><span>Элегантная фактура и золотые акценты для праздника</span></figcaption></figure></div><p class="lp-media-note">Для свадебной страницы используем только реальные работы из портфолио: один свадебный торт и несколько близких по эстетике премиальных тортов. Новые свадебные фото стоит обязательно добавлять сюда после каждой съёмки.</p></section>
     <section class="lp-section"><div class="lp-section-head"><h2>Что можно заказать</h2><p>Каждый торт согласуем по вкусу, весу, цветовой гамме и декору. Ниже — практичные ориентиры по форматам.</p></div><div class="lp-grid">
         <article class="lp-card">
           <img src="/img/gallery/gallery-11.webp" alt="Камерный свадебный торт" width="640" height="480" loading="lazy" decoding="async">
