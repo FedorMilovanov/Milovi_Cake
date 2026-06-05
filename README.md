@@ -27,13 +27,17 @@
 │   ├── style.css                 # Базовый визуальный слой
 │   ├── mc-2026.css               # Премиум-слой 2026: UX, доступность, CWV
 │   ├── premium-overrides.css     # Финальные безопасные overrides и баг-фиксы
+│   ├── v20-dark-and-fixes.css    # Тёмная тема и фиксы
+│   ├── v20-fixes.css             # Точечные хотфиксы
+│   ├── final-fixes.css           # Финальные hero/CTA правки
 │   └── gallery/gallery-2026.css  # Стили галереи
 │
 ├── js/
 │   ├── main.js                   # Каталог, корзина, калькулятор, отзывы, темы
 │   ├── nav.js                    # Мобильная навигация
 │   ├── mc-2026.js                # Дополнительные UX-улучшения
-│   └── gallery/                  # Логика галереи (data, main, shuffle, effects)
+│   ├── v20-faq-fix.js            # Фикс FAQ для пригородов
+│   └── gallery/                  # Логика галереи (data, main)
 │
 ├── img/                          # Оптимизированные изображения (webp/avif)
 │
@@ -95,7 +99,8 @@ node --check js/main.js
 node --check js/nav.js
 node --check js/mc-2026.js
 node --check js/gallery/main.js
-node --check js/gallery/shuffle.js
+node --check js/gallery/data.js
+node --check js/v20-faq-fix.js
 node --check sw.js
 
 # Генератор пригородов
