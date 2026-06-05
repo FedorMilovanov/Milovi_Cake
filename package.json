@@ -11,7 +11,8 @@
     "build:prigorody": "python3 prigorody/build.py",
     "test:playwright": "playwright test",
     "test:playwright:headed": "playwright test --headed",
-    "test:playwright:report": "playwright show-report"
+    "test:playwright:report": "playwright show-report",
+    "qa": "npm run audit:js && python3 scripts/check_prigorody_idempotent.py && npm run audit && npm run test:playwright"
   },
   "engines": {
     "node": ">=18.0.0"

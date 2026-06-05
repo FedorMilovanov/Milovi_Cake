@@ -773,8 +773,56 @@ with R.section("12. robots.txt & Sitemap"):
     sitemap_path = ROOT / "sitemap.xml"
     if sitemap_path.exists():
         R.ok("sitemap.xml found")
+        sitemap_text = sitemap_path.read_text(encoding="utf-8", errors="replace")
+        sitemap_locs = set(re.findall(r"<loc>(https://milovicake\.ru/[^<]*)</loc>", sitemap_text))
+
+        def html_to_url(rel: str, path: Path):
+            # Technical pages intentionally stay out of the public sitemap.
+            if rel == "404.html" or rel.startswith(("google", "yandex")):
+                return None
+            parsed = parse_html(path)
+            robots_meta = parsed.metas.get("robots", "").lower()
+            if "noindex" in robots_meta:
+                return None
+            if rel == "index.html":
+                return f"{SITE_URL}/"
+            if rel.endswith("/index.html"):
+                return f"{SITE_URL}/{rel[:-len('/index.html')]}/"
+            return None
+
+        expected_locs = {url for rel, path in html_pages for url in [html_to_url(rel, path)] if url}
+        missing = sorted(expected_locs - sitemap_locs)
+        extra = sorted(sitemap_locs - expected_locs)
+        if missing:
+            for url in missing[:20]:
+                R.err(f"Sitemap missing indexable URL: {url}")
+        if extra:
+            for url in extra[:20]:
+                R.warn(f"Sitemap has non-indexable/unknown URL: {url}")
+        if not missing:
+            R.ok(f"sitemap.xml covers all indexable pages ({len(expected_locs)} URLs)")
     else:
         R.warn("sitemap.xml not found")
+
+    # Business hours must be consistent across visible text and JSON-LD.
+    hours_files = [ROOT / "index.html", ROOT / "llms.txt", ROOT / "prigorody" / "_template.html", ROOT / "prigorody" / "_cities.csv"]
+    hours_files += [path for _, path in html_pages]
+    forbidden_hours = ("Пн–Вс", "Пн-Вс", "Ежедневно", "ежедневно", "Sunday", "Mo-Su")
+    hours_issues = []
+    for hp in dict.fromkeys(hours_files):
+        if not hp.exists() or is_excluded_path(hp):
+            continue
+        text = hp.read_text(encoding="utf-8", errors="replace")
+        rel = relpath(hp)
+        for bad in forbidden_hours:
+            if bad in text:
+                hours_issues.append(f"{rel}: forbidden hours marker '{bad}'")
+                break
+    if hours_issues:
+        for issue in hours_issues[:20]:
+            R.err(f"Business hours: {issue}")
+    else:
+        R.ok("Business hours consistent: Пн–Сб / Mo-Sa")
 
 # ═══════════════════════════════════════════════════════════════════════════
 # CHECK 13: HTML Size Check

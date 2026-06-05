@@ -83,3 +83,36 @@ test.describe('homepage structured data and links', () => {
     }
   });
 });
+
+test.describe('SEO infrastructure', () => {
+  test('sitemap contains public landing pages and excludes /call/', async ({ page, request }) => {
+    const response = await request.get('/sitemap.xml');
+    expect(response.ok()).toBeTruthy();
+    const xml = await response.text();
+    for (const href of [
+      '/zakazat-tort-spb/',
+      '/tort-s-dostavkoy/',
+      '/tort-na-den-rozhdeniya/',
+      '/bento-torty/',
+      '/detskie-torty/',
+      '/svadebnye-torty/',
+      '/o-konditere/',
+      '/dostavka-i-oplata/',
+      '/otzyvy/',
+    ]) {
+      expect(xml).toContain(`https://milovicake.ru${href}`);
+    }
+    expect(xml).not.toContain('https://milovicake.ru/call/');
+    expect(xml).toContain('<lastmod>2026-06-05</lastmod>');
+  });
+
+  test('homepage business hours are Monday-Saturday in visible text and schema', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('body')).toContainText('Пн–Сб, 10:00–20:00');
+    await expect(page.locator('body')).not.toContainText('Пн–Вс');
+    const graph = await page.locator('head script[type="application/ld+json"]').evaluate((node) => JSON.parse(node.textContent)['@graph']);
+    const business = graph.find((item) => Array.isArray(item['@type']) && item['@type'].includes('LocalBusiness'));
+    expect(JSON.stringify(business)).toContain('Saturday');
+    expect(JSON.stringify(business)).not.toContain('Sunday');
+  });
+});
