@@ -1,0 +1,68 @@
+# Milovi Cake — Git attributes
+# Defines line-ending normalisation and binary handling so that the repo
+# behaves identically on Windows, macOS and Linux contributor machines.
+
+# ── Text files: enforce LF on commit ─────────────────────────────────────
+*               text=auto eol=lf
+
+# Source code (explicit, defensive)
+*.html          text eol=lf
+*.css           text eol=lf
+*.js            text eol=lf
+*.cjs           text eol=lf
+*.mjs           text eol=lf
+*.json          text eol=lf
+*.xml           text eol=lf
+*.svg           text eol=lf
+*.md            text eol=lf
+*.py            text eol=lf
+*.yml           text eol=lf
+*.yaml          text eol=lf
+*.txt           text eol=lf
+*.csv           text eol=lf
+
+# CRLF intentionally preserved for files that ship to Windows-only consumers
+# (none here, but keeping the placeholder for future).
+
+# ── Binary assets: never diff, never normalise, treat as-is ──────────────
+*.webp          binary
+*.avif          binary
+*.png           binary
+*.jpg           binary
+*.jpeg          binary
+*.gif           binary
+*.ico           binary
+*.webm          binary
+*.mp4           binary
+*.mov           binary
+*.mp3           binary
+*.wav           binary
+*.woff          binary
+*.woff2         binary
+*.ttf           binary
+*.otf           binary
+*.eot           binary
+*.zip           binary
+*.tar           binary
+*.tar.gz        binary
+*.tgz           binary
+*.pdf           binary
+
+# ── Diff hints: human-readable diffs on data files ───────────────────────
+package-lock.json  -diff
+sitemap.xml        diff
+robots.txt         diff
+
+# ── Exclude from `git archive` (release tarballs) ────────────────────────
+/.github           export-ignore
+/tests             export-ignore
+/scripts           export-ignore
+/audit             export-ignore
+.gitignore         export-ignore
+.gitattributes     export-ignore
+AGENTS.md          export-ignore
+AI_DO_NOT_TOUCH_GUARDRAILS.md  export-ignore
+AuditNew           export-ignore
+playwright.config.js  export-ignore
+package.json       export-ignore
+package-lock.json  export-ignore
