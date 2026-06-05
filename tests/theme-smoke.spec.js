@@ -54,6 +54,8 @@ test.describe('light/dark UI smoke', () => {
       test(`${path} ${theme} theme is readable and stable`, async ({ page }) => {
         await applyTheme(page, theme);
         await page.goto(path, { waitUntil: 'domcontentloaded' });
+        // Gallery populates and lazy-loads a dense grid after module boot; give visible images time to settle.
+        if (path === '/gallery/') await page.waitForTimeout(900);
 
         await expect(page.locator('h1').first()).toBeVisible();
         await expect(page.locator('body')).not.toContainText('Пн–Вс');
