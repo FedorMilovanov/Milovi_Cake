@@ -1,0 +1,48 @@
+name: Lighthouse
+
+# Runs on the live site after every successful deploy to GitHub Pages.
+# We use the production URL because GitHub Pages performance (CDN, caching,
+# real network) is what users actually experience — local Lighthouse is
+# misleading.
+
+on:
+  workflow_run:
+    workflows: ["pages-build-deployment"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lighthouse:
+    # Only run when the deploy succeeded
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Wait for GitHub Pages cache to settle
+        run: sleep 30
+
+      - name: Audit live URLs with Lighthouse
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          # Mix of money pages: home, gallery, the strongest commercial
+          # landings, and one prigorody city to catch template regressions.
+          urls: |
+            https://milovicake.ru/
+            https://milovicake.ru/gallery/
+            https://milovicake.ru/svadebnye-torty/
+            https://milovicake.ru/bento-torty/
+            https://milovicake.ru/zakazat-tort-spb/
+            https://milovicake.ru/o-konditere/
+            https://milovicake.ru/prigorody/gatchina/
+          # Mobile profile — that's the slow path that matters for Core
+          # Web Vitals in Yandex/Google ranking.
+          configPath: ./.github/lighthouse-config.json
+          # Soft assertions: regressions print warnings, don't fail the
+          # workflow. We don't want a CDN hiccup to block a hotfix.
+          uploadArtifacts: true
+          temporaryPublicStorage: true

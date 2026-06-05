@@ -2,6 +2,7 @@
 
 [![Cake Sanity](https://github.com/FedorMilovanov/Milovi_Cake/actions/workflows/cake-sanity.yml/badge.svg)](https://github.com/FedorMilovanov/Milovi_Cake/actions/workflows/cake-sanity.yml)
 [![Production Smoke](https://github.com/FedorMilovanov/Milovi_Cake/actions/workflows/production-smoke.yml/badge.svg)](https://github.com/FedorMilovanov/Milovi_Cake/actions/workflows/production-smoke.yml)
+[![Lighthouse](https://github.com/FedorMilovanov/Milovi_Cake/actions/workflows/lighthouse.yml/badge.svg)](https://github.com/FedorMilovanov/Milovi_Cake/actions/workflows/lighthouse.yml)
 [![Domain](https://img.shields.io/badge/domain-milovicake.ru-c9934a)](https://milovicake.ru/)
 [![Stack](https://img.shields.io/badge/stack-vanilla_HTML%2FCSS%2FJS-8a5a2b)](#)
 

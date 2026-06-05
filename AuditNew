@@ -10,6 +10,26 @@
 
 `python3 scripts/audit.py` → PASSED, 0 errors, 0 warnings (2026-06-05 r60).
 `npx playwright test` → 61 passed, 1 skipped (2026-06-05 r60).
+`Lighthouse CI` → workflow `lighthouse.yml`, активируется на каждый
+успешный deploy GitHub Pages.
+
+## Lighthouse CI workflow
+
+- Добавлен `.github/workflows/lighthouse.yml` + `.github/lighthouse-config.json`.
+  Запускается через `workflow_run` после успешного `pages-build-deployment`
+  (плюс manual `workflow_dispatch`).
+
+- Аудитит 7 ключевых live URL на mobile-профиле (slow 4G, CPU x4 throttle —
+  это то, что использует Yandex/Google для CWV-ranking):
+  главная, /gallery/, 3 коммерческих лендинга (svadebnye, bento,
+  zakazat-tort-spb), /o-konditere/, /prigorody/gatchina/.
+
+- Soft-assertion budgets (warning, не fail — чтобы CDN-hiccup не блокировал
+  hotfix): Performance ≥ 85, Accessibility ≥ 95, Best Practices ≥ 95,
+  SEO ≥ 98, LCP < 2.5s, CLS < 0.1, TBT < 300ms.
+
+- Отчёты сохраняются в temporary public storage Treosh, доступны 7 дней
+  по ссылке в логе workflow. README получил Lighthouse badge.
 
 ## Lightbox HD AVIF + image optimisation helper r60
 
