@@ -238,22 +238,26 @@
 - Безопасно удалены точные дубли CSS-правил в `css/style.css` без изменения protected-зон:
   header-order dark, menu-open, bento toast, bottom-nav icon, sc-thumb will-change, shared body rule.
 
-- Raw CSS дополнительно снижен примерно до ~401 KB; CSS gzip ~70.3 KB. Cache-bust поднят до `20260605r53` / `milovi-cake-v2026.06.05-r53`.
+- Raw CSS дополнительно снижен примерно до ~401 KB; CSS gzip ~70.6 KB. Cache-bust был поднят до `20260605r53` / `milovi-cake-v2026.06.05-r53`.
 
-## Открытые warnings (не блокируют деплой)
+## CSS cleanup phase 3a
 
-- Размер CSS/JS по сырым байтам выше бюджета (по gzip ~87/68 КБ — приемлемо).
+- Начата selector-map чистка: удалены только orphan CSS-правила, чьи class/id отсутствуют во всех runtime HTML/JS и не относятся к protected UI-зонам.
+  Не трогались hero messenger rings, reviews, cart, gallery, dark/theme overlays, prigorody lightbox и premium override blocks.
 
-- !important: premium-overrides 658, v20-dark 600, mc-2026 216, style 133, final-fixes 131.
-  Снижать только точечно, с визуальной проверкой (есть PROTECTED hero-блоки).
+- Удалено 32 маленьких мёртвых правила из `css/style.css` и `css/mc-2026.css` (`breadcrumb-inner`, старые `btn-phone`, `slider-dots`, старые badge/rp utility и т.п.).
+  Raw CSS: ~401.1 KB → ~398.3 KB. CSS gzip: ~70.6 KB → ~70.2 KB. Cache-bust поднят до `20260605r54` / `milovi-cake-v2026.06.05-r54`.
 
-- .git pack 35.6 MB — история, на деплой не влияет.
+- `!important` baseline ужат до текущего фактического уровня, чтобы будущие правки не могли незаметно вернуть CSS-долг.
 
-## Расхождения в README (поправить отдельно)
+## Открытые warnings / technical debt
 
-- README указывает 4 CSS / 4 JS, фактически 7 CSS / 6 JS.
+- Блокирующих warnings сейчас нет: `python3 scripts/audit.py` проходит с 0 errors / 0 warnings.
 
-- В разделе проверок упомянут несуществующий js/gallery/shuffle.js.
+- Raw CSS всё ещё крупный из-за исторических слоёв и premium overrides, но wire-size в норме: CSS gzip ~70.2 KB, JS gzip ~68.3 KB, total ~138.4 KB.
+  Дальше резать только фазами: selector usage map → маленькая пачка → Playwright/visual QA.
+
+- .git pack/history — на деплой не влияет.
 
 ## Воспроизвести
 

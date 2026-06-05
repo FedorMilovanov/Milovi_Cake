@@ -89,11 +89,11 @@ DEV_TOOLING_JS = {
 # many declarations protect fragile premium UI states. The audit fails only if
 # future changes increase the baseline without an explicit budget update.
 IMPORTANT_BUDGET = {
-    "css/premium-overrides.css": 658,
+    "css/premium-overrides.css": 656,
     "css/v20-dark-and-fixes.css": 600,
-    "css/mc-2026.css": 216,
-    "css/style.css": 133,
-    "css/final-fixes.css": 131,
+    "css/mc-2026.css": 213,
+    "css/style.css": 128,
+    "css/final-fixes.css": 129,
     "css/gallery/gallery-2026.css": 24,
     "css/v20-fixes.css": 10,
 }
