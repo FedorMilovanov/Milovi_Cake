@@ -16,7 +16,8 @@
     "smoke:prod": "python3 scripts/production_smoke.py",
     "indexnow:dry-run": "python3 scripts/submit_indexnow.py --dry-run",
     "indexnow:submit": "python3 scripts/submit_indexnow.py",
-    "smoke:prod:retry": "python3 scripts/production_smoke.py --retries 6 --delay 30"
+    "smoke:prod:retry": "python3 scripts/production_smoke.py --retries 6 --delay 30",
+    "coverage:css": "node scripts/css_coverage.cjs"
   },
   "engines": {
     "node": ">=18.0.0"

@@ -265,6 +265,14 @@
 
 - Protected UI-зоны снова не трогались. Raw CSS: ~389.2 KB → ~388.6 KB. CSS gzip: ~68.7 KB → ~68.6 KB. Cache-bust поднят до `20260605r56` / `milovi-cake-v2026.06.05-r56`.
 
+## Runtime CSS coverage map
+
+- Добавлен dev-only инструмент `scripts/css_coverage.cjs` и npm-команда `npm run coverage:css`.
+  Он собирает CSS rule usage через Chromium/CDP на реальных страницах, в light/dark, desktop/mobile и с protected interactions: hero messenger hover, reviews modal/carousel, gallery, FAQ/video.
+
+- Последний прогон после r56: все runtime CSS rules, увиденные в сценариях, отмечены как used; non-protected unused candidates = 0.
+  Вывод: дальнейшее удаление CSS без расширения coverage-сценариев будет уже рискованным/слепым. Следующая чистка — только через добавление новых сценариев или ручную визуальную верификацию конкретного блока.
+
 ## Открытые warnings / technical debt
 
 - Блокирующих warnings сейчас нет: `python3 scripts/audit.py` проходит с 0 errors / 0 warnings.
