@@ -39,7 +39,9 @@ const SCENARIOS = [
   '/dostavka-i-oplata/',
   '/otzyvy/',
   '/meringue-roll/',
+  '/certificates/',
   '/prigorody/pushkin/',
+  '/prigorody/murino/',
 ];
 
 const PROTECTED_HINTS = [
@@ -128,55 +130,131 @@ async function safe(locator, action, timeout = 1200) {
   }
 }
 
+async function clickIfVisible(page, selector, wait = 250) {
+  return safe(page.locator(selector), async l => {
+    await l.scrollIntoViewIfNeeded({ timeout: 1200 }).catch(() => {});
+    await l.click({ timeout: 1500, force: false });
+    await page.waitForTimeout(wait);
+  });
+}
+
+async function hoverIfVisible(page, selector, wait = 220) {
+  return safe(page.locator(selector), async l => {
+    await l.scrollIntoViewIfNeeded({ timeout: 1200 }).catch(() => {});
+    await l.hover({ timeout: 1500 });
+    await page.waitForTimeout(wait);
+  });
+}
+
+async function exerciseCommonChrome(page) {
+  // Header, theme, mobile menu, and CTA/navigation states appear on many pages.
+  await clickIfVisible(page, '.theme-toggle', 220);
+  await clickIfVisible(page, '.theme-toggle', 120);
+  await clickIfVisible(page, '#burgerBtn', 260);
+  await clickIfVisible(page, '#burgerBtn', 160);
+  await hoverIfVisible(page, '.header-order, .mc-btn--order, .btn-primary--hero', 180);
+  await hoverIfVisible(page, '.bottom-nav-item--order', 180);
+}
+
+async function exerciseCatalogAndCart(page) {
+  // Calculator states: selected options, collapsed/expanded result, add-to-cart, cart steps.
+  await clickIfVisible(page, '.catalog-nav-item', 220);
+  await clickIfVisible(page, '.calc-opt:not(.selected)', 250);
+  await hoverIfVisible(page, '.calc-opt[data-price], .bento-seg-opt', 220);
+  await clickIfVisible(page, '#calcCollapsedBar', 250);
+  await clickIfVisible(page, '.calc-add-btn', 450);
+  await clickIfVisible(page, '#calcOpenCartBtn, .bottom-nav-item--order', 450);
+  await clickIfVisible(page, '#step2, .cart-next-btn, [onclick="navigateToStep(2)"]', 250);
+  await safe(page.locator('#cname'), async l => { await l.fill('QA Coverage'); await page.waitForTimeout(90); });
+  await safe(page.locator('#cphone'), async l => { await l.fill('+79990000000'); await page.waitForTimeout(90); });
+  await safe(page.locator('#ccomment'), async l => { await l.fill('coverage state'); await page.waitForTimeout(90); });
+  await hoverIfVisible(page, '#btnWA, #btnTG, .cart-clear-btn, .cart-close', 180);
+  await clickIfVisible(page, '.cart-close', 220);
+}
+
+async function exerciseLegacyLightbox(page) {
+  // Homepage/suburb catalog lightbox. Prefer actual product/card images; close afterward.
+  const opened = await clickIfVisible(page, '.product-card img, .product-card .slider-wrap, .cake-card img, [onclick^="openLightbox"]', 450);
+  if (opened) {
+    await hoverIfVisible(page, '.lightbox-arrow', 160);
+    await clickIfVisible(page, '.lightbox-arrow', 200);
+    await clickIfVisible(page, '.lightbox-close', 220);
+  }
+}
+
+async function exerciseGallery(page) {
+  // Filters, card hover, lightbox controls/share/order actions.
+  await clickIfVisible(page, '.gx-chip:not(.gx-chip-active)', 500);
+  await clickIfVisible(page, '.gx-chip:not(.gx-chip-active)', 500);
+  await hoverIfVisible(page, '.gx-card, .gx-cell, .gallery-card', 250);
+  const opened = await clickIfVisible(page, '.gx-card, .gx-cell, .gallery-card, .gallery-item, [data-gallery-index]', 800);
+  if (opened) {
+    await hoverIfVisible(page, '.lb-nav-next, .lb-action, .lb-order-icon, .lb-thumb', 180);
+    await clickIfVisible(page, '#lbNext, .lb-nav-next', 250);
+    await clickIfVisible(page, '#lbPrev, .lb-nav-prev', 250);
+    await clickIfVisible(page, '#lbShare, #lbCopy, .lb-action', 250);
+    await clickIfVisible(page, '.lb-thumb:not(.active), .lb-thumbs button', 250);
+    await clickIfVisible(page, '.lb-close, .lightbox-close, .gallery-modal-close, [aria-label="Закрыть"]', 300);
+  }
+}
+
+async function exerciseReviews(page) {
+  await clickIfVisible(page, '#btnNext', 250);
+  await clickIfVisible(page, '#btnPrev', 250);
+  await hoverIfVisible(page, '.review-slide, .review-card, .map-badge', 220);
+  await clickIfVisible(page, '.map-badge-yandex', 450);
+  await clickIfVisible(page, '#tabGoogle', 250);
+  await clickIfVisible(page, '#tabYandex', 250);
+  await clickIfVisible(page, '.reviews-modal-close', 220);
+}
+
+async function exerciseFaqAndMedia(page) {
+  await clickIfVisible(page, 'details summary, .faq-q, .cb-faq-q, .faq-item summary', 250);
+  await hoverIfVisible(page, '.cb-fl, .cb-occ, .cb-gluten-card, .lp-card, .feature', 180);
+  await safe(page.locator('video'), async l => {
+    await l.evaluate(v => { try { v.muted = true; v.play(); } catch (_) {} });
+    await page.waitForTimeout(350);
+  });
+}
+
 async function exercisePage(page, route) {
   await page.waitForLoadState('domcontentloaded');
-  await page.waitForTimeout(route === '/gallery/' ? 1300 : 700);
+  await page.waitForTimeout(route === '/gallery/' ? 1500 : 750);
+
+  await exerciseCommonChrome(page);
 
   // Scroll through the page so lazy/reveal/section styles become real runtime usage.
   await page.evaluate(async () => {
-    const steps = 7;
+    const steps = 9;
     const max = Math.max(0, document.documentElement.scrollHeight - innerHeight);
     for (let i = 0; i <= steps; i++) {
       scrollTo(0, Math.round(max * i / steps));
-      await new Promise(r => setTimeout(r, 120));
+      await new Promise(r => setTimeout(r, 110));
     }
     scrollTo(0, 0);
   });
   await page.waitForTimeout(250);
 
-  if (route === '/') {
-    // Protected hero messenger hover flight.
+  if (route === '/' || route.startsWith('/prigorody/')) {
+    // Protected hero messenger hover flight and homepage/suburb catalog states.
     for (const sel of ['.btn-hero-wa', '.btn-hero-tg', '.btn-hero-max']) {
-      await safe(page.locator(sel), async l => { await l.hover({ timeout: 1500 }); await page.waitForTimeout(350); });
+      await hoverIfVisible(page, sel, 350);
     }
-    // Reviews carousel + modal.
-    await safe(page.locator('#btnNext'), async l => { await l.click({ timeout: 1500 }); await page.waitForTimeout(250); });
-    await safe(page.locator('#btnPrev'), async l => { await l.click({ timeout: 1500 }); await page.waitForTimeout(250); });
-    await safe(page.locator('.map-badge-yandex'), async l => { await l.click({ timeout: 1500 }); await page.waitForTimeout(450); });
-    await safe(page.locator('#tabGoogle'), async l => { await l.click({ timeout: 1500 }); await page.waitForTimeout(250); });
-    await safe(page.locator('.reviews-modal-close'), async l => { await l.click({ timeout: 1500 }); await page.waitForTimeout(200); });
+    await exerciseReviews(page);
+    await exerciseCatalogAndCart(page);
+    await exerciseLegacyLightbox(page);
   }
 
   if (route === '/gallery/') {
-    await safe(page.locator('.gallery-card, .gx-cell, .gallery-item, [data-gallery-index]'), async l => {
-      await l.click({ timeout: 1500 });
-      await page.waitForTimeout(700);
-    });
-    await safe(page.locator('.lb-close, .lightbox-close, .gallery-modal-close, [aria-label="Закрыть"]'), async l => {
-      await l.click({ timeout: 1500 });
-      await page.waitForTimeout(250);
-    });
+    await exerciseGallery(page);
   }
 
-  if (route === '/svadebnye-torty/' || route.includes('tort') || route === '/bento-torty/') {
-    await safe(page.locator('details summary, .faq-q, .cb-faq-q'), async l => {
-      await l.click({ timeout: 1500 });
-      await page.waitForTimeout(250);
-    });
-    await safe(page.locator('video'), async l => {
-      await l.evaluate(v => { try { v.muted = true; v.play(); } catch (_) {} });
-      await page.waitForTimeout(350);
-    });
+  if (route === '/svadebnye-torty/' || route.includes('tort') || route === '/bento-torty/' || route === '/detskie-torty/') {
+    await exerciseFaqAndMedia(page);
+  }
+
+  if (route === '/otzyvy/') {
+    await hoverIfVisible(page, '.review-card, .lp-card, .trust-card', 220);
   }
 }
 
@@ -304,7 +382,7 @@ function writeReport(summary) {
       }
     }
     // Mobile coverage on the most fragile surfaces.
-    for (const route of ['/', '/gallery/', '/zakazat-tort-spb/', '/svadebnye-torty/', '/bento-torty/', '/otzyvy/']) {
+    for (const route of ['/', '/gallery/', '/zakazat-tort-spb/', '/svadebnye-torty/', '/bento-torty/', '/otzyvy/', '/prigorody/pushkin/']) {
       for (const theme of ['light', 'dark']) {
         scenarioResults.push(await collectFor(route, theme, { width: 412, height: 915 }, globalRules));
       }

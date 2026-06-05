@@ -270,8 +270,12 @@
 - Добавлен dev-only инструмент `scripts/css_coverage.cjs` и npm-команда `npm run coverage:css`.
   Он собирает CSS rule usage через Chromium/CDP на реальных страницах, в light/dark, desktop/mobile и с protected interactions: hero messenger hover, reviews modal/carousel, gallery, FAQ/video.
 
-- Последний прогон после r56: все runtime CSS rules, увиденные в сценариях, отмечены как used; non-protected unused candidates = 0.
-  Вывод: дальнейшее удаление CSS без расширения coverage-сценариев будет уже рискованным/слепым. Следующая чистка — только через добавление новых сценариев или ручную визуальную верификацию конкретного блока.
+- Первый прогон после r56: все runtime CSS rules, увиденные в сценариях, отмечены как used; non-protected unused candidates = 0.
+
+- Coverage расширен дополнительными редкими состояниями: burger/menu-open, theme toggle, calculator options, cart drawer/steps/form, catalog lightbox, gallery filters/lightbox/share controls, prigorody pages.
+  Расширенный прогон: `style.css 1142/1142 used`, `premium-overrides.css 312/312 used`, `v20-dark-and-fixes.css 109/109 used`, остальные runtime CSS также 100% used; non-protected unused candidates = 0.
+
+- Вывод: дальнейшее удаление CSS без расширения coverage-сценариев будет уже рискованным/слепым. Следующая чистка — только через добавление новых сценариев или ручную визуальную верификацию конкретного блока.
 
 ## Открытые warnings / technical debt
 

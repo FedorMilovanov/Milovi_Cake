@@ -5,7 +5,7 @@
   "description": "Milovi Cake — Торты на заказ. Professional audit tooling, zero runtime deps.",
   "scripts": {
     "audit": "python3 scripts/audit.py",
-    "audit:js": "node --check js/main.js && node --check js/nav.js && node --check js/mc-2026.js && node --check js/v20-faq-fix.js && node --check js/gallery/main.js && node --check js/gallery/data.js && node --check sw.js && echo '✅ All JS valid'",
+    "audit:js": "node --check js/main.js && node --check js/nav.js && node --check js/mc-2026.js && node --check js/v20-faq-fix.js && node --check js/gallery/main.js && node --check js/gallery/data.js && node --check sw.js && node --check scripts/css_coverage.cjs && echo '✅ All JS valid'",
     "audit:prigorody": "python3 scripts/check_prigorody_idempotent.py",
     "audit:all": "npm run audit:js && npm run audit:prigorody && npm run audit",
     "build:prigorody": "python3 prigorody/build.py",
