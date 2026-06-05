@@ -201,6 +201,11 @@
 - Теперь audit ловит не только runtime-ошибки Playwright, но и удаление protected-классов/маркеров на уровне кода.
   Текущий результат: `Protected UI contracts intact`.
 
+## README operational docs refresh
+
+- README полностью обновлён под текущее состояние проекта: commercial/trust pages, QA-команды,
+  Playwright, production smoke, IndexNow, gzip budgets, protected UI contracts, `llms.txt`, r51.
+
 ## Открытые warnings (не блокируют деплой)
 
 - Размер CSS/JS по сырым байтам выше бюджета (по gzip ~87/68 КБ — приемлемо).
