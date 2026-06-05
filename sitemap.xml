@@ -72,6 +72,27 @@
     </image:image>
   </url>
   <url>
+    <loc>https://milovicake.ru/zakazat-tort-spb/</loc>
+    <changefreq>weekly</changefreq>
+    <lastmod>2026-06-05</lastmod>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/head_desktop.webp</image:loc>
+      <image:title>Заказать торт в СПб — Milovi Cake</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://milovicake.ru/tort-na-den-rozhdeniya/</loc>
+    <changefreq>weekly</changefreq>
+    <lastmod>2026-06-05</lastmod>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://milovicake.ru/img/cake_bday.webp</image:loc>
+      <image:title>Торт на день рождения на заказ в СПб — Milovi Cake</image:title>
+    </image:image>
+  </url>
+
+  <url>
     <loc>https://milovicake.ru/meringue-roll/</loc>
     <changefreq>monthly</changefreq>
     <lastmod>2026-06-05</lastmod>
