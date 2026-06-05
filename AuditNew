@@ -116,6 +116,16 @@
   новые лендинги, wedding editorial/media, homepage schema graph, desktop + mobile.
   Локально установлены браузеры и системные зависимости; `npm run test:playwright` → 24/24 passed.
 
+## Schema and landing polish r51
+
+- Коммерческие и trust-лендинги получили более полные LocalBusiness schema-поля:
+  `openingHoursSpecification` Пн–Сб 10:00–20:00, `sameAs`, `areaServed`, `priceRange`, image/address enrichment.
+
+- `/svadebnye-torty/`: заменён слишком светлый/пустой визуал карточки «Десерты к свадьбе» на реальное фото капкейков из галереи.
+
+- Добавлен тонкий CSS polish для landing-media fallback backgrounds и тёмной темы, без новых CSS-файлов.
+  Cache-bust поднят до `20260605r51` / `milovi-cake-v2026.06.05-r51`.
+
 ## Открытые warnings (не блокируют деплой)
 
 - Размер CSS/JS по сырым байтам выше бюджета (по gzip ~87/68 КБ — приемлемо).
