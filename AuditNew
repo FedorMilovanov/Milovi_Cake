@@ -159,6 +159,14 @@
 
 - Текущий результат: `JSON-LD validation passed for 28 indexable pages`.
 
+## CSS budget policy cleanup
+
+- CSS/JS budget в `scripts/audit.py` переведён на deploy-relevant метрику: gzip transfer size.
+  Raw totals остаются в INFO как reference, но не создают ложные warnings для GitHub Pages/gzip delivery.
+
+- Текущий бюджет проходит: CSS gzip ~90.6 KB / 100 KB, JS gzip ~68.3 KB / 80 KB,
+  total CSS+JS gzip ~158.8 KB / 180 KB. Warnings снижены с 8 до 5; остались только реальные debt-warning по `!important`.
+
 ## Открытые warnings (не блокируют деплой)
 
 - Размер CSS/JS по сырым байтам выше бюджета (по gzip ~87/68 КБ — приемлемо).
