@@ -344,19 +344,7 @@
     });
   }
   
-  // 4. PREFETCH on hover (instant navigation)
-  var prefetchLinks = document.querySelectorAll('a[href^="/"], a[href^="./"]');
-  prefetchLinks.forEach(function(link) {
-    var prefetched = false;
-    link.addEventListener('mouseenter', function() {
-      if (prefetched) return;
-      prefetched = true;
-      var prefetchLink = document.createElement('link');
-      prefetchLink.rel = 'prefetch';
-      prefetchLink.href = link.href;
-      document.head.appendChild(prefetchLink);
-    }, { once: true, passive: true });
-  });
+  // 4. PREFETCH removed — causes unnecessary bandwidth on mobile
   
   // 5. OPTIMIZE SCROLL HANDLERS
   var ticking = false;
@@ -397,36 +385,9 @@
     }
   });
   
-  // 8. VIEW TRANSITIONS API for page navigation
-  if (document.startViewTransition) {
-    document.querySelectorAll('a[href^="/"]:not([target="_blank"])').forEach(function(link) {
-      link.addEventListener('click', function(e) {
-        var url = new URL(link.href);
-        if (url.origin !== location.origin) return;
-        
-        e.preventDefault();
-        document.startViewTransition(function() {
-          location.href = link.href;
-        });
-      });
-    });
-  }
+  // 8. VIEW TRANSITIONS API removed — breaks analytics and Safari
   
-  // 9. NETWORK INFORMATION API — adapt to connection
-  if (navigator.connection) {
-    var connection = navigator.connection;
-    
-    // Reduce animations on slow connections
-    if (connection.effectiveType === '2g' || connection.effectiveType === 'slow-2g') {
-      document.documentElement.classList.add('reduce-motion');
-    }
-    
-    // Save data mode
-    if (connection.saveData) {
-      document.documentElement.classList.add('save-data');
-      // Disable autoplay, reduce image quality, etc.
-    }
-  }
+  // 9. NETWORK INFORMATION API removed — conflicts with prefers-reduced-motion
   
   // 10. IDLE CALLBACKS for non-critical work
   var ric = window.requestIdleCallback || function(cb) { setTimeout(cb, 1); };

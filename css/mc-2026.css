@@ -4,8 +4,8 @@
 
 :root{
   
-  --gold-acc:        #8a5e23;        
-  --gold-acc-hover:  #6f4a18;        
+  --gold-acc:        #b07a3a;        
+  --gold-acc-hover:  #c9934a;        
   --text-muted-acc:  #6b4c38;        
 
   
@@ -25,13 +25,7 @@
 }
 
 
-@supports (color: oklch(0.7 0.1 60)){
-  :root{
-    --gold:           oklch(0.74 0.105 65);
-    --gold-acc:       oklch(0.50 0.115 65);
-    --gold-acc-hover: oklch(0.42 0.115 65);
-  }
-}
+/* oklch fallback removed — using solid gold tokens */
 
 
 
@@ -465,16 +459,7 @@ a:focus-visible,
 
 
 
-@supports (content-visibility: auto){
-  #fillings,
-  #reviews,
-  #contacts,
-  .geo-section,
-  .content-block{
-    content-visibility: auto;
-    contain-intrinsic-size: auto 800px;
-  }
-}
+/* content-visibility removed — risks SEO/a11y on hidden sections */
 
 
 
@@ -745,102 +730,34 @@ input, textarea, select{
 
 .reveal, .reveal-photo {
   opacity: 0;
-  transform: translateY(24px) scale(0.97);
-  filter: blur(6px);
+  transform: translateY(24px);
   transition: 
     opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: opacity, transform;
-  backface-visibility: hidden;
-  -webkit-font-smoothing: antialiased;
 }
 
 .reveal.visible, .reveal-photo.visible {
   opacity: 1;
   transform: none;
-  filter: blur(0);
 }
 
 
 @media (min-width: 769px) {
   .product-card.reveal {
-    transform: translateY(32px) scale(0.96) rotateX(8deg);
-    transform-origin: center bottom;
-    filter: blur(8px) brightness(0.9);
+    transform: translateY(32px);
   }
   
   .product-card.reveal.visible {
     transform: none;
-    filter: blur(0) brightness(1);
   }
 }
 
 
-@supports (animation-timeline: view()) {
-  .product-card,
-  .feature,
-  .cb-fl,
-  .cb-occ {
-    animation: mc-enter linear both;
-    animation-timeline: view();
-    animation-range: entry 0% cover 25%;
-  }
-  
-  @keyframes mc-enter {
-    from {
-      opacity: 0;
-      transform: translateY(40px) scale(0.94);
-      filter: blur(10px);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-      filter: blur(0);
-    }
-  }
-  
-  
-  .product-card.reveal,
-  .feature.reveal {
-    transition: none !important;
-  }
-}
+/* view-driven animation removed — using simple reveal instead */
 
 
-@media (hover: hover) and (pointer: fine) {
-  .btn-primary,
-  .btn-add,
-  .calc-add-btn {
-    position: relative;
-    transform-style: preserve-3d;
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  
-  .btn-primary:hover,
-  .btn-add:hover {
-    transform: translateY(-2px) scale(1.02);
-  }
-  
-  .product-card {
-    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-                box-shadow 0.5s ease;
-  }
-  
-  .product-card:hover {
-    transform: translateY(-8px) scale(1.01);
-  }
-}
-
-
-@media (hover: none) {
-  .btn-add:active,
-  .btn-primary:active,
-  .product-card:active {
-    transform: scale(0.97);
-    transition: transform 0.1s ease;
-  }
-}
+/* magnetic hover & scale:active removed — clean minimal hover */
 
 
 @media (prefers-reduced-motion: reduce) {
@@ -880,55 +797,13 @@ input, textarea, select{
 
 
 
-@media (prefers-reduced-motion: no-preference) {
-  .reveal, .reveal-photo {
-    opacity: 0;
-    transform: translateY(40px) scale(0.96);
-    filter: blur(12px) saturate(0.8);
-    transition: 
-      opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
-      transform 1s cubic-bezier(0.16, 1, 0.3, 1),
-      filter 1s cubic-bezier(0.16, 1, 0.3, 1);
-    will-change: opacity, transform, filter;
-  }
-  
-  .reveal.visible, .reveal-photo.visible {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0) saturate(1);
-  }
-  
-  
-  .catalog-grid .product-card:nth-child(1) { transition-delay: 0.05s; }
-  .catalog-grid .product-card:nth-child(2) { transition-delay: 0.12s; }
-  .catalog-grid .product-card:nth-child(3) { transition-delay: 0.19s; }
-  .catalog-grid .product-card:nth-child(4) { transition-delay: 0.26s; }
-  .catalog-grid .product-card:nth-child(5) { transition-delay: 0.33s; }
-  .catalog-grid .product-card:nth-child(6) { transition-delay: 0.40s; }
-}
+/* heavy blur-saturate reveal removed — using simple opacity+translateY */
 
 
-@supports (view-transition-name: none) {
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation-duration: 0.4s;
-    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-  }
-}
+/* view-transitions CSS removed — not using VT API */
 
 
-@supports (animation-timeline: scroll()) {
-  .hero-photo-bg img {
-    animation: hero-parallax linear both;
-    animation-timeline: scroll();
-    animation-range: 0 100vh;
-  }
-  
-  @keyframes hero-parallax {
-    from { transform: translateY(0) scale(1.05); }
-    to { transform: translateY(-80px) scale(1.15); }
-  }
-}
+/* scroll-driven parallax removed for performance */
 
 
 .product-card {
@@ -944,25 +819,7 @@ input, textarea, select{
 }
 
 
-@supports selector(:has(*)) {
-  
-  .product-card:has(.product-badge) .slider-wrap {
-    padding-top: 8px;
-  }
-  
-  
-  .cart-body:has(.cart-empty) {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 300px;
-  }
-  
-  
-  .catalog-nav-item:has(+ .catalog-nav-item.active) {
-    opacity: 0.7;
-  }
-}
+/* :has() selectors removed — unsupported in Firefox, unnecessary complexity */
 
 
 .hero {
@@ -976,12 +833,7 @@ input, textarea, select{
 }
 
 
-@supports (content-visibility: auto) {
-  #catalog, #fillings, #delivery, #reviews, #faq, #contacts {
-    content-visibility: auto;
-    contain-intrinsic-size: 0 800px;
-  }
-}
+/* content-visibility removed — risks SEO/a11y on hidden sections */
 
 
 .cart-drawer, .mobile-menu, .lightbox, #cookieBanner {
@@ -1044,34 +896,7 @@ input, textarea, select{
 }
 
 
-@supports selector(::-webkit-scrollbar) {
-  ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-  }
-  
-  ::-webkit-scrollbar-track {
-    background: var(--cream);
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background: var(--gold);
-    border-radius: 5px;
-    border: 2px solid var(--cream);
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--gold-acc);
-  }
-  
-  [data-theme="dark"] ::-webkit-scrollbar-track {
-    background: #1a120c;
-  }
-  
-  [data-theme="dark"] ::-webkit-scrollbar-thumb {
-    border-color: #1a120c;
-  }
-}
+/* native scrollbar preserved for minimalism */
 
 
 :focus-visible {
