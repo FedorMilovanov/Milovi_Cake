@@ -185,7 +185,6 @@
 
 
 :root:not([data-theme="dark"]) .section-sub,
-:root:not([data-theme="dark"]) .feature-desc,
 :root:not([data-theme="dark"]) .cb-fl-desc,
 :root:not([data-theme="dark"]) .cb-occ-desc,
 :root:not([data-theme="dark"]) .cb-tags-label,
@@ -402,7 +401,6 @@ h1, h2, h3,
 }
 p, li,
 .section-sub,
-.feature-desc,
 .cb-fl-desc,
 .cb-occ-desc,
 .cb-faq-a-inner,
