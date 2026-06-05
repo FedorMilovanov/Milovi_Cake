@@ -288,3 +288,35 @@ html[data-theme="dark"] .delivery-faq .faq-item,
   color: var(--gold, #d4a76a) !important;
   border-color: rgba(212, 167, 106, 0.25) !important;
 }
+
+/* ==========================================================================
+   8. PREMIUM: Smooth Silk Day/Night Theme Transitions (0.4s Morph)
+   ========================================================================== */
+body,
+header,
+main,
+section,
+footer,
+.site-header,
+.product-card,
+.card,
+.calc-result,
+.mc-nav,
+.mc-sheet,
+.content-block,
+.landing-footer,
+.lp-card,
+.lp-note,
+.info-card,
+.info-note,
+.site-footer,
+.about-compact-block,
+.feature,
+.cb-fl {
+  transition: 
+    background 0.4s ease,
+    background-color 0.4s ease,
+    color 0.4s ease,
+    border-color 0.4s ease,
+    box-shadow 0.4s ease !important;
+}
