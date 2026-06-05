@@ -8,8 +8,66 @@
 
 ## Текущий статус
 
-`python3 scripts/audit.py` → PASSED, 0 errors, 0 warnings (2026-06-05 r59).
-`npx playwright test` → 61 passed, 1 skipped (2026-06-05 r59).
+`python3 scripts/audit.py` → PASSED, 0 errors, 0 warnings (2026-06-05 r60).
+`npx playwright test` → 61 passed, 1 skipped (2026-06-05 r60).
+
+## Lightbox HD AVIF + image optimisation helper r60
+
+- 30 HD-AVIF (gallery-XX-hd.avif, q=62 speed=4) сгенерированы для всех
+  тяжёлых картинок галереи. Объём AVIF суммарно 2.88 MB vs 4.44 MB
+  webp — **35 % экономии** для AVIF-браузеров на каждом открытии
+  лайтбокса.
+
+- `js/gallery/main.js`:
+  * Lightbox `<img.lb-media-photo>` теперь тоже оборачивается в
+    `<picture>` через `wrapInPictureWithAvif` (раньше этот wrapper
+    применялся только к карточкам сетки, lightbox оставался на голом
+    `<img>`).
+  * Новый helper `swapAvifSourceFor(img, newWebpSrc)` синхронно
+    обновляет родительский `<source type="image/avif">` при swap
+    preview→HD внутри `ensurePhotoUpgrade`. Без этого AVIF-браузеры
+    продолжали бы рендерить preview-quality даже после загрузки
+    HD-webp в `<img>`.
+  * Helper safe-by-default: no-op если `<img>` не внутри `<picture>`
+    или новый src не webp. Сохранена вся существующая swap-логика
+    (`data-loadingFull`, `data-resolved`, `is-loading`, onerror
+    fallback) — не тронута ни одна линия.
+
+- audit.py через JS-derived-AVIF guard автоматически распознал
+  HD-AVIF как валидные: при наличии маркера `wrapInPictureWithAvif`
+  для каждого gallery webp с парным avif считается «используется
+  через JS-обёртку». Регрессий не появилось (47 / 0 / 0).
+
+- Playwright suite (61 теста): 61 passed, 1 skipped. Lightbox swap
+  protected interaction подтверждён живым.
+
+- Manual /gallery/ → lightbox-screenshot подтверждает: премиум-эстетика
+  (тёмный фон, золотая навигация, курсивный заголовок «Шоколадный
+  торт с мишками», CTA buttons, thumbnail strip снизу) на месте.
+  Сетевой probe: `gallery-01-hd.avif` грузится после swap.
+
+- Cache-bust поднят до `20260605r60` / `milovi-cake-v2026.06.05-r60`.
+
+## scripts/optimize_image.py — новая утилита для будущих фотосессий
+
+- Один-команда генератор пары `WebP + AVIF` из любого PNG/JPG/WEBP.
+  Использует те же параметры (webp q=82 method=6, avif q=60 speed=4),
+  что и текущие production-картинки.
+
+- Защита премиум-качества: PSNR проверка каждого результата.
+  PSNR < 30 dB → файлы удаляются, ошибка наверх. PSNR 30..35 dB →
+  warning. PSNR > 35 dB (норма для нашей baseline ~38-46 dB) → OK.
+
+- Опции: `--dest`, `--name`, `--webp-quality`, `--avif-quality`,
+  `--max-dim` (downscale, по умолчанию 2200 px), `--overwrite`,
+  `--dry-run`. Strip EXIF/ICC по умолчанию (приватность + меньше
+  размер).
+
+- `npm run optimize:image -- ~/path/to/photo.jpg --dest img/gallery/`
+  или напрямую `python3 scripts/optimize_image.py SRC [SRC ...]`.
+
+- Пример прогона на `img/hero.jpg` (65 KB): webp 24 KB (PSNR 46.7 dB),
+  avif 9 KB (PSNR 45.1 dB).
 
 ## Hero LCP preload + repo hygiene r59
 

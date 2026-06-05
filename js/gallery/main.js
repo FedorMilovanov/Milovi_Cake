@@ -1,4 +1,4 @@
-import { GALLERY_ITEMS } from './data.js?v=20260605r59';
+import { GALLERY_ITEMS } from './data.js?v=20260605r60';
 
 var _gLockY = 0; /* r31: gallery scroll lock state */
 const $ = (s, c = document) => c.querySelector(s);
@@ -17,7 +17,7 @@ const state = { filter:'all', items:[], visible:[], swiper:null, lbIndex:0, obse
 
 function esc(s=''){ return String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
 
-/* r57: AVIF support for gallery cards (lightbox keeps webp-only swap logic).
+/* r57/r60: AVIF support for gallery cards AND lightbox photos.
    Wraps an <img src="...webp"> into a <picture> with an AVIF <source>.
    If the AVIF twin does not exist on the server the browser will silently
    ignore the source and fall back to the <img>. Safe and idempotent. */
@@ -33,6 +33,21 @@ function wrapInPictureWithAvif(img) {
   picture.appendChild(source);
   picture.appendChild(img);
   return picture;
+}
+
+/* r60: Synchronously update the AVIF <source> sibling of an <img> after
+   the JS swaps img.src to a different webp (lightbox preview→HD swap).
+   Without this, the <picture> would still hand the browser the OLD
+   AVIF source (preview) even though the <img> fallback now points at
+   the HD webp — AVIF-capable browsers would render preview-quality.
+   No-op when img is not inside <picture> or new src isn't webp. */
+function swapAvifSourceFor(img, newWebpSrc) {
+  if (!img || !newWebpSrc || !/\.webp(\?|$)/i.test(newWebpSrc)) return;
+  const picture = img.parentElement;
+  if (!picture || picture.tagName !== 'PICTURE') return;
+  const source = picture.querySelector('source[type="image/avif"]');
+  if (!source) return;
+  source.srcset = newWebpSrc.replace(/\.webp(\?|$)/i, '.avif$1');
 }
 function normalizeItem(item) {
   const isVideo = item.type === 'video';
@@ -280,7 +295,7 @@ function openLightbox(index){
       img.dataset.resolved = (item.fullSrc && item.fullSrc !== item.src) ? 'preview' : 'full';
       if (img.dataset.resolved === 'preview') img.classList.add('is-preview');
       img.onerror=()=>{ if(img.src!==item.src) img.src=item.src; wrap.classList.remove('is-loading'); }; 
-      wrap.appendChild(img); 
+      wrap.appendChild(wrapInPictureWithAvif(img)); 
     } 
     slide.appendChild(wrap); 
     wrapper.appendChild(slide); 
@@ -492,6 +507,10 @@ function ensurePhotoUpgrade(photo, priority = 'auto') {
   loader.fetchPriority = priority;
   loader.onload = () => {
     if (!document.body.contains(photo)) return;
+    /* r60: keep AVIF <source> in sync with the new fullSrc, otherwise
+       AVIF-capable browsers would keep rendering the preview-quality
+       picture even after <img> was upgraded to the HD webp. */
+    swapAvifSourceFor(photo, fullSrc);
     photo.src = fullSrc;
     photo.dataset.resolved = 'full';
     photo.classList.remove('is-preview');
