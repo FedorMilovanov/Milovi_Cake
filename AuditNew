@@ -10,9 +10,44 @@
 
 `python3 scripts/audit.py` → PASSED, 0 errors, 0 warnings (2026-06-05 r60).
 `npx playwright test` → 61 passed, 1 skipped (2026-06-05 r60).
-`npm run visual:snapshot && npm run visual:diff` → 12/12 stable pairs pixel-perfect.
+`npm run visual:snapshot && npm run visual:diff` → 16/16 stable pixel-perfect.
 `Lighthouse CI` → workflow `lighthouse.yml`, mobile-профиль на каждый
 успешный deploy GitHub Pages.
+
+## Extended visual regression + extra UI contracts (current wave)
+
+- `scripts/visual_snapshot.cjs` расширен с 14 до 20 состояний.
+  Добавлены: мобильное меню (бургер открыт), gallery в dark-теме,
+  мобильный hero с messengers, gallery card hover (scale 1.1),
+  prigorody FAQ open (раскрытый аккордеон) и mobile bottom-nav.
+
+- Пары `gallery-desktop-dark-top.png` и `gallery-card-hover.png`
+  добавлены в `UNSTABLE_WHITELIST` — `buildInterleavedItems`
+  тасует карточки на каждой загрузке, что нам нужно учесть.
+
+- Sanity diff (baseline → after, тот же r60): 16/16 stable pairs
+  pixel-perfect, 4 unstable ignored.
+
+- `scripts/audit.py` дополнен 4 новыми guard'ами для микро-
+  интеракций, которых ранее не было в protected-блоке:
+
+  * Gallery card hover — `.card:hover .card-media` scale > 1.0
+    (с парсингом значения, не regex'ом — позволяет артистическую
+    настройку scale 1.05..1.20 без перезаписи guard'а)
+  * Gallery card hover — `.card:hover .card-overlay { opacity:1 }`
+  * Gallery card hover — `.card:hover .card-title translateY(0)`
+  * Theme toggle — пара `[data-theme="dark"] .theme-icon--moon
+    { display:none }` + `.theme-icon--sun { display:block }`
+    (предотвращает баг "moon icon показывается в dark mode")
+
+- Negative-тесты для всех 4 новых guard'ов подтверждены: при
+  обнулении/удалении правил audit немедленно даёт
+  `❌ AUDIT FAILED`, при восстановлении — `✅ PASSED`. Positive-
+  тест на scale(1.08): артистическая настройка >1 разрешена.
+
+- Изменения касаются только `scripts/`, `package.json` и `AuditNew`.
+  Рендерящий слой не тронут. Visual diff baseline → after:
+  все 16 stable pairs pixel-perfect.
 
 ## Visual Regression Suite + R10 lift guard
 

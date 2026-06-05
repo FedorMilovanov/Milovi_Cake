@@ -931,6 +931,76 @@ with R.section("10. Forbidden Patterns"):
             "'flat label flies up' micro-interaction is broken"
         )
 
+    # r61: Gallery card hover micro-interactions (premium DSLR-like
+    # zoom + overlay reveal). All three rules must be present in
+    # css/gallery/gallery-2026.css. They are protected by name,
+    # not by exact pixel transform, so the audit catches removal
+    # but tolerates artistic tuning (e.g. scale 1.08 instead of 1.10).
+    gallery_css_path = ROOT / "css" / "gallery" / "gallery-2026.css"
+    if gallery_css_path.exists():
+        gallery_css = gallery_css_path.read_text(encoding="utf-8", errors="replace")
+        # 1) Zoom on card hover (must be > 1.0; tolerate any tuning above 1)
+        zoom_match = re.search(
+            r"\.card:hover\s+\.card-media\s*\{[^}]*transform\s*:\s*scale\(\s*([\d.]+)\s*\)",
+            gallery_css,
+        )
+        zoom_ok = False
+        if zoom_match:
+            try:
+                zoom_ok = float(zoom_match.group(1)) > 1.0
+            except ValueError:
+                zoom_ok = False
+        if not zoom_ok:
+            protected_issues.append(
+                "Gallery card hover: missing '.card:hover .card-media { transform: scale(>1) }' — "
+                "premium DSLR-like zoom effect on card hover is broken"
+            )
+        # 2) Overlay reveal on card hover
+        if not re.search(
+            r"\.card:hover\s+\.card-overlay\s*\{[^}]*opacity\s*:\s*1",
+            gallery_css,
+        ):
+            protected_issues.append(
+                "Gallery card hover: missing '.card:hover .card-overlay { opacity:1 }' — "
+                "title overlay reveal is broken"
+            )
+        # 3) Title slide-in on card hover
+        if not re.search(
+            r"\.card:hover\s+\.card-title\s*\{[^}]*transform\s*:\s*translateY\(\s*0",
+            gallery_css,
+        ):
+            protected_issues.append(
+                "Gallery card hover: missing '.card:hover .card-title { transform: translateY(0) }' — "
+                "title slide-in animation is broken"
+            )
+    else:
+        protected_issues.append("css/gallery/gallery-2026.css missing — gallery styles absent")
+
+    # r61: Theme toggle icon swap contract. The moon/sun icons must
+    # switch via [data-theme="dark"] display rules in
+    # premium-overrides.css. If both rules disappear, the toggle
+    # button silently keeps the moon visible in dark mode (or vice
+    # versa) — the protected R12-ish contract.
+    premium_css_path = ROOT / "css" / "premium-overrides.css"
+    if premium_css_path.exists():
+        premium_css = premium_css_path.read_text(encoding="utf-8", errors="replace")
+        if not re.search(
+            r'\[data-theme="dark"\]\s+\.theme-icon--moon\s*\{[^}]*display\s*:\s*none',
+            premium_css,
+        ):
+            protected_issues.append(
+                "Theme toggle: missing [data-theme=\"dark\"] .theme-icon--moon { display:none } — "
+                "moon icon will not hide in dark mode"
+            )
+        if not re.search(
+            r'\[data-theme="dark"\]\s+\.theme-icon--sun\s*\{[^}]*display\s*:\s*block',
+            premium_css,
+        ):
+            protected_issues.append(
+                "Theme toggle: missing [data-theme=\"dark\"] .theme-icon--sun { display:block } — "
+                "sun icon will not appear in dark mode"
+            )
+
     # Premium reviews carousel and modals.
     for needle in ("id=\"reviews\"", "id=\"stage\"", "id=\"track\"", "id=\"btnPrev\"", "id=\"btnNext\"", "id=\"reviewsModal\""):
         require_contains("index.html", needle)

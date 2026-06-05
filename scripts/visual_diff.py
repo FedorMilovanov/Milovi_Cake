@@ -35,8 +35,10 @@ except ImportError:
 # карусели) дает шум независимо от наших правок. Они выводятся, но не
 # учитываются в финальном вердикте.
 UNSTABLE_WHITELIST = {
-    "gallery-desktop-top.png",   # buildInterleavedItems тасует фото/видео
-    "reviews-area.png",          # карусель отзывов автопрокручивается
+    "gallery-desktop-top.png",        # buildInterleavedItems тасует фото/видео
+    "gallery-desktop-dark-top.png",   # то же, dark-тема
+    "gallery-card-hover.png",         # первая карточка — случайная (тасование)
+    "reviews-area.png",               # карусель отзывов автопрокручивается
 }
 
 
