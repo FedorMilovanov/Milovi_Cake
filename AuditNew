@@ -80,6 +80,12 @@
 - Свадебная страница остаётся честной: используем реальный свадебный торт + близкие по эстетике премиальные работы,
   без выдуманных свадебных кейсов. Добавлен HowTo JSON-LD для процесса заказа.
 
+## Main page Schema @graph cleanup
+
+- Главная очищена от разрозненных JSON-LD блоков: Organization, Person, LocalBusiness/Bakery,
+  WebSite, WebPage, ItemList/Product, FAQPage, HowTo и BreadcrumbList сведены в единый `@graph`.
+  Это уменьшает дублирование `@id`, упрощает entity graph для поисковиков и AI-систем.
+
 ## Открытые warnings (не блокируют деплой)
 
 - Размер CSS/JS по сырым байтам выше бюджета (по gzip ~87/68 КБ — приемлемо).

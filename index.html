@@ -78,90 +78,602 @@
 
 
   <!-- breadcrumb перемещён ниже с полной цепочкой -->
-
   <script type="application/ld+json">
   {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "Милованова Виктория",
-    "jobTitle": "Частный кондитер",
-    "worksFor": { "@id": "https://milovicake.ru/#business" },
-    "url": "https://milovicake.ru/",
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": "Санкт-Петербург",
-      "addressCountry": "RU"
-    }
-  }
-  </script>
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": ["LocalBusiness", "Bakery"],
-    "@id": "https://milovicake.ru/#business",
-    "name": "Milovi Cake",
-    "description": "Авторские торты и десерты ручной работы на заказ в Санкт-Петербурге. Бисквитные торты, бенто, 3D-торты, меренговые рулеты, Павлова, капкейки. Доставка по СПб и Ленобласти.",
-    "url": "https://milovicake.ru/",
-    "image": [
-      "https://milovicake.ru/img/og-cover.jpg",
-      "https://milovicake.ru/img/head.webp",
-      "https://milovicake.ru/img/cake_biscuit_0.webp"
-    ],
-    "telephone": "+79119038886",
-    "contactPoint": {
-      "@type": "ContactPoint",
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://milovicake.ru/#organization",
+      "name": "Milovi Cake",
+      "alternateName": [
+        "Милови Кейк",
+        "Milovi"
+      ],
+      "url": "https://milovicake.ru/",
+      "logo": "https://milovicake.ru/icon-512.png",
+      "image": "https://milovicake.ru/img/og-cover.jpg",
+      "description": "Частная кондитерская в Санкт-Петербурге. Авторские торты, бенто, 3D-торты, меренговые рулеты, Павлова, капкейки. Доставка по СПб и Ленобласти.",
+      "founder": {
+        "@id": "https://milovicake.ru/#viktoria"
+      },
+      "foundingDate": "2018",
+      "areaServed": [
+        {
+          "@type": "City",
+          "name": "Санкт-Петербург"
+        },
+        {
+          "@type": "AdministrativeArea",
+          "name": "Ленинградская область"
+        }
+      ],
+      "sameAs": [
+        "https://vk.com/milovi_cake",
+        "https://t.me/MiloviCake",
+        "https://www.youtube.com/@milovi_cake",
+        "https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/"
+      ]
+    },
+    {
+      "@type": "Person",
+      "@id": "https://milovicake.ru/#viktoria",
+      "name": "Милованова Виктория",
+      "jobTitle": "Частный кондитер",
+      "worksFor": {
+        "@id": "https://milovicake.ru/#organization"
+      },
+      "url": "https://milovicake.ru/o-konditere/",
+      "image": "https://milovicake.ru/img/viktoria.webp",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Санкт-Петербург",
+        "addressCountry": "RU"
+      },
+      "knowsAbout": [
+        "авторские торты",
+        "бенто-торты",
+        "детские торты",
+        "свадебные торты",
+        "меренговые рулеты",
+        "Павлова",
+        "капкейки"
+      ]
+    },
+    {
+      "@type": [
+        "LocalBusiness",
+        "Bakery"
+      ],
+      "@id": "https://milovicake.ru/#business",
+      "name": "Milovi Cake",
+      "description": "Авторские торты и десерты ручной работы на заказ в Санкт-Петербурге. Бисквитные торты, бенто, 3D-торты, меренговые рулеты, Павлова, капкейки. Доставка по СПб и Ленобласти.",
+      "url": "https://milovicake.ru/",
+      "image": [
+        "https://milovicake.ru/img/og-cover.jpg",
+        "https://milovicake.ru/img/head.webp",
+        "https://milovicake.ru/img/cake_biscuit_0.webp"
+      ],
       "telephone": "+79119038886",
-      "contactType": "customer service",
-      "availableLanguage": "Russian",
-      "hoursAvailable": {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
-        "opens": "10:00",
-        "closes": "20:00"
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+79119038886",
+        "contactType": "customer service",
+        "availableLanguage": "Russian",
+        "hoursAvailable": {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday"
+          ],
+          "opens": "10:00",
+          "closes": "20:00"
+        }
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Пулковская ул., 19",
+        "addressLocality": "Санкт-Петербург",
+        "postalCode": "196240",
+        "addressRegion": "Санкт-Петербург",
+        "addressCountry": "RU"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 59.838,
+        "longitude": 30.323
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday"
+          ],
+          "opens": "10:00",
+          "closes": "20:00"
+        }
+      ],
+      "priceRange": "₽₽",
+      "servesCuisine": "Кондитерские изделия",
+      "hasMap": "https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/",
+      "parentOrganization": {
+        "@id": "https://milovicake.ru/#organization"
+      },
+      "founder": {
+        "@id": "https://milovicake.ru/#viktoria"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "6",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "review": [
+        {
+          "@type": "Review",
+          "author": {
+            "@type": "Person",
+            "name": "Евгения Монтихо"
+          },
+          "datePublished": "2025-12-20",
+          "reviewRating": {
+            "@type": "Rating",
+            "ratingValue": "5",
+            "bestRating": "5"
+          },
+          "reviewBody": "Дважды заказывали торты. Первый раз сделали в стиле Острова с тропическими фруктами, второй в выдержанном стиле с начинкой «вишня в шоколаде». Оба торта шикарные — ваше творчество дарит эстетическое и гастрономическое удовольствие.",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Яндекс Карты"
+          }
+        },
+        {
+          "@type": "Review",
+          "author": {
+            "@type": "Person",
+            "name": "Екатерина Гарсес Еникеева"
+          },
+          "datePublished": "2025-11-24",
+          "reviewRating": {
+            "@type": "Rating",
+            "ratingValue": "5",
+            "bestRating": "5"
+          },
+          "reviewBody": "Являюсь постоянным клиентом Виктории. Все торты на детские дни рождения берём у неё. Ценю индивидуальный подход, всегда всё вовремя, каждый раз воплощаем любые идеи — вкусно, красиво и качественно.",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Яндекс Карты"
+          }
+        },
+        {
+          "@type": "Review",
+          "author": {
+            "@type": "Person",
+            "name": "Евгения Е."
+          },
+          "datePublished": "2025-11-29",
+          "reviewRating": {
+            "@type": "Rating",
+            "ratingValue": "5",
+            "bestRating": "5"
+          },
+          "reviewBody": "Заказывала у Виктории тортики много раз, на праздники и просто так — всегда безумно вкусно! Оформление и дизайн отличные, любой сложности. Виктория отзывчивый и доброжелательный мастер.",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Яндекс Карты"
+          }
+        },
+        {
+          "@type": "Review",
+          "author": {
+            "@type": "Person",
+            "name": "Жанель"
+          },
+          "datePublished": "2026-02-02",
+          "reviewRating": {
+            "@type": "Rating",
+            "ratingValue": "5",
+            "bestRating": "5"
+          },
+          "reviewBody": "Огромное спасибо, Виктория! За оперативность, внимательный подход, рекомендации по вкусам и вашу работу! Торт получился отличным, именинница довольна.",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Яндекс Карты"
+          }
+        },
+        {
+          "@type": "Review",
+          "author": {
+            "@type": "Person",
+            "name": "Татьяна"
+          },
+          "datePublished": "2024-05-01",
+          "reviewRating": {
+            "@type": "Rating",
+            "ratingValue": "5",
+            "bestRating": "5"
+          },
+          "reviewBody": "Изумительно! Заказала дочери — была поражена! Огромное спасибо Виктории! Всё на высшем уровне: картинка, заказ, фото, чеки, доставка, упаковка, открытки — всё с душой! Буду обращаться ещё.",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Google Maps"
+          }
+        },
+        {
+          "@type": "Review",
+          "author": {
+            "@type": "Person",
+            "name": "Ирина Силантьева"
+          },
+          "datePublished": "2024-05-01",
+          "reviewRating": {
+            "@type": "Rating",
+            "ratingValue": "5",
+            "bestRating": "5"
+          },
+          "reviewBody": "Спасибо за прекрасно выполненную работу к 40-летию свадьбы! Всё на высшем уровне — и вкусовые качества, и шикарный дизайн, и внешнее оформление коробочки. И мы, и гости были в восторге.",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Google Maps"
+          }
+        }
+      ],
+      "sameAs": [
+        "https://vk.com/milovi_cake",
+        "https://t.me/MiloviCake",
+        "https://www.youtube.com/@milovi_cake",
+        "https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://milovicake.ru/#website",
+      "name": "Milovi Cake",
+      "url": "https://milovicake.ru/",
+      "description": "Авторские торты и десерты на заказ в Санкт-Петербурге",
+      "inLanguage": "ru-RU",
+      "publisher": {
+        "@id": "https://milovicake.ru/#organization"
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://milovicake.ru/#catalog"
+        },
+        "query-input": "required name=search_term_string"
       }
     },
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "Пулковская ул., 19",
-      "addressLocality": "Санкт-Петербург",
-      "postalCode": "196240",
-      "addressRegion": "Санкт-Петербург",
-      "addressCountry": "RU"
-    },
-    "geo": {
-      "@type": "GeoCoordinates",
-      "latitude": 59.838,
-      "longitude": 30.323
-    },
-    "openingHoursSpecification": [
-      {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
-        "opens": "10:00",
-        "closes": "20:00"
+    {
+      "@type": "WebPage",
+      "@id": "https://milovicake.ru/#webpage",
+      "url": "https://milovicake.ru/",
+      "name": "Milovi Cake — Торты и десерты на заказ в Санкт-Петербурге",
+      "description": "Авторские торты и десерты на заказ в Санкт-Петербурге — Milovi Cake. Свадебный, бенто, детский торт, меренговый рулет, Павлова. Доставка по СПб и Ленобласти.",
+      "inLanguage": "ru-RU",
+      "isPartOf": {
+        "@id": "https://milovicake.ru/#website"
+      },
+      "about": {
+        "@id": "https://milovicake.ru/#business"
+      },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "https://milovicake.ru/img/og-cover.jpg"
       }
-    ],
-    "priceRange": "₽₽",
-    "servesCuisine": "Кондитерские изделия",
-    "hasMap": "https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/",
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.8",
-      "reviewCount": "6",
-      "bestRating": "5",
-      "worstRating": "1"
     },
-    "sameAs": [
-      "https://vk.com/milovi_cake",
-      "https://t.me/MiloviCake",
-      "https://www.youtube.com/@milovi_cake",
-      "https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/"
-    ]
-  }
+    {
+      "@type": "ItemList",
+      "@id": "https://milovicake.ru/#catalog-list",
+      "name": "Каталог тортов и десертов Milovi Cake",
+      "url": "https://milovicake.ru/#catalog",
+      "numberOfItems": 6,
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "item": {
+            "@type": "Product",
+            "name": "Бисквитный торт на заказ",
+            "description": "Воздушный торт с нежнейшим кремом и авторским декором. Заказ от 2 кг.",
+            "image": "https://milovicake.ru/img/cake_biscuit_0.webp",
+            "brand": {
+              "@type": "Brand",
+              "name": "Milovi Cake"
+            },
+            "offers": {
+              "@type": "Offer",
+              "priceCurrency": "RUB",
+              "price": "2800",
+              "availability": "https://schema.org/InStock",
+              "priceValidUntil": "2026-12-31",
+              "url": "https://milovicake.ru/#catalog",
+              "seller": {
+                "@id": "https://milovicake.ru/#business"
+              },
+              "priceSpecification": {
+                "@type": "UnitPriceSpecification",
+                "price": "2800",
+                "priceCurrency": "RUB",
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": "1",
+                  "unitCode": "KGM"
+                }
+              }
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "item": {
+            "@type": "Product",
+            "name": "Бенто-торт",
+            "description": "Миниатюрный торт — идеальный подарок для особенного момента.",
+            "image": "https://milovicake.ru/img/bento_1.webp",
+            "brand": {
+              "@type": "Brand",
+              "name": "Milovi Cake"
+            },
+            "offers": {
+              "@type": "Offer",
+              "priceCurrency": "RUB",
+              "price": "1600",
+              "availability": "https://schema.org/InStock",
+              "priceValidUntil": "2026-12-31",
+              "url": "https://milovicake.ru/#catalog",
+              "seller": {
+                "@id": "https://milovicake.ru/#business"
+              }
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "item": {
+            "@type": "Product",
+            "name": "3D Торт",
+            "description": "Уникальный дизайнерский торт с объёмными элементами. Заказ от 3 кг.",
+            "image": "https://milovicake.ru/img/cake_3d.webp",
+            "brand": {
+              "@type": "Brand",
+              "name": "Milovi Cake"
+            },
+            "offers": {
+              "@type": "Offer",
+              "priceCurrency": "RUB",
+              "price": "5000",
+              "availability": "https://schema.org/InStock",
+              "priceValidUntil": "2026-12-31",
+              "url": "https://milovicake.ru/#catalog",
+              "seller": {
+                "@id": "https://milovicake.ru/#business"
+              },
+              "priceSpecification": {
+                "@type": "UnitPriceSpecification",
+                "price": "5000",
+                "priceCurrency": "RUB",
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": "1",
+                  "unitCode": "KGM"
+                }
+              }
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "item": {
+            "@type": "Product",
+            "name": "Меренговый рулет",
+            "description": "Хрустящая меренга с нежным кремом — фирменный десерт. Без глютена.",
+            "image": "https://milovicake.ru/img/meringue_roll.webp",
+            "brand": {
+              "@type": "Brand",
+              "name": "Milovi Cake"
+            },
+            "offers": {
+              "@type": "Offer",
+              "priceCurrency": "RUB",
+              "price": "2500",
+              "availability": "https://schema.org/InStock",
+              "priceValidUntil": "2026-12-31",
+              "url": "https://milovicake.ru/#catalog",
+              "seller": {
+                "@id": "https://milovicake.ru/#business"
+              }
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "item": {
+            "@type": "Product",
+            "name": "Пирожное Павлова",
+            "description": "Воздушная меренга с кремом и начинкой из ягод. Без глютена.",
+            "image": "https://milovicake.ru/img/pavlova.webp",
+            "brand": {
+              "@type": "Brand",
+              "name": "Milovi Cake"
+            },
+            "offers": {
+              "@type": "Offer",
+              "priceCurrency": "RUB",
+              "price": "350",
+              "availability": "https://schema.org/InStock",
+              "priceValidUntil": "2026-12-31",
+              "url": "https://milovicake.ru/#catalog",
+              "seller": {
+                "@id": "https://milovicake.ru/#business"
+              }
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 6,
+          "item": {
+            "@type": "Product",
+            "name": "Капкейки на заказ",
+            "description": "Авторские капкейки с кремом и декором. Минимальный заказ от 6 шт.",
+            "image": "https://milovicake.ru/img/cupcakes.webp",
+            "brand": {
+              "@type": "Brand",
+              "name": "Milovi Cake"
+            },
+            "offers": {
+              "@type": "Offer",
+              "priceCurrency": "RUB",
+              "price": "350",
+              "availability": "https://schema.org/InStock",
+              "priceValidUntil": "2026-12-31",
+              "url": "https://milovicake.ru/#catalog",
+              "seller": {
+                "@id": "https://milovicake.ru/#business"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://milovicake.ru/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Где заказать торт в СПб с доставкой на дом?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Milovi Cake доставляет по всему Санкт-Петербургу и пригородам — Пушкин, Петергоф, Гатчина, Всеволожск, Колпино и другие. Собственная служба доставки или Яндекс.Доставка. Самовывоз тоже доступен."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Как быстро ответите и сколько ждать торт?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Отвечаем в WhatsApp, Telegram или MAX в рабочее время. Стандартный срок изготовления — 2–3 дня, срочные заказы обсуждаются индивидуально."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Можно заказать бенто-торт, свадебный или торт на рождение ребёнка?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Да! Бенто-торты от 1 600 ₽, свадебные с живыми или сахарными цветами, детские с персонажами, торты на день рождения, крестины, юбилеи и корпоративы."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Есть ли торты без глютена?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Меренговый рулет и пирожное Павлова — без глютена. Детские торты делаем с натуральными ингредиентами, безопасным составом и любимыми персонажами."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Сколько стоит торт на заказ в СПб?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Бисквитные торты от 2 800 ₽/кг, бенто-торты от 1 600 ₽/шт, 3D-торты от 5 000 ₽/кг. Меренговый рулет 2 500 ₽, Павлова от 350 ₽. Точная цена согласовывается при заказе."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "HowTo",
+      "@id": "https://milovicake.ru/#order-howto",
+      "name": "Как заказать торт в Milovi Cake (СПб)",
+      "description": "5 простых шагов для заказа авторского торта с доставкой по Санкт-Петербургу.",
+      "totalTime": "PT3M",
+      "estimatedCost": {
+        "@type": "MonetaryAmount",
+        "currency": "RUB",
+        "value": "2800"
+      },
+      "image": "https://milovicake.ru/img/head.webp",
+      "step": [
+        {
+          "@type": "HowToStep",
+          "position": 1,
+          "name": "Выберите тип торта в каталоге",
+          "text": "Бисквитный, бенто, 3D-торт, меренговый рулет, Павлова или капкейки.",
+          "url": "https://milovicake.ru/#catalog"
+        },
+        {
+          "@type": "HowToStep",
+          "position": 2,
+          "name": "Подберите вес и начинку в калькуляторе",
+          "text": "Используйте интерактивный калькулятор: укажите вес, выберите начинку и декор — стоимость рассчитается мгновенно.",
+          "url": "https://milovicake.ru/#calculator"
+        },
+        {
+          "@type": "HowToStep",
+          "position": 3,
+          "name": "Свяжитесь через WhatsApp / Telegram / MAX",
+          "text": "Кнопки мессенджеров на сайте — обсудите детали заказа, дату и доставку."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 4,
+          "name": "Согласуйте детали и подтвердите заказ",
+          "text": "Кондитер подтвердит дату, итоговую стоимость и доставку (СПб + пригороды или самовывоз)."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 5,
+          "name": "Получите торт в назначенное время",
+          "text": "Доставка по СПб собственной службой или Яндекс.Доставка. Самовывоз также доступен."
+        }
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://milovicake.ru/#breadcrumbs",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Главная",
+          "item": "https://milovicake.ru/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Каталог тортов и десертов",
+          "item": "https://milovicake.ru/#catalog"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Калькулятор стоимости",
+          "item": "https://milovicake.ru/#calculator"
+        }
+      ]
+    }
+  ]
+}
   </script>
-
-  <style id="critical-css">
+<style id="critical-css">
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--cream:#f5f0e8;--gold:#c9934a;--brown:#3d2b1f;--text:#2c1a10;--text-muted:#9a7a62;--white:#FDFBF7;--z-nav:100;--z-header:110;--z-overlay:290;--z-drawer:300;--z-modal:400;--z-toast:450}
     [data-theme="dark"]{--cream:#1a1108;--text:#f0e4d0;--text-muted:#c8a880;--white:#201508}
@@ -189,327 +701,20 @@
     .catalog-card,.skeleton-card{border-radius:20px;overflow:hidden;background:var(--white,#FDFBF7);aspect-ratio:3/4;position:relative}
     @media(max-width:768px){#catalogGrid{grid-template-columns:repeat(2,1fr);gap:16px;padding:0 16px 32px}}
   </style>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "@id": "https://milovicake.ru/#website",
-    "name": "Milovi Cake",
-    "url": "https://milovicake.ru/",
-    "description": "Авторские торты и десерты на заказ в Санкт-Петербурге",
-    "inLanguage": "ru-RU",
-    "publisher": { "@id": "https://milovicake.ru/#business" },
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": { "@type": "EntryPoint", "urlTemplate": "https://milovicake.ru/#catalog" },
-      "query-input": "required name=search_term_string"
-    }
-  }
-  </script>
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    "name": "Каталог тортов и десертов Milovi Cake",
-    "url": "https://milovicake.ru/#catalog",
-    "numberOfItems": 6,
-    "itemListElement": [
-      {
-        "@type": "ListItem", "position": 1,
-        "item": {
-          "@type": "Product",
-          "name": "Бисквитный торт на заказ",
-          "description": "Воздушный торт с нежнейшим кремом и авторским декором. Заказ от 2 кг.",
-          "image": "https://milovicake.ru/img/cake_biscuit_0.webp",
-          "brand": { "@type": "Brand", "name": "Milovi Cake" },
-          "offers": {
-            "@type": "Offer",
-            "priceCurrency": "RUB", "price": "2800",
-            "priceSpecification": { "@type": "UnitPriceSpecification", "price": "2800", "priceCurrency": "RUB", "referenceQuantity": { "@type": "QuantitativeValue", "value": "1", "unitCode": "KGM" } },
-            "availability": "https://schema.org/InStock",
-            "priceValidUntil": "2026-12-31",
-            "url": "https://milovicake.ru/#catalog",
-            "seller": { "@id": "https://milovicake.ru/#business" }
-          }
-        }
-      },
-      {
-        "@type": "ListItem", "position": 2,
-        "item": {
-          "@type": "Product",
-          "name": "Бенто-торт",
-          "description": "Миниатюрный торт — идеальный подарок для особенного момента.",
-          "image": "https://milovicake.ru/img/bento_1.webp",
-          "brand": { "@type": "Brand", "name": "Milovi Cake" },
-          "offers": {
-            "@type": "Offer",
-            "priceCurrency": "RUB", "price": "1600",
-            "availability": "https://schema.org/InStock",
-            "priceValidUntil": "2026-12-31",
-            "url": "https://milovicake.ru/#catalog",
-            "seller": { "@id": "https://milovicake.ru/#business" }
-          }
-        }
-      },
-      {
-        "@type": "ListItem", "position": 3,
-        "item": {
-          "@type": "Product",
-          "name": "3D Торт",
-          "description": "Уникальный дизайнерский торт с объёмными элементами. Заказ от 3 кг.",
-          "image": "https://milovicake.ru/img/cake_3d.webp",
-          "brand": { "@type": "Brand", "name": "Milovi Cake" },
-          "offers": {
-            "@type": "Offer",
-            "priceCurrency": "RUB", "price": "5000",
-            "priceSpecification": { "@type": "UnitPriceSpecification", "price": "5000", "priceCurrency": "RUB", "referenceQuantity": { "@type": "QuantitativeValue", "value": "1", "unitCode": "KGM" } },
-            "availability": "https://schema.org/InStock",
-            "priceValidUntil": "2026-12-31",
-            "url": "https://milovicake.ru/#catalog",
-            "seller": { "@id": "https://milovicake.ru/#business" }
-          }
-        }
-      },
-      {
-        "@type": "ListItem", "position": 4,
-        "item": {
-          "@type": "Product",
-          "name": "Меренговый рулет",
-          "description": "Хрустящая меренга с нежным кремом — фирменный десерт. Без глютена.",
-          "image": "https://milovicake.ru/img/meringue_roll.webp",
-          "brand": { "@type": "Brand", "name": "Milovi Cake" },
-          "offers": {
-            "@type": "Offer",
-            "priceCurrency": "RUB", "price": "2500",
-            "availability": "https://schema.org/InStock",
-            "priceValidUntil": "2026-12-31",
-            "url": "https://milovicake.ru/#catalog",
-            "seller": { "@id": "https://milovicake.ru/#business" }
-          }
-        }
-      },
-      {
-        "@type": "ListItem", "position": 5,
-        "item": {
-          "@type": "Product",
-          "name": "Пирожное Павлова",
-          "description": "Воздушная меренга с кремом и начинкой из ягод. Без глютена.",
-          "image": "https://milovicake.ru/img/pavlova.webp",
-          "brand": { "@type": "Brand", "name": "Milovi Cake" },
-          "offers": {
-            "@type": "Offer",
-            "priceCurrency": "RUB", "price": "350",
-            "availability": "https://schema.org/InStock",
-            "priceValidUntil": "2026-12-31",
-            "url": "https://milovicake.ru/#catalog",
-            "seller": { "@id": "https://milovicake.ru/#business" }
-          }
-        }
-      },
-      {
-        "@type": "ListItem", "position": 6,
-        "item": {
-          "@type": "Product",
-          "name": "Капкейки на заказ",
-          "description": "Авторские капкейки с кремом и декором. Минимальный заказ от 6 шт.",
-          "image": "https://milovicake.ru/img/cupcakes.webp",
-          "brand": { "@type": "Brand", "name": "Milovi Cake" },
-          "offers": {
-            "@type": "Offer",
-            "priceCurrency": "RUB", "price": "350",
-            "availability": "https://schema.org/InStock",
-            "priceValidUntil": "2026-12-31",
-            "url": "https://milovicake.ru/#catalog",
-            "seller": { "@id": "https://milovicake.ru/#business" }
-          }
-        }
-      }
-    ]
-  }
-  </script>
-
-  <link rel="stylesheet" href="css/style.css?v=20260605r48" />
+<link rel="stylesheet" href="css/style.css?v=20260605r48" />
   <link rel="stylesheet" href="css/mc-2026.css?v=20260605r48" />
   <link rel="stylesheet" href="css/premium-overrides.css?v=20260605r48" />
   <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260605r48">
   <link rel="prefetch" href="img/bento_maxi.webp" as="image" />
   <link rel="prefetch" href="img/cake_3d.webp" as="image" />
   <link rel="prefetch" href="img/cake_3d_2.webp" as="image" />
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "Где заказать торт в СПб с доставкой на дом?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Milovi Cake доставляет по всему Санкт-Петербургу и пригородам — Пушкин, Петергоф, Гатчина, Всеволожск, Колпино и другие. Собственная служба доставки или Яндекс.Доставка. Самовывоз тоже доступен."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Как быстро ответите и сколько ждать торт?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Отвечаем в WhatsApp, Telegram или MAX в рабочее время. Стандартный срок изготовления — 2–3 дня, срочные заказы обсуждаются индивидуально."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Можно заказать бенто-торт, свадебный или торт на рождение ребёнка?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Да! Бенто-торты от 1 600 ₽, свадебные с живыми или сахарными цветами, детские с персонажами, торты на день рождения, крестины, юбилеи и корпоративы."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Есть ли торты без глютена?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Меренговый рулет и пирожное Павлова — без глютена. Детские торты делаем с натуральными ингредиентами, безопасным составом и любимыми персонажами."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Сколько стоит торт на заказ в СПб?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Бисквитные торты от 2 800 ₽/кг, бенто-торты от 1 600 ₽/шт, 3D-торты от 5 000 ₽/кг. Меренговый рулет 2 500 ₽, Павлова от 350 ₽. Точная цена согласовывается при заказе."
-        }
-      }
-    ]
-  }
-  </script>
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "@id": "https://milovicake.ru/#business",
-    "name": "Milovi Cake",
-    "url": "https://milovicake.ru/",
-    "telephone": "+79119038886",
-    "review": [
-      {
-        "@type": "Review",
-        "author": { "@type": "Person", "name": "Евгения Монтихо" },
-        "datePublished": "2025-12-20",
-        "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" },
-        "reviewBody": "Дважды заказывали торты. Первый раз сделали в стиле Острова с тропическими фруктами, второй в выдержанном стиле с начинкой «вишня в шоколаде». Оба торта шикарные — ваше творчество дарит эстетическое и гастрономическое удовольствие.",
-        "publisher": { "@type": "Organization", "name": "Яндекс Карты" }
-      },
-      {
-        "@type": "Review",
-        "author": { "@type": "Person", "name": "Екатерина Гарсес Еникеева" },
-        "datePublished": "2025-11-24",
-        "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" },
-        "reviewBody": "Являюсь постоянным клиентом Виктории. Все торты на детские дни рождения берём у неё. Ценю индивидуальный подход, всегда всё вовремя, каждый раз воплощаем любые идеи — вкусно, красиво и качественно.",
-        "publisher": { "@type": "Organization", "name": "Яндекс Карты" }
-      },
-      {
-        "@type": "Review",
-        "author": { "@type": "Person", "name": "Евгения Е." },
-        "datePublished": "2025-11-29",
-        "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" },
-        "reviewBody": "Заказывала у Виктории тортики много раз, на праздники и просто так — всегда безумно вкусно! Оформление и дизайн отличные, любой сложности. Виктория отзывчивый и доброжелательный мастер.",
-        "publisher": { "@type": "Organization", "name": "Яндекс Карты" }
-      },
-      {
-        "@type": "Review",
-        "author": { "@type": "Person", "name": "Жанель" },
-        "datePublished": "2026-02-02",
-        "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" },
-        "reviewBody": "Огромное спасибо, Виктория! За оперативность, внимательный подход, рекомендации по вкусам и вашу работу! Торт получился отличным, именинница довольна.",
-        "publisher": { "@type": "Organization", "name": "Яндекс Карты" }
-      },
-      {
-        "@type": "Review",
-        "author": { "@type": "Person", "name": "Татьяна" },
-        "datePublished": "2024-05-01",
-        "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" },
-        "reviewBody": "Изумительно! Заказала дочери — была поражена! Огромное спасибо Виктории! Всё на высшем уровне: картинка, заказ, фото, чеки, доставка, упаковка, открытки — всё с душой! Буду обращаться ещё.",
-        "publisher": { "@type": "Organization", "name": "Google Maps" }
-      },
-      {
-        "@type": "Review",
-        "author": { "@type": "Person", "name": "Ирина Силантьева" },
-        "datePublished": "2024-05-01",
-        "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" },
-        "reviewBody": "Спасибо за прекрасно выполненную работу к 40-летию свадьбы! Всё на высшем уровне — и вкусовые качества, и шикарный дизайн, и внешнее оформление коробочки. И мы, и гости были в восторге.",
-        "publisher": { "@type": "Organization", "name": "Google Maps" }
-      }
-    ]
-  }
-  </script>
-
-  <!-- Google tag (gtag.js) — ОТЛОЖЕНА: грузится из js/mc-2026.js после первого взаимодействия пользователя для уменьшения TBT/INP -->
+<!-- Google tag (gtag.js) — ОТЛОЖЕНА: грузится из js/mc-2026.js после первого взаимодействия пользователя для уменьшения TBT/INP -->
   <!-- prev sync gtag removed for Core Web Vitals 2026 compliance -->
 
   <!-- HowTo schema: процесс заказа торта (для AI Overviews / Яндекс.Видео) -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "HowTo",
-    "name": "Как заказать торт в Milovi Cake (СПб)",
-    "description": "5 простых шагов для заказа авторского торта с доставкой по Санкт-Петербургу.",
-    "totalTime": "PT3M",
-    "estimatedCost": { "@type": "MonetaryAmount", "currency": "RUB", "value": "2800" },
-    "image": "https://milovicake.ru/img/head.webp",
-    "step": [
-      { "@type": "HowToStep", "position": 1, "name": "Выберите тип торта в каталоге", "text": "Бисквитный, бенто, 3D-торт, меренговый рулет, Павлова или капкейки.", "url": "https://milovicake.ru/#catalog" },
-      { "@type": "HowToStep", "position": 2, "name": "Подберите вес и начинку в калькуляторе", "text": "Используйте интерактивный калькулятор: укажите вес, выберите начинку и декор — стоимость рассчитается мгновенно.", "url": "https://milovicake.ru/#calculator" },
-      { "@type": "HowToStep", "position": 3, "name": "Свяжитесь через WhatsApp / Telegram / MAX", "text": "Кнопки мессенджеров на сайте — обсудите детали заказа, дату и доставку." },
-      { "@type": "HowToStep", "position": 4, "name": "Согласуйте детали и подтвердите заказ", "text": "Кондитер подтвердит дату, итоговую стоимость и доставку (СПб + пригороды или самовывоз)." },
-      { "@type": "HowToStep", "position": 5, "name": "Получите торт в назначенное время", "text": "Доставка по СПб собственной службой или Яндекс.Доставка. Самовывоз также доступен." }
-    ]
-  }
-  </script>
-
-  <!-- BreadcrumbList: расширенная навигация (Главная → Каталог) -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Главная",  "item": "https://milovicake.ru/" },
-      { "@type": "ListItem", "position": 2, "name": "Каталог тортов и десертов", "item": "https://milovicake.ru/#catalog" },
-      { "@type": "ListItem", "position": 3, "name": "Калькулятор стоимости",     "item": "https://milovicake.ru/#calculator" }
-    ]
-  }
-  </script>
-
-  <!-- Organization schema (расширенная для E-E-A-T) -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "@id": "https://milovicake.ru/#organization",
-    "name": "Milovi Cake",
-    "alternateName": ["Милови Кейк", "Milovi"],
-    "url": "https://milovicake.ru/",
-    "logo": "https://milovicake.ru/icon-512.png",
-    "image": "https://milovicake.ru/img/og-cover.jpg",
-    "description": "Частная кондитерская в Санкт-Петербурге. Авторские торты, бенто, 3D-торты, меренговые рулеты, Павлова, капкейки. Доставка по СПб и Ленобласти.",
-    "founder": { "@type": "Person", "name": "Милованова Виктория", "jobTitle": "Частный кондитер" },
-    "foundingDate": "2018",
-    "areaServed": [
-      { "@type": "City", "name": "Санкт-Петербург" },
-      { "@type": "AdministrativeArea", "name": "Ленинградская область" }
-    ],
-    "sameAs": [
-      "https://vk.com/milovi_cake",
-      "https://t.me/MiloviCake",
-      "https://www.youtube.com/@milovi_cake",
-      "https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/"
-    ]
-  }
-  </script>
-
-  <link rel="stylesheet" href="/css/v20-fixes.css?v=20260605r48">
+<!-- BreadcrumbList: расширенная навигация (Главная → Каталог) -->
+<!-- Organization schema (расширенная для E-E-A-T) -->
+<link rel="stylesheet" href="/css/v20-fixes.css?v=20260605r48">
   <link rel="stylesheet" href="/css/final-fixes.css?v=20260605r48" />
 </head>
 
