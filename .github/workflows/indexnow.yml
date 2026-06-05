@@ -10,6 +10,7 @@ on:
       - 'img/**'
       - 'css/**'
       - 'js/**'
+      - 'scripts/submit_indexnow.py'
       - 'f5c91a4d89e84b2ca6d4f3e7a1029b6c.txt'
   workflow_dispatch:
 
@@ -19,51 +20,9 @@ permissions:
 jobs:
   submit:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+
       - name: Submit sitemap URLs to IndexNow
-        run: |
-          python3 - <<'PY'
-          import json
-          import re
-          import time
-          import urllib.request
-          from pathlib import Path
-
-          HOST = 'milovicake.ru'
-          KEY = 'f5c91a4d89e84b2ca6d4f3e7a1029b6c'
-          KEY_LOCATION = f'https://{HOST}/{KEY}.txt'
-          ENDPOINTS = [
-              'https://api.indexnow.org/indexnow',
-              'https://www.bing.com/indexnow',
-              'https://yandex.com/indexnow',
-          ]
-
-          sitemap = Path('sitemap.xml').read_text(encoding='utf-8', errors='replace')
-          urls = re.findall(r'<loc>(https://milovicake\.ru/[^<]*)</loc>', sitemap)
-          urls = [u for u in dict.fromkeys(urls) if '/call/' not in u]
-          if not urls:
-              raise SystemExit('No URLs found in sitemap.xml')
-
-          payload = json.dumps({
-              'host': HOST,
-              'key': KEY,
-              'keyLocation': KEY_LOCATION,
-              'urlList': urls,
-          }).encode('utf-8')
-
-          # Small delay helps GitHub Pages publish the new key/sitemap after push.
-          time.sleep(45)
-          for endpoint in ENDPOINTS:
-              req = urllib.request.Request(
-                  endpoint,
-                  data=payload,
-                  headers={'Content-Type': 'application/json; charset=utf-8'},
-                  method='POST',
-              )
-              try:
-                  with urllib.request.urlopen(req, timeout=20) as resp:
-                      print(endpoint, resp.status, resp.read(200).decode('utf-8', 'replace'))
-              except Exception as exc:
-                  print(endpoint, 'ERROR', repr(exc))
-          PY
+        run: python3 scripts/submit_indexnow.py --wait 45

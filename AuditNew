@@ -144,6 +144,14 @@
 
 - `.gitignore` дополнен Playwright artifacts: `playwright-report/`, `test-results/`, `qa-screens/`.
 
+## IndexNow tooling hardening
+
+- IndexNow inline-код из workflow вынесен в `scripts/submit_indexnow.py`.
+  Теперь есть локальные команды `npm run indexnow:dry-run` и `npm run indexnow:submit`, а workflow вызывает общий скрипт.
+
+- `scripts/production_smoke.py` больше не хранит версию вручную: актуальный cache-bust определяется из `sw.js`,
+  чтобы future rXX не требовал отдельной правки smoke-скрипта.
+
 ## Открытые warnings (не блокируют деплой)
 
 - Размер CSS/JS по сырым байтам выше бюджета (по gzip ~87/68 КБ — приемлемо).

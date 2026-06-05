@@ -12,10 +12,19 @@ import time
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
+from pathlib import Path
 
 HOST = "https://milovicake.ru"
 TIMEOUT = 20
-EXPECTED_VERSION = "20260605r51"
+def expected_version() -> str:
+    sw = (Path(__file__).resolve().parents[1] / "sw.js").read_text(encoding="utf-8", errors="replace")
+    match = re.search(r"\?v=(\d{8}r\d+)", sw)
+    if not match:
+        raise RuntimeError("Could not detect cache-bust version from sw.js")
+    return match.group(1)
+
+
+EXPECTED_VERSION = expected_version()
 INDEXNOW_KEY = "f5c91a4d89e84b2ca6d4f3e7a1029b6c"
 
 URLS = [
