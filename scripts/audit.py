@@ -1279,6 +1279,19 @@ with R.section("18b. File Hygiene Guards"):
     # Documented exceptions (whitelist) — empty for now.
     unref_whitelist: set[str] = set()
     img_root = ROOT / "img"
+
+    # JS-derived AVIF detection (r57): js/gallery/main.js contains a
+    # `wrapInPictureWithAvif` helper that, at runtime, takes any
+    # <img src="...webp"> and creates a <picture> with a sibling
+    # <source srcset="...avif">. So every gallery webp that has a
+    # binary-identical-name AVIF twin is *implicitly* consumed.
+    # Mirror that pairing here to avoid false positives.
+    gallery_js = ROOT / "js" / "gallery" / "main.js"
+    derived_avif_active = (
+        gallery_js.exists()
+        and "wrapInPictureWithAvif" in gallery_js.read_text(encoding="utf-8", errors="ignore")
+    )
+
     unreferenced = []
     if img_root.exists():
         media_exts = {".webp", ".png", ".jpg", ".jpeg", ".svg",
@@ -1290,8 +1303,18 @@ with R.section("18b. File Hygiene Guards"):
             if rel in unref_whitelist:
                 continue
             name = p.name
-            if name not in haystack:
-                unreferenced.append((rel, p.stat().st_size))
+            if name in haystack:
+                continue
+            # Derived AVIF (paired with a referenced gallery webp)
+            if (
+                derived_avif_active
+                and p.suffix.lower() == ".avif"
+                and "gallery/" in rel
+            ):
+                webp_twin = p.with_suffix(".webp")
+                if webp_twin.exists() and webp_twin.name in haystack:
+                    continue
+            unreferenced.append((rel, p.stat().st_size))
 
     if unreferenced:
         for rel, sz in sorted(unreferenced, key=lambda x: -x[1])[:10]:

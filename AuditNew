@@ -8,9 +8,87 @@
 
 ## Текущий статус
 
-`python3 scripts/audit.py` → PASSED, 0 errors, 0 warnings (2026-06-05 r57).
+`python3 scripts/audit.py` → PASSED, 0 errors, 0 warnings (2026-06-05 r58).
+`npx playwright test` → 61 passed, 1 skipped (2026-06-05 r58).
+
+## Gallery AVIF extension r58
+
+- В `js/gallery/main.js` добавлена крошечная утилита `wrapInPictureWithAvif(img)`
+  (16 строк), которая в runtime оборачивает любой `<img src="...webp">` в
+  `<picture>` с `<source type="image/avif">`. Если AVIF-близнеца нет на
+  сервере, браузер тихо игнорирует source и грузит webp. Идемпотентно.
+
+- Использовано ТОЛЬКО на grid-карточках галереи (самые массовые медиа,
+  грузятся first paint). Lightbox swap-логика НЕ тронута: там сложный
+  обмен preview↔full через `img.src = fullSrc` + `data-resolved` маркеры,
+  и AVIF потребует синхронной правки `<source srcset>`. Отдельной волной.
+
+- Сгенерированы AVIF для всех 30 обычных gallery-XX.webp (q=60, speed=4).
+  HD-варианты (gallery-XX-hd.webp) пока не имеют AVIF-близнецов — это
+  предотвращает false-positive «orphan» в audit, пока lightbox swap не
+  расширен. HD-AVIF добавим вместе с lightbox refactor.
+
+- `scripts/audit.py` обновлён: при наличии маркера `wrapInPictureWithAvif`
+  в `js/gallery/main.js` все gallery-XX.avif с парным webp считаются
+  «JS-derived» и не дают warning. Negative-test: убирание функции
+  немедленно даёт 20 warnings — guard живой.
+
+- Visual & runtime verification:
+  * Playwright `tests/`: 61/62 passed, 1 mobile-only skip.
+  * Локальный network probe главной /gallery/: 27 AVIF + 15 webp
+    (browser выбирает AVIF; webp — для тех картинок, где AVIF нет:
+    постеры видео + thumbnails в lightbox-thumbs).
+  * Скриншот desktop /gallery/ показывает корректный рендер masonry
+    сетки, hover-эффект `.card:hover .card-media { scale(1.1) }`
+    сохранён (class у `<img>` внутри `<picture>` не меняется).
+
+- Cache-bust поднят до `20260605r58` / `milovi-cake-v2026.06.05-r58`.
 
 ## Repo hygiene cleanup r57
+
+- Удалено 6 файлов мусора (~1.35 MB) без runtime-ссылок:
+  `uploads/final_power_patch.patch` (старый r41 diff на 404.html, попал в репо при
+  коммите `6adac35` под маскирующим сообщением "chore: cleanup patch file"),
+  `img/meringue_rolls_cut.png` (1.25 MB PNG при наличии оптимизированного webp),
+  `img/viktoria2.webp` (альтернативный кроп, нигде не используется),
+  `img/max_icon.svg` (MAX-иконка рендерится inline SVG в hero, см. R10),
+  `img/README.txt` (артефакт code-only patch package),
+  `audit/audit-2026-05-17_2252.md` (устаревший отчёт до добавления audit/ в .gitignore).
+
+- `scripts/audit.py` усилен секцией `18b. File Hygiene Guards` с 4 проверками:
+  unreferenced media (warning), duplicate file content by SHA1 (warning, с
+  явным whitelist для пары head.webp/head_desktop.webp и документацией почему
+  её нельзя унифицировать без потери проиндексированных Schema.org/PWA URL),
+  stale patch/zip/bak artefacts (error), .gitignore drift (warning).
+  Negative-test подтвердил срабатывание всех 4 проверок.
+
+## AVIF media tier r57
+
+- Сгенерированы AVIF-версии (quality=60, speed=4, PSNR ~38–40 dB — визуально
+  неотличимо) для 31 webp, которые подключаются как `<img>` или `<source>` на
+  landing-страницах, главной и prigorody-шаблоне: hero hero hero, viktoria,
+  bento, cake, cupcakes, meringue_*, и 11 gallery-XX, используемых в media-
+  showcase коммерческих лендингов. AVIF лежат рядом с webp как близнецы.
+
+- В 9 страницах (index, 9 landings, meringue-roll, _template + 14 пригородов)
+  52 одиночных тега `<img src="...webp">` обёрнуты в `<picture>` с
+  `<source type="image/avif" srcset="...avif">`. Уже существовавшие `<picture>`
+  (hero главной) не тронуты. Скрипт идемпотентный (повторный запуск ничего
+  не меняет).
+
+- prigorody/_template.html усилен AVIF source для hero (head_mobile.avif +
+  head_desktop.avif). 14 страниц регенерированы через `build.py`,
+  идемпотентность подтверждена (`scripts/check_prigorody_idempotent.py` OK).
+
+- Cache-bust поднят синхронно до `20260605r57` / `milovi-cake-v2026.06.05-r57`
+  во всех 35 файлах (HTML + sw.js + ESM data.js import).
+
+- audit.py исключает `audit/` из haystack при unreferenced-media сканировании,
+  чтобы наши же auto-generated отчёты не давали false-positive «упомянут».
+
+## Историческое состояние до r57
+
+`python3 scripts/audit.py` → PASSED, 0 errors, 0 warnings (2026-06-05 r56).
 
 - Удалено 6 файлов мусора (~1.35 MB) без runtime-ссылок:
   `uploads/final_power_patch.patch` (старый r41 diff на 404.html, попал в репо при

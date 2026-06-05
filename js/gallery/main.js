@@ -1,4 +1,4 @@
-import { GALLERY_ITEMS } from './data.js?v=20260605r57';
+import { GALLERY_ITEMS } from './data.js?v=20260605r58';
 
 var _gLockY = 0; /* r31: gallery scroll lock state */
 const $ = (s, c = document) => c.querySelector(s);
@@ -16,6 +16,24 @@ const state = { filter:'all', items:[], visible:[], swiper:null, lbIndex:0, obse
 
 
 function esc(s=''){ return String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+
+/* r57: AVIF support for gallery cards (lightbox keeps webp-only swap logic).
+   Wraps an <img src="...webp"> into a <picture> with an AVIF <source>.
+   If the AVIF twin does not exist on the server the browser will silently
+   ignore the source and fall back to the <img>. Safe and idempotent. */
+function wrapInPictureWithAvif(img) {
+  const src = img.getAttribute('src') || '';
+  // только для webp; если уже не webp — отдаём <img> как есть
+  if (!/\.webp(\?|$)/i.test(src)) return img;
+  const avifSrc = src.replace(/\.webp(\?|$)/i, '.avif$1');
+  const picture = document.createElement('picture');
+  const source = document.createElement('source');
+  source.type = 'image/avif';
+  source.srcset = avifSrc;
+  picture.appendChild(source);
+  picture.appendChild(img);
+  return picture;
+}
 function normalizeItem(item) {
   const isVideo = item.type === 'video';
   const poster = isVideo ? (item.poster || item.full || item.src) : item.src;
@@ -120,7 +138,7 @@ function renderGrid(){
       img.loading=index<8?'eager':'lazy'; 
       img.decoding='async'; 
       img.onerror=()=>{ if(img.src!==item.src) img.src=item.src; };
-      card.appendChild(img); 
+      card.appendChild(wrapInPictureWithAvif(img)); 
     }
     card.insertAdjacentHTML('beforeend', `<div class="card-overlay"><span class="card-title">${esc(item.title)}</span></div>`);
     card.addEventListener('click',()=>openLightbox(index)); 
