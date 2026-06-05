@@ -21,6 +21,19 @@
 
 ---
 
+## 0.1 Текущее состояние r51 — обязательный контекст
+
+- Production cache-bust: `20260605r51`; Service Worker: `milovi-cake-v2026.06.05-r51`.
+- Режим работы по всему проекту: `Пн–Сб, 10:00–20:00` / JSON-LD `Mo-Sa`.
+- Основная проверка перед push: `npm run qa`.
+- Live-проверка после публикации: `npm run smoke:prod:retry`.
+- IndexNow: `npm run indexnow:dry-run` и `npm run indexnow:submit`.
+- `scripts/audit.py` теперь проверяет JSON-LD, sitemap coverage, business hours, gzip budgets и protected UI contracts.
+- Playwright проверяет desktop/mobile, light/dark, landing media, hero messenger hover, reviews carousel/modal.
+- Текущий CSS/JS budget считается по gzip transfer size, raw totals — INFO. `!important` debt зафиксирован baseline-бюджетом и не должен расти.
+
+---
+
 ## 1. О проекте
 
 - **Что это:** статический сайт кондитера (HTML + CSS + JS), без сборщика
@@ -131,6 +144,15 @@
 
 Единый формат `id:mode:fill:decor` для всех товаров. **Не переписывать в "более простой" формат** — это ломает корзину для bento-режимов.
 
+### 3.8 Автотесты protected UI
+
+Protected UI теперь проверяется двумя слоями:
+
+- статически: `scripts/audit.py` проверяет наличие критичных классов, функций и CSS-маркеров;
+- в браузере: `tests/protected-interactions.spec.js` проверяет hover-анимацию WhatsApp / Telegram / MAX, отзывы и модалки.
+
+Если меняешь protected-зону — `npm run qa` обязателен, а не опционален.
+
 ---
 
 ## 4. CSS-ПРАВИЛА — железобетонные
@@ -172,6 +194,14 @@
 | Тёмная тема | `v20-dark-and-fixes.css` | не дублировать в `style.css` |
 | Hero / CTA полировка | `final-fixes.css` | не размазывать по другим |
 | Галерея | `css/gallery/gallery-2026.css` | не лезть в основные CSS |
+
+### 4.5 CSS/JS budget policy
+
+- Runtime budget считается по gzip transfer size, а не raw bytes.
+- Raw CSS/JS totals в `scripts/audit.py` — INFO/reference, не deploy-blocker.
+- `!important` counts зафиксированы baseline-бюджетом в `scripts/audit.py`.
+- Новые `!important` сверх baseline — warning и требуют осознанного объяснения.
+- Массово удалять `!important` запрещено: сначала определить protected-зону, затем маленький патч, затем `npm run qa`.
 
 ---
 
@@ -248,27 +278,40 @@ grep -rn '?v=' --include="*.html" --include="*.js"
 
 ## 7. ОБЯЗАТЕЛЬНЫЕ ПРОВЕРКИ перед коммитом
 
+### 7.1 Основная команда
+
 ```bash
-# 1. Синтаксис JS
-node --check js/main.js
-node --check js/nav.js
-node --check js/mc-2026.js
-node --check js/v20-faq-fix.js
-node --check js/gallery/main.js
-node --check sw.js
+npm run qa
+```
 
-# 2. Генератор пригородов (если правил _template.html или _cities.csv)
-python3 -m py_compile prigorody/build.py
-python3 prigorody/build.py
+Она запускает:
 
-# 3. Версии синхронизированы (все должны выдать одну и ту же строку)
-grep -rohE '\?v=[0-9a-zA-Z]+' --include="*.html" --include="*.js" | sort -u
+1. `npm run audit:js` — синтаксис всех runtime JS + `sw.js`.
+2. `python3 scripts/check_prigorody_idempotent.py` — генератор пригородов без дрейфа.
+3. `npm run audit` — zero-dependency аудит структуры, SEO, JSON-LD, sitemap, business hours, protected UI contracts, budgets.
+4. `npm run test:playwright` — desktop/mobile smoke, light/dark UI, hero messenger hover, reviews, landing media.
 
-# 4. Нет дубликатов функций в JS
-awk '/^function [a-zA-Z_]/{name=$2; sub(/\(.*/,"",name); print name}' js/main.js | sort | uniq -d
-# (должно быть пусто)
+### 7.2 Быстрые частичные команды
 
-# 5. CACHE_NAME в sw.js совпадает с ?v=
+```bash
+npm run audit:js
+python3 scripts/check_prigorody_idempotent.py
+npm run audit
+npm run test:playwright
+```
+
+### 7.3 Production после deploy
+
+```bash
+npm run smoke:prod:retry
+npm run indexnow:dry-run
+npm run indexnow:submit
+```
+
+### 7.4 Ручная версия-проверка при CSS/JS изменениях
+
+```bash
+grep -rohE '\?v=[0-9a-zA-Z]+' --include="*.html" --include="*.js" . | sort -u
 grep -E "CACHE_NAME|\?v=" sw.js
 ```
 
@@ -341,6 +384,7 @@ grep -E "CACHE_NAME|\?v=" sw.js
 | AGENTS-r1 | 2026-05-17 | Создан на основе аудита репо (204 файла, 1458 !important, 7 мёртвых JS) |
 | AGENTS-r2 | 2026-05-17 | Версия `?v=20260517r21` синхронизирована (HTML+sw.js). data.js легализован (используется gallery/main.js через ESM-импорт). |
 | AGENTS-r2 (обновление) | 2026-05-19 | r40: hero пригородов — убран inline padding-top:0, CSS-компенсация 112px для desktop, лого «авторские торты», H1 реструктурирован (--brand span), wave-text kill для hero-subtitle, SEO-текст главной улучшен. r41: исправлен баг мобильного hero (padding-top:90px создавал пустой зазор), hero-subtitle:hover — !important добавлен чтобы override R5 из premium-overrides. |
+| AGENTS-r3 | 2026-06-05 | r51: добавлен commercial/trust SEO-кластер, Playwright QA, production smoke, IndexNow tooling, gzip budget policy, JSON-LD/sitemap/business-hours/protected-UI audit guards. |
 
 ---
 

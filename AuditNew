@@ -206,6 +206,11 @@
 - README полностью обновлён под текущее состояние проекта: commercial/trust pages, QA-команды,
   Playwright, production smoke, IndexNow, gzip budgets, protected UI contracts, `llms.txt`, r51.
 
+## AGENTS operational guardrails refresh
+
+- `AGENTS.md` обновлён под r51: актуальные QA-команды, production smoke, IndexNow, gzip budgets,
+  protected UI autotests, `!important` baseline policy и текущий production context.
+
 ## Открытые warnings (не блокируют деплой)
 
 - Размер CSS/JS по сырым байтам выше бюджета (по gzip ~87/68 КБ — приемлемо).
