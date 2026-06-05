@@ -8,8 +8,31 @@
 
 ## Текущий статус
 
-`python3 scripts/audit.py` → PASSED, 0 errors, 0 warnings (2026-06-05 r58).
-`npx playwright test` → 61 passed, 1 skipped (2026-06-05 r58).
+`python3 scripts/audit.py` → PASSED, 0 errors, 0 warnings (2026-06-05 r59).
+`npx playwright test` → 61 passed, 1 skipped (2026-06-05 r59).
+
+## Hero LCP preload + repo hygiene r59
+
+- 8 landing pages получили `<link rel="preload" as="image" fetchpriority="high">`
+  для hero-картинки в `<head>`: предположительно даст -100..300 ms на LCP,
+  потому что браузер начинает загрузку hero ДО парсинга CSS (раньше hero
+  обнаруживался только при разборе `<section class="lp-hero">`).
+  Где есть AVIF — preload только AVIF (Chrome/Safari/Firefox skip preload
+  с MIME `image/avif` если не поддерживают, double-traffic нет).
+  Где AVIF нет (`otzyvy/index.html` → review_1.webp) — preload webp.
+
+- Добавлен `.gitattributes`: нормализация LF на index, явная маркировка
+  binary для webp/avif/png/jpg/webm/woff2/pdf (никаких ложных diff на
+  бинарниках, никаких EOL-rewrites при Windows-чекауте), `package-lock.json`
+  с `-diff` для тишины в git log, `export-ignore` на dev-инструменты
+  (.github, tests, scripts, audit, AGENTS.md, AI_DO_NOT_TOUCH, playwright
+  config) — `git archive` теперь даёт чистый deploy-only tarball.
+
+- Два файла с CRLF (`robots.txt`, `sitemap-videos.xml`) нормализованы в LF
+  в одном коммите с добавлением `.gitattributes`, чтобы не оставлять
+  renormalisation backlog.
+
+- Cache-bust поднят до `20260605r59` / `milovi-cake-v2026.06.05-r59`.
 
 ## Gallery AVIF extension r58
 
