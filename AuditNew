@@ -219,6 +219,12 @@
 
 - Текущий результат: `Lean landing CSS payload: 9 pages use only style.css`.
 
+## Production lean CSS smoke
+
+- `scripts/production_smoke.py` теперь проверяет lean CSS контракт на live-сайте:
+  9 commercial/trust landing pages должны отдавать только `/css/style.css` из локальных CSS.
+  Текущий production smoke: 44 checks passed.
+
 ## Открытые warnings (не блокируют деплой)
 
 - Размер CSS/JS по сырым байтам выше бюджета (по gzip ~87/68 КБ — приемлемо).

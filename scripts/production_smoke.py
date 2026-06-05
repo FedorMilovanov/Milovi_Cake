@@ -19,8 +19,7 @@ HOST = "https://milovicake.ru"
 TIMEOUT = 20
 INDEXNOW_KEY = "f5c91a4d89e84b2ca6d4f3e7a1029b6c"
 
-URLS = [
-    "/",
+LEAN_LANDING_PATHS = [
     "/zakazat-tort-spb/",
     "/tort-s-dostavkoy/",
     "/tort-na-den-rozhdeniya/",
@@ -30,6 +29,11 @@ URLS = [
     "/o-konditere/",
     "/dostavka-i-oplata/",
     "/otzyvy/",
+]
+
+URLS = [
+    "/",
+    *LEAN_LANDING_PATHS,
     "/gallery/",
     "/meringue-roll/",
     "/prigorody/pushkin/",
@@ -104,6 +108,14 @@ def run_checks() -> tuple[list[Result], dict[str, str]]:
         results.append(Result("sitemap:no /call/", f"{HOST}/call/" not in sitemap, 200, "/call/ absent"))
     else:
         results.append(Result("sitemap content", False, None, "sitemap body unavailable"))
+
+    # Lean landing pages should stay lightweight on production too: only style.css from local CSS.
+    for path in LEAN_LANDING_PATHS:
+        body = bodies.get(path, "")
+        css_hrefs = re.findall(r"<link[^>]+rel=[\"']stylesheet[\"'][^>]+href=[\"']([^\"']+)[\"']", body, flags=re.I)
+        local_css = sorted(href.split("?")[0] for href in css_hrefs if href.startswith("/css/") or href.startswith("css/"))
+        ok = local_css == ["/css/style.css"]
+        results.append(Result(f"{path} lean CSS", ok, 200, f"{local_css}" if not ok else "style.css only"))
 
     key_body = bodies.get(f"/{INDEXNOW_KEY}.txt", "").strip()
     results.append(Result("IndexNow key file", key_body == INDEXNOW_KEY, 200, "matches" if key_body == INDEXNOW_KEY else "mismatch"))
