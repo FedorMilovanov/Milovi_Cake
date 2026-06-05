@@ -176,6 +176,14 @@
 - Добавлен light/dark UI smoke без ложных срабатываний на intentional overlays главной/галереи.
   Текущий `npm run test:playwright` → 61 passed, 1 skipped (desktop-only hover on mobile).
 
+## Important budget baseline
+
+- `!important` debt теперь не является бесконечным «шумным» warning: текущие protected counts зафиксированы как baseline-бюджет в `scripts/audit.py`.
+  Аудит будет падать warning только если будущая правка увеличит количество `!important` сверх бюджета.
+  Это защищает premium UI, не вынуждая массово удалять важные override-слои.
+
+- Текущий `python3 scripts/audit.py` → 0 errors, 0 warnings; CSS/JS gzip budgets проходят.
+
 ## Открытые warnings (не блокируют деплой)
 
 - Размер CSS/JS по сырым байтам выше бюджета (по gzip ~87/68 КБ — приемлемо).
