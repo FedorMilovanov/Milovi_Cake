@@ -133,6 +133,17 @@
   Для 6 визуальных commercial landing pages изображения карточек и media-showcase переведены на `loading="eager"`.
   Видео оставлены `preload="metadata"`, чтобы не перегружать страницу.
 
+## CI/Production QA hardening
+
+- Добавлен GitHub Actions workflow `cake-sanity.yml`: `npm ci`, установка Playwright Chromium,
+  полный `npm run qa` на push/PR/manual. README badges теперь соответствуют реальным workflow.
+
+- Добавлен production smoke: `scripts/production_smoke.py` + workflow `production-smoke.yml`.
+  Проверяет live `milovicake.ru`: ключевые URL, sitemap, отсутствие `/call/`, IndexNow key-file,
+  актуальную версию `20260605r51` и часы `Пн–Сб`.
+
+- `.gitignore` дополнен Playwright artifacts: `playwright-report/`, `test-results/`, `qa-screens/`.
+
 ## Открытые warnings (не блокируют деплой)
 
 - Размер CSS/JS по сырым байтам выше бюджета (по gzip ~87/68 КБ — приемлемо).
