@@ -63,6 +63,10 @@ test.describe('premium media blocks', () => {
       await expect(page.locator('.lp-media-showcase')).toBeVisible();
       const mediaCount = await page.locator('.lp-media-showcase img, .lp-media-showcase video').count();
       expect(mediaCount).toBeGreaterThanOrEqual(4);
+      const brokenImages = await page.locator('.lp-media-showcase img, .lp-card img').evaluateAll((imgs) =>
+        imgs.filter((img) => !img.complete || img.naturalWidth < 40).map((img) => img.getAttribute('src'))
+      );
+      expect(brokenImages).toEqual([]);
     }
   });
 });

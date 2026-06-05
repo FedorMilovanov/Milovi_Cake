@@ -126,6 +126,13 @@
 - Добавлен тонкий CSS polish для landing-media fallback backgrounds и тёмной темы, без новых CSS-файлов.
   Cache-bust поднят до `20260605r51` / `milovi-cake-v2026.06.05-r51`.
 
+## Visual QA polish r51
+
+- По Playwright-скриншотам коммерческих лендингов выявлены тёмные placeholders в портфолио/карточках
+  из-за lazy-загрузки изображений при full-page capture и быстром скролле.
+  Для 6 визуальных commercial landing pages изображения карточек и media-showcase переведены на `loading="eager"`.
+  Видео оставлены `preload="metadata"`, чтобы не перегружать страницу.
+
 ## Открытые warnings (не блокируют деплой)
 
 - Размер CSS/JS по сырым байтам выше бюджета (по gzip ~87/68 КБ — приемлемо).
