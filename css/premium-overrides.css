@@ -1,17 +1,14 @@
-/* ══════════════════════════════════════════════════════════════
-   STYLE.CSS CONFLICT OVERRIDES (premium-overrides loads LAST)
-   These fix rules that were incorrectly set in minified style.css
-   ══════════════════════════════════════════════════════════════ */
 
-/* Fix 1: style.css has .burger-btn{display:none!important} in mobile media query */
-/* Our override: burger must always be visible on mobile */
+
+
+
 @media (max-width: 768px) {
   .burger-btn {
     display: flex !important;
   }
 }
 
-/* Fix 2: style.css still has mobile-sticky-cta rules — ensure element is hidden */
+
 .mobile-sticky-cta,
 #mobileStickyWa {
   display: none !important;
@@ -19,17 +16,12 @@
   pointer-events: none !important;
 }
 
-/* Fix 3: style.css .mobile-menu a has font-size:46px — override with premium 22px */
-/* This is handled by our .mobile-menu-nav a rules with !important */
 
-/* ═══════════════════════════════════════════════════════
-   MILOVI CAKE — Premium Overrides v2026.05.16
-   Загружается после style.css и mc-2026.css.
-   ФИНАЛЬНАЯ ВЕРСИЯ — все аудиты синтезированы.
-   Hybrid Navigation: burger → Premium TOC v3 + bottom mc-nav.
-   ═══════════════════════════════════════════════════════ */
 
-/* ── Scroll-margin для всех якорей (header 72px + 16px воздуха) ── */
+
+
+
+
 #home, #about, #catalog, #fillings, #calculator,
 #reviews, #why, #contacts, #delivery {
   scroll-margin-top: 88px;
@@ -41,7 +33,7 @@
   }
 }
 
-/* ── Типографика заголовков: убрать тени, оставить тонкую разрядку ── */
+
 h1, h2 {
   text-shadow: none !important;
   letter-spacing: -0.022em;
@@ -50,7 +42,7 @@ h3, h4 {
   text-shadow: none !important;
 }
 
-/* ── Cormorant Garamond: максимум 500 на крупных размерах ── */
+
 .cart-line-total,
 .cart-inline-total,
 .modal-review-avatar,
@@ -73,13 +65,13 @@ h3, h4 {
   font-weight: 500;
 }
 
-/* ── mobile-sticky-cta: убрать из DOM (элемент удалён), скрыть на случай кэша ── */
+
 .mobile-sticky-cta,
 #mobileStickyWa {
   display: none !important;
 }
 
-/* ── Лейблы формы: чуть больше контраста ── */
+
 .form-group label,
 .form-group .calc-label,
 .calc-row label,
@@ -88,7 +80,7 @@ h3, h4 {
   font-weight: 400;
 }
 
-/* ── Премиум-кнопки: убираем infinite shimmer, оставляем только on-hover ── */
+
 .btn-primary::before,
 .btn-wa::before,
 .calc-order-btn::before,
@@ -107,7 +99,7 @@ h3, h4 {
   100% { left: 160%; opacity: 0; }
 }
 
-/* ── Цены: убираем infinite glow, оставляем только on-hover ── */
+
 .product-card.in-view .price,
 .product-card.visible .price,
 .product-card .price {
@@ -124,7 +116,7 @@ h3, h4 {
   100% { text-shadow: 0 0 12px rgba(201,147,74,0.30); }
 }
 
-/* Калькулятор: цена без infinite пульсации */
+
 .calc-result-price {
   animation: none !important;
 }
@@ -133,7 +125,7 @@ h3, h4 {
   transition: filter .35s ease;
 }
 
-/* ── Section title: убираем infinite shimmer ── */
+
 .section-title.visible::before {
   animation: titleShimmerOnce 1.6s ease-out 0.2s both !important;
 }
@@ -143,7 +135,7 @@ h3, h4 {
   100% { left: 120%; opacity: 0; }
 }
 
-/* ── Hero-orbs: только на десктопе ── */
+
 @media (max-width: 900px), (hover: none) {
   .hero-orb-1, .hero-orb-2, .hero-orb-3 {
     animation: none !important;
@@ -151,7 +143,7 @@ h3, h4 {
   }
 }
 
-/* ── Hero мессенджеры: убираем infinite breathe ── */
+
 .btn-hero-wa, .btn-hero-tg, .btn-hero-max {
   animation: none !important;
 }
@@ -161,7 +153,7 @@ h3, h4 {
   .btn-hero-max:hover { box-shadow: 0 6px 20px rgba(107,78,255,0.20); border-color: rgba(107,78,255,0.60); }
 }
 
-/* ── Lightbox: премиум-плавность ── */
+
 .lb-box {
   transition: transform 0.55s cubic-bezier(0.4,0,0.2,1), opacity 0.4s ease, filter 0.55s cubic-bezier(0.4,0,0.2,1) !important;
   filter: blur(14px) !important;
@@ -174,7 +166,7 @@ h3, h4 {
   }
 }
 
-/* ── Reveal-fallback ── */
+
 @keyframes revealFallback { to { opacity: 1; transform: translateY(0); } }
 .reveal { animation: revealFallback 0.6s ease-out 1.6s both; }
 .reveal.visible { animation: none; opacity: 1; transform: translateY(0); }
@@ -182,7 +174,7 @@ h3, h4 {
   .reveal { animation: none; opacity: 1; transform: none; }
 }
 
-/* ── Reveal-задержки на каталоге ── */
+
 .product-card.reveal:nth-child(1) { transition-delay: 0s; }
 .product-card.reveal:nth-child(2) { transition-delay: 0.05s; }
 .product-card.reveal:nth-child(3) { transition-delay: 0.10s; }
@@ -190,7 +182,7 @@ h3, h4 {
 .product-card.reveal:nth-child(5) { transition-delay: 0.20s; }
 .product-card.reveal:nth-child(6) { transition-delay: 0.25s; }
 
-/* ── Cart drawer тени ── */
+
 .cart-drawer.open { box-shadow: -8px 0 40px rgba(0,0,0,0.14), 0 0 0 1px rgba(201,147,74,0.10); }
 @media (min-width: 769px) {
   .cart-drawer.open {
@@ -198,28 +190,26 @@ h3, h4 {
   }
 }
 
-/* Review card: убрать vignette */
+
 .review-card::after {
   background: radial-gradient(ellipse 110% 100% at 50% 50%, transparent 60%, rgba(55,28,8,0.05) 100%) !important;
 }
 
-/* ── About emoji ── */
+
 .about-emoji { filter: grayscale(0.15) sepia(0.20) hue-rotate(-12deg) saturate(1.05); }
 
-/* ── Scroll padding ── */
+
 html { scroll-padding-top: 88px; }
 
-/* ── Премиум фокус-стиль ── */
+
 :focus-visible { outline-color: var(--gold); outline-offset: 3px; }
 
-/* ── Мелкие фиксы ── */
+
 .header-trust-num { font-weight: 500; }
 #cookieAccept { font-weight: 500; }
 .modal-review-avatar { font-weight: 500; }
 
-/* ══════════════════════════════════════════════════════════════
-   MERINGUE-ROLL: блок «Доставка по 14 пригородам»
-   ══════════════════════════════════════════════════════════════ */
+
 .mr-cities { padding: 56px 24px 64px; background: linear-gradient(180deg, var(--cream, #f5f0e8) 0%, var(--cream-dark, #ede5d5) 100%); }
 .mr-cities__inner { max-width: 880px; margin: 0 auto; text-align: center; }
 .mr-cities__eyebrow { display: inline-block; font-family: 'Jost', sans-serif; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold, #c9934a); margin-bottom: 14px; }
@@ -241,9 +231,7 @@ html { scroll-padding-top: 88px; }
 }
 .mr-city-tag.is-target { background: linear-gradient(135deg, rgba(201,147,74,0.12), rgba(201,147,74,0.04)); border-color: var(--gold, #c9934a); box-shadow: 0 8px 28px rgba(201,147,74,0.18); }
 
-/* ══════════════════════════════════════════════════════════════
-   PRIGORODY: meringue-promo
-   ══════════════════════════════════════════════════════════════ */
+
 .meringue-promo[data-city] .meringue-promo__city { font-weight: 500; color: var(--gold, #c9934a); white-space: nowrap; }
 .prigorody-page .hero-orb { display: none; }
 .meringue-promo { background: linear-gradient(135deg, #faf6ef 0%, #f3e8d5 100%); padding: 36px 24px; position: relative; overflow: hidden; }
@@ -259,17 +247,17 @@ html { scroll-padding-top: 88px; }
   .meringue-promo__text { font-size: 16px; }
 }
 
-/* ── fill-desc-panel ── */
+
 .fill-desc-panel { width: fit-content; max-width: 100%; margin: 6px auto 0; padding: 5px 14px; background: transparent; border: 1px solid rgba(201, 147, 74, 0.22); border-radius: 50px; min-height: auto; text-align: center; }
 .fill-desc-text { font-size: 11px; font-weight: 300; color: var(--text-muted, #9a7a62); line-height: 1.4; letter-spacing: 0.02em; white-space: normal; text-align: center; }
 
-/* ── Header gold shimmer on scroll ── */
+
 .site-header.scrolled::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent 0%, rgba(201,147,74,0.45) 50%, transparent 100%); pointer-events: none; }
 
-/* ── Form focus gold glow ── */
+
 .form-group input:focus, .form-group textarea:focus { border-color: var(--gold, #c9934a) !important; box-shadow: 0 0 0 3px rgba(201,147,74,0.10), 0 6px 18px rgba(201,147,74,0.08) !important; transition: border-color 0.2s ease, box-shadow 0.4s cubic-bezier(.16,1,.3,1) !important; }
 
-/* ── Performance: content-visibility ── */
+
 @media (min-width: 1px) {
   #fillings, #reviews, #contacts {
     content-visibility: auto;
@@ -281,26 +269,22 @@ html { scroll-padding-top: 88px; }
   }
 }
 
-/* ── Reduced motion safety net ── */
+
 @media (prefers-reduced-motion: reduce) {
   .btn-primary:hover::before, .btn-wa:hover::before, .calc-order-btn:hover::before, .header-order:hover::before,
   .product-card:hover .price, .section-title.visible::before { animation: none !important; }
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   ▼▼▼  PREMIUM MOBILE TOC v3  ▼▼▼
-   Burger → полноэкранное люкс-меню с WA / TG / MAX мессенджерами
-   Убраны все старые конфликты из mc-2026.css Block 8
-   ══════════════════════════════════════════════════════════════════════ */
 
-/* Ensure burger is always visible on mobile */
+
+
 @media (max-width: 768px) {
   .burger-btn {
     display: flex !important;
   }
 }
 
-/* Full-screen overlay */
+
 .mobile-menu {
   display: none;
   position: fixed;
@@ -320,7 +304,7 @@ html { scroll-padding-top: 88px; }
   display: flex !important;
 }
 
-/* Header row */
+
 .mobile-menu-head {
   display: flex;
   align-items: center;
@@ -351,7 +335,7 @@ html { scroll-padding-top: 88px; }
   font-weight: 400;
 }
 
-/* Close button */
+
 .mobile-menu-close {
   width: 44px;
   height: 44px;
@@ -368,7 +352,7 @@ html { scroll-padding-top: 88px; }
 }
 .mobile-menu-close:active { transform: scale(0.90); background: rgba(201,147,74,0.18); }
 
-/* Section labels */
+
 .mobile-menu-section-label {
   display: block;
   font-family: 'Jost', sans-serif;
@@ -380,7 +364,7 @@ html { scroll-padding-top: 88px; }
   font-weight: 500;
 }
 
-/* Nav links */
+
 .mobile-menu-nav {
   display: flex !important;
   flex-direction: column !important;
@@ -406,7 +390,7 @@ html { scroll-padding-top: 88px; }
   color: var(--gold, #c9934a);
 }
 
-/* Gold divider */
+
 .mobile-menu-divider-h {
   height: 1px;
   background: linear-gradient(to right, transparent, rgba(201,147,74,0.28), transparent);
@@ -414,7 +398,7 @@ html { scroll-padding-top: 88px; }
   flex-shrink: 0;
 }
 
-/* Messengers section */
+
 .mobile-menu-messengers {
   padding: 0 24px calc(28px + env(safe-area-inset-bottom, 0px));
 }
@@ -425,7 +409,7 @@ html { scroll-padding-top: 88px; }
   margin-bottom: 20px;
 }
 
-/* Individual messenger buttons */
+
 .mm-msg {
   display: flex;
   flex-direction: column;
@@ -444,7 +428,7 @@ html { scroll-padding-top: 88px; }
   -webkit-tap-highlight-color: transparent;
 }
 .mm-msg:active { transform: scale(0.93); }
-/* Brand colors — exact official */
+
 .mm-msg--wa  { background: #25D366; box-shadow: 0 6px 18px rgba(37,211,102,0.32); }
 .mm-msg--tg  { background: #229ED9; box-shadow: 0 6px 18px rgba(34,158,217,0.32); }
 .mm-msg--max { background: #7B5EE8; box-shadow: 0 6px 18px rgba(123,94,232,0.32); }
@@ -454,7 +438,7 @@ html { scroll-padding-top: 88px; }
   .mm-msg--max:hover { filter: brightness(1.07); box-shadow: 0 10px 26px rgba(123,94,232,0.42); }
 }
 
-/* Phone link */
+
 .mobile-menu-phone {
   display: flex !important;
   align-items: center;
@@ -473,7 +457,7 @@ html { scroll-padding-top: 88px; }
 }
 .mobile-menu-phone:hover { background: rgba(201,147,74,0.14); border-color: var(--gold, #c9934a); }
 
-/* ── Dark mode ── */
+
 [data-theme="dark"] .mobile-menu {
   background: linear-gradient(180deg, rgba(30,20,10,0.985) 0%, rgba(42,28,14,0.985) 100%);
 }
@@ -487,7 +471,7 @@ html { scroll-padding-top: 88px; }
 [data-theme="dark"] .mobile-menu-nav a { border-bottom-color: rgba(212,167,106,0.08); }
 [data-theme="dark"] .mobile-menu-nav a:hover { background: rgba(212,167,106,0.07); color: var(--gold, #d4a76a); }
 
-/* ── Landscape compact mode ── */
+
 @media (orientation: landscape) and (max-height: 520px) {
   .mobile-menu-nav a { font-size: 18px !important; padding: 11px 24px !important; }
   .mobile-menu-section-label { padding: 14px 24px 6px; }
@@ -496,12 +480,12 @@ html { scroll-padding-top: 88px; }
 }
 
 
-/* ── Scroll lock when mobile menu is open ── */
+
 body.menu-open {
   overflow: hidden !important;
 }
 
-/* ── Theme toggle SVG icons — show moon/sun based on active theme ── */
+
 .theme-toggle {
   display: flex;
   align-items: center;
@@ -514,23 +498,18 @@ body.menu-open {
   line-height: 1;
 }
 .theme-icon { display: none; pointer-events: none; }
-/* Light mode: show moon (to switch to dark) */
+
 :root:not([data-theme="dark"]) .theme-icon--moon { display: block; }
 :root:not([data-theme="dark"]) .theme-icon--sun  { display: none; }
-/* Dark mode: show sun (to switch to light) */
+
 [data-theme="dark"] .theme-icon--moon { display: none; }
 [data-theme="dark"] .theme-icon--sun  { display: block; }
 
-/* ══════════════════════════════════════════════════════════════
-   BUGFIX PATCH 2026.05.16 (round 2 — пост-аудит)
-   Точечные исправления без переписывания структуры.
-   ══════════════════════════════════════════════════════════════ */
 
-/* #catalog light-mode gradient fixed directly in style.css (bug fix).
-   Dark override kept in v20-dark-and-fixes.css where dark theme lives. */
 
-/* Fix: .cb-ftab.cb-on в тёмной теме получала почти невидимую
-   активную таблетку через var(--white). Фиксируем контраст. */
+
+
+
 [data-theme="dark"] .cb-ftab.cb-on {
   background: #2a1d10;
   color: var(--gold, #d4a76a);
@@ -540,7 +519,7 @@ body.menu-open {
   background: rgba(212,167,106,0.07);
 }
 
-/* Fix: карточки контент-блока в тёмной теме — устойчивые тени и борда. */
+
 [data-theme="dark"] .cb-fl,
 [data-theme="dark"] .cb-gluten-card,
 [data-theme="dark"] .cb-occ {
@@ -554,14 +533,14 @@ body.menu-open {
   box-shadow: 0 10px 28px rgba(0,0,0,0.55);
 }
 
-/* Fix: .calc-add-btn-badge — белый фон в dark создавал яркую вспышку. */
+
 [data-theme="dark"] .calc-add-btn-badge {
   background: #1f1509;
   color: var(--gold-light, #e8b87a);
   box-shadow: 0 2px 8px rgba(0,0,0,0.55);
 }
 
-/* Fix: header header-city в тёмной теме — синхронизация цвета. */
+
 [data-theme="dark"] .site-header.header-city {
   background: rgba(14,9,4,0.92);
 }
@@ -569,14 +548,14 @@ body.menu-open {
   background: rgba(10,6,3,0.97);
 }
 
-/* Fix: .about-photo-badge — единый стиль в обеих темах. */
+
 [data-theme="dark"] .about-photo-badge {
   background: rgba(15,9,4,0.82);
   color: var(--gold-light, #e8b87a);
   border-color: rgba(212,167,106,0.30);
 }
 
-/* Fix: убираем потенциальный белый фон у .cart-clear-btn в dark. */
+
 [data-theme="dark"] .cart-clear-btn {
   background: transparent;
   color: var(--text-muted, #c8a880);
@@ -586,7 +565,7 @@ body.menu-open {
   color: #ff8077;
 }
 
-/* Fix: точечные светлые утечки в dark — закрываем. */
+
 [data-theme="dark"] .about-compact-block {
   background: #1f1509;
   border-color: rgba(212,167,106,0.14);
@@ -604,18 +583,15 @@ body.menu-open {
   color: #f0d6b0;
 }
 
-/* Fix: .messenger-bar-btn — в dark уменьшаем тени для аккуратности. */
+
 [data-theme="dark"] .messenger-bar-btn {
   text-shadow: 0 1px 1px rgba(0,0,0,0.45);
 }
 
 
-/* ══════════════════════════════════════════════════════════════
-   CONTACTS / BRAND POLISH v2026.05.16-r2
-   Final visibility + authentic messenger colors + cleaner contact UI
-   ══════════════════════════════════════════════════════════════ */
 
-/* Main order button: stronger contrast + premium glow */
+
+
 .btn-wa {
   color: #fff !important;
   font-weight: 600 !important;
@@ -641,7 +617,7 @@ body.menu-open {
   color: #fff !important;
 }
 
-/* Contact order card title: keep brand gold, no alien cyan hover */
+
 #contacts .card:not(.card--dark) h3 .wave-text .w:hover,
 #contacts .card:not(.card--dark) h3 .wave-text .w.w-auto,
 #contacts .card:not(.card--dark) h3 .wave-text .w.w-auto-near {
@@ -650,7 +626,7 @@ body.menu-open {
   text-shadow: 0 0 14px rgba(201,147,74,0.22) !important;
 }
 
-/* Contact notes and links: a bit more readable */
+
 .form-note,
 .consent-note {
   color: var(--text-muted-acc, #6b4c38) !important;
@@ -662,7 +638,7 @@ body.menu-open {
   text-underline-offset: 2px;
 }
 
-/* Contacts: primary phone block slightly more premium */
+
 .contact-primary-item {
   border-color: rgba(201,147,74,0.16) !important;
   box-shadow: 0 10px 26px rgba(61,43,31,0.05), 0 0 0 1px rgba(255,255,255,0.35) inset;
@@ -678,7 +654,7 @@ body.menu-open {
   box-shadow: 0 8px 18px rgba(201,147,74,0.10);
 }
 
-/* Restore authentic messenger colors over mc-2026 'safe' palette */
+
 :root .messenger-bar-wa,
 :root:not([data-theme="dark"]) .messenger-bar-wa {
   background: #25D366 !important;
@@ -701,7 +677,7 @@ body.menu-open {
   filter: drop-shadow(0 1px 1px rgba(0,0,0,0.12));
 }
 
-/* Social pills: cleaner authentic accents */
+
 .social-link.tg {
   background: rgba(34,158,217,0.12) !important;
   color: #229ED9 !important;
@@ -727,7 +703,7 @@ body.menu-open {
   transform: translateY(-2px) !important;
 }
 
-/* Hero messengers: slightly more authentic brand rendering */
+
 .btn-hero-wa {
   background: linear-gradient(135deg, rgba(37,211,102,0.16), rgba(37,211,102,0.08)) !important;
   border-color: rgba(37,211,102,0.44) !important;
@@ -757,12 +733,9 @@ body.menu-open {
   border-color: rgba(212,167,106,0.22) !important;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   PATCH r3 — 2026.05.16
-   Final visibility, brand colors, theme toggle, gallery polish
-   ══════════════════════════════════════════════════════════════ */
 
-/* ── 1) THEME TOGGLE: чистая, миниатюрная иконка без круга/фона ── */
+
+
 #themeToggleBtn.theme-toggle,
 .theme-toggle {
   width: 32px !important;
@@ -808,7 +781,7 @@ body.menu-open {
   width: 18px !important; height: 18px !important;
 }
 
-/* SHOW the right one based on data-theme */
+
 :root:not([data-theme="dark"]) .theme-toggle .theme-icon--moon,
 :root:not([data-theme="dark"]) .theme-toggle .moon-icon {
   display: block !important;
@@ -833,7 +806,7 @@ body.menu-open {
   color: var(--gold3, #e8c080) !important;
 }
 
-/* На "header-city" (тёмный хедер пригородов) — белая иконка */
+
 .site-header.header-city .theme-toggle {
   color: rgba(255,255,255,0.92);
 }
@@ -841,8 +814,8 @@ body.menu-open {
   color: var(--gold-light, #e8b87a) !important;
 }
 
-/* ── 2) "ОТПРАВИТЬ ЗАКАЗ" — реально читаемая кнопка ── */
-/* Тёмный градиент → белый текст с премиум-свечением. */
+
+
 .btn-wa,
 button.btn-wa,
 form .btn-wa {
@@ -893,11 +866,11 @@ form .btn-wa {
   background: linear-gradient(135deg, #a06a38 0%, #d4a76a 50%, #f0c98a 100%) !important;
 }
 
-/* ── 3) КОНТАКТЫ → социальные пилюли: аутентичные, чистые цвета ── */
+
 .social-link.wa,
 .social-links a.social-link.wa {
   background: rgba(37,211,102,0.10) !important;
-  color: #16A85B !important;            /* чуть глубже — лучше читается на кремовом */
+  color: #16A85B !important;            
   border: 1px solid rgba(37,211,102,0.32) !important;
 }
 [data-theme="dark"] .social-link.wa {
@@ -943,7 +916,7 @@ form .btn-wa {
   box-shadow: 0 6px 18px rgba(0,0,0,0.10);
 }
 
-/* messenger-bar (mobile / footer): true brand colors (already set, но укрепим SVG) */
+
 .messenger-bar-btn {
   font-weight: 600 !important;
   letter-spacing: 0.03em !important;
@@ -952,7 +925,7 @@ form .btn-wa {
   filter: drop-shadow(0 1px 1px rgba(0,0,0,0.18));
 }
 
-/* form-note и согласие — заметнее, без потери лёгкости */
+
 .form-note,
 .consent-note,
 .contacts-form .form-note {
@@ -979,13 +952,13 @@ form .btn-wa {
 [data-theme="dark"] .form-note a,
 [data-theme="dark"] .consent-note a { color: #e8b87a !important; border-bottom-color: rgba(232,184,122,0.4); }
 
-/* ── 4) Hero мессенджеры: чуть больше брендовости ── */
+
 .btn-hero-wa { color: #25D366 !important; }
 .btn-hero-tg { color: #229ED9 !important; }
 .btn-hero-max { color: #8e74ee !important; }
 
 
-/* R5-HERO-MESSENGER-PILLS */
+
 .messenger-group {
   display: flex;
   gap: 10px;
@@ -1036,7 +1009,7 @@ form .btn-wa {
   .btn-hero-messenger { padding: 10px; border-radius: 50%; }
   .messenger-group { gap: 8px; }
 }
-/* R5-HERO-ELASTIC */
+
 .hero-title-seo,
 .hero-subtitle {
   display: inline-block;
@@ -1068,16 +1041,9 @@ form .btn-wa {
   }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   PATCH R6 — 2026.05.16 (final)
-   1) Восстанавливаем геометрию CTA (.btn-wa, .calc-order-btn)
-      после удаления outline-перебивателя из style.css.
-   2) Theme toggle: SVG-иконки центрируются (отключаем абсолютное
-      позиционирование из style.css — там нет .theme-icon-wrap).
-   3) header-order — outline-пилл с context-aware цветом.
-   ══════════════════════════════════════════════════════════════ */
 
-/* ── 1) CTA buttons: финальная геометрия ── */
+
+
 .btn-wa,
 .calc-order-btn {
   padding: 18px 32px !important;
@@ -1097,7 +1063,7 @@ form .btn-wa {
   }
 }
 
-/* .calc-order-btn — тёмно-янтарный градиент (как у .btn-wa) */
+
 .calc-order-btn {
   color: #ffffff !important;
   text-shadow:
@@ -1133,7 +1099,7 @@ form .btn-wa {
   background: linear-gradient(135deg, #a06a38 0%, #d4a76a 50%, #f0c98a 100%) !important;
 }
 
-/* ── 2) Theme toggle SVG centering ── */
+
 .theme-toggle > svg,
 .theme-toggle > .theme-icon,
 .theme-toggle > .sun-icon,
@@ -1159,7 +1125,7 @@ form .btn-wa {
   color: var(--gold-light, #e8b87a) !important;
 }
 
-/* ── 3) header-order: контекстная outline-пилл ── */
+
 .header-order {
   background: transparent;
   color: var(--text);
@@ -1200,13 +1166,13 @@ form .btn-wa {
   color: var(--cream) !important;
 }
 
-/* ── 4) Hero subtitle: внутренние wave-spans без отдельного hover-skew ── */
+
 .hero-subtitle .w {
   display: inline-block;
   transition: color 0.3s ease, transform 0.3s ease;
 }
 
-/* ── 5) Reduced motion ── */
+
 @media (prefers-reduced-motion: reduce) {
   .btn-wa, .calc-order-btn, .header-order {
     transition: background 0.2s ease, color 0.2s ease !important;
@@ -1216,15 +1182,11 @@ form .btn-wa {
     transform: none !important;
   }
 }
-/* ══ END R6 ══ */
 
-/* ══════════════════════════════════════════════════════════════
-   PATCH R7 — 2026.05.16 (Apple-level polish)
-   Calculator UX, tooltip header, mobile feedback, focus rings,
-   sticky bottom bar safe-area, fill-toast glass, hover refinement.
-   ══════════════════════════════════════════════════════════════ */
 
-/* ── 1) Tooltip начинок: показываем заголовок (<strong>) ── */
+
+
+
 .fill-tooltip strong {
   display: block !important;
   margin-bottom: 4px !important;
@@ -1234,7 +1196,7 @@ form .btn-wa {
   letter-spacing: 0.01em;
 }
 .fill-tooltip {
-  /* Чуть премиальнее: glass-feel + warmer tint */
+  
   background: linear-gradient(165deg, rgba(45,28,16,0.96), rgba(28,16,8,0.96)) !important;
   border: 1px solid rgba(232,184,122,0.18) !important;
   box-shadow:
@@ -1247,10 +1209,10 @@ form .btn-wa {
   padding: 11px 14px 10px !important;
   border-radius: 14px !important;
 }
-/* (R8 simplified) JS already controls transform/opacity inline. */
 
-/* ── 2) Калькулятор-карточки начинок: focus-ring корректный ── */
-/* На selected (золотой фон) обычный gold outline невидим — делаем белый */
+
+
+
 .calc-opt:focus-visible {
   outline: 2px solid var(--gold, #c9934a) !important;
   outline-offset: 2px !important;
@@ -1262,7 +1224,7 @@ form .btn-wa {
     0 4px 14px rgba(201,147,74,0.45),
     0 0 0 4px rgba(255,255,255,0.18) !important;
 }
-/* Smooth tap response: лёгкий scale+brightness вместо резкого re-paint */
+
 .calc-opt {
   transition:
     border-color 0.22s ease,
@@ -1282,7 +1244,7 @@ form .btn-wa {
   }
 }
 
-/* ── 3) Type-cards (Бисквитный/Бенто/3D): мягкий hover & active ── */
+
 .calc-type-card {
   transition:
     border-color 0.25s ease,
@@ -1298,10 +1260,8 @@ form .btn-wa {
   }
 }
 
-/* ── 4) .calc-add-btn hover: убираем «выключенный» вид ── */
-/* В style.css: .calc-add-btn:hover{background:transparent;...}
-   На светлом фоне это выглядит как disabled. Делаем мягкий
-   тёмно-янтарный, заметнее премиально. */
+
+
 @media (hover: hover) and (pointer: fine) {
   .calc-add-btn:hover {
     background: linear-gradient(135deg, #a06a38 0%, #c9934a 100%) !important;
@@ -1318,29 +1278,29 @@ form .btn-wa {
   }
 }
 
-/* ── 5) Mobile sticky calc bar: гарантия z-index, safe-area ── */
+
 @media (max-width: 560px) {
   .calc-right-col {
-    z-index: 105 !important;            /* ↑ выше mc-nav (104) и стикеров */
+    z-index: 105 !important;            
     box-shadow: 0 -10px 32px rgba(0,0,0,0.18);
   }
   .calc-result-collapsed {
-    padding-top: 18px !important;       /* место для handle (полоска сверху) */
+    padding-top: 18px !important;       
     padding-bottom: max(14px, env(safe-area-inset-bottom, 0px)) !important;
   }
-  /* Анимация раскрытия — премиально-плавная */
+  
   .calc-result-expandable {
     transition:
       max-height 0.46s cubic-bezier(0.22, 1, 0.36, 1) !important;
   }
 }
 
-/* ── 6) Bento weight toast: всегда поверх mc-nav ── */
+
 .bento-weight-toast {
   z-index: 1200 !important;
 }
 
-/* ── 7) Fill-toast (мобильный): glass + премиум ── */
+
 .fill-toast {
   background: linear-gradient(165deg, rgba(45,28,16,0.96), rgba(28,16,8,0.96)) !important;
   border: 1px solid rgba(232,184,122,0.22) !important;
@@ -1363,7 +1323,7 @@ form .btn-wa {
   line-height: 1.5 !important;
 }
 
-/* ── 8) Fill-desc-panel (десктоп): premium reveal ── */
+
 .fill-desc-panel {
   transition:
     opacity 0.32s ease,
@@ -1375,7 +1335,7 @@ form .btn-wa {
   transform: translateY(-4px);
 }
 
-/* ── 9) Calc-summary-chip: безопасный wrap на мобиле ── */
+
 @media (max-width: 560px) {
   .calc-summary-chip {
     white-space: normal !important;
@@ -1387,7 +1347,7 @@ form .btn-wa {
   }
 }
 
-/* ── 10) Theme toggle на мобиле: 44px target, центр иконки ── */
+
 @media (max-width: 768px) {
   .theme-toggle {
     width: 44px !important;
@@ -1404,7 +1364,7 @@ form .btn-wa {
   }
 }
 
-/* ── 11) Калькулятор-степпер (вес/количество): премиальный feedback ── */
+
 .calc-stepper-btn {
   transition:
     background 0.22s ease,
@@ -1421,13 +1381,12 @@ form .btn-wa {
   }
 }
 
-/* ── 12) Calc-result-collapsed-arrow: вращение строго при открытом ── */
+
 .calc-right-col.calc-result-open .calc-result-collapsed-arrow {
   transform: rotate(180deg) !important;
 }
 
-/* ── 13) Calc-options grid: на 320-360px — карточки одной колонкой,
-   но с auto-height, чтобы не «плавились» ── */
+
 @media (max-width: 360px) {
   .calc-type-grid {
     grid-template-columns: 1fr 1fr !important;
@@ -1439,7 +1398,7 @@ form .btn-wa {
   }
 }
 
-/* ── 14) Reduced motion: сваливаем все CTA-анимации калькулятора ── */
+
 @media (prefers-reduced-motion: reduce) {
   .calc-opt,
   .calc-type-card,
@@ -1456,19 +1415,17 @@ form .btn-wa {
   }
 }
 
-/* ══ END R7 ══ */
 
-/* ══════════════════════════════════════════════════════════════
-   PATCH R8 — 2026.05.16 (Apple+Google final polish)
-   ══════════════════════════════════════════════════════════════ */
 
-/* ── 1) Lightbox image: lock aspect ratio to prevent CLS ── */
+
+
+
 #lightboxImg, #lbImg {
   background: rgba(20, 12, 6, 0.45);
   border-radius: 8px;
 }
 
-/* ── 2) Dynamically-rendered buttons (cart/qty/del/slider) — премиальный focus ── */
+
 .btn-add:focus-visible,
 .qty-btn:focus-visible,
 .del-btn:focus-visible,
@@ -1483,26 +1440,25 @@ form .btn-wa {
   outline-offset: 3px !important;
 }
 
-/* ── 3) Link underline-on-focus для accessibility (без overrid'а декоративных) ── */
+
 a:focus-visible:not(.btn-primary):not(.btn-wa):not(.header-order):not(.calc-add-btn):not(.btn-hero-messenger) {
   outline: 2px solid var(--gold, #c9934a);
   outline-offset: 2px;
   border-radius: 2px;
 }
 
-/* ── 4) Reduce CLS: catalog-card aspect-ratio для slider-wrap уже есть в style.css.
-   Дополнительно — img placeholder background, чтобы не было «прыжка» цвета. */
+
 .slide img {
   background: linear-gradient(135deg, rgba(232,184,122,0.06), rgba(245,240,232,0.10));
 }
 
-/* ── 5) iOS safe-area для bottom-nav (mc-nav) ── */
+
 .mc-nav,
 #mcNav {
   padding-bottom: env(safe-area-inset-bottom, 0px) !important;
 }
 
-/* ── 6) iOS callout suppression на интерактивных элементах ── */
+
 .calc-opt,
 .calc-type-card,
 .calc-stepper-btn,
@@ -1519,7 +1475,7 @@ a:focus-visible:not(.btn-primary):not(.btn-wa):not(.header-order):not(.calc-add-
   user-select: none;
 }
 
-/* ── 7) Button cursor pointer (default UA inconsistency) ── */
+
 button:not([disabled]),
 [role="button"]:not([disabled]) {
   cursor: pointer;
@@ -1529,7 +1485,7 @@ button[disabled] {
   opacity: 0.55;
 }
 
-/* ── 8) High-contrast mode: focus-ring визуальнее (Windows HC) ── */
+
 @media (forced-colors: active) {
   .calc-opt:focus-visible,
   .calc-type-card:focus-visible,
@@ -1540,7 +1496,7 @@ button[disabled] {
   }
 }
 
-/* ── 9) Print styles: убираем фиксированные элементы ── */
+
 @media print {
   .site-header,
   #scroll-progress,
@@ -1559,7 +1515,7 @@ button[disabled] {
   .hero { min-height: auto !important; padding: 20px !important; }
 }
 
-/* ══ END R8 ══ */
+
 
 /*
    AI DO NOT TOUCH — R10 PROTECTED BLOCK
@@ -1575,7 +1531,7 @@ button[disabled] {
    3) Dark mode: премиальные чёрные карточки вместо ярких белых пятен.
    ══════════════════════════════════════════════════════════════ */
 
-/* Hero messengers — same premium ring behavior as suburb pages */
+
 .messenger-group--ring,
 .hero-actions .messenger-group {
   display: flex;
@@ -1652,7 +1608,7 @@ button[disabled] {
   }
 }
 
-/* Suburb delivery: remove outer frame, give each piece a 3D square premium card */
+
 .city-delivery {
   padding: clamp(42px, 6vw, 82px) 24px clamp(40px, 5vw, 68px) !important;
   background:
@@ -1747,7 +1703,7 @@ button[disabled] {
   .delivery-card__item { min-height: 142px; border-radius: 18px !important; }
 }
 
-/* Premium dark mode — black glass cards with soft gold glow */
+
 [data-theme="dark"] body { background: #120b05; }
 [data-theme="dark"] .card,
 [data-theme="dark"] .card--light,
@@ -1830,9 +1786,7 @@ button[disabled] {
 
 /* ══ END R9 ══ */
 
-/* ══════════════════════════════════════════════════════════════
-   PATCH R11 — keyboard/a11y polish for legacy visual controls
-   ══════════════════════════════════════════════════════════════ */
+
 [role="button"]:focus-visible,
 .calc-biscuit-opt:focus-visible,
 .faq-item:focus-visible,
@@ -1867,16 +1821,12 @@ button[disabled] {
     outline-offset: 2px !important;
   }
 }
-/* ══ END R11 ══ */
 
-/* ══════════════════════════════════════════════════════════════
-   PATCH R12 — mobile calculator ergonomics + overlay a11y cleanup
-   Цель: калькулятор на телефоне не конфликтует с mc-nav, раскрывается
-   удобной bottom-sheet панелью и остаётся читаемым в обеих темах.
-   ══════════════════════════════════════════════════════════════ */
+
+
 @media (max-width: 560px) {
   .calc-right-col {
-    z-index: 160 !important; /* выше mc-nav/nav sheet backdrop и старых bottom bars */
+    z-index: 160 !important; 
     left: max(0px, env(safe-area-inset-left, 0px)) !important;
     right: max(0px, env(safe-area-inset-right, 0px)) !important;
     width: auto !important;
@@ -1948,7 +1898,7 @@ button[disabled] {
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
   }
-  /* Когда калькулятор раскрыт, нижняя nav не должна конкурировать с CTA. */
+  
   body:has(.calc-right-col.calc-result-open) #mcNav,
   body:has(.calc-right-col.calc-result-open) .mc-nav {
     transform: translateY(110%) !important;
@@ -1968,23 +1918,18 @@ button[disabled] {
   box-shadow: 0 -20px 60px rgba(0,0,0,.62), 0 0 30px rgba(212,167,106,.08) !important;
 }
 
-/* R12: overlays закрывают модалки по клику, но не должны становиться tab-кнопками. */
+
 .cart-overlay[role="button"],
 #privacyOverlay[role="button"],
 #cookiePrivacyOverlay[role="button"],
 [id$="Overlay"][role="button"] {
   outline: none !important;
 }
-/* ══ END R12 ══ */
 
-/* ══════════════════════════════════════════════════════════════
-   PATCH R13 — Premium mobile TOC micro-polish
-   Без реформы структуры: только тонкая прорисовка, плавность,
-   tactile feedback и минималистичная glass-эстетика для burger TOC
-   + smart bottom TOC (#mcNav / #mcSheet).
-   ══════════════════════════════════════════════════════════════ */
+
+
 @media (max-width: 768px) {
-  /* Bottom TOC: softer glass island, crisp but minimal */
+  
   #mcNav.mc-nav,
   .mc-nav {
     height: calc(62px + env(safe-area-inset-bottom, 0px)) !important;
@@ -2081,7 +2026,7 @@ button[disabled] {
     background: linear-gradient(180deg, transparent, rgba(201,147,74,.18), transparent) !important;
   }
 
-  /* Slide-up TOC sheet: premium card, more air, smoother depth */
+  
   #mcBackdrop.mc-sheet-backdrop {
     background: rgba(31,18,9,0) !important;
     -webkit-backdrop-filter: blur(0px);
@@ -2219,7 +2164,7 @@ button[disabled] {
     background: linear-gradient(90deg, transparent, rgba(201,147,74,.20), transparent) !important;
   }
 
-  /* Burger TOC: minimal premium drawing without changing markup */
+  
   .mobile-menu {
     background:
       radial-gradient(ellipse 85% 42% at 50% -10%, rgba(232,184,122,.18), transparent 62%),
@@ -2273,7 +2218,7 @@ button[disabled] {
   }
   .mm-msg:active { transform: scale(.94) translateY(1px) !important; }
 
-  /* Dark theme */
+  
   [data-theme="dark"] #mcNav.mc-nav,
   [data-theme="dark"] .mc-nav {
     background: linear-gradient(180deg, rgba(25,16,8,.90), rgba(13,8,4,.985)) !important;
@@ -2335,13 +2280,9 @@ button[disabled] {
     transform: none !important;
   }
 }
-/* ══ END R13 ══ */
 
-/* ══════════════════════════════════════════════════════════════
-   PATCH R14 — Mobile TOC finishing touches
-   Ещё тоньше: active row semantics, edge light, focus elegance,
-   perceived depth without changing structure.
-   ══════════════════════════════════════════════════════════════ */
+
+
 @media (max-width: 768px) {
   #mcSheet.mc-sheet {
     scrollbar-width: thin;
@@ -2399,7 +2340,7 @@ button[disabled] {
     opacity: .18;
   }
 
-  /* More graceful focus states for mobile TOC controls */
+  
   #mcNav .mc-btn:focus-visible,
   .mc-nav .mc-btn:focus-visible,
   #mcSheet .mc-row:focus-visible,
@@ -2412,7 +2353,7 @@ button[disabled] {
     box-shadow: 0 0 0 5px rgba(201,147,74,.12), 0 10px 24px rgba(61,43,31,.08) !important;
   }
 
-  /* Tap-highlight replacement: subtle inner bloom */
+  
   #mcNav .mc-btn::after,
   .mc-nav .mc-btn::after,
   #mcSheet .mc-row::after,
@@ -2439,7 +2380,7 @@ button[disabled] {
   #mcSheet .mc-row > *,
   .mobile-menu-nav a > * { position: relative; z-index: 1; }
 
-  /* The full-screen burger menu feels lighter at the bottom. */
+  
   .mobile-menu::after {
     content: '';
     position: fixed;
@@ -2492,15 +2433,11 @@ button[disabled] {
   #mcSheet .mc-row::after,
   .mobile-menu-nav a::after { transition: none !important; }
 }
-/* ══ END R14 ══ */
 
-/* ══════════════════════════════════════════════════════════════
-   PATCH R15 — Contacts polish + hero messenger lift + softer copy type
-   Точечно исправляет замечания: телефонная SVG-трубка, footer contacts,
-   высота подлёта названий WA/TG/MAX и менее «квадратную» типографику.
-   ══════════════════════════════════════════════════════════════ */
 
-/* 1) Contacts card: phone icon must be clean black, not white/gold-buggy */
+
+
+
 #contacts .contact-primary-icon {
   color: #0f0d0a !important;
   background:
@@ -2542,7 +2479,7 @@ button[disabled] {
 }
 [data-theme="dark"] #contacts .contact-primary-icon svg { color: #0b0906 !important; }
 
-/* 2) Footer contacts: remove accidental-looking colored links; make neutral premium chips */
+
 .site-footer .footer-col address {
   display: flex;
   flex-wrap: wrap;
@@ -2599,7 +2536,7 @@ button[disabled] {
   }
 }
 
-/* 3) Main hero messenger labels: match suburb-height lift, not tiny movement */
+
 .hero-actions .btn-hero-messenger:hover .hero-flat-text,
 .hero-actions .btn-hero-messenger:hover [id^="flat-text-"] {
   transform: translateY(-13px) !important;
@@ -2611,7 +2548,7 @@ button[disabled] {
   opacity: .10 !important;
 }
 
-/* 4) Softer, less square premium copy typography — no italic */
+
 .hero-subtitle,
 .section-sub,
 .about-section .section-sub,
@@ -2654,12 +2591,10 @@ button[disabled] {
 [data-theme="dark"] .meringue-promo__text {
   color: #d9c2a0 !important;
 }
-/* ══ END R15 ══ */
 
 
-/* ═══════════════════════════════════════════════════════
-   r18.3 FINAL HARDENING OVERRIDES — theme + messenger sync
-   ═══════════════════════════════════════════════════════ */
+
+
 .theme-toggle > .theme-icon,
 .theme-toggle .theme-icon { display: none !important; }
 html:not([data-theme="dark"]) .theme-toggle > .theme-icon--moon { display: block !important; }

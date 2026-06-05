@@ -1,12 +1,6 @@
-/* ═══════════════════════════════════════════════════════════════════
-   Milovi Cake — final surgical fixes v21
-   ДОЛЖЕН подключаться последним. Исправляет hero CTA, WA/TG/MAX labels,
-   dark hero, prigorody FAQ/delivery. Галерею не ломает.
-   ═══════════════════════════════════════════════════════════════════ */
 
-/* 1) HERO CTA под блоком “Изготовление / Доставка / Натуральные продукты”.
-   Полностью убираем внутреннюю рамку: старые ::before/::after, conic-ring,
-   shimmer, ripple/gold-ripple визуальные круги и inner outline. */
+
+
 .hero .btn-primary.btn-primary--hero,
 .hero-actions .btn-primary.btn-primary--hero,
 :root:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero,
@@ -61,7 +55,7 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero,
   animation: none !important;
 }
 
-/* Перебиваем mc-2026.css: :root:not([data-theme="dark"]) .btn-primary:hover */
+
 :root:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
 html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
 [data-theme="dark"] .hero .btn-primary.btn-primary--hero:hover,
@@ -92,8 +86,7 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   }
 }
 
-/* 2) Hero WA / TG / MAX: увеличиваем именно всплывающую ВВЕРХ надпись.
-   Расстояние подъёма и размер иконок не меняем. */
+
 .hero-actions .btn-hero-messenger .hero-flat-text,
 .hero-actions .btn-hero-messenger [id^="flat-text-"] {
   font-size: 13.2px !important;
@@ -119,21 +112,21 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   }
 }
 
-/* MAX icon: original direct glyph, centered inside the ring */
+
 .hero-actions .btn-hero-max > svg > g {
   transform: translate(6px, 3.5px) scale(0.27) !important;
   transform-origin: 0 0 !important;
   transform-box: view-box !important;
 }
 
-/* 3) Галерея — страховка прелоадера */
+
 #preloader.hidden {
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
 }
 
-/* 4) Тёмная тема hero — убираем чёрный прямоугольник */
+
 [data-theme="dark"] .hero-content::before,
 [data-theme="dark"] .hero-content::after {
   content: none !important;
@@ -143,8 +136,8 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   background: none !important;
 }
 
-/* 5) Пригороды: delivery glassmorphism без “коробочных” рамок */
-/* ЕДИНСТВЕННОЕ определение dark .delivery-card (consolidated, удалены дубли из v20-fixes.css и premium-overrides.css) */
+
+
 [data-theme="dark"] .delivery-card {
   border: 1px solid rgba(212,167,106,.15) !important;
   background: rgba(26,17,8,.88) !important;
@@ -164,16 +157,11 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   visibility: visible;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   v22 micro-fixes
-   1) WA/TG/MAX labels: same size, shorter flight.
-   2) MAX glyph: force centered normalized SVG mark.
-   3) Hero subtitle: keep synesthesia hover, do NOT dim other words.
-   ═══════════════════════════════════════════════════════════════════ */
+
 @media (hover:hover) and (pointer:fine) {
   .hero-actions .btn-hero-messenger:hover .hero-flat-text,
   .hero-actions .btn-hero-messenger:hover [id^="flat-text-"] {
-    /* было -13px — чуть ближе к кружку */
+    
     transform: translateY(-10.5px) scale(1.055) !important;
   }
   .hero-actions .btn-hero-messenger:hover .hero-ring-text,
@@ -182,7 +170,7 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   }
 }
 
-/* Не затемнять соседние слова в hero subtitle. Hover-слово остаётся с эффектом. */
+
 .hero-subtitle .w,
 .hero-subtitle .w.near,
 .hero-subtitle:hover .w,
@@ -206,19 +194,13 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   v23 — Hero heading & suburb fixes (rev3)
-   1) Hero subtitle: smooth whole-text stretch instead of per-word blue.
-   2) Suburb hero h1: multi-line layout, city bluish italic, blue "от", interactive brand.
-   3) .hero-title-brand: interactive stretch (no glare).
-   ═══════════════════════════════════════════════════════════════════ */
 
-/* ── 1) Hero subtitle: smooth whole-text stretch, kill per-word blue ── */
-/* Note: premium-overrides.css R5 has .hero-subtitle:hover { transform: translateX(4px) !important }
-   Since final-fixes.css loads last, same-specificity !important rules here win. */
+
+
+
 .hero-subtitle {
   display: inline-block;
-  transform-origin: left center; /* match R5 origin */
+  transform-origin: left center; 
   transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94),
               letter-spacing 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94),
               text-shadow 0.45s ease;
@@ -226,8 +208,8 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
 }
 @media (hover: hover) and (pointer: fine) {
   .hero-subtitle:hover {
-    transform: scaleX(1.018) scaleY(1.018) !important; /* important: overrides R5 translateX */
-    color: rgba(255, 238, 205, 0.92) !important;        /* warm, not dark; overrides R5 */
+    transform: scaleX(1.018) scaleY(1.018) !important; 
+    color: rgba(255, 238, 205, 0.92) !important;        
     letter-spacing: 0.035em;
     text-shadow: 0 0 18px rgba(201,147,74,0.22) !important;
   }
@@ -254,12 +236,12 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   }
 }
 
-/* ── 2) Suburb hero h1: multi-line structured layout ── */
+
 .hero-title--geo {
   line-height: 1.2;
 }
 
-/* All lines blue by default inside geo h1 */
+
 .hero-title--geo .hero-title-line {
   color: rgba(140, 195, 240, 0.88);
   -webkit-text-fill-color: rgba(140, 195, 240, 0.88);
@@ -269,7 +251,7 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   -webkit-text-fill-color: rgba(140, 200, 245, 0.82);
 }
 
-/* "в Мурино" — bluish italic */
+
 .hero-title-line--city {
   display: block;
   font-style: italic;
@@ -288,7 +270,7 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   }
 }
 
-/* "от" — same blue, no italic, subtle */
+
 .hero-title-line--accent {
   display: block;
   transition: color 0.4s ease, -webkit-text-fill-color 0.4s ease;
@@ -301,7 +283,7 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   }
 }
 
-/* ── 3) .hero-title-brand: interactive stretch (no glare) ── */
+
 .hero-title .hero-title-brand {
   display: inline;
   transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
@@ -335,37 +317,28 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   v24 — Professional fixes (r40) — 2026-05-19
-   1) City hero: padding-top compensates for header-city full height.
-   2) hero-subtitle: zero wave-text colour effects, stretch only.
-   3) hero-title--geo: compact size, .hero-title-line--brand styling.
-   4) header-logo-sub city: brand tagline, no "Главная".
-   ═══════════════════════════════════════════════════════════════════ */
 
-/* ── 1) City pages: push hero content below fixed header (72px row + ~40px crumb) ── */
+
+
 .site-header.header-city ~ main > .hero {
   padding-top: 112px !important;
-  /* important: inline style="padding-top:0" removed from template r40 */
+  
 }
 @media (max-width: 900px) {
   .site-header.header-city ~ main > .hero {
-    padding-top: 100px !important; /* 64px hdr-main-row + ~36px crumb */
+    padding-top: 100px !important; 
   }
 }
 @media (max-width: 768px) {
   .site-header.header-city ~ main > .hero {
-    /* Mobile: flex-column layout — photo-bg first, hero-content below.
-       Header overlaps the photo naturally (by design). No padding needed.
-       important: v24 wrongly added 90px here, creating white gap. */
+    
     padding-top: 0 !important;
-    padding-bottom: 0 !important; /* hero-content has own 40px bottom padding */
+    padding-bottom: 0 !important; 
   }
 }
 
-/* ── 2) hero-subtitle: FULL wave-text kill — whole-element stretch only ── */
-/* All word-level effects (color, opacity, transform) killed for .hero-subtitle.
-   Whole-element hover stretch from v23 stays intact. */
+
+
 .hero-subtitle .w,
 .hero-subtitle .w.near,
 .hero-subtitle .w:hover,
@@ -389,13 +362,13 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   animation: none !important;
 }
 
-/* ── 3) hero-title--geo: tighter, 3-line layout ── */
+
 .hero-title--geo {
   font-size: clamp(38px, 4.6vw, 66px) !important;
   line-height: 1.08 !important;
   margin-bottom: 16px !important;
 }
-/* "от Milovi Cake" combined line: warm gold, no italic */
+
 .hero-title-line--brand {
   display: block;
   font-style: normal;
@@ -416,7 +389,7 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
     -webkit-text-fill-color: rgba(248, 230, 190, 0.95) !important;
   }
 }
-/* Tighten gap between lines inside geo-hero */
+
 .hero-title--geo .hero-title-line,
 .hero-title--geo .hero-title-line--city,
 .hero-title--geo .hero-title-line--brand {
@@ -424,7 +397,7 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   padding-bottom: 0;
 }
 
-/* ── 4) header-logo-sub in city mode: ensure brand tone ── */
+
 .site-header.header-city .header-logo-sub {
   color: rgba(255, 235, 185, 0.38) !important;
   font-size: 10px !important;
@@ -435,7 +408,7 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   color: rgba(201, 147, 74, 0.55) !important;
 }
 
-/* ── Reduced-motion: no transforms on geo lines ── */
+
 @media (prefers-reduced-motion: reduce) {
   .hero-title-line--brand {
     transition: none !important;

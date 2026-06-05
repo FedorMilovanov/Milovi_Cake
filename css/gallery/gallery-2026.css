@@ -41,7 +41,7 @@ button { -webkit-tap-highlight-color: transparent; }
 .blob { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; opacity: .15; }
 .blob-1 { width: 500px; height: 500px; background: var(--gold); top: -100px; left: -100px; animation: orbit 25s linear infinite; }
 .blob-2 { width: 400px; height: 400px; background: var(--gold-light); bottom: -100px; right: -100px; animation: orbit 20s linear reverse infinite; }
-@media (hover: none) { .blob { display: none; } } /* Performance fix for mobile */
+@media (hover: none) { .blob { display: none; } } 
 @keyframes orbit { from { transform: rotate(0deg) translateX(50px) rotate(0deg); } to { transform: rotate(360deg) translateX(50px) rotate(-360deg); } }
 
 .gx-page { min-height: 100vh; position: relative; z-index: 1; padding: 48px 16px 72px; }
@@ -70,7 +70,7 @@ button { -webkit-tap-highlight-color: transparent; }
 .gx-counter-dot { width:4px; height:4px; border-radius:50%; background:var(--gold-light); opacity:.5; }
 .gx-main { width:100%; max-width:1400px; margin:0 auto; position:relative; z-index:2; }
 
-/* ═══════ DRIVE EXACT GRID + CARD HOVER ═══════ */
+
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -154,7 +154,7 @@ button { -webkit-tap-highlight-color: transparent; }
 .gx-footer-link:hover { color:var(--gold); }
 .gx-copy { margin-top:20px; font-size:10px; opacity:.42; letter-spacing:.22em; text-transform:uppercase; }
 
-/* ═══════ LIGHTBOX — PREMIUM 3D COVERFLOW FROM DRIVE ═══════ */
+
 .lb-root { position:fixed; inset:0; z-index:100000; display:flex; flex-direction:column; animation:lbFadeIn .6s cubic-bezier(.16,1,.3,1); background:#080402; contain:paint; isolation:isolate; }
 @keyframes lbFadeIn { from { opacity:0; transform:scale(1.02); } to { opacity:1; transform:scale(1); } }
 .lb-backdrop { position:absolute; inset:0; overflow:hidden; background:#080402; z-index:0; }
@@ -193,7 +193,7 @@ video.lb-media { background:#080402!important; }
 .lb-swiper .swiper-slide-active .lb-media { filter:saturate(1.05) brightness(1.02) contrast(1.02); opacity:1; transform:scale(1); box-shadow:0 40px 120px rgba(0,0,0,.7), 0 0 60px rgba(184,130,58,.12); }
 .lb-swiper .swiper-slide-visible:not(.swiper-slide-active) .lb-media { pointer-events:auto; }
 .lb-info { position:absolute; bottom:110px; left:0; right:0; text-align:center; z-index:20; pointer-events:none; padding:0 16px; }
-.lb-info-inner { display:inline-block; pointer-events: auto; } /* Fix: allow selecting text */
+.lb-info-inner { display:inline-block; pointer-events: auto; } 
 .lb-title { font-family:'Cormorant Garamond',serif; font-size:clamp(22px,3.5vw,32px); font-weight:400; font-style:italic; color:#fff; margin:0 0 8px; animation:infoSlideUp .5s cubic-bezier(.16,1,.3,1); text-shadow:0 2px 20px rgba(0,0,0,.5); }
 .lb-desc { font-size:11px; letter-spacing:.15em; color:rgba(255,255,255,.35); text-transform:uppercase; margin:0; animation:infoSlideUp .5s cubic-bezier(.16,1,.3,1) .05s both; }
 .lb-disclaimer { margin-top: 10px; font-size: 9px; color: rgba(255,255,255,0.2); letter-spacing: 0.05em; text-transform: uppercase; animation: infoSlideUp 0.5s ease 0.1s both; }
@@ -241,7 +241,7 @@ video.lb-media { background:#080402!important; }
 }
 @media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; } .blob { animation:none; } }
 
-/* Share / order actions inside opened work */
+
 .lb-actions {
   margin-top: 14px;
   display: inline-flex;
@@ -286,7 +286,7 @@ video.lb-media { background:#080402!important; }
   .lb-action { min-height: 30px; padding: 0 10px; font-size: 9px; letter-spacing: .08em; }
 }
 
-/* v25 — minimal messenger choice inside opened gallery work */
+
 .lb-order-choice {
   display: inline-flex;
   align-items: center;
@@ -359,12 +359,12 @@ video.lb-media { background:#080402!important; }
   .lb-order-max svg { width: 15px; height: 15px; }
 }
 
-/* === r19 FIX: добавлен .gx-chip-icon (был непокрыт) === */
+
 .gx-chip-icon { display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; margin-right:6px; opacity:0.85; }
 .gx-chip-icon svg { width:100%; height:100%; }
 
 
-/* r47 — premium SEO/AI facts block for gallery; placed below the interactive grid, does not touch lightbox/filter logic */
+
 .gx-seo-panel {
   position: relative;
   max-width: 920px;

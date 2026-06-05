@@ -1,8 +1,6 @@
-/* ==========================================================
-   v20-fixes.css — Final Apple-style Premium Fixes
-   ========================================================== */
 
-/* 1. Fix Black Rectangle in Hero Content in Dark Mode */
+
+
 html[data-theme="dark"] .hero-content,
 [data-theme="dark"] .hero-content {
   background: transparent !important;
@@ -10,10 +8,9 @@ html[data-theme="dark"] .hero-content,
   border: none !important;
 }
 
-/* 2. Dark Mode for Delivery Cards: consolidated in final-fixes.css to avoid cascade conflicts.
-   Do not add .delivery-card dark overrides here — managed in final-fixes.css only. */
 
-/* 3. Force FAQ visibility */
+
+
 .delivery-faq,
 .delivery-faq .faq-list,
 .delivery-faq .faq-item,

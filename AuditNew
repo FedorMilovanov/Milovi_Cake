@@ -225,6 +225,14 @@
   9 commercial/trust landing pages должны отдавать только `/css/style.css` из локальных CSS.
   Текущий production smoke: 44 checks passed.
 
+## CSS cleanup phase 1
+
+- Безопасная чистка CSS без изменения визуальных правил: удалены неприкладные комментарии из 7 CSS-файлов,
+  защищённые R9/R10/AI DO NOT TOUCH markers сохранены.
+
+- Raw CSS уменьшен примерно на 72 KB: ~474 KB → ~402 KB. CSS gzip уменьшен примерно до ~72 KB.
+  Cache-bust поднят до `20260605r52` / `milovi-cake-v2026.06.05-r52`.
+
 ## Открытые warnings (не блокируют деплой)
 
 - Размер CSS/JS по сырым байтам выше бюджета (по gzip ~87/68 КБ — приемлемо).
