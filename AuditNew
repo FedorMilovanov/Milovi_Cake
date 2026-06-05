@@ -246,7 +246,15 @@
   Не трогались hero messenger rings, reviews, cart, gallery, dark/theme overlays, prigorody lightbox и premium override blocks.
 
 - Удалено 32 маленьких мёртвых правила из `css/style.css` и `css/mc-2026.css` (`breadcrumb-inner`, старые `btn-phone`, `slider-dots`, старые badge/rp utility и т.п.).
-  Raw CSS: ~401.1 KB → ~398.3 KB. CSS gzip: ~70.6 KB → ~70.2 KB. Cache-bust поднят до `20260605r54` / `milovi-cake-v2026.06.05-r54`.
+  Raw CSS: ~401.1 KB → ~398.3 KB. CSS gzip: ~70.6 KB → ~70.2 KB. Cache-bust был поднят до `20260605r54` / `milovi-cake-v2026.06.05-r54`.
+
+## CSS cleanup phase 3b
+
+- Продолжена selector-map чистка: удалены только impossible selectors, где отсутствующий class/id делает правило недостижимым в текущем runtime HTML/JS.
+  Убраны старые блоки `product-img`, legacy contact/social, legacy footer, old map-panel/rating/chat/photo-strip utilities, `product-badge`, остатки `reveal-stagger` и старые header-trust-num/count правила.
+
+- Protected UI-зоны снова не трогались: hero messengers, reviews/modal, cart, gallery, theme/dark, prigorody lightbox, bento/order.
+  Raw CSS: ~398.3 KB → ~389.2 KB. CSS gzip: ~70.2 KB → ~68.7 KB. Cache-bust поднят до `20260605r55` / `milovi-cake-v2026.06.05-r55`.
 
 - `!important` baseline ужат до текущего фактического уровня, чтобы будущие правки не могли незаметно вернуть CSS-долг.
 
@@ -254,7 +262,7 @@
 
 - Блокирующих warnings сейчас нет: `python3 scripts/audit.py` проходит с 0 errors / 0 warnings.
 
-- Raw CSS всё ещё крупный из-за исторических слоёв и premium overrides, но wire-size в норме: CSS gzip ~70.2 KB, JS gzip ~68.3 KB, total ~138.4 KB.
+- Raw CSS всё ещё крупный из-за исторических слоёв и premium overrides, но wire-size в норме: CSS gzip ~68.7 KB, JS gzip ~68.3 KB, total ~137.0 KB.
   Дальше резать только фазами: selector usage map → маленькая пачка → Playwright/visual QA.
 
 - .git pack/history — на деплой не влияет.

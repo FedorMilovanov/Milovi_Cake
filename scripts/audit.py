@@ -91,8 +91,8 @@ DEV_TOOLING_JS = {
 IMPORTANT_BUDGET = {
     "css/premium-overrides.css": 656,
     "css/v20-dark-and-fixes.css": 600,
-    "css/mc-2026.css": 213,
-    "css/style.css": 128,
+    "css/mc-2026.css": 199,
+    "css/style.css": 124,
     "css/final-fixes.css": 129,
     "css/gallery/gallery-2026.css": 24,
     "css/v20-fixes.css": 10,
