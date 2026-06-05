@@ -107,6 +107,15 @@
 
 - Cache-bust поднят синхронно до `20260605r50` / `milovi-cake-v2026.06.05-r50`.
 
+## Hours and Playwright QA r50
+
+- Часы работы приведены к фактическому режиму `Пн–Сб, 10:00–20:00` по видимым блокам,
+  JSON-LD `openingHoursSpecification`, `openingHours`, пригородному шаблону и CSV-данным.
+
+- Подключён Playwright как dev-зависимость (`@playwright/test`) и добавлены smoke/visual QA-тесты:
+  новые лендинги, wedding editorial/media, homepage schema graph, desktop + mobile.
+  Локально установлены браузеры и системные зависимости; `npm run test:playwright` → 24/24 passed.
+
 ## Открытые warnings (не блокируют деплой)
 
 - Размер CSS/JS по сырым байтам выше бюджета (по gzip ~87/68 КБ — приемлемо).

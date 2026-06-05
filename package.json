@@ -8,7 +8,10 @@
     "audit:js": "node --check js/main.js && node --check js/nav.js && node --check js/mc-2026.js && node --check js/v20-faq-fix.js && node --check js/gallery/main.js && node --check js/gallery/data.js && node --check sw.js && echo '✅ All JS valid'",
     "audit:prigorody": "python3 scripts/check_prigorody_idempotent.py",
     "audit:all": "npm run audit:js && npm run audit:prigorody && npm run audit",
-    "build:prigorody": "python3 prigorody/build.py"
+    "build:prigorody": "python3 prigorody/build.py",
+    "test:playwright": "playwright test",
+    "test:playwright:headed": "playwright test --headed",
+    "test:playwright:report": "playwright show-report"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -18,5 +21,8 @@
     "milovi",
     "static-site"
   ],
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@playwright/test": "^1.60.0"
+  }
 }

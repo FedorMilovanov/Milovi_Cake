@@ -63,6 +63,33 @@ MAX_HTML = 200_000
 MIN_DESC_LEN = 50
 MAX_DESC_LEN = 160
 
+# Dev/tooling directories are not part of the deployed GitHub Pages site.
+# Keep runtime structure strict while allowing local Playwright/node tooling.
+EXCLUDED_AUDIT_DIRS = {
+    "node_modules",
+    ".git",
+    ".cache",
+    ".pytest_cache",
+    "playwright-report",
+    "test-results",
+}
+DEV_TOOLING_JS = {
+    "playwright.config.js",
+    "tests/landing-smoke.spec.js",
+}
+
+
+def relpath(p: Path) -> str:
+    return str(p.relative_to(ROOT)).replace(os.sep, "/")
+
+
+def is_excluded_path(p: Path) -> bool:
+    try:
+        rel_parts = p.relative_to(ROOT).parts
+    except ValueError:
+        rel_parts = p.parts
+    return any(part in EXCLUDED_AUDIT_DIRS for part in rel_parts)
+
 
 # ─── Minimal HTML Parser ──────────────────────────────────────────────────
 
@@ -189,7 +216,9 @@ R = AuditReport()
 
 html_pages = []
 for p in ROOT.rglob("*.html"):
-    rel = str(p.relative_to(ROOT)).replace(os.sep, "/")
+    if is_excluded_path(p):
+        continue
+    rel = relpath(p)
     if rel == "prigorody/_template.html":
         continue
     html_pages.append((rel, p))
@@ -204,7 +233,9 @@ with R.section("1. File Structure Guard"):
     # CSS files
     actual_css = set()
     for p in ROOT.rglob("*.css"):
-        rel = str(p.relative_to(ROOT)).replace(os.sep, "/")
+        if is_excluded_path(p):
+            continue
+        rel = relpath(p)
         actual_css.add(rel)
 
     forbidden_css = actual_css - ALLOWED_CSS
@@ -220,12 +251,14 @@ with R.section("1. File Structure Guard"):
     # JS files
     actual_js = set()
     for p in ROOT.rglob("*.js"):
+        if is_excluded_path(p):
+            continue
         if p.name == "sw.js":
             continue
-        rel = str(p.relative_to(ROOT)).replace(os.sep, "/")
+        rel = relpath(p)
         actual_js.add(rel)
 
-    forbidden_js = actual_js - ALLOWED_JS
+    forbidden_js = actual_js - ALLOWED_JS - DEV_TOOLING_JS
     missing_js = ALLOWED_JS - actual_js
 
     if forbidden_js:
@@ -699,13 +732,15 @@ with R.section("11. Encoding (UTF-8)"):
     text_extensions = {".html", ".css", ".js", ".json", ".svg", ".txt", ".xml", ".webmanifest", ".md"}
 
     for p in ROOT.rglob("*"):
+        if is_excluded_path(p):
+            continue
         if p.is_file() and p.suffix.lower() in text_extensions:
             try:
                 content = p.read_text(encoding="utf-8")
                 if "\ufffd" in content:
-                    encoding_issues.append(str(p.relative_to(ROOT)))
+                    encoding_issues.append(relpath(p))
             except UnicodeDecodeError:
-                encoding_issues.append(str(p.relative_to(ROOT)))
+                encoding_issues.append(relpath(p))
 
     if encoding_issues:
         for ei in encoding_issues[:20]:
@@ -926,11 +961,13 @@ with R.section("18. Repo Hygiene"):
     # Large files
     large_files = []
     for p in ROOT.rglob("*"):
+        if is_excluded_path(p):
+            continue
         if p.is_file():
             try:
                 sz = p.stat().st_size
                 if sz > 5_000_000:
-                    large_files.append((str(p.relative_to(ROOT)), sz))
+                    large_files.append((relpath(p), sz))
             except OSError:
                 pass
 
