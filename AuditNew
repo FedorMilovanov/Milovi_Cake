@@ -1,91 +1,39 @@
-# БАГИ МИЛОВИ и АУДИТ
+# Milovi Cake — состояние и аудит
 
-**Последнее обновление:** 2026-05-19 (r35 — diamond polished)
+**Последнее обновление:** 2026-06-05
 
-**Статус: ВСЕ БАГИ ЗАКРЫТЫ. Проект стабилизирован.**
+**Источник истины:** `python3 scripts/audit.py` (генерирует отчёт в `audit/`).
 
----
+> Этот файл ведётся ТОЛЬКО по фактам реального прогона аудита.
 
-## ✅ ВСЕ БАГИ ЗАКРЫТЫ
+## Текущий статус
 
-### r28–r29: Критические JS + синхронизация
-- [x] #1 CACHE_NAME/PRECACHE рассинхрон
-- [x] #2 SW install глотает ошибки precache
-- [x] #3 console.log в продакшене
-- [x] #5 _calcBiscuit не сохранялся в localStorage
-- [x] #11 SW комментарий ≠ CACHE_NAME
-- [x] #14 img fade hero opacity:0
-- [x] #15 **КРИТ:** selectCakeType уничтожает тултипы
-- [x] #16 changeQty без maxQty
-- [x] #17 buildTG clipboard fallback
-- [x] #21 lockBody iOS Safari scroll-through
-- [x] #35 scrollToProduct таймаут
+`python3 scripts/audit.py` → PASSED, 0 errors, 9 warnings (2026-06-05).
 
-### r30: Аналитика
-- [x] #8 GA sync → defer на всех 23 страницах
-- [x] #9/19 Yandex Metrika на всех страницах
-- [x] #39 Gallery без аналитики
+## Исправлено 2026-06-05 (было 26 errors → 0)
 
-### r31–r32: Accessibility
-- [x] #37 role="dialog" на lightbox, privacyOverlay
-- [x] #38 Focus traps: lightbox, cart, privacy
-- [x] #40 Gallery iOS scroll-lock
+- Рассинхрон версий: HTML был `r45`, sw.js — `r41` (SW прекэшировал несуществующие URL).
+  Всё сведено к `20260605r46`: HTML, sw.js (PRECACHE + CACHE_NAME + шапка), ESM-импорт data.js.
 
-### r34: Все edge-cases
-- [x] #13 parseCartKey colon escaping
-- [x] #22 buildWA URL length limit
-- [x] #25 Dark theme «дублирован» — подтверждено НЕ баг
-- [x] #26 closeLightbox .load() removed
-- [x] #27 warmupLightboxMedia stale preload cancellation
-- [x] #29 initSwiperWhenReady retries 120→40
-- [x] #33 toggleCart resize handler
-- [x] #34 CSV build.py validation
+- 404.html: удалён дублирующий `<meta robots>` (оставлен `noindex, follow`).
 
-### r35: Финальная чистка
-- [x] Дублированные блоки аналитики в 404, certificates, meringue-roll, gallery, prigorody — удалены. Каждая страница: ровно 1 GA + 1 YM
-- [x] Обрезанные мусорные комментарии `<!-- GA: moved to defer...` — удалены
-- [x] `</body> (r30) -->` фрагменты — удалены
-- [x] gallery/main.js `console.warn('[Milovi] Swiper CDN timeout')` — удалён
-- [x] CSS tokens: 141 hex→var() суммарно
-- [x] SW comment/CACHE_NAME/version — всё синхронно
+- Schema AggregateRating: reviewCount 8 → 6 (по числу реальных Review).
 
----
+## Открытые warnings (не блокируют деплой)
 
-## Финальное состояние
+- Размер CSS/JS по сырым байтам выше бюджета (по gzip ~87/68 КБ — приемлемо).
 
-| Метрика | Значение |
-|---------|----------|
-| Версия | `?v=20260519r35` единая |
-| CACHE_NAME | `milovi-cake-v2026.05.19-r35` |
-| SW comment | `V20260519-R35` |
-| JS синтаксис | 7/7 ✅ |
-| Дубликаты функций | 0 ✅ |
-| console.log/warn/error (прод) | 0 ✅ |
-| GA (defer) | все 23 страницы, ровно 1 блок каждая ✅ |
-| Yandex Metrika | все 23 страницы, ровно 1 блок каждая ✅ |
-| Sync GA в `<head>` | 0 ✅ |
-| role="dialog" | 6 модалей ✅ |
-| Focus traps | 4 модаля ✅ |
-| iOS scroll lock | main.js + gallery ✅ |
-| CSS-токены dark | 21 |
-| Hardcoded hex v20-dark | 31 (было 154) |
-| {{placeholders}} в HTML | 0 ✅ |
-| Мусорные файлы | 0 ✅ |
-| Дублированные аналитики | 0 ✅ |
-| CSV validation | build.py ✅ |
+- !important: premium-overrides 658, v20-dark 600, mc-2026 216, style 133, final-fixes 131.
+  Снижать только точечно, с визуальной проверкой (есть PROTECTED hero-блоки).
 
----
+- .git pack 35.6 MB — история, на деплой не влияет.
 
-## 📝 ИСТОРИЯ
+## Расхождения в README (поправить отдельно)
 
-| Версия | Ключевое |
-|--------|----------|
-| r21–r23 | Синхронизация, audit tooling, SW video bypass |
-| r28 | Ресинхронизация ?v= |
-| r29 | 8 JS-багов |
-| r30 | GA defer + Metrika на всех 23 страницах |
-| r31 | A11y: role="dialog", gallery iOS |
-| r32 | CSS: 141 hex→var(). Focus traps |
-| r33 | SW comment sync |
-| r34 | Все edge-cases (#13,#22,#26,#27,#29,#33,#34) |
-| r35 | **Финальная чистка**: дубли аналитики, мусорные комментарии, console.warn gallery |
+- README указывает 4 CSS / 4 JS, фактически 7 CSS / 6 JS.
+
+- В разделе проверок упомянут несуществующий js/gallery/shuffle.js.
+
+## Воспроизвести
+
+`python3 scripts/audit.py` → отчёт в audit/audit-YYYY-MM-DD_HHMM.md
