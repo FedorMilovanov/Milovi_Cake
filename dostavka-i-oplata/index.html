@@ -9,8 +9,8 @@
   <meta name="keywords" content="доставка тортов спб, оплата торта на заказ, самовывоз торт спб, торт доставка ленобласть, milovi cake доставка" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://milovicake.ru/dostavka-i-oplata/" />
-  <link rel="icon" href="/favicon.svg?v=20260605r49" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="/icon-apple.png?v=20260605r49" />
+  <link rel="icon" href="/favicon.svg?v=20260605r50" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/icon-apple.png?v=20260605r50" />
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#c9934a" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#3d2b1f" media="(prefers-color-scheme: dark)" />
@@ -32,12 +32,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" /></noscript>
-  <link rel="stylesheet" href="/css/style.css?v=20260605r49" />
-  <link rel="stylesheet" href="/css/mc-2026.css?v=20260605r49" />
-  <link rel="stylesheet" href="/css/premium-overrides.css?v=20260605r49" />
-  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260605r49" />
-  <link rel="stylesheet" href="/css/v20-fixes.css?v=20260605r49" />
-  <link rel="stylesheet" href="/css/final-fixes.css?v=20260605r49" />
+  <link rel="stylesheet" href="/css/style.css?v=20260605r50" />
+  <link rel="stylesheet" href="/css/mc-2026.css?v=20260605r50" />
+  <link rel="stylesheet" href="/css/premium-overrides.css?v=20260605r50" />
+  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260605r50" />
+  <link rel="stylesheet" href="/css/v20-fixes.css?v=20260605r50" />
+  <link rel="stylesheet" href="/css/final-fixes.css?v=20260605r50" />
   <script type="application/ld+json">{
   "@context": "https://schema.org",
   "@graph": [
@@ -134,10 +134,56 @@
 
     <div class="info-related" aria-label="Полезные разделы"><a href="/zakazat-tort-spb/">Заказать торт</a><a href="/tort-s-dostavkoy/">Доставка</a><a href="/tort-na-den-rozhdeniya/">День рождения</a><a href="/bento-torty/">Бенто</a><a href="/detskie-torty/">Детские</a><a href="/svadebnye-torty/">Свадебные</a><a href="/certificates/">Сертификаты</a></div>
     <section class="info-final"><h2>Готовы обсудить заказ?</h2><p>Напишите дату, повод, примерный вес и пожелания. Мы подскажем формат, начинку, доставку и ориентировочную стоимость.</p><div class="info-actions" style="justify-content:center"><a class="info-btn info-btn-primary" href="/#contacts">Оставить заявку</a><a class="info-btn info-btn-ghost" href="tel:+79119038886">Позвонить</a></div></section>
+
+    <footer class="landing-footer" aria-label="Контакты Milovi Cake">
+      <div class="landing-footer-grid">
+        <div>
+          <strong>Milovi Cake</strong>
+          <p>Авторские торты и десерты ручной работы в Санкт-Петербурге. Частный кондитер Виктория Милованова.</p>
+        </div>
+        <address>
+          <span>Пулковская ул., 19, Санкт-Петербург</span>
+          <a href="tel:+79119038886">+7 911 903 88 86</a>
+          <span>Пн–Вс, 10:00–20:00</span>
+        </address>
+        <nav aria-label="Полезные страницы">
+          <a href="/o-konditere/">О кондитере</a>
+          <a href="/dostavka-i-oplata/">Доставка и оплата</a>
+          <a href="/otzyvy/">Отзывы</a>
+          <a href="/certificates/">Сертификаты</a>
+        </nav>
+      </div>
+    </footer>
   </main>
 </div>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
 <script>(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");ym(106945185,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});</script>
+
+<script>
+  (function(){
+    var YM_ID = 106945185;
+    function reach(goal, params){
+      if (typeof ym === 'function') {
+        try { ym(YM_ID, 'reachGoal', goal, params || { path: location.pathname }); } catch(e) {}
+      }
+    }
+    document.addEventListener('click', function(e){
+      var a = e.target.closest && e.target.closest('a');
+      if (!a) return;
+      var href = a.getAttribute('href') || '';
+      var params = { path: location.pathname, href: href, text: (a.textContent || '').trim().slice(0, 80) };
+      if (href.indexOf('wa.me') !== -1) reach('lp_wa_click', params);
+      else if (href.indexOf('t.me') !== -1) reach('lp_tg_click', params);
+      else if (href.indexOf('max.ru') !== -1) reach('lp_max_click', params);
+      else if (href.indexOf('tel:') === 0) reach('lp_phone_click', params);
+      if (a.classList.contains('lp-btn') || a.classList.contains('info-btn')) reach('lp_cta_click', params);
+      if (href.indexOf('/gallery/') === 0 || href.indexOf('/gallery/') !== -1) reach('lp_gallery_click', params);
+    }, true);
+    document.addEventListener('play', function(e){
+      if (e.target && e.target.tagName === 'VIDEO') reach('lp_video_play', { path: location.pathname });
+    }, true);
+  })();
+</script>
 <noscript><div><img src="https://mc.yandex.ru/watch/106945185" width="1" height="1" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 </body>
 </html>
