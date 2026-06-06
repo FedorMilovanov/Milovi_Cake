@@ -28,9 +28,9 @@
       setTimeout(reveal,1200);
     })();
   </script>
-  <link rel="icon" href="favicon.svg?v=20260606r05" type="image/svg+xml">
-  <link rel="icon" href="icon-192.png?v=20260606r05" type="image/png" sizes="192x192">
-  <link rel="apple-touch-icon" href="icon-apple.png?v=20260606r05" />
+  <link rel="icon" href="favicon.svg?v=20260606r07" type="image/svg+xml">
+  <link rel="icon" href="icon-192.png?v=20260606r07" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="icon-apple.png?v=20260606r07" />
   <meta name="format-detection" content="telephone=no" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Milovi Cake — Торты и десерты на заказ в Санкт-Петербурге</title>
@@ -698,11 +698,12 @@
     #catalogGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;padding:0 24px 40px}
     .catalog-card,.skeleton-card{border-radius:20px;overflow:hidden;background:var(--white,#FDFBF7);aspect-ratio:3/4;position:relative}
     @media(max-width:768px){#catalogGrid{grid-template-columns:repeat(2,1fr);gap:16px;padding:0 16px 32px}}
+    @media(max-width:560px){#catalogGrid{grid-template-columns:1fr;gap:20px;padding:0 16px 36px}}
   </style>
-<link rel="stylesheet" href="css/style.css?v=20260606r05" />
-  <link rel="stylesheet" href="css/mc-2026.css?v=20260606r05" />
-  <link rel="stylesheet" href="css/premium-overrides.css?v=20260606r05" />
-  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260606r05">
+<link rel="stylesheet" href="css/style.css?v=20260606r07" />
+  <link rel="stylesheet" href="css/mc-2026.css?v=20260606r07" />
+  <link rel="stylesheet" href="css/premium-overrides.css?v=20260606r07" />
+  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260606r07">
   <link rel="prefetch" href="img/bento_maxi.webp" as="image" />
   <link rel="prefetch" href="img/cake_3d.webp" as="image" />
   <link rel="prefetch" href="img/cake_3d_2.webp" as="image" />
@@ -712,8 +713,8 @@
   <!-- HowTo schema: процесс заказа торта (для AI Overviews / Яндекс.Видео) -->
 <!-- BreadcrumbList: расширенная навигация (Главная → Каталог) -->
 <!-- Organization schema (расширенная для E-E-A-T) -->
-<link rel="stylesheet" href="/css/v20-fixes.css?v=20260606r05">
-  <link rel="stylesheet" href="/css/final-fixes.css?v=20260606r05" />
+<link rel="stylesheet" href="/css/v20-fixes.css?v=20260606r07">
+  <link rel="stylesheet" href="/css/final-fixes.css?v=20260606r07" />
 </head>
 
 <body>
@@ -969,6 +970,32 @@
       <div class="skeleton-card" aria-hidden="true"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
     </div>
   </div>
+</section>
+<!-- ════ RUNNING VIDEO STRIP — «Наши работы в движении» (r07) ════
+     Seamless marquee of real cake videos. Posters by default (light),
+     real <video> lazy-loads & plays only on the hovered/tapped tile.
+     Tiles are built by js/mc-2026.js (mcVideoStrip IIFE) from data-* JSON. -->
+<section class="vstrip-section" aria-label="Видео наших работ">
+  <div class="container">
+    <div class="vstrip-label"><span>Наши работы · в движении</span></div>
+  </div>
+  <div class="vstrip" id="mcVideoStrip" role="list"
+       data-videos='[
+        {"v":"/img/gallery/videos/video-03-bday.webm","p":"/img/gallery/gallery-20.webp","t":"Торт на день рождения"},
+        {"v":"/img/gallery/videos/video-06-bento-love.webm","p":"/img/gallery/gallery-29.webp","t":"Бенто Love"},
+        {"v":"/img/gallery/videos/video-11-bears.webm","p":"/img/gallery/gallery-01.webp","t":"3D-торт с мишками"},
+        {"v":"/img/gallery/videos/video-09-cupcakes-berry.webm","p":"/img/gallery/gallery-16.webp","t":"Капкейки с ягодами"},
+        {"v":"/img/gallery/videos/video-12-wedding-heart.webm","p":"/img/gallery/gallery-12.webp","t":"Свадебный торт"},
+        {"v":"/img/gallery/videos/video-13-bunny.webm","p":"/img/gallery/gallery-03.webp","t":"3D зайчик"},
+        {"v":"/img/gallery/videos/video-02-spb-cakes.webm","p":"/img/gallery/gallery-14.webp","t":"Торт с золотом"},
+        {"v":"/img/gallery/videos/video-16-moon-stars.webm","p":"/img/gallery/gallery-05.webp","t":"Луна и звёзды"}
+       ]'>
+    <div class="vstrip-track" id="mcVideoTrack"></div>
+  </div>
+  <noscript>
+    <div class="container"><p class="section-sub" style="text-align:center;margin-top:14px;">
+      <a href="/gallery/">Смотреть все работы в галерее →</a></p></div>
+  </noscript>
 </section>
 <div class="section-fade-divider" aria-hidden="true"></div>
 <!-- FILLINGS / CALCULATOR -->
@@ -1767,11 +1794,11 @@
 </script>
 
 <script>var IMG_BASE = 'img';</script>
-<script src="js/main.js?v=20260606r05" defer></script>
+<script src="js/main.js?v=20260606r07" defer></script>
 
 
-<script src="js/nav.js?v=20260606r05" defer></script>
-<script src="js/mc-2026.js?v=20260606r05" defer></script>
+<script src="js/nav.js?v=20260606r07" defer></script>
+<script src="js/mc-2026.js?v=20260606r07" defer></script>
 
 <script>
   /* ── Яндекс.Метрика: цели ── */
@@ -1807,6 +1834,6 @@
 </script>
 
 
-<script defer src="/js/v20-faq-fix.js?v=20260606r05"></script>
+<script defer src="/js/v20-faq-fix.js?v=20260606r07"></script>
 </body>
 </html>

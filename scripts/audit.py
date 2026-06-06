@@ -77,6 +77,8 @@ EXCLUDED_AUDIT_DIRS = {
     ".pytest_cache",
     "playwright-report",
     "test-results",
+    "_mockups",         # dev-only prototypes (not deployed, not indexable)
+    "_review_screens",  # dev-only reference screenshots
 }
 DEV_TOOLING_JS = {
     "playwright.config.js",

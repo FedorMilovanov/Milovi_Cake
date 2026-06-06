@@ -411,3 +411,107 @@
   });
   
 })();
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   RUNNING VIDEO STRIP — «Наши работы в движении» (r07)
+   Builds tiles from #mcVideoStrip[data-videos]. Posters by default;
+   real <video> lazy-loads & plays only on the hovered/tapped tile.
+   ES5, no deps, isolated IIFE. Reads data from inline JSON (mirrors gallery/data.js).
+   ═══════════════════════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+
+  var strip = document.getElementById('mcVideoStrip');
+  var track = document.getElementById('mcVideoTrack');
+  if (!strip || !track) return;
+
+  var items;
+  try { items = JSON.parse(strip.getAttribute('data-videos') || '[]'); }
+  catch (e) { items = []; }
+  if (!items.length) return;
+
+  var PLAY_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+  var canHover = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  var activeTile = null;
+
+  function clearMagnet(tile){
+    if (!tile) return;
+    tile.classList.remove('is-magnet', 'is-playing');
+    var v = tile.querySelector('video');
+    if (v) { try { v.pause(); } catch (e) {} }
+    if (!track.querySelector('.is-magnet')) track.classList.remove('has-magnet');
+  }
+
+  function setMagnet(tile, it){
+    if (activeTile && activeTile !== tile) clearMagnet(activeTile);
+    activeTile = tile;
+    track.classList.add('has-magnet');
+    tile.classList.add('is-magnet');
+    var v = tile.querySelector('video');
+    if (!v) {
+      v = document.createElement('video');
+      v.src = it.v;
+      v.muted = true; v.loop = true; v.playsInline = true;
+      v.setAttribute('muted',''); v.setAttribute('playsinline','');
+      v.preload = 'auto'; v.tabIndex = -1; v.setAttribute('aria-hidden','true');
+      tile.appendChild(v);
+    }
+    var p = v.play();
+    if (p && p.then) p.then(function(){ tile.classList.add('is-playing'); }).catch(function(){});
+    else tile.classList.add('is-playing');
+  }
+
+  function makeTile(it){
+    var d = document.createElement('a');
+    d.className = 'vtile';
+    d.setAttribute('role', 'listitem');
+    d.href = '/gallery/';
+    d.setAttribute('aria-label', it.t + ' — смотреть в галерее');
+
+    var img = document.createElement('img');
+    img.src = it.p; img.alt = it.t; img.loading = 'lazy'; img.decoding = 'async';
+    d.appendChild(img);
+
+    var play = document.createElement('span');
+    play.className = 'vtile-play'; play.innerHTML = PLAY_SVG;
+    d.appendChild(play);
+
+    var cap = document.createElement('div');
+    cap.className = 'vtile-cap'; cap.textContent = it.t;
+    d.appendChild(cap);
+
+    if (canHover) {
+      d.addEventListener('mouseenter', function(){ setMagnet(d, it); });
+      d.addEventListener('mouseleave', function(){ clearMagnet(d); activeTile = null; });
+    } else {
+      // touch: tap toggles magnet+play; do not navigate on first tap
+      d.addEventListener('click', function(e){
+        if (!d.classList.contains('is-magnet')) {
+          e.preventDefault();
+          setMagnet(d, it);
+        }
+        // second tap on an already-active tile: let the <a> navigate to gallery
+      });
+    }
+    return d;
+  }
+
+  // ×2 for seamless marquee
+  var frag = document.createDocumentFragment();
+  var i;
+  for (i = 0; i < items.length; i++) frag.appendChild(makeTile(items[i]));
+  for (i = 0; i < items.length; i++) frag.appendChild(makeTile(items[i]));
+  track.appendChild(frag);
+
+  // Pause the marquee animation when the strip is off-screen (battery/perf)
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        track.style.animationPlayState = en.isIntersecting ? '' : 'paused';
+        if (!en.isIntersecting && activeTile) { clearMagnet(activeTile); activeTile = null; }
+      });
+    }, { threshold: 0 });
+    io.observe(strip);
+  }
+})();

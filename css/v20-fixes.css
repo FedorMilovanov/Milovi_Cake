@@ -41,45 +41,11 @@ html[data-theme="dark"] .delivery-faq .faq-item,
    1. FIXED: Product Footers and Buttons on Mobile (No overlaps, No clipping)
    ========================================================================== */
 @media (max-width: 768px) {
-  /* Re-align product footer to vertical stack on mobile to prevent overlapping */
-  .product-footer {
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 12px !important;
-    padding-top: 14px !important;
-    border-top: 1px solid rgba(201, 147, 74, 0.09) !important;
-    margin-top: auto !important;
-  }
-
-  /* Left-align price and give it premium typographic weight */
-  .price {
-    align-self: flex-start !important;
-    font-size: 19px !important;
-    font-weight: 600 !important;
-    color: var(--brown) !important;
-    line-height: 1.2 !important;
-    margin-bottom: 2px !important;
-    white-space: nowrap !important;
-  }
-
-  /* Expand add button to full container width for tactile premium feel */
-  .btn-add {
-    width: 100% !important;
-    display: block !important;
-    text-align: center !important;
-    padding: 12px 16px !important;
-    font-size: 13.5px !important;
-    font-weight: 500 !important;
-    letter-spacing: 0.04em !important;
-    min-height: 44px !important;
-    white-space: nowrap !important;
-    border-radius: 50px !important;
-    box-shadow: 0 4px 14px rgba(138, 94, 35, 0.15) !important;
-  }
-  
-  /* Reset left padding on card body if necessary to prevent layout collapse */
+  /* Product footer / price / btn-add are owned solely by mc-2026.css (r67)
+     to remove the same-breakpoint !important conflict. Only the unique
+     card-body padding fix lives here. */
   .product-info {
-    padding: 20px 18px !important;
+    padding: 22px 20px !important;
   }
 }
 
@@ -201,4 +167,71 @@ html[data-theme="dark"] .delivery-faq .faq-item,
    ========================================================================== */
 :root, [data-theme="dark"] {
   transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+/* ==========================================================================
+   9. JEWELLER POLISH — even, quiet, premium-minimal mobile pass (r67)
+   Goal: consistent radii rhythm + unified, restrained tap feedback.
+   No new effects, no glow/shimmer — only evenness.
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* 9.1 — Unified, calm tap feedback across every touchable card.
+     One spring, one scale. Removes the "jumpy"/inconsistent feel. */
+  .product-card,
+  .feature,
+  .review-card,
+  .cb-fl,
+  .cb-gluten-card,
+  .cb-occ {
+    transition: transform 0.2s cubic-bezier(.22,1,.36,1),
+                box-shadow 0.25s cubic-bezier(.22,1,.36,1) !important;
+  }
+  .product-card:active,
+  .feature:active,
+  .review-card:active {
+    transform: scale(0.992) !important;
+  }
+
+  /* 9.2 — Even radii rhythm: cards 24px, pills 50px, small chips 16px.
+     Keeps the jewellery "set" feeling consistent across sections. */
+  .feature,
+  .review-card,
+  .cb-gluten-card {
+    border-radius: 24px !important;
+  }
+  .cb-fl,
+  .cb-occ {
+    border-radius: 18px !important;
+  }
+
+  /* 9.3 — Calmer drop shadows: single soft layer, warm-gold tint,
+     so cards sit flat & even instead of floating unevenly. */
+  .feature,
+  .review-card {
+    box-shadow: 0 8px 30px rgba(61, 43, 31, 0.06),
+                0 0 0 1px rgba(201, 147, 74, 0.07) !important;
+  }
+
+  /* 9.4 — Section vertical rhythm: even breathing room between blocks. */
+  section { scroll-margin-top: 76px; }
+}
+
+/* 9.5 — Hairline-crisp 1px borders on high-DPI screens (no fuzzy edges). */
+@media (max-width: 768px) and (-webkit-min-device-pixel-ratio: 2) {
+  .product-footer,
+  .feature,
+  .review-card,
+  .cb-fl {
+    border-width: 0.5px !important;
+  }
+}
+
+/* 9.6 — Honour reduced-motion: drop the tap-scale for users who ask. */
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  .product-card:active,
+  .feature:active,
+  .review-card:active,
+  .btn-add:active {
+    transform: none !important;
+  }
 }

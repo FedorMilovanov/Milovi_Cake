@@ -6,23 +6,23 @@
      - skipWaiting + clients.claim → обновления подхватываются мгновенно
    ═══════════════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'milovi-cake-v2026.06.06-r05';
+const CACHE_NAME = 'milovi-cake-v2026.06.06-r07';
 
 const PRECACHE = [
   '/',
-  '/css/style.css?v=20260606r05',
-  '/css/mc-2026.css?v=20260606r05',
-  '/css/premium-overrides.css?v=20260606r05',
-  '/css/v20-dark-and-fixes.css?v=20260606r05',
-  '/css/v20-fixes.css?v=20260606r05',
-  '/css/final-fixes.css?v=20260606r05',
-  '/css/gallery/gallery-2026.css?v=20260606r05',
-  '/js/main.js?v=20260606r05',
-  '/js/nav.js?v=20260606r05',
-  '/js/mc-2026.js?v=20260606r05',
-  '/js/v20-faq-fix.js?v=20260606r05',
-  '/js/gallery/main.js?v=20260606r05',
-  '/js/gallery/data.js?v=20260606r05',
+  '/css/style.css?v=20260606r07',
+  '/css/mc-2026.css?v=20260606r07',
+  '/css/premium-overrides.css?v=20260606r07',
+  '/css/v20-dark-and-fixes.css?v=20260606r07',
+  '/css/v20-fixes.css?v=20260606r07',
+  '/css/final-fixes.css?v=20260606r07',
+  '/css/gallery/gallery-2026.css?v=20260606r07',
+  '/js/main.js?v=20260606r07',
+  '/js/nav.js?v=20260606r07',
+  '/js/mc-2026.js?v=20260606r07',
+  '/js/v20-faq-fix.js?v=20260606r07',
+  '/js/gallery/main.js?v=20260606r07',
+  '/js/gallery/data.js?v=20260606r07',
   '/img/head_mobile.avif',
   '/img/head_desktop.avif',
   '/img/head_mobile.webp',

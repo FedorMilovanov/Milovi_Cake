@@ -25,3 +25,7 @@ playwright-report/
 test-results/
 qa-screens/
 tests/screenshots/
+
+# Dev-only prototypes & reference material (not deployed)
+_mockups/
+_review_screens/
