@@ -885,18 +885,20 @@ button:focus-visible, a:focus-visible {
 
 
 /* ════════════════════════════════════════════════════════════════
-   RUNNING VIDEO STRIP — «Наши работы в движении» (r07)
+   RUNNING VIDEO STRIP — «Наши работы в движении» (r08)
+   NARROW strip of MANY small tiles. 16 videos x2 = 32 running.
    Namespaced .vstrip-* classes, zero important-flags (no cascade conflicts).
-   Quiet premium: seamless marquee, magnetic hover, lazy video.
+   Quiet premium: thin seamless marquee, magnetic hover, lazy video.
    ════════════════════════════════════════════════════════════════ */
 .vstrip-section{
-  --vstrip-h: 132px;
-  --vtile-w: 184px;
-  --vgap: 14px;
-  padding: 18px 0 8px;
+  --vstrip-h: 74px;    /* thin strip */
+  --vtile-w: 100px;    /* small tiles → many visible at once */
+  --vgap: 9px;
+  --vmagnet: 2.15;     /* magnet zoom ratio (tiles are tiny, so larger ratio reads well) */
+  padding: 16px 0 8px;
 }
 .vstrip-label{
-  display:flex; align-items:center; gap:16px; margin:0 0 20px;
+  display:flex; align-items:center; gap:16px; margin:0 0 16px;
 }
 .vstrip-label::before,.vstrip-label::after{
   content:''; flex:1; height:1px;
@@ -908,13 +910,13 @@ button:focus-visible, a:focus-visible {
 }
 
 .vstrip{
-  position:relative; width:100%; overflow:hidden; padding:10px 0;
-  -webkit-mask-image:linear-gradient(to right,transparent,#000 7%,#000 93%,transparent);
-          mask-image:linear-gradient(to right,transparent,#000 7%,#000 93%,transparent);
+  position:relative; width:100%; overflow:hidden; padding:8px 0;
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent);
+          mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent);
 }
 .vstrip-track{
   display:flex; gap:var(--vgap); width:max-content;
-  animation:vstripMarquee 46s linear infinite;
+  animation:vstripMarquee 60s linear infinite;   /* slow, calm drift */
   will-change:transform;
 }
 .vstrip:hover .vstrip-track{ animation-play-state:paused; }
@@ -926,12 +928,12 @@ button:focus-visible, a:focus-visible {
 .vtile{
   position:relative; flex:0 0 auto;
   width:var(--vtile-w); height:var(--vstrip-h);
-  border-radius:18px; overflow:hidden; cursor:pointer;
+  border-radius:12px; overflow:hidden; cursor:pointer;
   background:#241808; border:none;
-  box-shadow:0 6px 20px rgba(61,43,31,.10), 0 0 0 1px rgba(201,147,74,.10);
+  box-shadow:0 4px 14px rgba(61,43,31,.10), 0 0 0 1px rgba(201,147,74,.10);
   transform-origin:center center;
-  transition:width .45s var(--ease-premium), box-shadow .45s var(--ease-premium),
-             opacity .4s ease, filter .4s ease;
+  transition:width .42s var(--ease-premium), box-shadow .42s var(--ease-premium),
+             opacity .35s ease, filter .35s ease;
 }
 .vtile img, .vtile video{
   width:100%; height:100%; object-fit:cover; display:block;
@@ -941,43 +943,46 @@ button:focus-visible, a:focus-visible {
 .vtile.is-playing video{ opacity:1; }
 .vtile.is-playing img{ opacity:0; }
 
-/* Magnetic: hovered tile expands, neighbours dim */
+/* Magnetic: hovered/tapped tile expands, neighbours dim */
 .vtile.is-magnet{
-  width:calc(var(--vtile-w) * 1.78);
-  box-shadow:0 18px 50px rgba(61,43,31,.26), 0 0 0 1.5px rgba(201,147,74,.5);
+  width:calc(var(--vtile-w) * var(--vmagnet));
+  border-radius:16px;
+  box-shadow:0 16px 44px rgba(61,43,31,.26), 0 0 0 1.5px rgba(201,147,74,.5);
   z-index:5;
 }
 .vtile.is-magnet img, .vtile.is-magnet video{ transform:scale(1.04); }
-.vstrip-track.has-magnet .vtile:not(.is-magnet){ opacity:.6; filter:saturate(.85); }
+.vstrip-track.has-magnet .vtile:not(.is-magnet){ opacity:.55; filter:saturate(.85); }
 
 .vtile-cap{
-  position:absolute; left:0; right:0; bottom:0; padding:18px 14px 10px;
-  background:linear-gradient(to top,rgba(20,11,4,.82),transparent);
-  color:#fdf3e0; font-family:'Jost',sans-serif; font-size:12px; letter-spacing:.02em;
-  opacity:0; transform:translateY(6px);
-  transition:opacity .35s ease, transform .35s var(--ease-premium);
+  position:absolute; left:0; right:0; bottom:0; padding:14px 10px 7px;
+  background:linear-gradient(to top,rgba(20,11,4,.84),transparent);
+  color:#fdf3e0; font-family:'Jost',sans-serif; font-size:11px; line-height:1.2; letter-spacing:.01em;
+  opacity:0; transform:translateY(5px);
+  transition:opacity .3s ease, transform .3s var(--ease-premium);
   pointer-events:none;
 }
 .vtile.is-magnet .vtile-cap{ opacity:1; transform:translateY(0); }
 
+/* tiny play hint, only visible while NOT magnified */
 .vtile-play{
-  position:absolute; top:10px; left:10px; width:26px; height:26px; border-radius:50%;
-  background:rgba(20,11,4,.55); display:flex; align-items:center; justify-content:center;
-  -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px); transition:opacity .3s ease;
+  position:absolute; top:6px; left:6px; width:20px; height:20px; border-radius:50%;
+  background:rgba(20,11,4,.5); display:flex; align-items:center; justify-content:center;
+  -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px); transition:opacity .3s ease;
 }
 .vtile.is-magnet .vtile-play{ opacity:0; }
-.vtile-play svg{ width:11px; height:11px; fill:#fdf3e0; margin-left:1px; }
+.vtile-play svg{ width:9px; height:9px; fill:#fdf3e0; margin-left:1px; }
 
 [data-theme="dark"] .vtile{
-  box-shadow:0 6px 20px rgba(0,0,0,.35), 0 0 0 1px rgba(212,167,106,.14);
+  box-shadow:0 4px 14px rgba(0,0,0,.35), 0 0 0 1px rgba(212,167,106,.14);
 }
 [data-theme="dark"] .vtile.is-magnet{
-  box-shadow:0 18px 50px rgba(0,0,0,.55), 0 0 0 1.5px rgba(212,167,106,.5);
+  box-shadow:0 16px 44px rgba(0,0,0,.55), 0 0 0 1.5px rgba(212,167,106,.5);
 }
 
 @media (max-width:768px){
-  .vstrip-section{ --vstrip-h:108px; --vtile-w:148px; --vgap:12px; padding:10px 0 4px; }
-  .vtile.is-magnet{ width:calc(var(--vtile-w) * 1.7); }
+  .vstrip-section{ --vstrip-h:60px; --vtile-w:82px; --vgap:8px; --vmagnet:2.3; padding:8px 0 4px; }
+  .vtile{ border-radius:10px; }
+  .vtile.is-magnet{ border-radius:14px; }
 }
 
 @media (prefers-reduced-motion:reduce){
