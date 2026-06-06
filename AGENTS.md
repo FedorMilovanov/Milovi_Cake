@@ -31,6 +31,7 @@
 - `scripts/audit.py` теперь проверяет JSON-LD, sitemap coverage, business hours, gzip budgets и protected UI contracts.
 - Playwright проверяет desktop/mobile, light/dark, landing media, hero messenger hover, reviews carousel/modal.
 - Текущий CSS/JS budget считается по gzip transfer size, raw totals — INFO. `!important` debt зафиксирован baseline-бюджетом и не должен расти.
+- **Тема по умолчанию (КРИТИЧНО):** весь сайт — СВЕТЛАЯ тема по умолчанию, КРОМЕ страницы `meringue-roll/` — она **ТЁМНАЯ ПО УМОЛЧАНИЮ**. Логика: anti-FOUC inline-скрипт ставит `data-theme="dark"`, если пользователь явно НЕ выбрал тему (`localStorage.mc_theme`); если выбрал `light` — уважается его выбор. Inline `<style id="anti-fouc">` на meringue тоже инвертирован (фон по умолчанию тёмный `#1a1108`). При правке meringue НЕ возвращать светлый дефолт. Переключатель темы доступен на ВСЕХ страницах (десктоп — в шапке; на лендингах — кнопка `.lp-theme-toggle` перед `</header>`; на главной и пригородах — строка `.mm-theme-row` в мобильном меню).
 
 ---
 

@@ -18,11 +18,13 @@ Thumbs.db
 _mockups/
 _review_screens/
 _server.mjs
+_shots/
 _view/
 audit/
 node_modules/
 npm-debug.log*
 playwright-report/
 qa-screens/
+see_*.jpg
 test-results/
 tests/screenshots/
