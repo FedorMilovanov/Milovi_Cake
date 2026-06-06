@@ -184,8 +184,8 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
 @media (hover:hover) and (pointer:fine) {
   .hero-subtitle .w:hover {
     transform: scaleY(1.08) translateY(-1px) !important;
-    color: rgba(201, 147, 74, 0.82) !important;
-    -webkit-text-fill-color: rgba(201, 147, 74, 0.82) !important;
+    color: rgba(160, 210, 255, 0.82) !important;
+    -webkit-text-fill-color: rgba(160, 210, 255, 0.82) !important;
   }
   .hero-subtitle .w.near:not(:hover) {
     transform: none !important;
