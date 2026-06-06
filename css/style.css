@@ -398,3 +398,16 @@ body{background:var(--cream);color:var(--text)}
 [data-theme="dark"] .lp-card,[data-theme="dark"] .lp-note,[data-theme="dark"] .info-card,[data-theme="dark"] .info-note,[data-theme="dark"] .landing-footer-grid{background:rgba(255,255,255,.045);border-color:rgba(212,167,106,.18);box-shadow:0 18px 56px rgba(0,0,0,.20);}
 [data-theme="dark"] .lp-btn-ghost,[data-theme="dark"] .info-btn-ghost,[data-theme="dark"] .lp-related a,[data-theme="dark"] .info-related a{background:rgba(255,255,255,.045);border-color:rgba(212,167,106,.22);}
 [data-theme="dark"] .lp-visual,[data-theme="dark"] .info-visual{box-shadow:0 34px 90px rgba(0,0,0,.34),0 0 0 1px rgba(212,167,106,.16);}
+
+/* r18 — Hero Ken-Burns: slow, soft auto zoom+drift on the bg photo (img only;
+   the parent #heroPhotoBg keeps its JS device-parallax transform, no conflict).
+   Runs only while the hero is on-screen; honours reduced-motion. */
+@keyframes heroKenBurns{
+  0%{transform:scale(1.0) translate3d(0,0,0)}
+  100%{transform:scale(1.12) translate3d(-1.6%,-1.4%,0)}
+}
+.hero-photo-bg img{will-change:transform;transform-origin:64% 42%}
+.hero--visible .hero-photo-bg img{animation:heroKenBurns 26s cubic-bezier(.37,0,.63,1) infinite alternate both}
+@media (prefers-reduced-motion:reduce){
+  .hero--visible .hero-photo-bg img{animation:none}
+}

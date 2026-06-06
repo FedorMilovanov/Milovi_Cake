@@ -417,3 +417,18 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
     transform: none !important;
   }
 }
+
+/* r18 — F3 soft gold glow + lift on catalog product cards (home + prigorody).
+   Refines the existing hover with a warm outer glow, matching the gallery framing. */
+@media (hover: hover) and (pointer: fine) {
+  .product-card { transition: transform 0.45s cubic-bezier(.22,1,.36,1), box-shadow 0.45s cubic-bezier(.22,1,.36,1), border-color 0.35s ease; }
+  .product-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 22px 46px -12px rgba(90,60,40,0.28),
+                0 0 0 1.5px rgba(232,184,122,0.6),
+                0 0 30px rgba(201,147,74,0.20);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .product-card:hover { transform: none; }
+}

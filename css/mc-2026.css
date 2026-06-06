@@ -1009,3 +1009,49 @@ button:focus-visible, a:focus-visible {
 .mm-theme-row:active .mm-theme-icons{ background:rgba(201,147,74,0.10); }
 /* the global [data-theme] rules already toggle which icon (moon/sun) is shown */
 .mm-theme-icons .theme-icon{ display:block; }
+
+
+/* ════════════════════════════════════════════════════════════════
+   r18 — Premium catalog card framing (F1 hairline · F3 glow+lift)
+   Desktop hover only, so the tuned mobile tap-feel is untouched.
+   No important-flags — uses higher specificity instead.
+   ════════════════════════════════════════════════════════════════ */
+@media (hover:hover) and (pointer:fine){
+  /* F1 — refined hairline gold inset that tightens toward the edge on hover */
+  .catalog-grid .product-card::after{
+    inset:8px;
+    border:1px solid rgba(232,184,122,.0);
+    border-radius:calc(var(--radius) - 6px);
+    transition:inset .55s cubic-bezier(.22,1,.36,1), border-color .45s ease, opacity .45s ease;
+    opacity:0;
+    z-index:6;
+  }
+  .catalog-grid .product-card:hover::after{
+    inset:6px;
+    border-color:rgba(232,184,122,.55);
+    opacity:1;
+  }
+  /* F3 — deeper, warmer glow ring + smooth lift (refines the base hover) */
+  .catalog-grid .product-card{
+    transition:transform .5s cubic-bezier(.22,1,.36,1), box-shadow .5s cubic-bezier(.22,1,.36,1), border-color .35s ease;
+  }
+  .catalog-grid .product-card:hover{
+    transform:translateY(-8px);
+    box-shadow:
+      0 24px 48px -12px rgba(90,60,40,.30),
+      0 0 0 1.5px rgba(232,184,122,.6),
+      0 0 38px rgba(201,147,74,.22);
+  }
+  [data-theme="dark"] .catalog-grid .product-card:hover{
+    box-shadow:
+      0 24px 48px -12px rgba(0,0,0,.5),
+      0 0 0 1.5px rgba(232,184,122,.5),
+      0 0 38px rgba(201,147,74,.20);
+  }
+  /* the product photo gently scales with the card (lively but quiet) */
+  .catalog-grid .product-card .slider-wrap img{ transition:transform .8s cubic-bezier(.22,1,.36,1); }
+  .catalog-grid .product-card:hover .slider-wrap img{ transform:scale(1.04); }
+}
+@media (prefers-reduced-motion:reduce){
+  .catalog-grid .product-card:hover .slider-wrap img{ transform:none; }
+}

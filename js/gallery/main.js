@@ -1,4 +1,4 @@
-import { GALLERY_ITEMS } from './data.js?v=20260606r17';
+import { GALLERY_ITEMS } from './data.js?v=20260606r18';
 
 var _gLockY = 0; /* r31: gallery scroll lock state */
 const $ = (s, c = document) => c.querySelector(s);
@@ -148,11 +148,18 @@ function renderGrid(){
     else { 
       const img=document.createElement('img'); 
       img.className='card-media'; 
-      img.src=item.src; 
       img.alt=item.title; 
       img.loading=index<8?'eager':'lazy'; 
       img.decoding='async'; 
       img.onerror=()=>{ if(img.src!==item.src) img.src=item.src; };
+      /* r18: premium skeleton — soft golden shimmer until the image loads, then fade in */
+      card.classList.add('is-loading');
+      var _reveal=function(){ card.classList.remove('is-loading'); card.classList.add('is-loaded'); };
+      img.addEventListener('load',_reveal,{once:true});
+      img.addEventListener('error',_reveal,{once:true});
+      img.src=item.src; 
+      if(img.complete && img.naturalWidth>0) _reveal();
+      card.insertAdjacentHTML('beforeend','<span class="card-skeleton" aria-hidden="true"></span>');
       card.appendChild(wrapInPictureWithAvif(img)); 
     }
     card.insertAdjacentHTML('beforeend', `<div class="card-overlay"><span class="card-title">${esc(item.title)}</span></div>`);
