@@ -1,4 +1,4 @@
-import { GALLERY_ITEMS } from './data.js?v=20260606r16';
+import { GALLERY_ITEMS } from './data.js?v=20260606r17';
 
 var _gLockY = 0; /* r31: gallery scroll lock state */
 const $ = (s, c = document) => c.querySelector(s);
@@ -207,14 +207,30 @@ function setupVideoObserver(){
      auto-downloading grid videos (each is ~1–2.5 MB). Saves mobile data. */
   var conn = navigator.connection || navigator.webkitConnection || navigator.mozConnection;
   var saveData = !!(conn && (conn.saveData || /^(slow-)?2g$/.test(conn.effectiveType || '')));
+  /* r17 robustness: cap concurrently PLAYING videos to avoid decoder/memory
+     pressure (WebKit/Safari can crash with many simultaneous autoplays). */
+  var MAX_PLAYING = 3;
+  var playingQueue = [];
+  function startPlay(v){
+    if (playingQueue.indexOf(v) === -1) playingQueue.push(v);
+    while (playingQueue.length > MAX_PLAYING){
+      var old = playingQueue.shift();
+      if (old && old !== v) { try { old.pause(); } catch(e){} }
+    }
+    v.play().catch(function(){});
+  }
+  function stopPlay(v){
+    var i = playingQueue.indexOf(v); if (i !== -1) playingQueue.splice(i,1);
+    try { v.pause(); } catch(e){}
+  }
   state.observer=new IntersectionObserver(entries=>{
     entries.forEach(entry=>{
       const v=entry.target; 
       if(entry.isIntersecting){ 
         if(saveData) return; /* poster stays; tap opens full video in lightbox */
         if(!v.src&&v.dataset.src)v.src=v.dataset.src; 
-        v.play().catch(()=>{});
-      } else v.pause();
+        startPlay(v);
+      } else stopPlay(v);
     });
   },{threshold:.3,rootMargin:'200px 0px'}); 
   $$('#galleryGrid video').forEach(v=>state.observer.observe(v)); 
