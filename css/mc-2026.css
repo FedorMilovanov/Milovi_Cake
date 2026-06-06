@@ -663,10 +663,6 @@ input, textarea, select{
     min-width: 44px !important;
   }
   
-  .btn-add:active {
-    transform: scale(0.95) !important;
-    background: var(--gold-acc-hover, #6f4a18) !important;
-  }
   
   
   @media (max-width: 360px) {
@@ -746,14 +742,7 @@ input, textarea, select{
 }
 
 
-@supports (content-visibility: auto) {
-  .catalog-grid,
-  .features-grid,
-  .cb-flavor-wrap {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 1000px;
-  }
-}
+/* content-visibility removed — risks SEO/a11y on hidden sections */
 
 
 @media (max-width: 768px) {
@@ -810,10 +799,7 @@ input, textarea, select{
 /* content-visibility removed — risks SEO/a11y on hidden sections */
 
 
-.cart-drawer, .mobile-menu, .lightbox, #cookieBanner {
-  will-change: backdrop-filter;
-  transform: translateZ(0); 
-}
+
 
 
 @media (prefers-reduced-motion: reduce) {
