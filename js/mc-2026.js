@@ -126,23 +126,32 @@
      ═══════════════════════════════════════════════════════════════════ */
   function trapFocus(container){
     if (!container) return null;
-    var focusable = container.querySelectorAll(
-      'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    if (!focusable.length) return null;
-    var first = focusable[0];
-    var last  = focusable[focusable.length - 1];
-
+    function getFocusable(){
+      return Array.prototype.filter.call(
+        container.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'),
+        function(el){ var r = el.getBoundingClientRect(); var cs = getComputedStyle(el); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden'; }
+      );
+    }
+    /* r15: robust trap — listen on document so focus can't leak behind the
+       open modal, and re-query focusables each Tab (cart content changes). */
     function handler(e){
       if (e.key !== 'Tab') return;
-      if (e.shiftKey){
-        if (document.activeElement === first){ last.focus(); e.preventDefault(); }
-      } else {
-        if (document.activeElement === last){ first.focus(); e.preventDefault(); }
+      var f = getFocusable();
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      var active = document.activeElement;
+      var inside = container.contains(active);
+      if (!inside){
+        // focus escaped behind the modal — pull it back in
+        e.preventDefault();
+        (e.shiftKey ? last : first).focus();
+        return;
       }
+      if (e.shiftKey && active === first){ last.focus(); e.preventDefault(); }
+      else if (!e.shiftKey && active === last){ first.focus(); e.preventDefault(); }
     }
-    container.addEventListener('keydown', handler);
-    return function release(){ container.removeEventListener('keydown', handler); };
+    document.addEventListener('keydown', handler, true);
+    return function release(){ document.removeEventListener('keydown', handler, true); };
   }
 
   window._trapFocus = trapFocus; /* r32: export for focus-trap in main.js (bug #38) */

@@ -1716,6 +1716,19 @@ function openChatLightbox(idx) {
   if (mcn) { mcn.classList.add('mc-nav--hidden'); document.body.classList.add('mc-nav-hidden'); }
   const lbXBtn = document.getElementById('lbX');
   if (lbXBtn) { lbXBtn.style.opacity = '0'; lbXBtn.style.transform = 'scale(0.5)'; lbXBtn.style.pointerEvents = 'none'; setTimeout(() => { lbXBtn.style.opacity = '1'; lbXBtn.style.transform = 'scale(1)'; lbXBtn.style.pointerEvents = ''; }, 500); }
+  /* r15: a11y — focus trap + ESC-to-close for the review lightbox */
+  if (window._trapFocus) { if (window._chatLbTrapRelease) window._chatLbTrapRelease(); window._chatLbTrapRelease = window._trapFocus(overlay); }
+  setTimeout(function(){ if (lbXBtn) try { lbXBtn.focus(); } catch(e){} }, 120);
+  if (!window._chatLbEscBound) {
+    window._chatLbEscBound = function(e){
+      var ov = document.getElementById('lbOverlay');
+      if (e.key === 'Escape' && ov && ov.classList.contains('active')) {
+        var x = document.getElementById('lbX'); if (x) x.click();
+        if (window._chatLbTrapRelease) { window._chatLbTrapRelease(); window._chatLbTrapRelease = null; }
+      }
+    };
+    document.addEventListener('keydown', window._chatLbEscBound);
+  }
 }
 
 // ══════════════════════════════════════════
@@ -2092,6 +2105,8 @@ if (scField && trackEl && dotsEl && stageEl) {
     if (lbBox) lbBox.classList.remove('clickable');
     if (lbX) { lbX.style.opacity = '0'; lbX.style.transform = 'scale(0.5)'; lbX.style.pointerEvents = 'none'; }
     if (lbOverlay) lbOverlay.classList.remove('active');
+    /* r15: release the review-lightbox focus trap on close */
+    if (window._chatLbTrapRelease) { window._chatLbTrapRelease(); window._chatLbTrapRelease = null; }
     unlockBody();
     var bn = document.getElementById('bottomNav');
     if (bn) bn.classList.remove('hidden');
