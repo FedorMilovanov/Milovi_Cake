@@ -519,3 +519,54 @@ video.lb-media { background:#080402!important; }
 .card-overlay{ background:linear-gradient(to top, rgba(18,11,4,.86) 0%, rgba(18,11,4,.10) 55%, transparent 75%); transition:opacity .45s ease; }
 .card-title{ transition:transform .45s cubic-bezier(.22,1,.36,1), opacity .45s ease; opacity:0; }
 .card:hover .card-title{ transform:translateY(0); opacity:1; }
+
+
+/* ════════════════════════════════════════════════════════════════
+   r19 — DARK THEME for the gallery (day/night toggle now works here too)
+   Flip the palette vars + the few surfaces that use literal light colours.
+   ════════════════════════════════════════════════════════════════ */
+html[data-theme="dark"]{
+  --cream: #161009;
+  --cream-deep: #1f160c;
+  --gold: #d4a85c;
+  --gold-light: #e8c07a;
+  --brown: #f0e4d0;
+  --text: #f0e4d0;
+  --muted: #c8a880;
+  --white: #1c1309;
+}
+html[data-theme="dark"] body{
+  background:
+    radial-gradient(circle at 20% 10%, rgba(212,168,92,0.10), transparent 26%),
+    radial-gradient(circle at 80% 0%, rgba(184,130,58,0.07), transparent 24%),
+    var(--cream);
+}
+/* chips: light glass -> dark warm glass */
+html[data-theme="dark"] .gx-chip{
+  border-color: rgba(232,184,122,.22);
+  color: var(--brown);
+  background: rgba(255,255,255,.04);
+}
+/* dark active chip — needs the override flag to beat the light active-chip rule */
+html[data-theme="dark"] .gx-chip-active{
+  background: var(--gold) !important;
+  color: #1a1108 !important;
+  border-color: var(--gold) !important;
+  box-shadow: 0 4px 16px rgba(212,168,92,.30);
+}
+/* footer CTA + back link borders */
+html[data-theme="dark"] .gx-cta{
+  border-color: rgba(232,184,122,.28);
+  color: var(--brown);
+  background: rgba(255,255,255,.04);
+  box-shadow: 0 2px 8px rgba(0,0,0,.25);
+}
+html[data-theme="dark"] .gx-cta:hover{
+  border-color: var(--gold);
+  color: var(--gold);
+}
+/* theme toggle button border in dark */
+html[data-theme="dark"] .lp-theme-toggle{
+  border-color: rgba(232,184,122,.3);
+  background: rgba(255,255,255,.05);
+}

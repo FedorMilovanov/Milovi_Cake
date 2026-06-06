@@ -97,7 +97,7 @@ IMPORTANT_BUDGET = {
     "css/mc-2026.css": 199,
     "css/style.css": 124,
     "css/final-fixes.css": 129,
-    "css/gallery/gallery-2026.css": 24,
+    "css/gallery/gallery-2026.css": 27,  # +3 r19: dark-theme active-chip must override the light active-chip !important
     "css/v20-fixes.css": 130,
 }
 

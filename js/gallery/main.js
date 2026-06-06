@@ -1,4 +1,4 @@
-import { GALLERY_ITEMS } from './data.js?v=20260606r18';
+import { GALLERY_ITEMS } from './data.js?v=20260606r19';
 
 var _gLockY = 0; /* r31: gallery scroll lock state */
 const $ = (s, c = document) => c.querySelector(s);
@@ -84,7 +84,7 @@ function categoryGlyph(id) {
 }
 function luxeSeal(){ 
   const idSuffix = Math.random().toString(36).substr(2, 5);
-  return `<svg viewBox="0 0 100 100" aria-hidden="true" class="gx-seal-svg"><defs><linearGradient id="sealGold_${idSuffix}" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f5e6c0"/><stop offset="50%" stop-color="#d4a85c"/><stop offset="100%" stop-color="#8e5e20"/></linearGradient><radialGradient id="sealGlow_${idSuffix}" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(212,168,92,0.45)"/><stop offset="100%" stop-color="rgba(212,168,92,0)"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#sealGlow_${idSuffix})"/><circle cx="50" cy="50" r="38" fill="none" stroke="url(#sealGold_${idSuffix})" stroke-width="1" opacity="0.7"/><circle cx="50" cy="50" r="32" fill="none" stroke="url(#sealGold_${idSuffix})" stroke-width="0.8" opacity="0.5"/><path d="M50 18 L54 30 L66 32 L57 40 L59 52 L50 47 L41 52 L43 40 L34 32 L46 30 Z" fill="url(#sealGold_${idSuffix})" fill-opacity="0.85"/><circle cx="50" cy="50" r="3.5" fill="url(#sealGold_${idSuffix})"/><circle cx="50" cy="12" r="1.8" fill="url(#sealGold_${idSuffix})" opacity="0.6"/><circle cx="50" cy="88" r="1.8" fill="url(#sealGold_${idSuffix})" opacity="0.6"/><circle cx="12" cy="50" r="1.8" fill="url(#sealGold_${idSuffix})" opacity="0.6"/><circle cx="88" cy="50" r="1.8" fill="url(#sealGold_${idSuffix})" opacity="0.6"/></svg>`; 
+  return `<svg viewBox="0 0 100 100" aria-hidden="true" class="gx-seal-svg"><defs><linearGradient id="sealGold_${idSuffix}" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f5e6c0"/><stop offset="50%" stop-color="#d4a85c"/><stop offset="100%" stop-color="#8e5e20"/></linearGradient><radialGradient id="sealGlow_${idSuffix}" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(212,168,92,0.45)"/><stop offset="100%" stop-color="rgba(212,168,92,0)"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#sealGlow_${idSuffix})"/><path d="M50 14 L56 38 L80 44 L60 50 L66 74 L50 60 L34 74 L40 50 L20 44 L44 38 Z" fill="url(#sealGold_${idSuffix})" fill-opacity="0.92"/><circle cx="50" cy="48" r="4" fill="url(#sealGold_${idSuffix})"/></svg>`; 
 }
 function renderFilters(){ 
   const wrap=$('#gxFilters'); 
