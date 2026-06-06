@@ -1200,16 +1200,16 @@ details.faq-item > div > p {
 @media (hover: hover) and (pointer: fine) {
   .hero-title-seo .w:hover {
     transform: scaleY(1.12) scaleX(1.04) translateY(-2px) !important;
-    color: rgba(160, 210, 255, 0.92) !important; 
-    -webkit-text-fill-color: rgba(160, 210, 255, 0.92) !important;
+    color: rgba(201, 147, 74, 0.92) !important; 
+    -webkit-text-fill-color: rgba(201, 147, 74, 0.92) !important;
     background: none !important;
   }
 
   
   .hero-title-seo .w.near {
     transform: scaleY(1.05) scaleX(1.02) translateY(-1px) !important;
-    color: rgba(160, 210, 255, 0.60) !important;
-    -webkit-text-fill-color: rgba(160, 210, 255, 0.60) !important;
+    color: rgba(201, 147, 74, 0.60) !important;
+    -webkit-text-fill-color: rgba(201, 147, 74, 0.60) !important;
     background: none !important;
   }
 }
@@ -1497,15 +1497,15 @@ details.faq-item > div > p {
 @media (hover: hover) and (pointer: fine) {
   .hero-subtitle .w:hover {
     transform: scaleY(1.08) translateY(-1px) !important;
-    color: rgba(160, 210, 255, 0.80) !important;
-    -webkit-text-fill-color: rgba(160, 210, 255, 0.80) !important;
+    color: rgba(201, 147, 74, 0.80) !important;
+    -webkit-text-fill-color: rgba(201, 147, 74, 0.80) !important;
     background: none !important;
     animation: none !important;
   }
   .hero-subtitle .w.near {
     transform: scaleY(1.04) !important;
-    color: rgba(160, 210, 255, 0.45) !important;
-    -webkit-text-fill-color: rgba(160, 210, 255, 0.45) !important;
+    color: rgba(201, 147, 74, 0.45) !important;
+    -webkit-text-fill-color: rgba(201, 147, 74, 0.45) !important;
   }
 }
 
@@ -1798,7 +1798,7 @@ html[data-theme="dark"] .delivery-faq .cb-faq-a-inner,
 .delivery-card__value { font-size: 16px !important; transform: translateZ(22px); }
 @media (hover:hover) and (pointer:fine) {
   .delivery-card__item:hover {
-    transform: translateY(-8px) rotateX(6deg) rotateY(-5deg) !important;
+    transform: translateY(-4px) !important;
     border-color: rgba(201,147,74,.42) !important;
     box-shadow:
       0 28px 64px rgba(61,43,31,.16),

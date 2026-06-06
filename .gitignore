@@ -24,3 +24,4 @@ npm-debug.log*
 playwright-report/
 test-results/
 qa-screens/
+tests/screenshots/

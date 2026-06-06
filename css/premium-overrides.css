@@ -2202,16 +2202,7 @@ button[disabled] {
 
 
 @media (max-width: 768px) {
-  #mcSheet.mc-sheet {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(201,147,74,.32) transparent;
-  }
-  #mcSheet.mc-sheet::-webkit-scrollbar { width: 4px; }
-  #mcSheet.mc-sheet::-webkit-scrollbar-track { background: transparent; }
-  #mcSheet.mc-sheet::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, rgba(201,147,74,.16), rgba(201,147,74,.42), rgba(201,147,74,.16));
-    border-radius: 99px;
-  }
+
   #mcSheet.mc-sheet::before {
     content: '';
     position: sticky;
