@@ -186,8 +186,9 @@
           'transition:transform 0.38s cubic-bezier(0.32,0.72,0,1);',
           'will-change:transform;',
           'overflow:hidden;',
+          'pointer-events:none;',  /* r09 FIX: closed sheet must NOT intercept taps on bottom-nav below it */
         '}',
-        '.mc-sheet.mc-open{transform:translateY(0);}',
+        '.mc-sheet.mc-open{transform:translateY(0);pointer-events:auto;}',
 
         /* Ручка */
         '.mc-sheet-handle{',

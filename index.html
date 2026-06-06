@@ -28,9 +28,9 @@
       setTimeout(reveal,1200);
     })();
   </script>
-  <link rel="icon" href="favicon.svg?v=20260606r08" type="image/svg+xml">
-  <link rel="icon" href="icon-192.png?v=20260606r08" type="image/png" sizes="192x192">
-  <link rel="apple-touch-icon" href="icon-apple.png?v=20260606r08" />
+  <link rel="icon" href="favicon.svg?v=20260606r09" type="image/svg+xml">
+  <link rel="icon" href="icon-192.png?v=20260606r09" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="icon-apple.png?v=20260606r09" />
   <meta name="format-detection" content="telephone=no" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Milovi Cake — Торты и десерты на заказ в Санкт-Петербурге</title>
@@ -700,10 +700,10 @@
     @media(max-width:768px){#catalogGrid{grid-template-columns:repeat(2,1fr);gap:16px;padding:0 16px 32px}}
     @media(max-width:560px){#catalogGrid{grid-template-columns:1fr;gap:20px;padding:0 16px 36px}}
   </style>
-<link rel="stylesheet" href="css/style.css?v=20260606r08" />
-  <link rel="stylesheet" href="css/mc-2026.css?v=20260606r08" />
-  <link rel="stylesheet" href="css/premium-overrides.css?v=20260606r08" />
-  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260606r08">
+<link rel="stylesheet" href="css/style.css?v=20260606r09" />
+  <link rel="stylesheet" href="css/mc-2026.css?v=20260606r09" />
+  <link rel="stylesheet" href="css/premium-overrides.css?v=20260606r09" />
+  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260606r09">
   <link rel="prefetch" href="img/bento_maxi.webp" as="image" />
   <link rel="prefetch" href="img/cake_3d.webp" as="image" />
   <link rel="prefetch" href="img/cake_3d_2.webp" as="image" />
@@ -713,8 +713,8 @@
   <!-- HowTo schema: процесс заказа торта (для AI Overviews / Яндекс.Видео) -->
 <!-- BreadcrumbList: расширенная навигация (Главная → Каталог) -->
 <!-- Organization schema (расширенная для E-E-A-T) -->
-<link rel="stylesheet" href="/css/v20-fixes.css?v=20260606r08">
-  <link rel="stylesheet" href="/css/final-fixes.css?v=20260606r08" />
+<link rel="stylesheet" href="/css/v20-fixes.css?v=20260606r09">
+  <link rel="stylesheet" href="/css/final-fixes.css?v=20260606r09" />
 </head>
 
 <body>
@@ -780,6 +780,15 @@
     <a href="#reviews"  onclick="closeMobileMenu()">Отзывы</a>
     <a href="#contacts" onclick="closeMobileMenu()">Контакты</a>
   </nav>
+  <div class="mobile-menu-divider-h"></div>
+  <!-- r09: theme toggle is reachable on mobile (header toggle is hidden < 769px) -->
+  <button type="button" class="mm-theme-row" onclick="toggleTheme()" aria-label="Переключить тему оформления">
+    <span class="mobile-menu-section-label" style="margin:0;">Тема оформления</span>
+    <span class="mm-theme-icons" aria-hidden="true">
+      <svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+    </span>
+  </button>
   <div class="mobile-menu-divider-h"></div>
   <div class="mobile-menu-messengers">
     <span class="mobile-menu-section-label">Связаться</span>
@@ -1803,11 +1812,11 @@
 </script>
 
 <script>var IMG_BASE = 'img';</script>
-<script src="js/main.js?v=20260606r08" defer></script>
+<script src="js/main.js?v=20260606r09" defer></script>
 
 
-<script src="js/nav.js?v=20260606r08" defer></script>
-<script src="js/mc-2026.js?v=20260606r08" defer></script>
+<script src="js/nav.js?v=20260606r09" defer></script>
+<script src="js/mc-2026.js?v=20260606r09" defer></script>
 
 <script>
   /* ── Яндекс.Метрика: цели ── */
@@ -1843,6 +1852,6 @@
 </script>
 
 
-<script defer src="/js/v20-faq-fix.js?v=20260606r08"></script>
+<script defer src="/js/v20-faq-fix.js?v=20260606r09"></script>
 </body>
 </html>

@@ -1,31 +1,28 @@
+
 # Dependencies
-node_modules/
-
-# Local/generated audit reports
-audit/
-
-# OS/editor
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Logs
-*.log
-npm-debug.log*
-
+# Dev-only prototypes & reference material (not deployed)
 # Env/secrets
+# Local/generated audit reports
+# Logs
+# OS/editor
+# Playwright artifacts
+*.log
+*.swo
+*.swp
+.DS_Store
 .env
 .env.*
-
-# Playwright artifacts
-playwright-report/
-test-results/
-qa-screens/
-tests/screenshots/
-
-# Dev-only prototypes & reference material (not deployed)
+.idea/
+.vscode/
+Thumbs.db
 _mockups/
 _review_screens/
+_server.mjs
+_view/
+audit/
+node_modules/
+npm-debug.log*
+playwright-report/
+qa-screens/
+test-results/
+tests/screenshots/
