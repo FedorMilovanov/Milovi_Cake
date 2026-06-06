@@ -1,4 +1,4 @@
-import { GALLERY_ITEMS } from './data.js?v=20260606r15';
+import { GALLERY_ITEMS } from './data.js?v=20260606r16';
 
 var _gLockY = 0; /* r31: gallery scroll lock state */
 const $ = (s, c = document) => c.querySelector(s);
@@ -203,10 +203,15 @@ function attachCardTilt(card){
 function setupVideoObserver(){ 
   if(state.observer) state.observer.disconnect(); 
   if(!('IntersectionObserver' in window)) return; 
+  /* r16 perf: on Save-Data or slow (2g) connections, keep posters only and skip
+     auto-downloading grid videos (each is ~1–2.5 MB). Saves mobile data. */
+  var conn = navigator.connection || navigator.webkitConnection || navigator.mozConnection;
+  var saveData = !!(conn && (conn.saveData || /^(slow-)?2g$/.test(conn.effectiveType || '')));
   state.observer=new IntersectionObserver(entries=>{
     entries.forEach(entry=>{
       const v=entry.target; 
       if(entry.isIntersecting){ 
+        if(saveData) return; /* poster stays; tap opens full video in lightbox */
         if(!v.src&&v.dataset.src)v.src=v.dataset.src; 
         v.play().catch(()=>{});
       } else v.pause();
