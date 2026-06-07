@@ -12,6 +12,7 @@
   <meta property="og:url" content="https://milovicake.ru/404.html" />
   <meta property="og:locale" content="ru_RU" />
 
+  <script>(function(){try{var t=localStorage.getItem('mc_theme');if(t)document.documentElement.setAttribute('data-theme',t);else if(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
   <link rel="apple-touch-icon" href="/icon-apple.png" />
@@ -22,6 +23,15 @@
       --brown: #3d2b1f;
       --cream: #f5f0e8;
       --text-muted: #9a7a62;
+    }
+    html[data-theme="dark"]{ color-scheme: dark; }
+    html[data-theme="dark"] body{
+      --gold: #d4a76a;
+      --brown: #f0e4d0;
+      --cream: #1a1108;
+      --text-muted: #c8a880;
+      background: #1a1108;
+      color: #f0e4d0;
     }
     body {
       font-family: 'Jost', system-ui, -apple-system, sans-serif;
@@ -99,8 +109,8 @@
   </style>
 
   <link rel="canonical" href="https://milovicake.ru/404.html" />
-  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260606r20">
-  <link rel="stylesheet" href="/css/v20-fixes.css?v=20260606r20">
+  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260606r21">
+  <link rel="stylesheet" href="/css/v20-fixes.css?v=20260606r21">
 </head>
 <body>
   <div class="icon">🎂</div>
@@ -117,7 +127,7 @@
   </div>
   <div class="brand">Milovi Cake · Санкт-Петербург</div>
 
-<script defer src="/js/v20-faq-fix.js?v=20260606r20"></script>
+<script defer src="/js/v20-faq-fix.js?v=20260606r21"></script>
 <!-- ══════ Google Analytics — defer on interaction ══════ -->
 <script>
   (function(){
