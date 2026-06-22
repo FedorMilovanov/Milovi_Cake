@@ -299,3 +299,15 @@ html[data-theme="dark"] .delivery-faq .faq-item,
 .card-media video {
   pointer-events: none;
 }
+
+/* ==========================================================================
+   13. FOOTER PROJECTS — link default color fix (r69)
+   .footer-projects-link is an <a> without explicit color, so browser default
+   link colors (blue/purple) leak through. Force theme-aware colors.
+   ========================================================================== */
+.footer-projects-link {
+  color: var(--text);
+}
+[data-theme="dark"] .footer-projects-link {
+  color: var(--gold);
+}
