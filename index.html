@@ -29,9 +29,9 @@
       setTimeout(reveal,1200);
     })();
   </script>
-  <link rel="icon" href="favicon.svg?v=20260606r22" type="image/svg+xml">
-  <link rel="icon" href="icon-192.png?v=20260606r22" type="image/png" sizes="192x192">
-  <link rel="apple-touch-icon" href="icon-apple.png?v=20260606r22" />
+  <link rel="icon" href="favicon.svg?v=20260622r23" type="image/svg+xml">
+  <link rel="icon" href="icon-192.png?v=20260622r23" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="icon-apple.png?v=20260622r23" />
   <meta name="format-detection" content="telephone=no" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Milovi Cake — Торты и десерты на заказ в Санкт-Петербурге</title>
@@ -595,6 +595,38 @@
             "@type": "Answer",
             "text": "Бисквитные торты от 2 800 ₽/кг, бенто-торты от 1 600 ₽/шт, 3D-торты от 5 000 ₽/кг. Меренговый рулет 2 500 ₽, Павлова от 350 ₽. Точная цена согласовывается при заказе."
           }
+        },
+        {
+          "@type": "Question",
+          "name": "Какая предоплата и можно ли оплатить при получении?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Для запуска работы по заказу берётся предоплата 30–50% — это фиксирует дату и состав. Остаток — при получении или перед доставкой. Перевод на карту, СБП, наличные при самовывозе."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Можно ли изменить заказ после предоплаты?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Да, до старта производства. Можно поменять дату, вес, начинку и большинство деталей декора. После выпечки бисквита правки ограничены — обсудим индивидуально."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Делаете ли торты без орехов, без лактозы или для аллергиков?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Да. Можно заменить орехи на безореховые начинки, использовать сливочный сыр без лактозы, подобрать состав под конкретные аллергены. Сообщите о них при заказе — обсудим варианты."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Как хранить торт до подачи?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Бисквитные торты — в холодильнике при +4–6 °C, за 1–2 часа до подачи достать и подержать при комнатной температуре. Меренговый рулет и Павлова — в прохладном месте, без сильных перепадов. Подробная памятка — при доставке."
+          }
         }
       ]
     },
@@ -701,10 +733,10 @@
     @media(max-width:768px){#catalogGrid{grid-template-columns:repeat(2,1fr);gap:16px;padding:0 16px 32px}}
     @media(max-width:560px){#catalogGrid{grid-template-columns:1fr;gap:20px;padding:0 16px 36px}}
   </style>
-<link rel="stylesheet" href="css/style.css?v=20260606r22" />
-  <link rel="stylesheet" href="css/mc-2026.css?v=20260606r22" />
-  <link rel="stylesheet" href="css/premium-overrides.css?v=20260606r22" />
-  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260606r22">
+<link rel="stylesheet" href="css/style.css?v=20260622r23" />
+  <link rel="stylesheet" href="css/mc-2026.css?v=20260622r23" />
+  <link rel="stylesheet" href="css/premium-overrides.css?v=20260622r23" />
+  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260622r23">
   <link rel="prefetch" href="img/bento_maxi.webp" as="image" />
   <link rel="prefetch" href="img/cake_3d.webp" as="image" />
   <link rel="prefetch" href="img/cake_3d_2.webp" as="image" />
@@ -714,8 +746,8 @@
   <!-- HowTo schema: процесс заказа торта (для AI Overviews / Яндекс.Видео) -->
 <!-- BreadcrumbList: расширенная навигация (Главная → Каталог) -->
 <!-- Organization schema (расширенная для E-E-A-T) -->
-<link rel="stylesheet" href="/css/v20-fixes.css?v=20260606r22">
-  <link rel="stylesheet" href="/css/final-fixes.css?v=20260606r22" />
+<link rel="stylesheet" href="/css/v20-fixes.css?v=20260622r23">
+  <link rel="stylesheet" href="/css/final-fixes.css?v=20260622r23" />
 </head>
 
 <body>
@@ -1362,6 +1394,26 @@
         <div class="cb-faq-q"><span>Есть ли торты без глютена и безопасные для детей?</span><div class="cb-faq-ico"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg></div></div>
         <div class="cb-faq-a"><div class="cb-faq-a-inner">Меренговый рулет и пирожное Павлова — без глютена. Детские торты делаем с натуральными ингредиентами, безопасным составом и любимыми персонажами, с безопасным составом и любимыми персонажами.</div></div>
       </div>
+      <div class="cb-faq-item" onclick="cbFaq(this)">
+        <div class="cb-faq-q"><span>Какая предоплата и можно ли оплатить при получении?</span><div class="cb-faq-ico"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg></div></div>
+        <div class="cb-faq-a"><div class="cb-faq-a-inner">Для запуска работы по заказу берётся предоплата 30–50% — это фиксирует дату и состав. Остаток — при получении или перед доставкой. Перевод на карту, СБП, наличные при самовывозе.</div></div>
+      </div>
+      <div class="cb-faq-item" onclick="cbFaq(this)">
+        <div class="cb-faq-q"><span>Можно ли изменить заказ после предоплаты?</span><div class="cb-faq-ico"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg></div></div>
+        <div class="cb-faq-a"><div class="cb-faq-a-inner">Да, до старта производства. Можно поменять дату, вес, начинку и большинство деталей декора. После выпечки бисквита правки ограничены — обсудим индивидуально.</div></div>
+      </div>
+      <div class="cb-faq-item" onclick="cbFaq(this)">
+        <div class="cb-faq-q"><span>Делаете ли торты без орехов, без лактозы или для аллергиков?</span><div class="cb-faq-ico"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg></div></div>
+        <div class="cb-faq-a"><div class="cb-faq-a-inner">Да. Можно заменить орехи на безореховые начинки, использовать сливочный сыр без лактозы, подобрать состав под конкретные аллергены. Сообщите о них при заказе — обсудим варианты.</div></div>
+      </div>
+      <div class="cb-faq-item" onclick="cbFaq(this)">
+        <div class="cb-faq-q"><span>Как хранить торт до подачи?</span><div class="cb-faq-ico"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg></div></div>
+        <div class="cb-faq-a"><div class="cb-faq-a-inner">Бисквитные торты — в холодильнике при +4–6 °C, за 1–2 часа до подачи достать и подержать при комнатной температуре. Меренговый рулет и Павлова — в прохладном месте, без сильных перепадов. Подробная памятка — при доставке.</div></div>
+      </div>
+      <div class="cb-faq-item" onclick="cbFaq(this)">
+        <div class="cb-faq-q"><span>Сколько стоит торт на заказ в СПб?</span><div class="cb-faq-ico"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg></div></div>
+        <div class="cb-faq-a"><div class="cb-faq-a-inner">Бисквитные торты от 2 800 ₽/кг, бенто-торты от 1 600 ₽/шт, 3D-торты от 5 000 ₽/кг. Меренговый рулет 2 500 ₽, Павлова от 350 ₽. Точная цена согласовывается при заказе.</div></div>
+      </div>
     </div>
 
     <!-- Теги -->
@@ -1813,11 +1865,11 @@
 </script>
 
 <script>var IMG_BASE = 'img';</script>
-<script src="js/main.js?v=20260606r22" defer></script>
+<script src="js/main.js?v=20260622r23" defer></script>
 
 
-<script src="js/nav.js?v=20260606r22" defer></script>
-<script src="js/mc-2026.js?v=20260606r22" defer></script>
+<script src="js/nav.js?v=20260622r23" defer></script>
+<script src="js/mc-2026.js?v=20260622r23" defer></script>
 
 <script>
   /* ── Яндекс.Метрика: цели ── */
@@ -1853,6 +1905,6 @@
 </script>
 
 
-<script defer src="/js/v20-faq-fix.js?v=20260606r22"></script>
+<script defer src="/js/v20-faq-fix.js?v=20260622r23"></script>
 </body>
 </html>

@@ -235,3 +235,29 @@ html[data-theme="dark"] .delivery-faq .faq-item,
     transform: none !important;
   }
 }
+
+/* ==========================================================================
+   10. ASIDE — small editorial note inside info-note cards (r23)
+   Used by /o-konditere/ "Подход" card to credit the French Pastry Library
+   without disrupting the calm layout. Single selector, no !important.
+   ========================================================================== */
+.info-note-aside {
+  margin: 14px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid rgba(201, 147, 74, .14);
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--brown-light);
+  opacity: .82;
+  font-style: italic;
+}
+.info-note-aside a {
+  color: var(--gold, #c9934a);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(201, 147, 74, .32);
+  transition: border-color .2s ease, opacity .2s ease;
+}
+.info-note-aside a:hover {
+  border-bottom-color: var(--gold, #c9934a);
+  opacity: 1;
+}
