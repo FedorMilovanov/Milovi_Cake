@@ -261,3 +261,41 @@ html[data-theme="dark"] .delivery-faq .faq-item,
   border-bottom-color: var(--gold, #c9934a);
   opacity: 1;
 }
+
+/* ==========================================================================
+   11. FOOTER PROJECTS — dark theme fixes (r68)
+   ========================================================================== */
+[data-theme="dark"] .footer-projects {
+  background: transparent;
+}
+[data-theme="dark"] .footer-projects-label {
+  color: var(--gold-light);
+}
+[data-theme="dark"] .footer-projects-link {
+  color: var(--gold) !important;
+  border-color: rgba(212, 167, 106, 0.25) !important;
+}
+[data-theme="dark"] .footer-projects-link:hover {
+  background: rgba(212, 167, 106, 0.08) !important;
+  border-color: var(--gold) !important;
+  color: var(--gold-light) !important;
+}
+[data-theme="dark"] .footer-projects-name {
+  color: var(--gold-light);
+}
+[data-theme="dark"] .footer-projects-desc {
+  color: var(--text-muted);
+}
+[data-theme="dark"] .footer-projects-arrow {
+  color: var(--gold);
+}
+
+/* ==========================================================================
+   12. GALLERY — video click-through fix (r68)
+   Prevent <video> inside .card from swallowing clicks; pass them to the
+   parent <button> so the lightbox opens on first tap/click.
+   ========================================================================== */
+.card video,
+.card-media video {
+  pointer-events: none;
+}
