@@ -243,10 +243,12 @@ const CAKE_CONFIGS = {
 // ── PRODUCT SLIDER TOUCH ──
 function addSliderTouch(pid, total) {
   const wrap = document.getElementById('slider-' + pid);
-  if (!wrap || wrap._touchBound) return;
-  wrap._touchBound = true;
+  if (!wrap) return;
+  // switchBentoTab пересоздаёт слушатели при смене таба; снимаем прошлые, чтобы не копить их (утечка + двойной свайп).
+  if (wrap._touchAbort) wrap._touchAbort.abort();
+  const _sig = (wrap._touchAbort = new AbortController()).signal;
   let startX = 0;
-  wrap.addEventListener('touchstart', e => { startX = e.touches[0].clientX; wrap._wasSwiped = false; }, { passive: true });
+  wrap.addEventListener('touchstart', e => { startX = e.touches[0].clientX; wrap._wasSwiped = false; }, { passive: true, signal: _sig });
   wrap.addEventListener('touchend', e => {
     const dx = e.changedTouches[0].clientX - startX;
     if (Math.abs(dx) < 40) return;
@@ -257,7 +259,7 @@ function addSliderTouch(pid, total) {
     goSlide(pid, next);
     if (slideTimers[pid]) { clearInterval(slideTimers[pid]); let c = next; slideTimers[pid] = setInterval(() => { if (document.hidden) return; c = (c + 1) % total; goSlide(pid, c); }, 3000); }
     setTimeout(() => { wrap._wasSwiped = false; }, 300);
-  }, { passive: true });
+  }, { passive: true, signal: _sig });
 }
 
 // ── BENTO TAB ──
@@ -307,7 +309,6 @@ function switchBentoTab(pid, mode) {
         goSlide(pid, sliderCurrentIdx[pid]);
       }, 3000);
     }
-    wrap._touchBound = false;
     addSliderTouch(pid, slides.length);
   }
 }
