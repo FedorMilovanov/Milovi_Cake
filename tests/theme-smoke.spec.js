@@ -74,13 +74,22 @@ test.describe('light/dark UI smoke', () => {
         }
 
         // Check only images that are actually in/near the current viewport. Offscreen lazy images
-        // are valid and should not be classified as UI bugs.
+        // are valid and should not be classified as UI bugs. Genuinely hidden images (e.g. the
+        // placeholder <img> inside a closed lightbox overlay, which is visibility:hidden when idle)
+        // are not user-visible and must not be flagged as broken.
         const brokenImages = await page.locator('img').evaluateAll((imgs) => {
           const vh = window.innerHeight;
+          const isVisible = (el) => {
+            for (let node = el; node && node !== document.documentElement; node = node.parentElement) {
+              const cs = getComputedStyle(node);
+              if (cs.visibility === 'hidden' || cs.display === 'none') return false;
+            }
+            return true;
+          };
           return imgs
             .filter((img) => {
               const rect = img.getBoundingClientRect();
-              return img.getAttribute('src') && rect.width > 20 && rect.bottom > -50 && rect.top < vh + 250;
+              return img.getAttribute('src') && rect.width > 20 && rect.bottom > -50 && rect.top < vh + 250 && isVisible(img);
             })
             .filter((img) => !img.complete || img.naturalWidth < 20)
             .map((img) => img.getAttribute('src'));

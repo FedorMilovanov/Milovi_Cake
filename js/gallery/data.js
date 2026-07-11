@@ -73,7 +73,8 @@ export const GALLERY_ITEMS = [
   { id: 'p24', type: 'photo', src: '/img/gallery/gallery-24.webp', full: '/img/gallery/gallery-24-hd.webp', title: '3D-торт Minecraft с зеленью',    desc: 'Тематический торт с игровым декором и фактурой', tags: ['3d','bday'] },
   { id: 'p25', type: 'photo', src: '/img/gallery/gallery-25.webp', full: '/img/gallery/gallery-25-hd.webp', title: 'Меренговые рулеты в коробке',   desc: 'Подарочный набор меренговых рулетов', tags: ['meringue'] },
   { id: 'p26', type: 'photo', src: '/img/gallery/gallery-26.webp', full: '/img/gallery/gallery-26-hd.webp', title: 'Мини Павлова с кремом',          desc: 'Порционные десерты Павлова с нежным кремом', tags: ['pavlova'] },
-  // FIX: p27 дублировал p12 — оба «Бенто Happy Birthday». Уникализируем p27.
+  // FIX: p27 дублировал p12 — оба «Бенто Happy Birthday». Уникализируем p27 (не удаляем — есть в JSON-LD галереи).
+  { id: 'p27', type: 'photo', src: '/img/gallery/gallery-27.webp', full: '/img/gallery/gallery-27-hd.webp', title: 'Бенто «С днём рождения!»',     desc: 'Мини-торт на день рождения в подарочной коробке', tags: ['bento','bday'] },
   { id: 'p28', type: 'photo', src: '/img/gallery/gallery-28.webp', full: '/img/gallery/gallery-28-hd.webp', title: 'Павлова с кремом и орехами',    desc: 'Порционный десерт Павлова крупным планом', tags: ['pavlova'] },
   /* r19: moved p21 here to separate the two near-identical Minecraft cakes (p20 was adjacent to p21) */
   { id: 'p21', type: 'photo', src: '/img/gallery/gallery-21.webp', full: '/img/gallery/gallery-21-hd.webp', title: '3D-торт Minecraft',             desc: 'Вертикальная композиция с игровым героем', tags: ['3d','bday'] },

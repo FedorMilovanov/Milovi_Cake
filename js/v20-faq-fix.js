@@ -278,6 +278,9 @@
 
   /* ── Найти ikonку + / × ── */
   function ensureFaqIcon(question) {
+    // Пригороды/нативные аккордеоны уже несут свою иконку (.cb-faq-ico) со своей
+    // стилизацией и rotate-анимацией — не дублируем её вторым «+».
+    if (question.querySelector('.cb-faq-ico')) return;
     // Ищем существующую иконку
     var icon = question.querySelector('.faq-icon, .faq-plus, span:last-child');
 

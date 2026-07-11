@@ -139,7 +139,7 @@ const products = [
     slideScale: [1.4, 1, 1],
     hasMaxi: true,
     maxiVariant: {
-      name: 'Макси Бенто', desc: 'Увеличенный бенто торт — больше радости, больше вкуса', price: 'от 3 000 ₽/кг', priceNum: 3000, unit: 'кг', minKg: 1,
+      name: 'Макси Бенто', desc: 'Увеличенный бенто торт — больше радости, больше вкуса', price: 'от 3 000 ₽/шт', priceNum: 3000, unit: 'шт', minQty: 1,
       slides: [IMG_BASE + '/bento_maxi.webp'], slidePos: ['center 40%'], slideScale: [1]
     }
   },
