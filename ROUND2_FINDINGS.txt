@@ -1,0 +1,164 @@
+=== NPM AUDIT (HIGH) ===
+
+added 3 packages, and audited 4 packages in 530ms
+
+found 0 vulnerabilities
+found 0 vulnerabilities
+
+=== SOURCE FINDINGS ===
+css/mc-2026.css:123: cookieBanner: #cookieBanner{
+css/mc-2026.css:130: cookieBanner: #cookieBanner > span{
+css/mc-2026.css:315: cookieBanner: #cookieBanner{
+css/mc-2026.css:351: cookieBanner: #cookieBanner{
+css/premium-overrides.css:1421: cookieBanner: .cookie-banner, #cookieBanner,
+css/premium-overrides.css:1832: privacyOverlay: #privacyOverlay[role="button"],
+css/style.css:1: privacyOverlay: *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}html{-webkit-text-size-adjust:100%;text-size-adjust:100%;background:var(--cream);color-scheme:light}[data-theme="dark"] html,html[data-the
+css/style.css:1: privacyModal: *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}html{-webkit-text-size-adjust:100%;text-size-adjust:100%;background:var(--cream);color-scheme:light}[data-theme="dark"] html,html[data-the
+css/style.css:1: cookieBanner: *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}html{-webkit-text-size-adjust:100%;text-size-adjust:100%;background:var(--cream);color-scheme:light}[data-theme="dark"] html,html[data-the
+css/v20-dark-and-fixes.css:525: cookieBanner: [data-theme="dark"] #cookieBanner {
+index.html:1457: openPrivacy: <p class="consent-note" style="text-align:left;">Нажимая кнопку, вы даёте согласие на <a href="#" onclick="openPrivacy(); return false;">обработку персональных данных</a></p>
+index.html:1495: openPrivacy: <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="#" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+index.html:1553: openPrivacy: <a href="#" onclick="openPrivacy(); return false;">Политика конфиденциальности</a>
+index.html:1715: privacyOverlay: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+index.html:1715: closePrivacy: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+index.html:1716: privacyModal: <div id="privacyModal">
+index.html:1717: closePrivacy: <button type="button" id="privacyClose" onclick="closePrivacy()" aria-label="Закрыть">×</button>
+index.html:1817: openPrivacy: <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="#" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+js/main.js:1439: cookieBanner: const banner = document.getElementById('cookieBanner');
+js/main.js:1446: openPrivacy: function openPrivacy() {
+js/main.js:1449: privacyOverlay: const el = document.getElementById('privacyOverlay');
+js/main.js:1457: closePrivacy: function closePrivacy() {
+js/main.js:1458: privacyOverlay: const el = document.getElementById('privacyOverlay');
+js/main.js:1606: closePrivacy: closePrivacy(); closeFillPopup(); closeCalcPanel();
+js/main.js:1999: precedence bug: if(STATE === 'zoom_in' && typeof lbIsOpen === 'undefined' || !lbIsOpen){ zoomP += (1 - zoomP) * ZOOM_IN_SPD_CUR; }
+js/main.js:2161: closePrivacy: window.closePrivacy = closePrivacy;
+js/main.js:2182: openPrivacy: window.openPrivacy = openPrivacy;
+js/main.js:2286: privacyOverlay: document.addEventListener('touchstart', function(e) { if (ptrBusy) return; var sy = window.scrollY; if (sy > 16 || sy < 0) return; _ensurePtrIndicator(); if (document.body.classList.contains('cart-open')||document.body.classList.contains('f
+prigorody/_template.html:718: openPrivacy: <p class="consent-note" style="text-align:left;">Нажимая кнопку, вы даёте согласие на <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработку персональных данных</a></p>
+prigorody/_template.html:770: openPrivacy: <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/_template.html:897: openPrivacy: <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/_template.html:950: privacyOverlay: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/_template.html:950: closePrivacy: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/_template.html:951: privacyModal: <div id="privacyModal">
+prigorody/_template.html:952: closePrivacy: <button type="button" id="privacyClose" onclick="closePrivacy()" aria-label="Закрыть">×</button>
+prigorody/_template.html:1038: openPrivacy: <a href="#" role="button" onclick="openPrivacy(); return false;">Политика конфиденциальности</a>
+prigorody/gatchina/index.html:718: openPrivacy: <p class="consent-note" style="text-align:left;">Нажимая кнопку, вы даёте согласие на <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработку персональных данных</a></p>
+prigorody/gatchina/index.html:770: openPrivacy: <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/gatchina/index.html:920: openPrivacy: <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/gatchina/index.html:973: privacyOverlay: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/gatchina/index.html:973: closePrivacy: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/gatchina/index.html:974: privacyModal: <div id="privacyModal">
+prigorody/gatchina/index.html:975: closePrivacy: <button type="button" id="privacyClose" onclick="closePrivacy()" aria-label="Закрыть">×</button>
+prigorody/gatchina/index.html:1061: openPrivacy: <a href="#" role="button" onclick="openPrivacy(); return false;">Политика конфиденциальности</a>
+prigorody/kolpino/index.html:718: openPrivacy: <p class="consent-note" style="text-align:left;">Нажимая кнопку, вы даёте согласие на <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработку персональных данных</a></p>
+prigorody/kolpino/index.html:770: openPrivacy: <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/kolpino/index.html:920: openPrivacy: <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/kolpino/index.html:973: privacyOverlay: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/kolpino/index.html:973: closePrivacy: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/kolpino/index.html:974: privacyModal: <div id="privacyModal">
+prigorody/kolpino/index.html:975: closePrivacy: <button type="button" id="privacyClose" onclick="closePrivacy()" aria-label="Закрыть">×</button>
+prigorody/kolpino/index.html:1061: openPrivacy: <a href="#" role="button" onclick="openPrivacy(); return false;">Политика конфиденциальности</a>
+prigorody/krasnoe-selo/index.html:718: openPrivacy: <p class="consent-note" style="text-align:left;">Нажимая кнопку, вы даёте согласие на <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработку персональных данных</a></p>
+prigorody/krasnoe-selo/index.html:770: openPrivacy: <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/krasnoe-selo/index.html:920: openPrivacy: <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/krasnoe-selo/index.html:973: privacyOverlay: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/krasnoe-selo/index.html:973: closePrivacy: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/krasnoe-selo/index.html:974: privacyModal: <div id="privacyModal">
+prigorody/krasnoe-selo/index.html:975: closePrivacy: <button type="button" id="privacyClose" onclick="closePrivacy()" aria-label="Закрыть">×</button>
+prigorody/krasnoe-selo/index.html:1061: openPrivacy: <a href="#" role="button" onclick="openPrivacy(); return false;">Политика конфиденциальности</a>
+prigorody/kronshtadt/index.html:718: openPrivacy: <p class="consent-note" style="text-align:left;">Нажимая кнопку, вы даёте согласие на <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработку персональных данных</a></p>
+prigorody/kronshtadt/index.html:770: openPrivacy: <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/kronshtadt/index.html:915: openPrivacy: <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/kronshtadt/index.html:968: privacyOverlay: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/kronshtadt/index.html:968: closePrivacy: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/kronshtadt/index.html:969: privacyModal: <div id="privacyModal">
+prigorody/kronshtadt/index.html:970: closePrivacy: <button type="button" id="privacyClose" onclick="closePrivacy()" aria-label="Закрыть">×</button>
+prigorody/kronshtadt/index.html:1056: openPrivacy: <a href="#" role="button" onclick="openPrivacy(); return false;">Политика конфиденциальности</a>
+prigorody/kudrovo/index.html:718: openPrivacy: <p class="consent-note" style="text-align:left;">Нажимая кнопку, вы даёте согласие на <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработку персональных данных</a></p>
+prigorody/kudrovo/index.html:770: openPrivacy: <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/kudrovo/index.html:916: openPrivacy: <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/kudrovo/index.html:969: privacyOverlay: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/kudrovo/index.html:969: closePrivacy: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/kudrovo/index.html:970: privacyModal: <div id="privacyModal">
+prigorody/kudrovo/index.html:971: closePrivacy: <button type="button" id="privacyClose" onclick="closePrivacy()" aria-label="Закрыть">×</button>
+prigorody/kudrovo/index.html:1057: openPrivacy: <a href="#" role="button" onclick="openPrivacy(); return false;">Политика конфиденциальности</a>
+prigorody/lomonosov/index.html:718: openPrivacy: <p class="consent-note" style="text-align:left;">Нажимая кнопку, вы даёте согласие на <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработку персональных данных</a></p>
+prigorody/lomonosov/index.html:770: openPrivacy: <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/lomonosov/index.html:916: openPrivacy: <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/lomonosov/index.html:969: privacyOverlay: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/lomonosov/index.html:969: closePrivacy: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/lomonosov/index.html:970: privacyModal: <div id="privacyModal">
+prigorody/lomonosov/index.html:971: closePrivacy: <button type="button" id="privacyClose" onclick="closePrivacy()" aria-label="Закрыть">×</button>
+prigorody/lomonosov/index.html:1057: openPrivacy: <a href="#" role="button" onclick="openPrivacy(); return false;">Политика конфиденциальности</a>
+prigorody/murino/index.html:718: openPrivacy: <p class="consent-note" style="text-align:left;">Нажимая кнопку, вы даёте согласие на <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработку персональных данных</a></p>
+prigorody/murino/index.html:770: openPrivacy: <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/murino/index.html:912: openPrivacy: <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/murino/index.html:965: privacyOverlay: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/murino/index.html:965: closePrivacy: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/murino/index.html:966: privacyModal: <div id="privacyModal">
+prigorody/murino/index.html:967: closePrivacy: <button type="button" id="privacyClose" onclick="closePrivacy()" aria-label="Закрыть">×</button>
+prigorody/murino/index.html:1053: openPrivacy: <a href="#" role="button" onclick="openPrivacy(); return false;">Политика конфиденциальности</a>
+prigorody/pavlovsk/index.html:718: openPrivacy: <p class="consent-note" style="text-align:left;">Нажимая кнопку, вы даёте согласие на <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработку персональных данных</a></p>
+prigorody/pavlovsk/index.html:770: openPrivacy: <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/pavlovsk/index.html:916: openPrivacy: <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/pavlovsk/index.html:969: privacyOverlay: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/pavlovsk/index.html:969: closePrivacy: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/pavlovsk/index.html:970: privacyModal: <div id="privacyModal">
+prigorody/pavlovsk/index.html:971: closePrivacy: <button type="button" id="privacyClose" onclick="closePrivacy()" aria-label="Закрыть">×</button>
+prigorody/pavlovsk/index.html:1057: openPrivacy: <a href="#" role="button" onclick="openPrivacy(); return false;">Политика конфиденциальности</a>
+prigorody/peterhof/index.html:718: openPrivacy: <p class="consent-note" style="text-align:left;">Нажимая кнопку, вы даёте согласие на <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработку персональных данных</a></p>
+prigorody/peterhof/index.html:770: openPrivacy: <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/peterhof/index.html:916: openPrivacy: <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/peterhof/index.html:969: privacyOverlay: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/peterhof/index.html:969: closePrivacy: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/peterhof/index.html:970: privacyModal: <div id="privacyModal">
+prigorody/peterhof/index.html:971: closePrivacy: <button type="button" id="privacyClose" onclick="closePrivacy()" aria-label="Закрыть">×</button>
+prigorody/peterhof/index.html:1057: openPrivacy: <a href="#" role="button" onclick="openPrivacy(); return false;">Политика конфиденциальности</a>
+prigorody/pushkin/index.html:718: openPrivacy: <p class="consent-note" style="text-align:left;">Нажимая кнопку, вы даёте согласие на <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработку персональных данных</a></p>
+prigorody/pushkin/index.html:770: openPrivacy: <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/pushkin/index.html:920: openPrivacy: <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/pushkin/index.html:973: privacyOverlay: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/pushkin/index.html:973: closePrivacy: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/pushkin/index.html:974: privacyModal: <div id="privacyModal">
+prigorody/pushkin/index.html:975: closePrivacy: <button type="button" id="privacyClose" onclick="closePrivacy()" aria-label="Закрыть">×</button>
+prigorody/pushkin/index.html:1061: openPrivacy: <a href="#" role="button" onclick="openPrivacy(); return false;">Политика конфиденциальности</a>
+prigorody/sestroretsk/index.html:718: openPrivacy: <p class="consent-note" style="text-align:left;">Нажимая кнопку, вы даёте согласие на <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработку персональных данных</a></p>
+prigorody/sestroretsk/index.html:770: openPrivacy: <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/sestroretsk/index.html:916: openPrivacy: <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/sestroretsk/index.html:969: privacyOverlay: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/sestroretsk/index.html:969: closePrivacy: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/sestroretsk/index.html:970: privacyModal: <div id="privacyModal">
+prigorody/sestroretsk/index.html:971: closePrivacy: <button type="button" id="privacyClose" onclick="closePrivacy()" aria-label="Закрыть">×</button>
+prigorody/sestroretsk/index.html:1057: openPrivacy: <a href="#" role="button" onclick="openPrivacy(); return false;">Политика конфиденциальности</a>
+prigorody/shushary/index.html:718: openPrivacy: <p class="consent-note" style="text-align:left;">Нажимая кнопку, вы даёте согласие на <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработку персональных данных</a></p>
+prigorody/shushary/index.html:770: openPrivacy: <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/shushary/index.html:916: openPrivacy: <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/shushary/index.html:969: privacyOverlay: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/shushary/index.html:969: closePrivacy: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/shushary/index.html:970: privacyModal: <div id="privacyModal">
+prigorody/shushary/index.html:971: closePrivacy: <button type="button" id="privacyClose" onclick="closePrivacy()" aria-label="Закрыть">×</button>
+prigorody/shushary/index.html:1057: openPrivacy: <a href="#" role="button" onclick="openPrivacy(); return false;">Политика конфиденциальности</a>
+prigorody/tosno/index.html:718: openPrivacy: <p class="consent-note" style="text-align:left;">Нажимая кнопку, вы даёте согласие на <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработку персональных данных</a></p>
+prigorody/tosno/index.html:770: openPrivacy: <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/tosno/index.html:916: openPrivacy: <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/tosno/index.html:969: privacyOverlay: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/tosno/index.html:969: closePrivacy: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/tosno/index.html:970: privacyModal: <div id="privacyModal">
+prigorody/tosno/index.html:971: closePrivacy: <button type="button" id="privacyClose" onclick="closePrivacy()" aria-label="Закрыть">×</button>
+prigorody/tosno/index.html:1057: openPrivacy: <a href="#" role="button" onclick="openPrivacy(); return false;">Политика конфиденциальности</a>
+prigorody/vsevolozhsk/index.html:718: openPrivacy: <p class="consent-note" style="text-align:left;">Нажимая кнопку, вы даёте согласие на <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработку персональных данных</a></p>
+prigorody/vsevolozhsk/index.html:770: openPrivacy: <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/vsevolozhsk/index.html:916: openPrivacy: <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="#" role="button" tabindex="0" onclick="openPrivacy(); return false;">обработкой персональных данных</a></p>
+prigorody/vsevolozhsk/index.html:969: privacyOverlay: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/vsevolozhsk/index.html:969: closePrivacy: <div id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Политика конфиденциальности" onclick="if(event.target===this)closePrivacy()">
+prigorody/vsevolozhsk/index.html:970: privacyModal: <div id="privacyModal">
+prigorody/vsevolozhsk/index.html:971: closePrivacy: <button type="button" id="privacyClose" onclick="closePrivacy()" aria-label="Закрыть">×</button>
+prigorody/vsevolozhsk/index.html:1057: openPrivacy: <a href="#" role="button" onclick="openPrivacy(); return false;">Политика конфиденциальности</a>
+
+=== UNPINNED ACTIONS ===
+.github/workflows/_collect-round2-findings.yml:62: '
+.github/workflows/_collect-round2-findings.yml:63: ',1)[1].strip().split()[0]
+.github/workflows/deep-polish-audit.yml:107: ')
+.github/workflows/deep-polish-audit.yml:109: ',
+.github/workflows/lighthouse.yml:24: treosh/lighthouse-ci-action@v12
+.github/workflows/production-smoke.yml:17: actions/checkout@v4
