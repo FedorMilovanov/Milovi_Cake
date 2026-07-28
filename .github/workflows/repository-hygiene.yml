@@ -1,0 +1,73 @@
+name: Repository hygiene
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Reject repository junk and unsafe workflow refs
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re, subprocess
+
+          tracked = [p for p in subprocess.check_output(['git','ls-files','-z']).decode().split('\0') if p]
+          failures=[]
+          forbidden_parts={
+              'node_modules','dist','build','_site','coverage','test-results','playwright-report',
+              '__pycache__','.pytest_cache','.mypy_cache','.ruff_cache','.cache','tmp','temp'
+          }
+          forbidden_names={'.DS_Store','Thumbs.db','desktop.ini','npm-debug.log','yarn-error.log'}
+          temp_workflow=re.compile(r'(^|/)(?:_temp|_diagnos|_inspect|_delete-stale|_repository-hygiene-audit)',re.I)
+
+          for rel in tracked:
+              path=Path(rel)
+              if set(path.parts) & forbidden_parts:
+                  failures.append(f'tracked generated/cache path: {rel}')
+              if path.name in forbidden_names or path.suffix in {'.pyc','.pyo'}:
+                  failures.append(f'tracked junk file: {rel}')
+              if rel.startswith('.github/workflows/') and temp_workflow.search(rel):
+                  failures.append(f'temporary workflow committed: {rel}')
+              if rel == '.env' or (rel.startswith('.env.') and rel != '.env.example'):
+                  failures.append(f'tracked environment file: {rel}')
+              if path.is_file() and path.stat().st_size > 20*1024*1024:
+                  failures.append(f'file exceeds 20 MiB repository budget: {rel}')
+
+          if '.github/CODEOWNERS' not in tracked:
+              failures.append('missing .github/CODEOWNERS')
+
+          exact_sha=re.compile(r'^[0-9a-f]{40}$',re.I)
+          for workflow in sorted(Path('.github/workflows').glob('*.yml')):
+              text=workflow.read_text('utf-8',errors='replace')
+              if re.search(r'^\s*permissions\s*:\s*write-all\s*$',text,re.M):
+                  failures.append(f'{workflow}: permissions write-all is forbidden')
+              for no,line in enumerate(text.splitlines(),1):
+                  stripped=line.strip()
+                  if not stripped.startswith('uses:'):
+                      continue
+                  target=stripped.split('uses:',1)[1].strip().split()[0]
+                  if target.startswith('./'):
+                      continue
+                  ref=target.rsplit('@',1)[-1] if '@' in target else ''
+                  if not exact_sha.fullmatch(ref):
+                      failures.append(f'{workflow}:{no}: action not pinned to exact SHA: {target}')
+
+          if failures:
+              raise SystemExit('\n'.join(failures))
+          print(f'Repository hygiene passed: {len(tracked)} tracked files')
+          PY
