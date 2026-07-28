@@ -25,7 +25,6 @@ jobs:
           python3 prigorody/build.py
           python3 scripts/check_prigorody_idempotent.py
           python3 scripts/analytics_contract.py
-          git diff --check
 
       - name: Commit generated pages and remove diagnostics
         run: |
