@@ -140,18 +140,29 @@ def rewrite_privacy_links(text: str) -> str:
 
 
 def remove_privacy_modal(text: str) -> str:
-    bounded = re.compile(
-        r'\s*<!--\s*PRIVACY MODAL\s*-->[\s\S]*?(?=<!--\s*FILL POPUP\s*-->)',
-        re.I,
-    )
-    text, count = bounded.subn('\n\n', text)
-    if count:
-        return text
-    # Fail closed: never guess the closing div of an unmarked modal.
-    if re.search(r'id=["\']privacy(?:Overlay|Modal)["\']', text, re.I):
-        raise RuntimeError('legacy privacy modal found without the bounded PRIVACY MODAL/FILL POPUP markers')
-    return text
-
+    opening = re.compile(r'<div\b[^>]*\bid=["\']privacyOverlay["\'][^>]*>', re.I)
+    token = re.compile(r'<div\b[^>]*>|</div\s*>', re.I)
+    while True:
+        match = opening.search(text)
+        if not match:
+            return text
+        depth = 0
+        block_end = None
+        for div in token.finditer(text, match.start()):
+            if div.group(0).lower().startswith('<div'):
+                depth += 1
+            else:
+                depth -= 1
+                if depth == 0:
+                    block_end = div.end()
+                    break
+        if block_end is None:
+            raise RuntimeError('unbalanced legacy privacyOverlay div')
+        block_start = match.start()
+        comment = re.search(r'<!--[^>]*PRIVACY MODAL[^>]*-->\s*$', text[:match.start()], re.I)
+        if comment:
+            block_start = comment.start()
+        text = text[:block_start] + '\n' + text[block_end:]
 
 def migrate_html(path: Path, text: str) -> str:
     text = remove_script_blocks(text)

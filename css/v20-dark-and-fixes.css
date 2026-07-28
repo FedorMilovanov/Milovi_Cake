@@ -518,11 +518,7 @@
 [data-theme="dark"] .fill-popup-close {
   color: var(--text-muted) !important;
   background: rgba(212,167,106,0.08) !important;
-}
-
-
-[data-theme="dark"] .cookie-banner,
-[data-theme="dark"] #cookieBanner {
+}[data-theme="dark"] .cookie-banner{
   background: var(--card-bg) !important;
   border-color: rgba(212,167,106,0.16) !important;
   color: var(--text-muted) !important;

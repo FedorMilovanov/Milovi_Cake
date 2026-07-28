@@ -1425,44 +1425,7 @@ function showBentoWeightToast(text) {
 
 
 // ── Cookie banner ──
-function _lsGet(key) { try { return localStorage.getItem(key); } catch(e) { return null; } }
-function _lsSet(key, val) { try { localStorage.setItem(key, val); } catch(e) {} }
-
-
-
-function initCookieBanner() {
-  const stored = _lsGet('cookieAccepted');
-  if (stored) {
-    const isDenied = stored.startsWith('denied:');
-    const expiry = parseInt(isDenied ? stored.slice(7) : stored);
-  }
-  const banner = document.getElementById('cookieBanner');
-  if (!banner) return;
-  setTimeout(() => { banner.style.transform = 'translateY(0)'; banner.classList.add('visible'); }, 800);
-}
-initCookieBanner();
-
 // ── Privacy modal ──
-function openPrivacy() {
-  if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
-  closeCalcPanel();
-  const el = document.getElementById('privacyOverlay');
-  if (!el) return;
-  el.classList.add('open');
-  if (window.innerWidth <= 900) lockBody();
-  /* r32: bug #38 — focus trap for privacy */
-  if (window._trapFocus) { window._privTrapRelease = window._trapFocus(el); }
-  var privClose = el.querySelector('#privacyClose'); if (privClose) setTimeout(function(){ privClose.focus(); }, 100);
-}
-function closePrivacy() {
-  const el = document.getElementById('privacyOverlay');
-  if (!el) return;
-  /* r32: bug #38 — release privacy focus trap */
-  if (window._privTrapRelease) { window._privTrapRelease(); window._privTrapRelease = null; }
-  el.classList.remove('open');
-  if (window.innerWidth <= 900) unlockBody();
-}
-
 // ══════════════════════════════════════════
 // FILL BOTTOM SHEET
 // ══════════════════════════════════════════
@@ -1603,7 +1566,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     if (typeof closeLightbox === 'function') closeLightbox();
     if (typeof lbIsOpen !== 'undefined' && lbIsOpen && typeof closeLB === 'function') closeLB();
-    closePrivacy(); closeFillPopup(); closeCalcPanel();
+    closeFillPopup(); closeCalcPanel();
     const _cartDr = document.getElementById('cartDrawer');
     if (_cartDr && _cartDr.classList.contains('open')) closeCart();
   }
@@ -1996,7 +1959,7 @@ if (scField && trackEl && dotsEl && stageEl) {
     if (!secEl) { if (loopActive) requestAnimationFrame(loop); return; }
     const dt = Math.min(ts-lastT, 40); lastT = ts;
     if(STATE === 'idle'){ requestAnimationFrame(loop); return; }
-    if(STATE === 'zoom_in' && typeof lbIsOpen === 'undefined' || !lbIsOpen){ zoomP += (1 - zoomP) * ZOOM_IN_SPD_CUR; }
+    if(STATE === 'zoom_in' && (typeof lbIsOpen === 'undefined' || !lbIsOpen)){ zoomP += (1 - zoomP) * ZOOM_IN_SPD_CUR; }
     else if(STATE === 'zoom_out'){
       zoomP += (0 - zoomP) * ZOOM_OUT_SPD;
       if (!dissolved && zoomP < 0.72) { dissolved = true; dissolveText(); }
@@ -2158,7 +2121,6 @@ window.closeCart = closeCart;
 window.closeFillPopup = closeFillPopup;
 window.closeLightbox = closeLightbox;
 window.closeMobileMenu = closeMobileMenu;
-window.closePrivacy = closePrivacy;
 window.closeReviewsModal = closeReviewsModal;
 window.confirmFillSelection = confirmFillSelection;
 window.goBackToCart = goBackToCart;
@@ -2179,7 +2141,6 @@ window.navigateFill = navigateFill;
 window.openCart = openCart;
 window.openChatLightbox = openChatLightbox;
 window.openLightbox = openLightbox;
-window.openPrivacy = openPrivacy;
 window.openReviewsModal = openReviewsModal;
 window.removeFromCart = removeFromCart;
 window.selectOpt = selectOpt;
@@ -2283,7 +2244,7 @@ if (typeof updateCalcCartBadge === 'function') {
   }
   function setPtrPos(dy) { var d = Math.min(dy, PTR_MAX); var progress = d / PTR_THRESHOLD; ptrIndicator.style.transform = 'translateY('+(d-56)+'px)'; ptrIndicator.style.background = 'rgba(28,20,16,'+Math.min(progress*0.85,0.85)+')'; ptrLabel.textContent = d >= PTR_THRESHOLD ? 'Отпусти' : 'Потяни ещё'; ptrSpinner.style.opacity = Math.min(progress,1); if (d >= PTR_THRESHOLD) ptrSpinner.classList.add('ptr-spinning'); else ptrSpinner.classList.remove('ptr-spinning'); }
   function ptrRelease(dy) { ptrActive = false; document.body.style.overscrollBehaviorY = ''; if (dy >= PTR_THRESHOLD && !ptrBusy) { ptrBusy = true; setPtrPos(PTR_MAX); ptrSpinner.classList.add('ptr-spinning'); ptrLabel.textContent = 'Обновляем...'; vibe([8,40,8]); setTimeout(function() { ptrSpinner.classList.remove('ptr-spinning'); ptrLabel.textContent = '✓ Обновлено'; ptrIndicator.style.transition = 'transform 0.4s ease, background 0.4s ease'; ptrIndicator.style.transform = 'translateY(-56px)'; ptrIndicator.style.background = 'transparent'; setTimeout(function() { ptrIndicator.style.transition = 'none'; ptrBusy = false; var ev = new CustomEvent('ptr:refresh', { bubbles: true, cancelable: true }); if (!document.dispatchEvent(ev)) window.location.reload(); }, 500); }, 1000); } else { ptrIndicator.style.transition = 'transform 0.3s ease, background 0.3s ease'; ptrIndicator.style.transform = 'translateY(-56px)'; ptrIndicator.style.background = 'transparent'; setTimeout(function() { ptrIndicator.style.transition = 'none'; }, 350); } }
-  document.addEventListener('touchstart', function(e) { if (ptrBusy) return; var sy = window.scrollY; if (sy > 16 || sy < 0) return; _ensurePtrIndicator(); if (document.body.classList.contains('cart-open')||document.body.classList.contains('fill-open')||document.body.classList.contains('menu-open')) return; var _lb = document.getElementById('lightbox'); if (_lb && _lb.classList.contains('open')) return; var _rm = document.getElementById('reviewsModal'); if (_rm && _rm.classList.contains('open')) return; var _pr = document.getElementById('privacyOverlay'); if (_pr && _pr.classList.contains('open')) return; ptrStartY = e.touches[0].clientY; ptrCurrent = 0; ptrActive = true; document.body.style.overscrollBehaviorY = 'none'; }, { passive: true });
+  document.addEventListener('touchstart', function(e) { if (ptrBusy) return; var sy = window.scrollY; if (sy > 16 || sy < 0) return; _ensurePtrIndicator(); if (document.body.classList.contains('cart-open')||document.body.classList.contains('fill-open')||document.body.classList.contains('menu-open')) return; var _lb = document.getElementById('lightbox'); if (_lb && _lb.classList.contains('open')) return; var _rm = document.getElementById('reviewsModal'); if (_rm && _rm.classList.contains('open')) return; ptrStartY = e.touches[0].clientY; ptrCurrent = 0; ptrActive = true; document.body.style.overscrollBehaviorY = 'none'; }, { passive: true });
   document.addEventListener('touchmove', function(e) { if (!ptrActive) return; var dy = e.touches[0].clientY - ptrStartY; if (dy < 0) { ptrActive = false; document.body.style.overscrollBehaviorY = ''; return; } ptrCurrent = dy; setPtrPos(dy * 0.55); }, { passive: true });
   document.addEventListener('touchend', function() { if (!ptrActive) return; ptrRelease(ptrCurrent * 0.55); }, { passive: true });
 })();

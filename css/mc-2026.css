@@ -120,17 +120,6 @@
 }
 
 @media (max-width: 480px){
-  #cookieBanner{
-    padding: 14px 16px !important;
-    gap: 10px !important;
-    font-size: 12.5px !important;
-    line-height: 1.45 !important;
-    align-items: stretch !important;
-  }
-  #cookieBanner > span{
-    flex: 1 1 100%;
-    text-align: left;
-  }
   #cookieAccept,
   #cookieDecline{
     flex: 1 1 calc(50% - 5px);
@@ -312,10 +301,6 @@
     height: auto !important;
   }
   
-  #cookieBanner{
-    bottom: 0 !important;
-  }
-  
   .calc-right-col.calc-result-open .calc-result-expandable{
     max-height: 60vh !important;
     overflow-y: auto !important;
@@ -348,10 +333,6 @@
 
 
 @supports (transition-behavior: allow-discrete){
-  #cookieBanner{
-    transition: transform .42s var(--ease-premium),
-                opacity .42s ease;
-  }
 }
 
 
