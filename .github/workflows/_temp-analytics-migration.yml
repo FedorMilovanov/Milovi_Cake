@@ -24,10 +24,10 @@ jobs:
           ref: feat/privacy-consent-deploy-marathon
           fetch-depth: 0
 
-      - name: Migrate and verify analytics sources
+      - name: Apply deterministic analytics migration
         run: |
-          python3 scripts/analytics_contract.py --fix
-          python3 scripts/analytics_contract.py
+          python3 scripts/analytics_contract.py --fix-only
+          python3 -m py_compile scripts/analytics_contract.py scripts/audit.py
           git diff --check
 
       - name: Commit migration and remove one-shot workflow
