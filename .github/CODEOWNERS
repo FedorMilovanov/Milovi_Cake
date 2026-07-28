@@ -1,0 +1,9 @@
+# Default ownership for all repository changes.
+* @FedorMilovanov
+
+# High-risk release and supply-chain surfaces.
+/.github/ @FedorMilovanov
+/package.json @FedorMilovanov
+/package-lock.json @FedorMilovanov
+/sw.js @FedorMilovanov
+/scripts/ @FedorMilovanov
