@@ -25,43 +25,8 @@ jobs:
           node-version: '22.13.0'
           cache: npm
 
-      - name: Harden modal removal to balanced div boundaries
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-
-          path = Path('scripts/analytics_contract.py')
-          source = path.read_text('utf-8')
-          start = source.index('def remove_privacy_modal(text: str) -> str:\n')
-          end = source.index('\ndef migrate_html(path: Path, text: str) -> str:\n', start)
-          replacement = '''def remove_privacy_modal(text: str) -> str:
-              opening = re.compile(r'<div\\b[^>]*\\bid=["\\\']privacyOverlay["\\\'][^>]*>', re.I)
-              token = re.compile(r'<div\\b[^>]*>|</div\\s*>', re.I)
-              while True:
-                  match = opening.search(text)
-                  if not match:
-                      return text
-                  depth = 0
-                  end = None
-                  for div in token.finditer(text, match.start()):
-                      if div.group(0).lower().startswith('<div'):
-                          depth += 1
-                      else:
-                          depth -= 1
-                          if depth == 0:
-                              end = div.end()
-                              break
-                  if end is None:
-                      raise RuntimeError('unbalanced legacy privacyOverlay div')
-                  prefix_start = match.start()
-                  comment = re.search(r'<!--[^>]*PRIVACY MODAL[^>]*-->\\s*$', text[:match.start()], re.I)
-                  if comment:
-                      prefix_start = comment.start()
-                  text = text[:prefix_start] + '\\n' + text[end:]
-'''
-          path.write_text(source[:start] + replacement + source[end:], 'utf-8')
-          PY
+      - name: Install balanced privacy-modal migration
+        run: python3 scripts/_patch_round2_migrator.py
 
       - name: Apply bounded privacy migration
         run: python3 scripts/analytics_contract.py --fix-only
@@ -109,7 +74,7 @@ jobs:
       - name: Commit verified migration and remove diagnostics
         shell: bash
         run: |
-          rm -f ROUND2_FINDINGS.txt .github/workflows/_apply-round2-polish.yml
+          rm -f ROUND2_FINDINGS.txt scripts/_patch_round2_migrator.py .github/workflows/_apply-round2-polish.yml
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
