@@ -1,0 +1,95 @@
+name: Temporary Cake deep-polish live proof
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/_temp-live-polish-proof.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  live-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      LIVE_BASE: https://milovicake.ru
+      EXPECTED_SHA: ea968c1e4035d2c3e8b30980c157aebff14c6081
+    steps:
+      - name: Prove exact release witness
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 30); do
+            body="$(curl -fsS --connect-timeout 10 --max-time 20 "$LIVE_BASE/release.json?round2=$attempt" || true)"
+            echo "attempt=$attempt body=$body"
+            if BODY="$body" python3 -c 'import json,os,sys; p=json.loads(os.environ["BODY"]); sys.exit(0 if p.get("repository")=="FedorMilovanov/Milovi_Cake" and p.get("sha")==os.environ["EXPECTED_SHA"] else 1)' 2>/dev/null; then
+              echo "Exact live release proven: $EXPECTED_SHA"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Live release witness did not reach $EXPECTED_SHA" >&2
+          exit 1
+
+      - name: Smoke live privacy and main surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          for path in / /privacy/ /gallery/ /o-konditere/; do
+            status="$(curl -sS -o /tmp/page.html -w '%{http_code}' --connect-timeout 10 --max-time 20 "$LIVE_BASE$path?round2=${GITHUB_RUN_ID}")"
+            echo "$path -> $status"
+            test "$status" = "200"
+          done
+
+      - name: Prove true 404 contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(curl -sS -o /tmp/not-found.html -w '%{http_code}' --connect-timeout 10 --max-time 20 "$LIVE_BASE/__deep-polish-missing__?round2=${GITHUB_RUN_ID}")"
+          echo "missing page -> $status"
+          test "$status" = "404"
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          html = Path('/tmp/not-found.html').read_text('utf-8', errors='replace')
+          tags = re.findall(r'<meta\b[^>]*>', html, flags=re.I)
+          valid = any(
+              re.search(r'\bname=["\x27]robots["\x27]', tag, flags=re.I)
+              and re.search(r'\bcontent=["\x27]noindex,\s*follow["\x27]', tag, flags=re.I)
+              for tag in tags
+          )
+          if not valid:
+              raise SystemExit('404 response lacks robots noindex, follow')
+          if re.search(r'<link\b[^>]*rel=["\x27]canonical["\x27]', html, flags=re.I):
+              raise SystemExit('404 response emits canonical')
+          if '/js/v20-faq-fix.js' in html:
+              raise SystemExit('404 response still loads FAQ runtime')
+          print('404 deep-polish contract proven')
+          PY
+
+      - name: Prove live privacy cleanup and consent boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS --connect-timeout 10 --max-time 20 "$LIVE_BASE/?round2=${GITHUB_RUN_ID}" -o /tmp/home.html
+          curl -fsS --connect-timeout 10 --max-time 20 "$LIVE_BASE/privacy/?round2=${GITHUB_RUN_ID}" -o /tmp/privacy.html
+          python3 - <<'PY'
+          from pathlib import Path
+          home = Path('/tmp/home.html').read_text('utf-8', errors='replace')
+          privacy = Path('/tmp/privacy.html').read_text('utf-8', errors='replace')
+          forbidden = ('privacyOverlay', 'privacyModal', 'cookieBanner', 'openPrivacy()', 'Мы используем файлы cookie')
+          found = [item for item in forbidden if item in home]
+          if found:
+              raise SystemExit(f'legacy privacy markers remain: {found}')
+          if home.count('/js/consent-analytics.js') != 1:
+              raise SystemExit('homepage does not expose exactly one consent loader')
+          if 'googletagmanager.com/gtag/js' in home or 'mc.yandex.ru/metrika/tag.js' in home:
+              raise SystemExit('homepage embeds direct analytics URL')
+          if 'самозанятая Милованова Виктория' not in privacy or '263006403654' not in privacy:
+              raise SystemExit('privacy page does not identify the operator')
+          if "localStorage.getItem('mc_theme')" not in privacy:
+              raise SystemExit('privacy page lacks pre-paint theme restoration')
+          print('Live privacy cleanup and consent boundary proven')
+          PY
