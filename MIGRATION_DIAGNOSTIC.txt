@@ -1,0 +1,57 @@
+analytics migration changed 36 files
+bento-torty/index.html:37: trailing whitespace.
++  
+call/index.html:14: trailing whitespace.
++  
+certificates/index.html:14: trailing whitespace.
++  
+detskie-torty/index.html:37: trailing whitespace.
++  
+dostavka-i-oplata/index.html:34: trailing whitespace.
++  
+o-konditere/index.html:37: trailing whitespace.
++  
+otzyvy/index.html:37: trailing whitespace.
++  
+prigorody/_template.html:98: trailing whitespace.
++  
+prigorody/gatchina/index.html:98: trailing whitespace.
++  
+prigorody/index.html:14: trailing whitespace.
++  
+prigorody/kolpino/index.html:98: trailing whitespace.
++  
+prigorody/krasnoe-selo/index.html:98: trailing whitespace.
++  
+prigorody/kronshtadt/index.html:98: trailing whitespace.
++  
+prigorody/kudrovo/index.html:98: trailing whitespace.
++  
+prigorody/lomonosov/index.html:98: trailing whitespace.
++  
+prigorody/murino/index.html:98: trailing whitespace.
++  
+prigorody/pavlovsk/index.html:98: trailing whitespace.
++  
+prigorody/peterhof/index.html:98: trailing whitespace.
++  
+prigorody/pushkin/index.html:98: trailing whitespace.
++  
+prigorody/sestroretsk/index.html:98: trailing whitespace.
++  
+prigorody/shushary/index.html:98: trailing whitespace.
++  
+prigorody/tosno/index.html:98: trailing whitespace.
++  
+prigorody/vsevolozhsk/index.html:98: trailing whitespace.
++  
+privacy/index.html:66: trailing whitespace.
++  
+svadebnye-torty/index.html:37: trailing whitespace.
++  
+tort-na-den-rozhdeniya/index.html:37: trailing whitespace.
++  
+tort-s-dostavkoy/index.html:37: trailing whitespace.
++  
+zakazat-tort-spb/index.html:37: trailing whitespace.
++  
