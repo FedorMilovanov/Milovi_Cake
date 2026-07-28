@@ -1,0 +1,32 @@
+
+> milovi-cake@1.0.0 qa
+> npm run audit:js && npm run audit:analytics && python3 scripts/check_prigorody_idempotent.py && npm run audit && npm run test:playwright
+
+
+> milovi-cake@1.0.0 audit:js
+> node --check js/main.js && node --check js/nav.js && node --check js/mc-2026.js && node --check js/consent-analytics.js && node --check js/v20-faq-fix.js && node --check js/gallery/main.js && node --check js/gallery/data.js && node --check sw.js && node --check scripts/css_coverage.cjs && echo '✅ All JS valid'
+
+✅ All JS valid
+
+> milovi-cake@1.0.0 audit:analytics
+> python3 scripts/analytics_contract.py
+
+Analytics contract FAILED:
+- meringue-roll/index.html: legacy cookie banner remains
+- prigorody/_template.html: legacy cookie banner remains
+- prigorody/gatchina/index.html: legacy cookie banner remains
+- prigorody/kolpino/index.html: legacy cookie banner remains
+- prigorody/krasnoe-selo/index.html: legacy cookie banner remains
+- prigorody/kronshtadt/index.html: legacy cookie banner remains
+- prigorody/kudrovo/index.html: legacy cookie banner remains
+- prigorody/lomonosov/index.html: legacy cookie banner remains
+- prigorody/murino/index.html: legacy cookie banner remains
+- prigorody/pavlovsk/index.html: legacy cookie banner remains
+- prigorody/peterhof/index.html: legacy cookie banner remains
+- prigorody/pushkin/index.html: legacy cookie banner remains
+- prigorody/sestroretsk/index.html: legacy cookie banner remains
+- prigorody/shushary/index.html: legacy cookie banner remains
+- prigorody/tosno/index.html: legacy cookie banner remains
+- prigorody/vsevolozhsk/index.html: legacy cookie banner remains
+
+exit_code=1
