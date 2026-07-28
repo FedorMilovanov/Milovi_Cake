@@ -11,6 +11,7 @@
   var banner = null;
   var settingsButton = null;
   var loaded = false;
+  var goalsBound = false;
 
   function readChoice() {
     try {
@@ -88,6 +89,46 @@
     loadYandexMetrika();
   }
 
+  function sendGoal(name, params) {
+    if (state !== 'granted') return;
+    var payload = params || { path: location.pathname };
+    if (typeof window.ym === 'function') {
+      try { window.ym(YM_ID, 'reachGoal', name, payload); } catch (_) {}
+    }
+    if (typeof window.gtag === 'function') {
+      try { window.gtag('event', name, payload); } catch (_) {}
+    }
+  }
+
+  function bindConversionGoals() {
+    if (goalsBound) return;
+    goalsBound = true;
+    document.addEventListener('click', function (event) {
+      var target = event.target;
+      var link = target && target.closest ? target.closest('a') : null;
+      if (!link) return;
+      var href = link.getAttribute('href') || '';
+      var params = {
+        path: location.pathname,
+        href: href,
+        text: (link.textContent || '').trim().slice(0, 80)
+      };
+      if (href.indexOf('wa.me') !== -1) sendGoal('lp_wa_click', params);
+      else if (href.indexOf('t.me') !== -1) sendGoal('lp_tg_click', params);
+      else if (href.indexOf('max.ru') !== -1) sendGoal('lp_max_click', params);
+      else if (href.indexOf('tel:') === 0) sendGoal('lp_phone_click', params);
+      if (link.classList.contains('lp-btn') || link.classList.contains('info-btn') || link.classList.contains('btn-primary')) {
+        sendGoal('lp_cta_click', params);
+      }
+      if (href.indexOf('/gallery/') !== -1) sendGoal('lp_gallery_click', params);
+    }, true);
+    document.addEventListener('play', function (event) {
+      if (event.target && event.target.tagName === 'VIDEO') {
+        sendGoal('lp_video_play', { path: location.pathname });
+      }
+    }, true);
+  }
+
   function setChoice(value) {
     saveChoice(value);
     hideBanner();
@@ -145,6 +186,7 @@
 
   function init() {
     addStyle();
+    bindConversionGoals();
     if (state === 'granted') loadAnalytics();
     if (state) renderSettingsButton();
     else showBanner();
@@ -154,7 +196,8 @@
     open: showBanner,
     getChoice: function () { return state; },
     grant: function () { setChoice('granted'); },
-    deny: function () { setChoice('denied'); }
+    deny: function () { setChoice('denied'); },
+    goal: sendGoal
   };
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
