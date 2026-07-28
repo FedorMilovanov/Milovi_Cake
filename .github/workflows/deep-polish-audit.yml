@@ -14,7 +14,9 @@ concurrency:
 jobs:
   audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
+    env:
+      RELEASE_SHA: ${{ github.event.pull_request.head.sha }}
     steps:
       - name: Checkout exact PR head
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -28,23 +30,20 @@ jobs:
           node-version: '22.13.0'
           cache: npm
 
-      - name: Install dependencies and browser
+      - name: Install dependencies and Chromium
         run: |
           npm ci
           npx playwright install --with-deps chromium
 
-      - name: Dependency security inventory
-        shell: bash
+      - name: Run permanent source contracts and security audit
         run: |
-          set +e
-          npm audit --audit-level=high
-          status=$?
-          if [ "$status" -ne 0 ]; then
-            echo 'dependency audit has high/critical findings' >> /tmp/deep-polish-findings.txt
-          fi
-          exit 0
+          npm run audit:js
+          npm run audit:analytics
+          npm run audit:security
+          python3 scripts/check_prigorody_idempotent.py
+          npm run audit
 
-      - name: Audit source contracts missed by the first pass
+      - name: Audit source details missed by the first release pass
         shell: bash
         run: |
           python3 - <<'PY'
@@ -54,7 +53,7 @@ jobs:
 
           root = Path('.')
           findings = []
-          ignored = {'.git', 'node_modules', '_site', 'playwright-report', 'test-results'}
+          ignored = {'.git', 'node_modules', '_site', 'playwright-report', 'test-results', 'audit'}
 
           def files(pattern):
               for path in root.rglob(pattern):
@@ -69,17 +68,11 @@ jobs:
               'legacy cookie banner id': re.compile(r'id=["\']cookieBanner["\']', re.I),
               'legacy cookie copy': re.compile(r'Мы используем файлы cookie', re.I),
           }
-
           for path in list(files('*.html')) + list(files('*.js')):
               text = path.read_text('utf-8', errors='replace')
-              rel = path.as_posix()
-              if rel == 'privacy/index.html':
-                  allowed = {'legacy privacy function'}
-              else:
-                  allowed = set()
               for label, pattern in legacy_patterns.items():
-                  if label not in allowed and pattern.search(text):
-                      findings.append(f'{rel}: {label}')
+                  if pattern.search(text):
+                      findings.append(f'{path.as_posix()}: {label}')
 
           index = Path('index.html').read_text('utf-8', errors='replace')
           duplicate = 'с безопасным составом и любимыми персонажами, с безопасным составом и любимыми персонажами'
@@ -93,163 +86,153 @@ jobs:
 
           package = json.loads(Path('package.json').read_text('utf-8'))
           scripts = package.get('scripts', {})
-          if 'audit:security' not in scripts:
-              findings.append('package.json: missing audit:security script')
-          if 'audit:security' not in scripts.get('qa', ''):
+          if scripts.get('audit:security') != 'npm audit --audit-level=high':
+              findings.append('package.json: high-severity dependency audit is not exact')
+          if 'npm run audit:security' not in scripts.get('qa', ''):
               findings.append('package.json: qa does not enforce dependency security audit')
 
           sha_re = re.compile(r'^[0-9a-f]{40}$', re.I)
-          for wf in files('*.yml'):
-              if '.github/workflows' not in wf.as_posix():
-                  continue
-              for no, line in enumerate(wf.read_text('utf-8', errors='replace').splitlines(), 1):
+          for workflow in sorted((root / '.github/workflows').glob('*.yml')):
+              for number, line in enumerate(workflow.read_text('utf-8', errors='replace').splitlines(), 1):
                   stripped = line.strip()
-                  if not stripped.startswith('uses:') and ' uses:' not in line:
+                  if not stripped.startswith('uses:'):
                       continue
-                  target = stripped.split('uses:', 1)[1].strip()
+                  target = stripped.split('uses:', 1)[1].strip().split()[0]
                   if target.startswith('./'):
                       continue
                   ref = target.rsplit('@', 1)[-1] if '@' in target else ''
                   if not sha_re.fullmatch(ref):
-                      findings.append(f'{wf.as_posix()}:{no}: action is not pinned to an exact SHA: {target}')
+                      findings.append(f'{workflow.as_posix()}:{number}: action is not pinned to an exact SHA: {target}')
 
-          loader = Path('js/consent-analytics.js').read_text('utf-8', errors='replace')
-          for marker in ('milovi_analytics_consent_v1', 'window.MiloviConsent', 'googletagmanager.com/gtag/js', 'mc.yandex.ru/metrika/tag.js'):
-              if marker not in loader:
-                  findings.append(f'js/consent-analytics.js: missing {marker}')
-
-          external_font_pages = []
-          for path in files('*.html'):
-              text = path.read_text('utf-8', errors='replace')
-              if 'fonts.googleapis.com' in text or 'fonts.gstatic.com' in text:
-                  external_font_pages.append(path.as_posix())
-          print(f'INFO external Google Fonts pages: {len(external_font_pages)}')
+          sw = Path('sw.js').read_text('utf-8')
+          if 'milovi-cake-v2026.07.28-r27' not in sw:
+              findings.append('sw.js: round-two cache revision is missing')
+          if '20260728r27' not in sw:
+              findings.append('sw.js: precache URLs do not use the round-two asset revision')
 
           if findings:
-              Path('/tmp/deep-polish-findings.txt').write_text(
-                  (Path('/tmp/deep-polish-findings.txt').read_text('utf-8') if Path('/tmp/deep-polish-findings.txt').exists() else '')
-                  + '\n'.join(findings) + '\n',
-                  'utf-8',
-              )
-          print('\n'.join(findings) if findings else 'Source round-two audit found no defects')
+              raise SystemExit('\n'.join(findings))
+          print('Source round-two audit found no defects')
           PY
 
-      - name: Crawl live sitemap and metadata
+      - name: Build and audit exact sanitized Pages candidate
+        run: |
+          npm run build:pages
+          npm run audit:pages
+
+      - name: Crawl candidate sitemap, canonical and error metadata
         shell: bash
         run: |
           python3 - <<'PY'
-          from html.parser import HTMLParser
           from pathlib import Path
-          from urllib.error import HTTPError
-          from urllib.request import Request, urlopen
+          from urllib.parse import urlparse
           import re
           import xml.etree.ElementTree as ET
 
+          site = Path('_site')
           findings = []
-          base = 'https://milovicake.ru'
+          sitemap_path = site / 'sitemap.xml'
+          if not sitemap_path.exists():
+              raise SystemExit('_site/sitemap.xml is missing')
 
-          def get(url):
-              req = Request(url, headers={'User-Agent': 'MiloviCakeDeepAudit/2.0'})
-              try:
-                  with urlopen(req, timeout=25) as response:
-                      return response.status, response.geturl(), response.read().decode('utf-8', 'replace')
-              except HTTPError as error:
-                  return error.code, error.geturl(), error.read().decode('utf-8', 'replace')
-
-          status, _, sitemap = get(base + '/sitemap.xml')
-          if status != 200:
-              findings.append(f'live sitemap status={status}')
-              urls = [base + '/']
-          else:
-              root = ET.fromstring(sitemap)
-              urls = [node.text.strip() for node in root.findall('.//{*}loc') if node.text]
-
-          canon_re = re.compile(r'<link\b[^>]*rel=["\']canonical["\'][^>]*href=["\']([^"\']+)', re.I)
+          root = ET.fromstring(sitemap_path.read_text('utf-8'))
+          urls = [node.text.strip() for node in root.findall('.//{*}loc') if node.text]
+          canonical_re = re.compile(r'<link\b[^>]*rel=["\']canonical["\'][^>]*href=["\']([^"\']+)', re.I)
           for url in urls:
-              status, final_url, html = get(url)
-              if status != 200:
-                  findings.append(f'{url}: HTTP {status}')
+              parsed = urlparse(url)
+              route = parsed.path
+              file = site / ('index.html' if route == '/' else route.lstrip('/') + ('index.html' if route.endswith('/') else ''))
+              if not file.exists():
+                  findings.append(f'{url}: missing artifact file {file.as_posix()}')
                   continue
+              html = file.read_text('utf-8', errors='replace')
               if 'googletagmanager.com/gtag/js' in html or 'mc.yandex.ru/metrika/tag.js' in html:
-                  findings.append(f'{url}: direct analytics URL embedded in HTML')
-              if 'id="privacyOverlay"' in html or 'id="privacyModal"' in html:
-                  findings.append(f'{url}: legacy privacy modal shipped live')
-              match = canon_re.search(html)
+                  findings.append(f'{url}: direct analytics URL embedded in candidate HTML')
+              for marker in ('privacyOverlay', 'privacyModal', 'cookieBanner', 'openPrivacy()'):
+                  if marker in html:
+                      findings.append(f'{url}: legacy marker remains: {marker}')
+              match = canonical_re.search(html)
               if not match:
                   findings.append(f'{url}: missing canonical')
-              elif match.group(1).rstrip('/') != final_url.split('?', 1)[0].rstrip('/'):
-                  findings.append(f'{url}: canonical mismatch {match.group(1)} != {final_url}')
+              elif match.group(1).rstrip('/') != url.rstrip('/'):
+                  findings.append(f'{url}: canonical mismatch {match.group(1)}')
               if re.search(r'<meta\b[^>]*name=["\']robots["\'][^>]*content=["\'][^"\']*noindex', html, re.I):
                   findings.append(f'{url}: sitemap URL is noindex')
 
-          status, _, missing = get(base + '/__deep-polish-missing-page__')
-          if status != 404:
-              findings.append(f'unknown live URL returns {status}, expected 404')
-          if not re.search(r'<meta\b[^>]*(?:name=["\']robots["\'][^>]*content=["\']noindex,\s*follow["\']|content=["\']noindex,\s*follow["\'][^>]*name=["\']robots["\'])', missing, re.I):
-              findings.append('live 404 lacks robots noindex, follow')
-          if re.search(r'<link\b[^>]*rel=["\']canonical["\']', missing, re.I):
-              findings.append('live 404 still emits canonical')
+          not_found = (site / '404.html').read_text('utf-8', errors='replace')
+          if not re.search(r'<meta\b[^>]*(?:name=["\']robots["\'][^>]*content=["\']noindex,\s*follow["\']|content=["\']noindex,\s*follow["\'][^>]*name=["\']robots["\'])', not_found, re.I):
+              findings.append('candidate 404 lacks robots noindex, follow')
+          if canonical_re.search(not_found):
+              findings.append('candidate 404 emits canonical')
+
+          release = (site / 'release.json').read_text('utf-8')
+          if 'FedorMilovanov/Milovi_Cake' not in release:
+              findings.append('candidate release witness has repository drift')
 
           if findings:
-              path = Path('/tmp/deep-polish-findings.txt')
-              path.write_text((path.read_text('utf-8') if path.exists() else '') + '\n'.join(findings) + '\n', 'utf-8')
-          print(f'Crawled {len(urls)} sitemap URLs')
-          print('\n'.join(findings) if findings else 'Live crawl found no defects')
+              raise SystemExit('\n'.join(findings))
+          print(f'Candidate crawl passed: {len(urls)} sitemap URLs')
           PY
 
-      - name: Exercise live consent and legacy DOM in Chromium
+      - name: Serve exact candidate
+        shell: bash
+        run: |
+          python3 -m http.server 4173 --directory _site >/tmp/cake-candidate-server.log 2>&1 &
+          echo $! >/tmp/cake-candidate-server.pid
+          for attempt in $(seq 1 20); do
+            curl -fsS http://127.0.0.1:4173/ >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/cake-candidate-server.log
+          exit 1
+
+      - name: Exercise candidate consent and legacy DOM in Chromium
         shell: bash
         run: |
           node <<'JS'
-          const fs = require('fs')
           const { chromium } = require('playwright')
 
           ;(async () => {
             const findings = []
             const browser = await chromium.launch({ headless: true })
             try {
-              const context = await browser.newContext()
-              const page = await context.newPage()
+              const denyContext = await browser.newContext()
+              const denyPage = await denyContext.newPage()
               const analyticsRequests = []
-              page.on('request', request => {
+              denyPage.on('request', request => {
                 const url = request.url()
                 if (/googletagmanager\.com|google-analytics\.com|mc\.yandex\.ru|metrika\.yandex/i.test(url)) analyticsRequests.push(url)
               })
-              await page.goto(`https://milovicake.ru/?deep-polish=${Date.now()}`, { waitUntil: 'domcontentloaded' })
-              await page.waitForTimeout(1800)
-              const before = await page.evaluate(() => ({
-                newConsent: document.querySelectorAll('.mc-consent').length,
+              await denyPage.goto(`http://127.0.0.1:4173/?deep-polish=${Date.now()}`, { waitUntil: 'domcontentloaded' })
+              await denyPage.waitForTimeout(800)
+              const before = await denyPage.evaluate(() => ({
+                consentPanels: document.querySelectorAll('.mc-consent').length,
                 privacyOverlay: Boolean(document.getElementById('privacyOverlay')),
                 privacyModal: Boolean(document.getElementById('privacyModal')),
                 cookieBanner: Boolean(document.getElementById('cookieBanner')),
-                legacyCookieCopy: document.body.innerText.includes('Мы используем файлы cookie'),
                 legacyPrivacyLinks: document.querySelectorAll('[onclick*="openPrivacy"]').length,
                 directAnalyticsScripts: [...document.scripts].filter(s => /googletagmanager\.com|mc\.yandex\.ru/i.test(s.src)).length,
               }))
-              console.log('before consent', before)
               if (analyticsRequests.length) findings.push(`analytics requested before consent: ${analyticsRequests.join(', ')}`)
-              if (before.newConsent !== 1) findings.push(`expected one new consent panel, found ${before.newConsent}`)
-              if (before.privacyOverlay || before.privacyModal) findings.push('legacy privacy modal remains in live DOM')
-              if (before.cookieBanner || before.legacyCookieCopy) findings.push('legacy cookie UI remains in live DOM')
-              if (before.legacyPrivacyLinks) findings.push(`legacy openPrivacy links remain: ${before.legacyPrivacyLinks}`)
+              if (before.consentPanels !== 1) findings.push(`expected one consent panel, found ${before.consentPanels}`)
+              if (before.privacyOverlay || before.privacyModal || before.cookieBanner) findings.push('legacy privacy/cookie DOM remains')
+              if (before.legacyPrivacyLinks) findings.push(`legacy privacy links remain: ${before.legacyPrivacyLinks}`)
               if (before.directAnalyticsScripts) findings.push('direct analytics script exists before consent')
-
-              await page.locator('.mc-consent__button--deny').click()
-              await page.waitForTimeout(400)
+              await denyPage.locator('.mc-consent__button--deny').click()
+              await denyPage.waitForTimeout(250)
               if (analyticsRequests.length) findings.push('analytics requested after denial')
-              await context.close()
+              await denyContext.close()
 
               const allowContext = await browser.newContext()
               const allowPage = await allowContext.newPage()
-              await allowPage.goto(`https://milovicake.ru/?deep-polish-allow=${Date.now()}`, { waitUntil: 'domcontentloaded' })
+              await allowPage.goto(`http://127.0.0.1:4173/?deep-polish-allow=${Date.now()}`, { waitUntil: 'domcontentloaded' })
               await allowPage.locator('.mc-consent__button--allow').click()
-              await allowPage.waitForTimeout(1200)
+              await allowPage.waitForTimeout(250)
               const afterAllow = await allowPage.evaluate(() => ({
                 ga: Boolean(document.querySelector('script[data-milovi-ga]')),
                 ym: Boolean(document.querySelector('script[data-milovi-ym]')),
                 settings: Boolean(document.querySelector('.mc-consent-settings')),
               }))
-              console.log('after allow', afterAllow)
               if (!afterAllow.ga || !afterAllow.ym) findings.push('analytics scripts were not attached after explicit consent')
               if (!afterAllow.settings) findings.push('privacy settings button missing after choice')
               await allowContext.close()
@@ -257,24 +240,14 @@ jobs:
               await browser.close()
             }
 
-            if (findings.length) {
-              fs.appendFileSync('/tmp/deep-polish-findings.txt', findings.join('\n') + '\n')
-              console.error(findings.join('\n'))
-            } else {
-              console.log('Live browser consent audit found no defects')
-            }
+            if (findings.length) throw new Error(findings.join('\n'))
+            console.log('Candidate browser consent audit found no defects')
           })().catch(error => {
-            fs.appendFileSync('/tmp/deep-polish-findings.txt', `browser audit crashed: ${error.stack || error}\n`)
             console.error(error)
+            process.exit(1)
           })
           JS
 
-      - name: Report all round-two findings
-        shell: bash
-        run: |
-          if [ -s /tmp/deep-polish-findings.txt ]; then
-            echo 'Deep polish audit FAILED with the following findings:'
-            sort -u /tmp/deep-polish-findings.txt
-            exit 1
-          fi
-          echo 'Deep polish audit passed without findings.'
+      - name: Stop candidate server
+        if: always()
+        run: kill "$(cat /tmp/cake-candidate-server.pid)" 2>/dev/null || true
