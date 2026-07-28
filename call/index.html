@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  
+
   <!-- ANTI-FOUC v1: instant background match + body opacity reveal -->
   <style id="anti-fouc">
     html{background:#f5f0e8;color-scheme:light}
@@ -108,23 +108,8 @@
     .back { margin-top: 28px; font-size: 14px; color: #9e8070; }
     .back a { color: #c9934a; text-decoration: none; }
   </style>
-  <!-- Google Analytics — deferred -->
-  <script>
-    (function(){
-      function loadGA(){
-        var s=document.createElement('script');
-        s.src='https://www.googletagmanager.com/gtag/js?id=G-94ZZ5B8YNY';
-        s.async=true; document.head.appendChild(s);
-        window.dataLayer=window.dataLayer||[];
-        window.gtag=function(){dataLayer.push(arguments);};
-        gtag('js',new Date()); gtag('config','G-94ZZ5B8YNY',{anonymize_ip:true});
-      }
-      ['click','touchstart'].forEach(function(e){
-        document.addEventListener(e,function f(){document.removeEventListener(e,f);loadGA();},{once:true,passive:true});
-      });
-      setTimeout(loadGA, 3000);
-    })();
-  </script>
+
+
   <link rel="stylesheet" href="/css/premium-overrides.css?v=20260711r26" />
   <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260711r26">
   <link rel="canonical" href="https://milovicake.ru/call/" />
@@ -161,21 +146,10 @@ setTimeout(_hideLoader, 5000);
     +7 911 903-88-86
   </a>
   <p class="back"><a href="/">← На главную</a></p>
-<!-- ══════ Yandex Metrika ══════ -->
-<script type="text/javascript">
-  (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-  m[i].l=1*new Date();
-  for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-  k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-  (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-  ym(106945185, "init", {
-    clickmap: true,
-    trackLinks: true,
-    accurateTrackBounce: true,
-    webvisor: true
-  });
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/106945185" width="1" height="1" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 
+
+
+
+  <script defer src="/js/consent-analytics.js"></script>
 </body>
 </html>

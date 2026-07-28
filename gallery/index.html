@@ -11,7 +11,7 @@
   <meta name="robots" content="index, follow" />
   <meta name="theme-color" content="#c9934a" />
   <link rel="canonical" href="https://milovicake.ru/gallery/" />
-  
+
   <meta property="og:title" content="Галерея Milovi Cake — Авторские торты на заказ в СПб" />
   <meta property="og:description" content="Портфолио кондитера Milovi Cake — фото и видео тортов, бенто и десертов." />
   <meta property="og:image" content="https://milovicake.ru/img/og-cover.jpg" />
@@ -21,7 +21,7 @@
   <meta property="og:site_name" content="Milovi Cake" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  
+
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Галерея Milovi Cake — Авторские торты" />
   <meta name="twitter:description" content="Фото и видео наших работ." />
@@ -171,41 +171,13 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
       navigator.serviceWorker.register('/sw.js').catch(function() {});
     }
   </script>
-<!-- ══════ Google Analytics — defer on interaction ══════ -->
-<script>
-  (function(){
-    if (window.gtag || document.querySelector('script[src*="googletagmanager.com/gtag/js"]')) return;
-    function loadGA(){
-      var s=document.createElement('script');
-      s.src='https://www.googletagmanager.com/gtag/js?id=G-94ZZ5B8YNY';
-      s.async=true; document.head.appendChild(s);
-      window.dataLayer=window.dataLayer||[];
-      window.gtag=function(){dataLayer.push(arguments);};
-      gtag('js',new Date()); gtag('config','G-94ZZ5B8YNY',{transport_type:'beacon'});
-    }
-    var f=false;
-    ['scroll','keydown','mousedown','touchstart','pointerdown'].forEach(function(e){
-      window.addEventListener(e,function h(){if(f)return;f=true;window.removeEventListener(e,h);loadGA();},{passive:true,once:true});
-    });
-    setTimeout(function(){if(!f){f=true;loadGA();}},5000);
-  })();
-</script>
 
-<!-- ══════ Yandex Metrika ══════ -->
-<script type="text/javascript">
-  (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-  m[i].l=1*new Date();
-  for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-  k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-  (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-  ym(106945185, "init", {
-    clickmap: true,
-    trackLinks: true,
-    accurateTrackBounce: true,
-    webvisor: true
-  });
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/106945185" width="1" height="1" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 
+
+
+
+
+
+  <script defer src="/js/consent-analytics.js"></script>
 </body>
 </html>
