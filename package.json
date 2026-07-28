@@ -40,6 +40,6 @@
     "@playwright/test": "1.60.0"
   },
   "dependencies": {
-    "playwright": "1.60.0"
+    "playwright": "1.62.0"
   }
 }
