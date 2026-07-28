@@ -1,0 +1,48 @@
+name: One-shot Cake QA diagnostic
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/_temp-qa-diagnostic.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    if: github.head_ref == 'feat/privacy-consent-deploy-marathon'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: feat/privacy-consent-deploy-marathon
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Run QA and preserve complete output
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+          set +e
+          npm run qa > CAKE_QA_DIAGNOSTIC.txt 2>&1
+          code=$?
+          set -e
+          printf '\nexit_code=%s\n' "$code" >> CAKE_QA_DIAGNOSTIC.txt
+          tail -n 240 CAKE_QA_DIAGNOSTIC.txt
+
+      - name: Commit diagnostic and remove workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/_temp-qa-diagnostic.yml
+          git add CAKE_QA_DIAGNOSTIC.txt
+          git commit -m "chore(ci): preserve exact Cake QA diagnostic"
+          git push origin HEAD:feat/privacy-consent-deploy-marathon
