@@ -1422,42 +1422,19 @@ function showBentoWeightToast(text) {
 }
 
 // ── Яндекс.Метрика ──
-function loadMetrika() {
-  if (window._metrikaLoaded) return;
-  window._metrikaLoaded = true;
-  (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)}; m[i].l=1*new Date(); k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js','ym');
-  ym(106945185,'init',{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
-}
+
 
 // ── Cookie banner ──
 function _lsGet(key) { try { return localStorage.getItem(key); } catch(e) { return null; } }
 function _lsSet(key, val) { try { localStorage.setItem(key, val); } catch(e) {} }
 
-function acceptCookie() {
-  _lsSet('cookieAccepted', Date.now() + 365 * 24 * 60 * 60 * 1000);
-  const banner = document.getElementById('cookieBanner');
-  if (!banner) return;
-  banner.classList.remove('visible');
-  banner.style.transform = 'translateY(100%)';
-  banner.addEventListener('transitionend', () => banner.remove(), { once: true });
-  const pc = document.createElement('link'); pc.rel = 'preconnect'; pc.href = 'https://mc.yandex.ru'; document.head.appendChild(pc);
-  if (typeof gtag !== 'undefined') {} // reserved for future
-  loadMetrika();
-}
-function declineCookie() {
-  _lsSet('cookieAccepted', 'denied:' + (Date.now() + 30 * 24 * 60 * 60 * 1000));
-  const banner = document.getElementById('cookieBanner');
-  if (!banner) return;
-  banner.classList.remove('visible');
-  banner.style.transform = 'translateY(100%)';
-  banner.addEventListener('transitionend', () => banner.remove(), { once: true });
-}
+
+
 function initCookieBanner() {
   const stored = _lsGet('cookieAccepted');
   if (stored) {
     const isDenied = stored.startsWith('denied:');
     const expiry = parseInt(isDenied ? stored.slice(7) : stored);
-    if (Date.now() < expiry) { if (!isDenied) loadMetrika(); return; }
   }
   const banner = document.getElementById('cookieBanner');
   if (!banner) return;
@@ -2214,8 +2191,6 @@ window.switchBentoTab = switchBentoTab;
 window.switchReviewsTab = switchReviewsTab;
 window.closeCalcPanel = closeCalcPanel;
 window.toggleCalcPanel = toggleCalcPanel;
-window.acceptCookie = acceptCookie;
-window.declineCookie = declineCookie;
 
 // Инициализируем бейдж
 if (typeof updateCalcCartBadge === 'function') {

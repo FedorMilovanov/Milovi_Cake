@@ -1765,14 +1765,6 @@
 
 <!-- [C-6 FIXED] bentoWeightToast was missing from HTML — showBentoWeightToast() silently failed -->
 <div class="bento-weight-toast" id="bentoWeightToast" role="status" aria-live="polite"></div>
-
-<!-- COOKIE BANNER -->
-<div id="cookieBanner">
-  <span>Мы используем файлы cookie для улучшения работы сайта. <a href="#" onclick="openPrivacy(); return false;">Политика конфиденциальности</a></span>
-  <button type="button" id="cookieDecline" onclick="declineCookie()">Отказаться</button>
-  <button type="button" id="cookieAccept" onclick="acceptCookie()">Принять</button>
-</div>
-
 <button type="button" class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Наверх">
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
 </button>
@@ -1827,7 +1819,7 @@
   </div>
 </div>
 
-<!-- [SEO-В4] Яндекс.Метрика загружается через main.js только после согласия с cookie -->
+
 
 <script>
   if ('serviceWorker' in navigator) {
@@ -1871,40 +1863,10 @@
 <script src="js/nav.js?v=20260711r26" defer></script>
 <script src="js/mc-2026.js?v=20260711r26" defer></script>
 
-<script>
-  /* ── Яндекс.Метрика: цели ── */
-  (function() {
-    var YM_ID = 106945185;
-    function reach(goal) {
-      if (typeof ym === 'function') ym(YM_ID, 'reachGoal', goal);
-    }
-    // WhatsApp clicks
-    document.querySelectorAll('a[href*="wa.me"]').forEach(function(el) {
-      el.addEventListener('click', function() { reach('wa_click'); });
-    });
-    // Telegram clicks
-    document.querySelectorAll('a[href*="t.me"]').forEach(function(el) {
-      el.addEventListener('click', function() { reach('tg_click'); });
-    });
-    // Phone clicks
-    document.querySelectorAll('a[href^="tel:"]').forEach(function(el) {
-      el.addEventListener('click', function() { reach('phone_click'); });
-    });
-    // Form submit (contact form)
-    document.querySelectorAll('form').forEach(function(form) {
-      form.addEventListener('submit', function() { reach('form_submit'); });
-    });
-    // Cart open
-    var cartBtn = document.getElementById('cartBtn');
-    if (cartBtn) cartBtn.addEventListener('click', function() { reach('cart_open'); });
-    // Order button in catalog
-    document.querySelectorAll('.card-order-btn, .catalog-order-btn').forEach(function(el) {
-      el.addEventListener('click', function() { reach('catalog_order_click'); });
-    });
-  })();
-</script>
+
 
 
 <script defer src="/js/v20-faq-fix.js?v=20260711r26"></script>
+  <script defer src="/js/consent-analytics.js"></script>
 </body>
 </html>

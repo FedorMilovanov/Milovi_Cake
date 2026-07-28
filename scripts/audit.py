@@ -47,6 +47,7 @@ ALLOWED_JS = {
     "js/main.js",
     "js/nav.js",
     "js/mc-2026.js",
+    "js/consent-analytics.js",
     "js/v20-faq-fix.js",
     "js/gallery/main.js",
     "js/gallery/data.js",

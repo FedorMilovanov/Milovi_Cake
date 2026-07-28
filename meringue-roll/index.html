@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  
+
   <!-- ANTI-FOUC v1: instant background match + body opacity reveal -->
   <!-- r11: Meringue page is DARK BY DEFAULT (honours explicit user theme choice) -->
   <style id="anti-fouc">
@@ -697,7 +697,7 @@
       transform: translateX(-50%) translateY(-8px) scale(1.04);
       animation: none;
     }
-    
+
     .box-float {
       position: absolute;
       width: 52%;
@@ -2471,7 +2471,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
   }
 </script>
 
-<!-- Yandex Metrika loads after cookie consent (see main.js) -->
+
 <!-- Gallery lightbox HTML -->
 <div class="lb-overlay" id="lbOverlay" style="display:none">
   <div class="lb-backdrop" id="lbBg"></div>
@@ -2609,85 +2609,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
   </div>
 </div>
 
-<script>
-(function() {
-  var COOKIE_KEY = 'cookieAccepted';
-  var COOKIE_DECLINE = 'cookieDeclined';
 
-  // [M-2 FIXED] Recalculate banner bottom on resize/orientation change so it
-  // always sits above mc-nav (60px + safe-area) even after device rotation.
-  function _updateBannerBottom() {
-    var b = document.getElementById('cookieBanner');
-    if (!b || b.style.display === 'none' || b.style.display === '') return;
-    b.style.bottom = window.innerWidth <= 768
-      ? 'calc(60px + env(safe-area-inset-bottom, 0px))'
-      : '0';
-  }
-  window.addEventListener('resize', _updateBannerBottom, { passive: true });
-  window.addEventListener('orientationchange', function() {
-    setTimeout(_updateBannerBottom, 350);
-  });
-
-  function showBanner() {
-    var b = document.getElementById('cookieBanner');
-    if (!b) return;
-    // Push banner above mc-nav (60px) on mobile so nav buttons remain tappable
-    b.style.bottom = window.innerWidth <= 768
-      ? 'calc(60px + env(safe-area-inset-bottom, 0px))'
-      : '0';
-    b.style.display = 'flex';
-    setTimeout(function() { b.style.transform = 'translateY(0)'; }, 100);
-  }
-
-  function hideBanner() {
-    var b = document.getElementById('cookieBanner');
-    if (!b) return;
-    b.style.transform = 'translateY(100%)';
-    b.addEventListener('transitionend', function() { b.style.display = 'none'; }, { once: true });
-  }
-
-  window.acceptCookie = function() {
-    localStorage.setItem(COOKIE_KEY, Date.now() + 365 * 24 * 60 * 60 * 1000);
-    localStorage.removeItem(COOKIE_DECLINE);
-    hideBanner();
-    loadMetrika();
-  };
-
-  window.declineCookie = function() {
-    localStorage.setItem(COOKIE_DECLINE, '1');
-    hideBanner();
-  };
-
-  window.openCookiePrivacy = function() {
-    var o = document.getElementById('cookiePrivacyOverlay');
-    if (o) { o.style.display = 'block'; document.documentElement.style.overflow = 'hidden'; }
-  };
-
-  window.closeCookiePrivacy = function() {
-    var o = document.getElementById('cookiePrivacyOverlay');
-    if (o) { o.style.display = 'none'; document.documentElement.style.overflow = ''; }
-  };
-
-  function loadMetrika() {
-    if (window._metrikaLoaded) return;
-    window._metrikaLoaded = true;
-    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-    m[i].l=1*new Date();
-    k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-    (window,document,'script','https://mc.yandex.ru/metrika/tag.js','ym');
-    ym(106945185,'init',{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
-  }
-
-  // Init
-  var stored = localStorage.getItem(COOKIE_KEY);
-  var declined = localStorage.getItem(COOKIE_DECLINE);
-  if (stored && Date.now() < parseInt(stored)) {
-    loadMetrika(); // already accepted
-  } else if (!declined) {
-    setTimeout(showBanner, 800);
-  }
-})();
-</script>
 
 <script>
 (function() {
@@ -2704,59 +2626,12 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 </script>
 
 <script src="../js/nav.js?v=20260711r26" defer></script>
-<script>
-  /* ── Яндекс.Метрика: цели ── */
-  (function() {
-    var YM_ID = 106945185;
-    function reach(goal) {
-      if (typeof ym === 'function') ym(YM_ID, 'reachGoal', goal);
-    }
-    // WhatsApp clicks
-    document.querySelectorAll('a[href*="wa.me"]').forEach(function(el) {
-      el.addEventListener('click', function() { reach('wa_click'); });
-    });
-    // Telegram clicks
-    document.querySelectorAll('a[href*="t.me"]').forEach(function(el) {
-      el.addEventListener('click', function() { reach('tg_click'); });
-    });
-    // Phone clicks
-    document.querySelectorAll('a[href^="tel:"]').forEach(function(el) {
-      el.addEventListener('click', function() { reach('phone_click'); });
-    });
-    // Form submit (contact form)
-    document.querySelectorAll('form').forEach(function(form) {
-      form.addEventListener('submit', function() { reach('form_submit'); });
-    });
-    // Cart open
-    var cartBtn = document.getElementById('cartBtn');
-    if (cartBtn) cartBtn.addEventListener('click', function() { reach('cart_open'); });
-    // Order button in catalog
-    document.querySelectorAll('.card-order-btn, .catalog-order-btn').forEach(function(el) {
-      el.addEventListener('click', function() { reach('catalog_order_click'); });
-    });
-  })();
-</script>
+
 
 <script defer src="/js/v20-faq-fix.js?v=20260711r26"></script>
-<!-- ══════ Google Analytics — defer on interaction ══════ -->
-<script>
-  (function(){
-    if (window.gtag || document.querySelector('script[src*="googletagmanager.com/gtag/js"]')) return;
-    function loadGA(){
-      var s=document.createElement('script');
-      s.src='https://www.googletagmanager.com/gtag/js?id=G-94ZZ5B8YNY';
-      s.async=true; document.head.appendChild(s);
-      window.dataLayer=window.dataLayer||[];
-      window.gtag=function(){dataLayer.push(arguments);};
-      gtag('js',new Date()); gtag('config','G-94ZZ5B8YNY',{transport_type:'beacon'});
-    }
-    var f=false;
-    ['scroll','keydown','mousedown','touchstart','pointerdown'].forEach(function(e){
-      window.addEventListener(e,function h(){if(f)return;f=true;window.removeEventListener(e,h);loadGA();},{passive:true,once:true});
-    });
-    setTimeout(function(){if(!f){f=true;loadGA();}},5000);
-  })();
-</script>
 
+
+
+  <script defer src="/js/consent-analytics.js"></script>
 </body>
 </html>

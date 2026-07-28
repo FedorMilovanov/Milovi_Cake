@@ -221,48 +221,6 @@
 
 
   /* ═══════════════════════════════════════════════════════════════════
-     7. Отложенная Google Analytics: загружаем только после
-        первого взаимодействия (для уменьшения TBT/INP).
-     ВНИМАНИЕ: Yandex Metrica загружается из main.js ТОЛЬКО после
-     согласия с cookie (loadMetrika()). Здесь мы НЕ автозагружаем
-     ничего на mc.yandex.ru — preconnect будет создан в acceptCookie().
-     ═══════════════════════════════════════════════════════════════════ */
-  var GA_ID = 'G-94ZZ5B8YNY';
-  var gaLoaded = false;
-
-  function loadGA(){
-    if (gaLoaded || window.gtag) return;
-    gaLoaded = true;
-    var s = document.createElement('script');
-    s.async = true;
-    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
-    document.head.appendChild(s);
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = window.gtag || function(){ window.dataLayer.push(arguments); };
-    window.gtag('js', new Date());
-    window.gtag('config', GA_ID, { transport_type: 'beacon' });
-  }
-
-  // Если в HTML уже подключён gtag (например, для других целей) — не дублируем
-  if (!window.gtag && !document.querySelector('script[src*="googletagmanager.com/gtag/js"]')){
-    var fired = false;
-    var triggerEvents = ['scroll', 'keydown', 'mousedown', 'touchstart', 'pointerdown'];
-    var trigger = function(){
-      if (fired) return;
-      fired = true;
-      for (var i = 0; i < triggerEvents.length; i++){
-        window.removeEventListener(triggerEvents[i], trigger);
-      }
-      ric(loadGA);
-    };
-    for (var i = 0; i < triggerEvents.length; i++){
-      window.addEventListener(triggerEvents[i], trigger, { passive: true });
-    }
-    setTimeout(trigger, 8000); // fallback
-  }
-
-
-  /* ═══════════════════════════════════════════════════════════════════
      8. Мониторинг INP / LCP / CLS (только при ?mc-debug=1)
      ═══════════════════════════════════════════════════════════════════ */
   if (location.search.indexOf('mc-debug=1') > -1 && 'PerformanceObserver' in window){
