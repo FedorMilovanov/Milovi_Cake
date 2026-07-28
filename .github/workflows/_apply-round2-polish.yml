@@ -1,0 +1,79 @@
+name: Apply bounded round-two polish
+
+on:
+  push:
+    branches: [fix/deep-polish-round2]
+    paths: ['.github/workflows/_apply-round2-polish.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout fix branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: fix/deep-polish-round2
+
+      - name: Setup pinned Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22.13.0'
+          cache: npm
+
+      - name: Apply bounded privacy migration
+        run: python3 scripts/analytics_contract.py --fix-only
+
+      - name: Bump service-worker and asset revision
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          old_revision = '20260711r26'
+          new_revision = '20260728r27'
+          old_cache = 'milovi-cake-v2026.07.11-r26'
+          new_cache = 'milovi-cake-v2026.07.28-r27'
+          old_header = 'Service Worker v1.5 (V20260605-R60)'
+          new_header = 'Service Worker v1.6 (V20260728-R27)'
+          allowed = {'.html', '.js', '.css', '.json', '.xml', '.webmanifest', '.txt'}
+          ignored = {'.git', 'node_modules', '_site', 'playwright-report', 'test-results'}
+          changed = 0
+          for path in Path('.').rglob('*'):
+              if not path.is_file() or path.suffix.lower() not in allowed:
+                  continue
+              if any(part in ignored for part in path.parts):
+                  continue
+              text = path.read_text('utf-8', errors='strict')
+              updated = text.replace(old_revision, new_revision).replace(old_cache, new_cache).replace(old_header, new_header)
+              if updated != text:
+                  path.write_text(updated, 'utf-8')
+                  changed += 1
+          if changed < 10:
+              raise SystemExit(f'cache revision replacement touched only {changed} files; expected broad exact replacement')
+          print(f'cache revision updated in {changed} files')
+          PY
+
+      - name: Validate migrated source
+        shell: bash
+        run: |
+          npm ci
+          npm run audit:js
+          npm run audit:analytics
+          npm run audit:security
+          python3 scripts/check_prigorody_idempotent.py
+          npm run audit
+
+      - name: Commit verified migration and remove diagnostics
+        shell: bash
+        run: |
+          rm -f ROUND2_FINDINGS.txt .github/workflows/_apply-round2-polish.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --cached --check
+          git commit -m 'fix(privacy): remove legacy consent UI and stale runtime paths'
+          git push origin HEAD:fix/deep-polish-round2
