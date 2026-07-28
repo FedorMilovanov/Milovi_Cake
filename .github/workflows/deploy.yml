@@ -1,0 +1,108 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Validate and build exact Pages candidate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      RELEASE_SHA: ${{ github.sha }}
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Setup pinned Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run complete source and browser QA
+        run: npm run qa
+
+      - name: Build sanitized immutable Pages artifact
+        run: npm run build:pages
+
+      - name: Audit exact Pages artifact
+        run: npm run audit:pages
+
+      - name: Upload exact Pages artifact
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+        with:
+          path: ./_site
+
+  deploy:
+    name: Deploy exact candidate
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+
+  live-proof-smoke-indexnow:
+    name: Prove live release, smoke production, notify IndexNow
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    env:
+      EXPECTED_SHA: ${{ github.sha }}
+      LIVE_BASE: https://milovicake.ru
+    steps:
+      - name: Checkout the same source for smoke and IndexNow
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Wait for CDN and prove exact live release
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 30); do
+            body="$(curl -fsS --connect-timeout 10 --max-time 20 "$LIVE_BASE/release.json?attempt=$attempt" || true)"
+            if BODY="$body" python3 -c 'import json,os,sys; p=json.loads(os.environ["BODY"]); sys.exit(0 if p.get("repository")=="FedorMilovanov/Milovi_Cake" and p.get("sha")==os.environ["EXPECTED_SHA"] else 1)' 2>/dev/null; then
+              echo "Live release witness matches $EXPECTED_SHA"
+              break
+            fi
+            if [ "$attempt" -eq 30 ]; then
+              echo "Live release witness did not reach $EXPECTED_SHA" >&2
+              exit 1
+            fi
+            sleep 10
+          done
+
+      - name: Run production smoke after proven deploy
+        run: python3 scripts/production_smoke.py --retries 3 --delay 10
+
+      - name: Notify IndexNow only after live smoke succeeds
+        run: python3 scripts/submit_indexnow.py
