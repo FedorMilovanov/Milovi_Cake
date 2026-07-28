@@ -30,7 +30,7 @@ npm run audit:analytics
 
 The contract fails if a legacy inline tag, old cookie handler, duplicate loader, false 404 canonical or missing privacy route returns.
 
-Generated suburb pages inherit the same boundary from `prigorody/_template.html`; generated files and the template are both audited.
+Generated suburb pages inherit the same boundary from `prigorody/_template.html`; generated files and the template are both audited. A template change is accepted only together with regenerated city pages and a green idempotency check.
 
 ## Pages artifact
 
