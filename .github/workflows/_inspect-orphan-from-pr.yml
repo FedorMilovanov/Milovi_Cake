@@ -1,0 +1,50 @@
+name: Temporary orphan inventory from PR
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/_inspect-orphan-from-pr.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout audit head
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Fetch and inventory orphan branch
+        run: |
+          git fetch --no-tags origin refs/heads/seo-audit-bot:refs/remotes/origin/seo-audit-bot
+          git ls-tree -r -l origin/seo-audit-bot > orphan-tree.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          lines=Path('orphan-tree.txt').read_text('utf-8').splitlines()
+          total=0
+          parsed=[]
+          for line in lines:
+              meta,path=line.split('\t',1)
+              parts=meta.split()
+              size=int(parts[3]) if parts[3].isdigit() else 0
+              total+=size
+              parsed.append((size,path))
+          parsed.sort(reverse=True)
+          out=[f'files={len(parsed)}',f'total_bytes={total}']+[f'{size:>10} {path}' for size,path in parsed]
+          Path('orphan-summary.txt').write_text('\n'.join(out)+'\n','utf-8')
+          print(Path('orphan-summary.txt').read_text())
+          PY
+      - name: Upload orphan inventory
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: orphan-seo-audit-bot-inventory-${{ github.event.pull_request.head.sha }}
+          path: |
+            orphan-tree.txt
+            orphan-summary.txt
+          retention-days: 1
