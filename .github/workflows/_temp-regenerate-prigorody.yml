@@ -1,0 +1,39 @@
+name: One-shot regenerate suburb pages
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/_temp-regenerate-prigorody.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    if: github.head_ref == 'feat/privacy-consent-deploy-marathon'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: feat/privacy-consent-deploy-marathon
+          fetch-depth: 0
+
+      - name: Generate and verify canonical suburb pages
+        run: |
+          python3 prigorody/build.py
+          python3 scripts/check_prigorody_idempotent.py
+          python3 scripts/analytics_contract.py
+          git diff --check
+
+      - name: Commit generated pages and remove diagnostics
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/_temp-regenerate-prigorody.yml
+          rm -f CAKE_QA_DIAGNOSTIC.txt
+          git add prigorody
+          git add -u
+          git commit -m "fix(privacy): regenerate suburb pages from consent-aware template"
+          git push origin HEAD:feat/privacy-consent-deploy-marathon
