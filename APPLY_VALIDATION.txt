@@ -1,6 +1,6 @@
 === npm ci ===
 
-added 3 packages, and audited 4 packages in 717ms
+added 3 packages, and audited 4 packages in 558ms
 
 found 0 vulnerabilities
 exit_code=0
