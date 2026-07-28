@@ -61,20 +61,51 @@ jobs:
           print(f'cache revision updated in {changed} files')
           PY
 
-      - name: Validate migrated source
+      - name: Validate migrated source and capture exact failure
+        id: validate
+        continue-on-error: true
         shell: bash
         run: |
-          npm ci
-          npm run audit:js
-          npm run audit:analytics
-          npm run audit:security
-          python3 scripts/check_prigorody_idempotent.py
-          npm run audit
+          set +e
+          : > APPLY_VALIDATION.txt
+          run_check() {
+            name="$1"
+            shift
+            echo "=== $name ===" | tee -a APPLY_VALIDATION.txt
+            "$@" >> APPLY_VALIDATION.txt 2>&1
+            status=$?
+            echo "exit_code=$status" | tee -a APPLY_VALIDATION.txt
+            if [ "$status" -ne 0 ]; then
+              tail -n 120 APPLY_VALIDATION.txt
+              return "$status"
+            fi
+          }
+          run_check 'npm ci' npm ci || exit $?
+          run_check 'JS syntax' npm run audit:js || exit $?
+          run_check 'privacy analytics contract' npm run audit:analytics || exit $?
+          run_check 'dependency security' npm run audit:security || exit $?
+          run_check 'suburb idempotency' python3 scripts/check_prigorody_idempotent.py || exit $?
+          run_check 'full static audit' npm run audit || exit $?
+
+      - name: Preserve failed validator without publishing generated changes
+        if: ${{ steps.validate.outcome == 'failure' }}
+        shell: bash
+        run: |
+          cp APPLY_VALIDATION.txt /tmp/APPLY_VALIDATION.txt
+          git reset --hard HEAD
+          cp /tmp/APPLY_VALIDATION.txt APPLY_VALIDATION.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add APPLY_VALIDATION.txt
+          git commit -m 'chore(diag): preserve failed Cake round-two validator'
+          git push origin HEAD:fix/deep-polish-round2
+          exit 1
 
       - name: Commit verified migration and remove diagnostics
+        if: ${{ steps.validate.outcome == 'success' }}
         shell: bash
         run: |
-          rm -f ROUND2_FINDINGS.txt scripts/_patch_round2_migrator.py .github/workflows/_apply-round2-polish.yml
+          rm -f ROUND2_FINDINGS.txt APPLY_VALIDATION.txt scripts/_patch_round2_migrator.py .github/workflows/_apply-round2-polish.yml
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
