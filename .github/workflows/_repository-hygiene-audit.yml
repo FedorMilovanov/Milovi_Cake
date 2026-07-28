@@ -1,0 +1,155 @@
+name: Temporary repository hygiene audit
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/_repository-hygiene-audit.yml'
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Build hygiene report
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from collections import defaultdict
+          import hashlib, json, os, re, subprocess, urllib.request
+
+          root = Path('.')
+          tracked = subprocess.check_output(['git','ls-files','-z']).decode().split('\0')
+          tracked = [p for p in tracked if p]
+
+          def remote_branches():
+              raw = subprocess.check_output(['git','ls-remote','--heads','origin'], text=True)
+              return [line.split('refs/heads/',1)[1] for line in raw.splitlines() if 'refs/heads/' in line]
+
+          junk_parts = {
+              'node_modules','dist','build','_site','coverage','test-results','playwright-report',
+              '.cache','__pycache__','.pytest_cache','.mypy_cache','.ruff_cache','tmp','temp'
+          }
+          junk_names = {'.DS_Store','Thumbs.db','desktop.ini','npm-debug.log','yarn-error.log'}
+          suspicious_name = re.compile(r'(^|/)(?:_?diagnos(?:e|tic)|debug|scratch|backup|bak|old|copy|repository-hygiene|live-proof)(?:[-_. /]|$)', re.I)
+          report_like = re.compile(r'(^|/)(?:AuditNew|audit-report|report|reports?|_review_screens|_mockups)(?:/|$)', re.I)
+
+          suspicious = []
+          report_files = []
+          large = []
+          top_sizes = []
+          hashes = defaultdict(list)
+          missing = []
+
+          for rel in tracked:
+              path = root / rel
+              if not path.is_file():
+                  missing.append(rel)
+                  continue
+              size = path.stat().st_size
+              top_sizes.append((size, rel))
+              parts = set(path.parts)
+              reasons = []
+              if parts & junk_parts: reasons.append('generated/cache directory')
+              if path.name in junk_names: reasons.append('OS/tool junk file')
+              if suspicious_name.search(rel): reasons.append('temporary/diagnostic name')
+              if reasons: suspicious.append({'path':rel,'size':size,'reasons':reasons})
+              if report_like.search(rel): report_files.append({'path':rel,'size':size})
+              if size >= 5*1024*1024: large.append({'path':rel,'size':size})
+              if size >= 1024:
+                  h = hashlib.sha256(path.read_bytes()).hexdigest()
+                  hashes[(h,size)].append(rel)
+
+          duplicates = [
+              {'sha256':h,'size':size,'paths':paths}
+              for (h,size),paths in hashes.items() if len(paths) > 1
+          ]
+          duplicates.sort(key=lambda x: (-x['size'], x['paths']))
+          top_sizes.sort(reverse=True)
+
+          workflows = []
+          unpinned = []
+          for wf in sorted(Path('.github/workflows').glob('*')):
+              if not wf.is_file(): continue
+              text = wf.read_text('utf-8', errors='replace')
+              uses = []
+              for no,line in enumerate(text.splitlines(),1):
+                  s=line.strip()
+                  if not s.startswith('uses:'): continue
+                  target=s.split('uses:',1)[1].strip().split()[0]
+                  uses.append({'line':no,'target':target})
+                  if target.startswith('./'): continue
+                  ref=target.rsplit('@',1)[-1] if '@' in target else ''
+                  if not re.fullmatch(r'[0-9a-fA-F]{40}', ref):
+                      unpinned.append({'workflow':wf.as_posix(),'line':no,'target':target})
+              workflows.append({'path':wf.as_posix(),'uses':uses})
+
+          repo_meta = {}
+          try:
+              req=urllib.request.Request(
+                  f"https://api.github.com/repos/{os.environ['REPOSITORY']}",
+                  headers={'Authorization':f"Bearer {os.environ['GH_TOKEN']}",
+                           'Accept':'application/vnd.github+json',
+                           'X-GitHub-Api-Version':'2022-11-28'}
+              )
+              with urllib.request.urlopen(req) as r:
+                  data=json.load(r)
+              for key in ('default_branch','delete_branch_on_merge','allow_squash_merge','allow_merge_commit','allow_rebase_merge','allow_auto_merge','allow_update_branch','archived','visibility'):
+                  repo_meta[key]=data.get(key)
+          except Exception as exc:
+              repo_meta={'error':str(exc)}
+
+          report={
+              'repository':os.environ['REPOSITORY'],
+              'head':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
+              'remote_branches':remote_branches(),
+              'tracked_file_count':len(tracked),
+              'top_level':sorted({Path(p).parts[0] for p in tracked}),
+              'suspicious_tracked_files':suspicious,
+              'report_or_mockup_files':report_files,
+              'large_files_over_5mb':sorted(large,key=lambda x:-x['size']),
+              'largest_50_files':[{'path':p,'size':s} for s,p in top_sizes[:50]],
+              'duplicate_groups_over_1kb':duplicates[:200],
+              'workflows':workflows,
+              'unpinned_actions':unpinned,
+              'missing_tracked_paths':missing,
+              'repository_settings':repo_meta,
+          }
+          Path('repository-hygiene-report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),'utf-8')
+          lines=[
+              f"Repository: {report['repository']}",
+              f"Branches: {', '.join(report['remote_branches'])}",
+              f"Tracked files: {report['tracked_file_count']}",
+              f"Suspicious tracked: {len(suspicious)}",
+              f"Report/mockup paths: {len(report_files)}",
+              f"Large files >5MB: {len(large)}",
+              f"Duplicate groups: {len(duplicates)}",
+              f"Unpinned actions: {len(unpinned)}",
+              f"Settings: {json.dumps(repo_meta,ensure_ascii=False)}",
+          ]
+          Path('repository-hygiene-summary.txt').write_text('\n'.join(lines)+'\n','utf-8')
+          print('\n'.join(lines))
+          PY
+
+      - name: Upload hygiene report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: repository-hygiene-${{ github.event.pull_request.head.sha }}
+          path: |
+            repository-hygiene-report.json
+            repository-hygiene-summary.txt
+          retention-days: 1
