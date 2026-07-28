@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import os
-import re
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
@@ -16,8 +15,13 @@ SITE = ROOT / '_site'
 ORIGIN = 'https://milovicake.ru'
 FORBIDDEN_PUBLIC_PATHS = {
     '.github', 'node_modules', 'scripts', 'tests', 'audit', '_mockups',
-    '_review_screens', 'package.json', 'package-lock.json', 'playwright.config.js',
-    'prigorody/_template.html', 'prigorody/_cities.csv', 'prigorody/build.py',
+    '_review_screens', 'playwright-report', 'test-results', 'package.json',
+    'package-lock.json', 'playwright.config.js', 'prigorody/_template.html',
+    'prigorody/_cities.csv', 'prigorody/build.py',
+}
+NON_RUNTIME_SOURCE_PARTS = {
+    '_site', 'node_modules', 'audit', '_mockups', '_review_screens',
+    'playwright-report', 'test-results',
 }
 FORBIDDEN_ANALYTICS = (
     'googletagmanager.com/gtag/js',
@@ -153,12 +157,8 @@ def main() -> int:
     source_runtime_html = sorted(
         path.relative_to(ROOT).as_posix()
         for path in ROOT.rglob('*.html')
-        if '_site' not in path.parts
-        and 'node_modules' not in path.parts
-        and 'audit' not in path.parts
-        and '_mockups' not in path.parts
-        and '_review_screens' not in path.parts
-        and path.name not in {'_template.html'}
+        if not any(part in NON_RUNTIME_SOURCE_PARTS for part in path.parts)
+        and path.name != '_template.html'
         and not is_verification_html(path)
     )
     artifact_runtime_html = sorted(
