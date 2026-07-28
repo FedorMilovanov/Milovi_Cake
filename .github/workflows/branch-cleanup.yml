@@ -18,7 +18,8 @@ jobs:
         startsWith(github.event.pull_request.head.ref, 'ci/') ||
         startsWith(github.event.pull_request.head.ref, 'tmp/') ||
         startsWith(github.event.pull_request.head.ref, 'test/') ||
-        startsWith(github.event.pull_request.head.ref, 'diagnostic/')
+        startsWith(github.event.pull_request.head.ref, 'diagnostic/') ||
+        startsWith(github.event.pull_request.head.ref, 'dependabot/')
       )
     runs-on: ubuntu-latest
     timeout-minutes: 5
