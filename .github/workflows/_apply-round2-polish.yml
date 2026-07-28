@@ -1,5 +1,5 @@
 name: Apply bounded round-two polish
-# Retry marker: exact Playwright lock integrity restored.
+# Retry marker: exact Playwright lock integrity restored; suburb pages regenerate from the canonical template.
 
 on:
   pull_request:
@@ -61,6 +61,9 @@ jobs:
               raise SystemExit(f'cache revision replacement touched only {changed} files; expected broad exact replacement')
           print(f'cache revision updated in {changed} files')
           PY
+
+      - name: Regenerate suburb pages from the migrated template
+        run: python3 prigorody/build.py
 
       - name: Validate migrated source and capture exact failure
         id: validate
