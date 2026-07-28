@@ -1,0 +1,55 @@
+name: Final live proof
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/final-live-proof.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  prove:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Wait for and verify exact production release
+        env:
+          EXPECTED_SHA: 9441053b17e784c684d1e863ccf6120f1d28ff68
+        run: |
+          python3 - <<'PY'
+          import json, os, time, urllib.error, urllib.request
+          base='https://milovicake.ru'
+          expected=os.environ['EXPECTED_SHA']
+          last=''
+          for attempt in range(24):
+              try:
+                  with urllib.request.urlopen(base+'/release.json?proof='+str(time.time()), timeout=20) as r:
+                      data=json.load(r)
+                  last=str(data)
+                  if data.get('repository') == 'FedorMilovanov/Milovi_Cake' and data.get('sha') == expected:
+                      break
+              except Exception as exc:
+                  last=repr(exc)
+              time.sleep(15)
+          else:
+              raise SystemExit(f'exact release not live: expected={expected}, last={last}')
+
+          for route in ('/','/privacy/','/gallery/','/o-konditere/'):
+              with urllib.request.urlopen(base+route+'?proof='+str(time.time()), timeout=20) as r:
+                  if r.status != 200:
+                      raise SystemExit(f'{route}: HTTP {r.status}')
+
+          missing='/__final-hygiene-proof-'+str(int(time.time()))
+          try:
+              urllib.request.urlopen(base+missing, timeout=20)
+              raise SystemExit('unknown route unexpectedly returned success')
+          except urllib.error.HTTPError as exc:
+              if exc.code != 404:
+                  raise
+              html=exc.read().decode('utf-8',errors='replace')
+              if 'noindex, follow' not in html or 'rel="canonical"' in html:
+                  raise SystemExit('404 metadata contract failed')
+          print(f'Cake production proof passed for {expected}')
+          PY
