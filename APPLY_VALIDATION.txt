@@ -1,0 +1,7 @@
+=== npm ci ===
+npm warn tarball tarball data for playwright-core@https://registry.npmjs.org/playwright-core/-/playwright-core-1.60.0.tgz (sha512-9bW6zX/m0lEbgTKJ6YppOKx8H3VOPBMOCFh2irXFOT4BbHgrx5hPjwJYLT40Lu+4qtD36qKc/Hn56StUW57IA==) seems to be corrupted. Trying again.
+npm warn tarball tarball data for playwright-core@https://registry.npmjs.org/playwright-core/-/playwright-core-1.60.0.tgz (sha512-9bW6zX/m0lEbgTKJ6YppOKx8H3VOPBMOCFh2irXFOT4BbHgrx5hPjwJYLT40Lu+4qtD36qKc/Hn56StUW57IA==) seems to be corrupted. Trying again.
+npm error code EINTEGRITY
+npm error sha512-9bW6zX/m0lEbgTKJ6YppOKx8H3VOPBMOCFh2irXFOT4BbHgrx5hPjwJYLT40Lu+4qtD36qKc/Hn56StUW57IA== integrity checksum failed when using sha512: wanted sha512-9bW6zX/m0lEbgTKJ6YppOKx8H3VOPBMOCFh2irXFOT4BbHgrx5hPjwJYLT40Lu+4qtD36qKc/Hn56StUW57IA== but got sha512-9bW6zvX/m0lEbgTKJ6YppOKx8H3VOPBMOCFh2irXFOT4BbHgrx5hPjwJYLT40Lu+4qtD36qKc/Hn56StUW57IA==. (2814257 bytes)
+npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2026-07-28T12_04_10_559Z-debug-0.log
+exit_code=1
