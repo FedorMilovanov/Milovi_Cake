@@ -1,7 +1,60 @@
 === npm ci ===
-npm warn tarball tarball data for playwright-core@https://registry.npmjs.org/playwright-core/-/playwright-core-1.60.0.tgz (sha512-9bW6zX/m0lEbgTKJ6YppOKx8H3VOPBMOCFh2irXFOT4BbHgrx5hPjwJYLT40Lu+4qtD36qKc/Hn56StUW57IA==) seems to be corrupted. Trying again.
-npm warn tarball tarball data for playwright-core@https://registry.npmjs.org/playwright-core/-/playwright-core-1.60.0.tgz (sha512-9bW6zX/m0lEbgTKJ6YppOKx8H3VOPBMOCFh2irXFOT4BbHgrx5hPjwJYLT40Lu+4qtD36qKc/Hn56StUW57IA==) seems to be corrupted. Trying again.
-npm error code EINTEGRITY
-npm error sha512-9bW6zX/m0lEbgTKJ6YppOKx8H3VOPBMOCFh2irXFOT4BbHgrx5hPjwJYLT40Lu+4qtD36qKc/Hn56StUW57IA== integrity checksum failed when using sha512: wanted sha512-9bW6zX/m0lEbgTKJ6YppOKx8H3VOPBMOCFh2irXFOT4BbHgrx5hPjwJYLT40Lu+4qtD36qKc/Hn56StUW57IA== but got sha512-9bW6zvX/m0lEbgTKJ6YppOKx8H3VOPBMOCFh2irXFOT4BbHgrx5hPjwJYLT40Lu+4qtD36qKc/Hn56StUW57IA==. (2814257 bytes)
-npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2026-07-28T12_04_10_559Z-debug-0.log
+
+added 3 packages, and audited 4 packages in 717ms
+
+found 0 vulnerabilities
+exit_code=0
+=== JS syntax ===
+
+> milovi-cake@1.0.0 audit:js
+> node --check js/main.js && node --check js/nav.js && node --check js/mc-2026.js && node --check js/consent-analytics.js && node --check js/v20-faq-fix.js && node --check js/gallery/main.js && node --check js/gallery/data.js && node --check sw.js && node --check scripts/css_coverage.cjs && echo '✅ All JS valid'
+
+✅ All JS valid
+exit_code=0
+=== privacy analytics contract ===
+
+> milovi-cake@1.0.0 audit:analytics
+> python3 scripts/analytics_contract.py
+
+Privacy/analytics contract OK: one loader, no legacy UI, exact workflow pins
+exit_code=0
+=== dependency security ===
+
+> milovi-cake@1.0.0 audit:security
+> npm audit --audit-level=high
+
+found 0 vulnerabilities
+exit_code=0
+=== suburb idempotency ===
+✓ gatchina
+✓ kolpino
+✓ krasnoe-selo
+✓ kronshtadt
+✓ kudrovo
+✓ lomonosov
+✓ murino
+✓ pavlovsk
+✓ peterhof
+✓ pushkin
+✓ sestroretsk
+✓ shushary
+✓ tosno
+✓ vsevolozhsk
+
+Готово: 14 файлов, 0 ошибок.
+❌ Prigorody generated pages were stale before build.py:
+  - prigorody/gatchina/index.html
+  - prigorody/kolpino/index.html
+  - prigorody/krasnoe-selo/index.html
+  - prigorody/kudrovo/index.html
+  - prigorody/lomonosov/index.html
+  - prigorody/murino/index.html
+  - prigorody/pavlovsk/index.html
+  - prigorody/peterhof/index.html
+  - prigorody/pushkin/index.html
+  - prigorody/sestroretsk/index.html
+  - prigorody/shushary/index.html
+  - prigorody/tosno/index.html
+  - prigorody/vsevolozhsk/index.html
+Run: python3 prigorody/build.py, review generated pages, then commit them.
 exit_code=1
