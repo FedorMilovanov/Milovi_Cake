@@ -26,6 +26,14 @@ jobs:
 
       - name: Apply deterministic analytics migration
         run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/analytics_contract.py')
+          text = path.read_text('utf-8')
+          text = text.replace("'        \"js/consent-analytics.js\",\\n'", "'    \"js/consent-analytics.js\",\\n'")
+          text = text.replace("'        \"js/mc-2026.js\",\\n'", "'    \"js/mc-2026.js\",\\n'")
+          path.write_text(text, 'utf-8')
+          PY
           python3 scripts/analytics_contract.py --fix-only
           python3 -m py_compile scripts/analytics_contract.py scripts/audit.py
           git diff --check
