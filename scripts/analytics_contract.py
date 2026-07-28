@@ -132,7 +132,8 @@ def migrate_html(path: Path, text: str) -> str:
     )
     if '</body>' not in text.lower():
         raise RuntimeError(f'{path.relative_to(ROOT)} has no </body>')
-    return re.sub(r'</body>', f'  {LOADER_TAG}\n</body>', text, count=1, flags=re.I)
+    text = re.sub(r'</body>', f'  {LOADER_TAG}\n</body>', text, count=1, flags=re.I)
+    return re.sub(r'[ \t]+$', '', text, flags=re.M)
 
 
 def ensure_sitemap(text: str) -> str:
@@ -148,10 +149,10 @@ def ensure_sitemap(text: str) -> str:
 
 
 def register_runtime_in_audit(text: str) -> str:
-    marker = '        "js/consent-analytics.js",\n'
+    marker = '    "js/consent-analytics.js",\n'
     if marker in text:
         return text
-    anchor = '        "js/mc-2026.js",\n'
+    anchor = '    "js/mc-2026.js",\n'
     if anchor not in text:
         raise RuntimeError('scripts/audit.py ALLOWED_JS anchor not found')
     return text.replace(anchor, anchor + marker, 1)
