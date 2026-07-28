@@ -20,13 +20,23 @@ jobs:
           ref: feat/privacy-consent-deploy-marathon
           fetch-depth: 0
 
-      - name: Rebuild from exact clean main sources
+      - name: Attempt clean-main rebuild
+        id: rebuild
+        shell: bash
         run: |
-          python3 scripts/analytics_contract.py --rebuild-from-main
-          python3 -m py_compile scripts/analytics_contract.py scripts/audit.py
-          git diff --check
+          set +e
+          {
+            python3 scripts/analytics_contract.py --rebuild-from-main
+            python3 -m py_compile scripts/analytics_contract.py scripts/audit.py
+            git diff --check
+          } > /tmp/rebuild.log 2>&1
+          code=$?
+          cat /tmp/rebuild.log
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
 
       - name: Prove critical page content survived
+        if: steps.rebuild.outputs.exit_code == '0'
         run: |
           grep -q 'application/ld+json' bento-torty/index.html
           grep -q 'FAQPage' bento-torty/index.html
@@ -36,11 +46,24 @@ jobs:
           ! grep -q 'mc.yandex.ru/metrika/tag.js' 404.html
           ! grep -q 'googletagmanager.com/gtag/js' 404.html
 
-      - name: Commit repaired migration and remove workflow
+      - name: Commit repaired migration
+        if: steps.rebuild.outputs.exit_code == '0'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git rm .github/workflows/_temp-clean-main-rebuild.yml
+          rm -f REBUILD_DIAGNOSTIC.txt
           git add -A
           git commit -m "fix(privacy): rebuild analytics migration from clean main"
+          git push origin HEAD:feat/privacy-consent-deploy-marathon
+
+      - name: Preserve rebuild diagnostic
+        if: steps.rebuild.outputs.exit_code != '0'
+        run: |
+          git reset --hard HEAD
+          cp /tmp/rebuild.log REBUILD_DIAGNOSTIC.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add REBUILD_DIAGNOSTIC.txt
+          git commit -m "chore(privacy): preserve clean-main rebuild diagnostic"
           git push origin HEAD:feat/privacy-consent-deploy-marathon
