@@ -1,4 +1,5 @@
 name: Apply bounded round-two polish
+# Retry marker: exact Playwright lock integrity restored.
 
 on:
   pull_request:
