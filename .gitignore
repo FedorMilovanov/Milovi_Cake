@@ -1,30 +1,50 @@
-
 # Dependencies
-# Dev-only prototypes & reference material (not deployed)
-# Env/secrets
-# Local/generated audit reports
-# Logs
-# OS/editor
-# Playwright artifacts
-*.log
-*.swo
-*.swp
-.DS_Store
+node_modules/
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Env and secrets
 .env
 .env.*
-.idea/
-.vscode/
-Thumbs.db
+
+# Local/generated audit reports
+.audit/
+audit/
+coverage/
+repository-hygiene-report.json
+repository-hygiene-summary.txt
+
+# Dev-only prototypes and reference material (not deployed)
 _mockups/
 _review_screens/
 _server.mjs
 _shots/
 _view/
-audit/
-node_modules/
-npm-debug.log*
-playwright-report/
 qa-screens/
 see_*.jpg
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS and editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swo
+*.swp
+
+# Playwright artifacts
+playwright-report/
 test-results/
 tests/screenshots/
