@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Milovi Cake analytics source contract.
 
---fix removes every legacy inline GA/Yandex block and cookie banner, installs the
-single local consent loader, removes the 404 canonical, and registers /privacy/
-in the sitemap. Without --fix the script is read-only and fails closed.
+`--fix` performs the deterministic migration and then validates it.
+`--fix-only` performs the migration for the one-shot branch transaction; normal
+CI subsequently runs this script without flags and fails closed on drift.
 """
 from __future__ import annotations
 
@@ -46,7 +46,11 @@ def remove_script_blocks(text: str) -> str:
             return ''
         if any(token.lower() in low for token in FORBIDDEN_HTML):
             return ''
-        if 'function acceptcookie' in low or 'function declinecookie' in low or 'function loadmetrika' in low:
+        if any(marker in low for marker in (
+            'function acceptcookie',
+            'function declinecookie',
+            'function loadmetrika',
+        )):
             return ''
         return block
 
@@ -122,11 +126,13 @@ def migrate_html(path: Path, text: str) -> str:
     if path.name == '404.html':
         text = re.sub(r'\s*<link\s+rel=["\']canonical["\'][^>]*>\s*', '\n', text, flags=re.I)
         text = re.sub(r'\s*<meta\s+property=["\']og:url["\'][^>]*>\s*', '\n', text, flags=re.I)
-    text = re.sub(r'\s*<script\s+defer\s+src=["\']/js/consent-analytics\.js(?:\?[^"\']*)?["\']\s*></script>\s*', '\n', text, flags=re.I)
+    text = re.sub(
+        r'\s*<script\s+defer\s+src=["\']/js/consent-analytics\.js(?:\?[^"\']*)?["\']\s*></script>\s*',
+        '\n', text, flags=re.I,
+    )
     if '</body>' not in text.lower():
         raise RuntimeError(f'{path.relative_to(ROOT)} has no </body>')
-    text = re.sub(r'</body>', f'  {LOADER_TAG}\n</body>', text, count=1, flags=re.I)
-    return text
+    return re.sub(r'</body>', f'  {LOADER_TAG}\n</body>', text, count=1, flags=re.I)
 
 
 def ensure_sitemap(text: str) -> str:
@@ -141,6 +147,16 @@ def ensure_sitemap(text: str) -> str:
     return text.replace('</urlset>', entry + '</urlset>')
 
 
+def register_runtime_in_audit(text: str) -> str:
+    marker = '        "js/consent-analytics.js",\n'
+    if marker in text:
+        return text
+    anchor = '        "js/mc-2026.js",\n'
+    if anchor not in text:
+        raise RuntimeError('scripts/audit.py ALLOWED_JS anchor not found')
+    return text.replace(anchor, anchor + marker, 1)
+
+
 def collect_html() -> list[Path]:
     return sorted(
         p for p in ROOT.rglob('*.html')
@@ -148,26 +164,29 @@ def collect_html() -> list[Path]:
     )
 
 
+def write_if_changed(path: Path, updated: str) -> int:
+    original = path.read_text('utf-8')
+    if updated == original:
+        return 0
+    path.write_text(updated, 'utf-8')
+    return 1
+
+
 def apply_fixes() -> int:
     changed = 0
     for path in collect_html():
         original = path.read_text('utf-8')
-        updated = migrate_html(path, original)
-        if updated != original:
-            path.write_text(updated, 'utf-8')
-            changed += 1
+        changed += write_if_changed(path, migrate_html(path, original))
     for path in sorted((ROOT / 'js').rglob('*.js')):
         original = path.read_text('utf-8')
-        updated = migrate_js(path, original)
-        if updated != original:
-            path.write_text(updated, 'utf-8')
-            changed += 1
+        changed += write_if_changed(path, migrate_js(path, original))
+
     sitemap = ROOT / 'sitemap.xml'
-    original = sitemap.read_text('utf-8')
-    updated = ensure_sitemap(original)
-    if updated != original:
-        sitemap.write_text(updated, 'utf-8')
-        changed += 1
+    changed += write_if_changed(sitemap, ensure_sitemap(sitemap.read_text('utf-8')))
+
+    audit = ROOT / 'scripts' / 'audit.py'
+    changed += write_if_changed(audit, register_runtime_in_audit(audit.read_text('utf-8')))
+
     print(f'analytics migration changed {changed} files')
     return changed
 
@@ -208,18 +227,31 @@ def check() -> list[str]:
                 errors.append(f'{rel}: legacy consent symbol remains: {symbol}')
 
     loader = (ROOT / 'js' / 'consent-analytics.js').read_text('utf-8')
-    for required in ('milovi_analytics_consent_v1', 'googletagmanager.com/gtag/js', 'mc.yandex.ru/metrika/tag.js', 'window.MiloviConsent'):
+    for required in (
+        'milovi_analytics_consent_v1',
+        'googletagmanager.com/gtag/js',
+        'mc.yandex.ru/metrika/tag.js',
+        'window.MiloviConsent',
+    ):
         if required not in loader:
             errors.append(f'consent loader missing contract marker: {required}')
+
+    audit = (ROOT / 'scripts' / 'audit.py').read_text('utf-8')
+    if '"js/consent-analytics.js"' not in audit:
+        errors.append('scripts/audit.py does not register consent-analytics.js')
     return errors
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument('--fix', action='store_true')
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('--fix', action='store_true')
+    group.add_argument('--fix-only', action='store_true')
     args = parser.parse_args()
-    if args.fix:
+    if args.fix or args.fix_only:
         apply_fixes()
+    if args.fix_only:
+        return 0
     errors = check()
     if errors:
         print('Analytics contract FAILED:', file=sys.stderr)
