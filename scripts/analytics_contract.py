@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 """Milovi Cake analytics source contract.
 
-`--fix` performs the deterministic migration and then validates it.
-`--fix-only` performs the migration for the one-shot branch transaction; normal
-CI subsequently runs this script without flags and fails closed on drift.
+The contract owns the one-loader privacy boundary. `--rebuild-from-main` is a
+one-shot recovery mode: it restores every legacy HTML/JS source from the exact
+`origin/main` baseline and reapplies the migration, preventing a partial or
+over-broad regex edit from becoming the new source of truth.
 """
 from __future__ import annotations
 
 import argparse
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -55,6 +57,18 @@ def remove_script_blocks(text: str) -> str:
         return block
 
     return pattern.sub(repl, text)
+
+
+def remove_yandex_noscript(text: str) -> str:
+    # Never cross another </noscript>: font fallbacks and unrelated no-JS content
+    # must survive even when a later Yandex pixel exists on the same page.
+    pattern = re.compile(
+        r'<noscript\b[^>]*>(?:(?!</noscript>)[\s\S])*?'
+        r'mc\.yandex\.ru/watch/'
+        r'(?:(?!</noscript>)[\s\S])*?</noscript>',
+        re.I,
+    )
+    return pattern.sub('', text)
 
 
 def remove_function(source: str, name: str) -> str:
@@ -114,10 +128,7 @@ def migrate_js(path: Path, text: str) -> str:
 
 def migrate_html(path: Path, text: str) -> str:
     text = remove_script_blocks(text)
-    text = re.sub(
-        r'<noscript\b[^>]*>[\s\S]*?mc\.yandex\.ru/watch/[\s\S]*?</noscript>',
-        '', text, flags=re.I,
-    )
+    text = remove_yandex_noscript(text)
     text = re.sub(r'<!--[^>]*(?:Google Analytics|Яндекс\.Метрика|Yandex Metrika)[^>]*-->', '', text, flags=re.I)
     text = re.sub(
         r'\s*<!--\s*COOKIE BANNER\s*-->\s*<div\s+id=["\']cookieBanner["\']>[\s\S]*?</div>\s*',
@@ -166,21 +177,68 @@ def collect_html() -> list[Path]:
 
 
 def write_if_changed(path: Path, updated: str) -> int:
-    original = path.read_text('utf-8')
+    original = path.read_text('utf-8') if path.exists() else None
     if updated == original:
         return 0
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(updated, 'utf-8')
     return 1
+
+
+def git_output(*args: str) -> str:
+    return subprocess.check_output(['git', *args], cwd=ROOT, text=True)
+
+
+def main_paths() -> list[str]:
+    return [line for line in git_output('ls-tree', '-r', '--name-only', 'origin/main').splitlines() if line]
+
+
+def main_text(relative: str) -> str:
+    return git_output('show', f'origin/main:{relative}')
+
+
+def rebuild_from_main() -> int:
+    subprocess.run(['git', 'fetch', '--no-tags', 'origin', 'main'], cwd=ROOT, check=True)
+    changed = 0
+    paths = main_paths()
+
+    for relative in paths:
+        path = ROOT / relative
+        if not relative.endswith('.html') or is_excluded(path) or is_verification_html(path):
+            continue
+        changed += write_if_changed(path, migrate_html(path, main_text(relative)))
+
+    # The new policy page is not present on main; normalize it from its branch source.
+    privacy = ROOT / 'privacy' / 'index.html'
+    changed += write_if_changed(privacy, migrate_html(privacy, privacy.read_text('utf-8')))
+
+    for relative in paths:
+        if not relative.startswith('js/') or not relative.endswith('.js'):
+            continue
+        path = ROOT / relative
+        changed += write_if_changed(path, migrate_js(path, main_text(relative)))
+
+    sitemap = ROOT / 'sitemap.xml'
+    changed += write_if_changed(sitemap, ensure_sitemap(main_text('sitemap.xml')))
+
+    audit = ROOT / 'scripts' / 'audit.py'
+    changed += write_if_changed(audit, register_runtime_in_audit(main_text('scripts/audit.py')))
+
+    diagnostic = ROOT / 'MIGRATION_DIAGNOSTIC.txt'
+    if diagnostic.exists():
+        diagnostic.unlink()
+        changed += 1
+
+    print(f'clean-main analytics rebuild changed {changed} files')
+    return changed
 
 
 def apply_fixes() -> int:
     changed = 0
     for path in collect_html():
-        original = path.read_text('utf-8')
-        changed += write_if_changed(path, migrate_html(path, original))
+        changed += write_if_changed(path, migrate_html(path, path.read_text('utf-8')))
     for path in sorted((ROOT / 'js').rglob('*.js')):
-        original = path.read_text('utf-8')
-        changed += write_if_changed(path, migrate_js(path, original))
+        changed += write_if_changed(path, migrate_js(path, path.read_text('utf-8')))
 
     sitemap = ROOT / 'sitemap.xml'
     changed += write_if_changed(sitemap, ensure_sitemap(sitemap.read_text('utf-8')))
@@ -248,11 +306,17 @@ def main() -> int:
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--fix', action='store_true')
     group.add_argument('--fix-only', action='store_true')
+    group.add_argument('--rebuild-from-main', action='store_true')
     args = parser.parse_args()
-    if args.fix or args.fix_only:
+
+    if args.rebuild_from_main:
+        rebuild_from_main()
+    elif args.fix or args.fix_only:
         apply_fixes()
+
     if args.fix_only:
         return 0
+
     errors = check()
     if errors:
         print('Analytics contract FAILED:', file=sys.stderr)
