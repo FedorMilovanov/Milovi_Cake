@@ -14,8 +14,22 @@
   <meta property="og:image" content="https://milovicake.ru/img/og-cover.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://milovicake.ru/img/og-cover.jpg" />
+  <meta name="theme-color" content="#c9934a" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#1a1108" media="(prefers-color-scheme: dark)" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/style.css?v=20260728r27" />
+  <script>
+    (function () {
+      try {
+        var theme = localStorage.getItem('mc_theme');
+        if (theme === 'light' || theme === 'dark') {
+          document.documentElement.setAttribute('data-theme', theme);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      } catch (_) {}
+    })();
+  </script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -67,8 +81,8 @@
     <h1>Политика конфиденциальности</h1>
     <p class="privacy-page__lead">Milovi Cake собирает только те технические данные, которые помогают поддерживать сайт, понимать востребованность страниц и улучшать удобство. Необязательная аналитика не загружается до вашего явного согласия.</p>
 
-    <h2>Кто отвечает за сайт</h2>
-    <p>Сайт <strong>milovicake.ru</strong> принадлежит проекту Milovi Cake. По вопросам обработки данных можно написать через контакты, указанные на сайте.</p>
+    <h2>Кто отвечает за сайт и данные</h2>
+    <p>Оператор сайта <strong>milovicake.ru</strong> — самозанятая Милованова Виктория, ИНН 263006403654. По вопросам обработки данных можно позвонить по номеру <a href="tel:+79119038886">+7 911 903 88 86</a> или написать в <a href="https://t.me/MiloviCake" target="_blank" rel="noopener noreferrer">Telegram</a>.</p>
 
     <h2>Какие данные могут обрабатываться</h2>
     <ul>
@@ -98,6 +112,7 @@
     <p>Политика может обновляться при изменении функций сайта или состава подключённых сервисов. Актуальная версия всегда публикуется по этому адресу.</p>
     <p><strong>Последнее обновление:</strong> 28 июля 2026 года.</p>
   </main>
+
   <script defer src="/js/consent-analytics.js"></script>
 </body>
 </html>

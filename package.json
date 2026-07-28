@@ -6,16 +6,17 @@
   "scripts": {
     "audit": "python3 scripts/audit.py",
     "audit:analytics": "python3 scripts/analytics_contract.py",
+    "audit:security": "npm audit --audit-level=high",
     "audit:js": "node --check js/main.js && node --check js/nav.js && node --check js/mc-2026.js && node --check js/consent-analytics.js && node --check js/v20-faq-fix.js && node --check js/gallery/main.js && node --check js/gallery/data.js && node --check sw.js && node --check scripts/css_coverage.cjs && echo '✅ All JS valid'",
     "audit:prigorody": "python3 scripts/check_prigorody_idempotent.py",
-    "audit:all": "npm run audit:js && npm run audit:analytics && npm run audit:prigorody && npm run audit",
+    "audit:all": "npm run audit:js && npm run audit:analytics && npm run audit:prigorody && npm run audit:security && npm run audit",
     "build:prigorody": "python3 prigorody/build.py",
     "build:pages": "python3 scripts/build_pages_artifact.py",
     "audit:pages": "python3 scripts/audit_pages_artifact.py",
     "test:playwright": "playwright test",
     "test:playwright:headed": "playwright test --headed",
     "test:playwright:report": "playwright show-report",
-    "qa": "npm run audit:js && npm run audit:analytics && python3 scripts/check_prigorody_idempotent.py && npm run audit && npm run test:playwright",
+    "qa": "npm run audit:js && npm run audit:analytics && python3 scripts/check_prigorody_idempotent.py && npm run audit:security && npm run audit && npm run test:playwright",
     "smoke:prod": "python3 scripts/production_smoke.py",
     "indexnow:dry-run": "python3 scripts/submit_indexnow.py --dry-run",
     "indexnow:submit": "python3 scripts/submit_indexnow.py",
@@ -26,7 +27,8 @@
     "visual:diff": "python3 scripts/visual_diff.py"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.13.0",
+    "npm": ">=10.9.2"
   },
   "keywords": [
     "cakes",
@@ -35,9 +37,9 @@
   ],
   "license": "UNLICENSED",
   "devDependencies": {
-    "@playwright/test": "^1.60.0"
+    "@playwright/test": "1.60.0"
   },
   "dependencies": {
-    "playwright": "^1.60.0"
+    "playwright": "1.60.0"
   }
 }
