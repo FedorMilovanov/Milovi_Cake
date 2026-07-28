@@ -1,0 +1,35 @@
+name: One-shot analytics migration
+
+on:
+  push:
+    branches: [feat/privacy-consent-deploy-marathon]
+    paths:
+      - '.github/workflows/_temp-analytics-migration.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout migration branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: feat/privacy-consent-deploy-marathon
+          fetch-depth: 0
+
+      - name: Migrate and verify analytics sources
+        run: |
+          python3 scripts/analytics_contract.py --fix
+          python3 scripts/analytics_contract.py
+          git diff --check
+
+      - name: Commit migration and remove one-shot workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/_temp-analytics-migration.yml
+          git add -A
+          git commit -m "refactor(privacy): centralize analytics behind explicit consent"
+          git push origin HEAD:feat/privacy-consent-deploy-marathon
