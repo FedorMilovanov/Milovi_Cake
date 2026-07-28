@@ -1,0 +1,46 @@
+name: One-shot clean-main analytics rebuild
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/_temp-clean-main-rebuild.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    if: github.head_ref == 'feat/privacy-consent-deploy-marathon'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout migration branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: feat/privacy-consent-deploy-marathon
+          fetch-depth: 0
+
+      - name: Rebuild from exact clean main sources
+        run: |
+          python3 scripts/analytics_contract.py --rebuild-from-main
+          python3 -m py_compile scripts/analytics_contract.py scripts/audit.py
+          git diff --check
+
+      - name: Prove critical page content survived
+        run: |
+          grep -q 'application/ld+json' bento-torty/index.html
+          grep -q 'FAQPage' bento-torty/index.html
+          grep -q 'Классический бенто' bento-torty/index.html
+          grep -q 'application/ld+json' index.html
+          grep -q '/js/consent-analytics.js' 404.html
+          ! grep -q 'mc.yandex.ru/metrika/tag.js' 404.html
+          ! grep -q 'googletagmanager.com/gtag/js' 404.html
+
+      - name: Commit repaired migration and remove workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/_temp-clean-main-rebuild.yml
+          git add -A
+          git commit -m "fix(privacy): rebuild analytics migration from clean main"
+          git push origin HEAD:feat/privacy-consent-deploy-marathon
