@@ -32,7 +32,7 @@
       var polish = document.createElement('link');
       polish.id = 'milovi-contact-polish';
       polish.rel = 'stylesheet';
-      polish.href = '/css/contact-polish.css?v=20260803r2';
+      polish.href = '/css/contact-polish.css?v=20260803r3';
       document.head.appendChild(polish);
     }
     if (document.getElementById('milovi-consent-style')) return;
