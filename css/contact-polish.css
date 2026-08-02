@@ -1,0 +1,133 @@
+/* Milovi Cake — premium contact form and light-theme refinement (2026-08-03). */
+html:not([data-theme="dark"]) #contacts {
+  background:
+    radial-gradient(900px 420px at 82% 8%, rgba(201, 147, 74, .14), transparent 62%),
+    linear-gradient(180deg, #f8f2e9 0%, #efe4d5 100%) !important;
+}
+html:not([data-theme="dark"]) #contacts .section-title { color: #8b5b2d !important; }
+html:not([data-theme="dark"]) #contacts .section-sub { color: #775f4c !important; }
+html:not([data-theme="dark"]) #contacts .card.card--dark {
+  background: linear-gradient(155deg, #20140d 0%, #160e09 100%) !important;
+  border-color: rgba(201, 147, 74, .28) !important;
+  box-shadow: 0 28px 70px rgba(72, 43, 20, .20), inset 0 1px rgba(255, 235, 190, .04) !important;
+}
+html:not([data-theme="dark"]) #contacts .card:not(.card--dark) {
+  --mc-form-field: #fffaf2;
+  --mc-form-border: rgba(112, 75, 43, .28);
+  --mc-form-border-active: #b9823f;
+  --mc-form-label-bg: #fffaf2;
+  background: linear-gradient(145deg, #fffaf2 0%, #f4e8d8 100%) !important;
+  border: 1px solid rgba(142, 98, 52, .25) !important;
+  box-shadow: 0 28px 70px rgba(92, 57, 26, .16), inset 0 1px rgba(255, 255, 255, .88) !important;
+}
+html:not([data-theme="dark"]) #contacts .card:not(.card--dark) h3 { color: #3d281a !important; }
+html:not([data-theme="dark"]) #contacts .card:not(.card--dark) .form-note { color: #7f6956 !important; }
+html:not([data-theme="dark"]) #contacts .card:not(.card--dark) .form-group.float-label input,
+html:not([data-theme="dark"]) #contacts .card:not(.card--dark) .form-group.float-label textarea { color: #342318 !important; }
+html:not([data-theme="dark"]) #contacts .card:not(.card--dark) .form-group.float-label label { color: #7f6956 !important; }
+
+[data-theme="dark"] #contacts .card:not(.card--dark) {
+  --mc-form-field: #25170d;
+  --mc-form-border: rgba(218, 174, 111, .26);
+  --mc-form-border-active: #d7aa6d;
+  --mc-form-label-bg: #25170d;
+  background: linear-gradient(150deg, #28190e 0%, #1e120a 100%) !important;
+  border-color: rgba(212, 167, 106, .26) !important;
+  box-shadow: 0 28px 70px rgba(0, 0, 0, .32), inset 0 1px rgba(255, 235, 190, .035) !important;
+}
+[data-theme="dark"] #contacts .card.card--dark {
+  background: linear-gradient(150deg, #191009 0%, #110b07 100%) !important;
+}
+[data-theme="dark"] #contacts .card:not(.card--dark) .form-group.float-label input,
+[data-theme="dark"] #contacts .card:not(.card--dark) .form-group.float-label textarea { color: #fff5e5 !important; }
+
+#contacts .card:not(.card--dark) .form-group.float-label {
+  position: relative !important;
+  margin: 0 0 20px !important;
+  border: 1px solid var(--mc-form-border, rgba(218, 174, 111, .28)) !important;
+  border-radius: 14px !important;
+  background: var(--mc-form-field, rgba(255, 255, 255, .04)) !important;
+  box-shadow: none !important;
+  transition: border-color .22s ease, background-color .22s ease, box-shadow .28s ease, transform .22s ease !important;
+}
+#contacts .card:not(.card--dark) .form-group.float-label:focus-within {
+  border-color: var(--mc-form-border-active, #d4a76a) !important;
+  box-shadow: 0 14px 34px rgba(72, 41, 17, .12) !important;
+  transform: translateY(-1px);
+}
+#contacts .card:not(.card--dark) .form-group.float-label input,
+#contacts .card:not(.card--dark) .form-group.float-label textarea {
+  width: 100% !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border-radius: 13px !important;
+  padding: 17px 18px 15px !important;
+  font-size: 15px !important;
+}
+#contacts .card:not(.card--dark) .form-group.float-label input { min-height: 54px !important; }
+#contacts .card:not(.card--dark) .form-group.float-label textarea {
+  min-height: 104px !important;
+  padding-top: 18px !important;
+  resize: vertical;
+}
+#contacts .card:not(.card--dark) .form-group.float-label input:focus,
+#contacts .card:not(.card--dark) .form-group.float-label textarea:focus {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+#contacts .card:not(.card--dark) .form-group.float-label label {
+  position: absolute !important;
+  z-index: 2 !important;
+  left: 14px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  margin: 0 !important;
+  padding: 0 6px !important;
+  background: transparent !important;
+  font-size: 13px !important;
+  line-height: 1 !important;
+  pointer-events: none !important;
+  transition: top .2s ease, transform .2s ease, font-size .2s ease, color .2s ease, background-color .2s ease, padding .2s ease !important;
+}
+#contacts .card:not(.card--dark) .form-group.float-label textarea + label {
+  top: 18px !important;
+  transform: none !important;
+}
+#contacts .card:not(.card--dark) .form-group.float-label input:focus + label,
+#contacts .card:not(.card--dark) .form-group.float-label input:not(:placeholder-shown) + label,
+#contacts .card:not(.card--dark) .form-group.float-label textarea:focus + label,
+#contacts .card:not(.card--dark) .form-group.float-label textarea:not(:placeholder-shown) + label {
+  top: 0 !important;
+  transform: translateY(-50%) !important;
+  background: var(--mc-form-label-bg, #25170d) !important;
+  padding: 0 8px !important;
+  color: var(--mc-form-border-active, #d4a76a) !important;
+  font-size: 11px !important;
+  letter-spacing: .065em !important;
+}
+#contacts .card:not(.card--dark) .form-group.float-label input:-webkit-autofill {
+  -webkit-text-fill-color: inherit !important;
+  transition: background-color 9999s ease-out 0s !important;
+}
+#contacts .card:not(.card--dark) .btn-wa {
+  margin-top: 28px !important;
+  box-shadow: 0 16px 36px rgba(201, 147, 74, .30) !important;
+}
+
+@media (max-width: 900px) {
+  #contacts .card:not(.card--dark) .form-group.float-label { margin-bottom: 18px !important; }
+}
+@media (max-width: 560px) {
+  #contacts .card:not(.card--dark) .form-group.float-label input { min-height: 52px !important; }
+  #contacts .card:not(.card--dark) .form-group.float-label textarea {
+    min-height: 100px !important;
+    resize: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #contacts .card:not(.card--dark) .form-group.float-label { transition: none !important; }
+}
