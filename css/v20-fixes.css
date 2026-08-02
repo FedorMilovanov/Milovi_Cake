@@ -41,9 +41,6 @@ html[data-theme="dark"] .delivery-faq .faq-item,
    1. FIXED: Product Footers and Buttons on Mobile (No overlaps, No clipping)
    ========================================================================== */
 @media (max-width: 768px) {
-  /* Product footer / price / btn-add are owned solely by mc-2026.css (r67)
-     to remove the same-breakpoint !important conflict. Only the unique
-     card-body padding fix lives here. */
   .product-info {
     padding: 22px 20px !important;
   }
@@ -53,12 +50,9 @@ html[data-theme="dark"] .delivery-faq .faq-item,
    2. FIXED: Squeezed Calculator Option Lists (Stretches to 100% card width)
    ========================================================================== */
 @media (max-width: 768px) {
-  /* Ensure calculator rows stretch and are beautifully balanced */
   .calc-left-col .calc-row {
     align-items: stretch !important;
   }
-  
-  /* Stretches options container to full available card width */
   .calc-options,
   #calcFill.calc-options,
   #calcFillBento.calc-options,
@@ -68,8 +62,6 @@ html[data-theme="dark"] .delivery-faq .faq-item,
     align-self: stretch !important;
     justify-content: stretch !important;
   }
-  
-  /* Allow single options to scale and flex nicely */
   .calc-opt {
     flex: 1 1 auto !important;
     min-width: 0 !important;
@@ -171,12 +163,8 @@ html[data-theme="dark"] .delivery-faq .faq-item,
 
 /* ==========================================================================
    9. JEWELLER POLISH — even, quiet, premium-minimal mobile pass (r67)
-   Goal: consistent radii rhythm + unified, restrained tap feedback.
-   No new effects, no glow/shimmer — only evenness.
    ========================================================================== */
 @media (max-width: 768px) {
-  /* 9.1 — Unified, calm tap feedback across every touchable card.
-     One spring, one scale. Removes the "jumpy"/inconsistent feel. */
   .product-card,
   .feature,
   .review-card,
@@ -191,9 +179,6 @@ html[data-theme="dark"] .delivery-faq .faq-item,
   .review-card:active {
     transform: scale(0.992) !important;
   }
-
-  /* 9.2 — Even radii rhythm: cards 24px, pills 50px, small chips 16px.
-     Keeps the jewellery "set" feeling consistent across sections. */
   .feature,
   .review-card,
   .cb-gluten-card {
@@ -203,20 +188,14 @@ html[data-theme="dark"] .delivery-faq .faq-item,
   .cb-occ {
     border-radius: 18px !important;
   }
-
-  /* 9.3 — Calmer drop shadows: single soft layer, warm-gold tint,
-     so cards sit flat & even instead of floating unevenly. */
   .feature,
   .review-card {
     box-shadow: 0 8px 30px rgba(61, 43, 31, 0.06),
                 0 0 0 1px rgba(201, 147, 74, 0.07) !important;
   }
-
-  /* 9.4 — Section vertical rhythm: even breathing room between blocks. */
   section { scroll-margin-top: 76px; }
 }
 
-/* 9.5 — Hairline-crisp 1px borders on high-DPI screens (no fuzzy edges). */
 @media (max-width: 768px) and (-webkit-min-device-pixel-ratio: 2) {
   .product-footer,
   .feature,
@@ -226,7 +205,6 @@ html[data-theme="dark"] .delivery-faq .faq-item,
   }
 }
 
-/* 9.6 — Honour reduced-motion: drop the tap-scale for users who ask. */
 @media (max-width: 768px) and (prefers-reduced-motion: reduce) {
   .product-card:active,
   .feature:active,
@@ -238,8 +216,6 @@ html[data-theme="dark"] .delivery-faq .faq-item,
 
 /* ==========================================================================
    10. ASIDE — small editorial note inside info-note cards (r23)
-   Used by /o-konditere/ "Подход" card to credit the French Pastry Library
-   without disrupting the calm layout. Single selector, no !important.
    ========================================================================== */
 .info-note-aside {
   margin: 14px 0 0;
@@ -292,8 +268,6 @@ html[data-theme="dark"] .delivery-faq .faq-item,
 
 /* ==========================================================================
    12. GALLERY — video click-through fix (r68)
-   Prevent <video> inside .card from swallowing clicks; pass them to the
-   parent <button> so the lightbox opens on first tap/click.
    ========================================================================== */
 .card video,
 .card-media video {
@@ -302,12 +276,333 @@ html[data-theme="dark"] .delivery-faq .faq-item,
 
 /* ==========================================================================
    13. FOOTER PROJECTS — link default color fix (r69)
-   .footer-projects-link is an <a> without explicit color, so browser default
-   link colors (blue/purple) leak through. Force theme-aware colors.
    ========================================================================== */
 .footer-projects-link {
   color: var(--text);
 }
 [data-theme="dark"] .footer-projects-link {
   color: var(--gold);
+}
+
+/* ==========================================================================
+   14. CONTACT FORM — quiet floating labels without an outlined notch (r70)
+   Inspired by the restrained filled-field pattern used in mature design
+   systems: persistent label, clear surface, one subtle focus affordance.
+   Social and messenger controls are intentionally outside this scope.
+   ========================================================================== */
+html:not([data-theme="dark"]) #contacts {
+  background:
+    radial-gradient(900px 420px at 82% 4%, rgba(172, 116, 58, .08), transparent 65%),
+    linear-gradient(180deg, #f7f3ed 0%, #eee5d9 100%) !important;
+}
+html:not([data-theme="dark"]) #contacts .card.card--dark {
+  background: linear-gradient(150deg, #21150e 0%, #140d09 100%) !important;
+  border-color: rgba(188, 132, 72, .24) !important;
+  box-shadow: 0 28px 66px rgba(61, 38, 20, .17) !important;
+}
+html:not([data-theme="dark"]) #contacts .card:not(.card--dark) {
+  --mc-field-surface: #fffdf9;
+  --mc-field-surface-focus: #ffffff;
+  --mc-field-edge: rgba(74, 49, 31, .16);
+  --mc-field-edge-hover: rgba(125, 82, 42, .30);
+  --mc-field-accent: #a66d32;
+  --mc-field-label: #796454;
+  --mc-field-label-active: #8d5a27;
+  --mc-field-text: #2e2118;
+  background: linear-gradient(145deg, #fffefa 0%, #f6eee3 100%) !important;
+  border: 1px solid rgba(91, 60, 35, .15) !important;
+  box-shadow: 0 28px 68px rgba(67, 42, 22, .12), inset 0 1px rgba(255,255,255,.94) !important;
+}
+[data-theme="dark"] #contacts .card:not(.card--dark) {
+  --mc-field-surface: #24170f;
+  --mc-field-surface-focus: #291a10;
+  --mc-field-edge: rgba(226, 190, 137, .16);
+  --mc-field-edge-hover: rgba(226, 190, 137, .29);
+  --mc-field-accent: #d5a465;
+  --mc-field-label: rgba(239, 218, 188, .64);
+  --mc-field-label-active: #e1b77d;
+  --mc-field-text: #fff4e3;
+  background: linear-gradient(150deg, #28190f 0%, #1d120b 100%) !important;
+  border-color: rgba(212,167,106,.22) !important;
+  box-shadow: 0 30px 72px rgba(0,0,0,.31) !important;
+}
+#contacts .card:not(.card--dark) .hours[style*="opacity:0"] { display:none !important; }
+#contacts .card:not(.card--dark) form { margin-top:28px !important; }
+
+#contacts .card:not(.card--dark) .form-group.float-label {
+  position:relative !important;
+  min-height:62px !important;
+  margin:0 0 16px !important;
+  border:0 !important;
+  border-radius:20px !important;
+  background:var(--mc-field-surface) !important;
+  overflow:hidden !important;
+  isolation:isolate !important;
+  box-shadow:
+    inset 0 0 0 1px var(--mc-field-edge),
+    0 7px 18px rgba(65,42,24,.035) !important;
+  transform:translateZ(0);
+  transition:background-color .24s ease,box-shadow .28s ease,transform .28s cubic-bezier(.22,1,.36,1) !important;
+}
+#contacts .card:not(.card--dark) .form-group.float-label::after {
+  content:"";
+  position:absolute;
+  z-index:4;
+  left:18px;
+  right:18px;
+  bottom:0;
+  height:2px;
+  border-radius:999px 999px 0 0;
+  background:var(--mc-field-accent);
+  opacity:0;
+  transform:scaleX(.18);
+  transform-origin:center;
+  transition:opacity .22s ease,transform .34s cubic-bezier(.22,1,.36,1);
+  pointer-events:none;
+}
+#contacts .card:not(.card--dark) .form-group.float-label:hover {
+  box-shadow:inset 0 0 0 1px var(--mc-field-edge-hover),0 9px 22px rgba(65,42,24,.045) !important;
+}
+#contacts .card:not(.card--dark) .form-group.float-label:focus-within {
+  background:var(--mc-field-surface-focus) !important;
+  box-shadow:inset 0 0 0 1px var(--mc-field-edge-hover),0 14px 30px rgba(80,49,24,.09) !important;
+  transform:translateY(-1px) !important;
+}
+#contacts .card:not(.card--dark) .form-group.float-label:focus-within::after {
+  opacity:1;
+  transform:scaleX(1);
+}
+#contacts .card:not(.card--dark) .form-group.float-label input,
+#contacts .card:not(.card--dark) .form-group.float-label textarea {
+  position:relative !important;
+  z-index:2 !important;
+  display:block !important;
+  width:100% !important;
+  margin:0 !important;
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+  background:transparent !important;
+  color:var(--mc-field-text) !important;
+  font-family:'Jost',system-ui,-apple-system,'Segoe UI',sans-serif !important;
+  font-size:15px !important;
+  font-weight:400 !important;
+  line-height:1.42 !important;
+  caret-color:var(--mc-field-accent) !important;
+  appearance:none !important;
+  -webkit-appearance:none !important;
+}
+#contacts .card:not(.card--dark) .form-group.float-label input {
+  min-height:62px !important;
+  padding:25px 18px 9px !important;
+}
+#contacts .card:not(.card--dark) .form-group.float-label textarea {
+  min-height:118px !important;
+  padding:28px 18px 16px !important;
+  resize:vertical;
+}
+#contacts .card:not(.card--dark) .form-group.float-label label {
+  position:absolute !important;
+  z-index:3 !important;
+  left:18px !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  transform-origin:left center !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  color:var(--mc-field-label) !important;
+  font-family:'Jost',system-ui,-apple-system,'Segoe UI',sans-serif !important;
+  font-size:14px !important;
+  font-weight:400 !important;
+  line-height:1 !important;
+  letter-spacing:0 !important;
+  pointer-events:none !important;
+  white-space:nowrap !important;
+  transition:top .30s cubic-bezier(.22,1,.36,1),transform .30s cubic-bezier(.22,1,.36,1),font-size .22s ease,color .22s ease,letter-spacing .22s ease !important;
+}
+#contacts .card:not(.card--dark) .form-group.float-label textarea + label {
+  top:21px !important;
+  transform:none !important;
+}
+#contacts .card:not(.card--dark) .form-group.float-label input:focus + label,
+#contacts .card:not(.card--dark) .form-group.float-label input:not(:placeholder-shown) + label,
+#contacts .card:not(.card--dark) .form-group.float-label input:-webkit-autofill + label,
+#contacts .card:not(.card--dark) .form-group.float-label textarea:focus + label,
+#contacts .card:not(.card--dark) .form-group.float-label textarea:not(:placeholder-shown) + label {
+  top:11px !important;
+  transform:none !important;
+  color:var(--mc-field-label-active) !important;
+  font-size:10.5px !important;
+  font-weight:500 !important;
+  letter-spacing:.025em !important;
+}
+#contacts .card:not(.card--dark) .form-group.float-label input:focus,
+#contacts .card:not(.card--dark) .form-group.float-label textarea:focus,
+#contacts .card:not(.card--dark) .form-group.float-label input:focus-visible,
+#contacts .card:not(.card--dark) .form-group.float-label textarea:focus-visible {
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+}
+#contacts .card:not(.card--dark) .form-group.float-label input:-webkit-autofill,
+#contacts .card:not(.card--dark) .form-group.float-label textarea:-webkit-autofill {
+  -webkit-text-fill-color:var(--mc-field-text) !important;
+  transition:background-color 9999s ease-out 0s !important;
+}
+#contacts .card:not(.card--dark) .form-note {
+  color:var(--mc-field-label) !important;
+  font-family:'Jost',system-ui,-apple-system,'Segoe UI',sans-serif !important;
+}
+
+/* Only the telephone badge is restyled. Brand social icons remain untouched. */
+#contacts .contact-primary-icon {
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex:0 0 40px !important;
+  width:40px !important;
+  height:40px !important;
+  border-radius:14px !important;
+  border:1px solid rgba(241,207,151,.38) !important;
+  background:linear-gradient(145deg,#f1d8a8 0%,#bd8341 100%) !important;
+  color:#21150d !important;
+  box-shadow:0 8px 20px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.68) !important;
+}
+#contacts .contact-primary-icon svg {
+  width:19px !important;
+  height:19px !important;
+  stroke-width:1.7 !important;
+  color:#21150d !important;
+}
+
+/* ==========================================================================
+   15. INFORMATION PAGES — real light/dark surface separation (r70)
+   ========================================================================== */
+html:not([data-theme="dark"]) .info-wrap {
+  --info-bg:#f5f1eb;
+  --info-surface:#fffdfa;
+  --info-surface-soft:#faf5ee;
+  --info-border:rgba(75,48,28,.13);
+  --info-title:#352318;
+  --info-copy:#5f4a3a;
+  --info-muted:#725c4b;
+  background:
+    radial-gradient(900px 520px at 8% 0%,rgba(196,143,79,.08),transparent 62%),
+    var(--info-bg) !important;
+  color:var(--info-title) !important;
+}
+html:not([data-theme="dark"]) .info-header {
+  background:rgba(255,253,249,.94) !important;
+  border-bottom:1px solid rgba(79,52,31,.10) !important;
+  box-shadow:0 8px 28px rgba(57,37,23,.055) !important;
+}
+html:not([data-theme="dark"]) .info-hero,
+html:not([data-theme="dark"]) .info-section {
+  color:var(--info-copy) !important;
+}
+html:not([data-theme="dark"]) .info-hero h1,
+html:not([data-theme="dark"]) .info-section h2,
+html:not([data-theme="dark"]) .info-section h3,
+html:not([data-theme="dark"]) .info-card h3,
+html:not([data-theme="dark"]) .info-note h3 {
+  color:var(--info-title) !important;
+}
+html:not([data-theme="dark"]) .info-hero p,
+html:not([data-theme="dark"]) .info-section p,
+html:not([data-theme="dark"]) .info-card p,
+html:not([data-theme="dark"]) .info-note p,
+html:not([data-theme="dark"]) .info-review,
+html:not([data-theme="dark"]) .info-list li,
+html:not([data-theme="dark"]) .info-related a,
+html:not([data-theme="dark"]) .info-note-aside {
+  color:var(--info-copy) !important;
+  opacity:1 !important;
+}
+html:not([data-theme="dark"]) .info-card,
+html:not([data-theme="dark"]) .info-note,
+html:not([data-theme="dark"]) .info-review,
+html:not([data-theme="dark"]) .info-list li,
+html:not([data-theme="dark"]) .info-related a {
+  background:var(--info-surface) !important;
+  border-color:var(--info-border) !important;
+  box-shadow:0 12px 34px rgba(58,37,22,.055),inset 0 1px rgba(255,255,255,.9) !important;
+}
+html:not([data-theme="dark"]) .info-note {
+  background:var(--info-surface-soft) !important;
+}
+html:not([data-theme="dark"]) .info-card strong,
+html:not([data-theme="dark"]) .info-list strong,
+html:not([data-theme="dark"]) .info-review strong {
+  color:var(--info-title) !important;
+}
+html:not([data-theme="dark"]) .info-kicker,
+html:not([data-theme="dark"]) .info-eyebrow,
+html:not([data-theme="dark"]) .info-meta {
+  color:#8a5b2c !important;
+  opacity:1 !important;
+}
+
+[data-theme="dark"] .info-wrap {
+  --info-bg:#120c08;
+  --info-surface:#1e140d;
+  --info-surface-soft:#21160e;
+  --info-border:rgba(221,178,116,.17);
+  --info-title:#f2dfc4;
+  --info-copy:#d8c4a9;
+  background:radial-gradient(900px 520px at 8% 0%,rgba(196,143,79,.07),transparent 62%),var(--info-bg) !important;
+  color:var(--info-title) !important;
+}
+[data-theme="dark"] .info-header {
+  background:rgba(18,12,8,.94) !important;
+  border-bottom-color:rgba(221,178,116,.13) !important;
+  box-shadow:0 8px 30px rgba(0,0,0,.28) !important;
+}
+[data-theme="dark"] .info-hero,
+[data-theme="dark"] .info-section,
+[data-theme="dark"] .info-hero p,
+[data-theme="dark"] .info-section p,
+[data-theme="dark"] .info-card p,
+[data-theme="dark"] .info-note p,
+[data-theme="dark"] .info-review,
+[data-theme="dark"] .info-list li,
+[data-theme="dark"] .info-related a,
+[data-theme="dark"] .info-note-aside {
+  color:var(--info-copy) !important;
+  opacity:1 !important;
+}
+[data-theme="dark"] .info-hero h1,
+[data-theme="dark"] .info-section h2,
+[data-theme="dark"] .info-section h3,
+[data-theme="dark"] .info-card h3,
+[data-theme="dark"] .info-note h3,
+[data-theme="dark"] .info-card strong,
+[data-theme="dark"] .info-list strong,
+[data-theme="dark"] .info-review strong {
+  color:var(--info-title) !important;
+}
+[data-theme="dark"] .info-card,
+[data-theme="dark"] .info-note,
+[data-theme="dark"] .info-review,
+[data-theme="dark"] .info-list li,
+[data-theme="dark"] .info-related a {
+  background:var(--info-surface) !important;
+  border-color:var(--info-border) !important;
+  box-shadow:0 14px 36px rgba(0,0,0,.22),inset 0 1px rgba(255,242,218,.025) !important;
+}
+[data-theme="dark"] .info-note { background:var(--info-surface-soft) !important; }
+
+@media (max-width:560px) {
+  #contacts .card:not(.card--dark) .form-group.float-label,
+  #contacts .card:not(.card--dark) .form-group.float-label input { min-height:58px !important; }
+  #contacts .card:not(.card--dark) .form-group.float-label textarea { min-height:112px !important;resize:none; }
+  #contacts .card:not(.card--dark) .form-group.float-label label { left:16px !important; }
+  #contacts .card:not(.card--dark) .form-group.float-label input,
+  #contacts .card:not(.card--dark) .form-group.float-label textarea { padding-left:16px !important;padding-right:16px !important; }
+}
+@media (prefers-reduced-motion:reduce) {
+  #contacts .card:not(.card--dark) .form-group.float-label,
+  #contacts .card:not(.card--dark) .form-group.float-label::after,
+  #contacts .card:not(.card--dark) .form-group.float-label label { transition:none !important; }
 }
