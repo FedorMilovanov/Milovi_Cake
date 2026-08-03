@@ -31,9 +31,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/apply_forensic_index_fixes.py
           if [ -f scripts/apply_forensic_index_round2.py ]; then
             python3 scripts/apply_forensic_index_round2.py
+          else
+            python3 scripts/apply_forensic_index_fixes.py
           fi
 
       - name: Commit only when source changed
