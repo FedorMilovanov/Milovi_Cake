@@ -723,3 +723,17 @@ html:not([data-theme="dark"]) .site-footer .footer-bottom a {
 html:not([data-theme="dark"]) .site-footer .footer-bottom a:hover {
   color: #e8b87a !important;
 }
+
+/* Forensic R79: the mobile calculator result is intentionally a fixed panel.
+   The calculator section must own a stacking context above later page sections;
+   otherwise contact fields can visually cover and intercept its controls. */
+@media (max-width: 560px) {
+  #calculator {
+    position: relative;
+    z-index: 103;
+  }
+  #calculator .calc-right-col {
+    z-index: 104 !important; /* important: matches the established mobile layer contract */
+    isolation: isolate;
+  }
+}

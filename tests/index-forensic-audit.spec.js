@@ -538,7 +538,21 @@ test.describe('INDEX forensic audit', () => {
       if (mobile) {
         const panel = page.locator('.calc-right-col');
         if (!(await panel.evaluate((el) => el.classList.contains('calc-result-open')))) {
-          await page.locator('#calcCollapsedBar').click();
+          const bar = page.locator('#calcCollapsedBar');
+          const hit = await bar.evaluate((el) => {
+            const rect = el.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            const top = document.elementFromPoint(x, y);
+            return {
+              bar: rect.toJSON(),
+              topElement: top ? (top.id ? `#${top.id}` : `${top.tagName.toLowerCase()}.${Array.from(top.classList).slice(0,3).join('.')}`) : null,
+              calculatorZ: getComputedStyle(document.getElementById('calculator')).zIndex,
+              panelZ: getComputedStyle(el.closest('.calc-right-col')).zIndex,
+            };
+          });
+          evidence.mobileCalculatorHitTest = hit;
+          await bar.click();
           await page.waitForTimeout(480);
         }
         if (!(await panel.evaluate((el) => el.classList.contains('calc-result-open')))) throw new Error('Мобильная панель результата не раскрылась');
@@ -627,10 +641,14 @@ test.describe('INDEX forensic audit', () => {
     });
 
     await attempt('Back-to-top и mobile fixed geometry', async () => {
-      await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
-      await page.waitForTimeout(220);
+      for (let pass = 0; pass < 5; pass += 1) {
+        await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
+        await page.waitForTimeout(240);
+      }
       if (!(await page.locator('#backToTop').isVisible())) throw new Error('Back-to-top не виден');
       if (mobile) {
+        await page.locator('.site-footer .footer-bottom').scrollIntoViewIfNeeded();
+        await page.waitForTimeout(420);
         const geometry = await page.evaluate(() => {
           const navEl = document.getElementById('mcNav');
           const topEl = document.getElementById('backToTop');
@@ -655,6 +673,8 @@ test.describe('INDEX forensic audit', () => {
         await page.screenshot({ path: filePath('mobile-footer-nav-geometry'), animations: 'allow' });
         if (Math.abs(geometry.viewport.width - geometry.nav.right) > 2 || geometry.nav.left > 2 || Math.abs(geometry.viewport.height - geometry.nav.bottom) > 2) throw new Error(`Nav geometry: ${JSON.stringify(geometry)}`);
         if (geometry.top.bottom > geometry.nav.top - 3) throw new Error(`Back-to-top пересекает nav: ${JSON.stringify(geometry)}`);
+        const footerVisible = geometry.footer.bottom > 0 && geometry.footer.top < geometry.viewport.height;
+        if (!footerVisible) throw new Error(`Footer не доведён в viewport: ${JSON.stringify(geometry)}`);
         if (geometry.footer.bottom > geometry.nav.top + 1) throw new Error(`Footer пересекает nav: ${JSON.stringify(geometry)}`);
       }
       await page.locator('#backToTop').click();
