@@ -18,7 +18,7 @@ Before an explicit visitor choice:
 - conversion goals are not sent;
 - catalog, cart, gallery and ordering links remain fully functional.
 
-The choice is stored as `milovi_analytics_consent_v1`. The persistent “Конфиденциальность” control reopens the decision panel. Revoking already active analytics reloads the document so the next page lifecycle starts without third-party analytics.
+The choice is stored as `milovi_analytics_consent_v1`. On a first visit, the decision dialog opens once and may be closed without granting analytics; in that case analytics remains disabled. A static “Настройки конфиденциальности” control in the footer reopens the same accessible dialog. No privacy control may be fixed over page content or overlap navigation and scroll-to-top controls. Revoking already active analytics reloads the document so the next page lifecycle starts without third-party analytics.
 
 ## Source guard
 
