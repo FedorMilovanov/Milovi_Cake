@@ -1,0 +1,388 @@
+/* Milovi Cake — restrained premium contact/UI polish, 2026-08-03.
+   Intentionally isolated and loaded last to avoid broad regressions. */
+
+/* A clearer porcelain daytime surface, without turning the entire page beige. */
+html:not([data-theme="dark"]) #contacts {
+  background:
+    radial-gradient(ellipse 52% 34% at 50% 4%, rgba(177,126,67,.075), transparent 72%),
+    #f8f7f4 !important;
+  color:#241a14;
+}
+html:not([data-theme="dark"]) #contacts .section-sub { color:#75675c !important; }
+html[data-theme="dark"] #contacts {
+  background:
+    radial-gradient(ellipse 52% 36% at 50% 4%, rgba(202,157,96,.075), transparent 72%),
+    #080604 !important;
+}
+
+/* Editorial two-part composition: one sculpted contact panel + an open form,
+   rather than two matching rounded rectangles. */
+#contacts .contacts-grid {
+  grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr) !important;
+  gap:clamp(42px,6vw,86px) !important;
+  align-items:stretch !important;
+  max-width:1240px;
+  margin-inline:auto;
+}
+#contacts .card {
+  min-width:0;
+}
+#contacts .card.card--dark {
+  padding:clamp(34px,4.2vw,58px) !important;
+  border:0 !important;
+  border-radius:42px 10px 42px 10px !important;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(228,184,123,.10), transparent 32%),
+    linear-gradient(148deg,#24150d 0%,#130c08 64%,#0e0906 100%) !important;
+  box-shadow:0 34px 86px rgba(31,18,10,.24), inset 0 1px 0 rgba(255,255,255,.045) !important;
+  overflow:hidden;
+}
+html[data-theme="dark"] #contacts .card.card--dark {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(228,184,123,.10), transparent 32%),
+    linear-gradient(148deg,#1b110b 0%,#0e0906 68%,#090604 100%) !important;
+  box-shadow:0 34px 90px rgba(0,0,0,.44), inset 0 1px 0 rgba(255,255,255,.035) !important;
+}
+#contacts .card.card--dark::before {
+  width:1px !important;
+  height:72px !important;
+  inset:42px auto auto 0 !important;
+  background:linear-gradient(180deg,transparent,#d4a76a,transparent) !important;
+  opacity:.72;
+}
+#contacts .card.card--dark::after { opacity:.32; }
+
+#contacts .card:not(.card--dark) {
+  padding:clamp(24px,2.5vw,38px) 0 12px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  transform:none !important;
+}
+#contacts .card:not(.card--dark):hover {
+  border:0 !important;
+  box-shadow:none !important;
+  transform:none !important;
+}
+#contacts .card h3 {
+  font-size:clamp(29px,3vw,38px) !important;
+  font-weight:400 !important;
+  letter-spacing:-.018em;
+}
+#contacts .card:not(.card--dark) h3 {
+  color:#2b2019 !important;
+  margin:0 0 36px !important;
+}
+html[data-theme="dark"] #contacts .card:not(.card--dark) h3 { color:#f1dfc2 !important; }
+
+/* One refined rule per field. Labels never cut through a box border and
+   focus/fill do not move component geometry. */
+#contacts .card:not(.card--dark) form { margin-top:0 !important; }
+#contacts .card:not(.card--dark) .form-group.float-label {
+  --line:rgba(62,43,30,.25);
+  --line-active:#a86f35;
+  position:relative !important;
+  min-height:72px !important;
+  margin:0 0 16px !important;
+  padding:22px 0 0 !important;
+  border:0 !important;
+  border-bottom:1px solid var(--line) !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  overflow:visible !important;
+  isolation:auto !important;
+  transform:none !important;
+  transition:border-color .22s ease !important;
+}
+html[data-theme="dark"] #contacts .card:not(.card--dark) .form-group.float-label {
+  --line:rgba(226,198,159,.23);
+  --line-active:#d7a869;
+}
+#contacts .card:not(.card--dark) .form-group.float-label::before {
+  content:"";
+  position:absolute;
+  left:0;
+  right:100%;
+  bottom:-1px;
+  height:1px;
+  background:var(--line-active);
+  transition:right .32s cubic-bezier(.22,1,.36,1);
+  pointer-events:none;
+}
+#contacts .card:not(.card--dark) .form-group.float-label:hover { border-color:rgba(168,111,53,.44) !important; }
+#contacts .card:not(.card--dark) .form-group.float-label:focus-within {
+  border-color:rgba(168,111,53,.22) !important;
+  box-shadow:none !important;
+  transform:none !important;
+}
+#contacts .card:not(.card--dark) .form-group.float-label:focus-within::before { right:0; }
+#contacts .card:not(.card--dark) .form-group.float-label input,
+#contacts .card:not(.card--dark) .form-group.float-label textarea {
+  position:relative !important;
+  z-index:1 !important;
+  width:100% !important;
+  min-height:46px !important;
+  margin:0 !important;
+  padding:10px 2px 10px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  outline:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  color:#2f241d !important;
+  font:400 16px/1.45 'Jost',system-ui,-apple-system,'Segoe UI',sans-serif !important;
+  caret-color:var(--line-active) !important;
+}
+html[data-theme="dark"] #contacts .card:not(.card--dark) .form-group.float-label input,
+html[data-theme="dark"] #contacts .card:not(.card--dark) .form-group.float-label textarea { color:#f4e8d5 !important; }
+#contacts .card:not(.card--dark) .form-group.float-label textarea {
+  min-height:110px !important;
+  padding-top:12px !important;
+  resize:vertical;
+}
+#contacts .card:not(.card--dark) .form-group.float-label label,
+#contacts .card:not(.card--dark) .form-group.float-label textarea + label,
+#contacts .card:not(.card--dark) .form-group.float-label input:focus + label,
+#contacts .card:not(.card--dark) .form-group.float-label input:not(:placeholder-shown) + label,
+#contacts .card:not(.card--dark) .form-group.float-label input:-webkit-autofill + label,
+#contacts .card:not(.card--dark) .form-group.float-label textarea:focus + label,
+#contacts .card:not(.card--dark) .form-group.float-label textarea:not(:placeholder-shown) + label {
+  position:absolute !important;
+  z-index:2 !important;
+  top:3px !important;
+  left:1px !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  color:#806e60 !important;
+  font:500 10.5px/1.2 'Jost',system-ui,-apple-system,'Segoe UI',sans-serif !important;
+  letter-spacing:.10em !important;
+  text-transform:uppercase;
+  transform:none !important;
+  transform-origin:left top !important;
+  white-space:nowrap !important;
+  pointer-events:none !important;
+  transition:color .2s ease !important;
+}
+html[data-theme="dark"] #contacts .card:not(.card--dark) .form-group.float-label label { color:rgba(231,208,177,.57) !important; }
+#contacts .card:not(.card--dark) .form-group.float-label:focus-within label { color:var(--line-active) !important; }
+#contacts .card:not(.card--dark) .form-group.float-label label::before,
+#contacts .card:not(.card--dark) .form-group.float-label::after { content:none !important; display:none !important; }
+
+#contacts .card:not(.card--dark) .form-note {
+  margin:24px 0 0 !important;
+  color:#74665b !important;
+  font-size:11px !important;
+  line-height:1.65 !important;
+}
+html[data-theme="dark"] #contacts .card:not(.card--dark) .form-note { color:rgba(235,215,187,.58) !important; }
+#contacts .card:not(.card--dark) .btn-wa {
+  min-height:54px !important;
+  margin-top:24px !important;
+  border-radius:999px !important;
+  background:linear-gradient(105deg,#86562d,#c28d4c,#e0b36f) !important;
+  color:#fffaf2 !important;
+  box-shadow:0 16px 34px rgba(125,78,37,.20) !important;
+}
+#contacts .card:not(.card--dark) .btn-wa:hover { transform:translateY(-2px) !important; box-shadow:0 20px 42px rgba(125,78,37,.27) !important; }
+
+/* Quiet, single-line contact treatment. */
+#contacts .contact-primary { margin:27px 0 22px !important; }
+#contacts .contact-primary-item {
+  padding:14px 0 15px !important;
+  border:0 !important;
+  border-bottom:1px solid rgba(224,194,154,.22) !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+#contacts .contact-primary-item:hover { border-color:rgba(224,194,154,.54) !important; box-shadow:none !important; transform:none !important; }
+#contacts .contact-primary-icon,
+html #contacts .card.card--dark .contact-primary-icon {
+  width:38px !important;
+  height:38px !important;
+  flex:0 0 38px !important;
+  border:1px solid rgba(231,201,160,.35) !important;
+  border-radius:50% !important;
+  background:transparent !important;
+  color:#e8c58f !important;
+  box-shadow:none !important;
+}
+#contacts .contact-primary-icon::before,
+#contacts .contact-primary-icon::after { content:none !important; display:none !important; }
+#contacts .contact-primary-icon svg { width:17px !important; height:17px !important; stroke-width:1.55 !important; }
+#contacts .contact-primary-label { color:rgba(239,215,183,.56) !important; font-size:10px !important; letter-spacing:.12em !important; }
+#contacts .contact-primary-value { color:#f6e8d2 !important; font-size:16px !important; font-weight:400 !important; letter-spacing:.025em; }
+
+#contacts .messenger-bar {
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:9px !important;
+  overflow:visible !important;
+  border-radius:0 !important;
+  margin:4px 0 0 !important;
+}
+#contacts .messenger-bar-btn {
+  min-height:44px;
+  padding:11px 10px !important;
+  border:1px solid rgba(255,255,255,.11) !important;
+  border-radius:999px !important;
+  background:rgba(255,255,255,.055) !important;
+  box-shadow:none !important;
+  color:#f7ead8 !important;
+  font-size:12px !important;
+  letter-spacing:.035em !important;
+}
+#contacts .messenger-bar-btn svg { width:17px !important; height:17px !important; }
+#contacts .messenger-bar-btn:hover { filter:none !important; background:rgba(255,255,255,.10) !important; border-color:rgba(232,193,137,.34) !important; transform:translateY(-1px); }
+#contacts .messenger-bar-wa svg { color:#55d987; }
+#contacts .messenger-bar-tg svg { color:#55b8e8; }
+#contacts .messenger-bar-max svg { color:#a48af8; }
+#contacts .consent-note { color:rgba(237,216,188,.46) !important; line-height:1.55 !important; }
+#contacts .social-divider { margin:26px 0 16px !important; }
+#contacts .social-divider::before,
+#contacts .social-divider::after { background:rgba(225,194,151,.17) !important; }
+#contacts .social-divider span { color:rgba(240,218,188,.55) !important; letter-spacing:.15em !important; }
+#contacts .social-links {
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:9px !important;
+}
+#contacts .social-link {
+  min-width:0 !important;
+  padding:9px 8px !important;
+  border-radius:999px !important;
+  background:rgba(255,255,255,.035) !important;
+  border-color:rgba(255,255,255,.10) !important;
+  font-size:11.5px !important;
+}
+#contacts .social-link:hover { background:rgba(255,255,255,.075) !important; opacity:1 !important; }
+
+/* Restore a compact two-row rhythm for the four advantages on phones. */
+#why .feature h3 { font-size:18px; color:var(--brown); margin-bottom:8px; }
+html[data-theme="dark"] #why .feature h3 { color:#f0e4d0; }
+
+/* Floating, visually lighter mobile app bar — theme-aware and clear of edges. */
+@media (max-width:768px) {
+  #mcNav.mc-nav,
+  html body #mcNav.mc-nav {
+    left:12px !important;
+    right:12px !important;
+    bottom:max(10px,env(safe-area-inset-bottom,0px)) !important;
+    width:auto !important;
+    height:66px !important;
+    max-width:none !important;
+    padding:0 5px !important;
+    border:1px solid rgba(112,78,48,.13) !important;
+    border-radius:22px !important;
+    background:rgba(250,249,246,.94) !important;
+    -webkit-backdrop-filter:blur(22px) saturate(145%) !important;
+    backdrop-filter:blur(22px) saturate(145%) !important;
+    box-shadow:0 16px 44px rgba(45,28,17,.18),inset 0 1px 0 rgba(255,255,255,.82) !important;
+    overflow:visible !important;
+  }
+  html[data-theme="dark"] #mcNav.mc-nav {
+    border-color:rgba(226,188,137,.16) !important;
+    background:rgba(23,15,10,.94) !important;
+    box-shadow:0 18px 46px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.035) !important;
+  }
+  #mcNav .mc-btn { min-height:64px !important; color:#78685c !important; }
+  html[data-theme="dark"] #mcNav .mc-btn { color:rgba(239,218,190,.60) !important; }
+  #mcNav .mc-btn.mc-active { color:#9d672f !important; }
+  html[data-theme="dark"] #mcNav .mc-btn.mc-active { color:#e0ae6d !important; }
+  #mcNav .mc-btn.mc-active::before { top:5px !important; width:18px !important; height:1px !important; border-radius:99px !important; }
+  #mcNav .mc-sep { margin:17px 0 !important; background:rgba(145,102,59,.13) !important; }
+  #mcNav .mc-btn--order .mc-btn-circle {
+    width:45px !important;
+    height:45px !important;
+    margin-top:-13px !important;
+    box-shadow:0 7px 20px rgba(150,96,43,.30),0 0 0 5px rgba(250,249,246,.94) !important;
+  }
+  html[data-theme="dark"] #mcNav .mc-btn--order .mc-btn-circle { box-shadow:0 8px 22px rgba(0,0,0,.36),0 0 0 5px rgba(23,15,10,.94) !important; }
+  body.has-mc-nav { padding-bottom:calc(88px + env(safe-area-inset-bottom,0px)) !important; }
+  body.has-mc-nav .site-footer,
+  body.has-mc-nav footer.site-footer { padding-bottom:34px !important; }
+  .back-to-top {
+    right:18px !important;
+    bottom:calc(92px + env(safe-area-inset-bottom,0px)) !important;
+    width:42px !important;
+    height:42px !important;
+  }
+  .back-to-top.footer-clearance { opacity:0 !important; pointer-events:none !important; transform:translateY(10px) scale(.9) !important; }
+
+  #contacts .contacts-grid { grid-template-columns:1fr !important; gap:36px !important; }
+  #contacts .card.card--dark { padding:32px 24px !important; border-radius:32px 8px 32px 8px !important; }
+  #contacts .card:not(.card--dark) { padding:4px 2px 8px !important; }
+  #contacts .card:not(.card--dark) h3 { margin-bottom:28px !important; }
+  #contacts .messenger-bar { grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:7px !important; }
+  #contacts .messenger-bar-btn { min-height:43px !important; padding:10px 5px !important; font-size:10.5px !important; gap:5px !important; }
+  #contacts .social-links { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
+  #contacts .social-link { font-size:11px !important; }
+
+  #why .features-grid {
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:12px !important;
+    margin-top:38px !important;
+  }
+  #why .feature { padding:22px 14px !important; border-radius:16px !important; }
+  #why .feature-icon { width:50px !important; height:50px !important; font-size:21px !important; margin-bottom:12px !important; }
+  #why .feature h3 { font-size:16px !important; line-height:1.18 !important; }
+  #why .feature p { font-size:12px !important; line-height:1.48 !important; }
+}
+
+@media (max-width:390px) {
+  #contacts .messenger-bar-btn { font-size:0 !important; }
+  #contacts .messenger-bar-btn svg { width:19px !important; height:19px !important; }
+  #contacts .messenger-bar-btn::after { font-size:10px; }
+  #contacts .messenger-bar-wa::after { content:"WhatsApp"; }
+  #contacts .messenger-bar-tg::after { content:"Telegram"; }
+  #contacts .messenger-bar-max::after { content:"MAX"; }
+}
+
+/* Settings dialog appears only on deliberate request; keep it compact and clear. */
+.mc-consent-dialog { border-radius:24px !important; }
+.mc-consent-trigger { white-space:nowrap; }
+
+@media (prefers-reduced-motion:reduce) {
+  #contacts .card:not(.card--dark) .form-group.float-label::before { transition:none !important; }
+}
+
+/* Override the older theme-specific !important card material with higher
+   specificity: the form side must remain an open editorial surface. */
+html body #contacts .contacts-grid > .card:not(.card--dark),
+html:not([data-theme="dark"]) body #contacts .contacts-grid > .card:not(.card--dark),
+html[data-theme="dark"] body #contacts .contacts-grid > .card:not(.card--dark) {
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  border-radius:0 !important;
+}
+
+/* The footer deliberately stays dark in both themes, so it must not inherit
+   the daytime page ink. Keep every legal/project label readable. */
+html body .site-footer .footer-projects-label { color:#c99551 !important; }
+html body .site-footer .footer-projects-link {
+  color:#ead4b1 !important;
+  border-color:rgba(212,167,106,.24) !important;
+  background:rgba(255,255,255,.025) !important;
+}
+html body .site-footer .footer-projects-link:hover,
+html body .site-footer .footer-projects-link:focus-visible {
+  color:#f2dfbf !important;
+  border-color:rgba(212,167,106,.46) !important;
+  background:rgba(212,167,106,.07) !important;
+}
+html body .site-footer .footer-projects-name { color:#f0d9b2 !important; }
+html body .site-footer .footer-projects-desc { color:rgba(246,229,204,.68) !important; }
+html body .site-footer .footer-projects-arrow { color:#d4a76a !important; }
+html body .site-footer .footer-bottom,
+html body .site-footer .footer-bottom > span,
+html body .site-footer .footer-bottom > div { color:rgba(241,222,194,.78) !important; opacity:1 !important; }
+html body .site-footer .footer-bottom a { color:rgba(238,218,187,.76) !important; opacity:1 !important; }
+html body .site-footer .footer-bottom a:hover,
+html body .site-footer .footer-bottom a:focus-visible { color:rgba(255,237,207,.96) !important; }
+html body .site-footer .footer-bottom .mc-consent-trigger { color:rgba(226,192,145,.84) !important; }
