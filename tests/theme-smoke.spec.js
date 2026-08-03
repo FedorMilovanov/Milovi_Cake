@@ -174,7 +174,6 @@ test.describe('contact, privacy and mobile application contracts', () => {
     const mobile = testInfo.project.name.includes('mobile');
     await applyTheme(page, 'light', null);
     await page.goto('/', { waitUntil: 'domcontentloaded' });
-    await waitForMobileAppShell(page);
 
     const overlay = page.locator('.mc-consent-overlay');
     await expect(overlay).toHaveClass(/is-open/, { timeout: 5000 });
@@ -185,6 +184,7 @@ test.describe('contact, privacy and mobile application contracts', () => {
     await page.locator('.mc-consent-close').click();
     await expect(overlay).toBeHidden();
     expect(await page.evaluate(() => localStorage.getItem('milovi_analytics_consent_v1'))).toBeNull();
+    if (mobile) await waitForMobileAppShell(page);
 
     if (mobile) {
       await expect(page.locator('.site-footer .mc-consent-trigger')).toHaveCount(0);
