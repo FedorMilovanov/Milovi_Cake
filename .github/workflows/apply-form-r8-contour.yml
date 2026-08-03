@@ -1,0 +1,125 @@
+name: Apply visible order form contour R8
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-form-r8-contour.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-form-r8-contour-main
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          persist-credentials: true
+
+      - name: Apply visible outer contour only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          css_path = Path('css/milovi-premium-r3.css')
+          html_path = Path('index.html')
+          css = css_path.read_text(encoding='utf-8')
+          html = html_path.read_text(encoding='utf-8')
+
+          marker = '/* R8 — make the whole order-form card contour unmistakably visible. */'
+          patch = r'''
+
+          /* R8 — make the whole order-form card contour unmistakably visible.
+             Field styling is intentionally untouched; only the outer card geometry changes. */
+          html:not([data-theme="dark"]) body #contacts .contacts-grid > .card:not(.card--dark) {
+            --r8-card-bg:linear-gradient(145deg,#fffdf9 0%,#f8f0e5 100%);
+            --r8-card-border:rgba(126,82,42,.62);
+            --r8-card-ring:rgba(255,255,255,.82);
+            --r8-card-shadow:0 22px 54px rgba(74,43,20,.16);
+          }
+          html[data-theme="dark"] body #contacts .contacts-grid > .card:not(.card--dark) {
+            --r8-card-bg:linear-gradient(150deg,#21150e 0%,#100b07 100%);
+            --r8-card-border:rgba(226,182,122,.52);
+            --r8-card-ring:rgba(255,255,255,.045);
+            --r8-card-shadow:0 26px 66px rgba(0,0,0,.42);
+          }
+
+          html body #contacts .contacts-grid > .card:not(.card--dark),
+          html:not([data-theme="dark"]) body #contacts .contacts-grid > .card:not(.card--dark),
+          html[data-theme="dark"] body #contacts .contacts-grid > .card:not(.card--dark) {
+            box-sizing:border-box !important;
+            border:1.5px solid var(--r8-card-border) !important;
+            background:var(--r8-card-bg) !important;
+            box-shadow:0 0 0 1px var(--r8-card-ring),var(--r8-card-shadow) !important;
+            overflow:hidden !important;
+          }
+
+          @media (max-width:768px) {
+            html body #contacts .contacts-grid > .card:not(.card--dark),
+            html:not([data-theme="dark"]) body #contacts .contacts-grid > .card:not(.card--dark),
+            html[data-theme="dark"] body #contacts .contacts-grid > .card:not(.card--dark) {
+              width:calc(100% - 28px) !important;
+              max-width:calc(100% - 28px) !important;
+              margin-left:14px !important;
+              margin-right:14px !important;
+              justify-self:center !important;
+              padding:30px 24px 32px !important;
+              border-radius:28px 10px 28px 10px !important;
+            }
+          }
+          '''
+
+          if marker not in css:
+              css = css.rstrip() + patch + '\n'
+
+          html = html.replace('milovi-premium-r3.css?v=20260803r7', 'milovi-premium-r3.css?v=20260803r8')
+          css_path.write_text(css, encoding='utf-8')
+          html_path.write_text(html, encoding='utf-8')
+          PY
+
+      - name: Verify contour and preserve line fields
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          css = Path('css/milovi-premium-r3.css').read_text(encoding='utf-8')
+          html = Path('index.html').read_text(encoding='utf-8')
+
+          required = [
+              'R8 — make the whole order-form card contour unmistakably visible',
+              'border:1.5px solid var(--r8-card-border)',
+              'width:calc(100% - 28px)',
+              'margin-left:14px',
+              'margin-right:14px',
+              'milovi-premium-r3.css?v=20260803r8',
+              'border-bottom:1px solid var(--r7-current-line)',
+          ]
+          missing = [item for item in required if item not in css and item not in html]
+          if missing:
+              raise SystemExit(f'missing R8 markers: {missing}')
+          if css.count('{') != css.count('}'):
+              raise SystemExit('CSS brace imbalance')
+          print('R8 visible contour verification passed')
+          PY
+
+      - name: Commit clean product state
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm -f .github/workflows/apply-form-r8-contour.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '4189826+github-actions[bot]@users.noreply.github.com'
+          git add css/milovi-premium-r3.css index.html
+          git commit -m 'fix: show complete order form contour on mobile'
+          git push origin HEAD:main
