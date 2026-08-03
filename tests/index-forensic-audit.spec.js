@@ -547,8 +547,8 @@ test.describe('INDEX forensic audit', () => {
             return {
               bar: rect.toJSON(),
               topElement: top ? (top.id ? `#${top.id}` : `${top.tagName.toLowerCase()}.${Array.from(top.classList).slice(0,3).join('.')}`) : null,
-              calculatorZ: getComputedStyle(document.getElementById('calculator')).zIndex,
-              panelZ: getComputedStyle(el.closest('.calc-right-col')).zIndex,
+              calculatorZ: document.getElementById('fillings') ? getComputedStyle(document.getElementById('fillings')).zIndex : null,
+              panelZ: el.closest('.calc-right-col') ? getComputedStyle(el.closest('.calc-right-col')).zIndex : null,
             };
           });
           evidence.mobileCalculatorHitTest = hit;

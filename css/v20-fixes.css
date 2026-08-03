@@ -725,14 +725,14 @@ html:not([data-theme="dark"]) .site-footer .footer-bottom a:hover {
 }
 
 /* Forensic R79: the mobile calculator result is intentionally a fixed panel.
-   The calculator section must own a stacking context above later page sections;
-   otherwise contact fields can visually cover and intercept its controls. */
+   The real calculator section is #fillings; it must own a stacking context above
+   later page sections so contact fields cannot cover or intercept its controls. */
 @media (max-width: 560px) {
-  #calculator {
+  #fillings {
     position: relative;
     z-index: 103;
   }
-  #calculator .calc-right-col {
+  #fillings .calc-right-col {
     z-index: 104 !important; /* important: matches the established mobile layer contract */
     isolation: isolate;
   }
