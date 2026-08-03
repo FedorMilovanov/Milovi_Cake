@@ -745,6 +745,18 @@ test.describe('INDEX forensic audit', () => {
           throw new Error(`Back-to-top не восстановился после ухода от footer: ${JSON.stringify(restored)}`);
         }
       }
+      if (mobile) {
+        await page.evaluate(() => scrollBy(0, -Math.max(innerHeight * .85, 520)));
+        await page.waitForTimeout(360);
+        const restored = await page.locator('#backToTop').evaluate((el) => ({
+          opacity: Number(getComputedStyle(el).opacity),
+          pointerEvents: getComputedStyle(el).pointerEvents,
+          classes: el.className,
+        }));
+        if (restored.opacity < .8 || restored.pointerEvents === 'none' || String(restored.classes).includes('footer-clearance')) {
+          throw new Error(`Back-to-top не восстановился после ухода от footer: ${JSON.stringify(restored)}`);
+        }
+      }
       await page.locator('#backToTop').click();
       const deadline = Date.now() + 4500;
       let y = await page.evaluate(() => scrollY);
