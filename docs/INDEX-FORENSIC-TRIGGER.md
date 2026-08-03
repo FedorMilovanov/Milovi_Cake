@@ -2,6 +2,6 @@
 
 Temporary exact-head trigger for the full desktop/mobile, light/dark, interaction and external validation pass on 2026-08-03.
 
-Third pass verifies immediate mobile review readability, accelerated desktop review assembly, non-invasive mobile geometry, corrected section selectors, privacy Escape, navigation settling and back-to-top timing.
+Fourth pass verifies document-level privacy Escape, readable light-theme footer, settled mobile navigation, correctly expanded mobile calculator result before cart insertion, and exact footer/navigation geometry.
 
 No production UI or runtime behavior is changed by this file.
