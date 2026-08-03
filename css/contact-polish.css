@@ -66,34 +66,39 @@ html:not([data-theme="dark"]) #contacts .card:not(.card--dark) .form-note { colo
   flex: 0 0 40px !important;
   width: 40px !important;
   height: 40px !important;
-  border-radius: 13px !important;
-  border: 1px solid rgba(240, 205, 145, .40) !important;
-  background:
-    radial-gradient(circle at 32% 24%, rgba(255,255,255,.88), rgba(255,255,255,0) 38%),
-    linear-gradient(145deg, #efd5a2 0%, #bd8341 100%) !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(222, 174, 108, .34) !important;
+  background: rgba(222, 174, 108, .055) !important;
   box-shadow:
-    0 8px 20px rgba(0,0,0,.20),
-    inset 0 1px rgba(255,255,255,.72),
-    inset 0 -1px rgba(92,51,20,.18) !important;
-  color: #2b1a0f !important;
+    inset 0 1px rgba(255,255,255,.055),
+    0 6px 16px rgba(0,0,0,.10) !important;
+  color: #d9ad70 !important;
   overflow: hidden !important;
 }
-#contacts .contact-primary-icon svg { display: none !important; }
 #contacts .contact-primary-icon::before {
-  content: "";
-  width: 19px;
-  height: 19px;
-  background: currentColor;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M6.62 10.79a15.46 15.46 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z'/%3E%3C/svg%3E") center / contain no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M6.62 10.79a15.46 15.46 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z'/%3E%3C/svg%3E") center / contain no-repeat;
+  content: none !important;
+  display: none !important;
+}
+#contacts .contact-primary-icon svg {
+  display: block !important;
+  width: 18px !important;
+  height: 18px !important;
+  color: inherit !important;
+  stroke: currentColor !important;
+  stroke-width: 1.55 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+  fill: none !important;
+  filter: none !important;
 }
 @media (hover:hover) and (pointer:fine) {
   #contacts .contact-primary-item:hover .contact-primary-icon {
     transform: translateY(-1px) !important;
+    border-color: rgba(231, 187, 126, .52) !important;
+    background: rgba(222, 174, 108, .085) !important;
     box-shadow:
-      0 11px 25px rgba(0,0,0,.24),
-      inset 0 1px rgba(255,255,255,.76),
-      inset 0 -1px rgba(92,51,20,.16) !important;
+      inset 0 1px rgba(255,255,255,.07),
+      0 8px 20px rgba(0,0,0,.13) !important;
   }
 }
 
