@@ -1833,12 +1833,15 @@ if (scField && trackEl && dotsEl && stageEl) {
       const angle = Math.random() * Math.PI * 2, dist = 60 + Math.random() * 120;
       const fromX = Math.cos(angle) * dist, fromY = Math.sin(angle) * dist, fromR = (Math.random() - 0.5) * 60, fromS = 0.3 + Math.random() * 0.4;
       const startAt = i * CHAR_DELAY;
-      el.style.opacity = '0'; el.style.transform = `translate(${fromX}px, ${fromY}px) rotate(${fromR}deg) scale(${fromS})`;
+      /* Forensic R82: the decorative assembly must never make review copy
+         unreadable. Motion and blur remain; opacity no longer drops to zero. */
+      el.style.opacity = '1'; el.style.transform = `translate(${fromX}px, ${fromY}px) rotate(${fromR}deg) scale(${fromS})`;
       el.style.filter = `blur(${2 + Math.random()*3}px)`;
       letterData.push({ el, fromX, fromY, fromR, fromS, startAt });
     });
     const EMOJI_START_AFTER = (totalLetters - 1) * CHAR_DELAY + ASSEMBLE_DUR * 0.6, EMOJI_GAP = 180;
     const emojiEls = Array.from(txtEl.querySelectorAll('.pl-emoji'));
+    emojiEls.forEach((el) => { el.style.opacity = '1'; });
     const animStart = performance.now();
     function animTick(now){
       if(typeGen !== myGen) return;
@@ -1847,7 +1850,7 @@ if (scField && trackEl && dotsEl && stageEl) {
         const t = elapsed - startAt;
         if(t < 0) return;
         const raw = Math.min(t / ASSEMBLE_DUR, 1), ease = raw < 1 ? 1 - Math.pow(1 - raw, 3) : 1;
-        el.style.opacity = String(Math.min(raw * 3, 1).toFixed(3));
+        el.style.opacity = '1';
         el.style.filter = `blur(${((1-raw)*3).toFixed(2)}px)`;
         el.style.transform = raw >= 1 ? 'none' : `translate(${(fromX*(1-ease)).toFixed(2)}px, ${(fromY*(1-ease)).toFixed(2)}px) rotate(${(fromR*(1-ease)).toFixed(2)}deg) scale(${(fromS+(1-fromS)*ease).toFixed(3)})`;
         if(raw >= 1){ el.style.filter='none'; el.style.opacity='1'; }
@@ -1856,7 +1859,7 @@ if (scField && trackEl && dotsEl && stageEl) {
         const t = elapsed - (EMOJI_START_AFTER + ei * EMOJI_GAP);
         if(t < 0) return;
         const DUR = 500, p = Math.min(t / DUR, 1), scale = p < 0.6 ? (p/0.6)*1.35 : 1.35-(p-0.6)/0.4*0.35, rot = Math.sin(p * Math.PI) * 18 * (1 - p);
-        em.style.opacity = String(Math.min(p * 5, 1).toFixed(3));
+        em.style.opacity = '1';
         em.style.transform = p >= 1 ? 'scale(1) rotate(0deg)' : `scale(${scale.toFixed(3)}) rotate(${rot.toFixed(1)}deg)`;
       });
       const lastEmojiEnd = EMOJI_START_AFTER + (emojiEls.length - 1) * EMOJI_GAP + 500;
