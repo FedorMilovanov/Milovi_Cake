@@ -1,0 +1,82 @@
+name: INDEX forensic run witness
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/index-forensic-run-witness.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  issues: write
+  contents: read
+
+jobs:
+  witness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      AUDIT_TITLE: 'AUTO INDEX forensic audit'
+    steps:
+      - name: Find latest exact forensic run
+        id: find
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_json=''
+          for attempt in $(seq 1 18); do
+            run_json="$(gh api "/repos/$GITHUB_REPOSITORY/actions/runs?event=push&branch=main&per_page=100" --jq '[.workflow_runs[] | select(.name == "INDEX forensic audit")][0] // empty' 2>/dev/null || true)"
+            if [ -n "$run_json" ]; then
+              break
+            fi
+            sleep 10
+          done
+          if [ -z "$run_json" ]; then
+            echo 'No INDEX forensic audit run was returned by the Actions API.' >&2
+            exit 1
+          fi
+          printf '%s' "$run_json" > latest-forensic-run.json
+          run_id="$(jq -r '.id' latest-forensic-run.json)"
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+          gh api "/repos/$GITHUB_REPOSITORY/actions/runs/$run_id/artifacts?per_page=100" > latest-forensic-artifacts.json || printf '{"artifacts":[]}' > latest-forensic-artifacts.json
+
+      - name: Publish exact run witness
+        shell: bash
+        env:
+          RUN_ID: ${{ steps.find.outputs.run_id }}
+        run: |
+          set -euo pipefail
+          status="$(jq -r '.status' latest-forensic-run.json)"
+          conclusion="$(jq -r '.conclusion // "pending"' latest-forensic-run.json)"
+          head_sha="$(jq -r '.head_sha' latest-forensic-run.json)"
+          created="$(jq -r '.created_at' latest-forensic-run.json)"
+          updated="$(jq -r '.updated_at' latest-forensic-run.json)"
+          artifacts="$(jq -r '.artifacts[]? | "- `\(.name)` — ID `\(.id)`, expired=\(.expired), size=\(.size_in_bytes) bytes"' latest-forensic-artifacts.json)"
+          if [ -z "$artifacts" ]; then artifacts='- Артефакты ещё не опубликованы или run завершился до upload-step.'; fi
+          cat > witness.md <<EOF
+          # Недоверчивый forensic-аудит всей INDEX
+
+          ## Точный Actions-run
+
+          - **Run ID:** \`$RUN_ID\`
+          - **Run:** https://github.com/$GITHUB_REPOSITORY/actions/runs/$RUN_ID
+          - **Head SHA:** \`$head_sha\`
+          - **Status:** \`$status\`
+          - **Conclusion:** \`$conclusion\`
+          - **Created:** $created
+          - **Updated:** $updated
+
+          ## Артефакты
+
+          $artifacts
+
+          Этот issue автоматически будет дополнен итоговым протоколом самим forensic workflow после обработки desktop/mobile, day/night, всех скриншотов, интерактивов и внешних проверок.
+          EOF
+          issue_number="$(gh issue list --state open --search "$AUDIT_TITLE in:title" --json number,title --jq '.[] | select(.title == env.AUDIT_TITLE) | .number' | head -n 1)"
+          if [ -n "$issue_number" ]; then
+            gh issue edit "$issue_number" --title "$AUDIT_TITLE" --body-file witness.md
+          else
+            gh issue create --title "$AUDIT_TITLE" --body-file witness.md
+          fi
