@@ -1,12 +1,13 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   MILOVI CAKE — Service Worker v1.6 (V20260728-R27)
+   MILOVI CAKE — Service Worker v1.7 (V20260803-R72)
    Strategy:
      - HTML (navigate): network-first, fallback to cache, fallback to "/"
      - Static (CSS/JS/img): stale-while-revalidate; video/range: browser-native
+     - contact form CSS + consent loader: forced revalidation after UI releases
      - skipWaiting + clients.claim → обновления подхватываются мгновенно
    ═══════════════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'milovi-cake-v2026.07.28-r27';
+const CACHE_NAME = 'milovi-cake-v2026.08.03-r72';
 
 const PRECACHE = [
   '/',
@@ -23,6 +24,7 @@ const PRECACHE = [
   '/js/v20-faq-fix.js?v=20260728r27',
   '/js/gallery/main.js?v=20260728r27',
   '/js/gallery/data.js?v=20260728r27',
+  '/js/consent-analytics.js',
   '/img/head_mobile.avif',
   '/img/head_desktop.avif',
   '/img/head_mobile.webp',
@@ -60,6 +62,20 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== location.origin) return;
 
   if (url.pathname.startsWith('/api/') || url.pathname.includes('/mc.yandex.ru')) return;
+
+  // UI release files must not be served from an obsolete browser/SW cache.
+  if (url.pathname === '/css/contact-polish.css' || url.pathname === '/js/consent-analytics.js') {
+    event.respondWith(
+      fetch(req, { cache: 'reload' }).then((res) => {
+        if (res && res.status === 200 && res.type === 'basic') {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+        }
+        return res;
+      }).catch(() => caches.match(req))
+    );
+    return;
+  }
 
   // Large media and Range requests are intentionally not stored in Cache Storage.
   // This prevents gallery .webm files from bloating the SW cache and keeps native
