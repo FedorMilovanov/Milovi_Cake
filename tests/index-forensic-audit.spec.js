@@ -717,7 +717,6 @@ test.describe('INDEX forensic audit', () => {
         evidence.mobileFixedGeometry = geometry;
         await page.screenshot({ path: filePath('mobile-footer-nav-geometry'), animations: 'allow' });
         await page.screenshot({ path: filePath('mobile-footer-clean-viewport'), animations: 'disabled' });
-        await page.screenshot({ path: filePath('mobile-footer-clean-viewport'), animations: 'disabled' });
         if (Math.abs(geometry.viewport.width - geometry.nav.right) > 2 || geometry.nav.left > 2 || Math.abs(geometry.viewport.height - geometry.nav.bottom) > 2) throw new Error(`Nav geometry: ${JSON.stringify(geometry)}`);
         if (geometry.top.bottom > geometry.nav.top - 3) throw new Error(`Back-to-top пересекает nav: ${JSON.stringify(geometry)}`);
         const footerVisible = geometry.footer.bottom > 0 && geometry.footer.top < geometry.viewport.height;
@@ -733,16 +732,18 @@ test.describe('INDEX forensic audit', () => {
         if (arrowFooterOverlap && arrowInteractive) throw new Error(`Back-to-top пересекает footer capsule: ${JSON.stringify(geometry)}`);
         if (!String(geometry.topClasses).includes('footer-clearance')) throw new Error(`Footer clearance state не включился: ${JSON.stringify(geometry)}`);
         if (geometry.topOpacity > .05 || geometry.topPointerEvents !== 'none') throw new Error(`Стрелка не скрылась у footer: ${JSON.stringify(geometry)}`);
-        const arrowFooterOverlap = !(
-          geometry.top.right <= geometry.footer.left ||
-          geometry.top.left >= geometry.footer.right ||
-          geometry.top.bottom <= geometry.footer.top ||
-          geometry.top.top >= geometry.footer.bottom
-        );
-        const arrowInteractive = geometry.topOpacity > .05 && geometry.topPointerEvents !== 'none';
-        if (arrowFooterOverlap && arrowInteractive) throw new Error(`Back-to-top пересекает footer capsule: ${JSON.stringify(geometry)}`);
-        if (!String(geometry.topClasses).includes('footer-clearance')) throw new Error(`Footer clearance state не включился: ${JSON.stringify(geometry)}`);
-        if (geometry.topOpacity > .05 || geometry.topPointerEvents !== 'none') throw new Error(`Стрелка не скрылась у footer: ${JSON.stringify(geometry)}`);
+      }
+      if (mobile) {
+        await page.evaluate(() => scrollBy(0, -Math.max(innerHeight * .85, 520)));
+        await page.waitForTimeout(360);
+        const restored = await page.locator('#backToTop').evaluate((el) => ({
+          opacity: Number(getComputedStyle(el).opacity),
+          pointerEvents: getComputedStyle(el).pointerEvents,
+          classes: el.className,
+        }));
+        if (restored.opacity < .8 || restored.pointerEvents === 'none' || String(restored.classes).includes('footer-clearance')) {
+          throw new Error(`Back-to-top не восстановился после ухода от footer: ${JSON.stringify(restored)}`);
+        }
       }
       await page.locator('#backToTop').click();
       const deadline = Date.now() + 4500;
