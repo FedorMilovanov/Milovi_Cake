@@ -257,3 +257,43 @@ html #contacts .card.card--dark .contact-primary-icon {
   }
 }
 
+/* R10 — persistent brand colours for social links.
+   Form fields, textarea, floating labels and phone icon are untouched. */
+#contacts .social-link {
+  color:rgb(var(--soc-rgb)) !important;
+  background:rgba(var(--soc-rgb),.075) !important;
+  border-color:rgba(var(--soc-rgb),.42) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035) !important;
+}
+#contacts .social-link svg {
+  color:inherit !important;
+  fill:currentColor !important;
+  opacity:1 !important;
+}
+#contacts .social-link.vk { --soc-rgb:74,118,168; }
+#contacts .social-link.tg { --soc-rgb:39,166,229; }
+#contacts .social-link.max { --soc-rgb:129,92,246; }
+#contacts .social-link.yt { --soc-rgb:230,53,46; }
+#contacts .social-link.ya { --soc-rgb:232,73,32; }
+#contacts .social-link.google { --soc-rgb:66,133,244; }
+#contacts .social-link.ig,
+#contacts .social-link.instagram { --soc-rgb:214,72,145; }
+
+@media (hover:hover) and (pointer:fine) {
+  #contacts .social-link:hover,
+  #contacts .social-link:focus-visible {
+    color:rgb(var(--soc-rgb)) !important;
+    background:rgba(var(--soc-rgb),.18) !important;
+    border-color:rgba(var(--soc-rgb),.82) !important;
+    box-shadow:
+      0 10px 28px rgba(var(--soc-rgb),.25),
+      0 0 0 1px rgba(var(--soc-rgb),.12),
+      inset 0 1px 0 rgba(255,255,255,.055) !important;
+    transform:translateY(-2px) !important;
+  }
+  #contacts .social-link:hover svg,
+  #contacts .social-link:focus-visible svg {
+    filter:drop-shadow(0 0 7px rgba(var(--soc-rgb),.58)) !important;
+  }
+}
+
