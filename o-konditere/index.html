@@ -30,11 +30,13 @@
   <meta name="twitter:image" content="https://milovicake.ru/img/og-cover.jpg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- r58: hero LCP preload (AVIF + WebP fallback) -->
   <link rel="preload" as="image" type="image/avif" href="/img/viktoria.avif" fetchpriority="high" />
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" /></noscript>
   <link rel="stylesheet" href="/css/style.css?v=20260728r27" />
-  <link rel="stylesheet" href="/css/v20-fixes.css?v=20260803r70" />
+  <style>.info-note-aside{margin:14px 0 0;padding-top:14px;border-top:1px solid rgba(201,147,74,.14);font-size:14px;line-height:1.65;color:var(--brown-light);opacity:.82;font-style:italic}.info-note-aside a{color:var(--gold,#c9934a);text-decoration:none;border-bottom:1px solid rgba(201,147,74,.32);transition:border-color .2s ease,opacity .2s ease}.info-note-aside a:hover{border-bottom-color:var(--gold,#c9934a);opacity:1}</style>
   <script type="application/ld+json">{
   "@context": "https://schema.org",
   "@graph": [
@@ -45,25 +47,47 @@
       "name": "О кондитере Milovi Cake",
       "description": "Виктория Милованова — частный кондитер Milovi Cake в Санкт-Петербурге.",
       "inLanguage": "ru-RU",
-      "about": { "@id": "https://milovicake.ru/#viktoria" },
-      "isPartOf": { "@id": "https://milovicake.ru/#website" }
+      "about": {
+        "@id": "https://milovicake.ru/#viktoria"
+      },
+      "isPartOf": {
+        "@id": "https://milovicake.ru/#website"
+      }
     },
     {
       "@type": "Person",
       "@id": "https://milovicake.ru/#viktoria",
       "name": "Виктория Милованова",
       "jobTitle": "Частный кондитер",
-      "worksFor": { "@id": "https://milovicake.ru/#business" },
+      "worksFor": {
+        "@id": "https://milovicake.ru/#business"
+      },
       "url": "https://milovicake.ru/o-konditere/",
       "image": "https://milovicake.ru/img/viktoria.webp",
-      "knowsAbout": ["авторские торты","бенто-торты","детские торты","свадебные торты","меренговые рулеты"]
+      "knowsAbout": [
+        "авторские торты",
+        "бенто-торты",
+        "детские торты",
+        "свадебные торты",
+        "меренговые рулеты"
+      ]
     },
     {
       "@type": "BreadcrumbList",
       "@id": "https://milovicake.ru/o-konditere/#breadcrumbs",
       "itemListElement": [
-        {"@type":"ListItem","position":1,"name":"Главная","item":"https://milovicake.ru/"},
-        {"@type":"ListItem","position":2,"name":"О кондитере","item":"https://milovicake.ru/o-konditere/"}
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Главная",
+          "item": "https://milovicake.ru/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "О кондитере",
+          "item": "https://milovicake.ru/o-konditere/"
+        }
       ]
     }
   ]
@@ -93,14 +117,31 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 
     <footer class="landing-footer" aria-label="Контакты Milovi Cake">
       <div class="landing-footer-grid">
-        <div><strong>Milovi Cake</strong><p>Авторские торты и десерты ручной работы в Санкт-Петербурге. Частный кондитер Виктория Милованова.</p></div>
-        <address><span>Пулковская ул., 19, Санкт-Петербург</span><a href="tel:+79119038886">+7 911 903 88 86</a><span>Пн–Сб, 10:00–20:00</span></address>
-        <nav aria-label="Полезные страницы"><a href="/o-konditere/">О кондитере</a><a href="/dostavka-i-oplata/">Доставка и оплата</a><a href="/otzyvy/">Отзывы</a><a href="/certificates/">Сертификаты</a></nav>
+        <div>
+          <strong>Milovi Cake</strong>
+          <p>Авторские торты и десерты ручной работы в Санкт-Петербурге. Частный кондитер Виктория Милованова.</p>
+        </div>
+        <address>
+          <span>Пулковская ул., 19, Санкт-Петербург</span>
+          <a href="tel:+79119038886">+7 911 903 88 86</a>
+          <span>Пн–Сб, 10:00–20:00</span>
+        </address>
+        <nav aria-label="Полезные страницы">
+          <a href="/o-konditere/">О кондитере</a>
+          <a href="/dostavka-i-oplata/">Доставка и оплата</a>
+          <a href="/otzyvy/">Отзывы</a>
+          <a href="/certificates/">Сертификаты</a>
+        </nav>
       </div>
     </footer>
   </main>
 </div>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
-<script defer src="/js/consent-analytics.js"></script>
+
+
+
+
+
+  <script defer src="/js/consent-analytics.js"></script>
 </body>
 </html>

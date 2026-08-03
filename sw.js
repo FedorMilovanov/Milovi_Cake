@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   MILOVI CAKE — Service Worker v1.7 (V20260803-R71)
+   MILOVI CAKE — Service Worker v1.6 (V20260728-R27)
    Strategy:
      - HTML (navigate): network-first, fallback to cache, fallback to "/"
      - Static (CSS/JS/img): stale-while-revalidate; video/range: browser-native
      - skipWaiting + clients.claim → обновления подхватываются мгновенно
    ═══════════════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'milovi-cake-v2026.08.03-r71';
+const CACHE_NAME = 'milovi-cake-v2026.07.28-r27';
 
 const PRECACHE = [
   '/',
@@ -14,7 +14,7 @@ const PRECACHE = [
   '/css/mc-2026.css?v=20260728r27',
   '/css/premium-overrides.css?v=20260728r27',
   '/css/v20-dark-and-fixes.css?v=20260728r27',
-  '/css/v20-fixes.css?v=20260803r70',
+  '/css/v20-fixes.css?v=20260728r27',
   '/css/final-fixes.css?v=20260728r27',
   '/css/gallery/gallery-2026.css?v=20260728r27',
   '/js/main.js?v=20260728r27',
@@ -23,7 +23,6 @@ const PRECACHE = [
   '/js/v20-faq-fix.js?v=20260728r27',
   '/js/gallery/main.js?v=20260728r27',
   '/js/gallery/data.js?v=20260728r27',
-  '/js/consent-analytics.js',
   '/img/head_mobile.avif',
   '/img/head_desktop.avif',
   '/img/head_mobile.webp',
@@ -62,6 +61,9 @@ self.addEventListener('fetch', (event) => {
 
   if (url.pathname.startsWith('/api/') || url.pathname.includes('/mc.yandex.ru')) return;
 
+  // Large media and Range requests are intentionally not stored in Cache Storage.
+  // This prevents gallery .webm files from bloating the SW cache and keeps native
+  // browser streaming/partial-content behavior intact.
   if (
     req.headers.has('range') ||
     req.destination === 'video' ||
@@ -70,6 +72,7 @@ self.addEventListener('fetch', (event) => {
 
   const acceptHeader = req.headers.get('accept') || '';
 
+  // HTML — network-first → cache → "/"
   if (req.mode === 'navigate' || acceptHeader.indexOf('text/html') !== -1){
     event.respondWith(
       fetch(req).then((res) => {
@@ -83,8 +86,9 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Static — stale-while-revalidate
   event.respondWith(
-    caches.match(req, { ignoreSearch: true }).then((cached) => {
+    caches.match(req).then((cached) => {
       const fetched = fetch(req).then((res) => {
         if (res && res.status === 200 && res.type === 'basic'){
           const copy = res.clone();
