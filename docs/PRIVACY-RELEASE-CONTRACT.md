@@ -18,7 +18,20 @@ Before an explicit visitor choice:
 - conversion goals are not sent;
 - catalog, cart, gallery and ordering links remain fully functional.
 
-The choice is stored as `milovi_analytics_consent_v1`. On a first visit, the decision dialog opens once and may be closed without granting analytics; in that case analytics remains disabled. A static “Настройки конфиденциальности” control in the footer reopens the same accessible dialog. No privacy control may be fixed over page content or overlap navigation and scroll-to-top controls. Revoking already active analytics reloads the document so the next page lifecycle starts without third-party analytics.
+The choice is stored as `milovi_analytics_consent_v1`. On a first visit, the decision dialog opens once and may be closed without granting analytics; in that case analytics remains disabled.
+
+The persistent settings entry is responsive:
+
+- on desktop it is a static “Настройки конфиденциальности” control inside the footer utility capsule;
+- on mobile it is the “Конфиденциальность” row inside the single app navigation sheet opened by “Ещё”;
+- mobile must never render a separate privacy row below the footer or a second bottom navigation;
+- the mobile decision UI opens as a bottom sheet above the page and temporarily moves the app navigation out of the interaction layer.
+
+No privacy control may be fixed over page content or overlap navigation and scroll-to-top controls. Revoking already active analytics reloads the document so the next page lifecycle starts without third-party analytics.
+
+## Mobile app-shell boundary
+
+At viewport widths up to 768 px, `#mcNav` is the only visible application navigation. Its five primary actions are “Каталог”, “Начинки”, “Отзывы”, “Заказать” and “Ещё”. Legacy `#bottomNav`, `#mrBottomNav` and mobile sticky order controls must remain hidden and non-interactive. The app bar stays available while scrolling, respects the safe area and must not cover the footer utility block.
 
 ## Source guard
 
