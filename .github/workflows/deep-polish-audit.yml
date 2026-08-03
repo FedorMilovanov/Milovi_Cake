@@ -1,4 +1,4 @@
-name: Deep polish round-two audit
+name: Deep polish audit
 
 on:
   pull_request:
@@ -13,10 +13,12 @@ concurrency:
 
 jobs:
   audit:
+    name: Source, browser and Pages candidate audit
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
       RELEASE_SHA: ${{ github.event.pull_request.head.sha }}
+
     steps:
       - name: Checkout exact PR head
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -30,220 +32,37 @@ jobs:
           node-version: '22.13.0'
           cache: npm
 
-      - name: Install dependencies and Chromium
+      - name: Install exact dependencies and Chromium
         run: |
           npm ci
           npx playwright install --with-deps chromium
 
-      - name: Run additional source guards
+      - name: Run complete source and browser QA
+        run: npm run qa
+
+      - name: Build sanitized Pages candidate
+        run: npm run build:pages
+
+      - name: Audit exact Pages candidate
+        run: npm run audit:pages
+
+      - name: Verify released mobile app-shell assets
         shell: bash
         run: |
-          npm run audit:analytics
-          npm run audit:security
-          python3 scripts/check_prigorody_idempotent.py
-          python3 - <<'PY'
-          from pathlib import Path
-          import json
-          import re
+          set -euo pipefail
+          grep -F "milovi-cake-v2026.08.03-r75" sw.js
+          grep -F "/css/contact-polish.css?v=20260803r7" sw.js
+          grep -F "/css/mobile-app-shell.css?v=20260803r1" sw.js
+          test -f _site/css/contact-polish-base.css
+          test -f _site/css/mobile-app-shell.css
+          grep -F "#mcPrivacyRow" tests/contact-privacy-regression.spec.js
+          grep -F "visibleNavs" tests/contact-privacy-regression.spec.js
 
-          findings = []
-          ignored = {'.git', 'node_modules', '_site', 'playwright-report', 'test-results', 'audit'}
-          legacy = {
-              'privacyOverlay': re.compile(r'id=["\']privacyOverlay["\']', re.I),
-              'privacyModal': re.compile(r'id=["\']privacyModal["\']', re.I),
-              'cookieBanner': re.compile(r'id=["\']cookieBanner["\']', re.I),
-              'openPrivacy': re.compile(r'\b(?:openPrivacy|closePrivacy)\s*\(', re.I),
-              'cookie copy': re.compile(r'Мы используем файлы cookie', re.I),
-          }
-          for suffix in ('*.html', '*.js'):
-              for path in Path('.').rglob(suffix):
-                  if any(part in ignored for part in path.parts):
-                      continue
-                  text = path.read_text('utf-8', errors='replace')
-                  for label, pattern in legacy.items():
-                      if pattern.search(text):
-                          findings.append(f'{path.as_posix()}: legacy {label}')
-
-          index = Path('index.html').read_text('utf-8')
-          if 'с безопасным составом и любимыми персонажами, с безопасным составом и любимыми персонажами' in index:
-              findings.append('index.html: duplicated FAQ phrase')
-          main_js = Path('js/main.js').read_text('utf-8')
-          if "if(STATE === 'zoom_in' && typeof lbIsOpen === 'undefined' || !lbIsOpen)" in main_js:
-              findings.append('js/main.js: review animation precedence bug')
-
-          package = json.loads(Path('package.json').read_text('utf-8'))
-          if package.get('scripts', {}).get('audit:security') != 'npm audit --audit-level=high':
-              findings.append('package.json: security audit command drift')
-
-          exact_sha = re.compile(r'^[0-9a-f]{40}$', re.I)
-          for workflow in sorted(Path('.github/workflows').glob('*.yml')):
-              for number, line in enumerate(workflow.read_text('utf-8').splitlines(), 1):
-                  stripped = line.strip()
-                  if not stripped.startswith('uses:'):
-                      continue
-                  target = stripped.split('uses:', 1)[1].strip().split()[0]
-                  if target.startswith('./'):
-                      continue
-                  ref = target.rsplit('@', 1)[-1] if '@' in target else ''
-                  if not exact_sha.fullmatch(ref):
-                      findings.append(f'{workflow.as_posix()}:{number}: unpinned action {target}')
-
-          sw = Path('sw.js').read_text('utf-8')
-          if 'milovi-cake-v2026.08.03-r74' not in sw or 'contact-polish.css?v=20260803r6' not in sw:
-              findings.append('sw.js: audited contact/privacy cache revision drift')
-
-          if findings:
-              raise SystemExit('\n'.join(findings))
-          print('Additional Cake source guards passed')
-          PY
-
-      - name: Build and audit exact sanitized Pages candidate
-        run: |
-          npm run build:pages
-          npm run audit:pages
-
-      - name: Crawl only URL entries from candidate sitemap
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          from urllib.parse import urlparse
-          import json
-          import os
-          import re
-          import xml.etree.ElementTree as ET
-
-          site = Path('_site')
-          findings = []
-          root = ET.fromstring((site / 'sitemap.xml').read_text('utf-8'))
-          urls = []
-          for url_node in root.findall('.//{*}url'):
-              loc = url_node.find('{*}loc')
-              if loc is not None and loc.text:
-                  urls.append(loc.text.strip())
-
-          canonical_re = re.compile(r'<link\b[^>]*rel=["\']canonical["\'][^>]*href=["\']([^"\']+)', re.I)
-          for url in urls:
-              route = urlparse(url).path
-              if route == '/':
-                  file = site / 'index.html'
-              elif route.endswith('/'):
-                  file = site / route.lstrip('/') / 'index.html'
-              else:
-                  file = site / route.lstrip('/')
-              if not file.exists():
-                  findings.append(f'{url}: missing {file.as_posix()}')
-                  continue
-              html = file.read_text('utf-8', errors='replace')
-              match = canonical_re.search(html)
-              if not match:
-                  findings.append(f'{url}: missing canonical')
-              elif match.group(1).rstrip('/') != url.rstrip('/'):
-                  findings.append(f'{url}: canonical mismatch {match.group(1)}')
-              if re.search(r'<meta\b[^>]*name=["\']robots["\'][^>]*content=["\'][^"\']*noindex', html, re.I):
-                  findings.append(f'{url}: sitemap URL is noindex')
-              if any(marker in html for marker in ('privacyOverlay', 'privacyModal', 'cookieBanner', 'openPrivacy()')):
-                  findings.append(f'{url}: legacy privacy marker remains')
-              if 'googletagmanager.com/gtag/js' in html or 'mc.yandex.ru/metrika/tag.js' in html:
-                  findings.append(f'{url}: direct analytics URL embedded in HTML')
-
-          not_found = (site / '404.html').read_text('utf-8', errors='replace')
-          if not re.search(r'<meta\b[^>]*(?:name=["\']robots["\'][^>]*content=["\']noindex,\s*follow["\']|content=["\']noindex,\s*follow["\'][^>]*name=["\']robots["\'])', not_found, re.I):
-              findings.append('404.html lacks noindex, follow')
-          if canonical_re.search(not_found):
-              findings.append('404.html emits canonical')
-
-          release = json.loads((site / 'release.json').read_text('utf-8'))
-          if release.get('repository') != 'FedorMilovanov/Milovi_Cake':
-              findings.append('release.json repository drift')
-          if release.get('sha') != os.environ['RELEASE_SHA']:
-              findings.append('release.json SHA drift')
-
-          if findings:
-              raise SystemExit('\n'.join(findings))
-          print(f'Candidate URL crawl passed: {len(urls)} routes')
-          PY
-
-      - name: Serve exact candidate
-        shell: bash
-        run: |
-          python3 -m http.server 4173 --directory _site >/tmp/cake-candidate-server.log 2>&1 &
-          echo $! >/tmp/cake-candidate-server.pid
-          for attempt in $(seq 1 20); do
-            curl -fsS http://127.0.0.1:4173/ >/dev/null && exit 0
-            sleep 1
-          done
-          cat /tmp/cake-candidate-server.log
-          exit 1
-
-      - name: Exercise candidate consent in Chromium
-        shell: bash
-        run: |
-          node <<'JS'
-          const { chromium } = require('playwright')
-          ;(async () => {
-            const findings = []
-            const browser = await chromium.launch({ headless: true })
-            try {
-              const denyContext = await browser.newContext({ serviceWorkers: 'block' })
-              const denyPage = await denyContext.newPage()
-              const analyticsRequests = []
-              denyPage.on('request', request => {
-                const url = request.url()
-                if (/googletagmanager\.com|google-analytics\.com|mc\.yandex\.ru|metrika\.yandex/i.test(url)) analyticsRequests.push(url)
-              })
-              await denyPage.goto(`http://127.0.0.1:4173/?deep-polish=${Date.now()}`, { waitUntil: 'domcontentloaded' })
-              await denyPage.waitForTimeout(1200)
-              const before = await denyPage.evaluate(() => {
-                const trigger = document.querySelector('.mc-consent-trigger')
-                return {
-                  overlays: document.querySelectorAll('.mc-consent-overlay').length,
-                  open: Boolean(document.querySelector('.mc-consent-overlay.is-open')),
-                  trigger: Boolean(trigger && trigger.closest('.footer-bottom')),
-                  triggerPosition: trigger ? getComputedStyle(trigger).position : '',
-                  legacyFixed: Boolean(document.querySelector('.mc-consent-settings')),
-                  legacy: Boolean(document.querySelector('#privacyOverlay,#privacyModal,#cookieBanner,[onclick*="openPrivacy"]')),
-                  directScripts: [...document.scripts].filter(script => /googletagmanager\.com|mc\.yandex\.ru/i.test(script.src)).length,
-                }
-              })
-              if (analyticsRequests.length) findings.push('analytics requested before consent')
-              if (before.overlays !== 1 || !before.open) findings.push(`expected one open consent dialog, found ${before.overlays}`)
-              if (!before.trigger || ['fixed', 'sticky'].includes(before.triggerPosition)) findings.push('footer privacy trigger contract failed')
-              if (before.legacyFixed || before.legacy) findings.push('legacy privacy UI remains')
-              if (before.directScripts) findings.push('direct analytics script exists before consent')
-              await denyPage.locator('.mc-consent-button--deny').click()
-              await denyPage.waitForTimeout(300)
-              if (analyticsRequests.length) findings.push('analytics requested after denial')
-              const denied = await denyPage.evaluate(() => ({
-                choice: localStorage.getItem('milovi_analytics_consent_v1'),
-                hidden: document.querySelector('.mc-consent-overlay').hidden,
-              }))
-              if (denied.choice !== 'denied' || !denied.hidden) findings.push('denial did not persist and close cleanly')
-              await denyContext.close()
-
-              const allowContext = await browser.newContext({ serviceWorkers: 'block' })
-              const allowPage = await allowContext.newPage()
-              await allowPage.goto(`http://127.0.0.1:4173/?deep-polish-allow=${Date.now()}`, { waitUntil: 'domcontentloaded' })
-              await allowPage.waitForTimeout(1200)
-              await allowPage.locator('.mc-consent-button--allow').click()
-              await allowPage.waitForTimeout(250)
-              const after = await allowPage.evaluate(() => ({
-                ga: Boolean(document.querySelector('script[data-milovi-ga]')),
-                ym: Boolean(document.querySelector('script[data-milovi-ym]')),
-                trigger: Boolean(document.querySelector('.footer-bottom .mc-consent-trigger')),
-                legacyFixed: Boolean(document.querySelector('.mc-consent-settings')),
-              }))
-              if (!after.ga || !after.ym) findings.push('analytics scripts were not attached after consent')
-              if (!after.trigger || after.legacyFixed) findings.push('footer privacy trigger is missing or legacy fixed control returned')
-              await allowContext.close()
-            } finally {
-              await browser.close()
-            }
-            if (findings.length) throw new Error(findings.join('\n'))
-            console.log('Cake candidate consent audit passed')
-          })().catch(error => { console.error(error); process.exit(1) })
-          JS
-
-      - name: Stop candidate server
+      - name: Upload browser proof
         if: always()
-        run: kill "$(cat /tmp/cake-candidate-server.pid)" 2>/dev/null || true
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: deep-polish-ui-${{ github.run_id }}-${{ github.run_attempt }}
+          path: test-results/ui-audit/
+          if-no-files-found: warn
+          retention-days: 7
