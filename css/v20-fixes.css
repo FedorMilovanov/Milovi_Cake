@@ -742,7 +742,7 @@ html:not([data-theme="dark"]) .site-footer .footer-bottom a:hover {
    The footer stays deliberately dark in both themes; only text contrast and
    the arrow's temporary clearance are adjusted. */
 .site-footer .footer-bottom {
-  color: rgba(235, 215, 187, .66) !important;
+  color: rgba(241, 222, 194, .80) !important;
 }
 .site-footer .footer-bottom > span,
 .site-footer .footer-bottom > div {
@@ -761,13 +761,17 @@ html:not([data-theme="dark"]) .site-footer .footer-bottom a:hover {
   color: rgba(226, 192, 145, .82) !important;
 }
 [data-theme="dark"] .site-footer .footer-bottom {
-  color: rgba(239, 220, 191, .70) !important;
+  color: rgba(243, 224, 196, .82) !important;
 }
 [data-theme="dark"] .site-footer .footer-bottom a {
   color: rgba(241, 220, 188, .80) !important;
 }
 @media (max-width: 768px) {
+  /* At the final footer there is no collision-free floating position. Hide the
+     redundant shortcut there and restore it automatically when scrolling up. */
   .back-to-top.footer-clearance {
-    bottom: calc(188px + env(safe-area-inset-bottom, 0px)) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateY(10px) scale(.90) !important;
   }
 }

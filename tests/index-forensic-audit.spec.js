@@ -698,9 +698,13 @@ test.describe('INDEX forensic audit', () => {
           const nav = navEl.getBoundingClientRect();
           const top = topEl.getBoundingClientRect();
           const footer = footerEl.getBoundingClientRect();
+          const topStyle = getComputedStyle(topEl);
           return {
             nav: nav.toJSON(),
             top: top.toJSON(),
+            topOpacity: Number(topStyle.opacity),
+            topPointerEvents: topStyle.pointerEvents,
+            topClasses: topEl.className,
             footer: footer.toJSON(),
             siteFooter: siteFooter.getBoundingClientRect().toJSON(),
             bodyPaddingBottom: getComputedStyle(document.body).paddingBottom,
@@ -725,14 +729,20 @@ test.describe('INDEX forensic audit', () => {
           geometry.top.bottom <= geometry.footer.top ||
           geometry.top.top >= geometry.footer.bottom
         );
-        if (arrowFooterOverlap) throw new Error(`Back-to-top пересекает footer capsule: ${JSON.stringify(geometry)}`);
+        const arrowInteractive = geometry.topOpacity > .05 && geometry.topPointerEvents !== 'none';
+        if (arrowFooterOverlap && arrowInteractive) throw new Error(`Back-to-top пересекает footer capsule: ${JSON.stringify(geometry)}`);
+        if (!String(geometry.topClasses).includes('footer-clearance')) throw new Error(`Footer clearance state не включился: ${JSON.stringify(geometry)}`);
+        if (geometry.topOpacity > .05 || geometry.topPointerEvents !== 'none') throw new Error(`Стрелка не скрылась у footer: ${JSON.stringify(geometry)}`);
         const arrowFooterOverlap = !(
           geometry.top.right <= geometry.footer.left ||
           geometry.top.left >= geometry.footer.right ||
           geometry.top.bottom <= geometry.footer.top ||
           geometry.top.top >= geometry.footer.bottom
         );
-        if (arrowFooterOverlap) throw new Error(`Back-to-top пересекает footer capsule: ${JSON.stringify(geometry)}`);
+        const arrowInteractive = geometry.topOpacity > .05 && geometry.topPointerEvents !== 'none';
+        if (arrowFooterOverlap && arrowInteractive) throw new Error(`Back-to-top пересекает footer capsule: ${JSON.stringify(geometry)}`);
+        if (!String(geometry.topClasses).includes('footer-clearance')) throw new Error(`Footer clearance state не включился: ${JSON.stringify(geometry)}`);
+        if (geometry.topOpacity > .05 || geometry.topPointerEvents !== 'none') throw new Error(`Стрелка не скрылась у footer: ${JSON.stringify(geometry)}`);
       }
       await page.locator('#backToTop').click();
       const deadline = Date.now() + 4500;
