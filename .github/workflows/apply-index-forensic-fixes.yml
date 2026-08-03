@@ -7,6 +7,7 @@ on:
       - 'docs/INDEX-FORENSIC-APPLY.md'
       - 'scripts/apply_forensic_index_fixes.py'
       - 'scripts/apply_forensic_index_round2.py'
+      - 'scripts/apply_forensic_index_round3.py'
 
 permissions:
   contents: write
@@ -31,7 +32,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ -f scripts/apply_forensic_index_round2.py ]; then
+          if [ -f scripts/apply_forensic_index_round3.py ]; then
+            python3 scripts/apply_forensic_index_round3.py
+          elif [ -f scripts/apply_forensic_index_round2.py ]; then
             python3 scripts/apply_forensic_index_round2.py
           else
             python3 scripts/apply_forensic_index_fixes.py
@@ -47,6 +50,6 @@ jobs:
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add index.html js/main.js css/style.css css/mc-2026.css css/premium-overrides.css css/v20-dark-and-fixes.css css/v20-fixes.css css/final-fixes.css tests/index-forensic-audit.spec.js
-          git commit -m 'fix: resolve second-pass forensic index findings'
+          git add index.html js/main.js js/consent-analytics.js css/style.css css/mc-2026.css css/premium-overrides.css css/v20-dark-and-fixes.css css/v20-fixes.css css/final-fixes.css tests/index-forensic-audit.spec.js
+          git commit -m 'fix: resolve final forensic index findings'
           git push origin "HEAD:${{ github.head_ref }}"
