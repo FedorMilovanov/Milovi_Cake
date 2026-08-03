@@ -32,7 +32,12 @@ async function waitForMobileShell(page) {
     const nav = document.getElementById('mcNav');
     if (!nav) return false;
     const style = getComputedStyle(nav);
-    return style.position === 'fixed' && style.visibility === 'visible' && style.transform === 'none';
+    const rect = nav.getBoundingClientRect();
+    return style.position === 'fixed' &&
+      style.display !== 'none' &&
+      style.visibility === 'visible' &&
+      rect.width >= window.innerWidth - 4 &&
+      Math.abs(window.innerHeight - rect.bottom) <= 2;
   });
 }
 
@@ -222,14 +227,22 @@ test.describe('contact theme and privacy regressions', () => {
     await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight * 0.55, behavior: 'instant' }));
     await page.waitForTimeout(250);
     await expect(nav).toBeVisible();
-    const afterScroll = await nav.evaluate((element) => ({
-      hiddenClass: element.classList.contains('mc-nav--hidden'),
-      bottom: window.innerHeight - element.getBoundingClientRect().bottom,
-      transform: getComputedStyle(element).transform
-    }));
-    expect(afterScroll.hiddenClass).toBe(false);
+    const afterScroll = await nav.evaluate((element) => {
+      const style = getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return {
+        bottom: window.innerHeight - rect.bottom,
+        width: rect.width,
+        display: style.display,
+        visibility: style.visibility,
+        pointerEvents: style.pointerEvents
+      };
+    });
     expect(afterScroll.bottom).toBeLessThanOrEqual(2);
-    expect(afterScroll.transform).toBe('none');
+    expect(afterScroll.width).toBeGreaterThanOrEqual(initial.viewport - 4);
+    expect(afterScroll.display).not.toBe('none');
+    expect(afterScroll.visibility).toBe('visible');
+    expect(afterScroll.pointerEvents).not.toBe('none');
 
     const footerBottom = page.locator('.site-footer .footer-bottom');
     await footerBottom.scrollIntoViewIfNeeded();
