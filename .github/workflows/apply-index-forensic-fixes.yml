@@ -16,6 +16,7 @@ on:
       - 'scripts/apply_forensic_index_round9.py'
       - 'scripts/apply_forensic_index_round10.py'
       - 'scripts/apply_forensic_index_round11.py'
+      - 'scripts/apply_forensic_index_round12.py'
 
 permissions:
   contents: write
@@ -40,7 +41,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ -f scripts/apply_forensic_index_round11.py ]; then
+          if [ -f scripts/apply_forensic_index_round12.py ]; then
+            python3 scripts/apply_forensic_index_round12.py
+          elif [ -f scripts/apply_forensic_index_round11.py ]; then
             python3 scripts/apply_forensic_index_round11.py
           elif [ -f scripts/apply_forensic_index_round10.py ]; then
             python3 scripts/apply_forensic_index_round10.py
@@ -75,5 +78,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '4189826+github-actions[bot]@users.noreply.github.com'
           git add index.html js/main.js js/consent-analytics.js css/style.css css/mc-2026.css css/premium-overrides.css css/v20-dark-and-fixes.css css/v20-fixes.css css/final-fixes.css tests/index-forensic-audit.spec.js
-          git commit -m 'test: verify mobile footer arrow restoration'
+          git commit -m 'fix: remove review and calculator timing races'
           git push origin "HEAD:${{ github.head_ref }}"
