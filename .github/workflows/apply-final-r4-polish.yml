@@ -1,0 +1,154 @@
+name: Apply final R4 polish
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-final-r4-polish.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-final-r4-polish-main
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          persist-credentials: true
+
+      - name: Apply isolated R4 polish
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          css_path = Path('css/milovi-premium-r3.css')
+          html_path = Path('index.html')
+          css = css_path.read_text(encoding='utf-8')
+          html = html_path.read_text(encoding='utf-8')
+
+          marker = '/* Final R4 polish — remove two residual visual artifacts found in the live-state audit. */'
+          patch = r'''
+
+          /* Final R4 polish — remove two residual visual artifacts found in the live-state audit. */
+
+          /* The legacy title shimmer is a wide rectangular sweep. In the contact section
+             keep the editorial title static and retain only a restrained hairline accent. */
+          #contacts .section-title::before {
+            content:none !important;
+            display:none !important;
+            animation:none !important;
+          }
+          #contacts .section-title::after,
+          #contacts .section-title.visible::after {
+            width:64px !important;
+            height:1px !important;
+            opacity:.78 !important;
+            transform:translateX(-50%) scaleX(1) !important;
+            background:linear-gradient(90deg,transparent,rgba(201,147,74,.88),transparent) !important;
+          }
+
+          /* Fine-print must remain quiet, not illegible. */
+          #contacts .consent-note { color:rgba(237,216,188,.62) !important; }
+          #contacts .card:not(.card--dark) .form-note { font-size:11.5px !important; }
+          html[data-theme="dark"] #contacts .card:not(.card--dark) .form-note { color:rgba(235,215,187,.68) !important; }
+
+          @media (max-width:768px) {
+            /* A closed sheet previously remained about 40px inside the viewport because
+               its bottom offset matched the navigation height. Fully remove it from the
+               visual and accessibility tree until the user deliberately opens “Ещё”. */
+            #mcSheet.mc-sheet:not(.mc-open) {
+              transform:translateY(calc(100% + 96px)) scale(.985) !important;
+              opacity:0 !important;
+              visibility:hidden !important;
+              pointer-events:none !important;
+            }
+            #mcSheet.mc-sheet.mc-open {
+              transform:translateY(0) scale(1) !important;
+              opacity:1 !important;
+              visibility:visible !important;
+              pointer-events:auto !important;
+            }
+
+            /* Leave enough scrollable footer clearance for the persistent floating bar. */
+            body.has-mc-nav .site-footer,
+            body.has-mc-nav footer.site-footer {
+              padding-bottom:calc(104px + env(safe-area-inset-bottom,0px)) !important;
+            }
+          }
+
+          @media (max-width:768px) {
+            /* Runtime navigation styles render name and metadata as inline spans. Keep
+               the sheet hierarchy readable and prevent labels from visually merging. */
+            #mcSheet .mc-row-text {
+              display:flex !important;
+              flex-direction:column !important;
+              align-items:flex-start !important;
+              gap:3px !important;
+              min-width:0 !important;
+            }
+            #mcSheet .mc-row-name,
+            #mcSheet .mc-row-sub {
+              display:block !important;
+              margin:0 !important;
+            }
+            #mcSheet .mc-row-sub {
+              max-width:100% !important;
+              overflow:hidden !important;
+              text-overflow:ellipsis !important;
+              white-space:nowrap !important;
+            }
+          }
+          '''
+
+          if marker not in css:
+              css = css.rstrip() + patch + '\n'
+          html = html.replace('milovi-premium-r3.css?v=20260803r3', 'milovi-premium-r3.css?v=20260803r4')
+
+          css_path.write_text(css, encoding='utf-8')
+          html_path.write_text(html, encoding='utf-8')
+          PY
+
+      - name: Verify final state
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          css = Path('css/milovi-premium-r3.css').read_text(encoding='utf-8')
+          html = Path('index.html').read_text(encoding='utf-8')
+          required = [
+              'Final R4 polish',
+              '#mcSheet.mc-sheet:not(.mc-open)',
+              'visibility:hidden !important',
+              '#mcSheet .mc-row-text',
+              'flex-direction:column !important',
+              'milovi-premium-r3.css?v=20260803r4',
+          ]
+          missing = [item for item in required if item not in css and item not in html]
+          if missing:
+              raise SystemExit(f'missing R4 markers: {missing}')
+          if css.count('{') != css.count('}'):
+              raise SystemExit('CSS brace imbalance')
+          print('R4 polish verification passed')
+          PY
+
+      - name: Commit clean main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm -f .github/workflows/apply-final-r4-polish.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '4189826+github-actions[bot]@users.noreply.github.com'
+          git add css/milovi-premium-r3.css index.html
+          git commit -m 'fix: final mobile navigation and contact polish'
+          git push origin HEAD:main
