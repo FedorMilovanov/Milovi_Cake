@@ -14,6 +14,7 @@ on:
       - 'scripts/apply_forensic_index_round7.py'
       - 'scripts/apply_forensic_index_round8.py'
       - 'scripts/apply_forensic_index_round9.py'
+      - 'scripts/apply_forensic_index_round10.py'
 
 permissions:
   contents: write
@@ -38,7 +39,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ -f scripts/apply_forensic_index_round9.py ]; then
+          if [ -f scripts/apply_forensic_index_round10.py ]; then
+            python3 scripts/apply_forensic_index_round10.py
+          elif [ -f scripts/apply_forensic_index_round9.py ]; then
             python3 scripts/apply_forensic_index_round9.py
           elif [ -f scripts/apply_forensic_index_round8.py ]; then
             python3 scripts/apply_forensic_index_round8.py
@@ -69,5 +72,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '4189826+github-actions[bot]@users.noreply.github.com'
           git add index.html js/main.js js/consent-analytics.js css/style.css css/mc-2026.css css/premium-overrides.css css/v20-dark-and-fixes.css css/v20-fixes.css css/final-fixes.css tests/index-forensic-audit.spec.js
-          git commit -m 'fix: keep review copy readable during animation'
+          git commit -m 'fix: hide redundant mobile arrow at footer'
           git push origin "HEAD:${{ github.head_ref }}"
