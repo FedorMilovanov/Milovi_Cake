@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   MILOVI CAKE — Service Worker v1.7 (V20260803-R74)
+   MILOVI CAKE — Service Worker v1.7 (V20260803-R75)
    Strategy:
      - HTML (navigate): network-first, fallback to cache, fallback to "/"
      - Static (CSS/JS/img): stale-while-revalidate; video/range: browser-native
@@ -7,7 +7,7 @@
      - skipWaiting + clients.claim → обновления подхватываются мгновенно
    ═══════════════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'milovi-cake-v2026.08.03-r74';
+const CACHE_NAME = 'milovi-cake-v2026.08.03-r75';
 
 const PRECACHE = [
   '/',
@@ -16,7 +16,9 @@ const PRECACHE = [
   '/css/premium-overrides.css?v=20260728r27',
   '/css/v20-dark-and-fixes.css?v=20260728r27',
   '/css/v20-fixes.css?v=20260728r27',
-  '/css/contact-polish.css?v=20260803r6',
+  '/css/contact-polish.css?v=20260803r7',
+  '/css/contact-polish-base.css?v=20260803r6',
+  '/css/mobile-app-shell.css?v=20260803r1',
   '/css/final-fixes.css?v=20260728r27',
   '/css/gallery/gallery-2026.css?v=20260728r27',
   '/js/main.js?v=20260728r27',
@@ -67,6 +69,8 @@ self.addEventListener('fetch', (event) => {
   // UI release files must not be served from an obsolete browser/SW cache.
   if (
     url.pathname === '/css/contact-polish.css' ||
+    url.pathname === '/css/contact-polish-base.css' ||
+    url.pathname === '/css/mobile-app-shell.css' ||
     url.pathname === '/css/v20-fixes.css' ||
     url.pathname === '/js/consent-analytics.js'
   ) {
