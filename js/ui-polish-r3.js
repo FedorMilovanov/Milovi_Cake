@@ -8,6 +8,20 @@
   }
 
   ready(function () {
+    /* Privacy-safe default: no analytics and no automatic blocking dialog.
+       Visitors can change the choice later from the footer or mobile “Ещё”. */
+    if (window.MiloviConsent && window.MiloviConsent.getChoice() === null) {
+      window.MiloviConsent.deny();
+    }
+    document.addEventListener('keydown', function (event) {
+      if (event.key !== 'Escape') return;
+      var overlay = document.querySelector('.mc-consent-overlay.is-open:not([hidden])');
+      if (!overlay || !window.MiloviConsent) return;
+      event.preventDefault();
+      event.stopPropagation();
+      window.MiloviConsent.close();
+    }, true);
+
     var topButton = document.getElementById('backToTop');
     if (topButton) {
       topButton.removeAttribute('onclick');
