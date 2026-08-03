@@ -46,17 +46,20 @@ jobs:
       - name: Audit exact Pages candidate
         run: npm run audit:pages
 
-      - name: Verify released mobile app-shell assets
+      - name: Verify released mobile app-shell contract
         shell: bash
         run: |
           set -euo pipefail
-          grep -F "milovi-cake-v2026.08.03-r75" sw.js
-          grep -F "/css/contact-polish.css?v=20260803r7" sw.js
-          grep -F "/css/mobile-app-shell.css?v=20260803r1" sw.js
-          test -f _site/css/contact-polish-base.css
-          test -f _site/css/mobile-app-shell.css
-          grep -F "#mcPrivacyRow" tests/contact-privacy-regression.spec.js
-          grep -F "visibleNavs" tests/contact-privacy-regression.spec.js
+          grep -F "milovi-cake-v2026.08.03-r76" sw.js
+          grep -F "/css/v20-fixes.css?v=20260728r27" sw.js
+          grep -F "#mcPrivacyRow" tests/theme-smoke.spec.js
+          grep -F "visibleNavs" tests/theme-smoke.spec.js
+          grep -F "CONTACTS + PRIVACY RELEASE R75" css/v20-fixes.css
+          test ! -e css/contact-polish.css
+          test ! -e css/contact-polish-base.css
+          test ! -e css/mobile-app-shell.css
+          test ! -e tests/contact-privacy-regression.spec.js
+          test ! -e scripts/audit_core.py
 
       - name: Upload browser proof
         if: always()
