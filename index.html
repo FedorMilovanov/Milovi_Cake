@@ -736,9 +736,9 @@
   <link rel="stylesheet" href="css/mc-2026.css?v=20260728r27" />
   <link rel="stylesheet" href="css/premium-overrides.css?v=20260728r27" />
   <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260728r27">
-  <link rel="prefetch" href="img/bento_maxi.webp" as="image" />
-  <link rel="prefetch" href="img/cake_3d.webp" as="image" />
-  <link rel="prefetch" href="img/cake_3d_2.webp" as="image" />
+  <link rel="prefetch" href="img/bento_maxi.webp" />
+  <link rel="prefetch" href="img/cake_3d.webp" />
+  <link rel="prefetch" href="img/cake_3d_2.webp" />
 <!-- Google tag (gtag.js) — ОТЛОЖЕНА: грузится из js/mc-2026.js после первого взаимодействия пользователя для уменьшения TBT/INP -->
   <!-- prev sync gtag removed for Core Web Vitals 2026 compliance -->
 
@@ -1184,7 +1184,7 @@
                 <span class="calc-result-collapsed-label">Примерная стоимость</span>
                 <span class="calc-result-collapsed-price" id="calcResultCollapsed">5 600 ₽</span>
               </div>
-              <div class="calc-result-collapsed-arrow" aria-label="Подробнее">
+              <div class="calc-result-collapsed-arrow" aria-hidden="true">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
               </div>
             </div>
@@ -1192,7 +1192,7 @@
             <!-- Раскрывающаяся часть — полный блок -->
             <div class="calc-result-expandable" id="calcExpandable">
               <div class="calc-result-expand-inner">
-                <div class="calc-result-label" id="calcLabel">Примерная стоимость<span class="calc-approx-badge" id="calcApproxBadge" aria-label="Приблизительная цена">~</span></div>
+                <div class="calc-result-label" id="calcLabel">Примерная стоимость<span class="calc-approx-badge" id="calcApproxBadge" role="img" aria-label="Приблизительная цена">~</span></div>
                 <div class="calc-result-price" id="calcResult">5 600 ₽</div>
                 <div class="calc-result-summary" id="calcSummary"></div>
                 <div class="calc-result-note" id="calcNote">Точная цена согласовывается при заказе</div>
@@ -1282,10 +1282,10 @@
   <div class="container">
     <h2 class="section-title reveal"><span class="ht-word">Почему</span> <em class="ht-em" style="font-style:italic;">Выбирают</em> <span class="ht-word">Нас</span></h2>
     <div class="features-grid">
-      <div class="feature reveal"><div class="feature-icon">🤍</div><h4>Ручная Работа</h4><p>Каждый десерт создаётся с любовью и заботой вручную</p></div>
-      <div class="feature reveal"><div class="feature-icon">🌿</div><h4>Натуральные Ингредиенты</h4><p>Только качественные продукты без искусственных добавок</p></div>
-      <div class="feature reveal"><div class="feature-icon">🎯</div><h4>Свежесть под заказ</h4><p>Готовим специально для вас, всегда свежее</p></div>
-      <div class="feature reveal"><div class="feature-icon">📦</div><h4>Доставка по СПб</h4><p>Аккуратная доставка в красивой упаковке</p></div>
+      <div class="feature reveal"><div class="feature-icon">🤍</div><h3>Ручная Работа</h3><p>Каждый десерт создаётся с любовью и заботой вручную</p></div>
+      <div class="feature reveal"><div class="feature-icon">🌿</div><h3>Натуральные Ингредиенты</h3><p>Только качественные продукты без искусственных добавок</p></div>
+      <div class="feature reveal"><div class="feature-icon">🎯</div><h3>Свежесть под заказ</h3><p>Готовим специально для вас, всегда свежее</p></div>
+      <div class="feature reveal"><div class="feature-icon">📦</div><h3>Доставка по СПб</h3><p>Аккуратная доставка в красивой упаковке</p></div>
     </div>
   </div>
 </section>
@@ -1789,7 +1789,7 @@
         <h4>Ваши данные</h4>
         <div class="form-group float-label"><input type="text" id="cname" placeholder=" " autocomplete="name" /><label for="cname">Как к Вам обращаться?</label></div>
         <div class="form-group float-label"><input type="tel" id="cphone" placeholder=" " required autocomplete="tel" inputmode="tel" /><label for="cphone">Телефон</label></div>
-        <div class="form-group float-label"><input type="date" id="cdate" placeholder=" " autocomplete="off" /><label for="cdate">Дата</label></div>
+        <div class="form-group float-label"><input type="date" id="cdate" class="cart-date-input" autocomplete="off" /><label for="cdate">Дата</label></div>
         <div class="form-group float-label"><textarea id="ccomment" placeholder=" " style="min-height:52px;"></textarea><label for="ccomment">Вес, декор, доставка/самовывоз…</label></div>
       </form>
     </div>

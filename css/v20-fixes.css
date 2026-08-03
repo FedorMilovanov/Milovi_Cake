@@ -666,3 +666,14 @@ html[data-theme="dark"] #mcSheet .mc-row-privacy .mc-row-icon { background:linea
   .mc-consent-overlay,
   .mc-consent-dialog { transition:none !important; }
 }
+
+/* Cart date uses the native date picker, which does not support placeholder.
+   Keep its label permanently docked to the field contour. */
+.cart-form .form-group.float-label .cart-date-input + label {
+  top: 0 !important;
+  transform: translateY(-50%) scale(.88) !important;
+  transform-origin: left center !important;
+  padding: 0 7px !important;
+  font-size: 12px !important;
+  letter-spacing: .025em !important;
+}

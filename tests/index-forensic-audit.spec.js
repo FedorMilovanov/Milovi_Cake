@@ -82,12 +82,14 @@ async function openIndex(page, theme = 'light', consent = 'denied') {
   });
   await page.addStyleTag({ content: `
     html { scroll-behavior: auto !important; }
-    *, *::before, *::after {
-      animation-delay: 0s !important;
-      animation-duration: 0s !important;
-      transition-delay: 0s !important;
-      transition-duration: 0s !important;
-      caret-color: transparent !important;
+    body *, body *::before, body *::after { caret-color: transparent !important; }
+    /* Chromium may omit offscreen content-visibility:auto sections from a fullPage capture.
+       This affects audit evidence only; it does not alter production CSS. */
+    @media (max-width: 768px) {
+      main section, main .content-block, footer.site-footer {
+        content-visibility: visible !important;
+        contain: none !important;
+      }
     }
   ` });
   await page.waitForTimeout(180);
@@ -346,7 +348,7 @@ test.describe('INDEX forensic audit', () => {
     for (const theme of ['light', 'dark']) {
       await attempt(`${theme}: загрузить INDEX`, async () => openIndex(page, theme, 'denied'));
       await attempt(`${theme}: прогреть lazy-контент`, async () => warmLazyContent(page));
-      await attempt(`${theme}: полный скриншот`, async () => page.screenshot({ path: filePath(`${theme}-index-full`), fullPage: true, animations: 'disabled' }));
+      await attempt(`${theme}: полный скриншот`, async () => page.screenshot({ path: filePath(`${theme}-index-full`), fullPage: true, animations: 'allow' }));
       for (const [name, selector] of SECTIONS) {
         await attempt(`${theme}: секция ${name}`, async () => {
           const locator = page.locator(selector).first();
@@ -429,7 +431,9 @@ test.describe('INDEX forensic audit', () => {
   });
 
   test('03 — прокликивание навигации, калькулятора, вкладок, FAQ, отзывов, корзины и privacy', async ({ page }, testInfo) => {
-    test.setTimeout(180000);
+    test.setTimeout(240000);
+    page.setDefaultTimeout(7000);
+    page.setDefaultNavigationTimeout(12000);
     const mobile = testInfo.project.name.includes('mobile');
     const viewport = page.viewportSize();
     await attempt('Открыть INDEX для интерактивов', async () => openIndex(page, 'dark', 'denied'));
@@ -559,8 +563,23 @@ test.describe('INDEX forensic audit', () => {
       await shot(page.locator('.cb-faq'), 'faq-open');
     });
 
-    await attempt('Reviews carousel next/prev', async () => {
+    await attempt('Reviews: active card has readable content', async () => {
       await page.locator('#reviews').scrollIntoViewIfNeeded();
+      await page.waitForTimeout(900);
+      const state = await page.locator('#track').evaluate((track) => {
+        const active = track.querySelector('.review-slide.active') || track.querySelector('.review-slide');
+        if (!active) return null;
+        const style = getComputedStyle(active);
+        const text = (active.innerText || '').trim();
+        return { text, opacity: Number(style.opacity), visibility: style.visibility, display: style.display };
+      });
+      await page.screenshot({ path: filePath('reviews-live-viewport'), animations: 'allow' });
+      if (!state || state.text.length < 20 || state.opacity < .5 || state.visibility === 'hidden' || state.display === 'none') {
+        throw new Error(`Review state: ${JSON.stringify(state)}`);
+      }
+      return state;
+    });
+    await attempt('Reviews carousel next/prev', async () => {
       const current = async () => page.locator('#track .review-slide').evaluateAll((slides) => slides.findIndex((slide) => slide.classList.contains('active')));
       const before = await current();
       await page.locator('#btnNext').click();
@@ -606,7 +625,9 @@ test.describe('INDEX forensic audit', () => {
   });
 
   test('04 — privacy, analytics boundary, контакты и внутренние ссылки', async ({ page, request }, testInfo) => {
-    test.setTimeout(180000);
+    test.setTimeout(240000);
+    page.setDefaultTimeout(7000);
+    page.setDefaultNavigationTimeout(12000);
     const mobile = testInfo.project.name.includes('mobile');
     const analyticsRequests = [];
     page.on('request', (req) => {
