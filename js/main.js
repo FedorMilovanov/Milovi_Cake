@@ -1460,11 +1460,16 @@ function toggleCalcPanel() {
   const col = document.getElementById('calcRightCol');
   if (!col) return;
   const isOpen = col.classList.toggle('calc-result-open');
+  if (isOpen) col.dataset.openScrollY = String(window.scrollY);
+  else delete col.dataset.openScrollY;
   _setCalcBackdrop(isOpen);
 }
 function closeCalcPanel() {
   const col = document.getElementById('calcRightCol');
-  if (col) col.classList.remove('calc-result-open');
+  if (col) {
+    col.classList.remove('calc-result-open');
+    delete col.dataset.openScrollY;
+  }
   _setCalcBackdrop(false);
 }
 function _setCalcBackdrop(show) {
@@ -1477,7 +1482,15 @@ function _setCalcBackdrop(show) {
 
 document.addEventListener('click', function(e) { if (window.innerWidth > 560) return; const col = document.getElementById('calcRightCol'); if (!col || !col.classList.contains('calc-result-open')) return; if (!col.contains(e.target)) closeCalcPanel(); }, { passive: true });
 
-window.addEventListener('scroll', function() { if (window.innerWidth > 560) return; const col = document.getElementById('calcRightCol'); if (col && col.classList.contains('calc-result-open')) closeCalcPanel(); }, { passive: true });
+window.addEventListener('scroll', function() {
+  if (window.innerWidth > 560) return;
+  const col = document.getElementById('calcRightCol');
+  if (!col || !col.classList.contains('calc-result-open')) return;
+  const openedAt = Number(col.dataset.openScrollY || window.scrollY);
+  /* A tap can trigger a tiny browser alignment scroll. Close only after a
+     deliberate page movement, not on the incidental scroll caused by opening. */
+  if (Math.abs(window.scrollY - openedAt) > 72) closeCalcPanel();
+}, { passive: true });
 
 let _fillToastTimer = null;
 function showFillToast(optEl, groupId) {
@@ -1908,7 +1921,7 @@ if (scField && trackEl && dotsEl && stageEl) {
     const SHATTER_DUR = 180, myGen = ++dissolveGen;
     const data = spans.map((el, i) => { const a = Math.random()*Math.PI*2, d = 40+Math.random()*100; return { el, delay: i*2, tx: Math.cos(a)*d, ty: Math.sin(a)*d-20, rot: (Math.random()-0.5)*90 }; });
     const start = performance.now();
-    function tick(now){ if(dissolveGen !== myGen) return; const t = now - start; let done = true; for(const d of data){ const local = t - d.delay; if(local < 0){ done = false; continue; } const raw = Math.min(local/SHATTER_DUR, 1); if(raw < 1) done = false; const p = raw*raw; d.el.style.opacity = String(Math.max(0,1-raw*2)); d.el.style.filter = `blur(${(raw*4).toFixed(2)}px)`; d.el.style.transform = `translate(${(d.tx*p).toFixed(2)}px, ${(d.ty*p).toFixed(2)}px) rotate(${(d.rot*p).toFixed(2)}deg) scale(${(1-raw*0.5).toFixed(3)})`; } if(!done) requestAnimationFrame(tick); }
+    function tick(now){ if(dissolveGen !== myGen) return; const t = now - start; let done = true; for(const d of data){ const local = t - d.delay; if(local < 0){ done = false; continue; } const raw = Math.min(local/SHATTER_DUR, 1); if(raw < 1) done = false; const p = raw*raw; d.el.style.opacity = '1'; d.el.style.filter = `blur(${(raw*4).toFixed(2)}px)`; d.el.style.transform = `translate(${(d.tx*p).toFixed(2)}px, ${(d.ty*p).toFixed(2)}px) rotate(${(d.rot*p).toFixed(2)}deg) scale(${(1-raw*0.5).toFixed(3)})`; } if(!done) requestAnimationFrame(tick); }
     requestAnimationFrame(tick);
   }
 
