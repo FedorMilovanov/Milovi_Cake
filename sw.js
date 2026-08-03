@@ -1,13 +1,13 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   MILOVI CAKE — Service Worker v1.7 (V20260803-R72)
+   MILOVI CAKE — Service Worker v1.7 (V20260803-R73)
    Strategy:
      - HTML (navigate): network-first, fallback to cache, fallback to "/"
      - Static (CSS/JS/img): stale-while-revalidate; video/range: browser-native
-     - contact form CSS + consent loader: forced revalidation after UI releases
+     - released UI styles + consent loader: forced revalidation
      - skipWaiting + clients.claim → обновления подхватываются мгновенно
    ═══════════════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'milovi-cake-v2026.08.03-r72';
+const CACHE_NAME = 'milovi-cake-v2026.08.03-r73';
 
 const PRECACHE = [
   '/',
@@ -64,7 +64,11 @@ self.addEventListener('fetch', (event) => {
   if (url.pathname.startsWith('/api/') || url.pathname.includes('/mc.yandex.ru')) return;
 
   // UI release files must not be served from an obsolete browser/SW cache.
-  if (url.pathname === '/css/contact-polish.css' || url.pathname === '/js/consent-analytics.js') {
+  if (
+    url.pathname === '/css/contact-polish.css' ||
+    url.pathname === '/css/v20-fixes.css' ||
+    url.pathname === '/js/consent-analytics.js'
+  ) {
     event.respondWith(
       fetch(req, { cache: 'reload' }).then((res) => {
         if (res && res.status === 200 && res.type === 'basic') {
