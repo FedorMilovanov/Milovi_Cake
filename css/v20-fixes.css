@@ -311,3 +311,205 @@ html[data-theme="dark"] .delivery-faq .faq-item,
 [data-theme="dark"] .footer-projects-link {
   color: var(--gold);
 }
+
+/* ==========================================================================
+   14. MOBILE NAV — floating jewellery capsule, light + dark (r73)
+   Visual-only override. Navigation items, order action and sheet logic stay intact.
+   ========================================================================== */
+@media (max-width: 768px) {
+  body.has-mc-nav {
+    padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  #mcNav.mc-nav,
+  .mc-nav {
+    left: max(10px, env(safe-area-inset-left, 0px)) !important;
+    right: max(10px, env(safe-area-inset-right, 0px)) !important;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px)) !important;
+    width: auto !important;
+    height: 68px !important;
+    padding: 5px !important;
+    gap: 0 !important;
+    align-items: stretch !important;
+    overflow: visible !important;
+    border: 1px solid rgba(102, 72, 46, .16) !important;
+    border-radius: 24px !important;
+    background:
+      linear-gradient(180deg, rgba(255,253,249,.94), rgba(248,241,231,.91)) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(125%) !important;
+            backdrop-filter: blur(18px) saturate(125%) !important;
+    box-shadow:
+      0 16px 42px rgba(54,35,22,.16),
+      0 3px 10px rgba(54,35,22,.06),
+      inset 0 1px 0 rgba(255,255,255,.88),
+      inset 0 0 0 1px rgba(255,255,255,.26) !important;
+    transform-origin: 50% 100% !important;
+  }
+
+  #mcNav.mc-nav.mc-nav--hidden,
+  .mc-nav.mc-nav--hidden {
+    transform: translateY(calc(100% + 22px)) !important;
+  }
+
+  #mcNav .mc-btn,
+  .mc-nav .mc-btn {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    min-height: 56px !important;
+    margin: 0 !important;
+    padding: 5px 2px 4px !important;
+    gap: 4px !important;
+    border: 0 !important;
+    border-radius: 17px !important;
+    background: transparent !important;
+    color: rgba(88,70,56,.68) !important;
+    box-shadow: none !important;
+    transition:
+      transform .20s cubic-bezier(.22,1,.36,1),
+      color .20s ease,
+      background-color .20s ease,
+      box-shadow .22s ease !important;
+  }
+
+  #mcNav .mc-btn svg,
+  .mc-nav .mc-btn svg {
+    width: 20px !important;
+    height: 20px !important;
+    stroke-width: 1.65 !important;
+    filter: none !important;
+    transform: none !important;
+  }
+
+  #mcNav .mc-btn-label,
+  .mc-nav .mc-btn-label {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    font-size: 9.4px !important;
+    font-weight: 500 !important;
+    line-height: 1 !important;
+    letter-spacing: .035em !important;
+    transform: none !important;
+  }
+
+  #mcNav .mc-btn.mc-active,
+  .mc-nav .mc-btn.mc-active {
+    color: #946332 !important;
+    background: linear-gradient(180deg, rgba(170,119,66,.115), rgba(170,119,66,.055)) !important;
+    box-shadow:
+      inset 0 0 0 1px rgba(170,119,66,.09),
+      inset 0 1px 0 rgba(255,255,255,.44) !important;
+  }
+
+  #mcNav .mc-btn.mc-active::before,
+  .mc-nav .mc-btn.mc-active::before {
+    content: none !important;
+    display: none !important;
+  }
+
+  #mcNav .mc-btn--order,
+  .mc-nav .mc-btn--order {
+    color: #a26d37 !important;
+  }
+
+  #mcNav .mc-btn--order .mc-btn-circle,
+  .mc-nav .mc-btn--order .mc-btn-circle {
+    width: 22px !important;
+    height: 22px !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: inherit !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  #mcNav .mc-btn--order svg,
+  .mc-nav .mc-btn--order svg {
+    width: 20px !important;
+    height: 20px !important;
+    color: currentColor !important;
+  }
+
+  #mcNav .mc-sep,
+  .mc-nav .mc-sep {
+    display: none !important;
+  }
+
+  #mcNav .mc-btn:active,
+  .mc-nav .mc-btn:active,
+  #mcNav .mc-btn.mc-press,
+  .mc-nav .mc-btn.mc-press {
+    transform: scale(.96) !important;
+    background: rgba(154,105,57,.075) !important;
+  }
+
+  #mcSheet.mc-sheet {
+    bottom: calc(90px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .back-to-top {
+    bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  [data-theme="dark"] #mcNav.mc-nav,
+  [data-theme="dark"] .mc-nav {
+    border-color: rgba(240,225,205,.15) !important;
+    background:
+      linear-gradient(180deg, rgba(31,29,26,.93), rgba(15,14,13,.95)) !important;
+    box-shadow:
+      0 18px 48px rgba(0,0,0,.48),
+      0 4px 12px rgba(0,0,0,.22),
+      inset 0 1px 0 rgba(255,255,255,.055),
+      inset 0 0 0 1px rgba(255,255,255,.018) !important;
+  }
+
+  [data-theme="dark"] #mcNav .mc-btn,
+  [data-theme="dark"] .mc-nav .mc-btn {
+    color: rgba(237,228,215,.67) !important;
+  }
+
+  [data-theme="dark"] #mcNav .mc-btn.mc-active,
+  [data-theme="dark"] .mc-nav .mc-btn.mc-active {
+    color: #f1dfc7 !important;
+    background: linear-gradient(180deg, rgba(240,223,199,.105), rgba(240,223,199,.045)) !important;
+    box-shadow:
+      inset 0 0 0 1px rgba(240,223,199,.075),
+      inset 0 1px 0 rgba(255,255,255,.035) !important;
+  }
+
+  [data-theme="dark"] #mcNav .mc-btn--order,
+  [data-theme="dark"] .mc-nav .mc-btn--order {
+    color: #e5c9a5 !important;
+  }
+
+  [data-theme="dark"] #mcNav .mc-btn:active,
+  [data-theme="dark"] .mc-nav .mc-btn:active,
+  [data-theme="dark"] #mcNav .mc-btn.mc-press,
+  [data-theme="dark"] .mc-nav .mc-btn.mc-press {
+    background: rgba(240,223,199,.075) !important;
+  }
+}
+
+@media (max-width: 360px) {
+  #mcNav.mc-nav,
+  .mc-nav {
+    left: max(6px, env(safe-area-inset-left, 0px)) !important;
+    right: max(6px, env(safe-area-inset-right, 0px)) !important;
+    border-radius: 21px !important;
+    padding-left: 3px !important;
+    padding-right: 3px !important;
+  }
+  #mcNav .mc-btn,
+  .mc-nav .mc-btn {
+    padding-left: 1px !important;
+    padding-right: 1px !important;
+  }
+  #mcNav .mc-btn-label,
+  .mc-nav .mc-btn-label {
+    font-size: 8.7px !important;
+    letter-spacing: .015em !important;
+  }
+}
