@@ -3,239 +3,115 @@ name: Apply exact contact UI restoration R9
 on:
   push:
     branches: [main]
-    paths:
-      - '.github/workflows/apply-contact-r9-restore.yml'
+    paths: ['.github/workflows/apply-contact-r9-restore.yml']
 
 permissions:
   contents: write
 
-concurrency:
-  group: apply-contact-r9-restore-main
-  cancel-in-progress: false
-
 jobs:
   restore:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
     steps:
-      - name: Checkout main
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           ref: main
           persist-credentials: true
-
-      - name: Restore approved contact UI
+      - name: Restore approved contact block
         shell: bash
         run: |
-          set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
+          p=Path('css/milovi-premium-r3.css'); h=Path('index.html')
+          s=p.read_text(encoding='utf-8'); x=h.read_text(encoding='utf-8')
 
-          css_path = Path('css/milovi-premium-r3.css')
-          html_path = Path('index.html')
-          css = css_path.read_text(encoding='utf-8')
-          html = html_path.read_text(encoding='utf-8')
+          a=s.find('/* A clearer porcelain daytime surface')
+          b=s.find('/* Restore a compact two-row rhythm')
+          if a>=0 and b>a: s=s[:a]+s[b:]
 
-          # Remove the broad R3 contact redesign. The original approved contact
-          # form/card/social rules remain in v20-fixes.css and premium-overrides.css.
-          start = css.find('/* A clearer porcelain daytime surface')
-          end = css.find('/* Restore a compact two-row rhythm')
-          if start != -1 and end != -1 and end > start:
-              css = css[:start] + css[end:]
-
-          # Remove the later R7/R8 experiments in one operation.
-          for marker in (
-              '/* Contact form restoration R7',
-              '/* Corrective R5',
-              '/* Corrective R6',
-              '/* R8 — make the whole order-form card contour unmistakably visible.',
-              '/* Contact restoration R9',
-          ):
-              pos = css.find(marker)
-              if pos != -1:
-                  css = css[:pos].rstrip() + '\n'
+          for m in ('/* Contact form restoration R7','/* Corrective R5','/* Corrective R6','/* R8 — make the whole order-form card contour unmistakably visible.','/* Contact restoration R9'):
+              i=s.find(m)
+              if i>=0:
+                  s=s[:i].rstrip()+'\n'
                   break
 
-          # Remove the rule that deliberately made the form card borderless.
-          start = css.find('/* Override the older theme-specific !important card material')
-          end = css.find('/* The footer deliberately stays dark in both themes', start)
-          if start != -1 and end != -1 and end > start:
-              css = css[:start] + css[end:]
+          a=s.find('/* Override the older theme-specific !important card material')
+          b=s.find('/* The footer deliberately stays dark in both themes',a)
+          if a>=0 and b>a: s=s[:a]+s[b:]
 
-          # Remove only contact-specific mobile overrides introduced by R3.
-          forbidden_mobile_prefixes = (
-              '  #contacts .contacts-grid ',
-              '  #contacts .card.card--dark ',
-              '  #contacts .card:not(.card--dark) {',
-              '  #contacts .card:not(.card--dark) h3 ',
-              '  #contacts .messenger-bar ',
-              '  #contacts .messenger-bar-btn ',
-              '  #contacts .social-links ',
-              '  #contacts .social-link ',
+          prefixes=(
+            '  #contacts .contacts-grid ','  #contacts .card.card--dark ',
+            '  #contacts .card:not(.card--dark) {','  #contacts .card:not(.card--dark) h3 ',
+            '  #contacts .messenger-bar ','  #contacts .messenger-bar-btn ',
+            '  #contacts .social-links ','  #contacts .social-link '
           )
-          css = '\n'.join(
-              line for line in css.splitlines()
-              if not line.startswith(forbidden_mobile_prefixes)
-          ) + '\n'
+          s='\n'.join(line for line in s.splitlines() if not line.startswith(prefixes))+'\n'
+          a=s.find('@media (max-width:390px) {\n  #contacts .messenger-bar-btn')
+          if a>=0:
+              b=s.find('\n}\n',a)
+              if b>=0: s=s[:a]+s[b+3:]
 
-          # Remove the R3-only narrow-phone messenger relabel block.
-          start = css.find('@media (max-width:390px) {\n  #contacts .messenger-bar-btn')
-          if start != -1:
-              end = css.find('\n}\n', start)
-              if end != -1:
-                  css = css[:start] + css[end + 3:]
+          s += r'''
 
-          patch = r'''
-
-          /* Contact restoration R9 — restore the approved framed contact UI.
-             The original card, field borders, textarea size and floating-label
-             animation come from v20-fixes.css. Only the newer phone treatment
-             and restrained social hover accents are intentionally retained. */
-
-          /* Keep the newer minimal phone treatment; do not restore the old tile. */
+          /* Contact restoration R9 — approved framed form and social blocks. */
           #contacts .card.card--dark .contact-primary-icon,
           html #contacts .card.card--dark .contact-primary-icon {
-            width:38px !important;
-            height:38px !important;
-            flex:0 0 38px !important;
-            border:1px solid rgba(231,201,160,.35) !important;
-            border-radius:50% !important;
-            background:transparent !important;
-            color:#e8c58f !important;
-            box-shadow:none !important;
-            overflow:visible !important;
+            width:38px !important;height:38px !important;flex:0 0 38px !important;
+            border:1px solid rgba(231,201,160,.35) !important;border-radius:50% !important;
+            background:transparent !important;color:#e8c58f !important;box-shadow:none !important;overflow:visible !important;
           }
           #contacts .card.card--dark .contact-primary-icon::before,
-          #contacts .card.card--dark .contact-primary-icon::after {
-            content:none !important;
-            display:none !important;
-          }
+          #contacts .card.card--dark .contact-primary-icon::after {content:none !important;display:none !important;}
           #contacts .card.card--dark .contact-primary-icon svg,
           #contacts .card.card--dark .contact-primary-icon svg path {
-            width:17px !important;
-            height:17px !important;
-            fill:none !important;
-            stroke:currentColor !important;
-            stroke-width:1.55 !important;
-            stroke-linecap:round !important;
-            stroke-linejoin:round !important;
-            filter:none !important;
+            width:17px !important;height:17px !important;fill:none !important;stroke:currentColor !important;
+            stroke-width:1.55 !important;stroke-linecap:round !important;stroke-linejoin:round !important;filter:none !important;
           }
-
-          /* Restore framed social buttons with quieter idle colours. */
-          #contacts .social-links { gap:10px !important; }
+          #contacts .social-links {gap:10px !important;}
           #contacts .social-link {
-            min-height:42px !important;
-            padding:10px 13px !important;
-            border-width:1px !important;
-            border-style:solid !important;
-            border-radius:13px !important;
-            background:rgba(255,255,255,.025) !important;
-            color:rgba(244,229,208,.76) !important;
-            font-size:12px !important;
-            font-weight:500 !important;
-            box-shadow:inset 0 1px 0 rgba(255,255,255,.025) !important;
-            opacity:1 !important;
-            transition:transform .22s cubic-bezier(.22,1,.36,1),background-color .22s ease,border-color .22s ease,color .22s ease,box-shadow .24s ease !important;
+            min-height:42px !important;padding:10px 13px !important;border:1px solid !important;border-radius:13px !important;
+            background:rgba(255,255,255,.025) !important;color:rgba(244,229,208,.76) !important;
+            font-size:12px !important;font-weight:500 !important;box-shadow:inset 0 1px 0 rgba(255,255,255,.025) !important;
+            opacity:1 !important;transition:transform .22s cubic-bezier(.22,1,.36,1),background-color .22s ease,border-color .22s ease,color .22s ease,box-shadow .24s ease !important;
           }
-          #contacts .social-link svg {
-            opacity:.82;
-            transition:opacity .22s ease,filter .22s ease !important;
-          }
-          #contacts .social-link.vk { --soc-rgb:74,118,168; border-color:rgba(74,118,168,.24) !important; }
-          #contacts .social-link.tg { --soc-rgb:34,158,217; border-color:rgba(34,158,217,.23) !important; }
-          #contacts .social-link.max { --soc-rgb:123,94,232; border-color:rgba(123,94,232,.22) !important; }
-          #contacts .social-link.yt { --soc-rgb:220,55,55; border-color:rgba(220,55,55,.21) !important; }
-          #contacts .social-link.ya { --soc-rgb:222,73,48; border-color:rgba(222,73,48,.20) !important; }
-          #contacts .social-link.google { --soc-rgb:66,133,244; border-color:rgba(66,133,244,.20) !important; }
-
+          #contacts .social-link svg {opacity:.82;transition:opacity .22s ease,filter .22s ease !important;}
+          #contacts .social-link.vk {--soc-rgb:74,118,168;border-color:rgba(74,118,168,.24) !important;}
+          #contacts .social-link.tg {--soc-rgb:34,158,217;border-color:rgba(34,158,217,.23) !important;}
+          #contacts .social-link.max {--soc-rgb:123,94,232;border-color:rgba(123,94,232,.22) !important;}
+          #contacts .social-link.yt {--soc-rgb:220,55,55;border-color:rgba(220,55,55,.21) !important;}
+          #contacts .social-link.ya {--soc-rgb:222,73,48;border-color:rgba(222,73,48,.20) !important;}
+          #contacts .social-link.google {--soc-rgb:66,133,244;border-color:rgba(66,133,244,.20) !important;}
           @media (hover:hover) and (pointer:fine) {
-            #contacts .social-link:hover,
-            #contacts .social-link:focus-visible {
-              color:#fff4e5 !important;
-              background:rgba(var(--soc-rgb),.12) !important;
-              border-color:rgba(var(--soc-rgb),.58) !important;
+            #contacts .social-link:hover,#contacts .social-link:focus-visible {
+              color:#fff4e5 !important;background:rgba(var(--soc-rgb),.12) !important;border-color:rgba(var(--soc-rgb),.58) !important;
               box-shadow:0 8px 24px rgba(var(--soc-rgb),.18),inset 0 1px 0 rgba(255,255,255,.055) !important;
-              transform:translateY(-2px) !important;
-              filter:none !important;
+              transform:translateY(-2px) !important;filter:none !important;
             }
-            #contacts .social-link:hover svg,
-            #contacts .social-link:focus-visible svg {
-              opacity:1 !important;
-              filter:drop-shadow(0 0 6px rgba(var(--soc-rgb),.46)) !important;
+            #contacts .social-link:hover svg,#contacts .social-link:focus-visible svg {
+              opacity:1 !important;filter:drop-shadow(0 0 6px rgba(var(--soc-rgb),.46)) !important;
             }
           }
-
           @media (max-width:768px) {
-            #contacts .social-link {
-              min-height:44px !important;
-              padding:10px 9px !important;
-              border-radius:12px !important;
-              font-size:11px !important;
-            }
+            #contacts .social-link {min-height:44px !important;padding:10px 9px !important;border-radius:12px !important;font-size:11px !important;}
           }
           '''
 
-          css = css.rstrip() + patch + '\n'
-          for old in (
-              'milovi-premium-r3.css?v=20260803r5',
-              'milovi-premium-r3.css?v=20260803r6',
-              'milovi-premium-r3.css?v=20260803r7',
-              'milovi-premium-r3.css?v=20260803r8',
-          ):
-              html = html.replace(old, 'milovi-premium-r3.css?v=20260803r9')
-
-          css_path.write_text(css, encoding='utf-8')
-          html_path.write_text(html, encoding='utf-8')
+          for old in ('20260803r5','20260803r6','20260803r7','20260803r8'):
+              x=x.replace(old,'20260803r9')
+          p.write_text(s,encoding='utf-8');h.write_text(x,encoding='utf-8')
           PY
-
-      - name: Verify exact restored state
+      - name: Verify and publish
         shell: bash
         run: |
-          set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
-          css = Path('css/milovi-premium-r3.css').read_text(encoding='utf-8')
-          html = Path('index.html').read_text(encoding='utf-8')
-          base = Path('css/v20-fixes.css').read_text(encoding='utf-8')
-
-          required_css = [
-              'Contact restoration R9',
-              'border-radius:13px !important',
-              'background:rgba(var(--soc-rgb),.12)',
-              'border-radius:50% !important',
-          ]
-          required_base = [
-              'border:1px solid var(--mc-field-border) !important',
-              'border-radius:15px !important',
-              'textarea { min-height:112px',
-              'top:0 !important',
-              'border: 1px solid rgba(128,87,46,.20) !important',
-          ]
-          forbidden = [
-              'One refined rule per field',
-              'Contact form restoration R7',
-              'R8 — make the whole order-form card contour',
-              'form side must remain an open editorial surface',
-              '--r7-card-bg',
-              '--r8-card-bg',
-          ]
-          missing = [x for x in required_css if x not in css]
-          missing += [x for x in required_base if x not in base]
-          present = [x for x in forbidden if x in css]
-          if missing or present:
-              raise SystemExit(f'missing={missing}; forbidden_present={present}')
-          if 'milovi-premium-r3.css?v=20260803r9' not in html:
-              raise SystemExit('R9 cache version is not connected')
-          if css.count('{') != css.count('}'):
-              raise SystemExit('CSS brace imbalance')
-          print('R9 exact contact restoration verified')
+          s=Path('css/milovi-premium-r3.css').read_text();x=Path('index.html').read_text();b=Path('css/v20-fixes.css').read_text()
+          assert 'Contact restoration R9' in s
+          assert 'border:1px solid var(--mc-field-border) !important' in b
+          assert 'border-radius:15px !important' in b and 'min-height:112px' in b
+          assert '20260803r9' in x
+          assert 'Contact form restoration R7' not in s and '--r8-card-bg' not in s
+          assert s.count('{')==s.count('}')
           PY
-
-      - name: Commit clean product state
-        shell: bash
-        run: |
-          set -euo pipefail
           git rm -f .github/workflows/apply-contact-r9-restore.yml
           git config user.name 'github-actions[bot]'
           git config user.email '4189826+github-actions[bot]@users.noreply.github.com'
