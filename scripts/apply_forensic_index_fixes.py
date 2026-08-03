@@ -5,13 +5,22 @@ Temporary audit-branch helper. It is intentionally strict and idempotent: every
 production replacement must match the audited source exactly, otherwise the run
 fails instead of guessing.
 """
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = ROOT / "index.html"
-PREMIUM = ROOT / "css" / "premium-overrides.css"
 FIXES = ROOT / "css" / "v20-fixes.css"
 FORENSIC = ROOT / "tests" / "index-forensic-audit.spec.js"
+CSS_FILES = (
+    ROOT / "css" / "style.css",
+    ROOT / "css" / "mc-2026.css",
+    ROOT / "css" / "premium-overrides.css",
+    ROOT / "css" / "v20-dark-and-fixes.css",
+    ROOT / "css" / "v20-fixes.css",
+    ROOT / "css" / "final-fixes.css",
+    ROOT / "css" / "gallery" / "gallery-2026.css",
+)
 
 
 def replace_exact(text: str, old: str, new: str, label: str) -> str:
@@ -53,12 +62,21 @@ for title in ("Ручная Работа", "Натуральные Ингред�
     index = replace_exact(index, f"<h4>{title}</h4>", f"<h3>{title}</h3>", f"heading {title}")
 INDEX.write_text(index, encoding="utf-8")
 
-premium = PREMIUM.read_text(encoding="utf-8")
-if ".feature h4" in premium:
-    premium = premium.replace(".feature h4", ".feature h3")
-elif ".feature h3" not in premium:
-    raise SystemExit("forensic fix source mismatch: feature heading CSS")
-PREMIUM.write_text(premium, encoding="utf-8")
+# Preserve the exact visual styling after correcting the heading level. The
+# selector may live in any approved stylesheet, so migrate every occurrence
+# rather than assuming a particular cascade layer.
+heading_selectors_found = 0
+for css_path in CSS_FILES:
+    css = css_path.read_text(encoding="utf-8")
+    migrated, count = re.subn(r"(\.feature\s+)h4\b", r"\1h3", css)
+    heading_selectors_found += count
+    css_path.write_text(migrated, encoding="utf-8")
+if heading_selectors_found == 0:
+    # Some builds style the card through `.feature` only. That is valid as long
+    # as no stale h4-specific selector remains anywhere in the approved CSS.
+    stale = [str(path.relative_to(ROOT)) for path in CSS_FILES if re.search(r"\.feature\s+h4\b", path.read_text(encoding="utf-8"))]
+    if stale:
+        raise SystemExit(f"forensic fix source mismatch: stale feature h4 selectors in {stale}")
 
 fixes = FIXES.read_text(encoding="utf-8")
 date_css = r'''
@@ -66,12 +84,12 @@ date_css = r'''
 /* Cart date uses the native date picker, which does not support placeholder.
    Keep its label permanently docked to the field contour. */
 .cart-form .form-group.float-label .cart-date-input + label {
-  top: 0;
-  transform: translateY(-50%) scale(.88);
-  transform-origin: left center;
-  padding: 0 7px;
-  font-size: 12px;
-  letter-spacing: .025em;
+  top: 0 !important;
+  transform: translateY(-50%) scale(.88) !important;
+  transform-origin: left center !important;
+  padding: 0 7px !important;
+  font-size: 12px !important;
+  letter-spacing: .025em !important;
 }
 '''
 if "Cart date uses the native date picker" not in fixes:
