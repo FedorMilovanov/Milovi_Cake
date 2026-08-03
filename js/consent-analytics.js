@@ -304,6 +304,7 @@
   function onDialogKeydown(event) {
     if (event.key === 'Escape') {
       event.preventDefault();
+      event.stopPropagation();
       closeDialog();
       return;
     }
@@ -349,6 +350,14 @@
       if (choice) setChoice(choice.getAttribute('data-choice'));
     });
     dialog.addEventListener('keydown', onDialogKeydown);
+    /* Capture Escape at document level as well. Focus may temporarily move to a
+       browser-native control or a responsive sheet while the dialog is open. */
+    document.addEventListener('keydown', function (event) {
+      if (event.key !== 'Escape' || !overlay || overlay.hidden) return;
+      event.preventDefault();
+      event.stopPropagation();
+      closeDialog();
+    }, true);
     document.body.appendChild(overlay);
     syncDialog();
     return overlay;

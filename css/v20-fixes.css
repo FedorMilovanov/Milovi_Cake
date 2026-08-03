@@ -689,3 +689,37 @@ html[data-theme="dark"] #mcSheet .mc-row-privacy .mc-row-icon { background:linea
     filter: none !important;
   }
 }
+
+/* Forensic R78: the footer intentionally stays dark in both themes. Light-theme
+   variables must therefore never recolor its project cards and legal line with
+   dark page ink. These values meet readable contrast without making the footer
+   loud or changing the approved layout. */
+html:not([data-theme="dark"]) .site-footer .footer-projects-label {
+  color: #c99551 !important; /* important: overrides inherited light-page ink */
+}
+html:not([data-theme="dark"]) .site-footer .footer-projects-link {
+  color: #ead4b1 !important; /* important: existing cascade sets var(--text) */
+  border-color: rgba(212,167,106,.25) !important;
+  background: rgba(255,255,255,.025) !important;
+}
+html:not([data-theme="dark"]) .site-footer .footer-projects-link:hover {
+  color: #f2dfbf !important;
+  border-color: rgba(212,167,106,.48) !important;
+  background: rgba(212,167,106,.07) !important;
+}
+html:not([data-theme="dark"]) .site-footer .footer-projects-name {
+  color: #f0d9b2 !important;
+}
+html:not([data-theme="dark"]) .site-footer .footer-projects-desc {
+  color: rgba(246,229,204,.68) !important;
+}
+html:not([data-theme="dark"]) .site-footer .footer-projects-arrow {
+  color: #d4a76a !important;
+}
+html:not([data-theme="dark"]) .site-footer .footer-bottom span,
+html:not([data-theme="dark"]) .site-footer .footer-bottom a {
+  color: rgba(246,229,204,.58) !important;
+}
+html:not([data-theme="dark"]) .site-footer .footer-bottom a:hover {
+  color: #e8b87a !important;
+}

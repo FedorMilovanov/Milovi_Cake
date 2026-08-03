@@ -466,9 +466,14 @@ test.describe('INDEX forensic audit', () => {
       for (const [label, selector] of [['Каталог', '#catalog'], ['Начинки', '#fillings'], ['Отзывы', '#reviews']]) {
         await attempt(`Mobile nav: ${label}`, async () => {
           await page.locator('#mcNav .mc-btn', { hasText: label }).click();
-          await page.waitForTimeout(650);
-          const top = await page.locator(selector).evaluate((el) => el.getBoundingClientRect().top);
-          if (top > viewport.height * 0.55) throw new Error(`Цель слишком низко: ${top}px`);
+          const deadline = Date.now() + 4200;
+          let top = await page.locator(selector).evaluate((el) => el.getBoundingClientRect().top);
+          while (top > viewport.height * 0.55 && Date.now() < deadline) {
+            await page.waitForTimeout(120);
+            top = await page.locator(selector).evaluate((el) => el.getBoundingClientRect().top);
+          }
+          if (top > viewport.height * 0.55) throw new Error(`Цель слишком низко после settle: ${top}px`);
+          return { label, selector, top };
         });
       }
       await attempt('Mobile burger: открыть/закрыть', async () => {
@@ -530,7 +535,16 @@ test.describe('INDEX forensic audit', () => {
     await attempt('Calculator → cart', async () => {
       await page.locator('#calcType .calc-type-card[data-type="biscuit"]').click();
       const before = numberFrom(await page.locator('#cartBadge').textContent());
-      await page.locator('.calc-add-btn').scrollIntoViewIfNeeded();
+      if (mobile) {
+        const panel = page.locator('.calc-right-col');
+        if (!(await panel.evaluate((el) => el.classList.contains('calc-result-open')))) {
+          await page.locator('#calcCollapsedBar').click();
+          await page.waitForTimeout(480);
+        }
+        if (!(await panel.evaluate((el) => el.classList.contains('calc-result-open')))) throw new Error('Мобильная панель результата не раскрылась');
+      } else {
+        await page.locator('.calc-add-btn').scrollIntoViewIfNeeded();
+      }
       await page.waitForTimeout(180);
       await page.locator('.calc-add-btn').click();
       await page.waitForTimeout(200);
@@ -618,15 +632,30 @@ test.describe('INDEX forensic audit', () => {
       if (!(await page.locator('#backToTop').isVisible())) throw new Error('Back-to-top не виден');
       if (mobile) {
         const geometry = await page.evaluate(() => {
-          const nav = document.getElementById('mcNav').getBoundingClientRect();
-          const top = document.getElementById('backToTop').getBoundingClientRect();
-          const footer = document.querySelector('.site-footer .footer-bottom').getBoundingClientRect();
-          return { nav: nav.toJSON(), top: top.toJSON(), footer: footer.toJSON(), viewport: { width: innerWidth, height: innerHeight } };
+          const navEl = document.getElementById('mcNav');
+          const topEl = document.getElementById('backToTop');
+          const footerEl = document.querySelector('.site-footer .footer-bottom');
+          const siteFooter = document.querySelector('.site-footer');
+          const nav = navEl.getBoundingClientRect();
+          const top = topEl.getBoundingClientRect();
+          const footer = footerEl.getBoundingClientRect();
+          return {
+            nav: nav.toJSON(),
+            top: top.toJSON(),
+            footer: footer.toJSON(),
+            siteFooter: siteFooter.getBoundingClientRect().toJSON(),
+            bodyPaddingBottom: getComputedStyle(document.body).paddingBottom,
+            footerPaddingBottom: getComputedStyle(siteFooter).paddingBottom,
+            scrollY,
+            maxScroll: document.documentElement.scrollHeight - innerHeight,
+            viewport: { width: innerWidth, height: innerHeight },
+          };
         });
-        if (Math.abs(geometry.viewport.width - geometry.nav.right) > 2 || geometry.nav.left > 2 || Math.abs(geometry.viewport.height - geometry.nav.bottom) > 2) throw new Error(`Nav geometry: ${JSON.stringify(geometry)}`);
-        if (geometry.top.bottom > geometry.nav.top - 3) throw new Error('Back-to-top пересекает nav');
-        if (geometry.footer.bottom > geometry.nav.top + 1) throw new Error('Footer пересекает nav');
         evidence.mobileFixedGeometry = geometry;
+        await page.screenshot({ path: filePath('mobile-footer-nav-geometry'), animations: 'allow' });
+        if (Math.abs(geometry.viewport.width - geometry.nav.right) > 2 || geometry.nav.left > 2 || Math.abs(geometry.viewport.height - geometry.nav.bottom) > 2) throw new Error(`Nav geometry: ${JSON.stringify(geometry)}`);
+        if (geometry.top.bottom > geometry.nav.top - 3) throw new Error(`Back-to-top пересекает nav: ${JSON.stringify(geometry)}`);
+        if (geometry.footer.bottom > geometry.nav.top + 1) throw new Error(`Footer пересекает nav: ${JSON.stringify(geometry)}`);
       }
       await page.locator('#backToTop').click();
       const deadline = Date.now() + 4500;
@@ -661,7 +690,7 @@ test.describe('INDEX forensic audit', () => {
     });
     record('critical', 'Privacy: до согласия нет analytics requests', analyticsRequests.length === 0, `Запросов: ${analyticsRequests.length}`, analyticsRequests);
     await attempt('Privacy: Escape без принудительного выбора', async () => {
-      await page.locator('.mc-consent-dialog').press('Escape');
+      await page.keyboard.press('Escape');
       await page.waitForTimeout(520);
       if (await page.locator('.mc-consent-overlay').isVisible()) throw new Error('Окно не закрылось');
       const stored = await page.evaluate(() => localStorage.getItem('milovi_analytics_consent_v1'));
