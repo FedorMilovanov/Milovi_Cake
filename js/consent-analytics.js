@@ -1,6 +1,6 @@
 /* Milovi Cake — centralized privacy-first analytics loader.
  * No third-party request is made before an explicit visitor choice.
- * The persistent control lives in the footer; the decision UI is one accessible modal.
+ * Desktop settings live in the footer; mobile settings live inside the app-like “Ещё” sheet.
  */
 (function () {
   'use strict';
@@ -8,6 +8,7 @@
   var STORAGE_KEY = 'milovi_analytics_consent_v1';
   var GA_ID = 'G-94ZZ5B8YNY';
   var YM_ID = 106945185;
+  var mobileMq = window.matchMedia('(max-width: 768px)');
   var state = readChoice();
   var overlay = null;
   var dialog = null;
@@ -19,6 +20,11 @@
   var closeTimer = null;
   var loaded = false;
   var goalsBound = false;
+  var shellObserver = null;
+
+  function isMobileApp() {
+    return mobileMq.matches;
+  }
 
   function readChoice() {
     try {
@@ -39,7 +45,7 @@
     var polish = document.createElement('link');
     polish.id = 'milovi-contact-polish';
     polish.rel = 'stylesheet';
-    polish.href = '/css/contact-polish.css?v=20260803r6';
+    polish.href = '/css/contact-polish.css?v=20260803r7';
     document.head.appendChild(polish);
   }
 
@@ -138,6 +144,11 @@
   }
 
   function renderFooterTrigger() {
+    if (isMobileApp()) {
+      if (trigger && trigger.isConnected) trigger.remove();
+      trigger = null;
+      return null;
+    }
     if (trigger && trigger.isConnected) return trigger;
     var host = footerHost();
     if (!host) return null;
@@ -158,6 +169,97 @@
     return 'Выбор ещё не сделан';
   }
 
+  function mobileStateLabel() {
+    if (state === 'granted') return 'Разрешена';
+    if (state === 'denied') return 'Отключена';
+    return 'Выбор не сделан';
+  }
+
+  function syncMobilePrivacyRow() {
+    var sub = document.querySelector('#mcPrivacyRow .mc-row-sub');
+    if (sub) sub.textContent = mobileStateLabel();
+  }
+
+  function removeLegacyMobileShells() {
+    if (!isMobileApp()) return;
+    ['bottomNav', 'mrBottomNav'].forEach(function (id) {
+      var old = document.getElementById(id);
+      if (!old) return;
+      old.hidden = true;
+      old.setAttribute('aria-hidden', 'true');
+      old.style.setProperty('display', 'none', 'important');
+      old.style.setProperty('pointer-events', 'none', 'important');
+    });
+    var nav = document.getElementById('mcNav');
+    if (nav) nav.classList.remove('mc-nav--hidden');
+    document.body.classList.remove('mc-nav-hidden');
+  }
+
+  function removeMobilePrivacyRow() {
+    var section = document.querySelector('#mcSheet .mc-section--privacy');
+    if (section) section.remove();
+  }
+
+  function ensureMobilePrivacyRow() {
+    if (!isMobileApp()) {
+      removeMobilePrivacyRow();
+      return false;
+    }
+    var sheet = document.getElementById('mcSheet');
+    if (!sheet) return false;
+    var current = document.getElementById('mcPrivacyRow');
+    if (current) {
+      syncMobilePrivacyRow();
+      return true;
+    }
+
+    var section = document.createElement('div');
+    section.className = 'mc-section mc-section--privacy';
+    section.innerHTML = '' +
+      '<div class="mc-section-label">Настройки</div>' +
+      '<button type="button" class="mc-row mc-row-privacy" id="mcPrivacyRow" aria-haspopup="dialog" aria-controls="mc-consent-dialog">' +
+        '<span class="mc-row-icon" aria-hidden="true">' +
+          '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
+            '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>' +
+            '<path d="M9.5 12l1.7 1.7 3.6-4"/>' +
+          '</svg>' +
+        '</span>' +
+        '<span class="mc-row-text">' +
+          '<span class="mc-row-name">Конфиденциальность</span>' +
+          '<span class="mc-row-sub">' + mobileStateLabel() + '</span>' +
+        '</span>' +
+        '<span class="mc-row-arrow" aria-hidden="true">' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>' +
+        '</span>' +
+      '</button>';
+
+    var safe = sheet.querySelector('.mc-sheet-safe');
+    sheet.insertBefore(section, safe || null);
+    section.querySelector('#mcPrivacyRow').addEventListener('click', function () {
+      if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
+      setTimeout(function () { openDialog(false); }, 220);
+    });
+    return true;
+  }
+
+  function syncResponsiveControls() {
+    document.documentElement.classList.toggle('mc-mobile-app', isMobileApp());
+    removeLegacyMobileShells();
+    renderFooterTrigger();
+    ensureMobilePrivacyRow();
+  }
+
+  function installMobileShellBridge() {
+    syncResponsiveControls();
+    if (shellObserver) return;
+    shellObserver = new MutationObserver(function () {
+      removeLegacyMobileShells();
+      ensureMobilePrivacyRow();
+    });
+    shellObserver.observe(document.body, { childList: true, subtree: true });
+    window.addEventListener('scroll', removeLegacyMobileShells, { passive: true });
+  }
+
   function syncDialog() {
     if (!dialog) return;
     if (statusValue) statusValue.textContent = stateLabel();
@@ -171,6 +273,7 @@
       allowButton.classList.toggle('is-selected', granted);
       allowButton.setAttribute('aria-pressed', granted ? 'true' : 'false');
     }
+    syncMobilePrivacyRow();
   }
 
   function focusableElements() {
@@ -211,6 +314,7 @@
     overlay.hidden = true;
     overlay.innerHTML = '' +
       '<section class="mc-consent-dialog" id="mc-consent-dialog" role="dialog" aria-modal="true" aria-labelledby="mc-consent-title" aria-describedby="mc-consent-description">' +
+        '<div class="mc-consent-handle" aria-hidden="true"></div>' +
         '<button class="mc-consent-close" type="button" aria-label="Закрыть настройки конфиденциальности">×</button>' +
         '<p class="mc-consent-eyebrow">Конфиденциальность</p>' +
         '<h2 class="mc-consent-title" id="mc-consent-title">Настройки аналитики</h2>' +
@@ -245,6 +349,7 @@
   }
 
   function openDialog(autoOpened) {
+    if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
     ensureDialog();
     renderFooterTrigger();
     if (closeTimer) {
@@ -298,7 +403,7 @@
   function init() {
     ensureUiAssets();
     bindConversionGoals();
-    renderFooterTrigger();
+    installMobileShellBridge();
     ensureDialog();
 
     if (state === 'granted') loadAnalytics();
@@ -319,6 +424,10 @@
     deny: function () { setChoice('denied'); },
     goal: sendGoal
   };
+
+  document.addEventListener('milovi:open-consent', function () { openDialog(false); });
+  if (mobileMq.addEventListener) mobileMq.addEventListener('change', syncResponsiveControls);
+  else mobileMq.addListener(syncResponsiveControls);
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
   else init();
