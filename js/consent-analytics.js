@@ -150,6 +150,24 @@
       document.querySelector('.site-footer, footer');
   }
 
+  function syncFooterPolicyLink() {
+    var mobile = isMobileApp();
+    document.querySelectorAll('.site-footer .footer-bottom > a[href="/privacy/"], footer .footer-bottom > a[href="/privacy/"]').forEach(function (link) {
+      link.classList.add('mc-footer-policy-link');
+      if (mobile) {
+        link.hidden = true;
+        link.setAttribute('aria-hidden', 'true');
+        link.setAttribute('tabindex', '-1');
+        link.style.setProperty('display', 'none', 'important');
+      } else {
+        link.hidden = false;
+        link.removeAttribute('aria-hidden');
+        link.removeAttribute('tabindex');
+        link.style.removeProperty('display');
+      }
+    });
+  }
+
   function renderFooterTrigger() {
     if (isMobileApp()) {
       if (trigger && trigger.isConnected) trigger.remove();
@@ -243,6 +261,7 @@
   function syncResponsiveControls() {
     document.documentElement.classList.toggle('mc-mobile-app', isMobileApp());
     removeLegacyMobileShells();
+    syncFooterPolicyLink();
     renderFooterTrigger();
     ensureMobilePrivacyRow();
   }
@@ -252,6 +271,7 @@
     if (shellObserver) return;
     shellObserver = new MutationObserver(function () {
       removeLegacyMobileShells();
+      syncFooterPolicyLink();
       ensureMobilePrivacyRow();
     });
     shellObserver.observe(document.body, { childList: true, subtree: true });
