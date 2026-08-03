@@ -491,3 +491,42 @@ html body #contacts .contacts-grid > .card:not(.card--dark):hover {
   #contacts .card:not(.card--dark) .form-group.float-label label { transition:none !important; }
 }
 
+/* R8 — make the whole order-form card contour unmistakably visible.
+   Field styling is intentionally untouched; only the outer card geometry changes. */
+html:not([data-theme="dark"]) body #contacts .contacts-grid > .card:not(.card--dark) {
+  --r8-card-bg:linear-gradient(145deg,#fffdf9 0%,#f8f0e5 100%);
+  --r8-card-border:rgba(126,82,42,.62);
+  --r8-card-ring:rgba(255,255,255,.82);
+  --r8-card-shadow:0 22px 54px rgba(74,43,20,.16);
+}
+html[data-theme="dark"] body #contacts .contacts-grid > .card:not(.card--dark) {
+  --r8-card-bg:linear-gradient(150deg,#21150e 0%,#100b07 100%);
+  --r8-card-border:rgba(226,182,122,.52);
+  --r8-card-ring:rgba(255,255,255,.045);
+  --r8-card-shadow:0 26px 66px rgba(0,0,0,.42);
+}
+
+html body #contacts .contacts-grid > .card:not(.card--dark),
+html:not([data-theme="dark"]) body #contacts .contacts-grid > .card:not(.card--dark),
+html[data-theme="dark"] body #contacts .contacts-grid > .card:not(.card--dark) {
+  box-sizing:border-box !important;
+  border:1.5px solid var(--r8-card-border) !important;
+  background:var(--r8-card-bg) !important;
+  box-shadow:0 0 0 1px var(--r8-card-ring),var(--r8-card-shadow) !important;
+  overflow:hidden !important;
+}
+
+@media (max-width:768px) {
+  html body #contacts .contacts-grid > .card:not(.card--dark),
+  html:not([data-theme="dark"]) body #contacts .contacts-grid > .card:not(.card--dark),
+  html[data-theme="dark"] body #contacts .contacts-grid > .card:not(.card--dark) {
+    width:calc(100% - 28px) !important;
+    max-width:calc(100% - 28px) !important;
+    margin-left:14px !important;
+    margin-right:14px !important;
+    justify-self:center !important;
+    padding:30px 24px 32px !important;
+    border-radius:28px 10px 28px 10px !important;
+  }
+}
+
