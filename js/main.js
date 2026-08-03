@@ -1807,7 +1807,7 @@ if (scField && trackEl && dotsEl && stageEl) {
     const full = txtEl.dataset.full;
     const myGen = typeGen;
     if(typeTimer){ clearTimeout(typeTimer); typeTimer=null; }
-    const CHAR_DELAY = 28, ASSEMBLE_DUR = 600;
+    const CHAR_DELAY = 2, ASSEMBLE_DUR = 180;
     const hasSegmenter = typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function';
     const segmenter = hasSegmenter ? new Intl.Segmenter('ru', { granularity: 'grapheme' }) : null;
     function segmentText(str) { if (segmenter) return [...segmenter.segment(str)].map(s => s.segment); return [...str]; }
@@ -1884,8 +1884,8 @@ if (scField && trackEl && dotsEl && stageEl) {
     if(!txtEl) return;
     const spans = Array.from(txtEl.querySelectorAll('.pl, .pl-emoji'));
     if(!spans.length) return;
-    const SHATTER_DUR = 480, myGen = ++dissolveGen;
-    const data = spans.map((el, i) => { const a = Math.random()*Math.PI*2, d = 40+Math.random()*100; return { el, delay: i*8, tx: Math.cos(a)*d, ty: Math.sin(a)*d-20, rot: (Math.random()-0.5)*90 }; });
+    const SHATTER_DUR = 180, myGen = ++dissolveGen;
+    const data = spans.map((el, i) => { const a = Math.random()*Math.PI*2, d = 40+Math.random()*100; return { el, delay: i*2, tx: Math.cos(a)*d, ty: Math.sin(a)*d-20, rot: (Math.random()-0.5)*90 }; });
     const start = performance.now();
     function tick(now){ if(dissolveGen !== myGen) return; const t = now - start; let done = true; for(const d of data){ const local = t - d.delay; if(local < 0){ done = false; continue; } const raw = Math.min(local/SHATTER_DUR, 1); if(raw < 1) done = false; const p = raw*raw; d.el.style.opacity = String(Math.max(0,1-raw*2)); d.el.style.filter = `blur(${(raw*4).toFixed(2)}px)`; d.el.style.transform = `translate(${(d.tx*p).toFixed(2)}px, ${(d.ty*p).toFixed(2)}px) rotate(${(d.rot*p).toFixed(2)}deg) scale(${(1-raw*0.5).toFixed(3)})`; } if(!done) requestAnimationFrame(tick); }
     requestAnimationFrame(tick);

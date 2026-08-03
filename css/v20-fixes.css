@@ -677,3 +677,15 @@ html[data-theme="dark"] #mcSheet .mc-row-privacy .mc-row-icon { background:linea
   font-size: 12px !important;
   letter-spacing: .025em !important;
 }
+
+/* Forensic R77: review copy must never be blank on mobile while the decorative
+   per-letter desktop animation is assembling. Inline animation styles are
+   intentionally overridden only below 600px; the card remains fully readable. */
+@media (max-width: 600px) {
+  #reviews .review-text .pl,
+  #reviews .review-text .pl-emoji {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
