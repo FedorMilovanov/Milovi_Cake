@@ -1,5 +1,5 @@
 # Apply audited INDEX fixes
 
-This marker requests the seventh deterministic forensic pass: guarantee that review text always finishes visibly, make manual review arrows override autoplay, and verify the mobile cart through the visible bottom navigation action.
+This marker requests the eighth deterministic forensic pass: keep the mobile back-to-top control clear of the footer capsule, improve lower-footer legibility, assert the real collision geometry, and produce clean section screenshots without closed fixed overlays.
 
 It has no production runtime effect and will be removed after verification.
