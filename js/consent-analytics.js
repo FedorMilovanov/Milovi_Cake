@@ -1,5 +1,6 @@
 /* Milovi Cake — centralized privacy-first analytics loader.
  * No third-party request is made before an explicit visitor choice.
+ * The persistent control lives in the footer; the decision UI is one accessible modal.
  */
 (function () {
   'use strict';
@@ -8,8 +9,14 @@
   var GA_ID = 'G-94ZZ5B8YNY';
   var YM_ID = 106945185;
   var state = readChoice();
-  var banner = null;
-  var settingsButton = null;
+  var overlay = null;
+  var dialog = null;
+  var trigger = null;
+  var statusValue = null;
+  var denyButton = null;
+  var allowButton = null;
+  var lastFocused = null;
+  var closeTimer = null;
   var loaded = false;
   var goalsBound = false;
 
@@ -27,27 +34,13 @@
     state = value;
   }
 
-  function addStyle() {
-    if (!document.getElementById('milovi-contact-polish')) {
-      var polish = document.createElement('link');
-      polish.id = 'milovi-contact-polish';
-      polish.rel = 'stylesheet';
-      polish.href = '/css/contact-polish.css?v=20260803r3';
-      document.head.appendChild(polish);
-    }
-    if (document.getElementById('milovi-consent-style')) return;
-    var style = document.createElement('style');
-    style.id = 'milovi-consent-style';
-    style.textContent = [
-      '.mc-consent{position:fixed;z-index:2147483000;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(760px,calc(100% - 28px));padding:20px;border:1px solid rgba(201,147,74,.45);border-radius:22px;background:rgba(24,16,10,.97);color:#f5ead9;box-shadow:0 22px 70px rgba(0,0,0,.38);font:400 15px/1.55 Jost,system-ui,sans-serif;backdrop-filter:blur(14px)}',
-      '.mc-consent[hidden],.mc-consent-settings[hidden]{display:none!important}.mc-consent__title{margin:0 0 7px;font:500 22px/1.2 "Cormorant Garamond",Georgia,serif}.mc-consent__text{margin:0;color:#d8c7b2}.mc-consent a{color:#e7b875}.mc-consent__actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-top:16px}',
-      '.mc-consent__button{min-height:44px;padding:10px 18px;border-radius:999px;border:1px solid rgba(231,184,117,.45);font:600 14px/1 Jost,system-ui,sans-serif;cursor:pointer}.mc-consent__button--deny{background:transparent;color:#f5ead9}.mc-consent__button--allow{background:#d4a76a;color:#21150d;border-color:#d4a76a}',
-      '.mc-consent-settings{position:fixed;z-index:2147482000;right:84px;bottom:max(18px,env(safe-area-inset-bottom));min-height:38px;padding:8px 13px;border-radius:999px;border:1px solid rgba(201,147,74,.45);background:rgba(24,16,10,.9);color:#f5ead9;font:500 12px/1.2 Jost,system-ui,sans-serif;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.2)}',
-      '@media(max-width:768px){.mc-consent-settings{left:12px;right:auto;bottom:calc(72px + env(safe-area-inset-bottom,0px))}}',
-      '@media(max-width:560px){.mc-consent{padding:17px}.mc-consent__actions{display:grid;grid-template-columns:1fr 1fr}.mc-consent__button{width:100%}}',
-      '@media(prefers-reduced-motion:reduce){.mc-consent,.mc-consent-settings{scroll-behavior:auto}}'
-    ].join('');
-    document.head.appendChild(style);
+  function ensureUiAssets() {
+    if (document.getElementById('milovi-contact-polish')) return;
+    var polish = document.createElement('link');
+    polish.id = 'milovi-contact-polish';
+    polish.rel = 'stylesheet';
+    polish.href = '/css/contact-polish.css?v=20260803r6';
+    document.head.appendChild(polish);
   }
 
   function loadGoogleAnalytics() {
@@ -93,6 +86,7 @@
   function loadAnalytics() {
     if (loaded || state !== 'granted') return;
     loaded = true;
+    window['ga-disable-' + GA_ID] = false;
     loadGoogleAnalytics();
     loadYandexMetrika();
   }
@@ -137,74 +131,189 @@
     }, true);
   }
 
-  function setChoice(value) {
-    saveChoice(value);
-    hideBanner();
-    renderSettingsButton();
-    if (value === 'granted') {
-      loadAnalytics();
+  function footerHost() {
+    return document.querySelector('.site-footer .footer-bottom, footer .footer-bottom') ||
+      document.querySelector('.site-footer .container, footer .container') ||
+      document.querySelector('.site-footer, footer');
+  }
+
+  function renderFooterTrigger() {
+    if (trigger && trigger.isConnected) return trigger;
+    var host = footerHost();
+    if (!host) return null;
+    trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'mc-consent-trigger';
+    trigger.textContent = 'Настройки конфиденциальности';
+    trigger.setAttribute('aria-haspopup', 'dialog');
+    trigger.setAttribute('aria-controls', 'mc-consent-dialog');
+    trigger.addEventListener('click', function () { openDialog(false); });
+    host.appendChild(trigger);
+    return trigger;
+  }
+
+  function stateLabel() {
+    if (state === 'granted') return 'Аналитика разрешена';
+    if (state === 'denied') return 'Аналитика отключена';
+    return 'Выбор ещё не сделан';
+  }
+
+  function syncDialog() {
+    if (!dialog) return;
+    if (statusValue) statusValue.textContent = stateLabel();
+    if (denyButton) {
+      var denied = state === 'denied';
+      denyButton.classList.toggle('is-selected', denied);
+      denyButton.setAttribute('aria-pressed', denied ? 'true' : 'false');
+    }
+    if (allowButton) {
+      var granted = state === 'granted';
+      allowButton.classList.toggle('is-selected', granted);
+      allowButton.setAttribute('aria-pressed', granted ? 'true' : 'false');
+    }
+  }
+
+  function focusableElements() {
+    if (!dialog) return [];
+    return Array.prototype.slice.call(dialog.querySelectorAll(
+      'button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'
+    )).filter(function (element) {
+      return element.offsetWidth > 0 || element.offsetHeight > 0;
+    });
+  }
+
+  function onDialogKeydown(event) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeDialog();
       return;
     }
+    if (event.key !== 'Tab') return;
+    var focusable = focusableElements();
+    if (!focusable.length) return;
+    var first = focusable[0];
+    var last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  function ensureDialog() {
+    ensureUiAssets();
+    if (overlay) return overlay;
+
+    overlay = document.createElement('div');
+    overlay.className = 'mc-consent-overlay';
+    overlay.hidden = true;
+    overlay.innerHTML = '' +
+      '<section class="mc-consent-dialog" id="mc-consent-dialog" role="dialog" aria-modal="true" aria-labelledby="mc-consent-title" aria-describedby="mc-consent-description">' +
+        '<button class="mc-consent-close" type="button" aria-label="Закрыть настройки конфиденциальности">×</button>' +
+        '<p class="mc-consent-eyebrow">Конфиденциальность</p>' +
+        '<h2 class="mc-consent-title" id="mc-consent-title">Настройки аналитики</h2>' +
+        '<p class="mc-consent-text" id="mc-consent-description">Сайт полностью работает без аналитики. Google Analytics и Яндекс.Метрика подключаются только после разрешения и помогают понять, какие разделы удобны посетителям. Подробнее — в <a href="/privacy/">политике конфиденциальности</a>.</p>' +
+        '<div class="mc-consent-status" aria-live="polite">' +
+          '<span class="mc-consent-status-label">Текущее состояние</span>' +
+          '<strong class="mc-consent-status-value"></strong>' +
+        '</div>' +
+        '<div class="mc-consent-actions">' +
+          '<button class="mc-consent-button mc-consent-button--deny" type="button" data-choice="denied" aria-pressed="false">Без аналитики</button>' +
+          '<button class="mc-consent-button mc-consent-button--allow" type="button" data-choice="granted" aria-pressed="false">Разрешить аналитику</button>' +
+        '</div>' +
+      '</section>';
+
+    dialog = overlay.querySelector('.mc-consent-dialog');
+    statusValue = overlay.querySelector('.mc-consent-status-value');
+    denyButton = overlay.querySelector('[data-choice="denied"]');
+    allowButton = overlay.querySelector('[data-choice="granted"]');
+
+    overlay.querySelector('.mc-consent-close').addEventListener('click', closeDialog);
+    overlay.addEventListener('click', function (event) {
+      if (event.target === overlay) closeDialog();
+    });
+    overlay.addEventListener('click', function (event) {
+      var choice = event.target.closest('[data-choice]');
+      if (choice) setChoice(choice.getAttribute('data-choice'));
+    });
+    dialog.addEventListener('keydown', onDialogKeydown);
+    document.body.appendChild(overlay);
+    syncDialog();
+    return overlay;
+  }
+
+  function openDialog(autoOpened) {
+    ensureDialog();
+    renderFooterTrigger();
+    if (closeTimer) {
+      clearTimeout(closeTimer);
+      closeTimer = null;
+    }
+    lastFocused = autoOpened ? null : document.activeElement;
+    syncDialog();
+    overlay.hidden = false;
+    document.body.classList.add('mc-consent-open');
+    requestAnimationFrame(function () {
+      overlay.classList.add('is-open');
+      var focusTarget = overlay.querySelector('.mc-consent-close');
+      if (focusTarget) focusTarget.focus({ preventScroll: true });
+    });
+  }
+
+  function closeDialog() {
+    if (!overlay || overlay.hidden) return;
+    overlay.classList.remove('is-open');
+    document.body.classList.remove('mc-consent-open');
+    closeTimer = setTimeout(function () {
+      overlay.hidden = true;
+      closeTimer = null;
+      if (lastFocused && lastFocused.isConnected && typeof lastFocused.focus === 'function') {
+        lastFocused.focus({ preventScroll: true });
+      }
+    }, 240);
+  }
+
+  function setChoice(value) {
+    var previous = state;
+    saveChoice(value);
+    syncDialog();
+
+    if (value === 'granted') {
+      window['ga-disable-' + GA_ID] = false;
+      loadAnalytics();
+      closeDialog();
+      return;
+    }
+
     window['ga-disable-' + GA_ID] = true;
-    if (loaded) location.reload();
-  }
-
-  function hideBanner() {
-    if (banner) banner.hidden = true;
-    if (settingsButton) settingsButton.hidden = false;
-  }
-
-  function showBanner() {
-    addStyle();
-    if (!banner) {
-      banner = document.createElement('section');
-      banner.className = 'mc-consent';
-      banner.setAttribute('role', 'dialog');
-      banner.setAttribute('aria-modal', 'false');
-      banner.setAttribute('aria-labelledby', 'mc-consent-title');
-      banner.innerHTML = '' +
-        '<h2 class="mc-consent__title" id="mc-consent-title">Помочь улучшать сайт?</h2>' +
-        '<p class="mc-consent__text">Google Analytics и Яндекс.Метрика загружаются только после вашего согласия. Отказ не ограничивает каталог, корзину и оформление заказа. Подробнее — в <a href="/privacy/">политике конфиденциальности</a>.</p>' +
-        '<div class="mc-consent__actions">' +
-          '<button class="mc-consent__button mc-consent__button--deny" type="button" data-choice="denied">Без аналитики</button>' +
-          '<button class="mc-consent__button mc-consent__button--allow" type="button" data-choice="granted">Разрешить</button>' +
-        '</div>';
-      banner.addEventListener('click', function (event) {
-        var target = event.target.closest('[data-choice]');
-        if (target) setChoice(target.getAttribute('data-choice'));
-      });
-      document.body.appendChild(banner);
+    if (loaded && previous === 'granted') {
+      location.reload();
+      return;
     }
-    if (settingsButton) settingsButton.hidden = true;
-    banner.hidden = false;
-    var first = banner.querySelector('[data-choice="denied"]');
-    if (first) first.focus({ preventScroll: true });
-  }
-
-  function renderSettingsButton() {
-    addStyle();
-    if (!settingsButton) {
-      settingsButton = document.createElement('button');
-      settingsButton.type = 'button';
-      settingsButton.className = 'mc-consent-settings';
-      settingsButton.textContent = 'Конфиденциальность';
-      settingsButton.setAttribute('aria-label', 'Изменить настройки аналитики');
-      settingsButton.addEventListener('click', showBanner);
-      document.body.appendChild(settingsButton);
-    }
-    settingsButton.hidden = banner ? !banner.hidden : false;
+    closeDialog();
   }
 
   function init() {
-    addStyle();
+    ensureUiAssets();
     bindConversionGoals();
+    renderFooterTrigger();
+    ensureDialog();
+
     if (state === 'granted') loadAnalytics();
-    if (state) renderSettingsButton();
-    else showBanner();
+    else window['ga-disable-' + GA_ID] = true;
+
+    if (!state) {
+      setTimeout(function () {
+        if (!state && !document.hidden) openDialog(true);
+      }, 700);
+    }
   }
 
   window.MiloviConsent = {
-    open: showBanner,
+    open: function () { openDialog(false); },
+    close: closeDialog,
     getChoice: function () { return state; },
     grant: function () { setChoice('granted'); },
     deny: function () { setChoice('denied'); },
