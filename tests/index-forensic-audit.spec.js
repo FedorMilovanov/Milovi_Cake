@@ -404,6 +404,13 @@ test.describe('INDEX forensic audit', () => {
         await page.screenshot({ path: filePath('contact-dark-clean-viewport'), animations: 'allow' });
       });
     }
+    if (page.viewportSize().width <= 768) {
+      await attempt('Чистый mobile viewport контактов dark', async () => {
+        await page.locator('#contacts').scrollIntoViewIfNeeded();
+        await page.waitForTimeout(220);
+        await page.screenshot({ path: filePath('contact-dark-clean-viewport'), animations: 'allow' });
+      });
+    }
 
     if (light && dark) {
       record('critical', 'Theme: атрибут dark', dark.theme === 'dark', `Получено: ${dark.theme}`, dark);
@@ -706,11 +713,19 @@ test.describe('INDEX forensic audit', () => {
         evidence.mobileFixedGeometry = geometry;
         await page.screenshot({ path: filePath('mobile-footer-nav-geometry'), animations: 'allow' });
         await page.screenshot({ path: filePath('mobile-footer-clean-viewport'), animations: 'disabled' });
+        await page.screenshot({ path: filePath('mobile-footer-clean-viewport'), animations: 'disabled' });
         if (Math.abs(geometry.viewport.width - geometry.nav.right) > 2 || geometry.nav.left > 2 || Math.abs(geometry.viewport.height - geometry.nav.bottom) > 2) throw new Error(`Nav geometry: ${JSON.stringify(geometry)}`);
         if (geometry.top.bottom > geometry.nav.top - 3) throw new Error(`Back-to-top пересекает nav: ${JSON.stringify(geometry)}`);
         const footerVisible = geometry.footer.bottom > 0 && geometry.footer.top < geometry.viewport.height;
         if (!footerVisible) throw new Error(`Footer не доведён в viewport: ${JSON.stringify(geometry)}`);
         if (geometry.footer.bottom > geometry.nav.top + 1) throw new Error(`Footer пересекает nav: ${JSON.stringify(geometry)}`);
+        const arrowFooterOverlap = !(
+          geometry.top.right <= geometry.footer.left ||
+          geometry.top.left >= geometry.footer.right ||
+          geometry.top.bottom <= geometry.footer.top ||
+          geometry.top.top >= geometry.footer.bottom
+        );
+        if (arrowFooterOverlap) throw new Error(`Back-to-top пересекает footer capsule: ${JSON.stringify(geometry)}`);
         const arrowFooterOverlap = !(
           geometry.top.right <= geometry.footer.left ||
           geometry.top.left >= geometry.footer.right ||
