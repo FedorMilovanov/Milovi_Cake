@@ -2314,3 +2314,34 @@ window.cbFlavor = cbFlavor; window.cbFaq = cbFaq;
   function init() { enhance(document); document.addEventListener('keydown',function(e){ var el = e.target&&e.target.closest?e.target.closest(SELECTOR):null; if(!el||el.matches('a,button,input,textarea,select')) return; if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); setTimeout(function(){syncPressed(el);},0); } }); document.addEventListener('click',function(e){ var el = e.target&&e.target.closest?e.target.closest(SELECTOR):null; if(el) setTimeout(function(){syncPressed(el);},0); },true); if('MutationObserver' in window){ var mo = new MutationObserver(function(muts){ muts.forEach(function(m){ m.addedNodes&&Array.prototype.forEach.call(m.addedNodes,function(node){ if(node.nodeType===1){ if(node.matches&&node.matches(SELECTOR)) enhance({querySelectorAll:function(){return[node];}}); enhance(node); } }); }); }); mo.observe(document.documentElement,{childList:true,subtree:true}); } }
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
 })();
+
+/* Forensic R81: keep the mobile back-to-top control clear of footer content. */
+(function initBackToTopFooterClearance() {
+  var button = document.getElementById('backToTop');
+  var footerBottom = document.querySelector('.site-footer .footer-bottom');
+  if (!button || !footerBottom) return;
+
+  function setClearance(active) {
+    button.classList.toggle('footer-clearance', Boolean(active) && window.innerWidth <= 768);
+  }
+
+  if (typeof IntersectionObserver === 'function') {
+    var observer = new IntersectionObserver(function(entries) {
+      setClearance(entries.some(function(entry) { return entry.isIntersecting; }));
+    }, { threshold: 0.01 });
+    observer.observe(footerBottom);
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 768) setClearance(false);
+    }, { passive: true });
+    return;
+  }
+
+  function fallback() {
+    var rect = footerBottom.getBoundingClientRect();
+    setClearance(rect.bottom > 0 && rect.top < window.innerHeight);
+  }
+  window.addEventListener('scroll', fallback, { passive: true });
+  window.addEventListener('resize', fallback, { passive: true });
+  fallback();
+})();
+

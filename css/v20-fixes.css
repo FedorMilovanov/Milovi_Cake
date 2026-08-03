@@ -737,3 +737,37 @@ html:not([data-theme="dark"]) .site-footer .footer-bottom a:hover {
     isolation: isolate;
   }
 }
+
+/* Forensic R81: footer legibility and collision-free back-to-top.
+   The footer stays deliberately dark in both themes; only text contrast and
+   the arrow's temporary clearance are adjusted. */
+.site-footer .footer-bottom {
+  color: rgba(235, 215, 187, .66) !important;
+}
+.site-footer .footer-bottom > span,
+.site-footer .footer-bottom > div {
+  color: inherit !important;
+  opacity: 1 !important;
+}
+.site-footer .footer-bottom a {
+  color: rgba(238, 218, 187, .76) !important;
+  opacity: 1 !important;
+}
+.site-footer .footer-bottom a:hover,
+.site-footer .footer-bottom a:focus-visible {
+  color: rgba(255, 237, 207, .96) !important;
+}
+.site-footer .footer-bottom .mc-consent-trigger {
+  color: rgba(226, 192, 145, .82) !important;
+}
+[data-theme="dark"] .site-footer .footer-bottom {
+  color: rgba(239, 220, 191, .70) !important;
+}
+[data-theme="dark"] .site-footer .footer-bottom a {
+  color: rgba(241, 220, 188, .80) !important;
+}
+@media (max-width: 768px) {
+  .back-to-top.footer-clearance {
+    bottom: calc(188px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}

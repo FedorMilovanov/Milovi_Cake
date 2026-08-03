@@ -83,6 +83,14 @@ async function openIndex(page, theme = 'light', consent = 'denied') {
   await page.addStyleTag({ content: `
     html { scroll-behavior: auto !important; }
     body *, body *::before, body *::after { caret-color: transparent !important; }
+    body.forensic-locator-shot #fillPopup:not(.open),
+    body.forensic-locator-shot #fillOverlay:not(.open) { display: none !important; }
+    @media (max-width: 560px) {
+      body.forensic-locator-shot.forensic-hide-calc-panel #calcRightCol:not(.calc-result-open),
+      body.forensic-locator-shot.forensic-hide-calc-panel #calcPanelBackdrop:not(.visible) {
+        visibility: hidden !important;
+      }
+    }
   ` });
   await page.waitForTimeout(180);
 }
@@ -105,8 +113,18 @@ async function warmLazyContent(page) {
 
 async function shot(locator, name) {
   if (await locator.count() === 0) return false;
-  await locator.first().scrollIntoViewIfNeeded();
-  await locator.first().screenshot({ path: filePath(name), animations: 'disabled' });
+  const page = locator.page();
+  const preserveCalc = /calc|cart/i.test(name);
+  await page.evaluate(({ hideCalc }) => {
+    document.body.classList.add('forensic-locator-shot');
+    document.body.classList.toggle('forensic-hide-calc-panel', hideCalc);
+  }, { hideCalc: !preserveCalc });
+  try {
+    await locator.first().scrollIntoViewIfNeeded();
+    await locator.first().screenshot({ path: filePath(name), animations: 'disabled' });
+  } finally {
+    await page.evaluate(() => document.body.classList.remove('forensic-locator-shot', 'forensic-hide-calc-panel'));
+  }
   return true;
 }
 
@@ -379,6 +397,13 @@ test.describe('INDEX forensic audit', () => {
     const dark = await attempt('Снять метрики тёмной темы', async () => contactMetrics(page));
     await attempt('Скрин контактов dark', async () => shot(page.locator('#contacts'), 'contact-dark-live'));
     await attempt('Скрин footer dark', async () => shot(page.locator('.site-footer .footer-bottom'), 'footer-dark-live'));
+    if (page.viewportSize().width <= 768) {
+      await attempt('Чистый mobile viewport контактов dark', async () => {
+        await page.locator('#contacts').scrollIntoViewIfNeeded();
+        await page.waitForTimeout(220);
+        await page.screenshot({ path: filePath('contact-dark-clean-viewport'), animations: 'allow' });
+      });
+    }
 
     if (light && dark) {
       record('critical', 'Theme: атрибут dark', dark.theme === 'dark', `Получено: ${dark.theme}`, dark);
@@ -680,11 +705,19 @@ test.describe('INDEX forensic audit', () => {
         });
         evidence.mobileFixedGeometry = geometry;
         await page.screenshot({ path: filePath('mobile-footer-nav-geometry'), animations: 'allow' });
+        await page.screenshot({ path: filePath('mobile-footer-clean-viewport'), animations: 'disabled' });
         if (Math.abs(geometry.viewport.width - geometry.nav.right) > 2 || geometry.nav.left > 2 || Math.abs(geometry.viewport.height - geometry.nav.bottom) > 2) throw new Error(`Nav geometry: ${JSON.stringify(geometry)}`);
         if (geometry.top.bottom > geometry.nav.top - 3) throw new Error(`Back-to-top пересекает nav: ${JSON.stringify(geometry)}`);
         const footerVisible = geometry.footer.bottom > 0 && geometry.footer.top < geometry.viewport.height;
         if (!footerVisible) throw new Error(`Footer не доведён в viewport: ${JSON.stringify(geometry)}`);
         if (geometry.footer.bottom > geometry.nav.top + 1) throw new Error(`Footer пересекает nav: ${JSON.stringify(geometry)}`);
+        const arrowFooterOverlap = !(
+          geometry.top.right <= geometry.footer.left ||
+          geometry.top.left >= geometry.footer.right ||
+          geometry.top.bottom <= geometry.footer.top ||
+          geometry.top.top >= geometry.footer.bottom
+        );
+        if (arrowFooterOverlap) throw new Error(`Back-to-top пересекает footer capsule: ${JSON.stringify(geometry)}`);
       }
       await page.locator('#backToTop').click();
       const deadline = Date.now() + 4500;
