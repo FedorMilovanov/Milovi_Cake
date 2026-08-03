@@ -350,6 +350,8 @@ test.describe('INDEX forensic audit', () => {
       }
       await page.evaluate(() => scrollTo(0, 0));
       await page.waitForTimeout(160);
+      await page.evaluate(() => scrollTo(0, 0));
+      await page.waitForTimeout(160);
       const scan = await attempt(`${theme}: DOM/геометрический скан`, async () => scanDocument(page));
       if (scan) {
         evidence[`scan_${theme}`] = scan;
