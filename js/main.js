@@ -1868,7 +1868,25 @@ if (scField && trackEl && dotsEl && stageEl) {
     const frames = totalDur / 16;
     ZOOM_IN_SPD_CUR = 1 - Math.pow(0.04, 1 / frames);
     const capturedTypeGen = typeGen;
-    typeTimer = setTimeout(()=>{ if(typeGen !== capturedTypeGen) { typeTimer = null; return; } typeTimer = null; zoomP = 1; startWaiting(); }, totalDur);
+    typeTimer = setTimeout(()=>{
+      if(typeGen !== capturedTypeGen) { typeTimer = null; return; }
+      /* Forensic R80: requestAnimationFrame may be throttled while the reviews
+         section is off-screen. Always finish in a readable state instead of
+         leaving every glyph at opacity:0 after the timer completes. */
+      letterEls.forEach((el) => {
+        el.style.opacity = '1';
+        el.style.filter = 'none';
+        el.style.transform = 'none';
+      });
+      emojiEls.forEach((el) => {
+        el.style.opacity = '1';
+        el.style.filter = 'none';
+        el.style.transform = 'scale(1) rotate(0deg)';
+      });
+      typeTimer = null;
+      zoomP = 1;
+      startWaiting();
+    }, totalDur);
   }
 
   function startWaiting(){
@@ -1925,8 +1943,10 @@ if (scField && trackEl && dotsEl && stageEl) {
   reviewsGoTo = goTo;
 
   const _btnPrev = document.getElementById('btnPrev'), _btnNext = document.getElementById('btnNext');
-  if (_btnPrev) _btnPrev.addEventListener('click', ()=> { if (!_goToBusy) goTo(cur-1); });
-  if (_btnNext) _btnNext.addEventListener('click', ()=> { if (!_goToBusy) goTo(cur+1); });
+  /* Manual navigation must always win over autoplay. The previous busy guard
+     could silently discard a real user click when autoplay had just advanced. */
+  if (_btnPrev) _btnPrev.addEventListener('click', ()=> goTo(cur-1));
+  if (_btnNext) _btnNext.addEventListener('click', ()=> goTo(cur+1));
 
   let tsX=0, tsY=0;
   if (trackEl) { trackEl.addEventListener('touchstart', e=>{ tsX=e.touches[0].clientX; tsY=e.touches[0].clientY; },{passive:true}); trackEl.addEventListener('touchend', e=>{ const dx=e.changedTouches[0].clientX-tsX, dy=e.changedTouches[0].clientY-tsY; if(Math.abs(dx)>Math.abs(dy)*1.4 && Math.abs(dx)>40){ if (!_goToBusy) goTo(dx<0 ? cur+1 : cur-1); } }); }

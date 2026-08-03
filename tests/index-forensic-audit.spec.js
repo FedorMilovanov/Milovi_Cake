@@ -564,7 +564,13 @@ test.describe('INDEX forensic audit', () => {
       await page.waitForTimeout(200);
       const after = numberFrom(await page.locator('#cartBadge').textContent());
       if (after <= before) throw new Error(`Badge ${before} → ${after}`);
-      await page.locator('#cartBtn').click();
+      if (mobile) {
+        const mobileCart = page.locator('#mcNav .mc-btn--order');
+        if (!(await mobileCart.isVisible())) throw new Error('Мобильная кнопка корзины «Заказать» не видна');
+        await mobileCart.click();
+      } else {
+        await page.locator('#cartBtn').click();
+      }
       if ((await page.locator('#cartDrawer').getAttribute('aria-hidden')) !== 'false') throw new Error('Корзина не открылась');
       await shot(page.locator('#cartDrawer'), 'cart-open');
       await page.locator('.cart-close').click();
@@ -624,7 +630,10 @@ test.describe('INDEX forensic audit', () => {
       const current = async () => page.locator('#track .review-slide').evaluateAll((slides) => slides.findIndex((slide) => slide.classList.contains('active')));
       const before = await current();
       await page.locator('#btnNext').click();
-      await page.waitForTimeout(650);
+      await page.waitForFunction((previous) => {
+        const slides = Array.from(document.querySelectorAll('#track .review-slide'));
+        return slides.findIndex((slide) => slide.classList.contains('active')) !== previous;
+      }, before, { timeout: 2500 });
       const next = await current();
       if (next === before) throw new Error(`Индекс не изменился: ${before}`);
       await page.locator('#btnPrev').click();
