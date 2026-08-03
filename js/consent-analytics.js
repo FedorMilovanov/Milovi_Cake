@@ -177,7 +177,8 @@
 
   function syncMobilePrivacyRow() {
     var sub = document.querySelector('#mcPrivacyRow .mc-row-sub');
-    if (sub) sub.textContent = mobileStateLabel();
+    var next = mobileStateLabel();
+    if (sub && sub.textContent !== next) sub.textContent = next;
   }
 
   function removeLegacyMobileShells() {
