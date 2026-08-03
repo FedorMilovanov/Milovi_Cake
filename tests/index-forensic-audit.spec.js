@@ -675,8 +675,6 @@ test.describe('INDEX forensic audit', () => {
         if (geometry.top.bottom > geometry.nav.top - 3) throw new Error(`Back-to-top пересекает nav: ${JSON.stringify(geometry)}`);
         const footerVisible = geometry.footer.bottom > 0 && geometry.footer.top < geometry.viewport.height;
         if (!footerVisible) throw new Error(`Footer не доведён в viewport: ${JSON.stringify(geometry)}`);
-        const footerVisible = geometry.footer.bottom > 0 && geometry.footer.top < geometry.viewport.height;
-        if (!footerVisible) throw new Error(`Footer не доведён в viewport: ${JSON.stringify(geometry)}`);
         if (geometry.footer.bottom > geometry.nav.top + 1) throw new Error(`Footer пересекает nav: ${JSON.stringify(geometry)}`);
       }
       await page.locator('#backToTop').click();
