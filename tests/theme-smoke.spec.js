@@ -188,6 +188,9 @@ test.describe('contact, privacy and mobile application contracts', () => {
 
     if (mobile) {
       await expect(page.locator('.site-footer .mc-consent-trigger')).toHaveCount(0);
+      const staticPolicy = page.locator('.site-footer .footer-bottom > a[href="/privacy/"]');
+      await expect(staticPolicy).toHaveCount(1);
+      await expect(staticPolicy).toBeHidden();
       await page.locator('#mcMoreBtn').click();
       const privacyRow = page.locator('#mcPrivacyRow');
       await expect(privacyRow).toBeVisible();
