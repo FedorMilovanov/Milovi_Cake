@@ -26,6 +26,16 @@ async function waitForContactPolish(page) {
   });
 }
 
+async function waitForMobileShell(page) {
+  await page.waitForFunction(() => {
+    if (window.innerWidth > 768) return true;
+    const nav = document.getElementById('mcNav');
+    if (!nav) return false;
+    const style = getComputedStyle(nav);
+    return style.position === 'fixed' && style.visibility === 'visible' && style.transform === 'none';
+  });
+}
+
 async function contactMetrics(page) {
   return page.evaluate(() => {
     const icon = document.querySelector('#contacts .card.card--dark .contact-primary-icon');
@@ -101,10 +111,12 @@ test.describe('contact theme and privacy regressions', () => {
     expectContactStable(lightAgain);
   });
 
-  test('privacy control is static in footer and dialog can close and reopen', async ({ page }, testInfo) => {
+  test('privacy dialog closes and reopens from the correct responsive control', async ({ page }, testInfo) => {
+    const mobile = testInfo.project.name.includes('mobile');
     await prepare(page, { theme: 'light', consent: null });
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await waitForContactPolish(page);
+    await waitForMobileShell(page);
 
     const overlay = page.locator('.mc-consent-overlay');
     await expect(overlay).toHaveClass(/is-open/, { timeout: 5000 });
@@ -116,49 +128,77 @@ test.describe('contact theme and privacy regressions', () => {
     await expect(overlay).toBeHidden();
     expect(await page.evaluate(() => localStorage.getItem('milovi_analytics_consent_v1'))).toBeNull();
 
-    const trigger = page.locator('.mc-consent-trigger');
-    await trigger.scrollIntoViewIfNeeded();
-    await expect(trigger).toBeVisible();
-    const triggerContract = await trigger.evaluate((element) => ({
-      position: getComputedStyle(element).position,
-      inFooterBottom: Boolean(element.closest('.footer-bottom')),
-      overlapTopButton: (() => {
-        const top = document.querySelector('.back-to-top');
-        if (!top) return false;
-        const a = element.getBoundingClientRect();
-        const b = top.getBoundingClientRect();
-        return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
-      })()
-    }));
-    expect(triggerContract.inFooterBottom).toBe(true);
-    expect(['fixed', 'sticky']).not.toContain(triggerContract.position);
-    expect(triggerContract.overlapTopButton).toBe(false);
+    let reopen;
+    if (mobile) {
+      await expect(page.locator('.site-footer .mc-consent-trigger')).toHaveCount(0);
+      await page.locator('#mcMoreBtn').click();
+      const privacyRow = page.locator('#mcPrivacyRow');
+      await expect(privacyRow).toBeVisible();
+      await expect(privacyRow.locator('.mc-row-sub')).toHaveText('Выбор не сделан');
+      await page.locator('#mcSheet').screenshot({ path: proofPath(testInfo, 'mobile-more-privacy') });
+      reopen = async () => {
+        if (!(await privacyRow.isVisible())) await page.locator('#mcMoreBtn').click();
+        await privacyRow.click();
+      };
+    } else {
+      const trigger = page.locator('.mc-consent-trigger');
+      await trigger.scrollIntoViewIfNeeded();
+      await expect(trigger).toBeVisible();
+      const triggerContract = await trigger.evaluate((element) => ({
+        position: getComputedStyle(element).position,
+        inFooterBottom: Boolean(element.closest('.footer-bottom')),
+        overlapTopButton: (() => {
+          const top = document.querySelector('.back-to-top');
+          if (!top) return false;
+          const a = element.getBoundingClientRect();
+          const b = top.getBoundingClientRect();
+          return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+        })()
+      }));
+      expect(triggerContract.inFooterBottom).toBe(true);
+      expect(['fixed', 'sticky']).not.toContain(triggerContract.position);
+      expect(triggerContract.overlapTopButton).toBe(false);
+      await page.locator('.site-footer .footer-bottom').screenshot({ path: proofPath(testInfo, 'footer-capsule') });
+      reopen = async () => trigger.click();
+    }
 
-    await page.locator('.site-footer .footer-bottom').screenshot({ path: proofPath(testInfo, 'footer-capsule') });
-    await trigger.click();
+    await reopen();
     await expect(overlay).toHaveClass(/is-open/);
     await page.locator('[data-choice="denied"]').click();
     await expect(overlay).toBeHidden();
     expect(await page.evaluate(() => localStorage.getItem('milovi_analytics_consent_v1'))).toBe('denied');
 
-    await trigger.click();
+    await reopen();
     await expect(page.locator('.mc-consent-status-value')).toHaveText('Аналитика отключена');
     await page.keyboard.press('Escape');
     await expect(overlay).toBeHidden();
   });
 
-  test('approved mobile bottom navigation layout is restored', async ({ page }, testInfo) => {
+  test('mobile has one persistent app navigation and a clean footer boundary', async ({ page }, testInfo) => {
     test.skip(!testInfo.project.name.includes('mobile'), 'mobile-only contract');
     await prepare(page, { theme: 'dark', consent: 'denied' });
     await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await waitForContactPolish(page);
+    await waitForMobileShell(page);
+
     const nav = page.locator('#mcNav');
     await expect(nav).toBeVisible();
+    await expect(nav.locator('.mc-btn-label')).toHaveText(['Каталог', 'Начинки', 'Отзывы', 'Заказать', 'Ещё']);
 
-    const geometry = await page.evaluate(() => {
+    const initial = await page.evaluate(() => {
       const nav = document.getElementById('mcNav');
-      const orderCircle = nav && nav.querySelector('.mc-btn--order .mc-btn-circle');
+      const orderCircle = nav.querySelector('.mc-btn--order .mc-btn-circle');
       const rect = nav.getBoundingClientRect();
       const circle = orderCircle.getBoundingClientRect();
+      const candidates = ['mcNav', 'bottomNav', 'mrBottomNav']
+        .map((id) => document.getElementById(id))
+        .filter(Boolean)
+        .filter((element) => {
+          const style = getComputedStyle(element);
+          const r = element.getBoundingClientRect();
+          return style.display !== 'none' && style.visibility !== 'hidden' && r.width > 0 && r.height > 0;
+        })
+        .map((element) => element.id);
       return {
         viewport: window.innerWidth,
         left: rect.left,
@@ -166,16 +206,46 @@ test.describe('contact theme and privacy regressions', () => {
         bottomGap: window.innerHeight - rect.bottom,
         width: rect.width,
         orderCircleWidth: circle.width,
-        orderCircleHeight: circle.height
+        orderCircleHeight: circle.height,
+        visibleNavs: candidates
       };
     });
 
-    expect(geometry.left).toBeLessThanOrEqual(2);
-    expect(geometry.rightGap).toBeLessThanOrEqual(2);
-    expect(geometry.bottomGap).toBeLessThanOrEqual(2);
-    expect(geometry.width).toBeGreaterThanOrEqual(geometry.viewport - 4);
-    expect(geometry.orderCircleWidth).toBeGreaterThanOrEqual(44);
-    expect(geometry.orderCircleHeight).toBeGreaterThanOrEqual(44);
-    await page.screenshot({ path: proofPath(testInfo, 'mobile-nav-restored'), fullPage: false });
+    expect(initial.visibleNavs).toEqual(['mcNav']);
+    expect(initial.left).toBeLessThanOrEqual(2);
+    expect(initial.rightGap).toBeLessThanOrEqual(2);
+    expect(initial.bottomGap).toBeLessThanOrEqual(2);
+    expect(initial.width).toBeGreaterThanOrEqual(initial.viewport - 4);
+    expect(initial.orderCircleWidth).toBeGreaterThanOrEqual(44);
+    expect(initial.orderCircleHeight).toBeGreaterThanOrEqual(44);
+
+    await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight * 0.55, behavior: 'instant' }));
+    await page.waitForTimeout(250);
+    await expect(nav).toBeVisible();
+    const afterScroll = await nav.evaluate((element) => ({
+      hiddenClass: element.classList.contains('mc-nav--hidden'),
+      bottom: window.innerHeight - element.getBoundingClientRect().bottom,
+      transform: getComputedStyle(element).transform
+    }));
+    expect(afterScroll.hiddenClass).toBe(false);
+    expect(afterScroll.bottom).toBeLessThanOrEqual(2);
+    expect(afterScroll.transform).toBe('none');
+
+    const footerBottom = page.locator('.site-footer .footer-bottom');
+    await footerBottom.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(150);
+    const boundary = await page.evaluate(() => {
+      const footer = document.querySelector('.site-footer .footer-bottom');
+      const nav = document.getElementById('mcNav');
+      const a = footer.getBoundingClientRect();
+      const b = nav.getBoundingClientRect();
+      return { footerBottom: a.bottom, navTop: b.top, overlap: a.bottom > b.top + 1 };
+    });
+    expect(boundary.overlap).toBe(false);
+    await page.screenshot({ path: proofPath(testInfo, 'mobile-app-footer'), fullPage: false });
+
+    await page.locator('#mcMoreBtn').click();
+    await expect(page.locator('#mcPrivacyRow')).toBeVisible();
+    await expect(page.locator('.site-footer .mc-consent-trigger')).toHaveCount(0);
   });
 });
