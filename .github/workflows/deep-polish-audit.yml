@@ -89,8 +89,8 @@ jobs:
                       findings.append(f'{workflow.as_posix()}:{number}: unpinned action {target}')
 
           sw = Path('sw.js').read_text('utf-8')
-          if 'milovi-cake-v2026.07.28-r27' not in sw or '20260728r27' not in sw:
-              findings.append('sw.js: stale cache or asset revision')
+          if 'milovi-cake-v2026.08.03-r74' not in sw or 'contact-polish.css?v=20260803r6' not in sw:
+              findings.append('sw.js: audited contact/privacy cache revision drift')
 
           if findings:
               raise SystemExit('\n'.join(findings))
@@ -193,33 +193,48 @@ jobs:
                 if (/googletagmanager\.com|google-analytics\.com|mc\.yandex\.ru|metrika\.yandex/i.test(url)) analyticsRequests.push(url)
               })
               await denyPage.goto(`http://127.0.0.1:4173/?deep-polish=${Date.now()}`, { waitUntil: 'domcontentloaded' })
-              await denyPage.waitForTimeout(600)
-              const before = await denyPage.evaluate(() => ({
-                panels: document.querySelectorAll('.mc-consent').length,
-                legacy: Boolean(document.querySelector('#privacyOverlay,#privacyModal,#cookieBanner,[onclick*="openPrivacy"]')),
-                directScripts: [...document.scripts].filter(script => /googletagmanager\.com|mc\.yandex\.ru/i.test(script.src)).length,
-              }))
+              await denyPage.waitForTimeout(1200)
+              const before = await denyPage.evaluate(() => {
+                const trigger = document.querySelector('.mc-consent-trigger')
+                return {
+                  overlays: document.querySelectorAll('.mc-consent-overlay').length,
+                  open: Boolean(document.querySelector('.mc-consent-overlay.is-open')),
+                  trigger: Boolean(trigger && trigger.closest('.footer-bottom')),
+                  triggerPosition: trigger ? getComputedStyle(trigger).position : '',
+                  legacyFixed: Boolean(document.querySelector('.mc-consent-settings')),
+                  legacy: Boolean(document.querySelector('#privacyOverlay,#privacyModal,#cookieBanner,[onclick*="openPrivacy"]')),
+                  directScripts: [...document.scripts].filter(script => /googletagmanager\.com|mc\.yandex\.ru/i.test(script.src)).length,
+                }
+              })
               if (analyticsRequests.length) findings.push('analytics requested before consent')
-              if (before.panels !== 1) findings.push(`expected one consent panel, found ${before.panels}`)
-              if (before.legacy) findings.push('legacy privacy DOM remains')
+              if (before.overlays !== 1 || !before.open) findings.push(`expected one open consent dialog, found ${before.overlays}`)
+              if (!before.trigger || ['fixed', 'sticky'].includes(before.triggerPosition)) findings.push('footer privacy trigger contract failed')
+              if (before.legacyFixed || before.legacy) findings.push('legacy privacy UI remains')
               if (before.directScripts) findings.push('direct analytics script exists before consent')
-              await denyPage.locator('.mc-consent__button--deny').click()
-              await denyPage.waitForTimeout(200)
+              await denyPage.locator('.mc-consent-button--deny').click()
+              await denyPage.waitForTimeout(300)
               if (analyticsRequests.length) findings.push('analytics requested after denial')
+              const denied = await denyPage.evaluate(() => ({
+                choice: localStorage.getItem('milovi_analytics_consent_v1'),
+                hidden: document.querySelector('.mc-consent-overlay').hidden,
+              }))
+              if (denied.choice !== 'denied' || !denied.hidden) findings.push('denial did not persist and close cleanly')
               await denyContext.close()
 
               const allowContext = await browser.newContext({ serviceWorkers: 'block' })
               const allowPage = await allowContext.newPage()
               await allowPage.goto(`http://127.0.0.1:4173/?deep-polish-allow=${Date.now()}`, { waitUntil: 'domcontentloaded' })
-              await allowPage.locator('.mc-consent__button--allow').click()
-              await allowPage.waitForTimeout(200)
+              await allowPage.waitForTimeout(1200)
+              await allowPage.locator('.mc-consent-button--allow').click()
+              await allowPage.waitForTimeout(250)
               const after = await allowPage.evaluate(() => ({
                 ga: Boolean(document.querySelector('script[data-milovi-ga]')),
                 ym: Boolean(document.querySelector('script[data-milovi-ym]')),
-                settings: Boolean(document.querySelector('.mc-consent-settings')),
+                trigger: Boolean(document.querySelector('.footer-bottom .mc-consent-trigger')),
+                legacyFixed: Boolean(document.querySelector('.mc-consent-settings')),
               }))
               if (!after.ga || !after.ym) findings.push('analytics scripts were not attached after consent')
-              if (!after.settings) findings.push('privacy settings control is missing after choice')
+              if (!after.trigger || after.legacyFixed) findings.push('footer privacy trigger is missing or legacy fixed control returned')
               await allowContext.close()
             } finally {
               await browser.close()
