@@ -1,4 +1,4 @@
-/* Milovi Cake — contact form refinement v3 (2026-08-03).
+/* Milovi Cake — contact form refinement v4 (2026-08-03).
    Premium floating labels, one clean outline, original social controls untouched. */
 
 html:not([data-theme="dark"]) #contacts {
@@ -115,6 +115,7 @@ html:not([data-theme="dark"]) #contacts .card:not(.card--dark) .form-note { colo
   border-radius: 15px !important;
   background: var(--mc-field-surface) !important;
   overflow: visible !important;
+  isolation: isolate !important;
   box-shadow: inset 0 1px rgba(255, 255, 255, .12) !important;
   transition:
     border-color .24s ease,
@@ -200,38 +201,72 @@ html:not([data-theme="dark"]) #contacts .card:not(.card--dark) .form-note { colo
   letter-spacing: 0 !important;
   white-space: nowrap !important;
   pointer-events: none !important;
+  isolation: isolate !important;
   transition:
-    top .26s cubic-bezier(.22,1,.36,1),
-    transform .26s cubic-bezier(.22,1,.36,1),
+    top .30s cubic-bezier(.22,1,.36,1),
+    transform .30s cubic-bezier(.22,1,.36,1),
     color .20s ease,
     font-size .24s ease,
     letter-spacing .24s ease,
-    padding .20s ease,
-    background-color .20s ease,
-    box-shadow .20s ease !important;
+    padding .20s ease !important;
 }
 #contacts .card:not(.card--dark) .form-group.float-label textarea + label {
   top: 19px !important;
   transform: translateY(0) scale(1) !important;
 }
 
-/* Focused or filled state: label rises into a precisely cut notch in the outline. */
+/* Soft notch: it fades into the field surface instead of cutting a rectangular hole. */
+#contacts .card:not(.card--dark) .form-group.float-label label::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -6px;
+  bottom: -6px;
+  left: -12px;
+  right: -12px;
+  background: linear-gradient(
+    90deg,
+    transparent 0,
+    var(--mc-field-surface) 12px,
+    var(--mc-field-surface) calc(100% - 12px),
+    transparent 100%
+  );
+  opacity: 0;
+  transform: scaleX(.82);
+  transform-origin: center;
+  pointer-events: none;
+  transition: opacity .16s ease, transform .30s cubic-bezier(.22,1,.36,1);
+}
+
+/* Focused or filled state: the label lands exactly on the top outline. */
 #contacts .card:not(.card--dark) .form-group.float-label input:focus + label,
 #contacts .card:not(.card--dark) .form-group.float-label input:not(:placeholder-shown) + label,
 #contacts .card:not(.card--dark) .form-group.float-label input:-webkit-autofill + label,
 #contacts .card:not(.card--dark) .form-group.float-label textarea:focus + label,
 #contacts .card:not(.card--dark) .form-group.float-label textarea:not(:placeholder-shown) + label {
   top: 0 !important;
-  transform: translateY(-50%) scale(.92) !important;
+  transform: translate3d(0,-50%,0) scale(.90) !important;
   padding: 0 7px !important;
-  background: var(--mc-field-surface) !important;
-  box-shadow:
-    -3px 0 0 var(--mc-field-surface),
-     3px 0 0 var(--mc-field-surface) !important;
+  background: transparent !important;
+  box-shadow: none !important;
   color: var(--mc-field-label-active) !important;
   font-size: 12px !important;
   font-weight: 500 !important;
   letter-spacing: .025em !important;
+}
+#contacts .card:not(.card--dark) .form-group.float-label input:focus + label::before,
+#contacts .card:not(.card--dark) .form-group.float-label input:not(:placeholder-shown) + label::before,
+#contacts .card:not(.card--dark) .form-group.float-label input:-webkit-autofill + label::before,
+#contacts .card:not(.card--dark) .form-group.float-label textarea:focus + label::before,
+#contacts .card:not(.card--dark) .form-group.float-label textarea:not(:placeholder-shown) + label::before {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+/* Neutralise the obsolete bottom focus stripe from earlier cached styles. */
+section#contacts .contacts-grid .card:not(.card--dark) .form-group.float-label::after {
+  content: none !important;
+  display: none !important;
 }
 
 #contacts .card:not(.card--dark) .form-group.float-label input:-webkit-autofill,
@@ -273,5 +308,6 @@ html:not([data-theme="dark"]) #contacts .card:not(.card--dark) .form-note { colo
 @media (prefers-reduced-motion: reduce) {
   #contacts .card:not(.card--dark) .form-group.float-label,
   #contacts .card:not(.card--dark) .form-group.float-label label,
+  #contacts .card:not(.card--dark) .form-group.float-label label::before,
   #contacts .contact-primary-icon { transition: none !important; }
 }
