@@ -1,4 +1,4 @@
-name: Gallery focused audit R82
+name: Gallery focused audit R83
 
 on:
   push:
@@ -41,7 +41,7 @@ jobs:
           npm run audit:security
       - name: Click local and live gallery exhaustively
         run: |
-          mkdir -p test-results/gallery-r82
+          mkdir -p test-results/gallery-r83
           python3 -m http.server 4174 >/tmp/gallery.log 2>&1 &
           sleep 1
           node <<'JS'
@@ -69,10 +69,10 @@ jobs:
             for(const f of filters){await page.locator(`.gx-chip[data-filter="${f}"]`).click();await page.waitForFunction(x=>document.querySelector(`.gx-chip[data-filter="${x}"]`)?.getAttribute('aria-pressed')==='true',f);const n=await page.locator('.card').count();ok(Number((await page.locator('#gxTotalCount').textContent()).trim())===n,label+' '+f+' counter');ok(await page.locator('.gx-chip[aria-pressed="true"]').count()===1,label+' '+f+' pressed')}
             await page.locator('.gx-chip[data-filter="all"]').click(); await page.waitForTimeout(500); const card=page.locator('.card').first();
             if(!mobile){const b=await card.boundingBox();await page.mouse.move(b.x+b.width*.7,b.y+b.height*.35);await page.waitForFunction(()=>{const e=document.querySelector('.card');return e?.classList.contains('is-active')&&Number(getComputedStyle(e,'::before').opacity)>.95},null,{timeout:3000});await page.waitForFunction(()=>Number(getComputedStyle(document.querySelector('.card:hover .card-overlay')).opacity)>.95,null,{timeout:3000});ok(await card.locator('.card-media').evaluate(e=>getComputedStyle(e).transform)!=='none',label+' zoom');await page.mouse.move(2,2)}
-            await card.click();await page.waitForSelector('#lbRoot',{state:'visible'});const c0=(await page.locator('#lbCounter').textContent()).trim();await page.keyboard.press('ArrowRight');await page.waitForTimeout(350);ok((await page.locator('#lbCounter').textContent()).trim()!==c0,label+' keyboard next');await page.keyboard.press('ArrowLeft');await page.keyboard.press('Escape');await page.waitForSelector('#lbRoot',{state:'detached'});
-            await card.click();await page.waitForSelector('#lbRoot',{state:'visible'});await page.locator('#lbNext').click();await page.locator('#lbPrev').click();await page.locator('#lbClose').click();await page.waitForSelector('#lbRoot',{state:'detached'});
+            await card.click();await page.waitForSelector('#lbRoot',{state:'visible'});await page.waitForSelector('#lbSwiper.swiper-initialized',{timeout:5000});const c0=(await page.locator('#lbCounter').textContent()).trim();await page.keyboard.press('ArrowRight');await page.waitForFunction(x=>document.querySelector('#lbCounter')?.textContent.trim()!==x,c0,{timeout:3000});await page.keyboard.press('ArrowLeft');await page.keyboard.press('Escape');await page.waitForSelector('#lbRoot',{state:'detached'});
+            await card.click();await page.waitForSelector('#lbRoot',{state:'visible'});await page.waitForSelector('#lbSwiper.swiper-initialized',{timeout:5000});await page.locator('#lbNext').click();await page.locator('#lbPrev').click();await page.locator('#lbClose').click();await page.waitForSelector('#lbRoot',{state:'detached'});
             const before=await page.locator('html').getAttribute('data-theme');await page.locator('.lp-theme-toggle').click();const after=await page.locator('html').getAttribute('data-theme');ok(after!==before,label+' theme toggle');ok(await page.evaluate(()=>localStorage.getItem('mc_theme'))===after,label+' theme persist');
-            const w=await page.evaluate(()=>[innerWidth,document.documentElement.scrollWidth]);ok(w[1]<=w[0]+2,label+' horizontal overflow '+w);await page.screenshot({path:`test-results/gallery-r82/${label}.png`,fullPage:true});ok(errors.length===0,label+' page errors '+errors.join('|'));ok(bad.length===0,label+' HTTP '+bad.join('|'));console.log('PASS',label,'cards',initial);await browser.close();
+            const w=await page.evaluate(()=>[innerWidth,document.documentElement.scrollWidth]);ok(w[1]<=w[0]+2,label+' horizontal overflow '+w);await page.screenshot({path:`test-results/gallery-r83/${label}.png`,fullPage:true});ok(errors.length===0,label+' page errors '+errors.join('|'));ok(bad.length===0,label+' HTTP '+bad.join('|'));console.log('PASS',label,'cards',initial);await browser.close();
           }
           (async()=>{for(const m of [false,true])for(const t of ['light','dark'])await one('http://127.0.0.1:4174',m,t,`local-${m?'mobile':'desktop'}-${t}`);for(const m of [false,true])await one('https://milovicake.ru',m,'light',`live-${m?'mobile':'desktop'}`);const r=await fetch('https://milovicake.ru/release.json?audit='+Date.now());const j=await r.json();ok(j.sha==='c4eb3bf6ed6fd5c3c9e4c2d857e53d8bae093370','live release sha '+JSON.stringify(j))})().catch(e=>{console.error(e);process.exit(1)});
           JS
@@ -82,7 +82,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: gallery-r82-${{ github.run_id }}
-          path: test-results/gallery-r82/
+          name: gallery-r83-${{ github.run_id }}
+          path: test-results/gallery-r83/
           if-no-files-found: warn
           retention-days: 7
