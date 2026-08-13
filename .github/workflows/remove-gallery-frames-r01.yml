@@ -179,23 +179,29 @@ jobs:
             await page.goto('http://127.0.0.1:4173/gallery/', { waitUntil: 'domcontentloaded' });
             await page.waitForSelector('.card');
             const card = page.locator('.card').first();
-            const pseudoBefore = await card.evaluate(el => getComputedStyle(el, '::after').content);
-            if (pseudoBefore !== 'none' && pseudoBefore !== 'normal') {
-              throw new Error(`decorative ::after still renders: ${pseudoBefore}`);
+            const pseudoAfter = await card.evaluate(el => getComputedStyle(el, '::after').content);
+            if (pseudoAfter !== 'none' && pseudoAfter !== 'normal') {
+              throw new Error(`decorative ::after still renders: ${pseudoAfter}`);
             }
+
             await card.hover();
-            await page.waitForTimeout(250);
+            await page.waitForFunction(() => {
+              const el = document.querySelector('.card:hover .card-overlay');
+              return !!el && Number(getComputedStyle(el).opacity) > 0.95;
+            }, null, { timeout: 1800 });
             const overlayOpacity = Number(await card.locator('.card-overlay').evaluate(el => getComputedStyle(el).opacity));
-            if (overlayOpacity < 0.8) throw new Error(`gallery overlay regression: opacity=${overlayOpacity}`);
+            if (overlayOpacity < 0.95) throw new Error(`gallery overlay regression: opacity=${overlayOpacity}`);
             const mediaTransform = await card.locator('.card-media').evaluate(el => getComputedStyle(el).transform);
             if (!mediaTransform || mediaTransform === 'none') throw new Error('gallery hover zoom regression');
+
             await card.click();
-            await page.waitForSelector('.lb-root');
+            await page.waitForSelector('.lb-root', { state: 'visible' });
             if (!(await page.locator('.lb-root').isVisible())) throw new Error('lightbox did not open');
             await page.keyboard.press('Escape');
-            await page.waitForTimeout(150);
+            await page.waitForSelector('.lb-root', { state: 'detached', timeout: 1800 });
+
             await page.locator('.gx-chip[data-filter="bento"]').click();
-            await page.waitForTimeout(150);
+            await page.waitForFunction(() => document.querySelectorAll('.card').length > 0);
             if (await page.locator('.card').count() < 1) throw new Error('gallery filter regression');
             if (errors.length) throw new Error(`page errors: ${errors.join(' | ')}`);
             await browser.close();
