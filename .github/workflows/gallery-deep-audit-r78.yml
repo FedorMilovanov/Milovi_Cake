@@ -1,0 +1,379 @@
+name: Gallery deep audit R78
+
+on:
+  push:
+    branches: [audit/gallery-deep-r78]
+    paths:
+      - '.github/workflows/gallery-deep-audit-r78.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deep-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      PRODUCT_SHA: c4eb3bf6ed6fd5c3c9e4c2d857e53d8bae093370
+      LIVE_BASE: https://milovicake.ru
+    steps:
+      - name: Checkout exact production head
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: c4eb3bf6ed6fd5c3c9e4c2d857e53d8bae093370
+          persist-credentials: false
+
+      - name: Prove exact source and surgical diff invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$PRODUCT_SHA"
+          git diff --check
+          python3 - <<'PY'
+          from pathlib import Path
+
+          css = Path('css/gallery/gallery-2026.css').read_text(encoding='utf-8')
+          gallery = Path('gallery/index.html').read_text(encoding='utf-8')
+          sw = Path('sw.js').read_text(encoding='utf-8')
+
+          forbidden = [
+              '/* ── F1 · hairline inset gold frame (тонкая рамка внутри) ── */',
+              '/* ── F3 · soft gold glow ring + lift on hover ── */',
+              '.card::after{',
+              '.card:hover::after{',
+              '0 0 0 1.5px rgba(232,184,122,.55)',
+              'transform:translateY(-6px)',
+          ]
+          residue = [x for x in forbidden if x in css]
+          if residue:
+              raise SystemExit(f'decorative frame residue present: {residue}')
+
+          protected = [
+              '.gallery-grid:has(.card:hover) .card:not(:hover)',
+              '.card::before {',
+              '.card.is-active::before { opacity: 1; }',
+              '.card.is-active { z-index:10; box-shadow:0 30px 60px rgba(0,0,0,.4), 0 0 0 1px rgba(212,168,92,.3); }',
+              '.card:hover .card-media { transform: scale(1.1); }',
+              '.card.is-loaded:hover .card-media{ transform:scale(1.08); }',
+              '.card:hover .card-overlay { opacity:1; }',
+              '.card-skeleton{',
+              '/* ── F5 · caption reveal (refine the existing overlay/title) ── */',
+              '.lb-root {',
+          ]
+          missing = [x for x in protected if x not in css]
+          if missing:
+              raise SystemExit(f'protected gallery behavior missing: {missing}')
+
+          asset = '/css/gallery/gallery-2026.css?v=20260813r01'
+          if gallery.count(asset) != 1:
+              raise SystemExit(f'gallery cache-bust mismatch: {gallery.count(asset)}')
+          if sw.count(asset) != 1:
+              raise SystemExit(f'SW cache-bust mismatch: {sw.count(asset)}')
+          if css.count('{') != css.count('}'):
+              raise SystemExit('CSS brace imbalance')
+          print('Surgical source invariants: PASS')
+          PY
+
+      - name: Setup pinned Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22.13.0'
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run repository canonical QA
+        run: npm run qa
+
+      - name: Build and audit exact Pages candidate
+        run: |
+          npm run build:pages
+          npm run audit:pages
+
+      - name: Deep-click local gallery in desktop/mobile and light/dark
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p test-results/gallery-deep
+          python3 -m http.server 4174 >/tmp/gallery-r78-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          sleep 1
+          node <<'JS'
+          const { chromium, devices } = require('playwright');
+          const fs = require('fs');
+
+          const assert = (ok, msg) => { if (!ok) throw new Error(msg); };
+          const filterIds = ['all','photo','video','wedding','bento','3d','meringue','pavlova','bday'];
+
+          async function auditGallery({ base, label, mobile, theme, live = false }) {
+            const browser = await chromium.launch({ headless: true });
+            const context = await browser.newContext({
+              ...(mobile ? devices['Pixel 7'] : { viewport: { width: 1440, height: 1100 } }),
+              serviceWorkers: 'block',
+            });
+            await context.addInitScript(({ theme }) => {
+              localStorage.setItem('milovi_analytics_consent_v1', 'denied');
+              localStorage.setItem('mc_theme', theme);
+            }, { theme });
+            const page = await context.newPage();
+            const pageErrors = [];
+            const badSameOrigin = [];
+            page.on('pageerror', e => pageErrors.push(String(e)));
+            page.on('response', r => {
+              try {
+                if (new URL(r.url()).origin === new URL(base).origin && r.status() >= 400) {
+                  badSameOrigin.push(`${r.status()} ${r.url()}`);
+                }
+              } catch (_) {}
+            });
+
+            await page.goto(`${base}/gallery/?r78=${Date.now()}`, { waitUntil: 'domcontentloaded', timeout: 45000 });
+            await page.waitForSelector('.card', { state: 'visible', timeout: 15000 });
+            await page.waitForTimeout(1800);
+
+            assert(await page.locator('.mc-consent-overlay.is-open').count() === 0, `${label}: consent overlay blocks gallery`);
+            const actualTheme = await page.locator('html').getAttribute('data-theme');
+            assert(actualTheme === theme, `${label}: theme mismatch ${actualTheme} != ${theme}`);
+
+            const chips = page.locator('.gx-chip');
+            assert(await chips.count() === filterIds.length, `${label}: filter count mismatch`);
+            const chipIds = await chips.evaluateAll(els => els.map(el => el.dataset.filter));
+            assert(JSON.stringify(chipIds) === JSON.stringify(filterIds), `${label}: filter order/ids changed: ${chipIds}`);
+
+            async function verifyGrid(stage) {
+              const cards = page.locator('.card');
+              const count = await cards.count();
+              const totalText = (await page.locator('#gxTotalCount').textContent() || '').trim();
+              assert(Number(totalText) === count, `${label}/${stage}: total counter ${totalText} != cards ${count}`);
+              const ids = await cards.evaluateAll(els => els.map(el => el.dataset.id));
+              assert(new Set(ids).size === ids.length, `${label}/${stage}: duplicate data-id cards`);
+              if (count > 0) {
+                const roles = await cards.evaluateAll(els => els.map(el => el.getAttribute('role')));
+                assert(roles.every(r => r === 'listitem'), `${label}/${stage}: card role regression`);
+                const emptyVisible = await page.locator('#gxEmpty').isVisible().catch(() => false);
+                assert(!emptyVisible, `${label}/${stage}: empty state visible with cards`);
+              } else {
+                assert(await page.locator('#gxEmpty').isVisible(), `${label}/${stage}: empty state hidden with zero cards`);
+              }
+              return count;
+            }
+
+            const initialCount = await verifyGrid('initial');
+            assert(initialCount > 0, `${label}: initial gallery empty`);
+
+            const first = page.locator('.card').first();
+            const pseudo = await first.evaluate(el => {
+              const s = getComputedStyle(el, '::after');
+              return { content: s.content, borderWidth: s.borderWidth, opacity: s.opacity };
+            });
+            assert(pseudo.content === 'none' || pseudo.content === 'normal', `${label}: decorative ::after still exists: ${JSON.stringify(pseudo)}`);
+            assert(pseudo.borderWidth === '0px', `${label}: ::after border still renders: ${JSON.stringify(pseudo)}`);
+
+            for (const id of filterIds) {
+              const chip = page.locator(`.gx-chip[data-filter="${id}"]`);
+              await chip.click();
+              await page.waitForFunction(filter => {
+                const active = document.querySelector(`.gx-chip[data-filter="${filter}"]`);
+                return active && active.getAttribute('aria-pressed') === 'true';
+              }, id);
+              const activePressed = await page.locator('.gx-chip[aria-pressed="true"]').count();
+              assert(activePressed === 1, `${label}/${id}: expected exactly one pressed filter`);
+              await verifyGrid(`filter-${id}`);
+            }
+
+            await page.locator('.gx-chip[data-filter="all"]').click();
+            await page.waitForFunction(() => document.querySelector('.gx-chip[data-filter="all"]')?.getAttribute('aria-pressed') === 'true');
+            await page.waitForTimeout(1000);
+
+            const card = page.locator('.card').first();
+            if (!mobile) {
+              const box = await card.boundingBox();
+              assert(box, `${label}: card has no box`);
+              await page.mouse.move(box.x + box.width * 0.7, box.y + box.height * 0.35);
+              await page.waitForFunction(() => document.querySelector('.card')?.classList.contains('is-active'), null, { timeout: 2500 });
+              const activeState = await card.evaluate(el => ({
+                active: el.classList.contains('is-active'),
+                mx: getComputedStyle(el).getPropertyValue('--mouse-x').trim(),
+                my: getComputedStyle(el).getPropertyValue('--mouse-y').trim(),
+                transform: getComputedStyle(el).transform,
+                beforeOpacity: getComputedStyle(el, '::before').opacity,
+              }));
+              assert(activeState.active, `${label}: pointer tilt did not activate`);
+              assert(activeState.beforeOpacity === '1', `${label}: pointer-reactive ::before not visible`);
+              assert(activeState.transform && activeState.transform !== 'none', `${label}: pointer transform missing`);
+
+              await page.waitForFunction(() => {
+                const el = document.querySelector('.card:hover .card-overlay');
+                return !!el && Number(getComputedStyle(el).opacity) > 0.95;
+              }, null, { timeout: 2500 });
+              const mediaTransform = await card.locator('.card-media').evaluate(el => getComputedStyle(el).transform);
+              assert(mediaTransform && mediaTransform !== 'none', `${label}: media hover zoom missing`);
+
+              await page.mouse.move(2, 2);
+              await page.waitForFunction(() => !document.querySelector('.card')?.classList.contains('is-active'), null, { timeout: 2500 });
+            }
+
+            await card.click();
+            await page.waitForSelector('#lbRoot', { state: 'visible', timeout: 10000 });
+            assert(await page.locator('#lbRoot').getAttribute('role') === 'dialog', `${label}: lightbox role missing`);
+            assert(await page.locator('#lbRoot').getAttribute('aria-modal') === 'true', `${label}: lightbox aria-modal missing`);
+            assert(await page.evaluate(() => document.activeElement?.id) === 'lbClose', `${label}: lightbox focus not moved to close`);
+            const counter0 = (await page.locator('#lbCounter').textContent() || '').trim();
+            await page.keyboard.press('ArrowRight');
+            await page.waitForTimeout(500);
+            const counter1 = (await page.locator('#lbCounter').textContent() || '').trim();
+            if (initialCount > 1) assert(counter1 !== counter0, `${label}: ArrowRight did not advance lightbox`);
+            await page.keyboard.press('ArrowLeft');
+            await page.waitForTimeout(500);
+            await page.keyboard.press('Escape');
+            await page.waitForSelector('#lbRoot', { state: 'detached', timeout: 5000 });
+
+            const overflow = await page.evaluate(() => ({ width: innerWidth, scrollWidth: document.documentElement.scrollWidth }));
+            assert(overflow.scrollWidth <= overflow.width + 2, `${label}: horizontal overflow ${JSON.stringify(overflow)}`);
+
+            await page.screenshot({ path: `test-results/gallery-deep/${label}.png`, fullPage: true });
+            assert(pageErrors.length === 0, `${label}: page errors: ${pageErrors.join(' | ')}`);
+            assert(badSameOrigin.length === 0, `${label}: same-origin HTTP failures: ${badSameOrigin.join(' | ')}`);
+            console.log(`PASS ${label}: cards=${initialCount}, pseudo=${JSON.stringify(pseudo)}`);
+            await browser.close();
+          }
+
+          (async () => {
+            for (const mobile of [false, true]) {
+              for (const theme of ['light', 'dark']) {
+                await auditGallery({
+                  base: 'http://127.0.0.1:4174',
+                  label: `local-${mobile ? 'mobile' : 'desktop'}-${theme}`,
+                  mobile,
+                  theme,
+                });
+              }
+            }
+          })().catch(err => { console.error(err); process.exit(1); });
+          JS
+
+      - name: Prove exact live release witness
+        shell: bash
+        run: |
+          set -euo pipefail
+          body="$(curl -fsS --retry 3 --retry-delay 2 --connect-timeout 10 --max-time 30 "$LIVE_BASE/release.json?r78=$RANDOM")"
+          BODY="$body" python3 - <<'PY'
+          import json, os
+          payload = json.loads(os.environ['BODY'])
+          expected = os.environ['PRODUCT_SHA']
+          if payload.get('repository') != 'FedorMilovanov/Milovi_Cake' or payload.get('sha') != expected:
+              raise SystemExit(f'live release mismatch: {payload!r}, expected {expected}')
+          print(f'Live release witness exact: {expected}')
+          PY
+
+      - name: Run production smoke with retries
+        run: python3 scripts/production_smoke.py --retries 3 --delay 10
+
+      - name: Deep-click live gallery desktop/mobile
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'JS'
+          const { chromium, devices } = require('playwright');
+          const fs = require('fs');
+          const assert = (ok, msg) => { if (!ok) throw new Error(msg); };
+
+          async function liveAudit(mobile) {
+            const label = `live-${mobile ? 'mobile' : 'desktop'}-light`;
+            const browser = await chromium.launch({ headless: true });
+            const context = await browser.newContext({
+              ...(mobile ? devices['Pixel 7'] : { viewport: { width: 1440, height: 1100 } }),
+              serviceWorkers: 'block',
+            });
+            await context.addInitScript(() => {
+              localStorage.setItem('milovi_analytics_consent_v1', 'denied');
+              localStorage.setItem('mc_theme', 'light');
+            });
+            const page = await context.newPage();
+            const pageErrors = [];
+            const badSameOrigin = [];
+            page.on('pageerror', e => pageErrors.push(String(e)));
+            page.on('response', r => {
+              if (r.url().startsWith('https://milovicake.ru/') && r.status() >= 400) badSameOrigin.push(`${r.status()} ${r.url()}`);
+            });
+
+            await page.goto(`https://milovicake.ru/gallery/?r78live=${Date.now()}`, { waitUntil: 'domcontentloaded', timeout: 45000 });
+            await page.waitForSelector('.card', { state: 'visible', timeout: 15000 });
+            await page.waitForTimeout(2000);
+            const cssHref = await page.locator('link[href*="/css/gallery/gallery-2026.css"]').getAttribute('href');
+            assert(cssHref && cssHref.includes('v=20260813r01'), `${label}: stale gallery CSS href ${cssHref}`);
+            const card = page.locator('.card').first();
+            const pseudo = await card.evaluate(el => ({
+              content: getComputedStyle(el, '::after').content,
+              borderWidth: getComputedStyle(el, '::after').borderWidth,
+            }));
+            assert(pseudo.content === 'none' || pseudo.content === 'normal', `${label}: live decorative ::after exists ${JSON.stringify(pseudo)}`);
+            assert(pseudo.borderWidth === '0px', `${label}: live ::after border exists ${JSON.stringify(pseudo)}`);
+
+            for (const id of ['all','photo','video','wedding','bento','3d','meringue','pavlova','bday']) {
+              await page.locator(`.gx-chip[data-filter="${id}"]`).click();
+              await page.waitForFunction(filter => document.querySelector(`.gx-chip[data-filter="${filter}"]`)?.getAttribute('aria-pressed') === 'true', id);
+              const cards = await page.locator('.card').count();
+              const total = Number((await page.locator('#gxTotalCount').textContent() || '').trim());
+              assert(cards === total, `${label}/${id}: live counter mismatch ${cards} != ${total}`);
+            }
+            await page.locator('.gx-chip[data-filter="all"]').click();
+            await page.waitForTimeout(800);
+            await page.locator('.card').first().click();
+            await page.waitForSelector('#lbRoot', { state: 'visible', timeout: 10000 });
+            await page.locator('#lbNext').click();
+            await page.waitForTimeout(400);
+            await page.locator('#lbPrev').click();
+            await page.locator('#lbClose').click();
+            await page.waitForSelector('#lbRoot', { state: 'detached', timeout: 5000 });
+
+            const overflow = await page.evaluate(() => ({ width: innerWidth, scrollWidth: document.documentElement.scrollWidth }));
+            assert(overflow.scrollWidth <= overflow.width + 2, `${label}: live horizontal overflow ${JSON.stringify(overflow)}`);
+            await page.screenshot({ path: `test-results/gallery-deep/${label}.png`, fullPage: true });
+            assert(pageErrors.length === 0, `${label}: live page errors: ${pageErrors.join(' | ')}`);
+            assert(badSameOrigin.length === 0, `${label}: live HTTP failures: ${badSameOrigin.join(' | ')}`);
+            console.log(`PASS ${label}`);
+            await browser.close();
+          }
+
+          (async () => {
+            await liveAudit(false);
+            await liveAudit(true);
+          })().catch(err => { console.error(err); process.exit(1); });
+          JS
+
+      - name: Fetch live gallery CSS and prove no frame residue
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS --retry 3 --retry-delay 2 --connect-timeout 10 --max-time 30 \
+            "$LIVE_BASE/css/gallery/gallery-2026.css?v=20260813r01&r78=$RANDOM" > /tmp/live-gallery.css
+          python3 - <<'PY'
+          from pathlib import Path
+          css = Path('/tmp/live-gallery.css').read_text(encoding='utf-8', errors='replace')
+          forbidden = ['.card::after{', '.card:hover::after{', '0 0 0 1.5px rgba(232,184,122,.55)', 'transform:translateY(-6px)']
+          residue = [x for x in forbidden if x in css]
+          if residue:
+              raise SystemExit(f'live CSS frame residue: {residue}')
+          for token in ['.card::before {', '.card.is-active::before { opacity: 1; }', '.card:hover .card-overlay { opacity:1; }', '.lb-root {']:
+              if token not in css:
+                  raise SystemExit(f'live CSS protected token missing: {token}')
+          print('Live CSS surgical invariants: PASS')
+          PY
+
+      - name: Upload deep gallery screenshots and Playwright proof
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: gallery-deep-r78-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            test-results/gallery-deep/
+            test-results/ui-audit/
+            playwright-report/
+          if-no-files-found: warn
+          retention-days: 7
