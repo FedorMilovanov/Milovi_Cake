@@ -50,7 +50,6 @@ jobs:
           f3 = '/* ── F3 · soft gold glow ring + lift on hover ── */'
           f5 = '/* ── F5 · caption reveal (refine the existing overlay/title) ── */'
 
-          # Fail closed if the source no longer matches the reviewed r18 section.
           for marker in (f1, f3, f5):
               if css.count(marker) != 1:
                   raise SystemExit(f'expected exactly one marker, got {css.count(marker)}: {marker}')
@@ -79,7 +78,6 @@ jobs:
           )
           css = css[:start] + replacement + css[end:]
 
-          # Surgical regression guards: old interaction/bug fixes must remain byte-present.
           preserved = [
               '.gallery-grid:has(.card:hover) .card:not(:hover)',
               '.card::before {',
@@ -176,6 +174,9 @@ jobs:
             const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
             const errors = [];
             page.on('pageerror', e => errors.push(String(e)));
+            await page.addInitScript(() => {
+              localStorage.setItem('milovi_analytics_consent_v1', 'denied');
+            });
             await page.goto('http://127.0.0.1:4173/gallery/', { waitUntil: 'domcontentloaded' });
             await page.waitForSelector('.card');
             const card = page.locator('.card').first();
