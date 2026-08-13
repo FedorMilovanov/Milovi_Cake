@@ -1,0 +1,215 @@
+name: Surgical gallery frame cleanup R01
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/remove-gallery-frames-r01.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gallery-frame-cleanup-main
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: main
+          persist-credentials: true
+
+      - name: Setup pinned Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22.13.0'
+          cache: npm
+
+      - name: Remove only the two r18 decorative frames
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          css_path = Path('css/gallery/gallery-2026.css')
+          gallery_path = Path('gallery/index.html')
+          sw_path = Path('sw.js')
+
+          css = css_path.read_text(encoding='utf-8')
+          gallery = gallery_path.read_text(encoding='utf-8')
+          sw = sw_path.read_text(encoding='utf-8')
+
+          f1 = '/* ── F1 · hairline inset gold frame (тонкая рамка внутри) ── */'
+          f3 = '/* ── F3 · soft gold glow ring + lift on hover ── */'
+          f5 = '/* ── F5 · caption reveal (refine the existing overlay/title) ── */'
+
+          # Fail closed if the source no longer matches the reviewed r18 section.
+          for marker in (f1, f3, f5):
+              if css.count(marker) != 1:
+                  raise SystemExit(f'expected exactly one marker, got {css.count(marker)}: {marker}')
+
+          start = css.index(f1)
+          mid = css.index(f3, start)
+          end = css.index(f5, mid)
+          section = css[start:end]
+
+          required_old = [
+              '.card::after{',
+              'border:1px solid rgba(232,184,122,.34)',
+              '.card:hover::after{',
+              '.card{ box-shadow:0 8px 26px rgba(0,0,0,.16), 0 0 0 1px rgba(184,130,58,.10); }',
+              '0 0 0 1.5px rgba(232,184,122,.55)',
+              'transform:translateY(-6px)',
+          ]
+          missing = [token for token in required_old if token not in section]
+          if missing:
+              raise SystemExit(f'r18 frame section changed unexpectedly; refusing broad edit: {missing}')
+
+          replacement = (
+              '/* R77 — intentional cleanup: gallery cards have no decorative inset frame or full gold glow ring.\n'
+              '   Preserve the pre-r18 pointer-reactive .card::before/.card.is-active interaction, media zoom,\n'
+              '   neighbour blur, loading skeletons, captions and lightbox behavior. */\n\n'
+          )
+          css = css[:start] + replacement + css[end:]
+
+          # Surgical regression guards: old interaction/bug fixes must remain byte-present.
+          preserved = [
+              '.gallery-grid:has(.card:hover) .card:not(:hover)',
+              '.card::before {',
+              '.card.is-active::before { opacity: 1; }',
+              '.card.is-active { z-index:10; box-shadow:0 30px 60px rgba(0,0,0,.4), 0 0 0 1px rgba(212,168,92,.3); }',
+              '.card:hover .card-media { transform: scale(1.1); }',
+              '.card.is-loaded:hover .card-media{ transform:scale(1.08); }',
+              '.card:hover .card-overlay { opacity:1; }',
+              '.card-skeleton{',
+              f5,
+              '.lb-root {',
+          ]
+          missing_preserved = [token for token in preserved if token not in css]
+          if missing_preserved:
+              raise SystemExit(f'protected gallery behavior would be lost: {missing_preserved}')
+
+          forbidden_after = [
+              f1,
+              f3,
+              '.card::after{',
+              '.card:hover::after{',
+              '0 0 0 1.5px rgba(232,184,122,.55)',
+              'transform:translateY(-6px)',
+          ]
+          still_there = [token for token in forbidden_after if token in css]
+          if still_there:
+              raise SystemExit(f'decorative frame residue remains: {still_there}')
+
+          if css.count('{') != css.count('}'):
+              raise SystemExit('gallery CSS brace imbalance after surgical cleanup')
+
+          old_asset = '/css/gallery/gallery-2026.css?v=20260728r27'
+          new_asset = '/css/gallery/gallery-2026.css?v=20260813r01'
+          if gallery.count(old_asset) != 1:
+              raise SystemExit(f'gallery cache-bust source count unexpected: {gallery.count(old_asset)}')
+          if sw.count(old_asset) != 1:
+              raise SystemExit(f'SW gallery cache-bust source count unexpected: {sw.count(old_asset)}')
+          gallery = gallery.replace(old_asset, new_asset)
+          sw = sw.replace(old_asset, new_asset)
+
+          old_cache = "const CACHE_NAME = 'milovi-cake-v2026.08.03-r76';"
+          new_cache = "const CACHE_NAME = 'milovi-cake-v2026.08.13-r77';"
+          if sw.count(old_cache) != 1:
+              raise SystemExit('SW cache name changed unexpectedly; refusing blind version edit')
+          sw = sw.replace(old_cache, new_cache)
+          sw = sw.replace('MILOVI CAKE — Service Worker v1.7 (V20260803-R76)',
+                          'MILOVI CAKE — Service Worker v1.7 (V20260813-R77)')
+
+          css_path.write_text(css, encoding='utf-8')
+          gallery_path.write_text(gallery, encoding='utf-8')
+          sw_path.write_text(sw, encoding='utf-8')
+          PY
+
+      - name: Verify diff is limited to reviewed files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          actual="$(git diff --name-only | sort)"
+          expected="$(printf '%s\n' css/gallery/gallery-2026.css gallery/index.html sw.js | sort)"
+          if [ "$actual" != "$expected" ]; then
+            echo 'Unexpected changed paths:'
+            printf '%s\n' "$actual"
+            exit 1
+          fi
+          git diff -- css/gallery/gallery-2026.css gallery/index.html sw.js
+
+      - name: Install test dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run syntax and deterministic source checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run audit:js
+          npm run audit:analytics
+          python3 scripts/check_prigorody_idempotent.py
+
+      - name: Browser-check gallery interactions after cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 >/tmp/milovi-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          sleep 1
+          node <<'JS'
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+            const errors = [];
+            page.on('pageerror', e => errors.push(String(e)));
+            await page.goto('http://127.0.0.1:4173/gallery/', { waitUntil: 'domcontentloaded' });
+            await page.waitForSelector('.card');
+            const card = page.locator('.card').first();
+            const pseudoBefore = await card.evaluate(el => getComputedStyle(el, '::after').content);
+            if (pseudoBefore !== 'none' && pseudoBefore !== 'normal') {
+              throw new Error(`decorative ::after still renders: ${pseudoBefore}`);
+            }
+            await card.hover();
+            await page.waitForTimeout(250);
+            const overlayOpacity = Number(await card.locator('.card-overlay').evaluate(el => getComputedStyle(el).opacity));
+            if (overlayOpacity < 0.8) throw new Error(`gallery overlay regression: opacity=${overlayOpacity}`);
+            const mediaTransform = await card.locator('.card-media').evaluate(el => getComputedStyle(el).transform);
+            if (!mediaTransform || mediaTransform === 'none') throw new Error('gallery hover zoom regression');
+            await card.click();
+            await page.waitForSelector('.lb-root');
+            if (!(await page.locator('.lb-root').isVisible())) throw new Error('lightbox did not open');
+            await page.keyboard.press('Escape');
+            await page.waitForTimeout(150);
+            await page.locator('.gx-chip[data-filter="bento"]').click();
+            await page.waitForTimeout(150);
+            if (await page.locator('.card').count() < 1) throw new Error('gallery filter regression');
+            if (errors.length) throw new Error(`page errors: ${errors.join(' | ')}`);
+            await browser.close();
+          })().catch(err => { console.error(err); process.exit(1); });
+          JS
+
+      - name: Publish surgical cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm -f .github/workflows/remove-gallery-frames-r01.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '4189826+github-actions[bot]@users.noreply.github.com'
+          git add css/gallery/gallery-2026.css gallery/index.html sw.js
+          git diff --cached --check
+          git commit -m 'fix: remove decorative gold frames from gallery cards'
+          git push origin HEAD:main
