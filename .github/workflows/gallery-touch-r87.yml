@@ -1,0 +1,50 @@
+name: Gallery touch audit R87
+on:
+  push:
+    branches: [audit/gallery-deep-r78]
+    paths: ['.github/workflows/gallery-touch-r87.yml']
+permissions:
+  contents: read
+jobs:
+  touch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: c4eb3bf6ed6fd5c3c9e4c2d857e53d8bae093370
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22.13.0'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Tap live gallery on Pixel 7
+        run: |
+          node <<'JS'
+          const {chromium,devices}=require('playwright');
+          (async()=>{
+            const b=await chromium.launch({headless:true});
+            const c=await b.newContext({...devices['Pixel 7'],serviceWorkers:'block'});
+            await c.addInitScript(()=>{localStorage.setItem('milovi_analytics_consent_v1','denied');localStorage.setItem('mc_theme','light')});
+            const p=await c.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(String(e)));
+            await p.goto('https://milovicake.ru/gallery/?touch='+Date.now(),{waitUntil:'domcontentloaded',timeout:45000});
+            await p.waitForSelector('.card',{state:'visible'});
+            for(const f of ['photo','video','wedding','bento','3d','meringue','pavlova','bday','all']){
+              await p.locator(`.gx-chip[data-filter="${f}"]`).tap();
+              await p.waitForFunction(x=>document.querySelector(`.gx-chip[data-filter="${x}"]`)?.getAttribute('aria-pressed')==='true',f);
+            }
+            await p.locator('.card').first().tap();
+            await p.waitForSelector('#lbRoot',{state:'visible'});
+            await p.locator('#lbClose').tap();
+            await p.waitForSelector('#lbRoot',{state:'detached'});
+            await p.waitForTimeout(300);
+            const s=await p.evaluate(()=>({hover:document.querySelectorAll('.card:hover').length, blurred:[...document.querySelectorAll('.card')].filter(x=>getComputedStyle(x).filter!=='none').length, dimmed:[...document.querySelectorAll('.card')].filter(x=>+getComputedStyle(x).opacity<.99).length, coarse:matchMedia('(pointer: coarse)').matches}));
+            if(!s.coarse||s.hover||s.blurred||s.dimmed||errs.length) throw new Error(JSON.stringify({s,errs}));
+            await p.locator('.lp-theme-toggle').tap();
+            if(await p.locator('html').getAttribute('data-theme')!=='dark') throw new Error('theme tap failed');
+            console.log('PASS live Pixel 7 touch taps; no sticky hover/blur',s);
+            await b.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
