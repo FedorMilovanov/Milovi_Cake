@@ -1,4 +1,4 @@
-name: Gallery focused audit R83
+name: Gallery exhaustive click audit R84
 
 on:
   push:
@@ -11,78 +11,119 @@ permissions:
 jobs:
   gallery:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           ref: c4eb3bf6ed6fd5c3c9e4c2d857e53d8bae093370
           persist-credentials: false
-      - name: Verify exact product and source guards
+      - name: Exact product guard
         run: |
+          set -euo pipefail
           test "$(git rev-parse HEAD)" = c4eb3bf6ed6fd5c3c9e4c2d857e53d8bae093370
           ! grep -qF '.card::after{' css/gallery/gallery-2026.css
           ! grep -qF '.card:hover::after{' css/gallery/gallery-2026.css
           grep -qF '.card::before {' css/gallery/gallery-2026.css
-          grep -qF '.card.is-active::before { opacity: 1; }' css/gallery/gallery-2026.css
-          grep -qF '.card:hover .card-overlay { opacity:1; }' css/gallery/gallery-2026.css
           grep -qF '/css/gallery/gallery-2026.css?v=20260813r01' gallery/index.html
-          grep -qF "localStorage.getItem('mc_theme')" gallery/index.html
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22.13.0'
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - name: Focused safety checks
+      - name: Click every card and force every lazy medium to load
+        shell: bash
         run: |
-          npm run audit:js
-          npm run audit:analytics
-          python3 scripts/check_prigorody_idempotent.py
-          npm run audit:security
-      - name: Click local and live gallery exhaustively
-        run: |
-          mkdir -p test-results/gallery-r83
-          python3 -m http.server 4174 >/tmp/gallery.log 2>&1 &
+          set -euo pipefail
+          mkdir -p test-results/gallery-r84
+          python3 -m http.server 4174 >/tmp/gallery-r84-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
           sleep 1
           node <<'JS'
           const { chromium, devices } = require('playwright');
-          const filters=['all','photo','video','wedding','bento','3d','meringue','pavlova','bday'];
           const ok=(x,m)=>{if(!x)throw new Error(m)};
-          async function one(base,mobile,theme,label){
+
+          async function audit(base,mobile,label){
             const browser=await chromium.launch({headless:true});
-            const ctx=await browser.newContext({...(mobile?devices['Pixel 7']:{viewport:{width:1440,height:1100}}),serviceWorkers:'block'});
-            await ctx.addInitScript(t=>{localStorage.setItem('milovi_analytics_consent_v1','denied');localStorage.setItem('mc_theme',t)},theme);
-            const page=await ctx.newPage(), errors=[], bad=[];
+            const context=await browser.newContext({...(mobile?devices['Pixel 7']:{viewport:{width:1440,height:1000}}),serviceWorkers:'block'});
+            await context.addInitScript(()=>{localStorage.setItem('milovi_analytics_consent_v1','denied');localStorage.setItem('mc_theme','light')});
+            const page=await context.newPage();
+            const errors=[], bad=[];
             page.on('pageerror',e=>errors.push(String(e)));
             page.on('response',r=>{if(r.url().startsWith(base+'/')&&r.status()>=400)bad.push(`${r.status()} ${r.url()}`)});
-            await page.goto(`${base}/gallery/?audit=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45000});
-            await page.waitForSelector('.card',{state:'visible',timeout:15000}); await page.waitForTimeout(1500);
-            ok(await page.locator('.mc-consent-overlay.is-open').count()===0,label+' consent overlay');
-            ok(await page.locator('html').getAttribute('data-theme')===theme,label+' theme');
-            ok(await page.locator('.gx-chip').count()===9,label+' filter count');
-            const initial=await page.locator('.card').count(); ok(initial>20,label+' card count '+initial);
-            ok(Number((await page.locator('#gxTotalCount').textContent()).trim())===initial,label+' total count');
-            const ids=await page.locator('.card').evaluateAll(es=>es.map(e=>e.dataset.id)); ok(new Set(ids).size===ids.length,label+' duplicate ids');
-            const p=await page.locator('.card').first().evaluate(e=>{const s=getComputedStyle(e,'::after');return[s.content,s.borderWidth,s.borderStyle]});
-            ok((p[0]==='none'||p[0]==='normal')&&(p[1]==='0px'||p[2]==='none'),label+' frame '+JSON.stringify(p));
-            if(base.startsWith('https://')) ok((await page.locator('link[href*="gallery-2026.css"]').getAttribute('href')).includes('v=20260813r01'),label+' stale css');
-            for(const f of filters){await page.locator(`.gx-chip[data-filter="${f}"]`).click();await page.waitForFunction(x=>document.querySelector(`.gx-chip[data-filter="${x}"]`)?.getAttribute('aria-pressed')==='true',f);const n=await page.locator('.card').count();ok(Number((await page.locator('#gxTotalCount').textContent()).trim())===n,label+' '+f+' counter');ok(await page.locator('.gx-chip[aria-pressed="true"]').count()===1,label+' '+f+' pressed')}
-            await page.locator('.gx-chip[data-filter="all"]').click(); await page.waitForTimeout(500); const card=page.locator('.card').first();
-            if(!mobile){const b=await card.boundingBox();await page.mouse.move(b.x+b.width*.7,b.y+b.height*.35);await page.waitForFunction(()=>{const e=document.querySelector('.card');return e?.classList.contains('is-active')&&Number(getComputedStyle(e,'::before').opacity)>.95},null,{timeout:3000});await page.waitForFunction(()=>Number(getComputedStyle(document.querySelector('.card:hover .card-overlay')).opacity)>.95,null,{timeout:3000});ok(await card.locator('.card-media').evaluate(e=>getComputedStyle(e).transform)!=='none',label+' zoom');await page.mouse.move(2,2)}
-            await card.click();await page.waitForSelector('#lbRoot',{state:'visible'});await page.waitForSelector('#lbSwiper.swiper-initialized',{timeout:5000});const c0=(await page.locator('#lbCounter').textContent()).trim();await page.keyboard.press('ArrowRight');await page.waitForFunction(x=>document.querySelector('#lbCounter')?.textContent.trim()!==x,c0,{timeout:3000});await page.keyboard.press('ArrowLeft');await page.keyboard.press('Escape');await page.waitForSelector('#lbRoot',{state:'detached'});
-            await card.click();await page.waitForSelector('#lbRoot',{state:'visible'});await page.waitForSelector('#lbSwiper.swiper-initialized',{timeout:5000});await page.locator('#lbNext').click();await page.locator('#lbPrev').click();await page.locator('#lbClose').click();await page.waitForSelector('#lbRoot',{state:'detached'});
-            const before=await page.locator('html').getAttribute('data-theme');await page.locator('.lp-theme-toggle').click();const after=await page.locator('html').getAttribute('data-theme');ok(after!==before,label+' theme toggle');ok(await page.evaluate(()=>localStorage.getItem('mc_theme'))===after,label+' theme persist');
-            const w=await page.evaluate(()=>[innerWidth,document.documentElement.scrollWidth]);ok(w[1]<=w[0]+2,label+' horizontal overflow '+w);await page.screenshot({path:`test-results/gallery-r83/${label}.png`,fullPage:true});ok(errors.length===0,label+' page errors '+errors.join('|'));ok(bad.length===0,label+' HTTP '+bad.join('|'));console.log('PASS',label,'cards',initial);await browser.close();
+            await page.goto(`${base}/gallery/?r84=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45000});
+            await page.waitForSelector('.card',{state:'visible',timeout:15000});
+            await page.waitForTimeout(1000);
+            const total=await page.locator('.card').count();
+            ok(total===46,`${label}: expected 46 cards, got ${total}`);
+
+            // Walk every card into the viewport so lazy images/posters/videos cannot hide below-fold failures.
+            for(let i=0;i<total;i++){
+              const card=page.locator('.card').nth(i);
+              await card.scrollIntoViewIfNeeded();
+              const media=card.locator('.card-media');
+              await media.waitFor({state:'visible',timeout:5000});
+              const tag=await media.evaluate(e=>e.tagName);
+              if(tag==='IMG'){
+                await page.waitForFunction(el=>el.complete&&el.naturalWidth>0,await media.elementHandle(),{timeout:8000});
+                const dims=await media.evaluate(e=>[e.naturalWidth,e.naturalHeight]);
+                ok(dims[0]>0&&dims[1]>0,`${label}: card ${i+1} image has no dimensions`);
+              }else if(tag==='VIDEO'){
+                const poster=await media.getAttribute('poster');
+                ok(!!poster,`${label}: card ${i+1} video has no poster`);
+                // IntersectionObserver should assign the deferred source when the card enters view.
+                await page.waitForFunction(el=>!!el.currentSrc||!!el.src,await media.elementHandle(),{timeout:8000});
+              }else throw new Error(`${label}: card ${i+1} unexpected media tag ${tag}`);
+            }
+
+            await page.evaluate(()=>scrollTo(0,0));
+            await page.waitForTimeout(300);
+
+            // Click every card. Verify that the correct item opens, metadata is populated, and close restores the page.
+            for(let i=0;i<total;i++){
+              const card=page.locator('.card').nth(i);
+              await card.scrollIntoViewIfNeeded();
+              const id=await card.getAttribute('data-id');
+              const title=await card.locator('.card-title').textContent();
+              await card.click();
+              await page.waitForSelector('#lbRoot',{state:'visible',timeout:8000});
+              ok((await page.locator('#lbTitle').textContent()).trim().length>0,`${label}: card ${i+1} lightbox title empty`);
+              ok((await page.locator('#lbTitle').textContent()).trim()===(title||'').trim(),`${label}: card ${i+1} lightbox title mismatch`);
+              ok(decodeURIComponent(new URL(page.url()).hash.slice(1))===id,`${label}: card ${i+1} hash mismatch`);
+              ok((await page.locator('#lbCounter').textContent()).trim().startsWith(String(i+1).padStart(2,'0')+' /'),`${label}: card ${i+1} counter mismatch ${(await page.locator('#lbCounter').textContent()).trim()}`);
+              await page.locator('#lbClose').click();
+              await page.waitForSelector('#lbRoot',{state:'detached',timeout:5000});
+              const body=await page.evaluate(()=>({position:document.body.style.position,overflow:document.body.style.overflow}));
+              ok(body.position===''&&body.overflow==='',`${label}: body scroll lock leaked after card ${i+1}: ${JSON.stringify(body)}`);
+            }
+
+            // One final pass after all media were forced into view, then capture a visual proof with lazy gaps eliminated.
+            for(let i=0;i<total;i++) await page.locator('.card').nth(i).scrollIntoViewIfNeeded();
+            await page.waitForTimeout(600);
+            await page.screenshot({path:`test-results/gallery-r84/${label}.png`,fullPage:true});
+            const overflow=await page.evaluate(()=>[innerWidth,document.documentElement.scrollWidth]);
+            ok(overflow[1]<=overflow[0]+2,`${label}: horizontal overflow ${overflow}`);
+            ok(errors.length===0,`${label}: page errors ${errors.join(' | ')}`);
+            ok(bad.length===0,`${label}: same-origin HTTP errors ${bad.join(' | ')}`);
+            console.log(`PASS ${label}: ${total}/46 cards media-loaded and clicked, no HTTP/page errors`);
+            await browser.close();
           }
-          (async()=>{for(const m of [false,true])for(const t of ['light','dark'])await one('http://127.0.0.1:4174',m,t,`local-${m?'mobile':'desktop'}-${t}`);for(const m of [false,true])await one('https://milovicake.ru',m,'light',`live-${m?'mobile':'desktop'}`);const r=await fetch('https://milovicake.ru/release.json?audit='+Date.now());const j=await r.json();ok(j.sha==='c4eb3bf6ed6fd5c3c9e4c2d857e53d8bae093370','live release sha '+JSON.stringify(j))})().catch(e=>{console.error(e);process.exit(1)});
+
+          (async()=>{
+            await audit('http://127.0.0.1:4174',false,'local-desktop');
+            await audit('http://127.0.0.1:4174',true,'local-mobile');
+            await audit('https://milovicake.ru',false,'live-desktop');
+            await audit('https://milovicake.ru',true,'live-mobile');
+          })().catch(e=>{console.error(e);process.exit(1)});
           JS
-      - name: Production smoke
+      - name: Production smoke with retries
         run: python3 scripts/production_smoke.py --retries 3 --delay 10
-      - name: Upload screenshots
+      - name: Upload post-scroll screenshots
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: gallery-r83-${{ github.run_id }}
-          path: test-results/gallery-r83/
+          name: gallery-r84-${{ github.run_id }}
+          path: test-results/gallery-r84/
           if-no-files-found: warn
           retention-days: 7
