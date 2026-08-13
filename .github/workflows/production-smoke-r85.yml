@@ -1,0 +1,23 @@
+name: Production smoke R85
+
+on:
+  push:
+    branches: [audit/gallery-deep-r78]
+    paths: ['.github/workflows/production-smoke-r85.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: c4eb3bf6ed6fd5c3c9e4c2d857e53d8bae093370
+          persist-credentials: false
+      - name: Exact production head
+        run: test "$(git rev-parse HEAD)" = c4eb3bf6ed6fd5c3c9e4c2d857e53d8bae093370
+      - name: Production smoke with retries
+        run: python3 scripts/production_smoke.py --retries 3 --delay 10
