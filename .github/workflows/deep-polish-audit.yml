@@ -50,16 +50,35 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -F "milovi-cake-v2026.08.03-r76" sw.js
+
+          # Release identity and exact migrated runtime assets must stay in lockstep.
+          grep -F "const CACHE_NAME = 'milovi-cake-v2026.08.15-r78';" sw.js
+          grep -F "'/css/final-fixes.css?v=20260815r78'" sw.js
+          grep -F "'/js/mc-2026.js?v=20260815r78'" sw.js
+          grep -F "'/js/consent-analytics.js?v=20260815r78'" sw.js
+          grep -F 'href="/css/final-fixes.css?v=20260815r78"' index.html
+          grep -F 'src="js/mc-2026.js?v=20260815r78"' index.html
+          grep -F 'src="/js/consent-analytics.js?v=20260815r78"' index.html
+
+          # Existing app-shell/privacy contracts remain explicit and regression-tested.
           grep -F "/css/v20-fixes.css?v=20260728r27" sw.js
           grep -F "#mcPrivacyRow" tests/theme-smoke.spec.js
           grep -F "visibleNavs" tests/theme-smoke.spec.js
           grep -F "CONTACTS + PRIVACY RELEASE R75" css/v20-fixes.css
+
+          # Superseded runtime sidecars and temporary extraction artifacts must not return.
+          test ! -e css/milovi-premium-r3.css
+          test ! -e js/ui-polish-r3.js
           test ! -e css/contact-polish.css
           test ! -e css/contact-polish-base.css
           test ! -e css/mobile-app-shell.css
           test ! -e tests/contact-privacy-regression.spec.js
           test ! -e scripts/audit_core.py
+
+          ! grep -Fq 'milovi-premium-r3.css' index.html
+          ! grep -Fq 'ui-polish-r3.js' index.html
+          ! grep -Fq 'milovi-premium-r3.css' sw.js
+          ! grep -Fq 'ui-polish-r3.js' sw.js
 
       - name: Upload browser proof
         if: always()
