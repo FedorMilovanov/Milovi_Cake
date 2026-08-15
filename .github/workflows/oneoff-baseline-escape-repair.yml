@@ -1,0 +1,70 @@
+name: One-off baseline escape repair
+
+on:
+  push:
+    branches:
+      - ci/restore-main-qa-baseline
+    paths:
+      - .github/workflows/oneoff-baseline-escape-repair.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact branch head
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ci/restore-main-qa-baseline
+          fetch-depth: 0
+
+      - name: Restore migrated Escape contract fail-closed
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          consent = Path('js/consent-analytics.js')
+          text = consent.read_text(encoding='utf-8')
+          anchor = "  document.addEventListener('milovi:open-consent', function () { openDialog(false); });\n"
+          listener = """  document.addEventListener('keydown', function (event) {\n    if (event.key !== 'Escape') return;\n    if (!overlay || overlay.hidden || !overlay.classList.contains('is-open')) return;\n    event.preventDefault();\n    event.stopPropagation();\n    closeDialog();\n  }, true);\n"""
+          if text.count(anchor) != 1:
+              raise SystemExit(f'consent anchor count must be 1, got {text.count(anchor)}')
+          if "overlay.classList.contains('is-open')" in text:
+              raise SystemExit('global Escape listener already present; refusing duplicate patch')
+          text = text.replace(anchor, listener + anchor, 1)
+          consent.write_text(text, encoding='utf-8')
+
+          protected = Path('tests/protected-interactions.spec.js')
+          test_text = protected.read_text(encoding='utf-8')
+          old = "    await page.locator('.mc-consent-close').press('Escape');\n"
+          new = "    await page.keyboard.press('Escape');\n"
+          if test_text.count(old) != 1:
+              raise SystemExit(f'focused Escape test anchor count must be 1, got {test_text.count(old)}')
+          test_text = test_text.replace(old, new, 1)
+          protected.write_text(test_text, encoding='utf-8')
+          PY
+
+          node --check js/consent-analytics.js
+          node --check tests/protected-interactions.spec.js
+          grep -F "overlay.classList.contains('is-open')" js/consent-analytics.js
+          grep -F "await page.keyboard.press('Escape');" tests/protected-interactions.spec.js
+
+      - name: Commit only the migration repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add js/consent-analytics.js tests/protected-interactions.spec.js
+          if git diff --cached --quiet; then
+            echo "No repair diff produced" >&2
+            exit 1
+          fi
+          changed="$(git diff --cached --name-only)"
+          printf '%s\n' "$changed"
+          test "$changed" = $'js/consent-analytics.js\ntests/protected-interactions.spec.js'
+          git commit -m "fix: preserve global consent Escape behavior"
+          git push origin HEAD:ci/restore-main-qa-baseline
