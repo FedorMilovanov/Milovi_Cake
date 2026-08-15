@@ -86,7 +86,7 @@ test.describe('premium baseline consolidation contracts', () => {
     await page.evaluate(() => window.MiloviConsent.open());
     await expect(overlay).toHaveClass(/is-open/);
     await expect(page.locator('#mc-consent-dialog')).toBeVisible();
-    await page.keyboard.press('Escape');
+    await page.locator('.mc-consent-close').press('Escape');
     await expect(overlay).not.toHaveClass(/is-open/);
   });
 
@@ -130,13 +130,9 @@ test.describe('premium baseline consolidation contracts', () => {
 
     await more.click();
     await expect(sheet).toHaveClass(/mc-open/);
-    const opened = await sheet.evaluate((el) => {
-      const css = getComputedStyle(el);
-      return { visibility: css.visibility, opacity: css.opacity, pointerEvents: css.pointerEvents };
-    });
-    expect(opened.visibility).toBe('visible');
-    expect(Number(opened.opacity)).toBeGreaterThan(0.9);
-    expect(opened.pointerEvents).toBe('auto');
+    await expect(sheet).toHaveCSS('visibility', 'visible');
+    await expect(sheet).toHaveCSS('pointer-events', 'auto');
+    await expect.poll(async () => sheet.evaluate((el) => Number(getComputedStyle(el).opacity))).toBeGreaterThan(0.9);
 
     await page.keyboard.press('Escape');
     await expect(sheet).not.toHaveClass(/mc-open/);
