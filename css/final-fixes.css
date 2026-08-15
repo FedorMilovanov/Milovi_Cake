@@ -432,3 +432,305 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
 @media (prefers-reduced-motion: reduce) {
   .product-card:hover { transform: none; }
 }
+
+/* Consolidated from css/milovi-premium-r3.css on 2026-08-15.
+   Kept at the end of the existing allowed final override layer to preserve
+   the former late-cascade position while retiring the unauthorized sidecar. */
+/* Milovi Cake — restrained premium contact/UI polish, 2026-08-03.
+   Intentionally isolated and loaded last to avoid broad regressions. */
+
+/* Restore a compact two-row rhythm for the four advantages on phones. */
+#why .feature h3 { font-size:18px; color:var(--brown); margin-bottom:8px; }
+html[data-theme="dark"] #why .feature h3 { color:#f0e4d0; }
+
+/* Floating, visually lighter mobile app bar — theme-aware and clear of edges. */
+@media (max-width:768px) {
+  #mcNav.mc-nav,
+  html body #mcNav.mc-nav {
+    left:12px !important;
+    right:12px !important;
+    bottom:max(10px,env(safe-area-inset-bottom,0px)) !important;
+    width:auto !important;
+    height:66px !important;
+    max-width:none !important;
+    padding:0 5px !important;
+    border:1px solid rgba(112,78,48,.13) !important;
+    border-radius:22px !important;
+    background:rgba(250,249,246,.94) !important;
+    -webkit-backdrop-filter:blur(22px) saturate(145%) !important;
+    backdrop-filter:blur(22px) saturate(145%) !important;
+    box-shadow:0 16px 44px rgba(45,28,17,.18),inset 0 1px 0 rgba(255,255,255,.82) !important;
+    overflow:visible !important;
+  }
+  html[data-theme="dark"] #mcNav.mc-nav {
+    border-color:rgba(226,188,137,.16) !important;
+    background:rgba(23,15,10,.94) !important;
+    box-shadow:0 18px 46px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.035) !important;
+  }
+  #mcNav .mc-btn { min-height:64px !important; color:#78685c !important; }
+  html[data-theme="dark"] #mcNav .mc-btn { color:rgba(239,218,190,.60) !important; }
+  #mcNav .mc-btn.mc-active { color:#9d672f !important; }
+  html[data-theme="dark"] #mcNav .mc-btn.mc-active { color:#e0ae6d !important; }
+  #mcNav .mc-btn.mc-active::before { top:5px !important; width:18px !important; height:1px !important; border-radius:99px !important; }
+  #mcNav .mc-sep { margin:17px 0 !important; background:rgba(145,102,59,.13) !important; }
+  #mcNav .mc-btn--order .mc-btn-circle {
+    width:45px !important;
+    height:45px !important;
+    margin-top:-13px !important;
+    box-shadow:0 7px 20px rgba(150,96,43,.30),0 0 0 5px rgba(250,249,246,.94) !important;
+  }
+  html[data-theme="dark"] #mcNav .mc-btn--order .mc-btn-circle { box-shadow:0 8px 22px rgba(0,0,0,.36),0 0 0 5px rgba(23,15,10,.94) !important; }
+  body.has-mc-nav { padding-bottom:calc(88px + env(safe-area-inset-bottom,0px)) !important; }
+  body.has-mc-nav .site-footer,
+  body.has-mc-nav footer.site-footer { padding-bottom:34px !important; }
+  .back-to-top {
+    right:18px !important;
+    bottom:calc(92px + env(safe-area-inset-bottom,0px)) !important;
+    width:42px !important;
+    height:42px !important;
+  }
+  .back-to-top.footer-clearance { opacity:0 !important; pointer-events:none !important; transform:translateY(10px) scale(.9) !important; }
+
+
+  #why .features-grid {
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:12px !important;
+    margin-top:38px !important;
+  }
+  #why .feature { padding:22px 14px !important; border-radius:16px !important; }
+  #why .feature-icon { width:50px !important; height:50px !important; font-size:21px !important; margin-bottom:12px !important; }
+  #why .feature h3 { font-size:16px !important; line-height:1.18 !important; }
+  #why .feature p { font-size:12px !important; line-height:1.48 !important; }
+}
+
+
+/* Settings dialog appears only on deliberate request; keep it compact and clear. */
+.mc-consent-dialog { border-radius:24px !important; }
+.mc-consent-trigger { white-space:nowrap; }
+
+@media (prefers-reduced-motion:reduce) {
+  #contacts .card:not(.card--dark) .form-group.float-label::before { transition:none !important; }
+}
+
+/* The footer deliberately stays dark in both themes, so it must not inherit
+   the daytime page ink. Keep every legal/project label readable. */
+html body .site-footer .footer-projects-label { color:#c99551 !important; }
+html body .site-footer .footer-projects-link {
+  color:#ead4b1 !important;
+  border-color:rgba(212,167,106,.24) !important;
+  background:rgba(255,255,255,.025) !important;
+}
+html body .site-footer .footer-projects-link:hover,
+html body .site-footer .footer-projects-link:focus-visible {
+  color:#f2dfbf !important;
+  border-color:rgba(212,167,106,.46) !important;
+  background:rgba(212,167,106,.07) !important;
+}
+html body .site-footer .footer-projects-name { color:#f0d9b2 !important; }
+html body .site-footer .footer-projects-desc { color:rgba(246,229,204,.68) !important; }
+html body .site-footer .footer-projects-arrow { color:#d4a76a !important; }
+html body .site-footer .footer-bottom,
+html body .site-footer .footer-bottom > span,
+html body .site-footer .footer-bottom > div { color:rgba(241,222,194,.78) !important; opacity:1 !important; }
+html body .site-footer .footer-bottom a { color:rgba(238,218,187,.76) !important; opacity:1 !important; }
+html body .site-footer .footer-bottom a:hover,
+html body .site-footer .footer-bottom a:focus-visible { color:rgba(255,237,207,.96) !important; }
+html body .site-footer .footer-bottom .mc-consent-trigger { color:rgba(226,192,145,.84) !important; }
+
+/* Final R4 polish — remove two residual visual artifacts found in the live-state audit. */
+
+/* The legacy title shimmer is a wide rectangular sweep. In the contact section
+   keep the editorial title static and retain only a restrained hairline accent. */
+#contacts .section-title::before {
+  content:none !important;
+  display:none !important;
+  animation:none !important;
+}
+#contacts .section-title::after,
+#contacts .section-title.visible::after {
+  width:64px !important;
+  height:1px !important;
+  opacity:.78 !important;
+  transform:translateX(-50%) scaleX(1) !important;
+  background:linear-gradient(90deg,transparent,rgba(201,147,74,.88),transparent) !important;
+}
+
+/* Fine-print must remain quiet, not illegible. */
+#contacts .consent-note { color:rgba(237,216,188,.62) !important; }
+#contacts .card:not(.card--dark) .form-note { font-size:11.5px !important; }
+html[data-theme="dark"] #contacts .card:not(.card--dark) .form-note { color:rgba(235,215,187,.68) !important; }
+
+@media (max-width:768px) {
+  /* A closed sheet previously remained about 40px inside the viewport because
+     its bottom offset matched the navigation height. Fully remove it from the
+     visual and accessibility tree until the user deliberately opens “Ещё”. */
+  #mcSheet.mc-sheet:not(.mc-open) {
+    transform:translateY(calc(100% + 96px)) scale(.985) !important;
+    opacity:0 !important;
+    visibility:hidden !important;
+    pointer-events:none !important;
+  }
+  #mcSheet.mc-sheet.mc-open {
+    transform:translateY(0) scale(1) !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    pointer-events:auto !important;
+  }
+
+  /* Leave enough scrollable footer clearance for the persistent floating bar. */
+  body.has-mc-nav .site-footer,
+  body.has-mc-nav footer.site-footer {
+    padding-bottom:calc(104px + env(safe-area-inset-bottom,0px)) !important;
+  }
+}
+
+@media (max-width:768px) {
+  /* Runtime navigation styles render name and metadata as inline spans. Keep
+     the sheet hierarchy readable and prevent labels from visually merging. */
+  #mcSheet .mc-row-text {
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:flex-start !important;
+    gap:3px !important;
+    min-width:0 !important;
+  }
+  #mcSheet .mc-row-name,
+  #mcSheet .mc-row-sub {
+    display:block !important;
+    margin:0 !important;
+  }
+  #mcSheet .mc-row-sub {
+    max-width:100% !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+  }
+}
+
+/* Contact restoration R9 — restore the approved framed contact UI.
+   The original card, field borders, textarea size and floating-label
+   animation come from v20-fixes.css. Only the newer phone treatment
+   and restrained social hover accents are intentionally retained. */
+
+/* Keep the newer minimal phone treatment; do not restore the old tile. */
+#contacts .card.card--dark .contact-primary-icon,
+html #contacts .card.card--dark .contact-primary-icon {
+  width:38px !important;
+  height:38px !important;
+  flex:0 0 38px !important;
+  border:1px solid rgba(231,201,160,.35) !important;
+  border-radius:50% !important;
+  background:transparent !important;
+  color:#e8c58f !important;
+  box-shadow:none !important;
+  overflow:visible !important;
+}
+#contacts .card.card--dark .contact-primary-icon::before,
+#contacts .card.card--dark .contact-primary-icon::after {
+  content:none !important;
+  display:none !important;
+}
+#contacts .card.card--dark .contact-primary-icon svg,
+#contacts .card.card--dark .contact-primary-icon svg path {
+  width:17px !important;
+  height:17px !important;
+  fill:none !important;
+  stroke:currentColor !important;
+  stroke-width:1.55 !important;
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+  filter:none !important;
+}
+
+/* Restore framed social buttons with quieter idle colours. */
+#contacts .social-links { gap:10px !important; }
+#contacts .social-link {
+  min-height:42px !important;
+  padding:10px 13px !important;
+  border-width:1px !important;
+  border-style:solid !important;
+  border-radius:13px !important;
+  background:rgba(255,255,255,.025) !important;
+  color:rgba(244,229,208,.76) !important;
+  font-size:12px !important;
+  font-weight:500 !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025) !important;
+  opacity:1 !important;
+  transition:transform .22s cubic-bezier(.22,1,.36,1),background-color .22s ease,border-color .22s ease,color .22s ease,box-shadow .24s ease !important;
+}
+#contacts .social-link svg {
+  opacity:.82;
+  transition:opacity .22s ease,filter .22s ease !important;
+}
+#contacts .social-link.vk { --soc-rgb:74,118,168; border-color:rgba(74,118,168,.24) !important; }
+#contacts .social-link.tg { --soc-rgb:34,158,217; border-color:rgba(34,158,217,.23) !important; }
+#contacts .social-link.max { --soc-rgb:123,94,232; border-color:rgba(123,94,232,.22) !important; }
+#contacts .social-link.yt { --soc-rgb:220,55,55; border-color:rgba(220,55,55,.21) !important; }
+#contacts .social-link.ya { --soc-rgb:222,73,48; border-color:rgba(222,73,48,.20) !important; }
+#contacts .social-link.google { --soc-rgb:66,133,244; border-color:rgba(66,133,244,.20) !important; }
+
+@media (hover:hover) and (pointer:fine) {
+  #contacts .social-link:hover,
+  #contacts .social-link:focus-visible {
+    color:#fff4e5 !important;
+    background:rgba(var(--soc-rgb),.12) !important;
+    border-color:rgba(var(--soc-rgb),.58) !important;
+    box-shadow:0 8px 24px rgba(var(--soc-rgb),.18),inset 0 1px 0 rgba(255,255,255,.055) !important;
+    transform:translateY(-2px) !important;
+    filter:none !important;
+  }
+  #contacts .social-link:hover svg,
+  #contacts .social-link:focus-visible svg {
+    opacity:1 !important;
+    filter:drop-shadow(0 0 6px rgba(var(--soc-rgb),.46)) !important;
+  }
+}
+
+@media (max-width:768px) {
+  #contacts .social-link {
+    min-height:44px !important;
+    padding:10px 9px !important;
+    border-radius:12px !important;
+    font-size:11px !important;
+  }
+}
+
+/* R10 — persistent brand colours for social links.
+   Form fields, textarea, floating labels and phone icon are untouched. */
+#contacts .social-link {
+  color:rgb(var(--soc-rgb)) !important;
+  background:rgba(var(--soc-rgb),.075) !important;
+  border-color:rgba(var(--soc-rgb),.42) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035) !important;
+}
+#contacts .social-link svg {
+  color:inherit !important;
+  fill:currentColor !important;
+  opacity:1 !important;
+}
+#contacts .social-link.vk { --soc-rgb:74,118,168; }
+#contacts .social-link.tg { --soc-rgb:39,166,229; }
+#contacts .social-link.max { --soc-rgb:129,92,246; }
+#contacts .social-link.yt { --soc-rgb:230,53,46; }
+#contacts .social-link.ya { --soc-rgb:232,73,32; }
+#contacts .social-link.google { --soc-rgb:66,133,244; }
+#contacts .social-link.ig,
+#contacts .social-link.instagram { --soc-rgb:214,72,145; }
+
+@media (hover:hover) and (pointer:fine) {
+  #contacts .social-link:hover,
+  #contacts .social-link:focus-visible {
+    color:rgb(var(--soc-rgb)) !important;
+    background:rgba(var(--soc-rgb),.18) !important;
+    border-color:rgba(var(--soc-rgb),.82) !important;
+    box-shadow:
+      0 10px 28px rgba(var(--soc-rgb),.25),
+      0 0 0 1px rgba(var(--soc-rgb),.12),
+      inset 0 1px 0 rgba(255,255,255,.055) !important;
+    transform:translateY(-2px) !important;
+  }
+  #contacts .social-link:hover svg,
+  #contacts .social-link:focus-visible svg {
+    filter:drop-shadow(0 0 7px rgba(var(--soc-rgb),.58)) !important;
+  }
+}

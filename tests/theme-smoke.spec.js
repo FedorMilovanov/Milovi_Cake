@@ -66,11 +66,16 @@ async function waitForMobileAppShell(page) {
     if (!nav) return false;
     const style = getComputedStyle(nav);
     const rect = nav.getBoundingClientRect();
+    const rightGap = window.innerWidth - rect.right;
+    const bottomGap = window.innerHeight - rect.bottom;
     return style.position === 'fixed' &&
       style.display !== 'none' &&
       style.visibility === 'visible' &&
-      rect.width >= window.innerWidth - 4 &&
-      Math.abs(window.innerHeight - rect.bottom) <= 2;
+      rect.left >= 8 && rect.left <= 16 &&
+      rightGap >= 8 && rightGap <= 16 &&
+      bottomGap >= 8 && bottomGap <= 16 &&
+      rect.width >= window.innerWidth - 32 &&
+      rect.width <= window.innerWidth - 16;
   });
 }
 
@@ -120,7 +125,7 @@ test.describe('light/dark UI smoke', () => {
 });
 
 test.describe('contact, privacy and mobile application contracts', () => {
-  test('phone icon and social divider survive light → dark → light', async ({ page }, testInfo) => {
+  test('minimal phone icon and social divider survive light → dark → light', async ({ page }, testInfo) => {
     await applyTheme(page, 'light');
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.locator('#contacts').scrollIntoViewIfNeeded();
@@ -130,12 +135,16 @@ test.describe('contact, privacy and mobile application contracts', () => {
       const pathNode = icon && icon.querySelector('svg path');
       const divider = document.querySelector('#contacts .card.card--dark .social-divider');
       if (!icon || !pathNode || !divider) return null;
+      const iconStyle = getComputedStyle(icon);
       const pathStyle = getComputedStyle(pathNode);
       const before = getComputedStyle(divider, '::before');
       const after = getComputedStyle(divider, '::after');
       return {
         theme: document.documentElement.getAttribute('data-theme'),
-        iconBackground: getComputedStyle(icon).backgroundImage,
+        iconBackground: iconStyle.backgroundImage,
+        iconBorderStyle: iconStyle.borderStyle,
+        iconBorderWidth: parseFloat(iconStyle.borderTopWidth),
+        iconBorderColor: iconStyle.borderTopColor,
         pathStroke: pathStyle.stroke,
         pathFill: pathStyle.fill,
         dividerBefore: before.backgroundImage,
@@ -147,8 +156,12 @@ test.describe('contact, privacy and mobile application contracts', () => {
 
     const assertStable = (metrics) => {
       expect(metrics).not.toBeNull();
-      expect(metrics.iconBackground).toContain('gradient');
+      expect(metrics.iconBackground).toBe('none');
+      expect(metrics.iconBorderStyle).toBe('solid');
+      expect(metrics.iconBorderWidth).toBeGreaterThanOrEqual(1);
+      expect(['transparent', 'rgba(0, 0, 0, 0)']).not.toContain(metrics.iconBorderColor);
       expect(metrics.pathFill).toBe('none');
+      expect(['none', 'transparent', 'rgba(0, 0, 0, 0)']).not.toContain(metrics.pathStroke);
       expect(metrics.dividerBefore).toContain('gradient');
       expect(metrics.dividerAfter).toContain('gradient');
       expect(metrics.dividerBeforeOpacity).toBeGreaterThan(0.9);
@@ -170,20 +183,16 @@ test.describe('contact, privacy and mobile application contracts', () => {
     assertStable(lightAgain);
   });
 
-  test('privacy reopens from footer on desktop and from Ещё on mobile', async ({ page }, testInfo) => {
+  test('privacy stays quiet by default and opens from footer on desktop or Ещё on mobile', async ({ page }, testInfo) => {
     const mobile = testInfo.project.name.includes('mobile');
     await applyTheme(page, 'light', null);
     await page.goto('/', { waitUntil: 'domcontentloaded' });
 
     const overlay = page.locator('.mc-consent-overlay');
-    await expect(overlay).toHaveClass(/is-open/, { timeout: 5000 });
-    await expect(page.locator('.mc-consent-dialog')).toBeVisible();
-    await expect(page.locator('.mc-consent-settings')).toHaveCount(0);
-    await page.locator('.mc-consent-dialog').screenshot({ path: proofPath(testInfo, 'privacy-dialog') });
-
-    await page.locator('.mc-consent-close').click();
+    await expect.poll(async () => page.evaluate(() => window.MiloviConsent && window.MiloviConsent.getChoice())).toBe('denied');
     await expect(overlay).toBeHidden();
-    expect(await page.evaluate(() => localStorage.getItem('milovi_analytics_consent_v1'))).toBeNull();
+    await expect(overlay).not.toHaveClass(/is-open/);
+    expect(await page.evaluate(() => localStorage.getItem('milovi_analytics_consent_v1'))).toBe('denied');
     if (mobile) await waitForMobileAppShell(page);
 
     if (mobile) {
@@ -194,7 +203,7 @@ test.describe('contact, privacy and mobile application contracts', () => {
       await page.locator('#mcMoreBtn').click();
       const privacyRow = page.locator('#mcPrivacyRow');
       await expect(privacyRow).toBeVisible();
-      await expect(privacyRow.locator('.mc-row-sub')).toHaveText('Выбор не сделан');
+      await expect(privacyRow.locator('.mc-row-sub')).toHaveText('Отключена');
       await page.locator('#mcSheet').screenshot({ path: proofPath(testInfo, 'mobile-more-privacy') });
       await privacyRow.click();
     } else {
@@ -211,6 +220,9 @@ test.describe('contact, privacy and mobile application contracts', () => {
     }
 
     await expect(overlay).toHaveClass(/is-open/);
+    await expect(page.locator('.mc-consent-dialog')).toBeVisible();
+    await expect(page.locator('.mc-consent-settings')).toHaveCount(0);
+    await page.locator('.mc-consent-dialog').screenshot({ path: proofPath(testInfo, 'privacy-dialog') });
     await page.locator('[data-choice="denied"]').click();
     await expect(overlay).toBeHidden();
     expect(await page.evaluate(() => localStorage.getItem('milovi_analytics_consent_v1'))).toBe('denied');
@@ -246,10 +258,14 @@ test.describe('contact, privacy and mobile application contracts', () => {
       };
     });
     expect(initial.visibleNavs).toEqual(['mcNav']);
-    expect(initial.left).toBeLessThanOrEqual(2);
-    expect(initial.rightGap).toBeLessThanOrEqual(2);
-    expect(initial.bottomGap).toBeLessThanOrEqual(2);
-    expect(initial.width).toBeGreaterThanOrEqual(initial.viewport - 4);
+    expect(initial.left).toBeGreaterThanOrEqual(8);
+    expect(initial.left).toBeLessThanOrEqual(16);
+    expect(initial.rightGap).toBeGreaterThanOrEqual(8);
+    expect(initial.rightGap).toBeLessThanOrEqual(16);
+    expect(initial.bottomGap).toBeGreaterThanOrEqual(8);
+    expect(initial.bottomGap).toBeLessThanOrEqual(16);
+    expect(initial.width).toBeGreaterThanOrEqual(initial.viewport - 32);
+    expect(initial.width).toBeLessThanOrEqual(initial.viewport - 16);
 
     await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight * 0.65, behavior: 'instant' }));
     await page.waitForTimeout(250);
@@ -264,7 +280,8 @@ test.describe('contact, privacy and mobile application contracts', () => {
         pointerEvents: style.pointerEvents,
       };
     });
-    expect(afterScroll.bottomGap).toBeLessThanOrEqual(2);
+    expect(afterScroll.bottomGap).toBeGreaterThanOrEqual(8);
+    expect(afterScroll.bottomGap).toBeLessThanOrEqual(16);
     expect(afterScroll.display).not.toBe('none');
     expect(afterScroll.visibility).toBe('visible');
     expect(afterScroll.pointerEvents).not.toBe('none');
