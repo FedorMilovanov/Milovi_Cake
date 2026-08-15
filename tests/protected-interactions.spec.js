@@ -86,7 +86,7 @@ test.describe('premium baseline consolidation contracts', () => {
     await page.evaluate(() => window.MiloviConsent.open());
     await expect(overlay).toHaveClass(/is-open/);
     await expect(page.locator('#mc-consent-dialog')).toBeVisible();
-    await page.locator('.mc-consent-close').press('Escape');
+    await page.keyboard.press('Escape');
     await expect(overlay).not.toHaveClass(/is-open/);
   });
 

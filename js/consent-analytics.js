@@ -424,6 +424,13 @@
     goal: sendGoal
   };
 
+  document.addEventListener('keydown', function (event) {
+    if (event.key !== 'Escape') return;
+    if (!overlay || overlay.hidden || !overlay.classList.contains('is-open')) return;
+    event.preventDefault();
+    event.stopPropagation();
+    closeDialog();
+  }, true);
   document.addEventListener('milovi:open-consent', function () { openDialog(false); });
   if (mobileMq.addEventListener) mobileMq.addEventListener('change', syncResponsiveControls);
   else mobileMq.addListener(syncResponsiveControls);
