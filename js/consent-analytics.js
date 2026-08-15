@@ -1,5 +1,7 @@
 /* Milovi Cake — centralized privacy-first analytics loader.
- * No third-party request is made before an explicit visitor choice.
+ * No third-party request is made before explicit opt-in.
+ * Unknown consent is persisted locally as denied without an automatic popup;
+ * visitors can deliberately change that choice from the privacy settings UI.
  * Desktop settings live in the footer; mobile settings live inside the app-like “Ещё” sheet.
  */
 (function () {
@@ -407,13 +409,10 @@
     bindConversionGoals();
     installMobileShellBridge();
     ensureDialog();
+    if (!state) saveChoice('denied');
     if (state === 'granted') loadAnalytics();
     else window['ga-disable-' + GA_ID] = true;
-    if (!state) {
-      setTimeout(function () {
-        if (!state && !document.hidden) openDialog(true);
-      }, 700);
-    }
+    syncDialog();
   }
 
   window.MiloviConsent = {
