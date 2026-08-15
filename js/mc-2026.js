@@ -42,9 +42,7 @@
       img.setAttribute('data-mc-fixed', '1');
     }
   }
-  // Прогон при старте
   patchDynamicImages(document);
-  // Наблюдаем только за catalogGrid — не за всем body (performance fix)
   try {
     var mo = new MutationObserver(function(muts){
       for (var i = 0; i < muts.length; i++){
@@ -57,10 +55,8 @@
     });
     var _targetGrid = document.getElementById('catalogGrid');
     if (_targetGrid) {
-      // Каталог уже в DOM — наблюдаем только за ним
       mo.observe(_targetGrid, { childList: true, subtree: true });
     } else {
-      // Каталог ещё не создан — ждём его появления в body (без subtree)
       var _gridWatcher = new MutationObserver(function(){
         var g = document.getElementById('catalogGrid');
         if (g) {
@@ -71,7 +67,6 @@
       _gridWatcher.observe(document.body, { childList: true });
     }
   } catch(e){ /* ignore */ }
-
 
   /* ═══════════════════════════════════════════════════════════════════
      2. Bottom-nav skeleton: убираем после готовности mcNav (anti-CLS)
@@ -88,13 +83,11 @@
       if (checkMcNavReady()){ navObserver.disconnect(); }
     });
     navObserver.observe(document.body, { childList: true, subtree: true });
-    // Резерв: через 4 секунды снимаем класс в любом случае
     setTimeout(function(){
       document.body.classList.add('mc-nav-ready');
       try { navObserver.disconnect(); } catch(e){}
     }, 4000);
   }
-
 
   /* [CLEANED] syncStickyWaVisibility removed — mobileStickyWa element no longer exists in DOM */
   /* ═══════════════════════════════════════════════════════════════════
@@ -109,7 +102,6 @@
         deco[i].setAttribute('aria-hidden', 'true');
       }
     }
-    // SVG inside button/a без явного aria-label → role-less, prendre aria-hidden
     var svgs = document.querySelectorAll('button svg, a svg');
     for (var k = 0; k < svgs.length; k++){
       if (!svgs[k].hasAttribute('aria-hidden') && !svgs[k].hasAttribute('aria-label')){
@@ -119,10 +111,8 @@
     }
   });
 
-
   /* ═══════════════════════════════════════════════════════════════════
      5. Focus-trap для mobile-menu (WCAG 2.4.3 / 2.1.2)
-        ESC-handler уже есть в main.js (строка ~2602), не дублируем.
      ═══════════════════════════════════════════════════════════════════ */
   function trapFocus(container){
     if (!container) return null;
@@ -132,8 +122,6 @@
         function(el){ var r = el.getBoundingClientRect(); var cs = getComputedStyle(el); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden'; }
       );
     }
-    /* r15: robust trap — listen on document so focus can't leak behind the
-       open modal, and re-query focusables each Tab (cart content changes). */
     function handler(e){
       if (e.key !== 'Tab') return;
       var f = getFocusable();
@@ -142,7 +130,6 @@
       var active = document.activeElement;
       var inside = container.contains(active);
       if (!inside){
-        // focus escaped behind the modal — pull it back in
         e.preventDefault();
         (e.shiftKey ? last : first).focus();
         return;
@@ -154,7 +141,7 @@
     return function release(){ document.removeEventListener('keydown', handler, true); };
   }
 
-  window._trapFocus = trapFocus; /* r32: export for focus-trap in main.js (bug #38) */
+  window._trapFocus = trapFocus;
   var menuTrapRelease = null;
   var menuReturnFocus = null;
   function syncMobileMenuTrap(){
@@ -181,7 +168,6 @@
     var menuMo = new MutationObserver(syncMobileMenuTrap);
     menuMo.observe(menuEl, { attributes: true, attributeFilter: ['class'] });
   }
-  // Дополнительный ESC для mobile-menu (main.js его не закрывает)
   document.addEventListener('keydown', function(e){
     if (e.key !== 'Escape') return;
     var m = document.getElementById('mobileMenu');
@@ -189,7 +175,6 @@
       window.closeMobileMenu();
     }
   });
-
 
   /* ═══════════════════════════════════════════════════════════════════
      6. Reviews-карусель: добавляем тач-свайп без переписывания JS
@@ -218,7 +203,6 @@
       }
     }, { passive: true });
   });
-
 
   /* ═══════════════════════════════════════════════════════════════════
      8. Мониторинг INP / LCP / CLS (только при ?mc-debug=1)
@@ -264,8 +248,6 @@
 
 (function() {
   'use strict';
-  
-  // 1. DEBOUNCE utility for scroll/resize
   function debounce(func, wait) {
     var timeout;
     return function() {
@@ -276,8 +258,6 @@
       }, wait);
     };
   }
-  
-  // 2. THROTTLE for high-frequency events
   function throttle(func, limit) {
     var inThrottle;
     return function() {
@@ -289,8 +269,6 @@
       }
     };
   }
-  
-  // 3. LAZY LOAD images with IntersectionObserver
   if ('IntersectionObserver' in window) {
     var lazyImages = [].slice.call(document.querySelectorAll('img[loading="lazy"]'));
     var lazyObserver = new IntersectionObserver(function(entries) {
@@ -305,45 +283,31 @@
         }
       });
     }, { rootMargin: '200px' });
-    
     lazyImages.forEach(function(img) {
       lazyObserver.observe(img);
     });
   }
-  
-  // 4. PREFETCH removed — causes unnecessary bandwidth on mobile
-  
-  // 5. OPTIMIZE SCROLL HANDLERS
   var ticking = false;
   function updateOnScroll() {
-    // Batch all scroll updates here
     ticking = false;
   }
-  
   window.addEventListener('scroll', function() {
     if (!ticking) {
       requestAnimationFrame(updateOnScroll);
       ticking = true;
     }
   }, { passive: true });
-  
-  // 6. REDUCE LAYOUT THRASHING
   function batchDOMReads() {
-    // Read all at once
     var scrollY = window.scrollY;
     var innerHeight = window.innerHeight;
     var bodyHeight = document.body.offsetHeight;
-    
-    // Then write
     requestAnimationFrame(function() {
-      // DOM writes here
+      void scrollY; void innerHeight; void bodyHeight;
     });
   }
-  
-  // 7. MEMORY LEAK PREVENTION — cleanup on page hide
+  void debounce; void throttle; void batchDOMReads;
   document.addEventListener('visibilitychange', function() {
     if (document.hidden) {
-      // Pause animations, timers
       if (window.slideTimers) {
         Object.keys(window.slideTimers).forEach(function(key) {
           clearInterval(window.slideTimers[key]);
@@ -351,23 +315,13 @@
       }
     }
   });
-  
-  // 8. VIEW TRANSITIONS API removed — breaks analytics and Safari
-  
-  // 9. NETWORK INFORMATION API removed — conflicts with prefers-reduced-motion
-  
-  // 10. IDLE CALLBACKS for non-critical work
   var ric = window.requestIdleCallback || function(cb) { setTimeout(cb, 1); };
-  
   ric(function() {
-    // Preload critical fonts
     if ('fonts' in document) {
       document.fonts.load('400 16px Jost');
       document.fonts.load('500 16px Jost');
       document.fonts.load('400 24px "Cormorant Garamond"');
     }
-    
-    // Warm up connections
     ['https://fonts.googleapis.com', 'https://fonts.gstatic.com'].forEach(function(origin) {
       var link = document.createElement('link');
       link.rel = 'preconnect';
@@ -376,32 +330,23 @@
       document.head.appendChild(link);
     });
   });
-  
 })();
-
 
 /* ═══════════════════════════════════════════════════════════════════════
    RUNNING VIDEO STRIP — «Наши работы в движении» (r07)
-   Builds tiles from #mcVideoStrip[data-videos]. Posters by default;
-   real <video> lazy-loads & plays only on the hovered/tapped tile.
-   ES5, no deps, isolated IIFE. Reads data from inline JSON (mirrors gallery/data.js).
    ═══════════════════════════════════════════════════════════════════════ */
 (function(){
   'use strict';
-
   var strip = document.getElementById('mcVideoStrip');
   var track = document.getElementById('mcVideoTrack');
   if (!strip || !track) return;
-
   var items;
   try { items = JSON.parse(strip.getAttribute('data-videos') || '[]'); }
   catch (e) { items = []; }
   if (!items.length) return;
-
   var PLAY_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
   var canHover = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   var activeTile = null;
-
   function clearMagnet(tile){
     if (!tile) return;
     tile.classList.remove('is-magnet', 'is-playing');
@@ -409,7 +354,6 @@
     if (v) { try { v.pause(); } catch (e) {} }
     if (!track.querySelector('.is-magnet')) track.classList.remove('has-magnet');
   }
-
   function setMagnet(tile, it){
     if (activeTile && activeTile !== tile) clearMagnet(activeTile);
     activeTile = tile;
@@ -428,50 +372,39 @@
     if (p && p.then) p.then(function(){ tile.classList.add('is-playing'); }).catch(function(){});
     else tile.classList.add('is-playing');
   }
-
   function makeTile(it){
     var d = document.createElement('a');
     d.className = 'vtile';
     d.setAttribute('role', 'listitem');
     d.href = '/gallery/';
     d.setAttribute('aria-label', it.t + ' — смотреть в галерее');
-
     var img = document.createElement('img');
     img.src = it.p; img.alt = it.t; img.loading = 'lazy'; img.decoding = 'async';
     d.appendChild(img);
-
     var play = document.createElement('span');
     play.className = 'vtile-play'; play.innerHTML = PLAY_SVG;
     d.appendChild(play);
-
     var cap = document.createElement('div');
     cap.className = 'vtile-cap'; cap.textContent = it.t;
     d.appendChild(cap);
-
     if (canHover) {
       d.addEventListener('mouseenter', function(){ setMagnet(d, it); });
       d.addEventListener('mouseleave', function(){ clearMagnet(d); activeTile = null; });
     } else {
-      // touch: tap toggles magnet+play; do not navigate on first tap
       d.addEventListener('click', function(e){
         if (!d.classList.contains('is-magnet')) {
           e.preventDefault();
           setMagnet(d, it);
         }
-        // second tap on an already-active tile: let the <a> navigate to gallery
       });
     }
     return d;
   }
-
-  // ×2 for seamless marquee
   var frag = document.createDocumentFragment();
   var i;
   for (i = 0; i < items.length; i++) frag.appendChild(makeTile(items[i]));
   for (i = 0; i < items.length; i++) frag.appendChild(makeTile(items[i]));
   track.appendChild(frag);
-
-  // Pause the marquee animation when the strip is off-screen (battery/perf)
   if ('IntersectionObserver' in window) {
     var io = new IntersectionObserver(function(entries){
       entries.forEach(function(en){
@@ -481,4 +414,59 @@
     }, { threshold: 0 });
     io.observe(strip);
   }
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CONSOLIDATED UI POLISH — migrated from retired ui-polish-r3.js.
+   Privacy default ownership now lives in consent-analytics.js; this block
+   retains only UX/accessibility behavior that belongs in the premium layer.
+   ═══════════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, { once: true });
+    else fn();
+  }
+
+  ready(function () {
+    var topButton = document.getElementById('backToTop');
+    if (topButton) {
+      topButton.removeAttribute('onclick');
+      topButton.addEventListener('click', function (event) {
+        event.preventDefault();
+        var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduced) {
+          window.scrollTo(0, 0);
+          return;
+        }
+        var start = window.scrollY || document.documentElement.scrollTop || 0;
+        var started = performance.now();
+        var duration = Math.min(720, Math.max(360, start * 0.09));
+        function frame(now) {
+          var progress = Math.min((now - started) / duration, 1);
+          var eased = 1 - Math.pow(1 - progress, 4);
+          window.scrollTo(0, Math.round(start * (1 - eased)));
+          if (progress < 1) requestAnimationFrame(frame);
+          else window.scrollTo(0, 0);
+        }
+        requestAnimationFrame(frame);
+      });
+
+      var footer = document.querySelector('.site-footer');
+      if (footer && 'IntersectionObserver' in window) {
+        new IntersectionObserver(function (entries) {
+          topButton.classList.toggle('footer-clearance', entries[0].isIntersecting);
+        }, { threshold: 0.03 }).observe(footer);
+      }
+    }
+
+    var yandexTab = document.getElementById('tabYandex');
+    var googleTab = document.getElementById('tabGoogle');
+    if (yandexTab && !yandexTab.getAttribute('aria-label')) yandexTab.setAttribute('aria-label', 'Отзывы на Яндекс Картах');
+    if (googleTab && !googleTab.getAttribute('aria-label')) googleTab.setAttribute('aria-label', 'Отзывы на Google Картах');
+
+    var weight = document.getElementById('calcWeight');
+    if (weight && !weight.getAttribute('aria-label')) weight.setAttribute('aria-label', 'Вес торта в килограммах');
+  });
 })();
