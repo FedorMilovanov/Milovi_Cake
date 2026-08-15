@@ -31,12 +31,30 @@ Accepted evidence anchors used by the reconciliation work:
 
 - bounded exact-owner VK UI observation: 106 native Clip IDs; output SHA-256 `cae57c99949fe818e2fe6bf05a975324a36f25bad28e25c7daa77c5e73b9be3a`; `surface_complete_claim=false`
 - confectionery gap evidence ZIP SHA-256 `f33b119d660fef85f11ae3d85f7f6649ff70e566594e26fff785cded5c5481a3`
+- confectionery gap result SHA-256 `6c99be41c3a0c068819f074b16664252c6601ed3b5f1bd49d184b2dc8ed631e0`
 - exact-VK sequence evidence ZIP SHA-256 `23a6238bf61e8e67cf21fe768a58947a39b514c4d6dd192fddc08d3b9584c616`
 - exact-VK sequence result SHA-256 `0ea7c8c8654e8f99a3252b5b629013e5fa21bbadae369a50682661a3a1f25de2`
 - final 13-row media-reconciliation queue ZIP SHA-256 `8d47a14f130aa3bd892eceb309a29c9c2ca8bcceae206cba86f5cb71a28d9e7d`
 - final 13-row queue result SHA-256 `ed9363ee664342205333523b3768ff81392ce1d4583f24567683771bec2202d8`
 
-The accepted final media-reconciliation queue contains exactly 13 `MEDIA_RECONCILIATION_REQUIRED` cake/dessert rows and explicitly excludes IP/trademark review rows. Do not reconstruct the separate six-row `IP_HOLD_DO_NOT_TRANSFER` subset merely by counting the broader named-rights inventory below; the accepted evidence ZIP, not arithmetic, is authoritative for that narrower migration-gap subset.
+The accepted final media-reconciliation queue contains exactly 13 `MEDIA_RECONCILIATION_REQUIRED` cake/dessert rows and explicitly excludes IP/trademark review rows.
+
+### Exact six-row migration-gap IP hold
+
+The narrower six-row `IP_HOLD_DO_NOT_TRANSFER` subset is now provenance-backed rather than reconstructed by arithmetic. The gap collector at the exact base of `video-channel-manager#316` (`d3f099c1761035d2261cb99db31370cdd09b7970`) has blob SHA `f465f5653fb90d83424a8795436898a6ec96419f`; that blob is unchanged on current `video-channel-manager/main`. Its exact 25-row `_CANDIDATE_ROWS` input contains six rows with source classifier label `IP_HOLD_HIDE`, and its deterministic `_transfer_gate()` maps that label to `IP_HOLD_DO_NOT_TRANSFER`.
+
+| Subject | YouTube ID | Source classifier | Final transfer gate |
+|---|---|---|---|
+| Om Nom | `P2Bpt77k408` | `IP_HOLD_HIDE` | `IP_HOLD_DO_NOT_TRANSFER` |
+| Squid Game | `jZjDWn_MNq0` | `IP_HOLD_HIDE` | `IP_HOLD_DO_NOT_TRANSFER` |
+| Cheburashka / Gena | `xzMgMEWz5pM` | `IP_HOLD_HIDE` | `IP_HOLD_DO_NOT_TRANSFER` |
+| Wednesday | `7FCbopqeTYE` | `IP_HOLD_HIDE` | `IP_HOLD_DO_NOT_TRANSFER` |
+| Roblox | `ZuQt6yFePO0` | `IP_HOLD_HIDE` | `IP_HOLD_DO_NOT_TRANSFER` |
+| Rainbow Friends Roblox | `qPXHrdUgPUY` | `IP_HOLD_HIDE` | `IP_HOLD_DO_NOT_TRANSFER` |
+
+`IP_HOLD_HIDE` is a historical source-classifier name, **not hide authority**. The accepted evidence result and this review both keep `hide_authorized=false`; the operational meaning here is only **do not transfer/amplify while review remains unresolved**.
+
+This six-row subset is narrower than the broader named-rights inventory below. Items can remain in named-rights review without belonging to this exact 25-row migration-gap hold.
 
 ## Named character / franchise rights review
 
