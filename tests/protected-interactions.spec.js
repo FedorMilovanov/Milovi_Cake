@@ -73,6 +73,76 @@ test.describe('protected homepage interactions', () => {
   });
 });
 
+test.describe('premium baseline consolidation contracts', () => {
+  test('privacy defaults locally to denied without an automatic popup and remains user-configurable', async ({ page }) => {
+    await page.addInitScript(() => localStorage.removeItem('milovi_analytics_consent_v1'));
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+    await expect.poll(async () => page.evaluate(() => window.MiloviConsent && window.MiloviConsent.getChoice())).toBe('denied');
+    const overlay = page.locator('.mc-consent-overlay');
+    await expect(overlay).toHaveAttribute('hidden', '');
+    await expect(overlay).not.toHaveClass(/is-open/);
+
+    await page.evaluate(() => window.MiloviConsent.open());
+    await expect(overlay).toHaveClass(/is-open/);
+    await expect(page.locator('#mc-consent-dialog')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(overlay).not.toHaveClass(/is-open/);
+  });
+
+  test('review and calculator controls keep explicit accessible names', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+    await expect(page.locator('#tabYandex')).toHaveAttribute('aria-label', 'Отзывы на Яндекс Картах');
+    await expect(page.locator('#tabGoogle')).toHaveAttribute('aria-label', 'Отзывы на Google Картах');
+    await expect(page.locator('#calcWeight')).toHaveAttribute('aria-label', 'Вес торта в килограммах');
+  });
+
+  test('back-to-top keeps script-owned smooth scrolling and footer collision state', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 800 });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+    const backToTop = page.locator('#backToTop, .back-to-top').first();
+    await expect(backToTop).toHaveCount(1);
+    await expect(backToTop).not.toHaveAttribute('onclick', /.+/);
+
+    await page.locator('.site-footer').scrollIntoViewIfNeeded();
+    await expect.poll(async () => backToTop.evaluate((el) => el.classList.contains('footer-clearance'))).toBeTruthy();
+  });
+
+  test('mobile app bar and sheet preserve closed/open visibility contract', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 800 });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+    const nav = page.locator('#mcNav');
+    const sheet = page.locator('#mcSheet');
+    const more = page.locator('#mcMoreBtn');
+    await expect(nav).toBeVisible();
+    await expect(sheet).toHaveCount(1);
+
+    const closed = await sheet.evaluate((el) => {
+      const css = getComputedStyle(el);
+      return { visibility: css.visibility, opacity: css.opacity, pointerEvents: css.pointerEvents };
+    });
+    expect(closed.visibility).toBe('hidden');
+    expect(Number(closed.opacity)).toBe(0);
+    expect(closed.pointerEvents).toBe('none');
+
+    await more.click();
+    await expect(sheet).toHaveClass(/mc-open/);
+    const opened = await sheet.evaluate((el) => {
+      const css = getComputedStyle(el);
+      return { visibility: css.visibility, opacity: css.opacity, pointerEvents: css.pointerEvents };
+    });
+    expect(opened.visibility).toBe('visible');
+    expect(Number(opened.opacity)).toBeGreaterThan(0.9);
+    expect(opened.pointerEvents).toBe('auto');
+
+    await page.keyboard.press('Escape');
+    await expect(sheet).not.toHaveClass(/mc-open/);
+  });
+});
+
 test.describe('landing page interactive basics', () => {
   test('FAQ details and media controls are interactive on wedding page', async ({ page }) => {
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
