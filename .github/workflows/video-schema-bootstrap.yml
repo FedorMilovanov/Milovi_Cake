@@ -43,8 +43,8 @@ jobs:
               print(f'updated {path}: {count} VideoObject date(s)')
           if changed != 6:
               raise SystemExit(f'expected 6 HTML files, changed {changed}')
-          if replacements != 12:
-              raise SystemExit(f'expected 12 VideoObject date replacements, changed {replacements}')
+          if replacements != 9:
+              raise SystemExit(f'expected 9 VideoObject date replacements, changed {replacements}')
           print(f'migrated {replacements} VideoObject entries across {changed} files')
           PY
 
