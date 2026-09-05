@@ -24,11 +24,15 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
-          import re
 
           root = Path('.')
           targets = [p for p in root.rglob('*.html') if '.git' not in p.parts and 'node_modules' not in p.parts and '_site' not in p.parts]
-          targets += [Path('js/main.js'), Path('sw.js')]
+          targets += [
+              Path('js/main.js'),
+              Path('js/gallery/data.js'),
+              Path('prigorody/_cities.csv'),
+              Path('sw.js'),
+          ]
 
           literal_replacements = [
               ('Белый сникерс', 'Ванильная карамель с арахисом'),
@@ -38,6 +42,9 @@ jobs:
               ('Ферреро', 'Шоколадный ореховый хруст'),
               ('ферреро', 'шоколадный ореховый хруст'),
               ('3D-торт в стиле Minecraft', '3D-торт с игровым тематическим декором'),
+              ('3D-торт Minecraft с зеленью', '3D-торт с игровым декором и зеленью'),
+              ('3D-торт Minecraft', '3D-торт с игровым декором'),
+              ('near-identical Minecraft cakes', 'near-identical game-themed cakes'),
               ('детские с персонажами', 'детские с индивидуальным тематическим декором'),
               ('любимыми персонажами', 'индивидуальным тематическим декором'),
               ('торт с персонажами', 'торт с индивидуальным тематическим декором'),
@@ -53,8 +60,11 @@ jobs:
               if path.suffix == '.html':
                   updated = updated.replace('js/main.js?v=20260728r27', 'js/main.js?v=20260906r01')
                   updated = updated.replace('/js/main.js?v=20260728r27', '/js/main.js?v=20260906r01')
+                  updated = updated.replace('js/gallery/data.js?v=20260728r27', 'js/gallery/data.js?v=20260906r01')
+                  updated = updated.replace('/js/gallery/data.js?v=20260728r27', '/js/gallery/data.js?v=20260906r01')
               if path == Path('sw.js'):
                   updated = updated.replace("'/js/main.js?v=20260728r27'", "'/js/main.js?v=20260906r01'")
+                  updated = updated.replace("'/js/gallery/data.js?v=20260728r27'", "'/js/gallery/data.js?v=20260906r01'")
               if updated != text:
                   path.write_text(updated, encoding='utf-8')
                   print(f'updated {path}')
@@ -72,7 +82,7 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- '*.html' js/main.js sw.js prigorody
+          git add -- '*.html' js/main.js js/gallery/data.js sw.js prigorody
           if git diff --cached --quiet; then
             echo 'No migration changes required.'
             exit 0
