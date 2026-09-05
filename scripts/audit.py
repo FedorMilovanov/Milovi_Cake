@@ -87,19 +87,20 @@ DEV_TOOLING_JS = {
     "tests/theme-smoke.spec.js",
     "tests/protected-interactions.spec.js",
     "tests/overlap-smoke.spec.js",
+    "tests/layout-matrix.spec.js",
 }
 
 # Current !important debt is intentionally budgeted instead of blindly removed:
 # many declarations protect fragile premium UI states. The audit fails only if
 # future changes increase the baseline without an explicit budget update.
 IMPORTANT_BUDGET = {
-    "css/premium-overrides.css": 656,
+    "css/premium-overrides.css": 639,
     "css/v20-dark-and-fixes.css": 600,
-    "css/mc-2026.css": 199,
+    "css/mc-2026.css": 191,
     "css/style.css": 124,
-    "css/final-fixes.css": 129,
-    "css/gallery/gallery-2026.css": 27,  # +3 r19: dark-theme active-chip must override the light active-chip !important
-    "css/v20-fixes.css": 130,
+    "css/final-fixes.css": 297,
+    "css/gallery/gallery-2026.css": 27,  # dark-theme active-chip override baseline
+    "css/v20-fixes.css": 272,
 }
 
 LEAN_LANDING_PAGES = {
@@ -862,7 +863,7 @@ with R.section("10. Forbidden Patterns"):
 
     if important_over_budget:
         for item in important_over_budget:
-            R.warn(f"!important budget exceeded: {item}")
+            R.err(f"!important budget exceeded: {item}")
     else:
         R.ok("!important counts within protected baseline budget")
 

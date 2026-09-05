@@ -6,7 +6,7 @@
 
 **Владелец проекта:** Виктория Милованова
 **Технический контакт:** через GitHub Issues / прямую переписку
-**Дата документа:** 2026-05-17 | **Версия:** AGENTS-r2
+**Дата документа:** 2026-09-06 | **Версия:** AGENTS-r3
 
 ---
 
@@ -16,22 +16,23 @@
 2. Запрещено добавлять `!important`, если без него можно обойтись.
 3. Запрещено редактировать `prigorody/<city>/index.html` — только `_template.html` + `build.py`.
 4. Запрещено трогать список в [§3 PROTECTED FILES] без письменного разрешения владельца.
-5. После любой правки CSS/JS — **обновить версию** `?v=...` синхронно во всех HTML и в `sw.js`.
+5. После правки CSS/JS — обновить revision только изменённых runtime assets и синхронизировать exact asset→revision с `sw.js`.
 6. Перед коммитом — прогнать [§7 ОБЯЗАТЕЛЬНЫЕ ПРОВЕРКИ].
 
 ---
 
-## 0.1 Текущее состояние r51 — обязательный контекст
+## 0.1 Текущие инварианты — обязательный контекст
 
-- Production cache-bust: `20260606r01`; Service Worker: `milovi-cake-v2026.06.06-r01`.
+- Production identity определяется **exact Git SHA** в сгенерированном `/release.json`; номер `rXX` не является источником истины релиза.
+- Asset cache-bust — **per-asset revision**: разные CSS/JS могут иметь разные `?v=...`, но каждая ссылка обязана точно совпадать с записью того же asset в `sw.js`.
 - Режим работы по всему проекту: `Пн–Сб, 10:00–20:00` / JSON-LD `Mo-Sa`.
-- Основная проверка перед push: `npm run qa`.
-- Live-проверка после публикации: `npm run smoke:prod:retry`.
-- IndexNow: `npm run indexnow:dry-run` и `npm run indexnow:submit`.
-- `scripts/audit.py` теперь проверяет JSON-LD, sitemap coverage, business hours, gzip budgets и protected UI contracts.
-- Playwright проверяет desktop/mobile, light/dark, landing media, hero messenger hover, reviews carousel/modal.
-- Текущий CSS/JS budget считается по gzip transfer size, raw totals — INFO. `!important` debt зафиксирован baseline-бюджетом и не должен расти.
-- **Тема по умолчанию (КРИТИЧНО):** весь сайт — СВЕТЛАЯ тема по умолчанию, КРОМЕ страницы `meringue-roll/` — она **ТЁМНАЯ ПО УМОЛЧАНИЮ**. Логика: anti-FOUC inline-скрипт ставит `data-theme="dark"`, если пользователь явно НЕ выбрал тему (`localStorage.mc_theme`); если выбрал `light` — уважается его выбор. Inline `<style id="anti-fouc">` на meringue тоже инвертирован (фон по умолчанию тёмный `#1a1108`). При правке meringue НЕ возвращать светлый дефолт. Переключатель темы доступен на ВСЕХ страницах (десктоп — в шапке; на лендингах — кнопка `.lp-theme-toggle` перед `</header>`; на главной и пригородах — строка `.mm-theme-row` в мобильном меню).
+- Основная проверка перед merge: `npm run qa`.
+- Live-проверка: transport/content smoke + exact-SHA release smoke.
+- `scripts/a11y_static.py` хранит permanent guards для подтверждённых conformance-регрессий.
+- `scripts/release_contract.py` проверяет exact asset→revision, не глобальный набор версий.
+- Playwright имеет обычные desktop/mobile проекты и отдельную responsive matrix `360/390/414/561/600/768/900/1024` × light/dark для camel-rule дефектов.
+- CSS/JS budget считается по gzip transfer size; historical `!important` debt не должен расти.
+- **Тема по умолчанию (КРИТИЧНО):** весь сайт — СВЕТЛАЯ тема по умолчанию, КРОМЕ `meringue-roll/`, где дефолт ТЁМНЫЙ; явный выбор пользователя всегда приоритетен.
 
 ---
 
@@ -64,11 +65,12 @@
 │   ├── final-fixes.css        ← финальные правки hero/CTA (ХРАНИТЬ КОРОТКИМ)
 │   └── gallery/gallery-2026.css ← стили только галереи
 │
-├── js/                        ← РОВНО 4 ФАЙЛА В КОРНЕ js/
+├── js/                        ← runtime allowlist контролирует scripts/audit.py
 │   ├── main.js                ← каталог, корзина, калькулятор, отзывы, темы, lightbox
 │   ├── nav.js                 ← мобильная навигация
 │   ├── mc-2026.js             ← премиум UX-улучшения
 │   ├── v20-faq-fix.js         ← фикс FAQ для пригородов/контактов
+│   ├── consent-analytics.js    ← единственный privacy-first analytics loader
 │   └── gallery/
 │       ├── main.js          ← логика галереи
 │       └── data.js          ← данные галереи (импортируется через ESM)
@@ -90,7 +92,7 @@
 
 ### ⛔ ЗАПРЕЩЕНО создавать в корне `js/`:
 - `js/main-v2.js`, `js/main-premium.js`, `js/refactored-main.js` и т.п.
-- Изоляция логики — в IIFE внутри одного из 4 существующих файлов.
+- Новые runtime JS-файлы не создавать без явного изменения allowlist/архитектуры; используйте существующие модули.
 
 ### ⛔ ЗАПРЕЩЕНО создавать в `js/gallery/`:
 - `effects/`, `shuffle.js`, `main-premium.js` и т.п.
@@ -236,44 +238,29 @@ node --check sw.js
 
 ---
 
-## 6. ВЕРСИОНИРОВАНИЕ — синхронно или никак
+## 6. RELEASE IDENTITY И ASSET REVISION
 
-### 6.1 Правило
+### 6.1 Источник истины релиза
 
-Все ссылки на CSS/JS используют `?v=...`:
-```html
-<link rel="stylesheet" href="/css/style.css?v=20260517r19">
-<script src="/js/main.js?v=20260517r19"></script>
-```
+Production release идентифицируется exact Git SHA в `/release.json`, который генерируется `scripts/build_pages_artifact.py`. Не копируйте «текущий rXX» в документацию и не используйте первый найденный `?v=` как release identity.
 
-И `sw.js`:
-```js
-const CACHE_NAME = 'milovi-cake-v2026.05.17-r19';
-const PRECACHE = [
-  '/css/style.css?v=20260517r19',
-  '/js/main.js?v=20260517r19',
-  // ...
-];
-```
+### 6.2 Asset cache-bust
 
-### 6.2 После любой правки CSS или JS
+`?v=` — revision **конкретного файла**, а не глобальная версия сайта. После изменения CSS/JS:
 
-Поднять версию **ВЕЗДЕ** одновременно. Найти все вхождения:
+1. поднимите revision этого asset во всех HTML/ESM местах, где он подключён;
+2. обновите **тот же asset** в `sw.js` PRECACHE;
+3. для изменения Service Worker semantics обновите `CACHE_NAME`;
+4. выполните `npm run audit:release`.
+
+Разные неизменённые assets могут сохранять разные исторические revisions. Запрещён только mismatch пары `asset → revision`.
+
+### 6.3 Проверка
 
 ```bash
-grep -rn '?v=' --include="*.html" --include="*.js"
+npm run audit:release
+grep -E "CACHE_NAME|\?v=" sw.js
 ```
-
-И заменить на новую. Все три места:
-- HTML-страницы (все, включая 14 пригородов)
-- `sw.js` PRECACHE array
-- `sw.js` CACHE_NAME
-
-### 6.3 Запрещено
-
-- ❌ Менять версию только в одном файле
-- ❌ Использовать разные версии для разных CSS в одном HTML
-- ❌ Забывать `sw.js`
 
 ---
 
@@ -287,10 +274,13 @@ npm run qa
 
 Она запускает:
 
-1. `npm run audit:js` — синтаксис всех runtime JS + `sw.js`.
-2. `python3 scripts/check_prigorody_idempotent.py` — генератор пригородов без дрейфа.
-3. `npm run audit` — zero-dependency аудит структуры, SEO, JSON-LD, sitemap, business hours, protected UI contracts, budgets.
-4. `npm run test:playwright` — desktop/mobile smoke, light/dark UI, hero messenger hover, reviews, landing media.
+1. `npm run audit:js` — синтаксис runtime JS + `sw.js`.
+2. `npm run audit:analytics` — privacy/analytics contract.
+3. `npm run audit:a11y` — permanent conformance guards.
+4. `npm run audit:release` — exact asset→revision contract.
+5. `python3 scripts/check_prigorody_idempotent.py` — генератор пригородов без дрейфа.
+6. `npm run audit:security` + `npm run audit` — dependency/security и zero-dependency site audit.
+7. `npm run test:playwright` — protected interactions + responsive layout matrix.
 
 ### 7.2 Быстрые частичные команды
 

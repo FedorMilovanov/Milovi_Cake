@@ -13,9 +13,9 @@
 ## Текущий production-статус
 
 - Режим работы: **Пн–Сб, 10:00–20:00**.
-- Cache-bust / SW: **`20260606r01` / `milovi-cake-v2026.06.06-r01`**.
-- `npm run qa` — полный локальный QA: JS, пригороды, Python-аудит, Playwright desktop/mobile.
-- `npm run smoke:prod` — smoke live-сайта `milovicake.ru`.
+- Release identity: **exact Git SHA** из live `/release.json`; cache revisions проверяются per-asset через `npm run audit:release`.
+- `npm run qa` — JS/privacy/a11y/release/security/site audit + idempotency пригородов + Playwright desktop/mobile/responsive matrix.
+- `npm run smoke:prod` — transport/content smoke; `npm run smoke:prod:release` — exact SHA + privacy + true 404 contract.
 - `scripts/audit.py` проверяет SEO, JSON-LD, sitemap coverage, business hours, protected UI contracts, gzip budgets, ссылки, a11y basics, PWA/SW.
 - Playwright защищает hero WhatsApp/Telegram/MAX hover, отзывы, модалки, лендинги, light/dark UI, landing media.
 
@@ -28,7 +28,7 @@
 ├── manifest.json                 # PWA-манифест
 ├── sw.js                         # Service Worker (network-first HTML + stale-while-revalidate static)
 ├── robots.txt, sitemap.xml       # SEO / индексация
-├── sitemap-videos.xml            # Видео-карта (шаблон, не заявлен в robots до реальных embed)
+├── sitemap-videos.xml            # Активная video sitemap для проверенных self-hosted gallery videos
 ├── llms.txt                      # Публичный AI fact sheet + guardrails
 ├── f5c91a4d89e84b2ca6d4f3e7a1029b6c.txt # IndexNow key-file
 ├── favicon.svg, icon-*.png       # Иконки PWA и Apple Touch
@@ -42,11 +42,12 @@
 │   ├── final-fixes.css           # Финальные hero/CTA правки
 │   └── gallery/gallery-2026.css  # Стили галереи
 │
-├── js/                           # РОВНО 6 runtime JS-файлов
+├── js/                           # Runtime JS allowlist (без npm/runtime dependencies)
 │   ├── main.js                   # Каталог, корзина, калькулятор, отзывы, темы
 │   ├── nav.js                    # Мобильная навигация
 │   ├── mc-2026.js                # Дополнительные UX-улучшения
 │   ├── v20-faq-fix.js            # Фикс FAQ для пригородов/контактов
+│   ├── consent-analytics.js       # Privacy-first analytics loader
 │   └── gallery/                  # data.js + main.js галереи
 │
 ├── img/                          # Оптимизированные изображения и видео галереи
@@ -74,19 +75,25 @@
 │
 ├── scripts/
 │   ├── audit.py                  # Главный zero-dependency аудит
+│   ├── a11y_static.py            # Permanent conformance guards
+│   ├── release_contract.py       # Exact asset→revision contract
 │   ├── check_prigorody_idempotent.py
-│   ├── production_smoke.py       # Live smoke milovicake.ru
+│   ├── production_smoke.py       # Transport/content live smoke
+│   ├── production_release_smoke.py # Exact SHA/privacy/404 live smoke
 │   └── submit_indexnow.py        # IndexNow submit/dry-run
 │
 ├── tests/                        # Playwright QA
 │   ├── landing-smoke.spec.js
 │   ├── theme-smoke.spec.js
-│   └── protected-interactions.spec.js
+│   ├── protected-interactions.spec.js
+│   ├── overlap-smoke.spec.js
+│   └── layout-matrix.spec.js
 │
 └── .github/workflows/
     ├── cake-sanity.yml           # npm run qa on push/PR/manual
-    ├── production-smoke.yml      # live smoke with retry window
-    └── indexnow.yml              # IndexNow submit after relevant push
+    ├── deploy.yml                # sanitized Pages artifact → deploy → exact-SHA witness → IndexNow
+    ├── production-smoke.yml      # scheduled live smoke + exact release semantics
+    └── lighthouse.yml            # post-deploy performance/accessibility telemetry
 ```
 
 ## SEO / AI / GEO архитектура

@@ -115,7 +115,7 @@ Milovi Cake доставляет по Санкт-Петербургу и при�
 - Keep colors synchronized through CSS variables.
 - Use inline SVG for UI icons.
 - Minimize infinite animations and respect `prefers-reduced-motion`.
-- After any CSS/JS change, update `?v=` in HTML and `CACHE_NAME`/`PRECACHE` in `sw.js`.
+- After a CSS/JS change, update only that asset revision everywhere it is referenced and the exact same asset entry in `sw.js`; production release identity is the exact Git SHA in `/release.json`.
 - Default theme: the whole site defaults to LIGHT, EXCEPT `meringue-roll/` which is DARK BY DEFAULT. The anti-FOUC inline script there sets `data-theme="dark"` unless the user explicitly chose a theme (`localStorage.mc_theme === 'light'`). Do not revert meringue to a light default.
 - A theme (day/night) toggle is reachable on every page: header toggle on desktop; `.lp-theme-toggle` before `</header>` on landing/sub pages; `.mm-theme-row` in the mobile menu on home and prigorody pages.
 
