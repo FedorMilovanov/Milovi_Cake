@@ -1,0 +1,66 @@
+name: Video schema bootstrap
+
+on:
+  push:
+    branches: [fix/video-upload-date-20260906]
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: fix/video-upload-date-20260906
+
+      - name: Migrate legacy VideoObject uploadDate values
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          root = Path('.')
+          old = '"uploadDate": "2026-06-05"'
+          new = '"uploadDate": "2026-05-14T07:40:50+03:00"'
+          changed = 0
+          replacements = 0
+          for path in sorted(root.rglob('*.html')):
+              if any(part in {'.git', 'node_modules', '_site'} for part in path.parts):
+                  continue
+              text = path.read_text(encoding='utf-8')
+              count = text.count(old)
+              if not count:
+                  continue
+              path.write_text(text.replace(old, new), encoding='utf-8')
+              changed += 1
+              replacements += count
+              print(f'updated {path}: {count} VideoObject date(s)')
+          if changed != 6:
+              raise SystemExit(f'expected 6 HTML files, changed {changed}')
+          if replacements != 12:
+              raise SystemExit(f'expected 12 VideoObject date replacements, changed {replacements}')
+          print(f'migrated {replacements} VideoObject entries across {changed} files')
+          PY
+
+      - name: Run complete fail-closed source audits
+        run: npm run audit:all
+
+      - name: Commit deterministic migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- '*.html'
+          if git diff --cached --quiet; then
+            echo 'No migration changes required.'
+            exit 0
+          fi
+          git commit -m 'fix(seo): use provenance-backed video uploadDate'
+          git push origin HEAD:fix/video-upload-date-20260906
