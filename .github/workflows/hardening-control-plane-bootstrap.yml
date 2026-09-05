@@ -30,6 +30,9 @@ jobs:
       - name: Refresh Playwright lockfile
         run: npm install --package-lock-only --ignore-scripts
 
+      - name: Harden audit baselines
+        run: python3 scripts/hardening_post_20260906.py
+
       - name: Validate source contracts
         shell: bash
         run: |
@@ -47,7 +50,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git rm -f .github/workflows/hardening-control-plane-bootstrap.yml scripts/hardening_20260906.py scripts/hardening_20260906_v2.py scripts/hardening_20260906_v3.py scripts/hardening_20260906_v4.py scripts/hardening_20260906_v5.py
+          git rm -f .github/workflows/hardening-control-plane-bootstrap.yml scripts/hardening_20260906.py scripts/hardening_20260906_v2.py scripts/hardening_20260906_v3.py scripts/hardening_20260906_v4.py scripts/hardening_20260906_v5.py scripts/hardening_post_20260906.py
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
