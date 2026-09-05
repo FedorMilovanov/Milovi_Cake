@@ -174,10 +174,6 @@ def migrate_html(path: Path, text: str) -> str:
         r'\s*<!--\s*COOKIE BANNER\s*-->\s*<div\s+id=["\']cookieBanner["\']>[\s\S]*?</div>\s*',
         '\n', text, flags=re.I,
     )
-    text = text.replace(
-        'с безопасным составом и любимыми персонажами, с безопасным составом и любимыми персонажами',
-        'с безопасным составом и любимыми персонажами',
-    )
     if path.name == '404.html':
         text = re.sub(r'\s*<link\s+rel=["\']canonical["\'][^>]*>\s*', '\n', text, flags=re.I)
         text = re.sub(r'\s*<meta\s+property=["\']og:url["\'][^>]*>\s*', '\n', text, flags=re.I)

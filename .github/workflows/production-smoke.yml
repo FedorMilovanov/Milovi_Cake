@@ -19,5 +19,10 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Run production smoke checks with deploy retry window
+      - name: Run transport/content production smoke with deploy retry window
         run: python3 scripts/production_smoke.py --retries 6 --delay 30
+
+      - name: Verify exact deployed release, privacy and 404 semantics
+        env:
+          EXPECTED_RELEASE_SHA: ${{ github.sha }}
+        run: python3 scripts/production_release_smoke.py --retries 6 --delay 30

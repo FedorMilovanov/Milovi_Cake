@@ -22,7 +22,20 @@ module.exports = defineConfig({
     timeout: 20_000,
   },
   projects: [
-    { name: 'chromium-desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 1100 } } },
-    { name: 'chromium-mobile', use: { ...devices['Pixel 7'] } },
+    {
+      name: 'chromium-desktop',
+      grepInvert: /@layout-matrix/,
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 1100 } },
+    },
+    {
+      name: 'chromium-mobile',
+      grepInvert: /@layout-matrix/,
+      use: { ...devices['Pixel 7'] },
+    },
+    {
+      name: 'layout-matrix',
+      grep: /@layout-matrix/,
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 1100 } },
+    },
   ],
 });
