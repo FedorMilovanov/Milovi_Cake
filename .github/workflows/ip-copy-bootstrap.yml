@@ -55,6 +55,7 @@ jobs:
               ('js/main.js?v=20260728r27', 'js/main.js?v=20260906r01'),
               ('js/gallery/main.js?v=20260728r27', 'js/gallery/main.js?v=20260906r01'),
               ('js/gallery/data.js?v=20260728r27', 'js/gallery/data.js?v=20260906r01'),
+              ('./data.js?v=20260728r27', './data.js?v=20260906r01'),
           ]
 
           for path in targets:
