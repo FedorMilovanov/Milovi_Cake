@@ -29,6 +29,7 @@ jobs:
           targets = [p for p in root.rglob('*.html') if '.git' not in p.parts and 'node_modules' not in p.parts and '_site' not in p.parts]
           targets += [
               Path('js/main.js'),
+              Path('js/gallery/main.js'),
               Path('js/gallery/data.js'),
               Path('prigorody/_cities.csv'),
               Path('sw.js'),
@@ -50,6 +51,12 @@ jobs:
               ('торт с персонажами', 'торт с индивидуальным тематическим декором'),
           ]
 
+          revision_replacements = [
+              ('js/main.js?v=20260728r27', 'js/main.js?v=20260906r01'),
+              ('js/gallery/main.js?v=20260728r27', 'js/gallery/main.js?v=20260906r01'),
+              ('js/gallery/data.js?v=20260728r27', 'js/gallery/data.js?v=20260906r01'),
+          ]
+
           for path in targets:
               if not path.exists() or not path.is_file():
                   continue
@@ -57,14 +64,8 @@ jobs:
               updated = text
               for old, new in literal_replacements:
                   updated = updated.replace(old, new)
-              if path.suffix == '.html':
-                  updated = updated.replace('js/main.js?v=20260728r27', 'js/main.js?v=20260906r01')
-                  updated = updated.replace('/js/main.js?v=20260728r27', '/js/main.js?v=20260906r01')
-                  updated = updated.replace('js/gallery/data.js?v=20260728r27', 'js/gallery/data.js?v=20260906r01')
-                  updated = updated.replace('/js/gallery/data.js?v=20260728r27', '/js/gallery/data.js?v=20260906r01')
-              if path == Path('sw.js'):
-                  updated = updated.replace("'/js/main.js?v=20260728r27'", "'/js/main.js?v=20260906r01'")
-                  updated = updated.replace("'/js/gallery/data.js?v=20260728r27'", "'/js/gallery/data.js?v=20260906r01'")
+              for old, new in revision_replacements:
+                  updated = updated.replace(old, new)
               if updated != text:
                   path.write_text(updated, encoding='utf-8')
                   print(f'updated {path}')
@@ -82,7 +83,7 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- '*.html' js/main.js js/gallery/data.js sw.js prigorody
+          git add -- '*.html' js/main.js js/gallery/main.js js/gallery/data.js sw.js prigorody
           if git diff --cached --quiet; then
             echo 'No migration changes required.'
             exit 0
