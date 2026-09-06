@@ -24,6 +24,20 @@ require(
     'img:not(.hero-img):not([class*="head"])' in main_js,
     'homepage hero exclusion disappeared from the generic image fade selector',
 )
+require(
+    "var isHomepage = path === '/' || path === '/index.html';" in main_js,
+    'homepage-specific decorative hero-motion gate missing',
+)
+require(
+    "hero.classList.add('hero--motion-ready');" in main_js
+    and "fallbackTimer = setTimeout(enableHeroMotion, 8000);" in main_js,
+    'homepage decorative hero motion is no longer bounded outside the initial LCP window',
+)
+require(
+    "document.addEventListener('pointerdown', enableAfterIntent, { once: true, passive: true });" in main_js
+    and "document.addEventListener('keydown', enableAfterIntent, { once: true });" in main_js,
+    'homepage hero motion lost its first-intent release path',
+)
 
 for path in ['index.html', 'gallery/index.html', 'svadebnye-torty/index.html', 'bento-torty/index.html', 'zakazat-tort-spb/index.html']:
     text = read(path)
@@ -118,6 +132,15 @@ require('min-height:48px' in gatchina, 'Gatchina FAQ target-size contract missin
 
 landing_css = read('css/style.css')
 require(
+    '.hero-photo-bg img{transform-origin:64% 42%}' in landing_css
+    and '.hero--visible.hero--motion-ready .hero-photo-bg img{will-change:transform;animation:heroKenBurns 26s' in landing_css,
+    'decorative hero motion returned to the initial LCP path',
+)
+require(
+    '.hero-photo-bg img{will-change:transform;transform-origin:64% 42%}' not in landing_css,
+    'homepage LCP image regained unconditional will-change',
+)
+require(
     '.lp-btn-primary{background:var(--gold);color:#2c1a10;' in landing_css,
     'commercial landing primary CTA contrast regressed',
 )
@@ -130,18 +153,26 @@ require(
     'landing footer link target-size contract regressed',
 )
 for path in ['svadebnye-torty/index.html', 'bento-torty/index.html', 'zakazat-tort-spb/index.html']:
-    require('/css/style.css?v=20260906r03' in read(path), f'{path} landing a11y CSS revision drifted')
+    require('/css/style.css?v=20260907r01' in read(path), f'{path} landing a11y CSS revision drifted')
 
 # Shared CSS and its service-worker generation must move as one release unit.
 for public_html in sorted(Path('.').rglob('*.html')):
     html = read(public_html)
     if 'style.css?v=' in html:
-        require('style.css?v=20260906r03' in html, f'{public_html} shared style revision drifted')
+        require('style.css?v=20260907r01' in html, f'{public_html} shared style revision drifted')
         require('style.css?v=20260728r27' not in html, f'{public_html} still references stale shared style revision')
 
+# Shared main.js and CSS identities must move together across every HTML consumer.
+for public_html in sorted(Path('.').rglob('*.html')):
+    html = read(public_html)
+    if 'js/main.js?v=' in html:
+        require('main.js?v=20260907r01' in html, f'{public_html} shared main.js revision drifted')
+        require('main.js?v=20260906r01' not in html, f'{public_html} still references stale shared main.js revision')
+
 sw = read('sw.js')
-require("const CACHE_NAME = 'milovi-cake-v2026.09.06-r80';" in sw, 'service-worker cache generation drifted')
-require("'/css/style.css?v=20260906r03'," in sw, 'service-worker precache still points at stale shared CSS revision')
+require("const CACHE_NAME = 'milovi-cake-v2026.09.07-r81';" in sw, 'service-worker cache generation drifted')
+require("'/css/style.css?v=20260907r01'," in sw, 'service-worker precache still points at stale shared CSS revision')
+require("'/js/main.js?v=20260907r01'," in sw, 'service-worker precache still points at stale shared main.js revision')
 require("'/js/gallery/main.js?v=20260906r03'," in sw, 'service-worker precache still points at stale gallery runtime revision')
 
 cfg = json.loads(read('.github/lighthouse-config.json'))

@@ -408,8 +408,8 @@ body{background:var(--cream);color:var(--text)}
   0%{transform:scale(1.0) translate3d(0,0,0)}
   100%{transform:scale(1.12) translate3d(-1.6%,-1.4%,0)}
 }
-.hero-photo-bg img{will-change:transform;transform-origin:64% 42%}
-.hero--visible .hero-photo-bg img{animation:heroKenBurns 26s cubic-bezier(.37,0,.63,1) infinite alternate both}
+.hero-photo-bg img{transform-origin:64% 42%}
+.hero--visible.hero--motion-ready .hero-photo-bg img{will-change:transform;animation:heroKenBurns 26s cubic-bezier(.37,0,.63,1) infinite alternate both}
 @media (prefers-reduced-motion:reduce){
-  .hero--visible .hero-photo-bg img{animation:none}
+  .hero--visible.hero--motion-ready .hero-photo-bg img{animation:none}
 }
