@@ -140,10 +140,18 @@ require("'/css/style.css?v=20260906r03'," in sw, 'service-worker precache still 
 cfg = json.loads(read('.github/lighthouse-config.json'))
 require(cfg['ci']['collect'].get('numberOfRuns') == 3, 'Lighthouse collection is not three runs')
 assertions = cfg['ci']['assert']['assertions']
-for audit in ['categories:best-practices', 'categories:seo', 'total-blocking-time']:
+for audit in ['categories:accessibility', 'categories:best-practices', 'categories:seo', 'cumulative-layout-shift', 'total-blocking-time']:
     require(assertions[audit][0] == 'error', f'{audit} must remain fail-closed')
-for audit in ['categories:performance', 'categories:accessibility', 'largest-contentful-paint', 'cumulative-layout-shift']:
+for audit in ['categories:performance', 'largest-contentful-paint']:
     require(assertions[audit][0] == 'warn', f'{audit} severity changed before evidence-backed closure')
+require(
+    assertions['categories:accessibility'][1].get('minScore') == 0.95,
+    'accessibility fail-closed threshold drifted from the proven 0.95 floor',
+)
+require(
+    assertions['cumulative-layout-shift'][1].get('maxNumericValue') == 0.1,
+    'CLS fail-closed threshold drifted from the proven 0.1 ceiling',
+)
 
 workflow = read('.github/workflows/lighthouse.yml')
 require(
