@@ -19,7 +19,9 @@ jobs:
           ref: hardening/lighthouse-root-causes-20260906
           fetch-depth: 0
       - name: Apply migration
-        run: python3 scripts/tmp_lighthouse_phase2.py
+        run: |
+          python3 scripts/tmp_lighthouse_phase2.py
+          sed -i 's/[[:space:]]\+$//' js/gallery/main.js
       - name: Regenerate and validate static contracts
         run: |
           python3 prigorody/build.py
