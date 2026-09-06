@@ -85,6 +85,13 @@
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
   <link rel="stylesheet" href="/css/gallery/gallery-2026.css?v=20260813r01" />
   <link rel="stylesheet" href="/css/final-fixes.css?v=20260815r78" />
+<style id="gallery-initial-layout-reserve">
+/* The module renders gallery cards after HTML parse. Reserve one viewport only while
+   the grid is in its initial empty state so the SEO panel never paints above the
+   hydrated grid. Once JS removes gxEmpty's inline display:none (or cards exist),
+   this rule stops matching and does not add whitespace to empty filter results. */
+#galleryGrid:empty:has(+ #gxEmpty[style*="display: none"]) { min-height: 100svh; }
+</style>
 <style id="lp-theme-toggle-css">
 .lp-theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;min-width:38px;border-radius:50%;border:1px solid rgba(201,147,74,.3);background:rgba(255,255,255,.04);color:var(--gold,#c9934a);cursor:pointer;padding:0;flex-shrink:0;margin-left:auto;-webkit-tap-highlight-color:transparent;transition:border-color .2s,background .2s,transform .15s}
 .lp-theme-toggle:hover{border-color:var(--gold,#c9934a);background:rgba(201,147,74,.1)}
@@ -164,8 +171,6 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
       navigator.serviceWorker.register('/sw.js').catch(function() {});
     }
   </script>
-
-
 
 
 
