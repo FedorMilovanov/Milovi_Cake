@@ -127,7 +127,8 @@ function renderGrid(){
     card.type='button'; 
     card.className=`card ${sizeClasses(item.size)}`.trim(); 
     // Animation is handled by CSS now (added to fixes), but we keep delay for stagger
-    card.style.animationDelay=`${Math.min(index*0.04, 1.2)}s`; 
+    if(index<4) card.style.animation='none';
+    else card.style.animationDelay=`${Math.min(index*0.04, 1.2)}s`;
     card.dataset.index=String(index); 
     card.dataset.id=item.id; 
     card.setAttribute('aria-label',`${item.title}. Открыть в 3D-галерее`);
@@ -137,10 +138,9 @@ function renderGrid(){
       v.className='card-media'; 
       v.poster=item.src; 
       v.muted=true; 
-      v.autoplay=true; 
       v.loop=true; 
       v.playsInline=true; 
-      v.preload='metadata'; 
+      v.preload='none';
       v.dataset.src=item.videoSrc; 
       card.appendChild(v); 
       card.insertAdjacentHTML('beforeend', playIcon()); 
@@ -149,8 +149,9 @@ function renderGrid(){
       const img=document.createElement('img'); 
       img.className='card-media'; 
       img.alt=item.title; 
-      img.loading=index<8?'eager':'lazy'; 
-      img.decoding='async'; 
+      img.loading=index<4?'eager':'lazy';
+      img.decoding='async';
+      if(index===0) img.fetchPriority='high';
       img.onerror=()=>{ if(img.src!==item.src) img.src=item.src; };
       /* r18: premium skeleton — soft golden shimmer until the image loads, then fade in */
       card.classList.add('is-loading');
@@ -167,8 +168,12 @@ function renderGrid(){
     attachCardTilt(card); 
     frag.appendChild(card);
   });
-  grid.appendChild(frag); 
-  setupVideoObserver();
+  grid.appendChild(frag);
+  if(document.readyState==='complete') setupVideoObserver();
+  else if(!state.videoObserverPending){
+    state.videoObserverPending=true;
+    window.addEventListener('load',()=>{state.videoObserverPending=false;setupVideoObserver();},{once:true});
+  }
 }
 function attachCardTilt(card){
   if(matchMedia('(hover: none), (pointer: coarse)').matches) return;
@@ -630,12 +635,6 @@ function closeLightbox(updateState = true){
   if (!closeLightbox._skipObserverRestore) setupVideoObserver(); // Re-enable grid videos
   closeLightbox._skipObserverRestore = false;
 }
-function hidePreloader(delay=650){ 
-  const p = $('#preloader');
-  if(!p) return;
-  setTimeout(()=>p.classList.add('hidden'),delay); 
-  setTimeout(()=>p.remove(),delay+800); 
-}
 function boot(){ 
   const seal = $('#gxSeal');
   if(seal) seal.innerHTML=luxeSeal(); 
@@ -643,8 +642,7 @@ function boot(){
   renderFilters(); 
   renderGrid(); 
   $('#resetFilter')?.addEventListener('click',()=>{state.filter='all'; renderFilters(); renderGrid();}); 
-  hidePreloader(); 
-  setTimeout(()=>hidePreloader(0),5000); 
+
   const hash=decodeURIComponent(location.hash.replace('#','')); 
   if(hash){ 
     const idx=state.visible.findIndex(item=>item.id===hash); 

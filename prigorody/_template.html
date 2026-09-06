@@ -92,10 +92,10 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" as="style" />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=optional" as="style" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=optional" rel="stylesheet" media="print" onload="this.media='all'" />
   <!-- noscript fonts -->
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/></noscript>
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=optional" rel="stylesheet"/></noscript>
   <link rel="stylesheet" href="../../css/style.css?v=20260728r27" />
   <link rel="stylesheet" href="../../css/mc-2026.css?v=20260728r27" />
   <link rel="stylesheet" href="../../css/premium-overrides.css?v=20260728r27" />
@@ -117,6 +117,13 @@
     :root:not([data-theme="dark"]) .prigorody-page .calc-opt.selected{color:#2c1a10}
     :root:not([data-theme="dark"]) .prigorody-page .calc-stepper-val{color:#8a5723}
     :root:not([data-theme="dark"]) .prigorody-page .nearby-city-card__info{color:#725f50}
+    :root:not([data-theme="dark"]) .prigorody-page .hero .btn-primary--hero{background:#8f5f25}
+    :root:not([data-theme="dark"]) .prigorody-page .geo-section p,
+    :root:not([data-theme="dark"]) .prigorody-page .seo-section p{color:#725f50}
+    .prigorody-page .delivery-faq .cb-faq-q{width:100%;min-height:48px;border:0;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
+    .prigorody-page .site-footer .wave-text .w,
+    .prigorody-page .site-footer .footer-col>h3{color:#9a8a6d}
+    .prigorody-page .site-footer .footer-col>h3{font-family:'Jost',sans-serif;font-size:11px;font-weight:400;letter-spacing:.12em;text-transform:uppercase;margin:0 0 14px}
   </style>
 </head>
 
@@ -568,22 +575,22 @@
     <div class="features-grid">
       <div class="feature reveal">
         <div class="feature-icon">🤍</div>
-        <h4>Ручная Работа</h4>
+        <h3>Ручная Работа</h3>
         <p>Каждый десерт создаётся с любовью и заботой вручную</p>
       </div>
       <div class="feature reveal">
         <div class="feature-icon">🌿</div>
-        <h4>Натуральные Ингредиенты</h4>
+        <h3>Натуральные Ингредиенты</h3>
         <p>Только качественные продукты без искусственных добавок</p>
       </div>
       <div class="feature reveal">
         <div class="feature-icon">🎯</div>
-        <h4>Свежесть под заказ</h4>
+        <h3>Свежесть под заказ</h3>
         <p>Готовим специально для вас, всегда свежее</p>
       </div>
       <div class="feature reveal">
         <div class="feature-icon">📦</div>
-        <h4>Доставка по СПб</h4>
+        <h3>Доставка по СПб</h3>
         <p>Аккуратная доставка в красивой упаковке</p>
       </div>
     </div>
@@ -666,16 +673,16 @@
   <div class="container">
     <h2 class="section-title reveal">Вопросы о доставке {{city_pre}} {{delivery_city}}</h2>
     <div class="faq-list">
-      <div class="faq-item" onclick="cbFaq(this)">
-        <div class="cb-faq-q"><span>{{faq_q1}}</span><div class="cb-faq-ico">+</div></div>
+      <div class="faq-item">
+        <button type="button" class="cb-faq-q" onclick="cbFaq(this.parentElement)" aria-expanded="false"><span>{{faq_q1}}</span><span class="cb-faq-ico" aria-hidden="true">+</span></button>
         <div class="cb-faq-a"><div class="cb-faq-a-inner">{{faq_a1}}</div></div>
       </div>
-      <div class="faq-item" onclick="cbFaq(this)">
-        <div class="cb-faq-q"><span>{{faq_q2}}</span><div class="cb-faq-ico">+</div></div>
+      <div class="faq-item">
+        <button type="button" class="cb-faq-q" onclick="cbFaq(this.parentElement)" aria-expanded="false"><span>{{faq_q2}}</span><span class="cb-faq-ico" aria-hidden="true">+</span></button>
         <div class="cb-faq-a"><div class="cb-faq-a-inner">{{faq_a2}}</div></div>
       </div>
-      <div class="faq-item" onclick="cbFaq(this)">
-        <div class="cb-faq-q"><span>{{faq_q3}}</span><div class="cb-faq-ico">+</div></div>
+      <div class="faq-item">
+        <button type="button" class="cb-faq-q" onclick="cbFaq(this.parentElement)" aria-expanded="false"><span>{{faq_q3}}</span><span class="cb-faq-ico" aria-hidden="true">+</span></button>
         <div class="cb-faq-a"><div class="cb-faq-a-inner">{{faq_a3}}</div></div>
       </div>
     </div>
@@ -991,7 +998,7 @@
         </div>
       </div>
       <div class="footer-col">
-        <h4>Навигация</h4>
+        <h3>Навигация</h3>
         <nav aria-label="Нижняя навигация">
                 <a href="#catalog">Каталог</a>
           <a href="#fillings">Начинки</a>
@@ -1000,7 +1007,7 @@
         </nav>
       </div>
       <div class="footer-col">
-        <h4>Контакты</h4>
+        <h3>Контакты</h3>
         <a href="tel:+79119038886">+7 911 903 88 86</a>
         <a href="https://wa.me/79119038886" target="_blank" rel="noopener noreferrer">WhatsApp</a>
         <a href="https://t.me/MiloviCake" target="_blank" rel="noopener noreferrer">Telegram</a>
@@ -1179,8 +1186,10 @@
 <script>
 function cbFaq(el){
   var isOpen = el.classList.contains('open');
-  document.querySelectorAll('.faq-item.open').forEach(function(i){ i.classList.remove('open'); });
-  if(!isOpen) el.classList.add('open');
+  document.querySelectorAll('.faq-item.open').forEach(function(i){ i.classList.remove('open'); var b=i.querySelector('.cb-faq-q'); if(b)b.setAttribute('aria-expanded','false'); });
+  var button=el.querySelector('.cb-faq-q');
+  if(!isOpen){ el.classList.add('open'); if(button)button.setAttribute('aria-expanded','true'); }
+  else if(button)button.setAttribute('aria-expanded','false');
 }
 </script>
 

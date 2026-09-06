@@ -63,10 +63,18 @@ test.describe('premium media blocks', () => {
       await expect(page.locator('.lp-media-showcase')).toBeVisible();
       const mediaCount = await page.locator('.lp-media-showcase img, .lp-media-showcase video').count();
       expect(mediaCount).toBeGreaterThanOrEqual(4);
-      const brokenImages = await page.locator('.lp-media-showcase img, .lp-card img').evaluateAll((imgs) =>
-        imgs.filter((img) => !img.complete || img.naturalWidth < 40).map((img) => img.getAttribute('src'))
-      );
-      expect(brokenImages).toEqual([]);
+
+      const images = page.locator('.lp-media-showcase img, .lp-card img');
+      const imageCount = await images.count();
+      for (let i = 0; i < imageCount; i += 1) {
+        const image = images.nth(i);
+        const src = await image.getAttribute('src');
+        await image.scrollIntoViewIfNeeded();
+        await expect.poll(
+          () => image.evaluate((img) => (img.complete ? img.naturalWidth : 0)),
+          { message: `Image ${src} should load after entering the viewport`, timeout: 10000 }
+        ).toBeGreaterThanOrEqual(40);
+      }
     }
   });
 });
