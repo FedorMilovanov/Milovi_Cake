@@ -129,6 +129,18 @@
   /* ── Инициализация JS accordion ── */
   function initJsAccordion(items) {
     items.forEach(function(item) {
+      // A .faq-item is a structural wrapper when it already owns a native
+      // button/summary. R11 in main.js used to promote the wrapper itself to
+      // role=button/tabindex=0, creating a duplicate 1px interactive target.
+      var nativeQuestion = Array.from(item.children).find(function(el) {
+        return el.matches('button, summary');
+      });
+      if (nativeQuestion) {
+        item.removeAttribute('role');
+        item.removeAttribute('tabindex');
+        item.removeAttribute('aria-label');
+      }
+
       var question = findQuestion(item);
       var answer = findAnswer(item);
 
