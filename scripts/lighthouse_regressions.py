@@ -58,10 +58,16 @@ require(
     'gallery Swiper noscript fallback missing',
 )
 require(f'<script src="{swiper_js}"' not in gallery, 'gallery Swiper JS returned to initial page load')
-require(
-    '/js/gallery/swiper-interaction-loader.js?v=20260906r01' in gallery,
-    'gallery interaction-triggered Swiper loader missing',
-)
+require('id="gallery-swiper-interaction-loader"' in gallery, 'gallery inline Swiper interaction loader missing')
+require(swiper_js in gallery, 'gallery interaction loader lost pinned Swiper source')
+require("target.closest('#galleryGrid .card')" in gallery, 'gallery Swiper loader is no longer scoped to gallery-card interaction')
+for event in ['pointerdown', 'focusin', 'click']:
+    require(
+        f"document.addEventListener('{event}', maybeLoad, true);" in gallery,
+        f'gallery Swiper loader lost {event} interaction trigger',
+    )
+require('script.async = true;' in gallery, 'gallery Swiper interaction load is not asynchronous')
+require("script.addEventListener('error'" in gallery and 'loading = false;' in gallery, 'gallery Swiper loader cannot retry after CDN failure')
 require('/css/gallery/gallery-2026.css?v=20260813r01" />' in gallery, 'gallery critical local CSS became deferred')
 require('/css/final-fixes.css?v=20260815r78" />' in gallery, 'gallery final critical CSS became deferred')
 require('id="gallery-lcp-media-fastpath"' in gallery, 'gallery eager-media LCP fast path missing')
@@ -76,17 +82,6 @@ require(
     and 'filter: saturate(1);' in gallery,
     'gallery eager media reveal delay returned',
 )
-
-swiper_loader = read('js/gallery/swiper-interaction-loader.js')
-require(swiper_js in swiper_loader, 'gallery interaction loader lost pinned Swiper source')
-require("target.closest('#galleryGrid .card')" in swiper_loader, 'gallery Swiper loader is no longer scoped to gallery-card interaction')
-for event in ['pointerdown', 'focusin', 'click']:
-    require(
-        f"document.addEventListener('{event}', maybeLoad, true);" in swiper_loader,
-        f'gallery Swiper loader lost {event} interaction trigger',
-    )
-require('script.async = true;' in swiper_loader, 'gallery Swiper interaction load is not asynchronous')
-require("script.addEventListener('error'" in swiper_loader and 'loading = false;' in swiper_loader, 'gallery Swiper loader cannot retry after CDN failure')
 
 gallery_css = read('css/gallery/gallery-2026.css')
 require('.card-skeleton{' in gallery_css, 'gallery lazy-card skeleton contract disappeared globally')
