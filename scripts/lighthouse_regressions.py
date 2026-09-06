@@ -24,6 +24,16 @@ require(
     'img:not(.hero-img):not([class*="head"])' in main_js,
     'homepage hero exclusion disappeared from the generic image fade selector',
 )
+require('function scheduleInitAppAfterHeroPaint()' in main_js, 'homepage app bootstrap is no longer post-paint scheduled')
+require("document.querySelector('.hero-img, .hero-photo-bg img')" in main_js, 'post-paint bootstrap lost the hero readiness gate')
+require("hero.addEventListener('load', scheduleAfterHero" in main_js, 'post-paint bootstrap no longer waits for hero load')
+require("requestAnimationFrame(function() { setTimeout(startApp, 0); });" in main_js, 'homepage app bootstrap can run before the hero paint opportunity')
+require("document.addEventListener('DOMContentLoaded', scheduleInitAppAfterHeroPaint" in main_js, 'DOMContentLoaded no longer schedules the post-paint bootstrap')
+require("document.addEventListener('DOMContentLoaded', initApp" not in main_js, 'synchronous DOMContentLoaded initApp path returned')
+require('function initCatalogSliderVisibilityObserver()' in main_js, 'catalog slider visibility observer is not hydration-safe')
+require("if (typeof initCatalogSliderVisibilityObserver === 'function') initCatalogSliderVisibilityObserver();" in main_js, 'deferred catalog render no longer rebinds slider visibility')
+require('function bindProductMouseGlow()' in main_js, 'catalog mouse glow binder is not hydration-safe')
+require("if (typeof bindProductMouseGlow === 'function') bindProductMouseGlow();" in main_js, 'deferred catalog render no longer rebinds mouse glow')
 
 for path in ['index.html', 'gallery/index.html', 'svadebnye-torty/index.html', 'bento-torty/index.html', 'zakazat-tort-spb/index.html']:
     text = read(path)
@@ -126,16 +136,20 @@ require(
 for path in ['svadebnye-torty/index.html', 'bento-torty/index.html', 'zakazat-tort-spb/index.html']:
     require('/css/style.css?v=20260906r03' in read(path), f'{path} landing a11y CSS revision drifted')
 
-# Shared CSS and its service-worker generation must move as one release unit.
+# Shared CSS/JS and service-worker generations must move as one release unit.
 for public_html in sorted(Path('.').rglob('*.html')):
     html = read(public_html)
     if 'style.css?v=' in html:
         require('style.css?v=20260906r03' in html, f'{public_html} shared style revision drifted')
         require('style.css?v=20260728r27' not in html, f'{public_html} still references stale shared style revision')
+    if 'main.js?v=' in html:
+        require('main.js?v=20260906r02' in html, f'{public_html} shared main.js revision drifted')
+        require('main.js?v=20260906r01' not in html, f'{public_html} still references stale main.js revision')
 
 sw = read('sw.js')
-require("const CACHE_NAME = 'milovi-cake-v2026.09.06-r79';" in sw, 'service-worker cache generation did not roll with shared CSS')
+require("const CACHE_NAME = 'milovi-cake-v2026.09.06-r80';" in sw, 'service-worker cache generation did not roll with shared JS')
 require("'/css/style.css?v=20260906r03'," in sw, 'service-worker precache still points at stale shared CSS revision')
+require("'/js/main.js?v=20260906r02'," in sw, 'service-worker precache still points at stale shared main.js revision')
 
 cfg = json.loads(read('.github/lighthouse-config.json'))
 require(cfg['ci']['collect'].get('numberOfRuns') == 3, 'Lighthouse collection is not three runs')
