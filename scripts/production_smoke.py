@@ -258,8 +258,6 @@ def main() -> int:
         last_results = results
         failed = [r for r in results if r.required and not r.ok]
         if not failed:
-            if not args.quiet_passed_attemps if False else False:
-                pass
             if not args.quiet_passed_attempts or attempt == attempts:
                 print_results(results, attempt if attempts > 1 else None)
             informational_failures = [r for r in results if not r.required and not r.ok]
