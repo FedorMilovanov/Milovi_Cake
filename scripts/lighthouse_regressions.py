@@ -53,7 +53,7 @@ require('media="(max-width: 768px)" srcset="/img/head_mobile.avif"' in order, 'o
 gallery = read('gallery/index.html')
 require('id="preloader"' not in gallery, 'gallery blocking preloader returned')
 require('/img/gallery/gallery-01.avif" fetchpriority="high"' in gallery, 'gallery LCP preload missing')
-require('/js/gallery/main.js?v=20260906r03' in gallery, 'gallery runtime revision drift')
+require('/js/gallery/main.js?v=20260906r04' in gallery, 'gallery runtime revision drift')
 require('#galleryGrid[data-hydrating="true"] { min-height: 100svh; }' in gallery, 'gallery hydration reserve missing')
 require('#galleryGrid[data-static-lcp-root="true"] { animation: none; }' in gallery, 'gallery grid animation gates initial LCP again')
 require('data-static-lcp="p01"' in gallery, 'gallery initial LCP card is no longer parser-visible')
@@ -123,6 +123,16 @@ require("v.preload='none';" in gallery_js, 'gallery video preload competes with 
 require('v.autoplay=true' not in gallery_js, 'gallery videos autoplay during initial load')
 require("if(index<4) card.style.animation='none';" in gallery_js, 'above-fold gallery cards animate into LCP')
 require('if(!window.Swiper)' in gallery_js and 'setTimeout(init,50)' in gallery_js, 'gallery lightbox lost its Swiper late-load polling fallback')
+require(
+    "const PHONE_CARD_MEDIA = '(max-width: 430px) and (max-resolution: 1.75dppx)';" in gallery_js,
+    'gallery phone-card media boundary drifted',
+)
+require("const PHONE_CARD_IDS = new Set(['p05', 'p06', 'p09', 'p12', 'p18']);" in gallery_js, 'gallery phone-card allowlist drifted')
+require(r"return item.src.replace(/\.webp(\?|$)/i, '-card.avif$1');" in gallery_js, 'gallery phone-card AVIF derivation disappeared')
+require("phoneSource.media = PHONE_CARD_MEDIA;" in gallery_js, 'gallery phone AVIF source lost its media guard')
+require("phoneSource.srcset = phoneAvifSrc;" in gallery_js, 'gallery phone AVIF source lost its derivative URL')
+for number in [5, 6, 9, 12, 18]:
+    require(Path(f'img/gallery/gallery-{number:02d}-card.avif').is_file(), f'gallery phone-card derivative missing for gallery-{number:02d}')
 
 gatchina = read('prigorody/gatchina/index.html')
 for title in ['Ручная Работа', 'Натуральные Ингредиенты', 'Свежесть под заказ', 'Доставка по СПб']:
@@ -170,10 +180,10 @@ for public_html in sorted(Path('.').rglob('*.html')):
         require('main.js?v=20260906r01' not in html, f'{public_html} still references stale shared main.js revision')
 
 sw = read('sw.js')
-require("const CACHE_NAME = 'milovi-cake-v2026.09.07-r81';" in sw, 'service-worker cache generation drifted')
+require("const CACHE_NAME = 'milovi-cake-v2026.09.07-r82';" in sw, 'service-worker cache generation drifted')
 require("'/css/style.css?v=20260907r01'," in sw, 'service-worker precache still points at stale shared CSS revision')
 require("'/js/main.js?v=20260907r01'," in sw, 'service-worker precache still points at stale shared main.js revision')
-require("'/js/gallery/main.js?v=20260906r03'," in sw, 'service-worker precache still points at stale gallery runtime revision')
+require("'/js/gallery/main.js?v=20260906r04'," in sw, 'service-worker precache still points at stale gallery runtime revision')
 
 cfg = json.loads(read('.github/lighthouse-config.json'))
 require(cfg['ci']['collect'].get('numberOfRuns') == 3, 'Lighthouse collection is not three runs')
