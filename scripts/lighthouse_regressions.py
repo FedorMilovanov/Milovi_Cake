@@ -40,6 +40,7 @@ require(
 )
 font_css = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600;700&display=optional'
 swiper_css = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css'
+swiper_js = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js'
 require(
     f'href="{font_css}" rel="stylesheet" media="print" onload="this.onload=null;this.media=\'all\'"' in gallery,
     'gallery Google Fonts CSS returned to the critical render path',
@@ -56,6 +57,17 @@ require(
     f'<noscript><link rel="stylesheet" href="{swiper_css}" /></noscript>' in gallery,
     'gallery Swiper noscript fallback missing',
 )
+require(f'<script src="{swiper_js}"' not in gallery, 'gallery Swiper JS returned to initial page load')
+require('id="gallery-swiper-interaction-loader"' in gallery, 'gallery inline Swiper interaction loader missing')
+require(swiper_js in gallery, 'gallery interaction loader lost pinned Swiper source')
+require("target.closest('#galleryGrid .card')" in gallery, 'gallery Swiper loader is no longer scoped to gallery-card interaction')
+for event in ['pointerdown', 'focusin', 'click']:
+    require(
+        f"document.addEventListener('{event}', maybeLoad, true);" in gallery,
+        f'gallery Swiper loader lost {event} interaction trigger',
+    )
+require('script.async = true;' in gallery, 'gallery Swiper interaction load is not asynchronous')
+require("script.addEventListener('error'" in gallery and 'loading = false;' in gallery, 'gallery Swiper loader cannot retry after CDN failure')
 require('/css/gallery/gallery-2026.css?v=20260813r01" />' in gallery, 'gallery critical local CSS became deferred')
 require('/css/final-fixes.css?v=20260815r78" />' in gallery, 'gallery final critical CSS became deferred')
 require('id="gallery-lcp-media-fastpath"' in gallery, 'gallery eager-media LCP fast path missing')
@@ -80,6 +92,7 @@ require("if(index===0) img.fetchPriority='high';" in gallery_js, 'gallery first 
 require("v.preload='none';" in gallery_js, 'gallery video preload competes with LCP')
 require('v.autoplay=true' not in gallery_js, 'gallery videos autoplay during initial load')
 require("if(index<4) card.style.animation='none';" in gallery_js, 'above-fold gallery cards animate into LCP')
+require('if(!window.Swiper)' in gallery_js and 'setTimeout(init,50)' in gallery_js, 'gallery lightbox lost its Swiper late-load polling fallback')
 
 gatchina = read('prigorody/gatchina/index.html')
 for title in ['Ручная Работа', 'Натуральные Ингредиенты', 'Свежесть под заказ', 'Доставка по СПб']:

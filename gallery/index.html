@@ -84,7 +84,40 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600;700&display=optional" rel="stylesheet" /></noscript>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" media="print" onload="this.onload=null;this.media='all'" />
   <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" /></noscript>
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
+  <script id="gallery-swiper-interaction-loader">
+  (function () {
+    'use strict';
+    const SWIPER_SRC = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js';
+    let loading = false;
+    function detach() {
+      document.removeEventListener('pointerdown', maybeLoad, true);
+      document.removeEventListener('focusin', maybeLoad, true);
+      document.removeEventListener('click', maybeLoad, true);
+    }
+    function loadSwiper() {
+      if (window.Swiper) { detach(); return; }
+      if (loading) return;
+      loading = true;
+      const script = document.createElement('script');
+      script.src = SWIPER_SRC;
+      script.async = true;
+      script.dataset.gallerySwiper = 'interaction';
+      script.addEventListener('load', detach, { once: true });
+      script.addEventListener('error', function () {
+        loading = false;
+        script.remove();
+      }, { once: true });
+      document.head.appendChild(script);
+    }
+    function maybeLoad(event) {
+      const target = event.target;
+      if (target instanceof Element && target.closest('#galleryGrid .card')) loadSwiper();
+    }
+    document.addEventListener('pointerdown', maybeLoad, true);
+    document.addEventListener('focusin', maybeLoad, true);
+    document.addEventListener('click', maybeLoad, true);
+  })();
+  </script>
   <link rel="stylesheet" href="/css/gallery/gallery-2026.css?v=20260813r01" />
   <link rel="stylesheet" href="/css/final-fixes.css?v=20260815r78" />
 <style id="gallery-initial-layout-reserve">
