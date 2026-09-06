@@ -94,6 +94,17 @@
    this rule stops matching and does not add whitespace to empty filter results. */
 #galleryGrid:empty:has(+ #gxEmpty[style*="display: none"]) { min-height: 100svh; }
 </style>
+<style id="gallery-lcp-media-fastpath">
+/* Eager above-fold photos already have the LCP preload/priority contract. Do not hide
+   those decoded pixels behind the decorative skeleton/reveal transition. Lazy cards
+   keep the premium skeleton and fade; loaded-card hover zoom remains unchanged. */
+#galleryGrid .card:has(img.card-media[loading="eager"]) .card-skeleton { display: none; }
+#galleryGrid .card.is-loading:has(img.card-media[loading="eager"]) .card-media {
+  opacity: 1;
+  transform: scale(1);
+  filter: saturate(1);
+}
+</style>
 <style id="lp-theme-toggle-css">
 .lp-theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;min-width:38px;border-radius:50%;border:1px solid rgba(201,147,74,.3);background:rgba(255,255,255,.04);color:var(--gold,#c9934a);cursor:pointer;padding:0;flex-shrink:0;margin-left:auto;-webkit-tap-highlight-color:transparent;transition:border-color .2s,background .2s,transform .15s}
 .lp-theme-toggle:hover{border-color:var(--gold,#c9934a);background:rgba(201,147,74,.1)}
