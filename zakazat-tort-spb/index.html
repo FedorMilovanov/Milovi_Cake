@@ -32,9 +32,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
   <!-- r58: hero LCP preload (AVIF + WebP fallback) -->
-  <link rel="preload" as="image" type="image/avif" href="/img/head_desktop.avif" fetchpriority="high" />
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" /></noscript>
+  <link rel="preload" as="image" type="image/avif" href="/img/head_mobile.avif" media="(max-width: 768px)" fetchpriority="high" />
+  <link rel="preload" as="image" type="image/avif" href="/img/head_desktop.avif" media="(min-width: 769px)" fetchpriority="high" />
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=optional" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=optional" rel="stylesheet" /></noscript>
   <link rel="stylesheet" href="/css/style.css?v=20260728r27" />
   <script type="application/ld+json">
   {
@@ -305,7 +306,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
         <div class="lp-facts"><span>от 1 600 ₽</span><span>доставка по СПб</span><span>самовывоз м. Звёздная</span><span>WhatsApp · Telegram · MAX</span></div>
       </div>
       <div class="lp-visual">
-        <picture><source type="image/avif" srcset="/img/head_desktop.avif"><img src="/img/head_desktop.webp" alt="Заказать торт в СПб — Milovi Cake" width="900" height="1200" fetchpriority="high" decoding="async"/></picture>
+        <picture><source type="image/avif" media="(max-width: 768px)" srcset="/img/head_mobile.avif"><source type="image/avif" media="(min-width: 769px)" srcset="/img/head_desktop.avif"><source type="image/webp" media="(max-width: 768px)" srcset="/img/head_mobile.webp"><img src="/img/head_desktop.webp" alt="Заказать торт в СПб — Milovi Cake" width="900" height="1200" fetchpriority="high" decoding="async"/></picture>
         <div class="lp-badge">Ручная работа · доставка по СПб</div>
       </div>
     </section>
@@ -313,7 +314,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
       <div class="lp-section-head"><h2>Популярные форматы</h2><p>Подбираем торт под событие, количество гостей, стиль праздника и желаемый бюджет. Ниже — основные варианты, которые чаще всего заказывают в Milovi Cake.</p></div>
       <div class="lp-grid">
         <article class="lp-card">
-          <picture><source type="image/avif" srcset="/img/cake_biscuit_0.avif"><img src="/img/cake_biscuit_0.webp" alt="Бисквитный торт на заказ в СПб" width="640" height="480" loading="eager" decoding="async"/></picture>
+          <picture><source type="image/avif" srcset="/img/cake_biscuit_0.avif"><img src="/img/cake_biscuit_0.webp" alt="Бисквитный торт на заказ в СПб" width="640" height="480" loading="lazy" decoding="async"/></picture>
           <div class="lp-card-body">
             <h3>Бисквитный торт</h3>
             <p>Классический торт на заказ с начинкой на выбор: ягоды, шоколад, карамель, красный бархат, медовик и другие вкусы.</p>
@@ -321,7 +322,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
           </div>
         </article>
         <article class="lp-card">
-          <picture><source type="image/avif" srcset="/img/bento_1.avif"><img src="/img/bento_1.webp" alt="Бенто-торт на заказ в Санкт-Петербурге" width="640" height="480" loading="eager" decoding="async"/></picture>
+          <picture><source type="image/avif" srcset="/img/bento_1.avif"><img src="/img/bento_1.webp" alt="Бенто-торт на заказ в Санкт-Петербурге" width="640" height="480" loading="lazy" decoding="async"/></picture>
           <div class="lp-card-body">
             <h3>Бенто-торт</h3>
             <p>Компактный персональный торт для подарка, признания, дня рождения или камерного праздника.</p>
@@ -329,7 +330,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
           </div>
         </article>
         <article class="lp-card">
-          <picture><source type="image/avif" srcset="/img/cake_3d.avif"><img src="/img/cake_3d.webp" alt="3D торт на заказ СПб" width="640" height="480" loading="eager" decoding="async"/></picture>
+          <picture><source type="image/avif" srcset="/img/cake_3d.avif"><img src="/img/cake_3d.webp" alt="3D торт на заказ СПб" width="640" height="480" loading="lazy" decoding="async"/></picture>
           <div class="lp-card-body">
             <h3>3D-торт</h3>
             <p>Объёмный торт со сложным индивидуальным тематическим декором.</p>
@@ -338,7 +339,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
         </article></div>
     </section>
 
-<section class="lp-media-showcase" aria-labelledby="mediaShowcaseTitle"><div class="lp-media-head"><h2 id="mediaShowcaseTitle">Смотрите реальные работы Milovi Cake</h2><p>Подобрали фото и видео из портфолио, чтобы было проще почувствовать стиль, масштаб декора и подачу.</p></div><div class="lp-media-grid"><figure class="lp-media-item"><picture><source type="image/avif" srcset="/img/gallery/gallery-14.avif"><img src="/img/gallery/gallery-14.webp" alt="Фактурный торт с золотом — Milovi Cake" width="900" height="700" loading="eager" decoding="async"/></picture><figcaption class="lp-media-caption"><strong>Фактурный торт с золотом</strong><span>Премиальный праздничный торт с объёмным декором</span></figcaption></figure><figure class="lp-media-item"><video preload="metadata" muted playsinline onclick="if(!this.controls){this.controls=true;this.closest('.lp-media-item').classList.add('is-playing');this.play().catch(function(){})}" poster="/img/gallery/gallery-14.webp" aria-label="Видео: фактурный торт"><source src="/img/gallery/videos/video-02-spb-cakes.webm" type="video/webm"></video><div class="lp-media-play" aria-hidden="true">▶</div><figcaption class="lp-media-caption"><strong>Видео: фактурный торт</strong><span>Живой референс авторского праздничного торта</span></figcaption></figure><figure class="lp-media-item"><picture><source type="image/avif" srcset="/img/gallery/gallery-07.avif"><img src="/img/gallery/gallery-07.webp" alt="Золотой торт с фактурным декором — Milovi Cake" width="900" height="700" loading="eager" decoding="async"/></picture><figcaption class="lp-media-caption"><strong>Золотой торт с фактурным декором</strong><span>Высокий торт в люкс-эстетике</span></figcaption></figure><figure class="lp-media-item"><picture><source type="image/avif" srcset="/img/gallery/gallery-30.avif"><img src="/img/gallery/gallery-30.webp" alt="Подарочный бенто-торт — Milovi Cake" width="900" height="700" loading="eager" decoding="async"/></picture><figcaption class="lp-media-caption"><strong>Подарочный бенто-торт</strong><span>Компактный торт для персонального подарка</span></figcaption></figure></div><p class="lp-media-note">Любая работа из галереи — это референс: финальный вес, начинка, цветовая гамма и декор согласуются индивидуально под ваш праздник.</p></section>
+<section class="lp-media-showcase" aria-labelledby="mediaShowcaseTitle"><div class="lp-media-head"><h2 id="mediaShowcaseTitle">Смотрите реальные работы Milovi Cake</h2><p>Подобрали фото и видео из портфолио, чтобы было проще почувствовать стиль, масштаб декора и подачу.</p></div><div class="lp-media-grid"><figure class="lp-media-item"><picture><source type="image/avif" srcset="/img/gallery/gallery-14.avif"><img src="/img/gallery/gallery-14.webp" alt="Фактурный торт с золотом — Milovi Cake" width="900" height="700" loading="lazy" decoding="async"/></picture><figcaption class="lp-media-caption"><strong>Фактурный торт с золотом</strong><span>Премиальный праздничный торт с объёмным декором</span></figcaption></figure><figure class="lp-media-item"><video preload="metadata" muted playsinline onclick="if(!this.controls){this.controls=true;this.closest('.lp-media-item').classList.add('is-playing');this.play().catch(function(){})}" poster="/img/gallery/gallery-14.webp" aria-label="Видео: фактурный торт"><source src="/img/gallery/videos/video-02-spb-cakes.webm" type="video/webm"></video><div class="lp-media-play" aria-hidden="true">▶</div><figcaption class="lp-media-caption"><strong>Видео: фактурный торт</strong><span>Живой референс авторского праздничного торта</span></figcaption></figure><figure class="lp-media-item"><picture><source type="image/avif" srcset="/img/gallery/gallery-07.avif"><img src="/img/gallery/gallery-07.webp" alt="Золотой торт с фактурным декором — Milovi Cake" width="900" height="700" loading="lazy" decoding="async"/></picture><figcaption class="lp-media-caption"><strong>Золотой торт с фактурным декором</strong><span>Высокий торт в люкс-эстетике</span></figcaption></figure><figure class="lp-media-item"><picture><source type="image/avif" srcset="/img/gallery/gallery-30.avif"><img src="/img/gallery/gallery-30.webp" alt="Подарочный бенто-торт — Milovi Cake" width="900" height="700" loading="lazy" decoding="async"/></picture><figcaption class="lp-media-caption"><strong>Подарочный бенто-торт</strong><span>Компактный торт для персонального подарка</span></figcaption></figure></div><p class="lp-media-note">Любая работа из галереи — это референс: финальный вес, начинка, цветовая гамма и декор согласуются индивидуально под ваш праздник.</p></section>
     <section class="lp-section">
       <div class="lp-section-head"><h2>Как проходит заказ</h2><p>Мы сделали процесс понятным: сначала обсуждаем задачу, затем подбираем вкус, вес и декор, после чего фиксируем дату.</p></div>
       <div class="lp-text-grid">

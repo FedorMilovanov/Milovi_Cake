@@ -13,22 +13,6 @@
       } catch(e){}
     })();
   </script>
-  <!-- ANTI-FOUC v1: body opacity reveal (theme handled above) -->
-  <style id="anti-fouc-body">
-    body{background:var(--cream)}
-    body:not(.ready){opacity:0}
-    body.ready{opacity:1;transition:opacity .28s ease-out}
-    @media (prefers-reduced-motion:reduce){body{opacity:1!important;transition:none!important}}
-  </style>
-  <noscript><style>body:not(.ready){opacity:1!important}</style></noscript>
-  <script>
-    (function(){
-      function reveal(){requestAnimationFrame(function(){document.body&&document.body.classList.add('ready')})}
-      if(document.readyState!=='loading')reveal();
-      else document.addEventListener('DOMContentLoaded',reveal);
-      setTimeout(reveal,1200);
-    })();
-  </script>
   <link rel="icon" href="favicon.svg?v=20260728r27" type="image/svg+xml">
   <link rel="icon" href="icon-192.png?v=20260728r27" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="icon-apple.png?v=20260728r27" />
@@ -73,8 +57,8 @@
   <link rel="preload" as="image" type="image/avif" href="img/head_desktop.avif" media="(min-width:769px)" fetchpriority="high" />
   <link rel="preload" as="image" type="image/avif" href="img/head_mobile.avif" media="(max-width:768px)" fetchpriority="high" />
   <link rel="preload" as="image" type="image/webp" href="img/head_mobile.webp" media="(max-width:768px)" />
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Jost:wght@400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Jost:wght@400;500&display=swap" rel="stylesheet"/></noscript>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Jost:wght@400;500&display=optional" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Jost:wght@400;500&display=optional" rel="stylesheet"/></noscript>
 
 
   <!-- breadcrumb перемещён ниже с полной цепочкой -->

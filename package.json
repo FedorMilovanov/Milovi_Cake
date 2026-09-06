@@ -11,14 +11,14 @@
     "audit:prigorody": "python3 scripts/check_prigorody_idempotent.py",
     "audit:ip-copy": "python3 scripts/ip_copy_contract.py",
     "audit:video-schema": "python3 scripts/video_schema_contract.py",
-    "audit:all": "npm run audit:js && npm run audit:analytics && npm run audit:a11y && npm run audit:release && npm run audit:ip-copy && npm run audit:video-schema && npm run audit:prigorody && npm run audit:security && npm run audit",
+    "audit:all": "npm run audit:js && npm run audit:analytics && npm run audit:a11y && npm run audit:release && npm run audit:lighthouse-regressions && npm run audit:ip-copy && npm run audit:video-schema && npm run audit:prigorody && npm run audit:security && npm run audit",
     "build:prigorody": "python3 prigorody/build.py",
     "build:pages": "python3 scripts/build_pages_artifact.py",
     "audit:pages": "python3 scripts/audit_pages_artifact.py",
     "test:playwright": "playwright test",
     "test:playwright:headed": "playwright test --headed",
     "test:playwright:report": "playwright show-report",
-    "qa": "npm run audit:js && npm run audit:analytics && npm run audit:a11y && npm run audit:release && npm run audit:ip-copy && npm run audit:video-schema && python3 scripts/check_prigorody_idempotent.py && npm run audit:security && npm run audit && npm run test:playwright",
+    "qa": "npm run audit:js && npm run audit:analytics && npm run audit:a11y && npm run audit:release && npm run audit:lighthouse-regressions && npm run audit:ip-copy && npm run audit:video-schema && python3 scripts/check_prigorody_idempotent.py && npm run audit:security && npm run audit && npm run test:playwright",
     "smoke:prod": "python3 scripts/production_smoke.py",
     "indexnow:dry-run": "python3 scripts/submit_indexnow.py --dry-run",
     "indexnow:submit": "python3 scripts/submit_indexnow.py",
@@ -29,7 +29,8 @@
     "visual:diff": "python3 scripts/visual_diff.py",
     "audit:a11y": "python3 scripts/a11y_static.py",
     "audit:release": "python3 scripts/release_contract.py",
-    "smoke:prod:release": "python3 scripts/production_release_smoke.py"
+    "smoke:prod:release": "python3 scripts/production_release_smoke.py",
+    "audit:lighthouse-regressions": "python3 scripts/lighthouse_regressions.py"
   },
   "engines": {
     "node": ">=22.13.0",
