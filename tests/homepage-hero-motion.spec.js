@@ -9,35 +9,31 @@ test.describe('homepage hero motion release contract', () => {
     await page.goto('/');
 
     const hero = page.locator('section.hero#home');
+    const heroImage = page.locator('.hero-photo-bg img.hero-img');
     await expect(hero).toBeVisible();
 
     const initiallyReady = await hero.evaluate((element) => element.classList.contains('hero--motion-ready'));
     expect(initiallyReady).toBe(false);
 
-    const initialAnimation = await page.locator('.hero-photo-bg img.hero-img').evaluate(
-      (element) => getComputedStyle(element).animationName,
-    );
+    const initialAnimation = await heroImage.evaluate((element) => getComputedStyle(element).animationName);
     expect(initialAnimation).toBe('none');
 
     await page.locator('body').dispatchEvent('pointerdown', { pointerType: 'mouse', button: 0, isPrimary: true });
     await expect(hero).toHaveClass(/\bhero--motion-ready\b/);
-
-    const releasedAnimation = await page.locator('.hero-photo-bg img.hero-img').evaluate(
-      (element) => getComputedStyle(element).animationName,
-    );
-    expect(releasedAnimation).toBe('heroKenBurns');
+    await expect.poll(
+      () => heroImage.evaluate((element) => getComputedStyle(element).animationName),
+    ).toBe('heroKenBurns');
   });
 
   test('preserves immediate decorative hero motion on non-home shared-runtime pages', async ({ page }) => {
     await page.goto('/prigorody/gatchina/');
 
     const hero = page.locator('section.hero#home');
+    const heroImage = page.locator('.hero-photo-bg img').first();
     await expect(hero).toBeVisible();
     await expect(hero).toHaveClass(/\bhero--motion-ready\b/);
-
-    const animation = await page.locator('.hero-photo-bg img').first().evaluate(
-      (element) => getComputedStyle(element).animationName,
-    );
-    expect(animation).toBe('heroKenBurns');
+    await expect.poll(
+      () => heroImage.evaluate((element) => getComputedStyle(element).animationName),
+    ).toBe('heroKenBurns');
   });
 });
