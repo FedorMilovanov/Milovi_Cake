@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Production smoke checks for milovicake.ru.
+"""Production transport/content smoke checks for milovicake.ru.
 
-Zero third-party dependencies. Intended for GitHub Actions/manual verification after
-GitHub Pages has published a deploy.
+Release identity is intentionally out of scope here: exact deployed SHA, privacy and
+true-404 semantics are owned by production_release_smoke.py. Asset revision integrity
+is owned by release_contract.py before deployment.
 """
 from __future__ import annotations
 
@@ -13,7 +14,6 @@ import time
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
-from pathlib import Path
 
 HOST = "https://milovicake.ru"
 HTTP_HOST = "http://milovicake.ru"
@@ -43,17 +43,6 @@ URLS = [
     "/robots.txt",
     f"/{INDEXNOW_KEY}.txt",
 ]
-
-
-def expected_version() -> str:
-    sw = (Path(__file__).resolve().parents[1] / "sw.js").read_text(encoding="utf-8", errors="replace")
-    match = re.search(r"\?v=(\d{8}r\d+)", sw)
-    if not match:
-        raise RuntimeError("Could not detect cache-bust version from sw.js")
-    return match.group(1)
-
-
-EXPECTED_VERSION = expected_version()
 
 
 @dataclass
@@ -99,8 +88,6 @@ def request(
                 time.monotonic() - started,
             )
     except urllib.error.HTTPError as exc:
-        # With redirects disabled urllib represents 3xx as HTTPError. Preserve
-        # the response metadata so the redirect itself can be diagnosed.
         if not follow_redirects and 300 <= exc.code < 400:
             raw = exc.read(read_limit)
             charset = exc.headers.get_content_charset() or "utf-8"
@@ -137,7 +124,7 @@ def run_transport_checks() -> list[Result]:
                 f"{elapsed:.3f}s" + (f" -> {location}" if location else " direct HTTP response"),
             )
         )
-    except Exception as exc:  # noqa: BLE001 — transport diagnostics must expose any network issue.
+    except Exception as exc:  # noqa: BLE001
         results.append(Result("transport:http-apex", False, None, repr(exc)))
 
     try:
@@ -153,8 +140,7 @@ def run_transport_checks() -> list[Result]:
     except Exception as exc:  # noqa: BLE001
         results.append(Result("transport:https-apex", False, None, repr(exc)))
 
-    # www is intentionally informational until DNS intent is confirmed in the
-    # uptime incident. It must not turn production smoke red on its own.
+    # www remains informational: canonical traffic should settle on the HTTPS apex.
     try:
         status, _body, _headers, final_url, elapsed = request(WWW_HOST + "/", read_limit=16_384)
         results.append(
@@ -183,14 +169,15 @@ def run_checks() -> tuple[list[Result], dict[str, str]]:
             results.append(Result(path, 200 <= status < 400, status, f"OK {elapsed:.3f}s -> {final_url}"))
         except urllib.error.HTTPError as exc:
             results.append(Result(path, False, exc.code, str(exc)))
-        except Exception as exc:  # noqa: BLE001 — smoke must report any network issue.
+        except Exception as exc:  # noqa: BLE001
             results.append(Result(path, False, None, repr(exc)))
         time.sleep(0.1)
 
-    # Content-level checks.
+    # Stable content-level contracts only. Do not derive release identity from an
+    # arbitrary ?v= label: per-asset revisions can legitimately differ.
     home = bodies.get("/", "")
     if home:
-        for needle in [EXPECTED_VERSION, "Пн–Сб, 10:00–20:00", "https://milovicake.ru/#business"]:
+        for needle in ["Пн–Сб, 10:00–20:00", "https://milovicake.ru/#business"]:
             results.append(Result(f"/ content:{needle}", needle in home, 200, "found" if needle in home else "missing"))
         results.append(
             Result(
@@ -212,7 +199,6 @@ def run_checks() -> tuple[list[Result], dict[str, str]]:
     else:
         results.append(Result("sitemap content", False, None, "sitemap body unavailable"))
 
-    # Lean landing pages should stay lightweight on production too: only style.css from local CSS.
     for path in LEAN_LANDING_PATHS:
         body = bodies.get(path, "")
         css_hrefs = re.findall(
@@ -272,6 +258,8 @@ def main() -> int:
         last_results = results
         failed = [r for r in results if r.required and not r.ok]
         if not failed:
+            if not args.quiet_passed_attemps if False else False:
+                pass
             if not args.quiet_passed_attempts or attempt == attempts:
                 print_results(results, attempt if attempts > 1 else None)
             informational_failures = [r for r in results if not r.required and not r.ok]
