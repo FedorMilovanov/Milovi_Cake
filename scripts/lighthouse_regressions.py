@@ -71,6 +71,22 @@ for title in ['Ручная Работа', 'Натуральные Ингред�
 require(gatchina.count('<button type="button" class="cb-faq-q"') == 3, 'Gatchina FAQ is not three native buttons')
 require('min-height:48px' in gatchina, 'Gatchina FAQ target-size contract missing')
 
+landing_css = read('css/style.css')
+require(
+    '.lp-btn-primary{background:var(--gold);color:#2c1a10;' in landing_css,
+    'commercial landing primary CTA contrast regressed',
+)
+require(
+    'background:var(--gold);color:#2c1a10;text-decoration:none;font-size:12px' in landing_css,
+    'wedding callout CTA contrast regressed',
+)
+require(
+    '.landing-footer nav a{display:flex;align-items:center;min-height:24px;' in landing_css,
+    'landing footer link target-size contract regressed',
+)
+for path in ['svadebnye-torty/index.html', 'bento-torty/index.html', 'zakazat-tort-spb/index.html']:
+    require('/css/style.css?v=20260906r03' in read(path), f'{path} landing a11y CSS revision drifted')
+
 cfg = json.loads(read('.github/lighthouse-config.json'))
 require(cfg['ci']['collect'].get('numberOfRuns') == 3, 'Lighthouse collection is not three runs')
 assertions = cfg['ci']['assert']['assertions']
