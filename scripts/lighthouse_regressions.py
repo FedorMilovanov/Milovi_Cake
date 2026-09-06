@@ -58,6 +58,22 @@ require(
 )
 require('/css/gallery/gallery-2026.css?v=20260813r01" />' in gallery, 'gallery critical local CSS became deferred')
 require('/css/final-fixes.css?v=20260815r78" />' in gallery, 'gallery final critical CSS became deferred')
+require('id="gallery-lcp-media-fastpath"' in gallery, 'gallery eager-media LCP fast path missing')
+require(
+    '#galleryGrid .card:has(img.card-media[loading="eager"]) .card-skeleton { display: none; }' in gallery,
+    'gallery eager media is hidden behind the decorative skeleton again',
+)
+require(
+    '#galleryGrid .card.is-loading:has(img.card-media[loading="eager"]) .card-media {' in gallery
+    and 'opacity: 1;' in gallery
+    and 'transform: scale(1);' in gallery
+    and 'filter: saturate(1);' in gallery,
+    'gallery eager media reveal delay returned',
+)
+
+gallery_css = read('css/gallery/gallery-2026.css')
+require('.card-skeleton{' in gallery_css, 'gallery lazy-card skeleton contract disappeared globally')
+require('.card.is-loading .card-media{ opacity:0;' in gallery_css, 'gallery lazy media no longer keeps the premium reveal contract')
 
 gallery_js = read('js/gallery/main.js')
 require("if(index===0) img.fetchPriority='high';" in gallery_js, 'gallery first image lost high fetch priority')
