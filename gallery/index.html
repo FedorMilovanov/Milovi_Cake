@@ -121,11 +121,11 @@
   <link rel="stylesheet" href="/css/gallery/gallery-2026.css?v=20260813r01" />
   <link rel="stylesheet" href="/css/final-fixes.css?v=20260815r78" />
 <style id="gallery-initial-layout-reserve">
-/* The module renders gallery cards after HTML parse. Reserve one viewport only while
-   the grid is in its initial empty state so the SEO panel never paints above the
-   hydrated grid. Once JS removes gxEmpty's inline display:none (or cards exist),
-   this rule stops matching and does not add whitespace to empty filter results. */
-#galleryGrid:empty:has(+ #gxEmpty[style*="display: none"]) { min-height: 100svh; }
+/* Keep the SEO panel below the viewport while the parser-visible LCP card is
+   hydrated into the full client gallery. The static-root marker also disables the
+   decorative grid entrance animation so it cannot gate first paint. */
+#galleryGrid[data-hydrating="true"] { min-height: 100svh; }
+#galleryGrid[data-static-lcp-root="true"] { animation: none; }
 </style>
 <style id="gallery-lcp-media-fastpath">
 /* Eager above-fold photos already have the LCP preload/priority contract. Do not hide
@@ -177,7 +177,15 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     </header>
 
     <main class="gx-main">
-      <div class="gallery-grid" id="galleryGrid" role="list"></div>
+      <div class="gallery-grid" id="galleryGrid" role="list" data-hydrating="true" data-static-lcp-root="true">
+        <button type="button" class="card col-span-2 row-span-2 is-loaded" data-index="0" data-id="p01" data-static-lcp="p01" aria-label="Шоколадный торт с мишками. Открыть в 3D-галерее" role="listitem" style="animation:none">
+          <picture>
+            <source type="image/avif" srcset="/img/gallery/gallery-01.avif">
+            <img class="card-media" alt="Шоколадный торт с мишками" loading="eager" decoding="async" fetchpriority="high" src="/img/gallery/gallery-01.webp">
+          </picture>
+          <div class="card-overlay"><span class="card-title">Шоколадный торт с мишками</span></div>
+        </button>
+      </div>
       <div class="gx-empty-state" id="gxEmpty" style="display: none;">
         <div class="gx-empty-wrap" aria-hidden="true" id="gxEmptyGlyph"></div>
         <p>В этой категории работы обновляются</p>
@@ -208,7 +216,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     </footer>
   </div>
 
-  <script type="module" src="/js/gallery/main.js?v=20260906r02"></script>
+  <script type="module" src="/js/gallery/main.js?v=20260906r03"></script>
   <script>
     /* FIX r24: Register Service Worker for gallery page.
        Previously SW was only registered on index.html. Direct visits to /gallery/

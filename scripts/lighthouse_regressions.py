@@ -39,11 +39,13 @@ require('media="(max-width: 768px)" srcset="/img/head_mobile.avif"' in order, 'o
 gallery = read('gallery/index.html')
 require('id="preloader"' not in gallery, 'gallery blocking preloader returned')
 require('/img/gallery/gallery-01.avif" fetchpriority="high"' in gallery, 'gallery LCP preload missing')
-require('/js/gallery/main.js?v=20260906r02' in gallery, 'gallery runtime revision drift')
-require(
-    '#galleryGrid:empty:has(+ #gxEmpty[style*="display: none"]) { min-height: 100svh; }' in gallery,
-    'gallery initial empty grid no longer reserves one viewport before hydration',
-)
+require('/js/gallery/main.js?v=20260906r03' in gallery, 'gallery runtime revision drift')
+require('#galleryGrid[data-hydrating="true"] { min-height: 100svh; }' in gallery, 'gallery hydration reserve missing')
+require('#galleryGrid[data-static-lcp-root="true"] { animation: none; }' in gallery, 'gallery grid animation gates initial LCP again')
+require('data-static-lcp="p01"' in gallery, 'gallery initial LCP card is no longer parser-visible')
+require('data-hydrating="true" data-static-lcp-root="true"' in gallery, 'gallery static-LCP hydration markers missing')
+require('<source type="image/avif" srcset="/img/gallery/gallery-01.avif">' in gallery, 'gallery static LCP AVIF source drifted')
+require('fetchpriority="high" src="/img/gallery/gallery-01.webp"' in gallery, 'gallery static LCP fallback lost high priority')
 require(
     'id="gxEmpty" style="display: none;"' in gallery,
     'gallery initial-layout reserve sentinel drifted',
@@ -99,6 +101,10 @@ require('.card.is-loading .card-media{ opacity:0;' in gallery_css, 'gallery lazy
 
 gallery_js = read('js/gallery/main.js')
 require("if(index===0) img.fetchPriority='high';" in gallery_js, 'gallery first image lost high fetch priority')
+require("const staticCard = grid.querySelector('[data-static-lcp=\"p01\"]');" in gallery_js, 'gallery static LCP lookup missing')
+require("const reuseStaticLcp = state.filter === 'all'" in gallery_js, 'gallery initial LCP is not reused during hydration')
+require("staticCard.dataset.hydrated = 'true';" in gallery_js, 'gallery static LCP interaction hydration missing')
+require("grid.removeAttribute('data-hydrating');" in gallery_js, 'gallery hydration reserve is never released')
 require("v.preload='none';" in gallery_js, 'gallery video preload competes with LCP')
 require('v.autoplay=true' not in gallery_js, 'gallery videos autoplay during initial load')
 require("if(index<4) card.style.animation='none';" in gallery_js, 'above-fold gallery cards animate into LCP')
@@ -134,8 +140,9 @@ for public_html in sorted(Path('.').rglob('*.html')):
         require('style.css?v=20260728r27' not in html, f'{public_html} still references stale shared style revision')
 
 sw = read('sw.js')
-require("const CACHE_NAME = 'milovi-cake-v2026.09.06-r79';" in sw, 'service-worker cache generation did not roll with shared CSS')
+require("const CACHE_NAME = 'milovi-cake-v2026.09.06-r80';" in sw, 'service-worker cache generation drifted')
 require("'/css/style.css?v=20260906r03'," in sw, 'service-worker precache still points at stale shared CSS revision')
+require("'/js/gallery/main.js?v=20260906r03'," in sw, 'service-worker precache still points at stale gallery runtime revision')
 
 cfg = json.loads(read('.github/lighthouse-config.json'))
 require(cfg['ci']['collect'].get('numberOfRuns') == 3, 'Lighthouse collection is not three runs')
