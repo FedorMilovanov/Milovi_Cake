@@ -87,6 +87,16 @@ require(
 for path in ['svadebnye-torty/index.html', 'bento-torty/index.html', 'zakazat-tort-spb/index.html']:
     require('/css/style.css?v=20260906r03' in read(path), f'{path} landing a11y CSS revision drifted')
 
+for public_html in sorted(Path('.').rglob('*.html')):
+    html = read(public_html)
+    if 'style.css?v=' in html:
+        require('style.css?v=20260906r03' in html, f'{public_html} shared style revision drifted')
+        require('style.css?v=20260728r27' not in html, f'{public_html} still references stale shared style revision')
+
+sw = read('sw.js')
+require("const CACHE_NAME = 'milovi-cake-v2026.09.06-r79';" in sw, 'service-worker cache generation did not roll with shared CSS')
+require("'/css/style.css?v=20260906r03'," in sw, 'service-worker precache still points at stale shared CSS revision')
+
 cfg = json.loads(read('.github/lighthouse-config.json'))
 require(cfg['ci']['collect'].get('numberOfRuns') == 3, 'Lighthouse collection is not three runs')
 assertions = cfg['ci']['assert']['assertions']
