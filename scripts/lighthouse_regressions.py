@@ -87,6 +87,7 @@ require(
 for path in ['svadebnye-torty/index.html', 'bento-torty/index.html', 'zakazat-tort-spb/index.html']:
     require('/css/style.css?v=20260906r03' in read(path), f'{path} landing a11y CSS revision drifted')
 
+# Shared CSS and its service-worker generation must move as one release unit.
 for public_html in sorted(Path('.').rglob('*.html')):
     html = read(public_html)
     if 'style.css?v=' in html:
