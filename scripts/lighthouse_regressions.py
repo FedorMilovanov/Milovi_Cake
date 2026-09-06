@@ -45,5 +45,23 @@ require('min-height:48px' in gatchina, 'Gatchina FAQ target-size contract missin
 
 cfg = json.loads(read('.github/lighthouse-config.json'))
 require(cfg['ci']['collect'].get('numberOfRuns') == 3, 'Lighthouse collection is not three runs')
+assertions = cfg['ci']['assert']['assertions']
+for audit in ['categories:best-practices', 'categories:seo', 'total-blocking-time']:
+    require(assertions[audit][0] == 'error', f'{audit} must remain fail-closed')
+for audit in ['categories:performance', 'categories:accessibility', 'largest-contentful-paint', 'cumulative-layout-shift']:
+    require(assertions[audit][0] == 'warn', f'{audit} severity changed before evidence-backed closure')
+
+workflow = read('.github/workflows/lighthouse.yml')
+require(
+    'AUDIT_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}' in workflow,
+    'Lighthouse audit SHA is not bound to the triggering deploy',
+)
+require('ref: ${{ env.AUDIT_SHA }}' in workflow, 'Lighthouse checkout is not pinned to the audit SHA')
+require(
+    workflow.count('python3 scripts/production_release_smoke.py') == 2,
+    'Lighthouse must prove the same live release before and after measurement',
+)
+require('Prove exact live release before Lighthouse' in workflow, 'pre-audit exact release proof missing')
+require('Re-prove exact live release after Lighthouse' in workflow, 'post-audit exact release proof missing')
 
 print('Lighthouse root-cause regression contract OK')
