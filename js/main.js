@@ -850,6 +850,36 @@ window.addEventListener('pageshow', function(e) {
   }, { passive: true });
 })();
 
+// ── DEFER DECORATIVE HOMEPAGE HERO MOTION OUT OF INITIAL LCP WINDOW ──
+(function initDeferredHeroMotion() {
+  var hero = document.querySelector('.hero');
+  if (!hero) return;
+  var path = window.location.pathname.replace(/\/+$/, '') || '/';
+  var isHomepage = path === '/' || path === '/index.html';
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduceMotion) return;
+  if (!isHomepage) { hero.classList.add('hero--motion-ready'); return; }
+
+  var enabled = false;
+  var fallbackTimer = null;
+  function enableHeroMotion() {
+    if (enabled) return;
+    enabled = true;
+    if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
+    hero.classList.add('hero--motion-ready');
+  }
+  function enableAfterIntent() { setTimeout(enableHeroMotion, 0); }
+  function armFallback() {
+    if (enabled || fallbackTimer) return;
+    fallbackTimer = setTimeout(enableHeroMotion, 8000);
+  }
+
+  document.addEventListener('pointerdown', enableAfterIntent, { once: true, passive: true });
+  document.addEventListener('keydown', enableAfterIntent, { once: true });
+  if (document.readyState === 'complete') armFallback();
+  else window.addEventListener('load', armFallback, { once: true });
+})();
+
 // ── SMOOTH IMAGE FADE ──
 document.querySelectorAll('img:not(.hero-img):not([class*="head"])').forEach(function(img) {
   if (img.complete || img.naturalWidth > 0) return;
