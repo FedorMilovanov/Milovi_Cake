@@ -6,7 +6,7 @@
 
 **Владелец проекта:** Виктория Милованова
 **Технический контакт:** через GitHub Issues / прямую переписку
-**Дата документа:** 2026-09-06 | **Версия:** AGENTS-r3
+**Дата документа:** 2026-09-06 | **Версия:** AGENTS-r5
 
 ---
 
@@ -175,7 +175,7 @@ Protected UI теперь проверяется двумя слоями:
 
 ### 4.2 `!important`
 
-Сейчас в репо **1458 использований `!important`**. Это плохо. Новые правки:
+Фактический `!important` debt задаётся **per-file baseline** в `scripts/audit.py` (`IMPORTANT_BUDGET`). Не копируйте сюда агрегатную цифру: executable baseline — единственный источник истины. Новые правки:
 - Сначала пытайся обойтись более специфичным селектором
 - Если уже есть `!important` на том же селекторе — НЕ добавлять ещё один поверх, а **исправить существующий**
 - Если без `!important` никак — оставить комментарий `/* important: причина */` рядом
@@ -203,7 +203,7 @@ Protected UI теперь проверяется двумя слоями:
 - Runtime budget считается по gzip transfer size, а не raw bytes.
 - Raw CSS/JS totals в `scripts/audit.py` — INFO/reference, не deploy-blocker.
 - `!important` counts зафиксированы baseline-бюджетом в `scripts/audit.py`.
-- Новые `!important` сверх baseline — warning и требуют осознанного объяснения.
+- Новые `!important` сверх baseline — **FAIL/ERROR** в `scripts/audit.py`; повышать baseline можно только отдельным осознанным review, а не вслед за случайно выросшим долгом.
 - Массово удалять `!important` запрещено: сначала определить protected-зону, затем маленький патч, затем `npm run qa`.
 
 ---
@@ -278,9 +278,11 @@ npm run qa
 2. `npm run audit:analytics` — privacy/analytics contract.
 3. `npm run audit:a11y` — permanent conformance guards.
 4. `npm run audit:release` — exact asset→revision contract.
-5. `python3 scripts/check_prigorody_idempotent.py` — генератор пригородов без дрейфа.
-6. `npm run audit:security` + `npm run audit` — dependency/security и zero-dependency site audit.
-7. `npm run test:playwright` — protected interactions + responsive layout matrix.
+5. `npm run audit:ip-copy` — запрет возврата customer-facing franchise/trademark naming.
+6. `npm run audit:video-schema` — provenance/timezone contract для VideoObject.
+7. `python3 scripts/check_prigorody_idempotent.py` — генератор пригородов без дрейфа.
+8. `npm run audit:security` + `npm run audit` — dependency/security и zero-dependency site audit.
+9. `npm run test:playwright` — protected interactions + responsive layout matrix.
 
 ### 7.2 Быстрые частичные команды
 
@@ -329,7 +331,7 @@ grep -E "CACHE_NAME|\?v=" sw.js
 ### 8.3 После правки
 
 1. Прогнать [§7 ОБЯЗАТЕЛЬНЫЕ ПРОВЕРКИ]
-2. Поднять `?v=` синхронно
+2. Если менялся runtime CSS/JS — поднять revision **только изменённого asset** во всех его ссылках и в exact entry этого же asset в `sw.js`
 3. В сообщении коммита указать: что и зачем меняли + какие проверки прошли
 
 ### 8.4 При откате чужой правки
@@ -345,7 +347,7 @@ grep -E "CACHE_NAME|\?v=" sw.js
 | Что собираешься сделать | Почему стоп |
 |---|---|
 | «Создать новый CSS-файл для…» | См. §2 ⛔. Используй существующие 7. |
-| «Создать новый JS-файл для…» | См. §2 ⛔. Используй существующие 5. |
+| «Создать новый JS-файл для…» | См. §2 ⛔. Используй существующий runtime allowlist; новый runtime-файл требует явного архитектурного изменения. |
 | «Удалить кучу `!important`» | См. §4.2. Это нужно, но осторожно. Сначала спроси владельца. |
 | «Перепишу `buildCartKey` в более понятный вид» | См. §3.7. НЕ ТРОНЬ. |
 | «Сделаю hero-мессенджеры красивее» | См. §3.1. НЕ ТРОНЬ. |
@@ -353,16 +355,16 @@ grep -E "CACHE_NAME|\?v=" sw.js
 | «Убираю `R15 fallback` — выглядит устаревшим» | См. §3.6. НЕ ТРОНЬ. |
 | «Делаю отдельный premium-effects.js» | См. §2 ⛔. Уже было — закончилось мёртвыми файлами. |
 | «Поправил, версию не поднимал» | См. §6. ПОДНИМИ перед коммитом. |
-| «Один HTML на одной версии, другой на другой — нормально» | См. §6.3. НЕ нормально. |
+| «Один и тот же asset можно подключить с разными `?v=` на разных страницах» | См. §6.2. НЕЛЬЗЯ: revision должен совпадать для конкретной пары `asset → revision`; разные assets могут иметь разные revisions. |
 
 ---
 
 ## 10. КАК ПОНЯТЬ, ЧТО ТЫ ЧТО-ТО ИЗМЕНИЛ ПРАВИЛЬНО
 
-✅ Все 5 проверок из §7 — зелёные
+✅ Все применимые проверки из §7 — зелёные, включая полный `npm run qa`
 ✅ В `git diff` минимум строк изменено
-✅ Структура файлов осталась той же (нет новых .css/.js файлов)
-✅ Версия `?v=...` поднята и одинакова везде
+✅ Структура файлов осталась той же (нет новых .css/.js файлов без явного изменения архитектуры)
+✅ Для каждого изменённого runtime asset его `?v=` одинаков во всех ссылках и точно совпадает с entry этого asset в `sw.js`; разные assets могут иметь разные revisions
 ✅ Сообщение коммита объясняет, ЧТО и ЗАЧЕМ
 ✅ Защищённый код [§3] не тронут
 
@@ -392,7 +394,7 @@ grep -E "CACHE_NAME|\?v=" sw.js
 3. **Добавляй content-aware guard'ы** в `scripts/audit.py` / Playwright, которые проверяют СУТЬ, а не факт видимости:
    - `scrollWidth <= clientWidth` для кнопок (нет обрезки текста);
    - bounding-box'ы цены и кнопки **не пересекаются**;
-   - `getComputedStyle(bottomNav).backgroundColor` имеет alpha ≥ 0.95 (панель непрозрачна);
+   - `getComputedStyle(bottomNav).backgroundColor` имеет alpha ≥ 0.94 (approved mobile app-shell token; любое снижение ниже token — regression);
    - в каталоге `≤768px` футер карточки `flex-direction: column` (нет бокового clipping).
 4. **Не доверяй baseline вслепую.** Если baseline-скрин сам кривой — сначала почини реальность, потом пересними baseline. Никогда не «фиксируй» баг как эталон.
 
@@ -403,7 +405,7 @@ grep -E "CACHE_NAME|\?v=" sw.js
 | Зона | Что ломается | На что смотреть |
 |---|---|---|
 | Каталог 561–768px | 2 узкие колонки + горизонтальный футер → обрезка CTA | футер должен быть `column` ≤768px |
-| `.mc-nav` (нижняя панель) | прозрачность → просвечивает контент | alpha фона ≥0.95 + `.has-mc-nav` padding на body |
+| `.mc-nav` (нижняя панель) | прозрачность → просвечивает контент | alpha фона ≥0.94 + `.has-mc-nav` padding на body |
 | `.back-to-top` | наезд на нижнюю панель | `bottom: calc(82px + safe-area)` |
 | Бейджи «ХИТ»/«ОРЕХИ», цена-цифра | наезд на текст/кнопку | bounding-box не пересекается |
 | Длинные слова («Добавить в корзину», названия) | overflow | влезает или переносится, без `…` |
@@ -457,6 +459,7 @@ grep -E "CACHE_NAME|\?v=" sw.js
 | AGENTS-r2 (обновление) | 2026-05-19 | r40: hero пригородов — убран inline padding-top:0, CSS-компенсация 112px для desktop, лого «авторские торты», H1 реструктурирован (--brand span), wave-text kill для hero-subtitle, SEO-текст главной улучшен. r41: исправлен баг мобильного hero (padding-top:90px создавал пустой зазор), hero-subtitle:hover — !important добавлен чтобы override R5 из premium-overrides. |
 | AGENTS-r3 | 2026-06-05 | r51: добавлен commercial/trust SEO-кластер, Playwright QA, production smoke, IndexNow tooling, gzip budget policy, JSON-LD/sitemap/business-hours/protected-UI audit guards. |
 | AGENTS-r4 | 2026-06-06 | Добавлены §11 (визуальный контроль — Playwright НЕ достаточно, протокол скриншотов на 8 ширинах, content-aware guard'ы, правило «верблюда», коварные зоны) и §12 (что можно трогать и в какую сторону + список «не нашего стиля» + премиум-фичи: видео-полоса с магнитным hover, прототип в `_mockups/video-strip-demo.html`). Зафиксировано: синий wave-text hover — ОРИГИНАЛ владельца, не баг. |
+| AGENTS-r5 | 2026-09-06 | Синхронизированы executable contracts: per-asset revisions, fail-closed `!important` baseline, актуальная QA-цепочка (IP/video-schema), mobile-nav alpha 0.94 и запрет volatile aggregate/version claims. |
 
 ---
 

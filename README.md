@@ -90,8 +90,11 @@
 │   └── layout-matrix.spec.js
 │
 └── .github/workflows/
-    ├── cake-sanity.yml           # npm run qa on push/PR/manual
-    ├── deploy.yml                # sanitized Pages artifact → deploy → exact-SHA witness → IndexNow
+    ├── cake-sanity.yml           # npm run qa on PR/manual
+    ├── deep-polish-audit.yml      # PR-only deep source/browser/Pages contract
+    ├── repository-hygiene.yml    # PR + main supply-chain/repository guard
+    ├── branch-cleanup.yml         # cleanup temporary/merged PR branches
+    ├── deploy.yml                 # main → QA → sanitized Pages → exact-SHA witness/smoke → IndexNow
     ├── production-smoke.yml      # scheduled live smoke + exact release semantics
     └── lighthouse.yml            # post-deploy performance/accessibility telemetry
 ```
@@ -196,10 +199,15 @@ npm run qa
 
 `npm run qa` запускает:
 
-1. JS syntax check.
-2. Prigorody idempotency.
-3. `scripts/audit.py`.
-4. Playwright desktop/mobile.
+1. Runtime JS + Service Worker syntax check.
+2. Privacy/analytics contract.
+3. Static a11y/conformance guards.
+4. Exact asset→revision release contract.
+5. IP/customer-copy contract.
+6. Video structured-data provenance/timezone contract.
+7. Prigorody idempotency.
+8. `npm audit --audit-level=high` + `scripts/audit.py`.
+9. Playwright desktop/mobile + responsive matrix.
 
 ### Быстрые проверки
 
@@ -241,7 +249,7 @@ npm run indexnow:dry-run
 npm run indexnow:submit
 ```
 
-Workflow `.github/workflows/indexnow.yml` автоматически отправляет URL из sitemap после релевантных push.
+IndexNow встроен в `.github/workflows/deploy.yml`: URL отправляются **только после** успешного deploy, exact-SHA live witness и production smoke. Отдельного `indexnow.yml` в текущей архитектуре нет.
 
 ## CSS / JS budget
 
@@ -251,18 +259,19 @@ Workflow `.github/workflows/indexnow.yml` автоматически отпра�
 - JS gzip budget: 80 KB.
 - Total CSS+JS gzip budget: 180 KB.
 
-Raw CSS/JS totals выводятся как INFO, не как deploy-blocker. Текущий `!important` debt зафиксирован baseline-бюджетом: аудит не шумит на исторический protected debt, но предупредит, если будущая правка увеличит количество `!important` сверх baseline.
+Raw CSS/JS totals выводятся как INFO, не как deploy-blocker. `!important` debt зафиксирован per-file baseline-бюджетом в `scripts/audit.py`: исторический protected debt допускается, но любое превышение baseline является **ошибкой/FAIL**, а не warning.
 
 ## Деплой
 
 GitHub Pages: push в `main` запускает публикацию.
 
-При изменении CSS/JS обязательно поднять `?v=` синхронно:
+При изменении runtime CSS/JS обновляется revision **только изменённого asset**:
 
-- все HTML;
-- `js/gallery/main.js` ESM import `data.js`;
-- `sw.js` `CACHE_NAME` и `PRECACHE`;
-- `prigorody/_template.html`, затем `python3 prigorody/build.py`.
+- все HTML/ESM ссылки именно на этот asset;
+- exact entry этого же asset в `sw.js` `PRECACHE`;
+- `prigorody/_template.html` + `python3 prigorody/build.py`, если asset подключён на generated suburb pages;
+- `CACHE_NAME` менять только при осознанном изменении Service Worker cache namespace/semantics, а не автоматически для каждого asset bump;
+- затем обязательно `npm run audit:release`.
 
 После deploy:
 

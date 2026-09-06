@@ -135,7 +135,7 @@ Milovi Cake доставляет по Санкт-Петербургу и при�
 
 - Passing automated tests does NOT mean the page looks correct. Previous agents shipped obvious mobile bugs (clipped "Add to cart" button, price overlapping the button, translucent bottom-nav over content) while reporting all tests green.
 - Always take and visually inspect screenshots at widths 360/390/414/561/600/768/900/1024 in both light and dark. The 561–768px range (2-column catalog) is especially fragile.
-- Check substance, not just visibility: text fits inside buttons (no `…` clipping), elements do not overlap, fixed bars are opaque (alpha ≥ 0.95), no duplicate controls.
+- Check substance, not just visibility: text fits inside buttons (no `…` clipping), elements do not overlap, fixed bars match the approved app-shell surface token (alpha ≥ 0.94), no duplicate controls.
 - The "camel rule": a defect a normal person sees at first glance must never pass review, even if every test is green.
 
 ## What may be improved and in which direction (see AGENTS.md §12)
