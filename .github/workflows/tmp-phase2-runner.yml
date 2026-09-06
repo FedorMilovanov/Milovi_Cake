@@ -26,6 +26,7 @@ jobs:
           python3 scripts/check_prigorody_idempotent.py
           python3 scripts/a11y_static.py
           python3 scripts/release_contract.py
+          python3 scripts/lighthouse_regressions.py
           python3 scripts/audit.py
           node --check js/gallery/main.js
           git diff --check
