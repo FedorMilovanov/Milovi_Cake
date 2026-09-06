@@ -85,6 +85,7 @@ jobs:
       contents: read
     env:
       EXPECTED_SHA: ${{ github.sha }}
+      EXPECTED_RELEASE_SHA: ${{ github.sha }}
       LIVE_BASE: https://milovicake.ru
     steps:
       - name: Checkout the same source for smoke and IndexNow
@@ -110,8 +111,11 @@ jobs:
             sleep 10
           done
 
-      - name: Run production smoke after proven deploy
+      - name: Run transport/content smoke after proven deploy
         run: python3 scripts/production_smoke.py --retries 3 --delay 10
 
-      - name: Notify IndexNow only after live smoke succeeds
+      - name: Verify exact release, privacy and true 404
+        run: python3 scripts/production_release_smoke.py --retries 3 --delay 10
+
+      - name: Notify IndexNow only after all live gates succeed
         run: python3 scripts/submit_indexnow.py

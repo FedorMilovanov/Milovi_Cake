@@ -51,17 +51,19 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Release identity and exact migrated runtime assets must stay in lockstep.
-          grep -F "const CACHE_NAME = 'milovi-cake-v2026.08.15-r78';" sw.js
-          grep -F "'/css/final-fixes.css?v=20260815r78'" sw.js
-          grep -F "'/js/mc-2026.js?v=20260815r78'" sw.js
-          grep -F "'/js/consent-analytics.js?v=20260815r78'" sw.js
-          grep -F 'href="/css/final-fixes.css?v=20260815r78"' index.html
-          grep -F 'src="js/mc-2026.js?v=20260815r78"' index.html
-          grep -F 'src="/js/consent-analytics.js?v=20260815r78"' index.html
+          # `npm run qa` already proves exact asset→revision equality through
+          # scripts/release_contract.py. This layer proves the required app-shell
+          # assets/contracts still exist without freezing a volatile rXX label here.
+          grep -Eq "^const CACHE_NAME = 'milovi-cake-v[^']+';" sw.js
+          grep -Eq "'/css/final-fixes\.css\?v=[^']+'" sw.js
+          grep -Eq "'/js/mc-2026\.js\?v=[^']+'" sw.js
+          grep -Eq "'/js/consent-analytics\.js\?v=[^']+'" sw.js
+          grep -Eq 'href="/css/final-fixes\.css\?v=[^"]+"' index.html
+          grep -Eq 'src="js/mc-2026\.js\?v=[^"]+"' index.html
+          grep -Eq 'src="/js/consent-analytics\.js\?v=[^"]+"' index.html
+          grep -Eq "'/css/v20-fixes\.css\?v=[^']+'" sw.js
 
           # Existing app-shell/privacy contracts remain explicit and regression-tested.
-          grep -F "/css/v20-fixes.css?v=20260728r27" sw.js
           grep -F "#mcPrivacyRow" tests/theme-smoke.spec.js
           grep -F "visibleNavs" tests/theme-smoke.spec.js
           grep -F "CONTACTS + PRIVACY RELEASE R75" css/v20-fixes.css
