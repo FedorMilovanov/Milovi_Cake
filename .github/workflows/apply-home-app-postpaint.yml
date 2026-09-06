@@ -1,0 +1,216 @@
+name: Apply homepage post-paint bootstrap fix
+
+on:
+  push:
+    branches:
+      - hardening/home-app-postpaint-20260906
+    paths:
+      - .github/workflows/apply-home-app-postpaint.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: hardening/home-app-postpaint-20260906
+      - name: Apply focused startup patch
+        shell: python
+        run: |
+          from pathlib import Path
+
+          main_path = Path('js/main.js')
+          main = main_path.read_text('utf-8')
+
+          old_boot = "if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initApp); } else { initApp(); }"
+          new_boot = """function scheduleInitAppAfterHeroPaint() {
+            var started = false;
+            var fallbackTimer = null;
+            function startApp() {
+              if (started) return;
+              started = true;
+              if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
+              initApp();
+            }
+            function scheduleAfterHero() {
+              if (started) return;
+              if (typeof requestAnimationFrame === 'function') {
+                requestAnimationFrame(function() { setTimeout(startApp, 0); });
+              } else {
+                setTimeout(startApp, 0);
+              }
+            }
+            var hero = document.querySelector('.hero-img, .hero-photo-bg img');
+            if (!hero || hero.complete) scheduleAfterHero();
+            else {
+              hero.addEventListener('load', scheduleAfterHero, { once: true });
+              hero.addEventListener('error', scheduleAfterHero, { once: true });
+              fallbackTimer = setTimeout(scheduleAfterHero, 1200);
+            }
+          }
+
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', scheduleInitAppAfterHeroPaint, { once: true });
+          } else {
+            scheduleInitAppAfterHeroPaint();
+          }"""
+          if main.count(old_boot) != 1:
+              raise SystemExit(f'bootstrap anchor count={main.count(old_boot)}')
+          main = main.replace(old_boot, new_boot, 1)
+
+          old_slider = """setTimeout(() => {
+            const sliderIO = new IntersectionObserver(entries => {
+              entries.forEach(entry => {
+                const match = entry.target.id && entry.target.id.match(/^slider-(\\d+)$/);
+                if (!match) return;
+                const pid = parseInt(match[1]);
+                if (!entry.isIntersecting) { if (slideTimers[pid]) { clearInterval(slideTimers[pid]); delete slideTimers[pid]; } }
+                else if (!slideTimers[pid]) {
+                  const p = products.find(x => x.id === pid);
+                  if (p && p.slides && p.slides.length > 1) { let cur = sliderCurrentIdx[pid] || 0; slideTimers[pid] = setInterval(() => { cur = (cur + 1) % p.slides.length; sliderCurrentIdx[pid] = cur; goSlide(pid, cur); }, 3000); }
+                }
+              });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('[id^=\"slider-\"]').forEach(el => sliderIO.observe(el));
+          }, 300);"""
+          new_slider = """let _catalogSliderVisibilityObserver = null;
+          function initCatalogSliderVisibilityObserver() {
+            if (!_catalogSliderVisibilityObserver) {
+              _catalogSliderVisibilityObserver = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                  const match = entry.target.id && entry.target.id.match(/^slider-(\\d+)$/);
+                  if (!match) return;
+                  const pid = parseInt(match[1]);
+                  if (!entry.isIntersecting) { if (slideTimers[pid]) { clearInterval(slideTimers[pid]); delete slideTimers[pid]; } }
+                  else if (!slideTimers[pid]) {
+                    const p = products.find(x => x.id === pid);
+                    if (p && p.slides && p.slides.length > 1) { let cur = sliderCurrentIdx[pid] || 0; slideTimers[pid] = setInterval(() => { cur = (cur + 1) % p.slides.length; sliderCurrentIdx[pid] = cur; goSlide(pid, cur); }, 3000); }
+                  }
+                });
+              }, { threshold: 0.1 });
+            }
+            document.querySelectorAll('[id^=\"slider-\"]').forEach(el => {
+              if (el._visibilityObserved) return;
+              el._visibilityObserved = true;
+              _catalogSliderVisibilityObserver.observe(el);
+            });
+          }
+          setTimeout(initCatalogSliderVisibilityObserver, 300);"""
+          if main.count(old_slider) != 1:
+              raise SystemExit(f'slider anchor count={main.count(old_slider)}')
+          main = main.replace(old_slider, new_slider, 1)
+
+          old_render_tail = """  observeReveal();
+            initPriceGlowObserver();
+          }"""
+          new_render_tail = """  observeReveal();
+            initPriceGlowObserver();
+            if (typeof bindProductMouseGlow === 'function') bindProductMouseGlow();
+            if (typeof initCatalogSliderVisibilityObserver === 'function') initCatalogSliderVisibilityObserver();
+          }"""
+          if main.count(old_render_tail) != 1:
+              raise SystemExit(f'render tail anchor count={main.count(old_render_tail)}')
+          main = main.replace(old_render_tail, new_render_tail, 1)
+
+          old_glow = """document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.product-card').forEach(card => {
+              if (card._glowBound) return;
+              card._glowBound = true;
+              card.addEventListener('mousemove', (e) => { const r = card.getBoundingClientRect(); card.style.setProperty('--mouse-x', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%'); card.style.setProperty('--mouse-y', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%'); });
+            });
+          });"""
+          new_glow = """function bindProductMouseGlow() {
+            document.querySelectorAll('.product-card').forEach(card => {
+              if (card._glowBound) return;
+              card._glowBound = true;
+              card.addEventListener('mousemove', (e) => { const r = card.getBoundingClientRect(); card.style.setProperty('--mouse-x', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%'); card.style.setProperty('--mouse-y', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%'); });
+            });
+          }
+          document.addEventListener('DOMContentLoaded', bindProductMouseGlow);"""
+          if main.count(old_glow) != 1:
+              raise SystemExit(f'glow anchor count={main.count(old_glow)}')
+          main = main.replace(old_glow, new_glow, 1)
+          main_path.write_text(main, 'utf-8')
+
+          for html_path in Path('.').rglob('*.html'):
+              text = html_path.read_text('utf-8')
+              if 'main.js?v=20260906r01' in text:
+                  html_path.write_text(text.replace('main.js?v=20260906r01', 'main.js?v=20260906r02'), 'utf-8')
+
+          sw_path = Path('sw.js')
+          sw = sw_path.read_text('utf-8')
+          for old, new in [
+              ('V20260906-R79', 'V20260906-R80'),
+              ("milovi-cake-v2026.09.06-r79", "milovi-cake-v2026.09.06-r80"),
+              ('/js/main.js?v=20260906r01', '/js/main.js?v=20260906r02'),
+          ]:
+              if old not in sw:
+                  raise SystemExit(f'missing SW anchor: {old}')
+              sw = sw.replace(old, new)
+          sw_path.write_text(sw, 'utf-8')
+
+          guard_path = Path('scripts/lighthouse_regressions.py')
+          guard = guard_path.read_text('utf-8')
+          anchor = """require(
+              'img:not(.hero-img):not([class*=\"head\"])' in main_js,
+              'homepage hero exclusion disappeared from the generic image fade selector',
+          )
+          """
+          addition = anchor + """require('function scheduleInitAppAfterHeroPaint()' in main_js, 'homepage app bootstrap is no longer post-paint scheduled')
+          require("document.querySelector('.hero-img, .hero-photo-bg img')" in main_js, 'post-paint bootstrap lost the hero readiness gate')
+          require("hero.addEventListener('load', scheduleAfterHero" in main_js, 'post-paint bootstrap no longer waits for hero load')
+          require("requestAnimationFrame(function() { setTimeout(startApp, 0); });" in main_js, 'homepage app bootstrap can run before the hero paint opportunity')
+          require("document.addEventListener('DOMContentLoaded', scheduleInitAppAfterHeroPaint" in main_js, 'DOMContentLoaded no longer schedules the post-paint bootstrap')
+          require("document.addEventListener('DOMContentLoaded', initApp" not in main_js, 'synchronous DOMContentLoaded initApp path returned')
+          require('function initCatalogSliderVisibilityObserver()' in main_js, 'catalog slider visibility observer is not hydration-safe')
+          require("if (typeof initCatalogSliderVisibilityObserver === 'function') initCatalogSliderVisibilityObserver();" in main_js, 'deferred catalog render no longer rebinds slider visibility')
+          require('function bindProductMouseGlow()' in main_js, 'catalog mouse glow binder is not hydration-safe')
+          require("if (typeof bindProductMouseGlow === 'function') bindProductMouseGlow();" in main_js, 'deferred catalog render no longer rebinds mouse glow')
+          """
+          if guard.count(anchor) != 1:
+              raise SystemExit(f'guard anchor count={guard.count(anchor)}')
+          guard = guard.replace(anchor, addition, 1)
+
+          coherence_anchor = """# Shared CSS and its service-worker generation must move as one release unit.
+          for public_html in sorted(Path('.').rglob('*.html')):
+              html = read(public_html)
+              if 'style.css?v=' in html:
+                  require('style.css?v=20260906r03' in html, f'{public_html} shared style revision drifted')
+                  require('style.css?v=20260728r27' not in html, f'{public_html} still references stale shared style revision')
+
+          sw = read('sw.js')
+          require(\"const CACHE_NAME = 'milovi-cake-v2026.09.06-r79';\" in sw, 'service-worker cache generation did not roll with shared CSS')
+          require(\"'/css/style.css?v=20260906r03',\" in sw, 'service-worker precache still points at stale shared CSS revision')
+          """
+          coherence_new = """# Shared CSS/JS and service-worker generations must move as one release unit.
+          for public_html in sorted(Path('.').rglob('*.html')):
+              html = read(public_html)
+              if 'style.css?v=' in html:
+                  require('style.css?v=20260906r03' in html, f'{public_html} shared style revision drifted')
+                  require('style.css?v=20260728r27' not in html, f'{public_html} still references stale shared style revision')
+              if 'main.js?v=' in html:
+                  require('main.js?v=20260906r02' in html, f'{public_html} shared main.js revision drifted')
+                  require('main.js?v=20260906r01' not in html, f'{public_html} still references stale main.js revision')
+
+          sw = read('sw.js')
+          require(\"const CACHE_NAME = 'milovi-cake-v2026.09.06-r80';\" in sw, 'service-worker cache generation did not roll with shared JS')
+          require(\"'/css/style.css?v=20260906r03',\" in sw, 'service-worker precache still points at stale shared CSS revision')
+          require(\"'/js/main.js?v=20260906r02',\" in sw, 'service-worker precache still points at stale shared main.js revision')
+          """
+          if guard.count(coherence_anchor) != 1:
+              raise SystemExit(f'coherence anchor count={guard.count(coherence_anchor)}')
+          guard = guard.replace(coherence_anchor, coherence_new, 1)
+          guard_path.write_text(guard, 'utf-8')
+
+          Path('.github/workflows/apply-home-app-postpaint.yml').unlink()
+      - name: Commit focused patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Perf: schedule app bootstrap after hero paint"
+          git push origin HEAD:hardening/home-app-postpaint-20260906
