@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   patch:
-    if: github.actor == 'FedorMilovanov'
+    if: ${{ github.actor == 'FedorMilovanov' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout patch branch
@@ -30,121 +30,43 @@ jobs:
               text = p.read_text(encoding='utf-8')
               count = text.count(old)
               if count != 1:
-                  raise SystemExit(f'{path}: expected exactly one match, found {count}: {old[:100]!r}')
+                  raise SystemExit(f'{path}: expected exactly one match, found {count}: {old[:120]!r}')
               p.write_text(text.replace(old, new, 1), encoding='utf-8')
 
-          # gallery/index.html: ship the proven first LCP card in initial HTML,
-          # reserve layout while JS hydrates, and remove the container fade from LCP.
-          replace_once(
-              'gallery/index.html',
-              '''/* The module renders gallery cards after HTML parse. Reserve one viewport only while
-   the grid is in its initial empty state so the SEO panel never paints above the
-   hydrated grid. Once JS removes gxEmpty's inline display:none (or cards exist),
-   this rule stops matching and does not add whitespace to empty filter results. */
-#galleryGrid:empty:has(+ #gxEmpty[style*="display: none"]) { min-height: 100svh; }''',
-              '''/* Keep the SEO panel below the viewport while the server-rendered LCP card is
-   hydrated into the full client gallery. The permanent static-LCP marker also
-   disables the decorative grid entrance animation so it cannot gate first paint. */
-#galleryGrid[data-hydrating="true"] { min-height: 100svh; }
-#galleryGrid[data-static-lcp-root="true"] { animation: none; }'''
-          )
-          replace_once(
-              'gallery/index.html',
-              '      <div class="gallery-grid" id="galleryGrid" role="list"></div>',
-              '''      <div class="gallery-grid" id="galleryGrid" role="list" data-hydrating="true" data-static-lcp-root="true">
-        <button type="button" class="card col-span-2 row-span-2 is-loaded" data-index="0" data-id="p01" data-static-lcp="p01" aria-label="Шоколадный торт с мишками. Открыть в 3D-галерее" role="listitem" style="animation:none">
-          <picture>
-            <source type="image/avif" srcset="/img/gallery/gallery-01.avif">
-            <img class="card-media" alt="Шоколадный торт с мишками" loading="eager" decoding="async" fetchpriority="high" src="/img/gallery/gallery-01.webp">
-          </picture>
-          <div class="card-overlay"><span class="card-title">Шоколадный торт с мишками</span></div>
-        </button>
-      </div>'''
-          )
-          replace_once(
-              'gallery/index.html',
-              '/js/gallery/main.js?v=20260906r02',
-              '/js/gallery/main.js?v=20260906r03'
-          )
+          old_reserve = "/* The module renders gallery cards after HTML parse. Reserve one viewport only while\n   the grid is in its initial empty state so the SEO panel never paints above the\n   hydrated grid. Once JS removes gxEmpty's inline display:none (or cards exist),\n   this rule stops matching and does not add whitespace to empty filter results. */\n#galleryGrid:empty:has(+ #gxEmpty[style*=\"display: none\"]) { min-height: 100svh; }"
+          new_reserve = "/* Keep the SEO panel below the viewport while the parser-visible LCP card is\n   hydrated into the full client gallery. The static-root marker also disables the\n   decorative grid entrance animation so it cannot gate first paint. */\n#galleryGrid[data-hydrating=\"true\"] { min-height: 100svh; }\n#galleryGrid[data-static-lcp-root=\"true\"] { animation: none; }"
+          replace_once('gallery/index.html', old_reserve, new_reserve)
 
-          # js/gallery/main.js: reuse/hydrate the initial card instead of deleting it
-          # and creating a later LCP candidate.
-          replace_once(
-              'js/gallery/main.js',
-              '''  const grid=$('#galleryGrid'), empty=$('#gxEmpty'); 
-  grid.innerHTML=''; 
-  if(empty) {''',
-              '''  const grid=$('#galleryGrid'), empty=$('#gxEmpty');
-  const staticCard = grid.querySelector('[data-static-lcp="p01"]');
-  const reuseStaticLcp = state.filter === 'all' && staticCard && state.visible[0]?.id === staticCard.dataset.id;
-  if (reuseStaticLcp) {
-    Array.from(grid.children).forEach(child => { if (child !== staticCard) child.remove(); });
-    staticCard.dataset.index = '0';
-  } else {
-    grid.innerHTML='';
-  }
-  if(empty) {'''
-          )
-          replace_once(
-              'js/gallery/main.js',
-              '''  state.visible.forEach((item,index)=>{
-    const card=document.createElement('button'); ''',
-              '''  state.visible.forEach((item,index)=>{
-    if (reuseStaticLcp && index === 0) {
-      if (staticCard.dataset.hydrated !== 'true') {
-        staticCard.addEventListener('click',()=>openLightbox(0));
-        attachCardTilt(staticCard);
-        staticCard.dataset.hydrated = 'true';
-      }
-      return;
-    }
-    const card=document.createElement('button'); '''
-          )
-          replace_once(
-              'js/gallery/main.js',
-              '''  grid.appendChild(frag);
-  if(document.readyState==='complete') setupVideoObserver();''',
-              '''  grid.appendChild(frag);
-  grid.removeAttribute('data-hydrating');
-  if(document.readyState==='complete') setupVideoObserver();'''
-          )
+          old_grid = '      <div class="gallery-grid" id="galleryGrid" role="list"></div>'
+          new_grid = '      <div class="gallery-grid" id="galleryGrid" role="list" data-hydrating="true" data-static-lcp-root="true">\n        <button type="button" class="card col-span-2 row-span-2 is-loaded" data-index="0" data-id="p01" data-static-lcp="p01" aria-label="Шоколадный торт с мишками. Открыть в 3D-галерее" role="listitem" style="animation:none">\n          <picture>\n            <source type="image/avif" srcset="/img/gallery/gallery-01.avif">\n            <img class="card-media" alt="Шоколадный торт с мишками" loading="eager" decoding="async" fetchpriority="high" src="/img/gallery/gallery-01.webp">\n          </picture>\n          <div class="card-overlay"><span class="card-title">Шоколадный торт с мишками</span></div>\n        </button>\n      </div>'
+          replace_once('gallery/index.html', old_grid, new_grid)
+          replace_once('gallery/index.html', '/js/gallery/main.js?v=20260906r02', '/js/gallery/main.js?v=20260906r03')
 
-          # Service-worker generation and precache move with the gallery runtime.
+          old_boot = "  const grid=$('#galleryGrid'), empty=$('#gxEmpty'); \n  grid.innerHTML=''; \n  if(empty) {"
+          new_boot = "  const grid=$('#galleryGrid'), empty=$('#gxEmpty');\n  const staticCard = grid.querySelector('[data-static-lcp=\"p01\"]');\n  const reuseStaticLcp = state.filter === 'all' && staticCard && state.visible[0]?.id === staticCard.dataset.id;\n  if (reuseStaticLcp) {\n    Array.from(grid.children).forEach(child => { if (child !== staticCard) child.remove(); });\n    staticCard.dataset.index = '0';\n  } else {\n    grid.innerHTML='';\n  }\n  if(empty) {"
+          replace_once('js/gallery/main.js', old_boot, new_boot)
+
+          old_loop = "  state.visible.forEach((item,index)=>{\n    const card=document.createElement('button'); "
+          new_loop = "  state.visible.forEach((item,index)=>{\n    if (reuseStaticLcp && index === 0) {\n      if (staticCard.dataset.hydrated !== 'true') {\n        staticCard.addEventListener('click',()=>openLightbox(0));\n        attachCardTilt(staticCard);\n        staticCard.dataset.hydrated = 'true';\n      }\n      return;\n    }\n    const card=document.createElement('button'); "
+          replace_once('js/gallery/main.js', old_loop, new_loop)
+          replace_once('js/gallery/main.js', "  grid.appendChild(frag);\n  if(document.readyState==='complete') setupVideoObserver();", "  grid.appendChild(frag);\n  grid.removeAttribute('data-hydrating');\n  if(document.readyState==='complete') setupVideoObserver();")
+
           replace_once('sw.js', 'V20260906-R79', 'V20260906-R80')
           replace_once('sw.js', "const CACHE_NAME = 'milovi-cake-v2026.09.06-r79';", "const CACHE_NAME = 'milovi-cake-v2026.09.06-r80';")
           replace_once('sw.js', "'/js/gallery/main.js?v=20260906r02',", "'/js/gallery/main.js?v=20260906r03',")
 
-          # Fail-closed regression contract: initial LCP markup, hydration reuse,
-          # runtime revision and SW cache generation must remain coherent.
-          replace_once(
-              'scripts/lighthouse_regressions.py',
-              "require('/js/gallery/main.js?v=20260906r02' in gallery, 'gallery runtime revision drift')",
-              "require('/js/gallery/main.js?v=20260906r03' in gallery, 'gallery runtime revision drift')"
-          )
-          marker = "require('id=\"gallery-lcp-media-fastpath\"' in gallery, 'gallery eager-media LCP fast path missing')\n"
-          insertion = marker + '''require('data-static-lcp="p01"' in gallery, 'gallery initial LCP card is no longer server-rendered')
-require('data-hydrating="true" data-static-lcp-root="true"' in gallery, 'gallery static-LCP hydration markers missing')
-require('<source type="image/avif" srcset="/img/gallery/gallery-01.avif">' in gallery, 'gallery static LCP AVIF source drifted')
-require('fetchpriority="high" src="/img/gallery/gallery-01.webp"' in gallery, 'gallery static LCP fallback lost high priority')
-require('#galleryGrid[data-hydrating="true"] { min-height: 100svh; }' in gallery, 'gallery hydration layout reserve missing')
-require('#galleryGrid[data-static-lcp-root="true"] { animation: none; }' in gallery, 'gallery container animation gates initial LCP again')
-'''
-          replace_once('scripts/lighthouse_regressions.py', marker, insertion)
-          marker_js = "require(\"if(index===0) img.fetchPriority='high';\" in gallery_js, 'gallery first image lost high fetch priority')\n"
-          insertion_js = marker_js + '''require("const staticCard = grid.querySelector('[data-static-lcp=\\\"p01\\\"]');" in gallery_js, 'gallery static LCP lookup missing')
-require("const reuseStaticLcp = state.filter === 'all'" in gallery_js, 'gallery initial LCP is not reused during hydration')
-require("staticCard.dataset.hydrated = 'true';" in gallery_js, 'gallery static LCP interaction hydration missing')
-require("grid.removeAttribute('data-hydrating');" in gallery_js, 'gallery hydration reserve is never released')
-'''
-          replace_once('scripts/lighthouse_regressions.py', marker_js, insertion_js)
-          replace_once(
-              'scripts/lighthouse_regressions.py',
-              "require(\"const CACHE_NAME = 'milovi-cake-v2026.09.06-r79';\" in sw, 'service-worker cache generation did not roll with shared CSS')",
-              "require(\"const CACHE_NAME = 'milovi-cake-v2026.09.06-r80';\" in sw, 'service-worker cache generation drifted')"
-          )
-          sw_marker = "require(\"'/css/style.css?v=20260906r03',\" in sw, 'service-worker precache still points at stale shared CSS revision')\n"
-          sw_insertion = sw_marker + "require(\"'/js/gallery/main.js?v=20260906r03',\" in sw, 'service-worker precache still points at stale gallery runtime revision')\n"
-          replace_once('scripts/lighthouse_regressions.py', sw_marker, sw_insertion)
+          replace_once('scripts/lighthouse_regressions.py', "require('/js/gallery/main.js?v=20260906r02' in gallery, 'gallery runtime revision drift')", "require('/js/gallery/main.js?v=20260906r03' in gallery, 'gallery runtime revision drift')")
+          old_layout_contract = "require(\n    '#galleryGrid:empty:has(+ #gxEmpty[style*=\"display: none\"]) { min-height: 100svh; }' in gallery,\n    'gallery initial empty grid no longer reserves one viewport before hydration',\n)\nrequire(\n    'id=\"gxEmpty\" style=\"display: none;\"' in gallery,\n    'gallery initial-layout reserve sentinel drifted',\n)"
+          new_layout_contract = "require('#galleryGrid[data-hydrating=\"true\"] { min-height: 100svh; }' in gallery, 'gallery hydration reserve missing')\nrequire('#galleryGrid[data-static-lcp-root=\"true\"] { animation: none; }' in gallery, 'gallery grid animation gates initial LCP again')\nrequire('data-static-lcp=\"p01\"' in gallery, 'gallery initial LCP card is no longer parser-visible')\nrequire('data-hydrating=\"true\" data-static-lcp-root=\"true\"' in gallery, 'gallery static-LCP hydration markers missing')\nrequire('<source type=\"image/avif\" srcset=\"/img/gallery/gallery-01.avif\">' in gallery, 'gallery static LCP AVIF source drifted')\nrequire('fetchpriority=\"high\" src=\"/img/gallery/gallery-01.webp\"' in gallery, 'gallery static LCP fallback lost high priority')\nrequire(\n    'id=\"gxEmpty\" style=\"display: none;\"' in gallery,\n    'gallery initial-layout reserve sentinel drifted',\n)"
+          replace_once('scripts/lighthouse_regressions.py', old_layout_contract, new_layout_contract)
+
+          old_js_guard = "require(\"if(index===0) img.fetchPriority='high';\" in gallery_js, 'gallery first image lost high fetch priority')"
+          new_js_guard = old_js_guard + "\nrequire(\"const staticCard = grid.querySelector('[data-static-lcp=\\\"p01\\\"]');\" in gallery_js, 'gallery static LCP lookup missing')\nrequire(\"const reuseStaticLcp = state.filter === 'all'\" in gallery_js, 'gallery initial LCP is not reused during hydration')\nrequire(\"staticCard.dataset.hydrated = 'true';\" in gallery_js, 'gallery static LCP interaction hydration missing')\nrequire(\"grid.removeAttribute('data-hydrating');\" in gallery_js, 'gallery hydration reserve is never released')"
+          replace_once('scripts/lighthouse_regressions.py', old_js_guard, new_js_guard)
+          replace_once('scripts/lighthouse_regressions.py', "require(\"const CACHE_NAME = 'milovi-cake-v2026.09.06-r79';\" in sw, 'service-worker cache generation did not roll with shared CSS')", "require(\"const CACHE_NAME = 'milovi-cake-v2026.09.06-r80';\" in sw, 'service-worker cache generation drifted')")
+          old_sw_guard = "require(\"'/css/style.css?v=20260906r03',\" in sw, 'service-worker precache still points at stale shared CSS revision')"
+          new_sw_guard = old_sw_guard + "\nrequire(\"'/js/gallery/main.js?v=20260906r03',\" in sw, 'service-worker precache still points at stale gallery runtime revision')"
+          replace_once('scripts/lighthouse_regressions.py', old_sw_guard, new_sw_guard)
           PY
 
       - name: Verify focused contracts
