@@ -107,8 +107,15 @@ function renderGrid(){
   $('#videoCount').textContent=`${state.visible.filter(i=>i.type==='video').length} видео`;
   const totalSpan = $('#gxTotalCount');
   if(totalSpan) totalSpan.textContent=String(state.visible.length);
-  const grid=$('#galleryGrid'), empty=$('#gxEmpty'); 
-  grid.innerHTML=''; 
+  const grid=$('#galleryGrid'), empty=$('#gxEmpty');
+  const staticCard = grid.querySelector('[data-static-lcp="p01"]');
+  const reuseStaticLcp = state.filter === 'all' && staticCard && state.visible[0]?.id === staticCard.dataset.id;
+  if (reuseStaticLcp) {
+    Array.from(grid.children).forEach(child => { if (child !== staticCard) child.remove(); });
+    staticCard.dataset.index = '0';
+  } else {
+    grid.innerHTML='';
+  }
   if(empty) {
     // FIX r24: HTML has inline style="display:none". JS was only toggling .hidden attr,
     // but inline style overrides CSS rules. Fix: removeProperty so CSS takes full control.
@@ -123,6 +130,14 @@ function renderGrid(){
   if(!state.visible.length) return;
   const frag=document.createDocumentFragment();
   state.visible.forEach((item,index)=>{
+    if (reuseStaticLcp && index === 0) {
+      if (staticCard.dataset.hydrated !== 'true') {
+        staticCard.addEventListener('click',()=>openLightbox(0));
+        attachCardTilt(staticCard);
+        staticCard.dataset.hydrated = 'true';
+      }
+      return;
+    }
     const card=document.createElement('button'); 
     card.type='button'; 
     card.className=`card ${sizeClasses(item.size)}`.trim(); 
@@ -169,6 +184,7 @@ function renderGrid(){
     frag.appendChild(card);
   });
   grid.appendChild(frag);
+  grid.removeAttribute('data-hydrating');
   if(document.readyState==='complete') setupVideoObserver();
   else if(!state.videoObserverPending){
     state.videoObserverPending=true;
