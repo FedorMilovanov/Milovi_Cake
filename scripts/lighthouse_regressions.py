@@ -40,6 +40,7 @@ require(
 )
 font_css = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600;700&display=optional'
 swiper_css = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css'
+swiper_js = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js'
 require(
     f'href="{font_css}" rel="stylesheet" media="print" onload="this.onload=null;this.media=\'all\'"' in gallery,
     'gallery Google Fonts CSS returned to the critical render path',
@@ -56,6 +57,11 @@ require(
     f'<noscript><link rel="stylesheet" href="{swiper_css}" /></noscript>' in gallery,
     'gallery Swiper noscript fallback missing',
 )
+require(f'<script src="{swiper_js}"' not in gallery, 'gallery Swiper JS returned to initial page load')
+require(
+    '/js/gallery/swiper-interaction-loader.js?v=20260906r01' in gallery,
+    'gallery interaction-triggered Swiper loader missing',
+)
 require('/css/gallery/gallery-2026.css?v=20260813r01" />' in gallery, 'gallery critical local CSS became deferred')
 require('/css/final-fixes.css?v=20260815r78" />' in gallery, 'gallery final critical CSS became deferred')
 require('id="gallery-lcp-media-fastpath"' in gallery, 'gallery eager-media LCP fast path missing')
@@ -71,6 +77,17 @@ require(
     'gallery eager media reveal delay returned',
 )
 
+swiper_loader = read('js/gallery/swiper-interaction-loader.js')
+require(swiper_js in swiper_loader, 'gallery interaction loader lost pinned Swiper source')
+require("target.closest('#galleryGrid .card')" in swiper_loader, 'gallery Swiper loader is no longer scoped to gallery-card interaction')
+for event in ['pointerdown', 'focusin', 'click']:
+    require(
+        f"document.addEventListener('{event}', maybeLoad, true);" in swiper_loader,
+        f'gallery Swiper loader lost {event} interaction trigger',
+    )
+require('script.async = true;' in swiper_loader, 'gallery Swiper interaction load is not asynchronous')
+require("script.addEventListener('error'" in swiper_loader and 'loading = false;' in swiper_loader, 'gallery Swiper loader cannot retry after CDN failure')
+
 gallery_css = read('css/gallery/gallery-2026.css')
 require('.card-skeleton{' in gallery_css, 'gallery lazy-card skeleton contract disappeared globally')
 require('.card.is-loading .card-media{ opacity:0;' in gallery_css, 'gallery lazy media no longer keeps the premium reveal contract')
@@ -80,6 +97,7 @@ require("if(index===0) img.fetchPriority='high';" in gallery_js, 'gallery first 
 require("v.preload='none';" in gallery_js, 'gallery video preload competes with LCP')
 require('v.autoplay=true' not in gallery_js, 'gallery videos autoplay during initial load')
 require("if(index<4) card.style.animation='none';" in gallery_js, 'above-fold gallery cards animate into LCP')
+require('if(!window.Swiper)' in gallery_js and 'setTimeout(init,50)' in gallery_js, 'gallery lightbox lost its Swiper late-load polling fallback')
 
 gatchina = read('prigorody/gatchina/index.html')
 for title in ['Ручная Работа', 'Натуральные Ингредиенты', 'Свежесть под заказ', 'Доставка по СПб']:
