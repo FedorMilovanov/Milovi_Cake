@@ -45,6 +45,11 @@ require('min-height:48px' in gatchina, 'Gatchina FAQ target-size contract missin
 
 cfg = json.loads(read('.github/lighthouse-config.json'))
 require(cfg['ci']['collect'].get('numberOfRuns') == 3, 'Lighthouse collection is not three runs')
+assertions = cfg['ci']['assert']['assertions']
+for audit in ['categories:best-practices', 'categories:seo', 'total-blocking-time']:
+    require(assertions[audit][0] == 'error', f'{audit} must remain fail-closed')
+for audit in ['categories:performance', 'categories:accessibility', 'largest-contentful-paint', 'cumulative-layout-shift']:
+    require(assertions[audit][0] == 'warn', f'{audit} severity changed before evidence-backed closure')
 
 workflow = read('.github/workflows/lighthouse.yml')
 require(
