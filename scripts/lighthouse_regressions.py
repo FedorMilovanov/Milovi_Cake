@@ -30,6 +30,14 @@ gallery = read('gallery/index.html')
 require('id="preloader"' not in gallery, 'gallery blocking preloader returned')
 require('/img/gallery/gallery-01.avif" fetchpriority="high"' in gallery, 'gallery LCP preload missing')
 require('/js/gallery/main.js?v=20260906r02' in gallery, 'gallery runtime revision drift')
+require(
+    '#galleryGrid:empty:has(+ #gxEmpty[style*="display: none"]) { min-height: 100svh; }' in gallery,
+    'gallery initial empty grid no longer reserves one viewport before hydration',
+)
+require(
+    'id="gxEmpty" style="display: none;"' in gallery,
+    'gallery initial-layout reserve sentinel drifted',
+)
 
 gallery_js = read('js/gallery/main.js')
 require("if(index===0) img.fetchPriority='high';" in gallery_js, 'gallery first image lost high fetch priority')
