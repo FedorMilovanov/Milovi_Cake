@@ -14,6 +14,15 @@ def require(condition, message):
 home = read('index.html')
 require('id="anti-fouc-body"' not in home, 'homepage body-level anti-FOUC gate returned')
 require('body:not(.ready){opacity:0}' not in home, 'homepage can still be hidden before DOMContentLoaded')
+require(
+    '<img class="hero-img" src="img/head_desktop.webp"' in home,
+    'homepage LCP hero is not explicitly excluded from the generic image fade',
+)
+main_js = read('js/main.js')
+require(
+    'img:not(.hero-img):not([class*="head"])' in main_js,
+    'homepage hero exclusion disappeared from the generic image fade selector',
+)
 
 for path in ['index.html', 'gallery/index.html', 'svadebnye-torty/index.html', 'bento-torty/index.html', 'zakazat-tort-spb/index.html']:
     text = read(path)
