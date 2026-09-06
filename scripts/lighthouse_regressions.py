@@ -38,6 +38,26 @@ require(
     'id="gxEmpty" style="display: none;"' in gallery,
     'gallery initial-layout reserve sentinel drifted',
 )
+font_css = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600;700&display=optional'
+swiper_css = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css'
+require(
+    f'href="{font_css}" rel="stylesheet" media="print" onload="this.onload=null;this.media=\'all\'"' in gallery,
+    'gallery Google Fonts CSS returned to the critical render path',
+)
+require(
+    f'href="{swiper_css}" media="print" onload="this.onload=null;this.media=\'all\'"' in gallery,
+    'gallery Swiper CSS returned to the critical render path',
+)
+require(
+    f'<noscript><link href="{font_css}" rel="stylesheet" /></noscript>' in gallery,
+    'gallery Google Fonts noscript fallback missing',
+)
+require(
+    f'<noscript><link rel="stylesheet" href="{swiper_css}" /></noscript>' in gallery,
+    'gallery Swiper noscript fallback missing',
+)
+require('/css/gallery/gallery-2026.css?v=20260813r01" />' in gallery, 'gallery critical local CSS became deferred')
+require('/css/final-fixes.css?v=20260815r78" />' in gallery, 'gallery final critical CSS became deferred')
 
 gallery_js = read('js/gallery/main.js')
 require("if(index===0) img.fetchPriority='high';" in gallery_js, 'gallery first image lost high fetch priority')
