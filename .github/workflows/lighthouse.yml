@@ -14,11 +14,19 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    env:
+      AUDIT_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
     steps:
-      - name: Checkout audit configuration
+      - name: Checkout exact audit configuration
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ env.AUDIT_SHA }}
           persist-credentials: false
+
+      - name: Prove exact live release before Lighthouse
+        env:
+          EXPECTED_RELEASE_SHA: ${{ env.AUDIT_SHA }}
+        run: python3 scripts/production_release_smoke.py --retries 3 --delay 10
 
       - name: Audit proven live URLs with Lighthouse
         uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12
@@ -35,3 +43,8 @@ jobs:
           configPath: ./.github/lighthouse-config.json
           uploadArtifacts: true
           temporaryPublicStorage: true
+
+      - name: Re-prove exact live release after Lighthouse
+        env:
+          EXPECTED_RELEASE_SHA: ${{ env.AUDIT_SHA }}
+        run: python3 scripts/production_release_smoke.py --retries 1
