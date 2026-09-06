@@ -173,4 +173,19 @@ require(
 require('Prove exact live release before Lighthouse' in workflow, 'pre-audit exact release proof missing')
 require('Re-prove exact live release after Lighthouse' in workflow, 'post-audit exact release proof missing')
 
+# Homepage must preload only the preferred AVIF hero candidate. The WebP source remains
+# a real picture fallback, but preloading both formats wastes critical-path bandwidth.
+require(
+    '<link rel="preload" as="image" type="image/avif" href="img/head_mobile.avif" media="(max-width:768px)" fetchpriority="high" />' in home,
+    'homepage preferred mobile AVIF hero preload missing',
+)
+require(
+    '<link rel="preload" as="image" type="image/webp" href="img/head_mobile.webp"' not in home,
+    'homepage duplicate mobile WebP hero preload returned',
+)
+require(
+    '<source type="image/webp" media="(max-width: 768px)" srcset="img/head_mobile.webp" />' in home,
+    'homepage mobile WebP picture fallback was removed',
+)
+
 print('Lighthouse root-cause regression contract OK')
