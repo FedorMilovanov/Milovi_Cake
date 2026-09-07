@@ -186,6 +186,17 @@ test.describe('hero motion performance contract', () => {
     await page.emulateMedia({ reducedMotion: 'no-preference' });
   });
 
+  test('keeps homepage main continuously paintable through DOMContentLoaded', async ({ page }) => {
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+  const main = page.locator('main#main-content');
+  await expect(main).toBeVisible();
+  await expect(page.locator('body')).not.toHaveClass(/\bpage-loaded\b/);
+  await expect.poll(
+    () => main.evaluate((element) => getComputedStyle(element).animationName),
+  ).toBe('none');
+});
+
   test('keeps gyroscope parallax sensor-driven and bounded after motion settles', async ({ page }, testInfo) => {
     if (!(testInfo.project.name || '').includes('mobile')) test.skip(true, 'gyroscope parallax is touch-only');
 

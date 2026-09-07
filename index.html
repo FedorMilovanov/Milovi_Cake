@@ -1802,10 +1802,7 @@
 <script>
 (function() {
   'use strict';
-  // [PERF v2] page-loaded раньше: на DOMContentLoaded, не ждём картинки
-  function _mcPageLoaded(){ document.body.classList.add('page-loaded'); }
-  if (document.readyState !== 'loading') _mcPageLoaded();
-  else document.addEventListener('DOMContentLoaded', _mcPageLoaded);
+  // [PERF] Keep the homepage main continuously paintable through DOMContentLoaded.
   var header = document.getElementById('siteHeader');
   var lastScrollY = 0, ticking = false, scrollDelta = 0;
   function updateHeader() {
