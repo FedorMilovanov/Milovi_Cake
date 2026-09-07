@@ -46,6 +46,13 @@ for path in ['index.html', 'gallery/index.html', 'svadebnye-torty/index.html', '
 for path in ['svadebnye-torty/index.html', 'bento-torty/index.html', 'zakazat-tort-spb/index.html']:
     require('loading="eager"' not in read(path), f'{path} reintroduced below-fold eager media')
 
+bento = read('bento-torty/index.html')
+require('/img/bento_1-mobile.avif\" media=\"(max-width: 768px)\" fetchpriority=\"high\"' in bento, 'Bento mobile LCP preload missing')
+require('media=\"(max-width: 768px)\" srcset=\"/img/bento_1-mobile.avif\"' in bento, 'Bento mobile LCP source missing')
+require('/img/bento_1.avif\" media=\"(min-width: 769px)\" fetchpriority=\"high\"' in bento, 'Bento desktop LCP preload lost its media guard')
+require(Path('img/bento_1-mobile.avif').is_file(), 'Bento mobile LCP derivative missing')
+require(Path('img/bento_1-mobile.avif').stat().st_size < Path('img/bento_1.avif').stat().st_size, 'Bento mobile derivative is not smaller than source')
+
 order = read('zakazat-tort-spb/index.html')
 require('/img/head_mobile.avif" media="(max-width: 768px)" fetchpriority="high"' in order, 'order page mobile hero preload missing')
 require('media="(max-width: 768px)" srcset="/img/head_mobile.avif"' in order, 'order page mobile hero source missing')
