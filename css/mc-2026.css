@@ -194,7 +194,7 @@
 :root:not([data-theme="dark"]) .calc-add-btn,
 :root:not([data-theme="dark"]) .calc-order-btn,
 :root:not([data-theme="dark"]) .header-order,
-:root:not([data-theme="dark"]) body:not(.prigorody-page) .calc-opt.selected,
+:root:not([data-theme="dark"]) body:not(.prigorody-page) .calc-options:not(#calcDecor) .calc-opt.selected,
 :root:not([data-theme="dark"]) #fillSheetSelect{
   background: var(--gold-acc) !important;
   color: #fff !important;
