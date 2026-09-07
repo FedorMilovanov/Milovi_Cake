@@ -64,9 +64,23 @@ require(
 
 faq_js = read('js/v20-faq-fix.js')
 require(
-    "item.setAttribute('aria-label', label);" in faq_js
-    and "item.setAttribute('aria-expanded', item.classList.contains('cb-open') ? 'true' : 'false');" in faq_js,
-    'homepage content-block FAQ lost question-only naming or expanded-state synchronization',
+    "item.removeAttribute('role');" in faq_js
+    and "item.removeAttribute('tabindex');" in faq_js
+    and "item.removeAttribute('aria-label');" in faq_js
+    and "item.removeAttribute('aria-expanded');" in faq_js,
+    'homepage content-block FAQ wrapper regained interactive semantics',
+)
+require(
+    "control.setAttribute('role', 'button');" in faq_js
+    and "control.setAttribute('tabindex', '0');" in faq_js
+    and "control.removeAttribute('aria-label');" in faq_js
+    and "control.setAttribute('aria-expanded', item.classList.contains('cb-open') ? 'true' : 'false');" in faq_js,
+    'homepage content-block FAQ question lost control semantics or expanded-state synchronization',
+)
+require(
+    "if (e.key !== 'Enter' && e.key !== ' ') return;" in faq_js
+    and "if (typeof item.click === 'function') item.click();" in faq_js,
+    'homepage content-block FAQ keyboard activation regressed',
 )
 
 for path in ['index.html', 'gallery/index.html', 'svadebnye-torty/index.html', 'bento-torty/index.html', 'zakazat-tort-spb/index.html']:
@@ -223,7 +237,7 @@ for public_html in sorted(Path('.').rglob('*.html')):
         require('main.js?v=20260906r01' not in html, f'{public_html} still references stale shared main.js revision')
 
 sw = read('sw.js')
-require("const CACHE_NAME = 'milovi-cake-v2026.09.07-r85';" in sw, 'service-worker cache generation drifted')
+require("const CACHE_NAME = 'milovi-cake-v2026.09.07-r86';" in sw, 'service-worker cache generation drifted')
 require("'/css/style.css?v=20260907r01'," in sw, 'service-worker precache still points at stale shared CSS revision')
 require("'/js/main.js?v=20260907r01'," in sw, 'service-worker precache still points at stale shared main.js revision')
 require("'/js/gallery/main.js?v=20260906r05'," in sw, 'service-worker precache still points at stale gallery runtime revision')
