@@ -46,6 +46,28 @@ require(
     'homepage gyroscope parallax returned to an unconditional animation loop',
 )
 
+mc_js = read('js/mc-2026.js')
+require(
+    "strip.removeAttribute('role');" in mc_js
+    and "d.setAttribute('role', 'listitem')" not in mc_js,
+    'homepage video strip regained incompatible synthetic list semantics',
+)
+require(
+    "img.src = it.p; img.alt = '';" in mc_js,
+    'homepage video-strip poster is no longer decorative inside its labelled link',
+)
+require(
+    "catalogNavItems[c].removeAttribute('aria-label');" in mc_js,
+    'homepage catalog nav regained an aria-label that disagrees with visible text',
+)
+
+faq_js = read('js/v20-faq-fix.js')
+require(
+    "item.setAttribute('aria-label', label);" in faq_js
+    and "item.setAttribute('aria-expanded', item.classList.contains('cb-open') ? 'true' : 'false');" in faq_js,
+    'homepage content-block FAQ lost question-only naming or expanded-state synchronization',
+)
+
 for path in ['index.html', 'gallery/index.html', 'svadebnye-torty/index.html', 'bento-torty/index.html', 'zakazat-tort-spb/index.html']:
     text = read(path)
     require('display=swap' not in text, f'{path} reintroduced display=swap')
@@ -200,7 +222,7 @@ for public_html in sorted(Path('.').rglob('*.html')):
         require('main.js?v=20260906r01' not in html, f'{public_html} still references stale shared main.js revision')
 
 sw = read('sw.js')
-require("const CACHE_NAME = 'milovi-cake-v2026.09.07-r84';" in sw, 'service-worker cache generation drifted')
+require("const CACHE_NAME = 'milovi-cake-v2026.09.07-r85';" in sw, 'service-worker cache generation drifted')
 require("'/css/style.css?v=20260907r01'," in sw, 'service-worker precache still points at stale shared CSS revision')
 require("'/js/main.js?v=20260907r01'," in sw, 'service-worker precache still points at stale shared main.js revision')
 require("'/js/gallery/main.js?v=20260906r05'," in sw, 'service-worker precache still points at stale gallery runtime revision')
