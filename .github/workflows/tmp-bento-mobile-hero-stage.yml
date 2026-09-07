@@ -1,0 +1,92 @@
+name: Temporary Bento mobile hero staging
+
+on:
+  push:
+    branches:
+      - perf/bento-mobile-hero-derivative-20260907
+
+permissions:
+  contents: write
+
+jobs:
+  stage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BASE_SHA: 6c2c898cbd5c61845c019643c787afce496430a8
+      BRANCH: perf/bento-mobile-hero-derivative-20260907
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH }}
+          fetch-depth: 2
+
+      - name: Prove exact staging base
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$BASE_SHA"
+
+      - name: Generate measured mobile derivative and wire responsive hero
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --quiet 'Pillow==12.3.0' 'pillow-avif-plugin==1.6.0'
+          python3 - <<'PY'
+          from pathlib import Path
+          import os
+          import pillow_avif  # registers AVIF support
+          from PIL import Image
+
+          src = Path('img/bento_1.avif')
+          dst = Path('img/bento_1-mobile.avif')
+          with Image.open(src) as image:
+              if image.size != (1280, 1280):
+                  raise SystemExit(f'unexpected Bento source dimensions: {image.size}')
+              image = image.convert('RGB').resize((768, 768), Image.Resampling.LANCZOS)
+              image.save(dst, format='AVIF', quality=85, speed=6)
+          with Image.open(dst) as image:
+              if image.size != (768, 768):
+                  raise SystemExit(f'unexpected Bento derivative dimensions: {image.size}')
+          if dst.stat().st_size >= src.stat().st_size:
+              raise SystemExit(f'derivative is not smaller: {dst.stat().st_size} >= {src.stat().st_size}')
+
+          page = Path('bento-torty/index.html')
+          html = page.read_text('utf-8')
+          old_preload = '<link rel="preload" as="image" type="image/avif" href="/img/bento_1.avif" fetchpriority="high" />'
+          new_preload = '<link rel="preload" as="image" type="image/avif" href="/img/bento_1-mobile.avif" media="(max-width: 768px)" fetchpriority="high" />\n  <link rel="preload" as="image" type="image/avif" href="/img/bento_1.avif" media="(min-width: 769px)" fetchpriority="high" />'
+          old_picture = '<div class="lp-visual"><picture><source type="image/avif" srcset="/img/bento_1.avif"><img src="/img/bento_1.webp" alt="Бенто-торты на заказ в СПб — Milovi Cake" width="900" height="1200" fetchpriority="high" decoding="async"/></picture>'
+          new_picture = '<div class="lp-visual"><picture><source type="image/avif" media="(max-width: 768px)" srcset="/img/bento_1-mobile.avif"><source type="image/avif" media="(min-width: 769px)" srcset="/img/bento_1.avif"><img src="/img/bento_1.webp" alt="Бенто-торты на заказ в СПб — Milovi Cake" width="900" height="1200" fetchpriority="high" decoding="async"/></picture>'
+          if html.count(old_preload) != 1:
+              raise SystemExit(f'expected one Bento hero preload, found {html.count(old_preload)}')
+          if html.count(old_picture) != 1:
+              raise SystemExit(f'expected one Bento hero picture, found {html.count(old_picture)}')
+          page.write_text(html.replace(old_preload, new_preload).replace(old_picture, new_picture), 'utf-8')
+
+          contract = Path('scripts/lighthouse_regressions.py')
+          text = contract.read_text('utf-8')
+          marker = "order = read('zakazat-tort-spb/index.html')\n"
+          addition = "bento = read('bento-torty/index.html')\nrequire('/img/bento_1-mobile.avif\\\" media=\\\"(max-width: 768px)\\\" fetchpriority=\\\"high\\\"' in bento, 'Bento mobile LCP preload missing')\nrequire('media=\\\"(max-width: 768px)\\\" srcset=\\\"/img/bento_1-mobile.avif\\\"' in bento, 'Bento mobile LCP source missing')\nrequire('/img/bento_1.avif\\\" media=\\\"(min-width: 769px)\\\" fetchpriority=\\\"high\\\"' in bento, 'Bento desktop LCP preload lost its media guard')\nrequire(Path('img/bento_1-mobile.avif').is_file(), 'Bento mobile LCP derivative missing')\nrequire(Path('img/bento_1-mobile.avif').stat().st_size < Path('img/bento_1.avif').stat().st_size, 'Bento mobile derivative is not smaller than source')\n\n"
+          if marker not in text:
+              raise SystemExit('Lighthouse contract insertion marker missing')
+          if 'Bento mobile LCP derivative missing' in text:
+              raise SystemExit('Bento derivative contract already present')
+          contract.write_text(text.replace(marker, addition + marker, 1), 'utf-8')
+          PY
+
+      - name: Validate staged source
+        run: |
+          set -euo pipefail
+          python3 scripts/lighthouse_regressions.py
+          python3 scripts/audit.py
+          git diff --check
+          git status --short
+
+      - name: Commit production-only diff and remove staging workflow
+        run: |
+          set -euo pipefail
+          rm .github/workflows/tmp-bento-mobile-hero-stage.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add bento-torty/index.html img/bento_1-mobile.avif scripts/lighthouse_regressions.py .github/workflows/tmp-bento-mobile-hero-stage.yml
+          git diff --cached --check
+          git commit -m 'Perf: serve a right-sized Bento hero on mobile'
+          git push origin HEAD:"$BRANCH"
