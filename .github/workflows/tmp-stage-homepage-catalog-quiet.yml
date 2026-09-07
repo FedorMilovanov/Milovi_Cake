@@ -1,0 +1,278 @@
+name: Temporary stage homepage catalog quiet window
+
+on:
+  push:
+    branches:
+      - perf/homepage-catalog-quiet-window-20260907
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tmp-homepage-catalog-quiet-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  patch-verify-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout staging branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: perf/homepage-catalog-quiet-window-20260907
+          fetch-depth: 0
+
+      - name: Setup pinned Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          cache: npm
+
+      - name: Apply exact causal patch
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def read(path):
+              return Path(path).read_text('utf-8')
+
+          def write(path, text):
+              Path(path).write_text(text, 'utf-8')
+
+          def replace_once(text, old, new, label):
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{label}: expected exactly 1 match, found {count}')
+              return text.replace(old, new, 1)
+
+          main_path = 'js/main.js'
+          main = read(main_path)
+
+          main = replace_once(
+              main,
+              ' type="button" aria-label="Перейти к ${p.name}">${thumbHtml}<span class="catalog-nav-label">',
+              ' type="button">${thumbHtml}<span class="catalog-nav-label">',
+              'catalog renderer accessible-name cleanup',
+          )
+
+          start_marker = 'function initApp() {'
+          end_marker = '// ── SCROLL HANDLER ──'
+          start = main.find(start_marker)
+          end = main.find(end_marker, start)
+          if start < 0 or end < 0 or end <= start:
+              raise SystemExit('initApp/catalog lifecycle markers not found')
+          old_segment = main[start:end]
+          required_old = [
+              'renderCatalogNav();',
+              'renderCatalog();',
+              'setTimeout(initCatalogNavScroll, 500);',
+              '// ── PAUSE SLIDERS WHEN OFF-SCREEN ──',
+              "document.querySelectorAll('[id^=\"slider-\"]').forEach(el => sliderIO.observe(el));",
+          ]
+          for needle in required_old:
+              if needle not in old_segment:
+                  raise SystemExit(f'expected old catalog lifecycle fragment missing: {needle}')
+
+          new_segment = r'''let _catalogHydrated = false;
+          let _catalogHydrationTimer = null;
+          let _catalogHydrationIO = null;
+
+          function initCatalogSliderVisibility() {
+            if (typeof IntersectionObserver === 'undefined') return;
+            const sliderIO = new IntersectionObserver(entries => {
+              entries.forEach(entry => {
+                const match = entry.target.id && entry.target.id.match(/^slider-(\d+)$/);
+                if (!match) return;
+                const pid = parseInt(match[1]);
+                if (!entry.isIntersecting) {
+                  if (slideTimers[pid]) { clearInterval(slideTimers[pid]); delete slideTimers[pid]; }
+                } else if (!slideTimers[pid]) {
+                  const p = products.find(x => x.id === pid);
+                  if (p && p.slides && p.slides.length > 1) {
+                    let cur = sliderCurrentIdx[pid] || 0;
+                    slideTimers[pid] = setInterval(() => {
+                      if (document.hidden) return;
+                      cur = (cur + 1) % p.slides.length;
+                      sliderCurrentIdx[pid] = cur;
+                      goSlide(pid, cur);
+                    }, 3000);
+                  }
+                }
+              });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('[id^="slider-"]').forEach(el => sliderIO.observe(el));
+          }
+
+          function hydrateCatalog() {
+            if (_catalogHydrated) return;
+            _catalogHydrated = true;
+            if (_catalogHydrationTimer) { clearTimeout(_catalogHydrationTimer); _catalogHydrationTimer = null; }
+            if (_catalogHydrationIO) { _catalogHydrationIO.disconnect(); _catalogHydrationIO = null; }
+            renderCatalogNav();
+            renderCatalog();
+            if (typeof requestIdleCallback !== 'undefined') { requestIdleCallback(wireProductLightbox, { timeout: 500 }); }
+            else { requestAnimationFrame(function() { requestAnimationFrame(wireProductLightbox); }); }
+            setTimeout(initCatalogNavScroll, 500);
+            initCatalogSliderVisibility();
+          }
+
+          function scheduleCatalogHydration() {
+            const path = location.pathname || '/';
+            const isHomepage = path === '/' || path === '/index.html';
+            if (!isHomepage) { hydrateCatalog(); return; }
+
+            const catalog = document.getElementById('catalog');
+            if (!catalog) return;
+            const release = () => hydrateCatalog();
+
+            if (location.hash === '#catalog') { release(); return; }
+
+            document.addEventListener('pointerdown', release, { once: true, passive: true });
+            document.addEventListener('keydown', release, { once: true });
+
+            if (typeof IntersectionObserver !== 'undefined') {
+              _catalogHydrationIO = new IntersectionObserver(entries => {
+                if (entries.some(entry => entry.isIntersecting)) release();
+              }, { threshold: 0, rootMargin: '800px 0px' });
+              _catalogHydrationIO.observe(catalog);
+            }
+
+            _catalogHydrationTimer = setTimeout(release, 6000);
+          }
+
+          function initApp() {
+            /* r29: bug #5 — restore biscuit from localStorage */
+            if (typeof window._calcBiscuit === "undefined") { try { window._calcBiscuit = localStorage.getItem("milovicake_biscuit") || "vanilla"; } catch(e) { window._calcBiscuit = "vanilla"; } }
+            scheduleCatalogHydration();
+            loadCartFromStorage();
+            updateCartUI();
+            observeReveal();
+            initWaveText();
+            initSectionTitleWords();
+            enforceSingleSelected('calcType');
+            enforceSingleSelected('calcFill');
+            enforceSingleSelected('calcDecor');
+            (function initCalcRows() {
+              document.querySelectorAll('.calc-row').forEach(r => r.style.transition = 'none');
+              const activeTypeCard = document.querySelector('#calcType .calc-opt.selected');
+              if (activeTypeCard) selectCakeType(activeTypeCard, activeTypeCard.dataset.type || 'biscuit');
+              requestAnimationFrame(() => requestAnimationFrame(() => { document.querySelectorAll('.calc-row').forEach(r => r.style.transition = ''); }));
+            })();
+            updateCalc();
+            (function initFillDescPanel() {
+              const panel = document.getElementById('fillDescPanel'), text = document.getElementById('fillDescText');
+              if (!panel || !text) return;
+              const selected = document.querySelector('#calcFill .calc-opt.selected');
+              if (!selected) return;
+              const tooltipEl = selected.querySelector('.fill-tooltip');
+              const desc = tooltipEl ? Array.from(tooltipEl.childNodes).filter(n => !(n.nodeName === 'STRONG')).map(n => n.textContent).join('').trim() : '';
+              if (desc) { text.textContent = desc; panel.style.opacity = '1'; }
+            })();
+            (function initHeroOrbWillChange() {
+              const hero = document.querySelector('.hero');
+              if (!hero || typeof IntersectionObserver === 'undefined') return;
+              const io = new IntersectionObserver(entries => { entries.forEach(e => e.target.classList.toggle('hero--visible', e.isIntersecting)); }, { threshold: 0 });
+              io.observe(hero);
+            })();
+          }
+
+          if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initApp); } else { initApp(); }
+
+
+          '''
+          main = main[:start] + new_segment + main[end:]
+          write(main_path, main)
+
+          test_path = 'tests/protected-interactions.spec.js'
+          tests = read(test_path)
+          tests = replace_once(
+              tests,
+              "    const catalogItems = page.locator('.catalog-nav-item');\n    await expect(catalogItems).toHaveCount(6);",
+              "    // Catalog DOM must stay out of the DOMContentLoaded/LCP window, then hydrate on first intent.\n    await expect(page.locator('#catalogGrid .product-card')).toHaveCount(0);\n    await page.locator('.btn-primary--hero[href=\"#catalog\"]').dispatchEvent('pointerdown');\n    const catalogItems = page.locator('.catalog-nav-item');\n    await expect(catalogItems).toHaveCount(6);\n    await expect(page.locator('#catalogGrid .product-card')).toHaveCount(6);",
+              'protected interaction catalog first-intent proof',
+          )
+          write(test_path, tests)
+
+          regress_path = 'scripts/lighthouse_regressions.py'
+          regress = read(regress_path)
+          contract = r'''require(
+              'function scheduleCatalogHydration()' in main_js
+              and "document.addEventListener('pointerdown', release, { once: true, passive: true });" in main_js
+              and "document.addEventListener('keydown', release, { once: true });" in main_js
+              and "rootMargin: '800px 0px'" in main_js
+              and '_catalogHydrationTimer = setTimeout(release, 6000);' in main_js,
+              'homepage catalog hydration is no longer outside the initial LCP window with intent/viewport release',
+          )
+          require(
+              'function initCatalogSliderVisibility()' in main_js
+              and 'initCatalogSliderVisibility();' in main_js,
+              'deferred homepage catalog lost post-hydration slider visibility lifecycle',
+          )
+          init_app = main_js.split('function initApp() {', 1)[1].split("\n}\n\nif (document.readyState", 1)[0]
+          require(
+              'scheduleCatalogHydration();' in init_app
+              and 'renderCatalogNav();' not in init_app
+              and 'renderCatalog();' not in init_app
+              and 'loadCartFromStorage();' in init_app
+              and 'updateCartUI();' in init_app
+              and 'updateCalc();' in init_app,
+              'homepage catalog work returned to synchronous initApp or immediate cart/calculator lifecycle was deferred',
+          )
+          require(
+              'aria-label="Перейти к ${p.name}"' not in main_js,
+              'deferred catalog renderer can recreate the old catalog accessible-name mismatch after mc-2026 cleanup',
+          )
+
+          '''
+          regress = replace_once(
+              regress,
+              "mc_js = read('js/mc-2026.js')\n",
+              contract + "mc_js = read('js/mc-2026.js')\n",
+              'homepage catalog Lighthouse source contract insertion',
+          )
+          regress = replace_once(
+              regress,
+              "const CACHE_NAME = 'milovi-cake-v2026.09.07-r86';",
+              "const CACHE_NAME = 'milovi-cake-v2026.09.07-r87';",
+              'Lighthouse service-worker generation contract',
+          )
+          write(regress_path, regress)
+
+          sw_path = 'sw.js'
+          sw = read(sw_path)
+          sw = replace_once(
+              sw,
+              "const CACHE_NAME = 'milovi-cake-v2026.09.07-r86';",
+              "const CACHE_NAME = 'milovi-cake-v2026.09.07-r87';",
+              'service-worker generation bump',
+          )
+          write(sw_path, sw)
+          PY
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run full source and browser QA
+        run: npm run qa
+
+      - name: Build sanitized Pages candidate
+        run: npm run build:pages
+
+      - name: Audit exact Pages candidate
+        run: npm run audit:pages
+
+      - name: Commit only causal files and remove staging workflow
+        shell: bash
+        run: |
+          git config user.name "FedorMilovanov"
+          git config user.email "258225528+FedorMilovanov@users.noreply.github.com"
+          git add js/main.js scripts/lighthouse_regressions.py sw.js tests/protected-interactions.spec.js
+          git rm .github/workflows/tmp-stage-homepage-catalog-quiet.yml
+          git diff --cached --check
+          git commit -m "perf: defer homepage catalog hydration beyond LCP window"
+          git push origin HEAD:perf/homepage-catalog-quiet-window-20260907
