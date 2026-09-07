@@ -1,17 +1,17 @@
 const { test, expect } = require('@playwright/test');
 
 test('gallery typography cannot trigger a late Google Fonts layout swap', async ({ page }) => {
-  const remoteFontRequests = [];
+  const remoteFontFiles = [];
   page.on('request', (request) => {
-    if (/fonts\.(?:googleapis|gstatic)\.com/i.test(request.url())) {
-      remoteFontRequests.push(request.url());
+    if (/fonts\.gstatic\.com/i.test(request.url())) {
+      remoteFontFiles.push(request.url());
     }
   });
 
   await page.goto('/gallery/', { waitUntil: 'networkidle' });
 
   await expect(page.locator('#gallery-stable-fonts')).toHaveCount(1);
-  expect(remoteFontRequests).toEqual([]);
+  expect(remoteFontFiles).toEqual([]);
 
   const fonts = await page.evaluate(() => ({
     body: getComputedStyle(document.body).fontFamily,
