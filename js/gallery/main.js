@@ -17,7 +17,7 @@ const TELEGRAM_USERNAME = 'milovi_cake';
 const state = { filter:'all', items:[], visible:[], swiper:null, lbIndex:0, observer:null, bgTimer:null, isNavigating: false, mediaWarmupTimer: null };
 
 
-function esc(s=''){ return String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+function esc(s=''){ return String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt',"'":'&#39;','"':'&quot;'}[c])); }
 
 function phoneCardAvifFor(item) {
   if (!item || !PHONE_CARD_IDS.has(item.id) || !/\.webp(\?|$)/i.test(item.src || '')) return '';
@@ -162,7 +162,6 @@ function renderGrid(){
     card.dataset.index=String(index); 
     card.dataset.id=item.id; 
     card.setAttribute('aria-label',`${item.title}. Открыть в 3D-галерее`);
-    card.setAttribute('role', 'listitem'); // FIX r24: galleryGrid role=list requires listitem on children
     if(item.type==='video') { 
       const v=document.createElement('video'); 
       v.className='card-media'; 
@@ -178,7 +177,7 @@ function renderGrid(){
     else { 
       const img=document.createElement('img'); 
       img.className='card-media'; 
-      img.alt=item.title; 
+      img.alt=''; 
       img.loading=index<4?'eager':'lazy';
       img.decoding='async';
       if(index===0) img.fetchPriority='high';
