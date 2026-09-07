@@ -144,6 +144,62 @@ test.describe('hero motion performance contract', () => {
     await page.emulateMedia({ reducedMotion: 'no-preference' });
   });
 
+  test('keeps gyroscope parallax sensor-driven and bounded after motion settles', async ({ page }, testInfo) => {
+    if (!(testInfo.project.name || '').includes('mobile')) test.skip(true, 'gyroscope parallax is touch-only');
+
+    await page.addInitScript(() => {
+      const nativeRaf = window.requestAnimationFrame.bind(window);
+      const nativeAddEventListener = window.addEventListener.bind(window);
+      const nativeRemoveEventListener = window.removeEventListener.bind(window);
+      window.__mcGyroRafScheduled = 0;
+      window.__mcGyroListeners = 0;
+      window.addEventListener = function wrappedAddEventListener(type, listener, options) {
+        if (type === 'deviceorientation') window.__mcGyroListeners += 1;
+        return nativeAddEventListener(type, listener, options);
+      };
+      window.removeEventListener = function wrappedRemoveEventListener(type, listener, options) {
+        if (type === 'deviceorientation') window.__mcGyroListeners = Math.max(0, window.__mcGyroListeners - 1);
+        return nativeRemoveEventListener(type, listener, options);
+      };
+      window.requestAnimationFrame = function wrappedRequestAnimationFrame(callback) {
+        if (callback && callback.name === 'animateParallax') window.__mcGyroRafScheduled += 1;
+        return nativeRaf(callback);
+      };
+      Object.defineProperty(window, 'DeviceOrientationEvent', {
+        configurable: true,
+        value: function DeviceOrientationEventStub() {},
+      });
+    });
+
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    const heroBg = page.locator('#heroPhotoBg');
+    await expect(heroBg).toBeVisible();
+    await expect.poll(() => page.evaluate(() => window.__mcGyroListeners)).toBeGreaterThan(0);
+    await page.waitForTimeout(300);
+    expect(await page.evaluate(() => window.__mcGyroRafScheduled)).toBe(0);
+    expect(await heroBg.evaluate((element) => element.style.transform)).toBe('');
+
+    await page.evaluate(() => {
+      function emitOrientation(gamma, beta) {
+        const event = new Event('deviceorientation');
+        Object.defineProperties(event, {
+          gamma: { value: gamma },
+          beta: { value: beta },
+        });
+        window.dispatchEvent(event);
+      }
+      emitOrientation(0, 0);
+      emitOrientation(12, 8);
+    });
+
+    await expect.poll(() => page.evaluate(() => window.__mcGyroRafScheduled)).toBeGreaterThan(0);
+    await expect.poll(() => heroBg.evaluate((element) => element.style.transform)).toContain('translate(');
+    await page.waitForTimeout(2500);
+    const settledCount = await page.evaluate(() => window.__mcGyroRafScheduled);
+    await page.waitForTimeout(500);
+    expect(await page.evaluate(() => window.__mcGyroRafScheduled)).toBe(settledCount);
+  });
+
   test('keeps decorative hero motion out of initial homepage render until real intent', async ({ page }) => {
     await page.goto('/');
 

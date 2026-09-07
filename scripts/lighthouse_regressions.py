@@ -38,6 +38,13 @@ require(
     and "document.addEventListener('keydown', enableAfterIntent, { once: true });" in main_js,
     'homepage hero motion lost its first-intent release path',
 )
+require(
+    'function scheduleParallax()' in main_js
+    and 'scheduleParallax();' in main_js
+    and 'if (!heroInView || document.hidden || rafId) return;' in main_js
+    and 'if (!rafId) animateParallax();' not in main_js,
+    'homepage gyroscope parallax returned to an unconditional animation loop',
+)
 
 for path in ['index.html', 'gallery/index.html', 'svadebnye-torty/index.html', 'bento-torty/index.html', 'zakazat-tort-spb/index.html']:
     text = read(path)
@@ -193,7 +200,7 @@ for public_html in sorted(Path('.').rglob('*.html')):
         require('main.js?v=20260906r01' not in html, f'{public_html} still references stale shared main.js revision')
 
 sw = read('sw.js')
-require("const CACHE_NAME = 'milovi-cake-v2026.09.07-r83';" in sw, 'service-worker cache generation drifted')
+require("const CACHE_NAME = 'milovi-cake-v2026.09.07-r84';" in sw, 'service-worker cache generation drifted')
 require("'/css/style.css?v=20260907r01'," in sw, 'service-worker precache still points at stale shared CSS revision')
 require("'/js/main.js?v=20260907r01'," in sw, 'service-worker precache still points at stale shared main.js revision')
 require("'/js/gallery/main.js?v=20260906r05'," in sw, 'service-worker precache still points at stale gallery runtime revision')

@@ -2250,17 +2250,78 @@ if (typeof updateCalcCartBadge === 'function') {
   var heroBg = document.getElementById('heroPhotoBg');
   if (heroBg && window.DeviceOrientationEvent) {
     var baseGamma = null, baseBeta = null, curX = 0, curY = 0, targetX = 0, targetY = 0, rafId = null, MAX_SHIFT = 14;
+    var gyroActive = false, heroInView = false;
+    var needsGyroPermission = typeof window.DeviceOrientationEvent.requestPermission === 'function';
+    var gyroPermissionGranted = !needsGyroPermission;
     function lerp(a,b,t){ return a+(b-a)*t; }
-    function animateParallax() { curX = lerp(curX, targetX, 0.06); curY = lerp(curY, targetY, 0.06); heroBg.style.transform = 'translate('+curX.toFixed(2)+'px,'+curY.toFixed(2)+'px) scale(1.06)'; rafId = requestAnimationFrame(animateParallax); }
-    function onOrientation(e) { if (baseGamma === null) { baseGamma = e.gamma || 0; baseBeta = e.beta || 0; } var dg = Math.max(-25, Math.min(25, (e.gamma||0)-baseGamma)); var db = Math.max(-20, Math.min(20, (e.beta||0)-baseBeta)); targetX = -(dg/25)*MAX_SHIFT; targetY = -(db/20)*(MAX_SHIFT*0.6); }
-    if (typeof DeviceOrientationEvent.requestPermission === 'function') { var heroSection = document.getElementById('home'); if (heroSection) { heroSection.addEventListener('touchstart', function startGyro() { DeviceOrientationEvent.requestPermission().then(function(state) { if (state === 'granted') { window.addEventListener('deviceorientation', onOrientation, { passive: true }); animateParallax(); } }).catch(function(){}); heroSection.removeEventListener('touchstart', startGyro); }, { once: true, passive: true }); } }
-    else { window.addEventListener('deviceorientation', onOrientation, { passive: true }); }
-    var gyroActive = false;
-    var heroObserver = new IntersectionObserver(function(entries) { entries.forEach(function(entry) { if (entry.isIntersecting) { if (!rafId) animateParallax(); if (!gyroActive) { window.addEventListener('deviceorientation', onOrientation, { passive: true }); gyroActive = true; } } else { if (rafId) { cancelAnimationFrame(rafId); rafId = null; } heroBg.style.transform = ''; window.removeEventListener('deviceorientation', onOrientation); gyroActive = false; } }); }, { threshold: 0.1 });
-    heroObserver.observe(document.getElementById('home'));
-    document.addEventListener('visibilitychange', function() { if (document.hidden) { if (rafId) { cancelAnimationFrame(rafId); rafId = null; } window.removeEventListener('deviceorientation', onOrientation); gyroActive = false; } });
+    function stopParallax(resetTransform) {
+      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+      if (resetTransform) {
+        baseGamma = null; baseBeta = null;
+        curX = 0; curY = 0; targetX = 0; targetY = 0;
+        heroBg.style.transform = '';
+      }
+    }
+    function animateParallax() {
+      rafId = null;
+      if (!heroInView || document.hidden) return;
+      curX = lerp(curX, targetX, 0.06);
+      curY = lerp(curY, targetY, 0.06);
+      if (Math.abs(targetX-curX) < 0.05) curX = targetX;
+      if (Math.abs(targetY-curY) < 0.05) curY = targetY;
+      heroBg.style.transform = 'translate('+curX.toFixed(2)+'px,'+curY.toFixed(2)+'px) scale(1.06)';
+      if (Math.abs(targetX-curX) >= 0.05 || Math.abs(targetY-curY) >= 0.05) rafId = requestAnimationFrame(animateParallax);
+    }
+    function scheduleParallax() {
+      if (!heroInView || document.hidden || rafId) return;
+      if (Math.abs(targetX-curX) < 0.05 && Math.abs(targetY-curY) < 0.05) return;
+      rafId = requestAnimationFrame(animateParallax);
+    }
+    function onOrientation(e) {
+      if (baseGamma === null) { baseGamma = e.gamma || 0; baseBeta = e.beta || 0; }
+      var dg = Math.max(-25, Math.min(25, (e.gamma||0)-baseGamma));
+      var db = Math.max(-20, Math.min(20, (e.beta||0)-baseBeta));
+      targetX = -(dg/25)*MAX_SHIFT;
+      targetY = -(db/20)*(MAX_SHIFT*0.6);
+      scheduleParallax();
+    }
+    function syncGyroListener() {
+      var shouldListen = heroInView && !document.hidden && gyroPermissionGranted;
+      if (shouldListen && !gyroActive) {
+        window.addEventListener('deviceorientation', onOrientation, { passive: true });
+        gyroActive = true;
+      } else if (!shouldListen && gyroActive) {
+        window.removeEventListener('deviceorientation', onOrientation);
+        gyroActive = false;
+      }
+    }
+    if (needsGyroPermission) {
+      var heroSection = document.getElementById('home');
+      if (heroSection) {
+        heroSection.addEventListener('touchstart', function startGyro() {
+          window.DeviceOrientationEvent.requestPermission().then(function(state) {
+            gyroPermissionGranted = state === 'granted';
+            syncGyroListener();
+          }).catch(function() { gyroPermissionGranted = false; syncGyroListener(); });
+        }, { once: true, passive: true });
+      }
+    }
+    var observedHero = document.getElementById('home');
+    if (observedHero) {
+      var heroObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          heroInView = entry.isIntersecting;
+          if (!heroInView) stopParallax(true);
+          syncGyroListener();
+        });
+      }, { threshold: 0.1 });
+      heroObserver.observe(observedHero);
+    }
+    document.addEventListener('visibilitychange', function() {
+      if (document.hidden) stopParallax(true);
+      syncGyroListener();
+    });
   }
-
   // ── Pull-to-refresh ──
   var PTR_THRESHOLD = 65, PTR_MAX = 80, ptrActive = false, ptrStartY = 0, ptrCurrent = 0, ptrBusy = false;
   var ptrIndicator = null, ptrSpinner = null, ptrLabel = null;
