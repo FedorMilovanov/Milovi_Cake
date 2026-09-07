@@ -392,6 +392,9 @@
   var strip = document.getElementById('mcVideoStrip');
   var track = document.getElementById('mcVideoTrack');
   if (!strip || !track) return;
+  // Native anchors are not valid ARIA listitems. The strip is a visual marquee,
+  // not a semantic list; keep its links native and let each caption name the link.
+  strip.removeAttribute('role');
 
   var items;
   try { items = JSON.parse(strip.getAttribute('data-videos') || '[]'); }
@@ -432,12 +435,11 @@
   function makeTile(it){
     var d = document.createElement('a');
     d.className = 'vtile';
-    d.setAttribute('role', 'listitem');
     d.href = '/gallery/';
     d.setAttribute('aria-label', it.t + ' — смотреть в галерее');
 
     var img = document.createElement('img');
-    img.src = it.p; img.alt = it.t; img.loading = 'lazy'; img.decoding = 'async';
+    img.src = it.p; img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
     d.appendChild(img);
 
     var play = document.createElement('span');
@@ -526,6 +528,13 @@
           topButton.classList.toggle('footer-clearance', entries[0].isIntersecting);
         }, { threshold: 0.03 }).observe(footer);
       }
+    }
+
+    // The catalog buttons already expose their visible short name + price.
+    // A prefixed aria-label made the accessible name disagree with visible text.
+    var catalogNavItems = document.querySelectorAll('.catalog-nav-item[aria-label]');
+    for (var c = 0; c < catalogNavItems.length; c++) {
+      catalogNavItems[c].removeAttribute('aria-label');
     }
 
     var yandexTab = document.getElementById('tabYandex');
