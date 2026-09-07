@@ -99,15 +99,26 @@ test('@layout-matrix @gallery typography cannot trigger a late Google Fonts layo
 
   await page.goto('/gallery/', { waitUntil: 'networkidle' });
   await expect(page.locator('#gallery-stable-fonts')).toHaveCount(1);
-  expect(remoteFontFiles).toEqual([]);
+  await expect(page.locator('.mc-consent-trigger')).toBeVisible();
 
-  const fonts = await page.evaluate(() => ({
+  const initialFonts = await page.evaluate(() => ({
     body: getComputedStyle(document.body).fontFamily,
     heading: getComputedStyle(document.querySelector('.gx-heading')).fontFamily,
     seoHeading: getComputedStyle(document.querySelector('.gx-seo-panel h2')).fontFamily,
+    consentTrigger: getComputedStyle(document.querySelector('.mc-consent-trigger')).fontFamily,
   }));
 
-  expect(fonts.body).not.toMatch(/Jost/i);
-  expect(fonts.heading).not.toMatch(/Cormorant Garamond/i);
-  expect(fonts.seoHeading).not.toMatch(/Cormorant Garamond/i);
+  expect(initialFonts.body).not.toMatch(/Jost/i);
+  expect(initialFonts.heading).not.toMatch(/Cormorant Garamond/i);
+  expect(initialFonts.seoHeading).not.toMatch(/Cormorant Garamond/i);
+  expect(initialFonts.consentTrigger).not.toMatch(/Jost/i);
+  expect(remoteFontFiles).toEqual([]);
+
+  await page.locator('.mc-consent-trigger').click();
+  await expect(page.locator('.mc-consent-overlay')).toHaveClass(/is-open/);
+  await expect(page.locator('.mc-consent-title')).toBeVisible();
+  const consentTitleFont = await page.locator('.mc-consent-title').evaluate((el) => getComputedStyle(el).fontFamily);
+  expect(consentTitleFont).not.toMatch(/Cormorant Garamond/i);
+  await page.waitForTimeout(250);
+  expect(remoteFontFiles).toEqual([]);
 });
