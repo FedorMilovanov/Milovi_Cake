@@ -67,7 +67,7 @@ for (const width of WIDTHS) {
   }
 }
 
-test('@gallery phone card media policy: measured cards use conditional AVIF and LCP stays full-size', async ({ page }) => {
+test('@layout-matrix @gallery phone card media policy: measured cards use conditional AVIF and LCP stays full-size', async ({ page }) => {
   const optimizedIds = ['p05', 'p06', 'p09', 'p12', 'p18'];
   const phoneMedia = '(max-width: 430px) and (max-resolution: 1.75dppx)';
   await page.setViewportSize({ width: 390, height: 844 });
