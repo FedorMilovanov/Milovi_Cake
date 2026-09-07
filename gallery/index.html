@@ -123,13 +123,25 @@
 /* The gallery uses deterministic local font stacks. Remote webfont activation after
    first paint caused an intermittent 0.21 CLS shift in production Lighthouse. The
    legacy webfont stylesheet remains deferred for compatibility but these faces are
-   intentionally not referenced by gallery layout. */
+   intentionally not referenced by gallery layout, lightbox, or privacy controls. */
 :root {
   --gallery-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --gallery-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
 }
-body { font-family: var(--gallery-sans); }
-.gx-heading, .lb-brand, .lb-title, .loader-text, .gx-seo-panel h2 { font-family: var(--gallery-serif); }
+body,
+.lb-action,
+.mc-consent-trigger,
+.mc-consent-eyebrow,
+.mc-consent-text,
+.mc-consent-status-label,
+.mc-consent-status-value,
+.mc-consent-button { font-family: var(--gallery-sans) !important; }
+.gx-heading,
+.lb-brand,
+.lb-title,
+.loader-text,
+.gx-seo-panel h2,
+.mc-consent-title { font-family: var(--gallery-serif) !important; }
 </style>
 <style id="gallery-initial-layout-reserve">
 /* Keep the SEO panel below the viewport while the parser-visible LCP card is
