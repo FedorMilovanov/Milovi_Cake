@@ -162,7 +162,6 @@ function renderGrid(){
     card.dataset.index=String(index); 
     card.dataset.id=item.id; 
     card.setAttribute('aria-label',`${item.title}. Открыть в 3D-галерее`);
-    card.setAttribute('role', 'listitem'); // FIX r24: galleryGrid role=list requires listitem on children
     if(item.type==='video') { 
       const v=document.createElement('video'); 
       v.className='card-media'; 
@@ -178,7 +177,7 @@ function renderGrid(){
     else { 
       const img=document.createElement('img'); 
       img.className='card-media'; 
-      img.alt=item.title; 
+      img.alt=''; 
       img.loading=index<4?'eager':'lazy';
       img.decoding='async';
       if(index===0) img.fetchPriority='high';
