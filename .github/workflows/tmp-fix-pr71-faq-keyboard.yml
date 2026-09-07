@@ -1,0 +1,87 @@
+name: Temporary fix PR71 FAQ keyboard
+
+on:
+  push:
+    branches: [a11y/homepage-faq-control-semantics-v2-20260907]
+
+permissions:
+  contents: write
+
+jobs:
+  patch-verify-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: a11y/homepage-faq-control-semantics-v2-20260907
+          persist-credentials: true
+
+      - name: Apply keyboard activation fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          faq = Path('js/v20-faq-fix.js')
+          text = faq.read_text('utf-8')
+          old = """        if (typeof item.click === 'function') item.click();
+        else if (typeof window.cbFaq === 'function') window.cbFaq(item);"""
+          new = """        if (typeof window.cbFaq === 'function') window.cbFaq(item);"""
+          if text.count(old) != 1:
+              raise SystemExit(f'FAQ keyboard anchor drifted: {text.count(old)}')
+          faq.write_text(text.replace(old, new, 1), 'utf-8')
+
+          regress = Path('scripts/lighthouse_regressions.py')
+          text = regress.read_text('utf-8')
+          old = '''require(
+    "if (e.key !== 'Enter' && e.key !== ' ') return;" in faq_js
+    and "if (typeof item.click === 'function') item.click();" in faq_js,
+    'homepage content-block FAQ keyboard activation regressed',
+)'''
+          new = '''require(
+    "if (e.key !== 'Enter' && e.key !== ' ') return;" in faq_js
+    and "if (typeof window.cbFaq === 'function') window.cbFaq(item);" in faq_js
+    and "item.click();" not in faq_js,
+    'homepage content-block FAQ keyboard activation regressed',
+)'''
+          if text.count(old) != 1:
+              raise SystemExit(f'FAQ regression anchor drifted: {text.count(old)}')
+          regress.write_text(text.replace(old, new, 1), 'utf-8')
+          PY
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run full repository QA
+        run: npm run qa
+
+      - name: Verify surgical diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          mapfile -t changed < <(git diff --name-only | sort)
+          expected=(js/v20-faq-fix.js scripts/lighthouse_regressions.py)
+          mapfile -t expected_sorted < <(printf '%s\n' "${expected[@]}" | sort)
+          if [ "$(printf '%s\n' "${changed[@]}")" != "$(printf '%s\n' "${expected_sorted[@]}")" ]; then
+            printf 'unexpected changed files:\n%s\n' "${changed[*]}" >&2
+            exit 1
+          fi
+
+      - name: Commit verified fix and self-delete workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/tmp-fix-pr71-faq-keyboard.yml
+          git config user.name 'FedorMilovanov'
+          git config user.email '258225528+FedorMilovanov@users.noreply.github.com'
+          git add js/v20-faq-fix.js scripts/lighthouse_regressions.py .github/workflows/tmp-fix-pr71-faq-keyboard.yml
+          git diff --cached --check
+          git commit -m 'Fix homepage FAQ keyboard activation path'
+          git push origin HEAD:a11y/homepage-faq-control-semantics-v2-20260907
