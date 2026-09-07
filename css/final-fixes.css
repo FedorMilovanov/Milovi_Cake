@@ -734,3 +734,57 @@ html #contacts .card.card--dark .contact-primary-icon {
     filter:drop-shadow(0 0 7px rgba(var(--soc-rgb),.58)) !important;
   }
 }
+
+/* r87 — production-measured WCAG contrast repair (Lighthouse #183).
+   Keep dark-theme palette intact; only measured light surfaces and the dark footer are adjusted. */
+:root:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero,
+html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero {
+  background: #865a24 !important;
+  color: #fff !important;
+}
+:root:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
+html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover {
+  background: #734a1d !important;
+  color: #fff !important;
+}
+
+:root:not([data-theme="dark"]) .cb-section-label span,
+:root:not([data-theme="dark"]) .cb-gluten-badge,
+:root:not([data-theme="dark"]) .cb-fl-name,
+:root:not([data-theme="dark"]) .cb-occ-name,
+:root:not([data-theme="dark"]) .vstrip-label span,
+:root:not([data-theme="dark"]) #calcWeightVal {
+  color: #865a24 !important;
+}
+
+:root:not([data-theme="dark"]) .cb-ftab:not(.cb-on),
+:root:not([data-theme="dark"]) #fillDescText,
+:root:not([data-theme="dark"]) .geo-section > .container > p,
+:root:not([data-theme="dark"]) .about-compact-block p {
+  color: #6b4c38 !important;
+}
+:root:not([data-theme="dark"]) .about-compact-block p {
+  opacity: 1 !important;
+}
+
+:root:not([data-theme="dark"]) .calc-opt.selected,
+:root:not([data-theme="dark"]) #fillSheetSelect,
+:root:not([data-theme="dark"]) .btn-primary.btn-warn {
+  background: #865a24 !important;
+  color: #fff !important;
+}
+:root:not([data-theme="dark"]) .btn-primary.btn-warn:hover {
+  background: #734a1d !important;
+  color: #fff !important;
+}
+
+.site-footer .footer-brand p.wave-text,
+.site-footer .footer-brand p.wave-text .w,
+.site-footer .footer-address {
+  color: #a99472 !important;
+  opacity: 1 !important;
+}
+.site-footer .footer-col h4 {
+  color: #d9c7a8 !important;
+  opacity: 1 !important;
+}
