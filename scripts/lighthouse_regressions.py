@@ -79,7 +79,8 @@ require(
 )
 require(
     "if (e.key !== 'Enter' && e.key !== ' ') return;" in faq_js
-    and "if (typeof item.click === 'function') item.click();" in faq_js,
+    and "if (typeof window.cbFaq === 'function') window.cbFaq(item);" in faq_js
+    and "item.click();" not in faq_js,
     'homepage content-block FAQ keyboard activation regressed',
 )
 
