@@ -66,3 +66,27 @@ for (const width of WIDTHS) {
     });
   }
 }
+
+test('@gallery phone card media policy: measured cards use conditional AVIF and LCP stays full-size', async ({ page }) => {
+  const optimizedIds = ['p05', 'p06', 'p09', 'p12', 'p18'];
+  const phoneMedia = '(max-width: 430px) and (max-resolution: 1.75dppx)';
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
+  await page.waitForSelector('#galleryGrid [data-id="p18"] img.card-media');
+  expect(await page.evaluate((q) => matchMedia(q).matches, phoneMedia)).toBeTruthy();
+  for (const id of optimizedIds) {
+    const number = id.slice(1);
+    const card = page.locator(`#galleryGrid [data-id="${id}"]`);
+    await expect(card.locator('img.card-media')).toHaveAttribute('src', `/img/gallery/gallery-${number}.webp`);
+    const sources = card.locator('source[type="image/avif"]');
+    await expect(sources).toHaveCount(2);
+    await expect(sources.nth(0)).toHaveAttribute('media', phoneMedia);
+    await expect(sources.nth(0)).toHaveAttribute('srcset', `/img/gallery/gallery-${number}-card.avif`);
+    await expect(sources.nth(1)).toHaveAttribute('srcset', `/img/gallery/gallery-${number}.avif`);
+  }
+  const lcpCard = page.locator('#galleryGrid [data-id="p01"]');
+  await expect(lcpCard.locator('source[type="image/avif"]')).toHaveCount(1);
+  await expect(lcpCard.locator('source[type="image/avif"]')).toHaveAttribute('srcset', '/img/gallery/gallery-01.avif');
+  await page.setViewportSize({ width: 900, height: 900 });
+  expect(await page.evaluate((q) => matchMedia(q).matches, phoneMedia)).toBeFalsy();
+});
