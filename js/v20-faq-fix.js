@@ -316,12 +316,31 @@
   /* ── Семантика content-block FAQ на главной ── */
   function syncContentBlockFaqItem(item) {
     if (!item || !item.classList || !item.classList.contains('cb-faq-item')) return;
-    var question = item.querySelector('.cb-faq-q span') || item.querySelector('.cb-faq-q');
-    var label = question ? (question.textContent || '').replace(/\s+/g, ' ').trim() : '';
-    item.setAttribute('role', 'button');
-    item.setAttribute('tabindex', '0');
-    if (label) item.setAttribute('aria-label', label);
-    item.setAttribute('aria-expanded', item.classList.contains('cb-open') ? 'true' : 'false');
+    var control = item.querySelector('.cb-faq-q');
+
+    // The item contains both the visible question and the answer, so it must stay
+    // structural. Putting role=button/aria-label on this wrapper makes its
+    // accessible name disagree with its visible descendant text in Lighthouse.
+    item.removeAttribute('role');
+    item.removeAttribute('tabindex');
+    item.removeAttribute('aria-label');
+    item.removeAttribute('aria-expanded');
+
+    if (!control) return;
+    control.setAttribute('role', 'button');
+    control.setAttribute('tabindex', '0');
+    control.removeAttribute('aria-label');
+    control.setAttribute('aria-expanded', item.classList.contains('cb-open') ? 'true' : 'false');
+
+    if (!control._cbFaqKeyInited) {
+      control._cbFaqKeyInited = true;
+      control.addEventListener('keydown', function(e) {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        e.preventDefault();
+        if (typeof item.click === 'function') item.click();
+        else if (typeof window.cbFaq === 'function') window.cbFaq(item);
+      });
+    }
   }
 
   function initContentBlockFaqA11y() {
