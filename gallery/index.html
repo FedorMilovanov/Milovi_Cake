@@ -77,7 +77,10 @@
   </script>
 
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%23f1d49b'/%3E%3Cstop offset='1' stop-color='%23b8823a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='14' y='28' width='36' height='18' rx='5' fill='%23f5f0e8' stroke='%233d2b1f' stroke-width='2'/%3E%3Cpath d='M18 30c5 4 9 4 14 0s9-4 14 0' fill='none' stroke='url(%23g)' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M32 14v12' stroke='%23b8823a' stroke-width='3' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='13' r='3' fill='url(%23g)'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preload" as="image" type="image/avif" href="/img/gallery/gallery-01.avif" fetchpriority="high" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600;700&display=optional" rel="stylesheet" media="print" onload="this.onload=null;this.media='all'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600;700&display=optional" rel="stylesheet" /></noscript>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" media="print" onload="this.onload=null;this.media='all'" />
   <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" /></noscript>
   <script id="gallery-swiper-interaction-loader">
@@ -118,7 +121,9 @@
   <link rel="stylesheet" href="/css/final-fixes.css?v=20260815r78" />
 <style id="gallery-stable-fonts">
 /* The gallery uses deterministic local font stacks. Remote webfont activation after
-   first paint caused an intermittent 0.21 CLS shift in production Lighthouse. */
+   first paint caused an intermittent 0.21 CLS shift in production Lighthouse. The
+   legacy webfont stylesheet remains deferred for compatibility but these faces are
+   intentionally not referenced by gallery layout. */
 :root {
   --gallery-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --gallery-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
