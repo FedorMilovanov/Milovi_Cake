@@ -90,3 +90,35 @@ test('@layout-matrix @gallery phone card media policy: measured cards use condit
   await page.setViewportSize({ width: 900, height: 900 });
   expect(await page.evaluate((q) => matchMedia(q).matches, phoneMedia)).toBeFalsy();
 });
+
+test('@layout-matrix @gallery typography cannot trigger a late Google Fonts layout swap', async ({ page }) => {
+  const remoteFontFiles = [];
+  page.on('request', (request) => {
+    if (/fonts\.gstatic\.com/i.test(request.url())) remoteFontFiles.push(request.url());
+  });
+
+  await page.goto('/gallery/', { waitUntil: 'networkidle' });
+  await expect(page.locator('#gallery-stable-fonts')).toHaveCount(1);
+  await expect(page.locator('.mc-consent-trigger')).toBeVisible();
+
+  const initialFonts = await page.evaluate(() => ({
+    body: getComputedStyle(document.body).fontFamily,
+    heading: getComputedStyle(document.querySelector('.gx-heading')).fontFamily,
+    seoHeading: getComputedStyle(document.querySelector('.gx-seo-panel h2')).fontFamily,
+    consentTrigger: getComputedStyle(document.querySelector('.mc-consent-trigger')).fontFamily,
+  }));
+
+  expect(initialFonts.body).not.toMatch(/Jost/i);
+  expect(initialFonts.heading).not.toMatch(/Cormorant Garamond/i);
+  expect(initialFonts.seoHeading).not.toMatch(/Cormorant Garamond/i);
+  expect(initialFonts.consentTrigger).not.toMatch(/Jost/i);
+  expect(remoteFontFiles).toEqual([]);
+
+  await page.locator('.mc-consent-trigger').click();
+  await expect(page.locator('.mc-consent-overlay')).toHaveClass(/is-open/);
+  await expect(page.locator('.mc-consent-title')).toBeVisible();
+  const consentTitleFont = await page.locator('.mc-consent-title').evaluate((el) => getComputedStyle(el).fontFamily);
+  expect(consentTitleFont).not.toMatch(/Cormorant Garamond/i);
+  await page.waitForTimeout(250);
+  expect(remoteFontFiles).toEqual([]);
+});
