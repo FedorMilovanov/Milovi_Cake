@@ -17,7 +17,7 @@ const TELEGRAM_USERNAME = 'milovi_cake';
 const state = { filter:'all', items:[], visible:[], swiper:null, lbIndex:0, observer:null, bgTimer:null, isNavigating: false, mediaWarmupTimer: null };
 
 
-function esc(s=''){ return String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt',"'":'&#39;','"':'&quot;'}[c])); }
+function esc(s=''){ return String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
 
 function phoneCardAvifFor(item) {
   if (!item || !PHONE_CARD_IDS.has(item.id) || !/\.webp(\?|$)/i.test(item.src || '')) return '';
