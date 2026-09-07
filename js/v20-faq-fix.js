@@ -314,6 +314,14 @@
   }
 
   /* ── Семантика content-block FAQ на главной ── */
+  function toggleContentBlockFaqItem(item) {
+    var isOpen = item.classList.contains('cb-open');
+    $$('.cb-faq-item.cb-open').forEach(function(openItem) {
+      openItem.classList.remove('cb-open');
+    });
+    if (!isOpen) item.classList.add('cb-open');
+  }
+
   function syncContentBlockFaqItem(item) {
     if (!item || !item.classList || !item.classList.contains('cb-faq-item')) return;
     var control = item.querySelector('.cb-faq-q');
@@ -338,6 +346,7 @@
         if (e.key !== 'Enter' && e.key !== ' ') return;
         e.preventDefault();
         if (typeof window.cbFaq === 'function') window.cbFaq(item);
+        else toggleContentBlockFaqItem(item);
       });
     }
   }
