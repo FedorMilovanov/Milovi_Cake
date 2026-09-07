@@ -217,7 +217,8 @@
 .site-footer .footer-brand p.wave-text .w,
 .site-footer .footer-address{
   color: #a99472;
-  opacity: 1;
+  /* important: overrides the legacy inline footer-address opacity. */
+  opacity: 1 !important;
 }
 
 
@@ -306,7 +307,7 @@
   transition: opacity .25s ease, transform .25s ease !important;
 }
 .bento-weight-toast.show{
-  opacity: 1 !important;
+  opacity: 1;
   transform: translateX(-50%) translateY(0) !important;
 }
 
