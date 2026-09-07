@@ -128,3 +128,108 @@ test.describe('SEO infrastructure', () => {
     expect(JSON.stringify(business)).not.toContain('Sunday');
   });
 });
+
+function contrastRatio(foreground, background) {
+  const linearize = (value) => {
+    const channel = value / 255;
+    return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+  };
+  const luminance = ([r, g, b]) => (0.2126 * linearize(r)) + (0.7152 * linearize(g)) + (0.0722 * linearize(b));
+  const l1 = luminance(foreground);
+  const l2 = luminance(background);
+  return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+}
+
+async function assertContrast(page, selector, minimum = 4.5) {
+  const samples = await page.locator(selector).evaluateAll((nodes) => {
+    const parse = (value) => {
+      const match = String(value).match(/rgba?\(\s*([\d.]+)[, ]+\s*([\d.]+)[, ]+\s*([\d.]+)(?:\s*[,/]\s*([\d.]+))?\s*\)/i);
+      if (!match) return null;
+      return [Number(match[1]), Number(match[2]), Number(match[3]), match[4] === undefined ? 1 : Number(match[4])];
+    };
+    const composite = (front, back) => {
+      const alpha = front[3] + back[3] * (1 - front[3]);
+      if (alpha === 0) return [0, 0, 0, 0];
+      return [
+        (front[0] * front[3] + back[0] * back[3] * (1 - front[3])) / alpha,
+        (front[1] * front[3] + back[1] * back[3] * (1 - front[3])) / alpha,
+        (front[2] * front[3] + back[2] * back[3] * (1 - front[3])) / alpha,
+        alpha,
+      ];
+    };
+    const backgroundFor = (node) => {
+      let current = node;
+      let background = [255, 255, 255, 1];
+      const layers = [];
+      while (current) {
+        const color = parse(getComputedStyle(current).backgroundColor);
+        if (color && color[3] > 0) layers.push(color);
+        current = current.parentElement;
+      }
+      for (let i = layers.length - 1; i >= 0; i -= 1) background = composite(layers[i], background);
+      return background;
+    };
+    return nodes
+      .filter((node) => {
+        const style = getComputedStyle(node);
+        return style.display !== 'none' && style.visibility !== 'hidden';
+      })
+      .map((node) => ({
+        text: (node.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 100),
+        color: parse(getComputedStyle(node).color),
+        background: backgroundFor(node),
+        opacity: Number(getComputedStyle(node).opacity || '1'),
+      }));
+  });
+
+  expect(samples.length, `${selector} should resolve to at least one visible node`).toBeGreaterThan(0);
+  for (const sample of samples) {
+    expect(sample.color, `${selector} should expose an RGB text color`).not.toBeNull();
+    expect(sample.opacity, `${selector} should not lower text opacity (${sample.text})`).toBe(1);
+    const ratio = contrastRatio(sample.color, sample.background);
+    expect(ratio, `${selector} contrast ${ratio.toFixed(2)}:1 for “${sample.text}”`).toBeGreaterThanOrEqual(minimum);
+  }
+}
+
+async function useLightTheme(page) {
+  await page.addInitScript(() => localStorage.setItem('mc_theme', 'light'));
+}
+
+test.describe('production-measured contrast regressions', () => {
+  test('homepage measured text pairs remain WCAG AA', async ({ page }) => {
+    await useLightTheme(page);
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    for (const selector of [
+      '.hero .btn-primary.btn-primary--hero',
+      '.about-compact-block p',
+      '.vstrip-label span',
+      '.calc-opt.selected .opt-label',
+      '#calcWeightVal',
+      '#fillDescText',
+      '.geo-section > .container > p',
+      '.cb-section-label span',
+      '.cb-ftab:not(.cb-on)',
+      '.cb-fl-name',
+      '.cb-gluten-badge',
+      '.cb-occ-name',
+      '.site-footer .footer-col--brand p',
+      '.site-footer .footer-col h4',
+      '.site-footer .footer-address',
+      '#fillSheetSelect',
+    ]) {
+      await assertContrast(page, selector);
+    }
+  });
+
+  test('About-page primary CTA remains WCAG AA', async ({ page }) => {
+    await useLightTheme(page);
+    await page.goto('/o-konditere/', { waitUntil: 'domcontentloaded' });
+    await assertContrast(page, '.info-btn-primary');
+  });
+
+  test('Gatchina primary warning CTA remains WCAG AA', async ({ page }) => {
+    await useLightTheme(page);
+    await page.goto('/prigorody/gatchina/', { waitUntil: 'domcontentloaded' });
+    await assertContrast(page, '.btn-primary.btn-warn');
+  });
+});
