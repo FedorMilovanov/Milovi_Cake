@@ -60,13 +60,16 @@ require('media="(max-width: 768px)" srcset="/img/head_mobile.avif"' in order, 'o
 gallery = read('gallery/index.html')
 require('id="preloader"' not in gallery, 'gallery blocking preloader returned')
 require('/img/gallery/gallery-01.avif" fetchpriority="high"' in gallery, 'gallery LCP preload missing')
-require('/js/gallery/main.js?v=20260906r04' in gallery, 'gallery runtime revision drift')
+require('/js/gallery/main.js?v=20260906r05' in gallery, 'gallery runtime revision drift')
 require('#galleryGrid[data-hydrating="true"] { min-height: 100svh; }' in gallery, 'gallery hydration reserve missing')
 require('#galleryGrid[data-static-lcp-root="true"] { animation: none; }' in gallery, 'gallery grid animation gates initial LCP again')
 require('data-static-lcp="p01"' in gallery, 'gallery initial LCP card is no longer parser-visible')
 require('data-hydrating="true" data-static-lcp-root="true"' in gallery, 'gallery static-LCP hydration markers missing')
 require('<source type="image/avif" srcset="/img/gallery/gallery-01.avif">' in gallery, 'gallery static LCP AVIF source drifted')
 require('fetchpriority="high" src="/img/gallery/gallery-01.webp"' in gallery, 'gallery static LCP fallback lost high priority')
+require('id="galleryGrid" role="list"' not in gallery, 'gallery grid regained synthetic list semantics')
+require('role="listitem"' not in gallery, 'gallery native card button regained incompatible listitem role')
+require('<img class="card-media" alt="" loading="eager"' in gallery, 'gallery static card media is no longer decorative inside its labelled button')
 require(
     'id="gxEmpty" style="display: none;"' in gallery,
     'gallery initial-layout reserve sentinel drifted',
@@ -130,6 +133,9 @@ require("v.preload='none';" in gallery_js, 'gallery video preload competes with 
 require('v.autoplay=true' not in gallery_js, 'gallery videos autoplay during initial load')
 require("if(index<4) card.style.animation='none';" in gallery_js, 'above-fold gallery cards animate into LCP')
 require('if(!window.Swiper)' in gallery_js and 'setTimeout(init,50)' in gallery_js, 'gallery lightbox lost its Swiper late-load polling fallback')
+require("card.setAttribute('role', 'listitem')" not in gallery_js, 'gallery dynamic native button regained incompatible listitem role')
+require("img.alt='';" in gallery_js, 'gallery dynamic card media is no longer decorative inside its labelled button')
+require("card.setAttribute('aria-label',`${item.title}. Открыть в 3D-галерее`);" in gallery_js, 'gallery cards lost explicit accessible names')
 require(
     "const PHONE_CARD_MEDIA = '(max-width: 430px) and (max-resolution: 1.75dppx)';" in gallery_js,
     'gallery phone-card media boundary drifted',
@@ -187,10 +193,10 @@ for public_html in sorted(Path('.').rglob('*.html')):
         require('main.js?v=20260906r01' not in html, f'{public_html} still references stale shared main.js revision')
 
 sw = read('sw.js')
-require("const CACHE_NAME = 'milovi-cake-v2026.09.07-r82';" in sw, 'service-worker cache generation drifted')
+require("const CACHE_NAME = 'milovi-cake-v2026.09.07-r83';" in sw, 'service-worker cache generation drifted')
 require("'/css/style.css?v=20260907r01'," in sw, 'service-worker precache still points at stale shared CSS revision')
 require("'/js/main.js?v=20260907r01'," in sw, 'service-worker precache still points at stale shared main.js revision')
-require("'/js/gallery/main.js?v=20260906r04'," in sw, 'service-worker precache still points at stale gallery runtime revision')
+require("'/js/gallery/main.js?v=20260906r05'," in sw, 'service-worker precache still points at stale gallery runtime revision')
 
 cfg = json.loads(read('.github/lighthouse-config.json'))
 require(cfg['ci']['collect'].get('numberOfRuns') == 3, 'Lighthouse collection is not three runs')
