@@ -4,6 +4,8 @@ var _gLockY = 0; /* r31: gallery scroll lock state */
 const $ = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
 const SIZE_MAP = { tall: '1x2', wide: '2x1', big: '2x2', m: '1x1' };
+const PHONE_CARD_MEDIA = '(max-width: 430px) and (max-resolution: 1.75dppx)';
+const PHONE_CARD_IDS = new Set(['p05', 'p06', 'p09', 'p12', 'p18']);
 const filterButtons = [
   { id: 'all', label: 'Все' }, { id: 'photo', label: 'Фото' }, { id: 'video', label: 'Видео' },
   { id: 'wedding', label: 'Свадебные' }, { id: 'bento', label: 'Бенто' }, { id: '3d', label: '3D' },
@@ -17,6 +19,11 @@ const state = { filter:'all', items:[], visible:[], swiper:null, lbIndex:0, obse
 
 function esc(s=''){ return String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
 
+function phoneCardAvifFor(item) {
+  if (!item || !PHONE_CARD_IDS.has(item.id) || !/\.webp(\?|$)/i.test(item.src || '')) return '';
+  return item.src.replace(/\.webp(\?|$)/i, '-card.avif$1');
+}
+
 /* r57/r60: AVIF support for gallery cards AND lightbox photos.
    Wraps an <img src="...webp"> into a <picture> with an AVIF <source>.
    If the AVIF twin does not exist on the server the browser will silently
@@ -27,6 +34,14 @@ function wrapInPictureWithAvif(img) {
   if (!/\.webp(\?|$)/i.test(src)) return img;
   const avifSrc = src.replace(/\.webp(\?|$)/i, '.avif$1');
   const picture = document.createElement('picture');
+  const phoneAvifSrc = img.dataset.phoneAvifSrc || '';
+  if (phoneAvifSrc) {
+    const phoneSource = document.createElement('source');
+    phoneSource.type = 'image/avif';
+    phoneSource.media = PHONE_CARD_MEDIA;
+    phoneSource.srcset = phoneAvifSrc;
+    picture.appendChild(phoneSource);
+  }
   const source = document.createElement('source');
   source.type = 'image/avif';
   source.srcset = avifSrc;
@@ -173,6 +188,8 @@ function renderGrid(){
       var _reveal=function(){ card.classList.remove('is-loading'); card.classList.add('is-loaded'); };
       img.addEventListener('load',_reveal,{once:true});
       img.addEventListener('error',_reveal,{once:true});
+      const phoneAvifSrc = phoneCardAvifFor(item);
+      if(phoneAvifSrc) img.dataset.phoneAvifSrc=phoneAvifSrc;
       img.src=item.src; 
       if(img.complete && img.naturalWidth>0) _reveal();
       card.insertAdjacentHTML('beforeend','<span class="card-skeleton" aria-hidden="true"></span>');
