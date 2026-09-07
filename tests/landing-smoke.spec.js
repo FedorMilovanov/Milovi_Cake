@@ -227,9 +227,9 @@ test.describe('production-measured contrast regressions', () => {
     await assertContrast(page, '.info-btn-primary');
   });
 
-  test('Gatchina primary warning CTA remains WCAG AA', async ({ page }) => {
+  test('Gatchina primary hero CTA remains WCAG AA', async ({ page }) => {
     await useLightTheme(page);
     await page.goto('/prigorody/gatchina/', { waitUntil: 'domcontentloaded' });
-    await assertContrast(page, '.btn-primary.btn-warn');
+    await assertContrast(page, '.hero .btn-primary.btn-primary--hero');
   });
 });
