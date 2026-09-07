@@ -313,6 +313,32 @@
     question.appendChild(newIcon);
   }
 
+  /* ── Семантика content-block FAQ на главной ── */
+  function syncContentBlockFaqItem(item) {
+    if (!item || !item.classList || !item.classList.contains('cb-faq-item')) return;
+    var question = item.querySelector('.cb-faq-q span') || item.querySelector('.cb-faq-q');
+    var label = question ? (question.textContent || '').replace(/\s+/g, ' ').trim() : '';
+    item.setAttribute('role', 'button');
+    item.setAttribute('tabindex', '0');
+    if (label) item.setAttribute('aria-label', label);
+    item.setAttribute('aria-expanded', item.classList.contains('cb-open') ? 'true' : 'false');
+  }
+
+  function initContentBlockFaqA11y() {
+    var items = $$('.cb-faq-item');
+    items.forEach(syncContentBlockFaqItem);
+    var root = $('.cb-faq');
+    if (!root || typeof MutationObserver === 'undefined') return;
+    var observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mut) {
+        if (mut.type === 'attributes' && mut.target.classList && mut.target.classList.contains('cb-faq-item')) {
+          syncContentBlockFaqItem(mut.target);
+        }
+      });
+    });
+    observer.observe(root, { subtree: true, attributes: true, attributeFilter: ['class'] });
+  }
+
   /* ── Главная инициализация ── */
   function init() {
     var found = findFaqItems();
@@ -325,6 +351,7 @@
 
     initJsAccordion(found.jsItems);
     initDetailsAccordion(found.detailsItems);
+    initContentBlockFaqA11y();
 
     // MutationObserver для динамически добавленных FAQ
     if (typeof MutationObserver !== 'undefined') {
