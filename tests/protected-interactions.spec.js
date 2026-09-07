@@ -92,26 +92,43 @@ test.describe('protected homepage interactions', () => {
     ))).toBe(true);
 
     const faqItems = page.locator('.cb-faq-item');
+    const faqControls = page.locator('.cb-faq-item > .cb-faq-q');
     await expect(faqItems).toHaveCount(9);
-    const faqSemantics = await faqItems.evaluateAll((items) => items.map((item) => ({
-      role: item.getAttribute('role'),
-      expanded: item.getAttribute('aria-expanded'),
-      label: item.getAttribute('aria-label'),
-      question: ((item.querySelector('.cb-faq-q span') || item.querySelector('.cb-faq-q'))?.textContent || '')
-        .replace(/\s+/g, ' ').trim(),
+    await expect(faqControls).toHaveCount(9);
+
+    expect(await faqItems.evaluateAll((items) => items.every((item) =>
+      !item.hasAttribute('role') &&
+      !item.hasAttribute('tabindex') &&
+      !item.hasAttribute('aria-label') &&
+      !item.hasAttribute('aria-expanded')
+    ))).toBe(true);
+
+    const faqSemantics = await faqControls.evaluateAll((controls) => controls.map((control) => ({
+      role: control.getAttribute('role'),
+      tabindex: control.getAttribute('tabindex'),
+      expanded: control.getAttribute('aria-expanded'),
+      label: control.getAttribute('aria-label'),
+      text: (control.textContent || '').replace(/\s+/g, ' ').trim(),
     })));
-    for (const item of faqSemantics) {
-      expect(item.role).toBe('button');
-      expect(item.expanded).toBe('false');
-      expect(item.label).toBe(item.question);
-      expect(item.label.length).toBeGreaterThan(0);
+    for (const control of faqSemantics) {
+      expect(control.role).toBe('button');
+      expect(control.tabindex).toBe('0');
+      expect(control.expanded).toBe('false');
+      expect(control.label).toBeNull();
+      expect(control.text.length).toBeGreaterThan(0);
     }
 
-    await faqItems.nth(0).click();
-    await expect(faqItems.nth(0)).toHaveAttribute('aria-expanded', 'true');
-    await faqItems.nth(1).click();
-    await expect(faqItems.nth(0)).toHaveAttribute('aria-expanded', 'false');
-    await expect(faqItems.nth(1)).toHaveAttribute('aria-expanded', 'true');
+    await faqControls.nth(0).focus();
+    await page.keyboard.press('Enter');
+    await expect(faqItems.nth(0)).toHaveClass(/cb-open/);
+    await expect(faqControls.nth(0)).toHaveAttribute('aria-expanded', 'true');
+
+    await faqControls.nth(1).focus();
+    await page.keyboard.press('Space');
+    await expect(faqItems.nth(0)).not.toHaveClass(/cb-open/);
+    await expect(faqControls.nth(0)).toHaveAttribute('aria-expanded', 'false');
+    await expect(faqItems.nth(1)).toHaveClass(/cb-open/);
+    await expect(faqControls.nth(1)).toHaveAttribute('aria-expanded', 'true');
   });
 });
 
