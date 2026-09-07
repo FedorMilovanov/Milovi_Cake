@@ -337,8 +337,7 @@
       control.addEventListener('keydown', function(e) {
         if (e.key !== 'Enter' && e.key !== ' ') return;
         e.preventDefault();
-        if (typeof item.click === 'function') item.click();
-        else if (typeof window.cbFaq === 'function') window.cbFaq(item);
+        if (typeof window.cbFaq === 'function') window.cbFaq(item);
       });
     }
   }
