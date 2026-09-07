@@ -74,20 +74,27 @@ require(
     'id="gxEmpty" style="display: none;"' in gallery,
     'gallery initial-layout reserve sentinel drifted',
 )
-font_css = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600;700&display=optional'
 swiper_css = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css'
 swiper_js = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js'
+require('fonts.googleapis.com' not in gallery, 'gallery remote Google Fonts stylesheet returned')
+require('fonts.gstatic.com' not in gallery, 'gallery remote Google Fonts transport returned')
+require('id="gallery-stable-fonts"' in gallery, 'gallery deterministic font contract missing')
 require(
-    f'href="{font_css}" rel="stylesheet" media="print" onload="this.onload=null;this.media=\'all\'"' in gallery,
-    'gallery Google Fonts CSS returned to the critical render path',
+    '--gallery-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;' in gallery,
+    'gallery deterministic sans stack drifted',
+)
+require(
+    '--gallery-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;' in gallery,
+    'gallery deterministic serif stack drifted',
+)
+require(
+    'body { font-family: var(--gallery-sans); }' in gallery
+    and '.gx-heading, .lb-brand, .lb-title, .loader-text, .gx-seo-panel h2 { font-family: var(--gallery-serif); }' in gallery,
+    'gallery still exposes initial layout to late webfont geometry',
 )
 require(
     f'href="{swiper_css}" media="print" onload="this.onload=null;this.media=\'all\'"' in gallery,
     'gallery Swiper CSS returned to the critical render path',
-)
-require(
-    f'<noscript><link href="{font_css}" rel="stylesheet" /></noscript>' in gallery,
-    'gallery Google Fonts noscript fallback missing',
 )
 require(
     f'<noscript><link rel="stylesheet" href="{swiper_css}" /></noscript>' in gallery,
