@@ -14,7 +14,7 @@
 
 - Режим работы: **Пн–Сб, 10:00–20:00**.
 - Release identity: **exact Git SHA** из live `/release.json`; cache revisions проверяются per-asset через `npm run audit:release`.
-- `npm run qa` — JS/privacy/a11y/release/security/site audit + idempotency пригородов + Playwright desktop/mobile/responsive matrix.
+- `npm run qa` — JS/privacy/a11y/release/Lighthouse regression+aggregation/security/site audits + idempotency пригородов + Playwright desktop/mobile/responsive matrix.
 - `npm run smoke:prod` — transport/content smoke; `npm run smoke:prod:release` — exact SHA + privacy + true 404 contract.
 - `scripts/audit.py` проверяет SEO, JSON-LD, sitemap coverage, business hours, protected UI contracts, gzip budgets, ссылки, a11y basics, PWA/SW.
 - Playwright защищает hero WhatsApp/Telegram/MAX hover, отзывы, модалки, лендинги, light/dark UI, landing media.
@@ -203,11 +203,13 @@ npm run qa
 2. Privacy/analytics contract.
 3. Static a11y/conformance guards.
 4. Exact asset→revision release contract.
-5. IP/customer-copy contract.
-6. Video structured-data provenance/timezone contract.
-7. Prigorody idempotency.
-8. `npm audit --audit-level=high` + `scripts/audit.py`.
-9. Playwright desktop/mobile + responsive matrix.
+5. Lighthouse regression contract.
+6. Lighthouse 3-run aggregation contract.
+7. IP/customer-copy contract.
+8. Video structured-data provenance/timezone contract.
+9. Prigorody idempotency.
+10. `npm audit --audit-level=high` + `scripts/audit.py`.
+11. Playwright desktop/mobile + responsive matrix.
 
 ### Быстрые проверки
 
