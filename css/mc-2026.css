@@ -4,8 +4,8 @@
 
 :root{
   
-  --gold-acc:        #b07a3a;        
-  --gold-acc-hover:  #c9934a;        
+  --gold-acc:        #865a24;        
+  --gold-acc-hover:  #734a1d;        
   --text-muted-acc:  #6b4c38;        
 
   
@@ -162,7 +162,11 @@
 :root:not([data-theme="dark"]) .calc-result-price,
 :root:not([data-theme="dark"]) .calc-summary-chip .chip-val,
 :root:not([data-theme="dark"]) .stats-grid .stat-num,
-:root:not([data-theme="dark"]) .features-grid .feature-num{
+:root:not([data-theme="dark"]) .features-grid .feature-num,
+:root:not([data-theme="dark"]) .cb-section-label span,
+:root:not([data-theme="dark"]) .cb-gluten-badge,
+:root:not([data-theme="dark"]) .vstrip-label span,
+:root:not([data-theme="dark"]) #calcWeightVal{
   color: var(--gold-acc) !important;
 }
 
@@ -171,8 +175,17 @@
 :root:not([data-theme="dark"]) .cb-fl-desc,
 :root:not([data-theme="dark"]) .cb-occ-desc,
 :root:not([data-theme="dark"]) .cb-tags-label,
-:root:not([data-theme="dark"]) .calc-weight-hint{
+:root:not([data-theme="dark"]) .calc-weight-hint,
+:root:not([data-theme="dark"]) .cb-ftab:not(.cb-on),
+:root:not([data-theme="dark"]) #fillDescText,
+:root:not([data-theme="dark"]) .geo-section > .container > p,
+:root:not([data-theme="dark"]) .about-compact-block p{
   color: var(--text-muted-acc) !important;
+}
+
+/* Muted supporting copy must remain readable instead of relying on opacity. */
+:root:not([data-theme="dark"]) .about-compact-block p{
+  opacity: 1;
 }
 
 
@@ -180,7 +193,9 @@
 :root:not([data-theme="dark"]) .btn-add,
 :root:not([data-theme="dark"]) .calc-add-btn,
 :root:not([data-theme="dark"]) .calc-order-btn,
-:root:not([data-theme="dark"]) .header-order{
+:root:not([data-theme="dark"]) .header-order,
+:root:not([data-theme="dark"]) body:not(.prigorody-page) .calc-options:not(#calcDecor) .calc-opt.selected,
+:root:not([data-theme="dark"]) #fillSheetSelect{
   background: var(--gold-acc) !important;
   color: #fff !important;
 }
@@ -190,6 +205,20 @@
 :root:not([data-theme="dark"]) .calc-order-btn:hover,
 :root:not([data-theme="dark"]) .header-order:hover{
   background: var(--gold-acc-hover) !important;
+}
+
+/* The footer is intentionally dark in both themes; use stable AA ink without
+   changing its surface or visual hierarchy. */
+.site-footer .footer-col h4{
+  color: #d9c7a8;
+}
+.site-footer .footer-col--brand p,
+.site-footer .footer-brand p.wave-text,
+.site-footer .footer-brand p.wave-text .w,
+.site-footer .footer-address{
+  color: #a99472;
+  /* important: overrides the legacy inline footer-address opacity. */
+  opacity: 1 !important;
 }
 
 
@@ -278,7 +307,7 @@
   transition: opacity .25s ease, transform .25s ease !important;
 }
 .bento-weight-toast.show{
-  opacity: 1 !important;
+  opacity: 1;
   transform: translateX(-50%) translateY(0) !important;
 }
 
