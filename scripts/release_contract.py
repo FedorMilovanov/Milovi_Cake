@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate exact HTML/ESM asset revision pairs against the Service Worker precache."""
+"""Validate exact asset revisions and production release-orchestration invariants."""
 from __future__ import annotations
 
 import re
@@ -41,6 +41,44 @@ def iter_html():
         if any(part in EXCLUDED for part in parts):
             continue
         yield path
+
+
+def check_production_smoke_workflow(errors: list[str]) -> None:
+    """Keep scheduled smoke bound to the last deployment already proven live."""
+    path = ROOT / '.github' / 'workflows' / 'production-smoke.yml'
+    try:
+        workflow = path.read_text('utf-8')
+    except OSError as exc:
+        errors.append(f'{path.relative_to(ROOT)} unreadable: {exc}')
+        return
+
+    required = (
+        ('actions: read', 'scheduled smoke must have read-only Actions access'),
+        ('- name: Resolve latest successful canonical deploy', 'scheduled smoke must resolve deployed identity before checkout'),
+        ('actions/workflows/deploy.yml/runs?branch=main&status=success&per_page=1', 'scheduled smoke must query the latest successful canonical deploy'),
+        ('ref: ${{ steps.deployed.outputs.sha }}', 'scheduled smoke checkout must use the resolved deployed SHA'),
+        ('EXPECTED_RELEASE_SHA: ${{ steps.deployed.outputs.sha }}', 'exact release smoke must use the resolved deployed SHA'),
+    )
+    for needle, message in required:
+        if needle not in workflow:
+            errors.append(message)
+
+    forbidden = (
+        'EXPECTED_RELEASE_SHA: ${{ github.sha }}',
+        'ref: ${{ github.sha }}',
+    )
+    for needle in forbidden:
+        if needle in workflow:
+            errors.append(f'scheduled smoke is race-prone: forbidden binding present: {needle}')
+
+    try:
+        resolve_pos = workflow.index('- name: Resolve latest successful canonical deploy')
+        checkout_pos = workflow.index('- name: Checkout exact deployed source')
+        release_pos = workflow.index('- name: Verify exact deployed release, privacy and 404 semantics')
+    except ValueError:
+        return
+    if not (resolve_pos < checkout_pos < release_pos):
+        errors.append('scheduled smoke ordering must be resolve deployed SHA -> checkout deployed source -> exact release verification')
 
 
 def main() -> int:
@@ -108,13 +146,15 @@ def main() -> int:
             if actual != expected:
                 errors.append(f'{js.relative_to(ROOT)}: import {asset} revision {actual or "<missing>"} != sw.js {expected}')
 
+    check_production_smoke_workflow(errors)
+
     if errors:
-        print('Release asset contract FAILED:', file=sys.stderr)
+        print('Release asset/orchestration contract FAILED:', file=sys.stderr)
         for error in errors:
             print(f'- {error}', file=sys.stderr)
         return 1
     unique = len(set(sw_versions.values()))
-    print(f'Release asset contract OK: {len(sw_versions)} exact asset revisions across {unique} revision label(s)')
+    print(f'Release contract OK: {len(sw_versions)} exact asset revisions across {unique} revision label(s); scheduled smoke bound to last successful deploy')
     return 0
 
 
