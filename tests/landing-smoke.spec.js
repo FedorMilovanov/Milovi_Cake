@@ -227,9 +227,10 @@ test.describe('production-measured contrast regressions', () => {
     await assertContrast(page, '.info-btn-primary');
   });
 
-  test('Gatchina primary hero CTA remains WCAG AA', async ({ page }) => {
+  test('Gatchina measured contrast pairs remain WCAG AA', async ({ page }) => {
     await useLightTheme(page);
     await page.goto('/prigorody/gatchina/', { waitUntil: 'domcontentloaded' });
     await assertContrast(page, '.hero .btn-primary.btn-primary--hero');
+    await assertContrast(page, '.prigorody-page .calc-options:not(#calcDecor) .calc-opt.selected .opt-label');
   });
 });
