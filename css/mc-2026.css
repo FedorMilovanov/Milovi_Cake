@@ -1,3 +1,8 @@
+/* r19 — Lighthouse #185: suburb selected calculator labels need dark ink on the retained gold surface. */
+:root:not([data-theme="dark"]) .prigorody-page .calc-options:not(#calcDecor) .calc-opt.selected .opt-label{
+  color:#2c1a10 !important;
+}
+
 
 
 
