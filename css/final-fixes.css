@@ -734,3 +734,10 @@ html #contacts .card.card--dark .contact-primary-icon {
     filter:drop-shadow(0 0 7px rgba(var(--soc-rgb),.58)) !important;
   }
 }
+
+/* r19 — Lighthouse #185: selected suburb calculator labels need explicit AA ink.
+   This child declaration intentionally has no !important; it overrides inherited
+   selected-state ink without increasing the repository's override budget. */
+:root:not([data-theme="dark"]) .prigorody-page .calc-options:not(#calcDecor) .calc-opt.selected .opt-label {
+  color:#2c1a10;
+}
