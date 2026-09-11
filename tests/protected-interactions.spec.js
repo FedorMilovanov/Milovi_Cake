@@ -133,20 +133,20 @@ test.describe('protected homepage interactions', () => {
 });
 
 test.describe('premium baseline consolidation contracts', () => {
-  test('privacy defaults locally to denied without an automatic popup and remains user-configurable', async ({ page }) => {
+  test('privacy prompts once on first visit, fails closed, and remains user-configurable', async ({ page }) => {
     await page.addInitScript(() => localStorage.removeItem('milovi_analytics_consent_v1'));
     await page.goto('/', { waitUntil: 'domcontentloaded' });
 
     await expect.poll(async () => page.evaluate(() => window.MiloviConsent && window.MiloviConsent.getChoice())).toBe('denied');
     const overlay = page.locator('.mc-consent-overlay');
-    await expect(overlay).toHaveAttribute('hidden', '');
-    await expect(overlay).not.toHaveClass(/is-open/);
-
-    await page.evaluate(() => window.MiloviConsent.open());
     await expect(overlay).toHaveClass(/is-open/);
     await expect(page.locator('#mc-consent-dialog')).toBeVisible();
+    expect(await page.locator('script[data-milovi-ga]').count()).toBe(0);
+
     await page.keyboard.press('Escape');
     await expect(overlay).not.toHaveClass(/is-open/);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect(page.locator('.mc-consent-overlay')).not.toHaveClass(/is-open/);
   });
 
   test('review and calculator controls keep explicit accessible names', async ({ page }) => {
