@@ -1,7 +1,7 @@
 /* Milovi Cake — centralized privacy-first analytics loader.
  * No third-party request is made before explicit opt-in.
- * Unknown consent is persisted locally as denied without an automatic popup;
- * visitors can deliberately change that choice from the privacy settings UI.
+ * Unknown consent defaults locally to denied and opens the decision dialog once;
+ * analytics remains disabled unless the visitor explicitly opts in.
  * Desktop settings live in the footer; mobile settings live inside the app-like “Ещё” sheet.
  */
 (function () {
@@ -132,10 +132,12 @@
         href: href,
         text: (link.textContent || '').trim().slice(0, 80)
       };
-      if (href.indexOf('wa.me') !== -1) sendGoal('lp_wa_click', params);
-      else if (href.indexOf('t.me') !== -1) sendGoal('lp_tg_click', params);
-      else if (href.indexOf('max.ru') !== -1) sendGoal('lp_max_click', params);
-      else if (href.indexOf('tel:') === 0) sendGoal('lp_phone_click', params);
+      var leadChannel = '';
+      if (href.indexOf('wa.me') !== -1) { sendGoal('lp_wa_click', params); leadChannel = 'whatsapp'; }
+      else if (href.indexOf('t.me') !== -1) { sendGoal('lp_tg_click', params); leadChannel = 'telegram'; }
+      else if (href.indexOf('max.ru') !== -1) { sendGoal('lp_max_click', params); leadChannel = 'max'; }
+      else if (href.indexOf('tel:') === 0) { sendGoal('lp_phone_click', params); leadChannel = 'phone'; }
+      if (leadChannel) sendGoal('generate_lead', Object.assign({}, params, { lead_channel: leadChannel }));
       if (link.classList.contains('lp-btn') || link.classList.contains('info-btn') || link.classList.contains('btn-primary')) {
         sendGoal('lp_cta_click', params);
       }
@@ -409,7 +411,10 @@
     bindConversionGoals();
     installMobileShellBridge();
     ensureDialog();
-    if (!state) saveChoice('denied');
+    if (!state) {
+      saveChoice('denied');
+      openDialog(true);
+    }
     if (state === 'granted') loadAnalytics();
     else window['ga-disable-' + GA_ID] = true;
     syncDialog();

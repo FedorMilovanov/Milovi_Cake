@@ -409,6 +409,8 @@ def check() -> list[str]:
         'googletagmanager.com/gtag/js',
         'mc.yandex.ru/metrika/tag.js',
         'window.MiloviConsent',
+        'openDialog(true)',
+        "sendGoal('generate_lead'",
     ):
         if required not in loader:
             errors.append(f'consent loader missing contract marker: {required}')
