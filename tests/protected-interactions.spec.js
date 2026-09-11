@@ -134,8 +134,9 @@ test.describe('protected homepage interactions', () => {
 
 test.describe('premium baseline consolidation contracts', () => {
   test('privacy prompts once on first visit, fails closed, and remains user-configurable', async ({ page }) => {
-    await page.addInitScript(() => localStorage.removeItem('milovi_analytics_consent_v1'));
     await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.evaluate(() => localStorage.removeItem('milovi_analytics_consent_v1'));
+    await page.reload({ waitUntil: 'domcontentloaded' });
 
     await expect.poll(async () => page.evaluate(() => window.MiloviConsent && window.MiloviConsent.getChoice())).toBe('denied');
     const overlay = page.locator('.mc-consent-overlay');
