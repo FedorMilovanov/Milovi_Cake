@@ -14,7 +14,7 @@
 
 1. Запрещено создавать **новые CSS-файлы**. Все правки — в существующие 7 файлов.
 2. Запрещено добавлять `!important`, если без него можно обойтись.
-3. Запрещено редактировать `prigorody/<city>/index.html` — только `_template.html` + `build.py`.
+3. Запрещено редактировать `prigorody/<city>/index.html` — только `_template.html` + `build.py`. Для изменения данных города обновить его `lastmod` в `_cities.csv`, затем синхронизировать `sitemap.xml` через `scripts/sync_prigorody_sitemap.py`.
 4. Запрещено трогать список в [§3 PROTECTED FILES] без письменного разрешения владельца.
 5. После правки CSS/JS — обновить revision только изменённых runtime assets и синхронизировать exact asset→revision с `sw.js`.
 6. Перед коммитом — прогнать [§7 ОБЯЗАТЕЛЬНЫЕ ПРОВЕРКИ].
