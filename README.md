@@ -171,7 +171,7 @@ python3 prigorody/build.py
 python3 scripts/check_prigorody_idempotent.py
 ```
 
-Если меняли `_cities.csv` или `_template.html`, затем обновить `sitemap.xml`, если добавлены/удалены URL.
+Если меняли данные конкретного города в `_cities.csv`, обновите его `lastmod` фактической датой изменения и запустите `python3 scripts/sync_prigorody_sitemap.py`. Если добавлены/удалены URL, отдельно обновите состав `sitemap.xml`. Проверка `audit:prigorody-sitemap` не допускает рассинхронизацию дат.
 
 ## Локальный запуск
 

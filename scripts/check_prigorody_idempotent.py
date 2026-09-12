@@ -23,7 +23,10 @@ PRIGORODY = ROOT / "prigorody"
 
 
 def digest(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    # Git may materialize CRLF on Windows while build.py writes LF. Newline
+    # representation is not generated-page drift, so compare normalized bytes.
+    data = path.read_bytes().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    return hashlib.sha256(data).hexdigest()
 
 
 def generated_pages() -> list[Path]:

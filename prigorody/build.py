@@ -272,7 +272,7 @@ def main():
     # ── r34: bug #34 — CSV structure validation ──
     with open(CSV_PATH, encoding='utf-8') as vf:
         vreader = csv.DictReader(vf)
-        required_cols = ['slug', 'title', 'meta_desc', 'h1_city', 'hero_p', 'delivery_price']
+        required_cols = ['slug', 'title', 'meta_desc', 'h1_city', 'hero_p', 'delivery_price', 'lastmod']
         for col in required_cols:
             if col not in vreader.fieldnames:
                 print(f'ОШИБКА: столбец "{col}" отсутствует в CSV')
