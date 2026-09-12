@@ -26,7 +26,10 @@ test.describe('protected homepage interactions', () => {
       expect(before.opacity).toBeLessThan(0.2);
 
       await btn.hover();
-      await page.waitForTimeout(520);
+      await expect.poll(
+        async () => Number(await flat.getAttribute('opacity') || '0'),
+        { message: `${item.label} flat label reaches hover state`, timeout: 2000 },
+      ).toBeGreaterThan(0.75);
 
       const hover = await flat.evaluate((el) => ({ opacity: Number(el.getAttribute('opacity') || '0'), y: Number(el.getAttribute('y') || '0'), size: Number(el.getAttribute('font-size') || '0') }));
       const ringHover = await ring.evaluate((el) => ({ opacity: Number(el.getAttribute('opacity') || '0'), transform: el.getAttribute('transform') || '' }));
@@ -37,7 +40,10 @@ test.describe('protected homepage interactions', () => {
       expect(ringHover.transform, `${item.label} ring moves`).toContain('translate');
 
       await page.mouse.move(20, 20);
-      await page.waitForTimeout(520);
+      await expect.poll(
+        async () => Number(await flat.getAttribute('opacity') || '0'),
+        { message: `${item.label} flat label returns to rest`, timeout: 2000 },
+      ).toBeLessThan(0.25);
       const after = await flat.evaluate((el) => ({ opacity: Number(el.getAttribute('opacity') || '0'), y: Number(el.getAttribute('y') || '0') }));
       expect(after.opacity, `${item.label} flat label returns`).toBeLessThan(0.25);
       expect(after.y, `${item.label} y returns`).toBeGreaterThan(4);
