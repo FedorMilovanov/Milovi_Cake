@@ -360,6 +360,8 @@ test.describe('forensic visual regressions', () => {
   test('suburb cart close is icon-only and meets the 44px target', async ({ page }) => {
     await page.goto('/prigorody/pushkin/', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('.cart-close span')).toHaveCount(0);
+    await page.evaluate(() => window.openCart());
+    await expect(page.locator('.cart-drawer')).toHaveClass(/open/);
     const box = await page.locator('.cart-close').evaluate((el) => {
       const rect = el.getBoundingClientRect();
       return { width: rect.width, height: rect.height };
