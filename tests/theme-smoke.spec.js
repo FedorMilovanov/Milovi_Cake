@@ -362,12 +362,9 @@ test.describe('forensic visual regressions', () => {
     await expect(page.locator('.cart-close span')).toHaveCount(0);
     await page.evaluate(() => window.openCart());
     await expect(page.locator('.cart-drawer')).toHaveClass(/open/);
-    const box = await page.locator('.cart-close').evaluate((el) => {
-      const rect = el.getBoundingClientRect();
-      return { width: rect.width, height: rect.height };
-    });
-    expect(box.width).toBeGreaterThanOrEqual(44);
-    expect(box.height).toBeGreaterThanOrEqual(44);
+    const close = page.locator('.cart-close');
+    await expect.poll(async () => close.evaluate((el) => el.getBoundingClientRect().width)).toBeGreaterThanOrEqual(44);
+    await expect.poll(async () => close.evaluate((el) => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
   });
 
   test('meringue map-review labels are not visually clipped', async ({ page }, testInfo) => {
