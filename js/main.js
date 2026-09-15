@@ -939,7 +939,7 @@ function renderCatalogNav() {
     const thumbHtml = thumbSrc ? `<div class="catalog-nav-thumb"><img src="${thumbSrc}" alt="" width="48" height="48" decoding="async" loading="lazy"></div>` : `<div class="catalog-nav-emoji">${p.emoji}</div>`;
     const shortName = shortNames[p.name] || p.name;
     const shortPrice = p.price.replace('от ', '').replace(' ₽/кг', '₽/кг').replace(' ₽/шт', '₽');
-    return `<button class="catalog-nav-item" data-target="card-${p.id}" onclick="scrollToProduct(${p.id})" type="button" aria-label="Перейти к ${p.name}">${thumbHtml}<span class="catalog-nav-label">${shortName}</span><span class="catalog-nav-price">${shortPrice}</span></button>`;
+    return `<button class="catalog-nav-item" data-target="card-${p.id}" onclick="scrollToProduct(${p.id})" type="button">${thumbHtml}<span class="catalog-nav-label">${shortName}</span><span class="catalog-nav-price">${shortPrice}</span></button>`;
   }).join('');
 }
 
@@ -1080,17 +1080,94 @@ function initSectionTitleWords() {
   window.addEventListener('pageshow', function(e) { if (e.persisted) initMessengerRings(); });
 })();
 
+let _catalogHydrated = false;
+let _catalogHydrationTimer = null;
+let _catalogHydrationIO = null;
+
+function initCatalogSliderVisibility() {
+  if (typeof IntersectionObserver === 'undefined') return;
+  const sliderIO = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const match = entry.target.id && entry.target.id.match(/^slider-(\d+)$/);
+      if (!match) return;
+      const pid = parseInt(match[1]);
+      if (!entry.isIntersecting) {
+        if (slideTimers[pid]) { clearInterval(slideTimers[pid]); delete slideTimers[pid]; }
+      } else if (!slideTimers[pid]) {
+        const p = products.find(x => x.id === pid);
+        if (p && p.slides && p.slides.length > 1) {
+          let cur = sliderCurrentIdx[pid] || 0;
+          slideTimers[pid] = setInterval(() => {
+            if (document.hidden) return;
+            cur = (cur + 1) % p.slides.length;
+            sliderCurrentIdx[pid] = cur;
+            goSlide(pid, cur);
+          }, 3000);
+        }
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('[id^="slider-"]').forEach(el => sliderIO.observe(el));
+}
+
+function hydrateCatalog() {
+  if (_catalogHydrated) return;
+  _catalogHydrated = true;
+  if (_catalogHydrationTimer) {
+    clearTimeout(_catalogHydrationTimer);
+    _catalogHydrationTimer = null;
+  }
+  if (_catalogHydrationIO) {
+    _catalogHydrationIO.disconnect();
+    _catalogHydrationIO = null;
+  }
+
+  renderCatalogNav();
+  renderCatalog();
+  if (typeof requestIdleCallback !== 'undefined') requestIdleCallback(wireProductLightbox, { timeout: 500 });
+  else requestAnimationFrame(() => requestAnimationFrame(wireProductLightbox));
+  setTimeout(initCatalogNavScroll, 500);
+  initCatalogSliderVisibility();
+}
+
+function scheduleCatalogHydration() {
+  const path = location.pathname || '/';
+  const isHomepage = path === '/' || path === '/index.html';
+  if (!isHomepage) {
+    hydrateCatalog();
+    return;
+  }
+
+  const catalog = document.getElementById('catalog');
+  if (!catalog) return;
+  const release = () => hydrateCatalog();
+
+  if (location.hash === '#catalog') {
+    release();
+    return;
+  }
+
+  document.addEventListener('click', release, { once: true });
+  document.addEventListener('keydown', () => setTimeout(release, 0), { once: true });
+
+  if (typeof IntersectionObserver !== 'undefined') {
+    _catalogHydrationIO = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) release();
+    }, { threshold: 0, rootMargin: '200px 0px' });
+    _catalogHydrationIO.observe(catalog);
+  }
+
+  // Keep the heavy catalog DOM outside the measured LCP window even without intent/scroll.
+  _catalogHydrationTimer = setTimeout(release, 8000);
+}
+
 function initApp() {
   /* r29: bug #5 — restore biscuit from localStorage */
   if (typeof window._calcBiscuit === "undefined") { try { window._calcBiscuit = localStorage.getItem("milovicake_biscuit") || "vanilla"; } catch(e) { window._calcBiscuit = "vanilla"; } }
-  renderCatalogNav();
-  renderCatalog();
-  if (typeof requestIdleCallback !== 'undefined') { requestIdleCallback(wireProductLightbox, { timeout: 500 }); }
-  else { requestAnimationFrame(function() { requestAnimationFrame(wireProductLightbox); }); }
+  scheduleCatalogHydration();
   loadCartFromStorage();
   updateCartUI();
   observeReveal();
-  setTimeout(initCatalogNavScroll, 500);
   initWaveText();
   initSectionTitleWords();
   enforceSingleSelected('calcType');
@@ -1122,23 +1199,6 @@ function initApp() {
 
 if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initApp); } else { initApp(); }
 
-
-// ── PAUSE SLIDERS WHEN OFF-SCREEN ──
-setTimeout(() => {
-  const sliderIO = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      const match = entry.target.id && entry.target.id.match(/^slider-(\d+)$/);
-      if (!match) return;
-      const pid = parseInt(match[1]);
-      if (!entry.isIntersecting) { if (slideTimers[pid]) { clearInterval(slideTimers[pid]); delete slideTimers[pid]; } }
-      else if (!slideTimers[pid]) {
-        const p = products.find(x => x.id === pid);
-        if (p && p.slides && p.slides.length > 1) { let cur = sliderCurrentIdx[pid] || 0; slideTimers[pid] = setInterval(() => { cur = (cur + 1) % p.slides.length; sliderCurrentIdx[pid] = cur; goSlide(pid, cur); }, 3000); }
-      }
-    });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('[id^="slider-"]').forEach(el => sliderIO.observe(el));
-}, 300);
 
 // ── SCROLL HANDLER ──
 const _scrollEl = document.getElementById('scroll-progress');

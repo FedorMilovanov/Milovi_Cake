@@ -47,6 +47,34 @@ require(
     'homepage gyroscope parallax returned to an unconditional animation loop',
 )
 
+require(
+    'function scheduleCatalogHydration()' in main_js
+    and "document.addEventListener('click', release, { once: true });" in main_js
+    and "document.addEventListener('keydown', () => setTimeout(release, 0), { once: true });" in main_js
+    and "rootMargin: '200px 0px'" in main_js
+    and '_catalogHydrationTimer = setTimeout(release, 8000);' in main_js,
+    'homepage catalog hydration returned to the initial LCP window or lost an intent/viewport release path',
+)
+require(
+    'function initCatalogSliderVisibility()' in main_js
+    and 'initCatalogSliderVisibility();' in main_js,
+    'deferred homepage catalog lost post-hydration slider visibility lifecycle',
+)
+init_app = main_js.split('function initApp() {', 1)[1].split("\n}\n\nif (document.readyState", 1)[0]
+require(
+    'scheduleCatalogHydration();' in init_app
+    and 'renderCatalogNav();' not in init_app
+    and 'renderCatalog();' not in init_app
+    and 'loadCartFromStorage();' in init_app
+    and 'updateCartUI();' in init_app
+    and 'updateCalc();' in init_app,
+    'homepage catalog work returned to synchronous initApp or immediate cart/calculator lifecycle was deferred',
+)
+require(
+    'aria-label="Перейти к ${p.name}"' not in main_js,
+    'deferred catalog renderer can recreate the old catalog accessible-name mismatch',
+)
+
 mc_js = read('js/mc-2026.js')
 require(
     "strip.removeAttribute('role');" in mc_js
@@ -243,13 +271,13 @@ for public_html in sorted(Path('.').rglob('*.html')):
 for public_html in sorted(Path('.').rglob('*.html')):
     html = read(public_html)
     if 'js/main.js?v=' in html:
-        require('main.js?v=20260907r01' in html, f'{public_html} shared main.js revision drifted')
+        require('main.js?v=20260916r01' in html, f'{public_html} shared main.js revision drifted')
         require('main.js?v=20260906r01' not in html, f'{public_html} still references stale shared main.js revision')
 
 sw = read('sw.js')
 require("const CACHE_NAME = 'milovi-cake-v2026.09.15-r87';" in sw, 'service-worker cache generation drifted')
 require("'/css/style.css?v=20260915r02'," in sw, 'service-worker precache still points at stale shared CSS revision')
-require("'/js/main.js?v=20260907r01'," in sw, 'service-worker precache still points at stale shared main.js revision')
+require("'/js/main.js?v=20260916r01'," in sw, 'service-worker precache still points at stale shared main.js revision')
 require("'/js/gallery/main.js?v=20260906r05'," in sw, 'service-worker precache still points at stale gallery runtime revision')
 
 cfg = json.loads(read('.github/lighthouse-config.json'))

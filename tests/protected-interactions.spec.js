@@ -78,6 +78,18 @@ test.describe('protected homepage interactions', () => {
     await expect(modal).not.toHaveClass(/open/);
   });
 
+  test('keeps homepage catalog out of the initial LCP quiet window and releases on first intent', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(500);
+
+    expect(await page.locator('.catalog-nav-item').count()).toBe(0);
+    expect(await page.locator('#catalogGrid .product-card').count()).toBe(0);
+
+    await page.locator('body').dispatchEvent('click');
+    await expect(page.locator('.catalog-nav-item')).toHaveCount(6);
+    await expect(page.locator('#catalogGrid .product-card')).toHaveCount(6);
+  });
+
   test('homepage component semantics match their visible controls', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
 
@@ -92,7 +104,9 @@ test.describe('protected homepage interactions', () => {
       .toEqual(Array(32).fill(''));
 
     const catalogItems = page.locator('.catalog-nav-item');
+    await page.locator('body').dispatchEvent('click');
     await expect(catalogItems).toHaveCount(6);
+    await expect(page.locator('#catalogGrid .product-card')).toHaveCount(6);
     expect(await catalogItems.evaluateAll((items) => items.every((item) =>
       !item.hasAttribute('aria-label') && (item.textContent || '').trim().length > 0
     ))).toBe(true);
