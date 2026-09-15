@@ -357,6 +357,54 @@ test.describe('forensic visual regressions', () => {
     expect(contrastRatio(headingStyle.color, background)).toBeGreaterThanOrEqual(4.5);
   });
 
+  test('About first visit stays within the mobile CLS budget while consent initializes', async ({ page }, testInfo) => {
+    test.skip(!testInfo.project.name.includes('mobile'), 'mobile Lighthouse-style CLS regression');
+
+    await page.route('https://fonts.googleapis.com/**', async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 700));
+      await route.continue();
+    });
+    await page.addInitScript(() => {
+      localStorage.removeItem('milovi_analytics_consent_v1');
+      localStorage.setItem('mc_theme', 'light');
+      window.__mcCls = 0;
+      window.__mcLayoutShifts = [];
+      new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (entry.hadRecentInput) continue;
+          window.__mcCls += entry.value;
+          window.__mcLayoutShifts.push({
+            value: entry.value,
+            sources: (entry.sources || []).map((source) => ({
+              node: source.node && source.node.id
+                ? '#' + source.node.id
+                : source.node && source.node.className
+                  ? '.' + String(source.node.className).trim().split(/\s+/).join('.')
+                  : source.node && source.node.tagName
+                    ? source.node.tagName.toLowerCase()
+                    : '',
+            })),
+          });
+        }
+      }).observe({ type: 'layout-shift', buffered: true });
+    });
+
+    await page.goto('/o-konditere/', { waitUntil: 'load' });
+    await expect.poll(
+      () => page.evaluate(() => window.MiloviConsent && window.MiloviConsent.getChoice()),
+    ).toBe('denied');
+    await page.waitForTimeout(1200);
+
+    const result = await page.evaluate(() => ({
+      cls: window.__mcCls || 0,
+      shifts: window.__mcLayoutShifts || [],
+      fontDisplayOptional: [...document.querySelectorAll('link[href*="fonts.googleapis.com"]')]
+        .every((link) => link.href.includes('display=optional')),
+    }));
+    expect(result.fontDisplayOptional).toBe(true);
+    expect(result.cls, JSON.stringify(result.shifts)).toBeLessThanOrEqual(0.1);
+  });
+
   test('About page keeps hero geometry stable when privacy scroll-lock engages', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name.includes('mobile'), 'desktop scrollbar-gutter regression');
     await applyTheme(page, 'light', 'denied');
