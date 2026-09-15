@@ -47,6 +47,34 @@ require(
     'homepage gyroscope parallax returned to an unconditional animation loop',
 )
 
+require(
+    'function scheduleCatalogHydration()' in main_js
+    and "document.addEventListener('pointerdown', release, { once: true, passive: true });" in main_js
+    and "document.addEventListener('keydown', release, { once: true });" in main_js
+    and "rootMargin: '800px 0px'" in main_js
+    and '_catalogHydrationTimer = setTimeout(release, 8000);' in main_js,
+    'homepage catalog hydration returned to the initial LCP window or lost an intent/viewport release path',
+)
+require(
+    'function initCatalogSliderVisibility()' in main_js
+    and 'initCatalogSliderVisibility();' in main_js,
+    'deferred homepage catalog lost post-hydration slider visibility lifecycle',
+)
+init_app = main_js.split('function initApp() {', 1)[1].split("\n}\n\nif (document.readyState", 1)[0]
+require(
+    'scheduleCatalogHydration();' in init_app
+    and 'renderCatalogNav();' not in init_app
+    and 'renderCatalog();' not in init_app
+    and 'loadCartFromStorage();' in init_app
+    and 'updateCartUI();' in init_app
+    and 'updateCalc();' in init_app,
+    'homepage catalog work returned to synchronous initApp or immediate cart/calculator lifecycle was deferred',
+)
+require(
+    'aria-label="Перейти к ${p.name}"' not in main_js,
+    'deferred catalog renderer can recreate the old catalog accessible-name mismatch',
+)
+
 mc_js = read('js/mc-2026.js')
 require(
     "strip.removeAttribute('role');" in mc_js
