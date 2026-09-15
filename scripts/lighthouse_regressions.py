@@ -84,7 +84,16 @@ require(
     'homepage content-block FAQ keyboard activation regressed',
 )
 
-for path in ['index.html', 'gallery/index.html', 'svadebnye-torty/index.html', 'bento-torty/index.html', 'zakazat-tort-spb/index.html']:
+for path in [
+    'index.html',
+    'gallery/index.html',
+    'svadebnye-torty/index.html',
+    'bento-torty/index.html',
+    'zakazat-tort-spb/index.html',
+    'o-konditere/index.html',
+    'otzyvy/index.html',
+    'dostavka-i-oplata/index.html',
+]:
     text = read(path)
     require('display=swap' not in text, f'{path} reintroduced display=swap')
 
