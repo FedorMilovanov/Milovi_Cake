@@ -1153,7 +1153,7 @@ function scheduleCatalogHydration() {
   if (typeof IntersectionObserver !== 'undefined') {
     _catalogHydrationIO = new IntersectionObserver(entries => {
       if (entries.some(entry => entry.isIntersecting)) release();
-    }, { threshold: 0, rootMargin: '800px 0px' });
+    }, { threshold: 0, rootMargin: '200px 0px' });
     _catalogHydrationIO.observe(catalog);
   }
 
