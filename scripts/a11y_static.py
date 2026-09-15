@@ -73,12 +73,15 @@ def main() -> int:
     errors.extend(require_text('prigorody/index.html', (
         'id="themeToggleBtn"',
         'window.toggleTheme = function ()',
+        "document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light')",
     )))
     errors.extend(require_text('css/style.css', (
         '.mobile-menu-nav a{font-family:',
         '.cart-close{background:transparent',
         'width:44px;height:44px',
         '[data-theme="dark"] .bridal-panel{',
+        '[data-theme="dark"] .bento-seg{',
+        '[data-theme="dark"] .about-compact-block h3{',
     )))
     suburb_template = (ROOT / 'prigorody/_template.html').read_text('utf-8', errors='replace')
     if '>закрыть</span>' in suburb_template:

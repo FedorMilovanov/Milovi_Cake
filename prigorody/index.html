@@ -15,10 +15,8 @@
   <script>
     (function(){
       try{var t=localStorage.getItem('mc_theme');
-        if(t)document.documentElement.setAttribute('data-theme',t);
-        else if(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)
-          document.documentElement.setAttribute('data-theme','dark');
-      }catch(e){}
+        document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');
+      }catch(e){document.documentElement.setAttribute('data-theme','light')}
       function reveal(){requestAnimationFrame(function(){document.body&&document.body.classList.add('ready')})}
       if(document.readyState!=='loading')reveal();
       else document.addEventListener('DOMContentLoaded',reveal);
