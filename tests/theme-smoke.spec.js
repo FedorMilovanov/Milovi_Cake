@@ -357,6 +357,37 @@ test.describe('forensic visual regressions', () => {
     expect(contrastRatio(headingStyle.color, background)).toBeGreaterThanOrEqual(4.5);
   });
 
+  test('About page keeps hero geometry stable when privacy scroll-lock engages', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name.includes('mobile'), 'desktop scrollbar-gutter regression');
+    await applyTheme(page, 'light', 'denied');
+    await page.goto('/o-konditere/', { waitUntil: 'domcontentloaded' });
+    const visual = page.locator('.info-visual');
+    await expect(visual).toBeVisible();
+
+    const before = await visual.evaluate((el) => {
+      const rect = el.getBoundingClientRect();
+      return {
+        left: rect.left,
+        top: rect.top,
+        width: rect.width,
+        height: rect.height,
+        gutter: getComputedStyle(document.documentElement).scrollbarGutter,
+      };
+    });
+    expect(before.gutter).toContain('stable');
+
+    await page.evaluate(() => document.body.classList.add('mc-consent-open'));
+    await page.waitForTimeout(80);
+    const after = await visual.evaluate((el) => {
+      const rect = el.getBoundingClientRect();
+      return { left: rect.left, top: rect.top, width: rect.width, height: rect.height };
+    });
+    expect(Math.abs(after.left - before.left)).toBeLessThanOrEqual(0.5);
+    expect(Math.abs(after.top - before.top)).toBeLessThanOrEqual(0.5);
+    expect(Math.abs(after.width - before.width)).toBeLessThanOrEqual(0.5);
+    expect(Math.abs(after.height - before.height)).toBeLessThanOrEqual(0.5);
+  });
+
   test('wedding editorial uses genuinely dark surfaces in dark theme', async ({ page }) => {
     await applyTheme(page, 'dark');
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
