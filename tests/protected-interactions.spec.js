@@ -85,7 +85,7 @@ test.describe('protected homepage interactions', () => {
     expect(await page.locator('.catalog-nav-item').count()).toBe(0);
     expect(await page.locator('#catalogGrid .product-card').count()).toBe(0);
 
-    await page.locator('body').dispatchEvent('pointerdown');
+    await page.locator('body').dispatchEvent('click');
     await expect(page.locator('.catalog-nav-item')).toHaveCount(6);
     await expect(page.locator('#catalogGrid .product-card')).toHaveCount(6);
   });
@@ -104,7 +104,7 @@ test.describe('protected homepage interactions', () => {
       .toEqual(Array(32).fill(''));
 
     const catalogItems = page.locator('.catalog-nav-item');
-    await page.locator('body').dispatchEvent('pointerdown');
+    await page.locator('body').dispatchEvent('click');
     await expect(catalogItems).toHaveCount(6);
     await expect(page.locator('#catalogGrid .product-card')).toHaveCount(6);
     expect(await catalogItems.evaluateAll((items) => items.every((item) =>
