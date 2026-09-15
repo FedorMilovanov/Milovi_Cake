@@ -70,6 +70,20 @@ def main() -> int:
         ':root:not([data-theme="dark"]) .prigorody-page .nearby-city-card__info{color:#725f50}',
     )))
 
+    errors.extend(require_text('prigorody/index.html', (
+        'id="themeToggleBtn"',
+        'window.toggleTheme = function ()',
+    )))
+    errors.extend(require_text('css/style.css', (
+        '.mobile-menu-nav a{font-family:',
+        '.cart-close{background:transparent',
+        'width:44px;height:44px',
+        '[data-theme="dark"] .bridal-panel{',
+    )))
+    suburb_template = (ROOT / 'prigorody/_template.html').read_text('utf-8', errors='replace')
+    if '>закрыть</span>' in suburb_template:
+        errors.append('prigorody/_template.html: cart close must remain icon-only; accessible name belongs in aria-label')
+
     if errors:
         print('Static accessibility/conformance guard FAILED:', file=sys.stderr)
         for error in errors:
