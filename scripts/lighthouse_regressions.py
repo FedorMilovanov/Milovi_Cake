@@ -195,7 +195,7 @@ require(
     'gallery phone-card media boundary drifted',
 )
 require("const PHONE_CARD_IDS = new Set(['p05', 'p06', 'p09', 'p12', 'p18']);" in gallery_js, 'gallery phone-card allowlist drifted')
-require("return item.src.replace(/\.webp(\?|$)/i, '-card.avif$1');" in gallery_js, 'gallery phone-card AVIF derivation disappeared')
+require(r"return item.src.replace(/\.webp(\?|$)/i, '-card.avif$1');" in gallery_js, 'gallery phone-card AVIF derivation disappeared')
 require("phoneSource.media = PHONE_CARD_MEDIA;" in gallery_js, 'gallery phone AVIF source lost its media guard')
 require("phoneSource.srcset = phoneAvifSrc;" in gallery_js, 'gallery phone AVIF source lost its derivative URL')
 for number in [5, 6, 9, 12, 18]:
