@@ -23,7 +23,8 @@ for (const width of WIDTHS) {
         localStorage.setItem('mc_theme', selectedTheme);
       }, theme);
       await page.goto('/', { waitUntil: 'domcontentloaded' });
-      await page.waitForSelector('.product-card');
+      await page.locator('body').dispatchEvent('pointerdown');
+    await page.waitForSelector('.product-card');
 
       const horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
       expect(horizontalOverflow).toBeLessThanOrEqual(1);
