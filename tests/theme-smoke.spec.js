@@ -302,3 +302,99 @@ test.describe('contact, privacy and mobile application contracts', () => {
     await expect(page.locator('.site-footer .mc-consent-trigger')).toHaveCount(0);
   });
 });
+
+test.describe('forensic visual regressions', () => {
+  test('mobile menu messenger labels keep compact typography and fit their cards', async ({ page }, testInfo) => {
+    test.skip(!testInfo.project.name.includes('mobile'), 'mobile-only regression');
+    await applyTheme(page, 'light');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.locator('#burgerBtn').click();
+    await expect(page.locator('#mobileMenu')).toHaveClass(/open/);
+    const metrics = await page.locator('.mm-msg').evaluateAll((items) => items.map((el) => {
+      const style = getComputedStyle(el);
+      const box = el.getBoundingClientRect();
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const text = range.getBoundingClientRect();
+      return { fontSize: parseFloat(style.fontSize), width: box.width, textLeft: text.left, textRight: text.right, left: box.left, right: box.right };
+    }));
+    expect(metrics).toHaveLength(3);
+    for (const item of metrics) {
+      expect(item.fontSize).toBeLessThanOrEqual(16);
+      expect(item.width).toBeGreaterThan(0);
+      expect(item.textLeft).toBeGreaterThanOrEqual(item.left - 1);
+      expect(item.textRight).toBeLessThanOrEqual(item.right + 1);
+    }
+  });
+
+  test('wedding editorial uses genuinely dark surfaces in dark theme', async ({ page }) => {
+    await applyTheme(page, 'dark');
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    const surfaces = await page.evaluate(() => {
+      const read = (selector) => {
+        const style = getComputedStyle(document.querySelector(selector));
+        return { backgroundColor: style.backgroundColor, backgroundImage: style.backgroundImage };
+      };
+      return { panel: read('.bridal-panel'), mini: read('.bridal-mini'), step: read('.bridal-step') };
+    });
+    const darkEnough = (rgb) => {
+      const values = (rgb.match(/\d+/g) || []).slice(0, 3).map(Number);
+      return values.length === 3 && Math.max(...values) < 80;
+    };
+    expect(darkEnough(surfaces.panel.backgroundColor)).toBe(true);
+    expect(surfaces.panel.backgroundImage).not.toContain('255, 255, 255');
+    expect(darkEnough(surfaces.mini.backgroundColor)).toBe(true);
+    expect(darkEnough(surfaces.step.backgroundColor)).toBe(true);
+  });
+
+  test('suburb hub exposes a persistent theme toggle', async ({ page }) => {
+    await applyTheme(page, 'light');
+    await page.goto('/prigorody/', { waitUntil: 'domcontentloaded' });
+    const toggle = page.locator('#themeToggleBtn');
+    await expect(toggle).toBeVisible();
+    await toggle.click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    expect(await page.evaluate(() => localStorage.getItem('mc_theme'))).toBe('dark');
+  });
+
+  test('suburb cart close is icon-only and meets the 44px target', async ({ page }) => {
+    await page.goto('/prigorody/pushkin/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('.cart-close span')).toHaveCount(0);
+    await page.evaluate(() => window.openCart());
+    await expect(page.locator('.cart-drawer')).toHaveClass(/open/);
+    const close = page.locator('.cart-close');
+    await expect.poll(async () => close.evaluate((el) => el.getBoundingClientRect().width)).toBeGreaterThanOrEqual(44);
+    await expect.poll(async () => close.evaluate((el) => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
+  });
+
+  test('meringue map-review labels are not visually clipped', async ({ page }, testInfo) => {
+    test.skip(!testInfo.project.name.includes('mobile'), 'mobile clipping regression');
+    await page.goto('/meringue-roll/', { waitUntil: 'domcontentloaded' });
+    const links = page.locator('a.btn-ghost').filter({ hasText: /Яндекс Карты|Google Maps/ });
+    await expect(links).toHaveCount(2);
+    const fits = await links.evaluateAll((items) => items.map((el) => {
+      const box = el.getBoundingClientRect();
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const content = range.getBoundingClientRect();
+      return content.left >= box.left - 1 && content.right <= box.right + 1;
+    }));
+    expect(fits).toEqual([true, true]);
+  });
+
+  test('privacy analytics CTA fits and opens its dialog', async ({ page }) => {
+    await page.goto('/privacy/', { waitUntil: 'domcontentloaded' });
+    const button = page.getByRole('button', { name: 'Открыть настройки аналитики' });
+    await expect(button).toBeVisible();
+    const fits = await button.evaluate((el) => {
+      const box = el.getBoundingClientRect();
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const content = range.getBoundingClientRect();
+      return content.left >= box.left - 1 && content.right <= box.right + 1;
+    });
+    expect(fits).toBe(true);
+    await button.click();
+    await expect(page.locator('.mc-consent-dialog')).toBeVisible();
+  });
+});
