@@ -51,7 +51,7 @@ require(
     'function scheduleCatalogHydration()' in main_js
     and "document.addEventListener('pointerdown', release, { once: true, passive: true });" in main_js
     and "document.addEventListener('keydown', release, { once: true });" in main_js
-    and "rootMargin: '800px 0px'" in main_js
+    and "rootMargin: '200px 0px'" in main_js
     and '_catalogHydrationTimer = setTimeout(release, 8000);' in main_js,
     'homepage catalog hydration returned to the initial LCP window or lost an intent/viewport release path',
 )
