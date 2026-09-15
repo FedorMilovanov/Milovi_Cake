@@ -1147,8 +1147,8 @@ function scheduleCatalogHydration() {
     return;
   }
 
-  document.addEventListener('pointerdown', release, { once: true, passive: true });
-  document.addEventListener('keydown', release, { once: true });
+  document.addEventListener('click', release, { once: true });
+  document.addEventListener('keydown', () => setTimeout(release, 0), { once: true });
 
   if (typeof IntersectionObserver !== 'undefined') {
     _catalogHydrationIO = new IntersectionObserver(entries => {
