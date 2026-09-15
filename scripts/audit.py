@@ -1385,9 +1385,30 @@ with R.section("18b. File Hygiene Guards"):
     # binary-identical-name AVIF twin is *implicitly* consumed.
     # Mirror that pairing here to avoid false positives.
     gallery_js = ROOT / "js" / "gallery" / "main.js"
-    derived_avif_active = (
-        gallery_js.exists()
-        and "wrapInPictureWithAvif" in gallery_js.read_text(encoding="utf-8", errors="ignore")
+    gallery_js_text = (
+        gallery_js.read_text(encoding="utf-8", errors="ignore")
+        if gallery_js.exists()
+        else ""
+    )
+    derived_avif_active = "wrapInPictureWithAvif" in gallery_js_text
+
+    # Gallery phone cards are another intentional runtime derivative:
+    # PHONE_CARD_IDS gates selected items and phoneCardAvifFor() rewrites
+    # gallery-NN.webp -> gallery-NN-card.avif for the phone-only <source>.
+    # Parse the runtime allowlist instead of hard-coding file exceptions so
+    # audit behavior follows the actual gallery implementation automatically.
+    phone_card_ids: set[str] = set()
+    phone_card_match = re.search(
+        r"const\s+PHONE_CARD_IDS\s*=\s*new Set\(\[([^\]]*)\]\)",
+        gallery_js_text,
+    )
+    if phone_card_match:
+        phone_card_ids = set(re.findall(r"['\"](p\d+)['\"]", phone_card_match.group(1)))
+    phone_card_derivation_active = (
+        bool(phone_card_ids)
+        and "function phoneCardAvifFor(item)" in gallery_js_text
+        and "PHONE_CARD_IDS.has(item.id)" in gallery_js_text
+        and r"return item.src.replace(/\.webp(\?|$)/i, '-card.avif$1');" in gallery_js_text
     )
 
     unreferenced = []
@@ -1412,6 +1433,25 @@ with R.section("18b. File Hygiene Guards"):
                 webp_twin = p.with_suffix(".webp")
                 if webp_twin.exists() and webp_twin.name in haystack:
                     continue
+            # Phone-card AVIFs are selected dynamically by item id and use a
+            # "-card.avif" suffix, so their exact filenames never appear in
+            # source. Validate the same derivation contract as runtime JS.
+            if (
+                phone_card_derivation_active
+                and p.suffix.lower() == ".avif"
+                and "gallery/" in rel
+            ):
+                card_match = re.fullmatch(r"gallery-(\d+)-card\.avif", p.name)
+                if card_match:
+                    number = int(card_match.group(1))
+                    item_id = f"p{number:02d}"
+                    webp_twin = p.with_name(f"gallery-{number:02d}.webp")
+                    if (
+                        item_id in phone_card_ids
+                        and webp_twin.exists()
+                        and webp_twin.name in haystack
+                    ):
+                        continue
             unreferenced.append((rel, p.stat().st_size))
 
     if unreferenced:
