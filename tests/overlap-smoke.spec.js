@@ -7,6 +7,7 @@ test.describe('Mobile layout overlap smoke tests', () => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     
     // Give the product cards time to render if they are populated dynamically
+    await page.locator('body').dispatchEvent('pointerdown');
     await page.waitForSelector('.product-card');
 
     const cards = page.locator('.product-card');
