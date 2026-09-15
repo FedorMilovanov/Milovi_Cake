@@ -192,6 +192,10 @@ require("phoneSource.srcset = phoneAvifSrc;" in gallery_js, 'gallery phone AVIF 
 for number in [5, 6, 9, 12, 18]:
     require(Path(f'img/gallery/gallery-{number:02d}-card.avif').is_file(), f'gallery phone-card derivative missing for gallery-{number:02d}')
 
+about = read('o-konditere/index.html')
+require('scrollbar-gutter:stable' in about, 'About page does not reserve a stable scrollbar gutter')
+require('display=optional' in about and 'display=swap' not in about, 'About page font loading can still cause late swap CLS')
+
 gatchina = read('prigorody/gatchina/index.html')
 for title in ['Ручная Работа', 'Натуральные Ингредиенты', 'Свежесть под заказ', 'Доставка по СПб']:
     require(f'<h3>{title}</h3>' in gatchina and f'<h4>{title}</h4>' not in gatchina, f'Gatchina heading order drift: {title}')
