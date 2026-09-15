@@ -327,6 +327,36 @@ test.describe('forensic visual regressions', () => {
     }
   });
 
+  test('homepage dark bento and About heading remain readable', async ({ page }) => {
+    await applyTheme(page, 'dark');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+    const segment = page.locator('.bento-seg').first();
+    const inactive = page.locator('.bento-seg-opt:not(.active)').first();
+    await expect(segment).toBeVisible();
+    await expect(inactive).toBeVisible();
+
+    const bento = await page.evaluate(() => {
+      const seg = document.querySelector('.bento-seg');
+      const opt = document.querySelector('.bento-seg-opt:not(.active)');
+      return {
+        foreground: getComputedStyle(opt).color,
+        background: getComputedStyle(seg).backgroundColor,
+      };
+    });
+    expect(contrastRatio(bento.foreground, bento.background)).toBeGreaterThanOrEqual(4.5);
+
+    const heading = page.locator('.about-compact-block h3').first();
+    await expect(heading).toBeVisible();
+    const headingStyle = await heading.evaluate((el) => ({
+      color: getComputedStyle(el).color,
+      fill: getComputedStyle(el).webkitTextFillColor,
+    }));
+    expect(headingStyle.fill).not.toBe('rgba(0, 0, 0, 0)');
+    const background = await effectiveBg(heading);
+    expect(contrastRatio(headingStyle.color, background)).toBeGreaterThanOrEqual(4.5);
+  });
+
   test('wedding editorial uses genuinely dark surfaces in dark theme', async ({ page }) => {
     await applyTheme(page, 'dark');
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
@@ -347,14 +377,19 @@ test.describe('forensic visual regressions', () => {
     expect(darkEnough(surfaces.step.backgroundColor)).toBe(true);
   });
 
-  test('suburb hub exposes a persistent theme toggle', async ({ page }) => {
-    await applyTheme(page, 'light');
+  test('suburb hub defaults to light and exposes a persistent theme toggle', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await page.addInitScript(() => localStorage.removeItem('mc_theme'));
     await page.goto('/prigorody/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
     const toggle = page.locator('#themeToggleBtn');
     await expect(toggle).toBeVisible();
     await toggle.click();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
     expect(await page.evaluate(() => localStorage.getItem('mc_theme'))).toBe('dark');
+    await toggle.click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    expect(await page.evaluate(() => localStorage.getItem('mc_theme'))).toBe('light');
   });
 
   test('suburb cart close is icon-only and meets the 44px target', async ({ page }) => {

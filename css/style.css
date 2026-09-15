@@ -413,3 +413,16 @@ body{background:var(--cream);color:var(--text)}
 @media (prefers-reduced-motion:reduce){
   .hero--visible.hero--motion-ready .hero-photo-bg img{animation:none}
 }
+
+/* Audited dark-theme surface parity — 2026-09-15 */
+[data-theme="dark"] .bento-seg{
+  background:var(--card-bg-elevated);
+  border:1px solid rgba(212,167,106,.14);
+}
+[data-theme="dark"] .about-compact-block h3{
+  background:none;
+  -webkit-background-clip:border-box;
+  background-clip:border-box;
+  -webkit-text-fill-color:var(--text);
+  color:var(--text);
+}
