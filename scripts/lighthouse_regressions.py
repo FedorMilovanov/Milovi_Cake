@@ -221,13 +221,13 @@ require(
     'landing footer link target-size contract regressed',
 )
 for path in ['svadebnye-torty/index.html', 'bento-torty/index.html', 'zakazat-tort-spb/index.html']:
-    require('/css/style.css?v=20260907r01' in read(path), f'{path} landing a11y CSS revision drifted')
+    require('/css/style.css?v=20260915r02' in read(path), f'{path} landing a11y CSS revision drifted')
 
 # Shared CSS and its service-worker generation must move as one release unit.
 for public_html in sorted(Path('.').rglob('*.html')):
     html = read(public_html)
     if 'style.css?v=' in html:
-        require('style.css?v=20260907r01' in html, f'{public_html} shared style revision drifted')
+        require('style.css?v=20260915r02' in html, f'{public_html} shared style revision drifted')
         require('style.css?v=20260728r27' not in html, f'{public_html} still references stale shared style revision')
 
 # Shared main.js and CSS identities must move together across every HTML consumer.
@@ -239,7 +239,7 @@ for public_html in sorted(Path('.').rglob('*.html')):
 
 sw = read('sw.js')
 require("const CACHE_NAME = 'milovi-cake-v2026.09.07-r86';" in sw, 'service-worker cache generation drifted')
-require("'/css/style.css?v=20260907r01'," in sw, 'service-worker precache still points at stale shared CSS revision')
+require("'/css/style.css?v=20260915r02'," in sw, 'service-worker precache still points at stale shared CSS revision')
 require("'/js/main.js?v=20260907r01'," in sw, 'service-worker precache still points at stale shared main.js revision')
 require("'/js/gallery/main.js?v=20260906r05'," in sw, 'service-worker precache still points at stale gallery runtime revision')
 
