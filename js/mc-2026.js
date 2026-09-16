@@ -356,26 +356,9 @@
   
   // 9. NETWORK INFORMATION API removed — conflicts with prefers-reduced-motion
   
-  // 10. IDLE CALLBACKS for non-critical work
-  var ric = window.requestIdleCallback || function(cb) { setTimeout(cb, 1); };
-  
-  ric(function() {
-    // Preload critical fonts
-    if ('fonts' in document) {
-      document.fonts.load('400 16px Jost');
-      document.fonts.load('500 16px Jost');
-      document.fonts.load('400 24px "Cormorant Garamond"');
-    }
-    
-    // Warm up connections
-    ['https://fonts.googleapis.com', 'https://fonts.gstatic.com'].forEach(function(origin) {
-      var link = document.createElement('link');
-      link.rel = 'preconnect';
-      link.href = origin;
-      link.crossOrigin = 'anonymous';
-      document.head.appendChild(link);
-    });
-  });
+  // 10. Font loading stays declarative in <head>. Do not force document.fonts.load()
+  // or append late preconnects here: display=optional and the static connection hints
+  // own initial font network policy without duplicate VeryHigh work.
   
 })();
 

@@ -12,6 +12,10 @@ def require(condition, message):
 
 
 home = read('index.html')
+require(
+    '<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />' in home,
+    'homepage Google Fonts preconnect lost its reusable CORS connection contract',
+)
 require('id="anti-fouc-body"' not in home, 'homepage body-level anti-FOUC gate returned')
 require('body:not(.ready){opacity:0}' not in home, 'homepage can still be hidden before DOMContentLoaded')
 require("classList.add('page-loaded')" not in home, 'homepage DOMContentLoaded main reveal reset returned')
@@ -76,6 +80,11 @@ require(
 )
 
 mc_js = read('js/mc-2026.js')
+require(
+    "document.fonts.load('" not in mc_js
+    and "['https://fonts.googleapis.com', 'https://fonts.gstatic.com']" not in mc_js,
+    'shared UX runtime regained forced Google Font loads or duplicate late font preconnects',
+)
 require(
     "strip.removeAttribute('role');" in mc_js
     and "d.setAttribute('role', 'listitem')" not in mc_js,
