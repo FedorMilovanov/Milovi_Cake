@@ -6,6 +6,7 @@ const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
 const SIZE_MAP = { tall: '1x2', wide: '2x1', big: '2x2', m: '1x1' };
 const PHONE_CARD_MEDIA = '(max-width: 430px) and (max-resolution: 1.75dppx)';
 const PHONE_CARD_IDS = new Set(['p05', 'p06', 'p09', 'p12', 'p18']);
+const GRID_RENDER_BATCH_SIZE = 6;
 const filterButtons = [
   { id: 'all', label: 'Все' }, { id: 'photo', label: 'Фото' }, { id: 'video', label: 'Видео' },
   { id: 'wedding', label: 'Свадебные' }, { id: 'bento', label: 'Бенто' }, { id: '3d', label: '3D' },
@@ -14,7 +15,7 @@ const filterButtons = [
 ];
 const CONTACT_PHONE = '79119038886';
 const TELEGRAM_USERNAME = 'milovi_cake';
-const state = { filter:'all', items:[], visible:[], swiper:null, lbIndex:0, observer:null, bgTimer:null, isNavigating: false, mediaWarmupTimer: null };
+const state = { filter:'all', items:[], visible:[], swiper:null, lbIndex:0, observer:null, bgTimer:null, isNavigating: false, mediaWarmupTimer: null, gridRenderToken: 0 };
 
 
 function esc(s=''){ return String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
@@ -116,15 +117,30 @@ function renderFilters(){
 }
 function sizeClasses(size){ if(size==='2x2') return 'col-span-2 row-span-2'; if(size==='2x1') return 'col-span-2'; if(size==='1x2') return 'row-span-2'; return ''; }
 function playIcon(){ return '<svg class="play-badge" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>'; }
+function scheduleGridBatch(callback) {
+  requestAnimationFrame(() => setTimeout(callback, 0));
+}
+function finishGridRender(grid, renderToken) {
+  if (renderToken !== state.gridRenderToken) return;
+  grid.removeAttribute('data-hydrating');
+  if(document.readyState==='complete') setupVideoObserver();
+  else if(!state.videoObserverPending){
+    state.videoObserverPending=true;
+    window.addEventListener('load',()=>{state.videoObserverPending=false;setupVideoObserver();},{once:true});
+  }
+}
 function renderGrid(){
   state.visible=filteredItems();
-  $('#photoCount').textContent=`${state.visible.filter(i=>i.type==='photo').length} фото`;
-  $('#videoCount').textContent=`${state.visible.filter(i=>i.type==='video').length} видео`;
+  const visibleItems=state.visible;
+  $('#photoCount').textContent=`${visibleItems.filter(i=>i.type==='photo').length} фото`;
+  $('#videoCount').textContent=`${visibleItems.filter(i=>i.type==='video').length} видео`;
   const totalSpan = $('#gxTotalCount');
-  if(totalSpan) totalSpan.textContent=String(state.visible.length);
+  if(totalSpan) totalSpan.textContent=String(visibleItems.length);
   const grid=$('#galleryGrid'), empty=$('#gxEmpty');
+  const renderToken=++state.gridRenderToken;
+  grid.setAttribute('data-hydrating','true');
   const staticCard = grid.querySelector('[data-static-lcp="p01"]');
-  const reuseStaticLcp = state.filter === 'all' && staticCard && state.visible[0]?.id === staticCard.dataset.id;
+  const reuseStaticLcp = state.filter === 'all' && staticCard && visibleItems[0]?.id === staticCard.dataset.id;
   if (reuseStaticLcp) {
     Array.from(grid.children).forEach(child => { if (child !== staticCard) child.remove(); });
     staticCard.dataset.index = '0';
@@ -134,7 +150,7 @@ function renderGrid(){
   if(empty) {
     // FIX r24: HTML has inline style="display:none". JS was only toggling .hidden attr,
     // but inline style overrides CSS rules. Fix: removeProperty so CSS takes full control.
-    if (state.visible.length > 0) {
+    if (visibleItems.length > 0) {
       empty.hidden = true;
       empty.style.removeProperty('display');
     } else {
@@ -142,70 +158,83 @@ function renderGrid(){
       empty.style.removeProperty('display');
     }
   }
-  if(!state.visible.length) return;
-  const frag=document.createDocumentFragment();
-  state.visible.forEach((item,index)=>{
-    if (reuseStaticLcp && index === 0) {
-      if (staticCard.dataset.hydrated !== 'true') {
-        staticCard.addEventListener('click',()=>openLightbox(0));
-        attachCardTilt(staticCard);
-        staticCard.dataset.hydrated = 'true';
+  if(!visibleItems.length) {
+    grid.removeAttribute('data-hydrating');
+    return;
+  }
+
+  let cursor=0;
+  const appendNextBatch=()=>{
+    if(renderToken !== state.gridRenderToken) return;
+    const frag=document.createDocumentFragment();
+    let built=0;
+    while(cursor < visibleItems.length && built < GRID_RENDER_BATCH_SIZE){
+      const index=cursor++;
+      const item=visibleItems[index];
+      if (reuseStaticLcp && index === 0) {
+        if (staticCard.dataset.hydrated !== 'true') {
+          staticCard.addEventListener('click',()=>openLightbox(0));
+          attachCardTilt(staticCard);
+          staticCard.dataset.hydrated = 'true';
+        }
+        continue;
       }
+      const card=document.createElement('button');
+      card.type='button';
+      card.className=`card ${sizeClasses(item.size)}`.trim();
+      // Animation is handled by CSS now (added to fixes), but we keep delay for stagger
+      if(index<4) card.style.animation='none';
+      else card.style.animationDelay=`${Math.min(index*0.04, 1.2)}s`;
+      card.dataset.index=String(index);
+      card.dataset.id=item.id;
+      card.setAttribute('aria-label',`${item.title}. Открыть в 3D-галерее`);
+      if(item.type==='video') {
+        const v=document.createElement('video');
+        v.className='card-media';
+        v.poster=item.src;
+        v.muted=true;
+        v.loop=true;
+        v.playsInline=true;
+        v.preload='none';
+        v.dataset.src=item.videoSrc;
+        card.appendChild(v);
+        card.insertAdjacentHTML('beforeend', playIcon());
+      }
+      else {
+        const img=document.createElement('img');
+        img.className='card-media';
+        img.alt='';
+        img.loading=index<4?'eager':'lazy';
+        img.decoding='async';
+        if(index===0) img.fetchPriority='high';
+        img.onerror=()=>{ if(img.src!==item.src) img.src=item.src; };
+        /* r18: premium skeleton — soft golden shimmer until the image loads, then fade in */
+        card.classList.add('is-loading');
+        var _reveal=function(){ card.classList.remove('is-loading'); card.classList.add('is-loaded'); };
+        img.addEventListener('load',_reveal,{once:true});
+        img.addEventListener('error',_reveal,{once:true});
+        const phoneAvifSrc = phoneCardAvifFor(item);
+        if(phoneAvifSrc) img.dataset.phoneAvifSrc=phoneAvifSrc;
+        img.src=item.src;
+        if(img.complete && img.naturalWidth>0) _reveal();
+        card.insertAdjacentHTML('beforeend','<span class="card-skeleton" aria-hidden="true"></span>');
+        card.appendChild(wrapInPictureWithAvif(img));
+      }
+      card.insertAdjacentHTML('beforeend', `<div class="card-overlay"><span class="card-title">${esc(item.title)}</span></div>`);
+      card.addEventListener('click',()=>openLightbox(index));
+      attachCardTilt(card);
+      frag.appendChild(card);
+      built++;
+    }
+    grid.appendChild(frag);
+    if(cursor < visibleItems.length) {
+      scheduleGridBatch(appendNextBatch);
       return;
     }
-    const card=document.createElement('button'); 
-    card.type='button'; 
-    card.className=`card ${sizeClasses(item.size)}`.trim(); 
-    // Animation is handled by CSS now (added to fixes), but we keep delay for stagger
-    if(index<4) card.style.animation='none';
-    else card.style.animationDelay=`${Math.min(index*0.04, 1.2)}s`;
-    card.dataset.index=String(index); 
-    card.dataset.id=item.id; 
-    card.setAttribute('aria-label',`${item.title}. Открыть в 3D-галерее`);
-    if(item.type==='video') { 
-      const v=document.createElement('video'); 
-      v.className='card-media'; 
-      v.poster=item.src; 
-      v.muted=true; 
-      v.loop=true; 
-      v.playsInline=true; 
-      v.preload='none';
-      v.dataset.src=item.videoSrc; 
-      card.appendChild(v); 
-      card.insertAdjacentHTML('beforeend', playIcon()); 
-    }
-    else { 
-      const img=document.createElement('img'); 
-      img.className='card-media'; 
-      img.alt=''; 
-      img.loading=index<4?'eager':'lazy';
-      img.decoding='async';
-      if(index===0) img.fetchPriority='high';
-      img.onerror=()=>{ if(img.src!==item.src) img.src=item.src; };
-      /* r18: premium skeleton — soft golden shimmer until the image loads, then fade in */
-      card.classList.add('is-loading');
-      var _reveal=function(){ card.classList.remove('is-loading'); card.classList.add('is-loaded'); };
-      img.addEventListener('load',_reveal,{once:true});
-      img.addEventListener('error',_reveal,{once:true});
-      const phoneAvifSrc = phoneCardAvifFor(item);
-      if(phoneAvifSrc) img.dataset.phoneAvifSrc=phoneAvifSrc;
-      img.src=item.src; 
-      if(img.complete && img.naturalWidth>0) _reveal();
-      card.insertAdjacentHTML('beforeend','<span class="card-skeleton" aria-hidden="true"></span>');
-      card.appendChild(wrapInPictureWithAvif(img)); 
-    }
-    card.insertAdjacentHTML('beforeend', `<div class="card-overlay"><span class="card-title">${esc(item.title)}</span></div>`);
-    card.addEventListener('click',()=>openLightbox(index)); 
-    attachCardTilt(card); 
-    frag.appendChild(card);
-  });
-  grid.appendChild(frag);
-  grid.removeAttribute('data-hydrating');
-  if(document.readyState==='complete') setupVideoObserver();
-  else if(!state.videoObserverPending){
-    state.videoObserverPending=true;
-    window.addEventListener('load',()=>{state.videoObserverPending=false;setupVideoObserver();},{once:true});
-  }
+    finishGridRender(grid, renderToken);
+  };
+
+  appendNextBatch();
 }
 function attachCardTilt(card){
   if(matchMedia('(hover: none), (pointer: coarse)').matches) return;

@@ -92,6 +92,27 @@ test('@layout-matrix @gallery phone card media policy: measured cards use condit
   expect(await page.evaluate((q) => matchMedia(q).matches, phoneMedia)).toBeFalsy();
 });
 
+test('@layout-matrix @gallery progressive grid hydration cancels stale filter batches', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
+
+  const grid = page.locator('#galleryGrid');
+  const cards = grid.locator('.card');
+  await expect(cards).toHaveCount(46);
+  await expect(grid).not.toHaveAttribute('data-hydrating', 'true');
+
+  await page.locator('[data-filter="video"]').click();
+  await page.locator('[data-filter="all"]').click();
+  await expect(cards).toHaveCount(46);
+  await expect(grid).not.toHaveAttribute('data-hydrating', 'true');
+  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+
+  const ids = await cards.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-id')));
+  expect(ids).toHaveLength(46);
+  expect(new Set(ids).size).toBe(46);
+  expect(ids[0]).toBe('p01');
+});
+
 test('@layout-matrix @gallery typography cannot trigger a late Google Fonts layout swap', async ({ page }) => {
   const remoteFontFiles = [];
   page.on('request', (request) => {
