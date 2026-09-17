@@ -25,6 +25,15 @@ require(
     'homepage LCP hero is not explicitly excluded from the generic image fade',
 )
 main_js = read('js/main.js')
+chat_sources = main_js.split('const CHAT_SRCS = [', 1)[1].split('];', 1)[0]
+for number in range(1, 9):
+    thumb = Path(f'img/review_{number}-thumb.webp')
+    original = Path(f'img/review_{number}.webp')
+    require(thumb.is_file(), f'homepage review thumbnail missing: {thumb}')
+    require(thumb.stat().st_size < original.stat().st_size, f'homepage review thumbnail is not smaller: {thumb}')
+    require(f'<img src="img/review_{number}-thumb.webp"' in home, f'homepage filmstrip returned to full review image {number}')
+    require(f"IMG_BASE + '/review_{number}.webp'" in chat_sources, f'review lightbox lost full-resolution source {number}')
+    require(f'review_{number}-thumb.webp' not in chat_sources, f'review lightbox incorrectly uses thumbnail {number}')
 require(
     'img:not(.hero-img):not([class*="head"])' in main_js,
     'homepage hero exclusion disappeared from the generic image fade selector',
@@ -138,11 +147,30 @@ for path in ['svadebnye-torty/index.html', 'bento-torty/index.html', 'zakazat-to
     require('loading="eager"' not in read(path), f'{path} reintroduced below-fold eager media')
 
 bento = read('bento-torty/index.html')
-require('/img/bento_1-mobile.avif\" media=\"(max-width: 768px)\" fetchpriority=\"high\"' in bento, 'Bento mobile LCP preload missing')
-require('media=\"(max-width: 768px)\" srcset=\"/img/bento_1-mobile.avif\"' in bento, 'Bento mobile LCP source missing')
-require('/img/bento_1.avif\" media=\"(min-width: 769px)\" fetchpriority=\"high\"' in bento, 'Bento desktop LCP preload lost its media guard')
-require(Path('img/bento_1-mobile.avif').is_file(), 'Bento mobile LCP derivative missing')
-require(Path('img/bento_1-mobile.avif').stat().st_size < Path('img/bento_1.avif').stat().st_size, 'Bento mobile derivative is not smaller than source')
+require('/img/bento_1-mobile-640.avif" media="(max-width: 768px)" fetchpriority="high"' in bento, 'Bento mobile LCP preload missing')
+require('media="(max-width: 768px)" srcset="/img/bento_1-mobile-640.avif"' in bento, 'Bento mobile LCP source missing')
+require('/img/bento_1.avif" media="(min-width: 769px)" fetchpriority="high"' in bento, 'Bento desktop LCP preload lost its media guard')
+require(Path('img/bento_1-mobile-640.avif').is_file(), 'Bento 640px mobile LCP derivative missing')
+require(
+    Path('img/bento_1-mobile-640.avif').stat().st_size < Path('img/bento_1-mobile.avif').stat().st_size,
+    'Bento 640px LCP derivative is not smaller than the previous mobile source',
+)
+for preview, source in [
+    ('img/gallery/gallery-27-preview.avif', 'img/gallery/gallery-27.avif'),
+    ('img/gallery/gallery-27-card.avif', 'img/gallery/gallery-27.avif'),
+    ('img/bento_1-card.avif', 'img/bento_1.avif'),
+    ('img/gallery/gallery-30-preview.avif', 'img/gallery/gallery-30.avif'),
+    ('img/gallery/gallery-19-preview.webp', 'img/gallery/gallery-19.webp'),
+    ('img/gallery/gallery-29-preview.webp', 'img/gallery/gallery-29.webp'),
+]:
+    require(Path(preview).is_file(), f'Bento preview derivative missing: {preview}')
+    require(Path(preview).stat().st_size < Path(source).stat().st_size, f'Bento preview is not smaller than source: {preview}')
+require('/img/gallery/gallery-27-preview.avif' in bento, 'Bento first portfolio preview returned to the full AVIF')
+require('/img/gallery/gallery-30-preview.avif' in bento, 'Bento second portfolio preview returned to the full AVIF')
+require('poster="/img/gallery/gallery-19-preview.webp"' in bento, 'Bento first video poster returned to the full image')
+require('poster="/img/gallery/gallery-29-preview.webp"' in bento, 'Bento second video poster returned to the full image')
+require('/img/bento_1-card.avif' in bento, 'Bento product card returned to the full bento source')
+require('/img/gallery/gallery-27-card.avif' in bento, 'Bento birthday card returned to the full gallery source')
 
 order = read('zakazat-tort-spb/index.html')
 require('/img/head_mobile.avif" media="(max-width: 768px)" fetchpriority="high"' in order, 'order page mobile hero preload missing')
@@ -326,7 +354,7 @@ require('Re-prove exact live release after Lighthouse' in workflow, 'post-audit 
 # Homepage must preload only the preferred AVIF hero candidate. The WebP source remains
 # a real picture fallback, but preloading both formats wastes critical-path bandwidth.
 require(
-    '<link rel="preload" as="image" type="image/avif" href="img/head_mobile.avif" media="(max-width:768px)" fetchpriority="high" />' in home,
+    '<link rel="preload" as="image" type="image/avif" href="img/head_mobile-640.avif" media="(max-width:768px)" fetchpriority="high" />' in home,
     'homepage preferred mobile AVIF hero preload missing',
 )
 require(
@@ -336,6 +364,25 @@ require(
 require(
     '<source type="image/webp" media="(max-width: 768px)" srcset="img/head_mobile.webp" />' in home,
     'homepage mobile WebP picture fallback was removed',
+)
+
+require(
+    '<source type="image/avif" media="(max-width: 768px)" srcset="img/head_mobile-640.avif" />' in home,
+    'homepage preferred mobile AVIF picture source missing',
+)
+require(Path('img/head_mobile-640.avif').is_file(), 'homepage 640px hero derivative missing')
+require(
+    Path('img/head_mobile-640.avif').stat().st_size < Path('img/head_mobile.avif').stat().st_size,
+    'homepage 640px hero derivative is not smaller than previous mobile source',
+)
+require(
+    '<picture><source type="image/avif" srcset="img/viktoria-480.avif"><img src="img/viktoria.webp"' in home,
+    'homepage Viktoria presentation derivative missing',
+)
+require(Path('img/viktoria-480.avif').is_file(), 'homepage Viktoria 480px derivative missing')
+require(
+    Path('img/viktoria-480.avif').stat().st_size < Path('img/viktoria.avif').stat().st_size,
+    'homepage Viktoria derivative is not smaller than source',
 )
 
 print('Lighthouse root-cause regression contract OK')
