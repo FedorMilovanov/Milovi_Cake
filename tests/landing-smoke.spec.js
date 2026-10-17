@@ -78,6 +78,8 @@ test.describe('premium media blocks', () => {
   test('wedding video poster matches the footage in portfolio, gallery and video metadata', async ({ page, request }) => {
     const poster = '/img/gallery/video-12-wedding-heart-poster.webp';
     const description = 'Кондитер оформляет белый торт свежей малиной';
+    const videoRequests = [];
+    page.on('request', (req) => { if (req.url().includes('/video-12-wedding-heart.webm')) videoRequests.push(req.url()); });
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
     const schemas = await page.locator('script[type="application/ld+json"]').allTextContents();
     const reel = schemas.map(JSON.parse).flatMap((schema) => schema['@graph'] || [schema])
@@ -85,10 +87,13 @@ test.describe('premium media blocks', () => {
     expect(reel.thumbnailUrl).toBe(`https://milovicake.ru${poster}`);
     expect(reel.name).toContain('малиной');
     expect(reel.description).toBe(description);
+    await expect(page.locator('.lp-media-showcase video')).toHaveAttribute('preload', 'none');
     const playButton = page.locator('.lp-media-showcase button.lp-media-play');
     await playButton.focus();
     await expect(playButton).toBeFocused();
+    expect(videoRequests).toHaveLength(0);
     await page.keyboard.press('Enter');
+    await expect.poll(() => videoRequests.length).toBeGreaterThan(0);
     await expect(page.locator('.lp-media-showcase video')).toHaveAttribute('controls', '');
     await expect(page.locator('.lp-media-showcase video')).toBeFocused();
     await expect(playButton).toBeHidden();
@@ -162,6 +167,30 @@ test.describe('premium media blocks', () => {
         expect(layout.linkFont).toBeGreaterThanOrEqual(11);
       } else {
         expect(layout.photo.right).toBeLessThanOrEqual(layout.copy.left + 1);
+      }
+    }
+  });
+
+  test('wedding detail serves the full-width photo sharply on high-density phones', async ({ browser }) => {
+    for (const [width, dpr, margin] of [[320, 2, 40], [412, 2.625, 48]]) {
+      const context = await browser.newContext({
+        viewport: { width, height: 844 }, deviceScaleFactor: dpr, isMobile: true, hasTouch: true,
+        storageState: 'tests/analytics-denied.storage-state.json', serviceWorkers: 'block',
+      });
+      try {
+        const page = await context.newPage();
+        await page.goto('http://127.0.0.1:4173/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+        const photo = await page.locator('.wed-collection-detail img').evaluate(async (image) => {
+          image.loading = 'eager';
+          await image.decode();
+          return { width: image.getBoundingClientRect().width, loaded: image.naturalWidth > 0,
+            url: image.currentSrc };
+        });
+        expect(photo.width).toBeCloseTo(width - margin, 0);
+        expect(photo.loaded).toBe(true);
+        expect(photo.url).toContain('/img/wedding-style-pure-ivory.avif');
+      } finally {
+        await context.close();
       }
     }
   });
@@ -317,6 +346,16 @@ test.describe('premium media blocks', () => {
     const guests = page.locator('#wedGuests');
     await guests.scrollIntoViewIfNeeded();
     await guests.focus();
+    const valueStyle = await page.locator('#wedGuestsOut').evaluate((number) => {
+      const value = getComputedStyle(number);
+      const heading = getComputedStyle(number.parentElement);
+      return { valueSize: parseFloat(value.fontSize), headingSize: parseFloat(heading.fontSize),
+        valueColor: value.color, headingColor: heading.color, display: value.display };
+    });
+    expect(valueStyle.valueSize).toBeGreaterThanOrEqual(26);
+    expect(valueStyle.valueSize).toBe(valueStyle.headingSize);
+    expect(valueStyle.valueColor).toBe(valueStyle.headingColor);
+    expect(valueStyle.display).toBe('inline');
     await expect(page.locator('#wedCalcPrice')).toContainText('23 800 ₽');
     await guests.press('Home');
     await expect(page.locator('#wedGuestsOut')).toHaveText('15');
