@@ -11,7 +11,7 @@ const CACHE_NAME = 'milovi-cake-v2026.09.15-r87';
 
 const PRECACHE = [
   '/',
-  '/css/style.css?v=20261017r03',
+  '/css/style.css?v=20261017r04',
   '/css/mc-2026.css?v=20260728r27',
   '/css/premium-overrides.css?v=20260728r27',
   '/css/v20-dark-and-fixes.css?v=20260728r27',
@@ -22,8 +22,8 @@ const PRECACHE = [
   '/js/nav.js?v=20260728r27',
   '/js/mc-2026.js?v=20260916r02',
   '/js/v20-faq-fix.js?v=20260728r27',
-  '/js/gallery/main.js?v=20260916r06',
-  '/js/gallery/data.js?v=20260906r01',
+  '/js/gallery/main.js?v=20261017r01',
+  '/js/gallery/data.js?v=20261017r01',
   '/js/consent-analytics.js?v=20260815r78',
   '/img/head_mobile.avif',
   '/img/head_desktop.avif',

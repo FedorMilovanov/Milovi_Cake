@@ -56,7 +56,58 @@ test.describe('premium media blocks', () => {
     await expect(page.locator('.bridal-callout')).toBeVisible();
     await expect(page.locator('.lp-media-showcase')).toBeVisible();
     await expect(page.locator('video source[src*="video-12-wedding-heart.webm"]')).toHaveCount(1);
+    await expect(page.locator('.lp-media-showcase video')).toHaveAttribute('poster', '/img/gallery/video-12-wedding-heart-poster.webp');
     await expect(page.locator('img[src*="gallery-11.webp"]').first()).toBeVisible();
+  });
+
+  test('wedding portfolio link lands below the fixed header at every layout breakpoint', async ({ page }) => {
+    for (const width of [320, 390, 861, 1536]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+      await page.locator('.wed-collection-note a').click();
+      await expect(page).toHaveURL(/#mediaShowcaseTitle$/);
+      await page.waitForFunction(() => Math.abs(document.querySelector('#mediaShowcaseTitle').getBoundingClientRect().top - 88) < 2);
+      const offset = await page.evaluate(() => ({
+        heading: document.querySelector('#mediaShowcaseTitle').getBoundingClientRect().top,
+        header: document.querySelector('.lp-header').getBoundingClientRect().bottom,
+      }));
+      expect(offset.heading).toBeGreaterThanOrEqual(offset.header + 12);
+    }
+  });
+
+  test('wedding video poster matches the footage in portfolio, gallery and video metadata', async ({ page, request }) => {
+    const poster = '/img/gallery/video-12-wedding-heart-poster.webp';
+    const description = 'Кондитер оформляет белый торт свежей малиной';
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    const schemas = await page.locator('script[type="application/ld+json"]').allTextContents();
+    const reel = schemas.map(JSON.parse).flatMap((schema) => schema['@graph'] || [schema])
+      .find((item) => item['@type'] === 'VideoObject' && item.contentUrl?.includes('video-12-wedding-heart.webm'));
+    expect(reel.thumbnailUrl).toBe(`https://milovicake.ru${poster}`);
+    expect(reel.name).toContain('малиной');
+    expect(reel.description).toBe(description);
+    const playButton = page.locator('.lp-media-showcase button.lp-media-play');
+    await playButton.focus();
+    await expect(playButton).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('.lp-media-showcase video')).toHaveAttribute('controls', '');
+    await expect(page.locator('.lp-media-showcase video')).toBeFocused();
+    await expect(playButton).toBeHidden();
+    const response = await request.get(poster);
+    expect(response.ok()).toBe(true);
+    expect((await response.body()).length).toBeLessThan(20_000);
+    const sitemap = await (await request.get('/sitemap-videos.xml')).text();
+    expect(sitemap).toContain(`<video:thumbnail_loc>https://milovicake.ru${poster}</video:thumbnail_loc>`);
+    expect(sitemap).toContain(`<video:description>${description}</video:description>`);
+    const home = await (await request.get('/')).text();
+    expect(home).toContain(`{"v":"/img/gallery/videos/video-12-wedding-heart.webm","p":"${poster}","t":"Торт с малиной"}`);
+    await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
+    await page.locator('.gx-chip[data-filter="wedding"]').click();
+    await expect(page.locator('[data-id="v12"] video')).toHaveAttribute('poster', poster);
+    const galleryReel = await page.evaluate(async () => {
+      const { GALLERY_ITEMS } = await import('/js/gallery/data.js?v=20261017r01');
+      return GALLERY_ITEMS.find((item) => item.id === 'v12');
+    });
+    expect(galleryReel.desc).toBe(description);
   });
 
   test('wedding style cards load small images lazily and open a named WhatsApp brief', async ({ page, request }) => {
