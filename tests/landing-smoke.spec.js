@@ -214,6 +214,27 @@ test.describe('premium media blocks', () => {
     expect(sides.overflow).toBeLessThanOrEqual(1);
   });
 
+  test('wedding menu stays in the viewport at 320px when web fonts fail', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => route.abort());
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    await page.evaluate(async () => { await document.fonts.ready; });
+    const bounds = await page.evaluate(() => {
+      const rect = (selector) => {
+        const { left, right } = document.querySelector(selector).getBoundingClientRect();
+        return { left, right };
+      };
+      return { logo: rect('.lp-logo'), toggle: rect('.lp-theme-toggle'), menu: rect('.wed-mobile-menu summary'),
+        rightEdge: innerWidth - parseFloat(getComputedStyle(document.querySelector('.wed-header')).paddingRight) };
+    });
+    expect(bounds.logo.right).toBeLessThanOrEqual(bounds.toggle.left - 4);
+    expect(bounds.toggle.right).toBeLessThanOrEqual(bounds.menu.left - 4);
+    expect(bounds.menu.right).toBeLessThanOrEqual(bounds.rightEdge + 1);
+    await page.locator('.wed-mobile-menu summary').click();
+    await expect(page.locator('.wed-mobile-menu')).toHaveAttribute('open', '');
+    await expect(page.locator('.wed-mobile-menu nav a').first()).toBeVisible();
+  });
+
   test('wedding mobile menu exposes navigation and follows the theme', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.addInitScript(() => localStorage.setItem('mc_theme', 'light'));
