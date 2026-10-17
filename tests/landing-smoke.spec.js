@@ -140,6 +140,80 @@ test.describe('premium media blocks', () => {
     }
   });
 
+  test('wedding detail keeps its image and readable call to action on narrow phones', async ({ page }) => {
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    for (const width of [320, 393, 440, 500, 501, 561, 1024]) {
+      await page.setViewportSize({ width, height: 860 });
+      const layout = await page.locator('.wed-collection-detail').evaluate((section) => {
+        const box = (selector) => {
+          const { left, right, top, bottom, width } = section.querySelector(selector).getBoundingClientRect();
+          return { left, right, top, bottom, width };
+        };
+        const link = section.querySelector('a');
+        return { photo: box('picture'), copy: box('.wed-collection-detail-copy'), title: box('h3'),
+          linkFont: parseFloat(getComputedStyle(link).fontSize), linkFits: link.scrollWidth <= link.clientWidth + 1,
+          overflow: document.documentElement.scrollWidth - innerWidth };
+      });
+      expect(layout.overflow).toBeLessThanOrEqual(1);
+      expect(layout.linkFits).toBe(true);
+      if (width <= 500) {
+        expect(layout.photo.bottom).toBeLessThanOrEqual(layout.copy.top + 1);
+        expect(layout.title.width).toBeGreaterThan(190);
+        expect(layout.linkFont).toBeGreaterThanOrEqual(11);
+      } else {
+        expect(layout.photo.right).toBeLessThanOrEqual(layout.copy.left + 1);
+      }
+    }
+  });
+
+  test('wedding header and anchors respect a simulated notched-phone safe area', async ({ page }) => {
+    // Chromium's iPhone preset does not expose Safari's nonzero env() insets.
+    await page.setViewportSize({ width: 393, height: 659 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    await page.locator('.wed-wrap').evaluate((wrap) => {
+      wrap.style.setProperty('--wed-safe-top', '59px');
+      wrap.style.setProperty('--wed-safe-left', '20px');
+      wrap.style.setProperty('--wed-safe-right', '20px');
+    });
+    await page.waitForFunction(() => Math.round(document.querySelector('.lp-header').getBoundingClientRect().height) === 131);
+    const bounds = await page.evaluate(() => {
+      const box = (selector) => {
+        const { left, right, top, bottom } = document.querySelector(selector).getBoundingClientRect();
+        return { left, right, top, bottom };
+      };
+      return { header: box('.lp-header'), logo: box('.lp-logo'), menu: box('.wed-mobile-menu summary'),
+        heading: box('#wedHeroTitle'), overflow: document.documentElement.scrollWidth - innerWidth };
+    });
+    expect(bounds.logo.top).toBeGreaterThanOrEqual(59);
+    expect(bounds.logo.left).toBeGreaterThanOrEqual(20);
+    expect(bounds.menu.top).toBeGreaterThanOrEqual(59);
+    expect(bounds.menu.right).toBeLessThanOrEqual(393 - 20);
+    expect(bounds.heading.top).toBeGreaterThan(bounds.header.bottom);
+    expect(bounds.overflow).toBeLessThanOrEqual(1);
+    await page.locator('.wed-link').click();
+    await page.waitForFunction(() => Math.abs(document.querySelector('#wedCollection').getBoundingClientRect().top - 131) < 2);
+    await page.locator('.wed-collection-note a').click();
+    await page.waitForFunction(() => Math.abs(document.querySelector('#mediaShowcaseTitle').getBoundingClientRect().top - 147) < 2);
+    const gap = await page.evaluate(() => document.querySelector('#mediaShowcaseTitle').getBoundingClientRect().top - document.querySelector('.lp-header').getBoundingClientRect().bottom);
+    expect(gap).toBeGreaterThanOrEqual(12);
+    await page.setViewportSize({ width: 844, height: 390 });
+    await page.locator('.wed-wrap').evaluate((wrap) => {
+      wrap.style.setProperty('--wed-safe-top', '0px');
+      wrap.style.setProperty('--wed-safe-left', '59px');
+      wrap.style.setProperty('--wed-safe-right', '59px');
+    });
+    await page.waitForFunction(() => document.querySelector('.lp-logo').getBoundingClientRect().left >= 59);
+    const sides = await page.evaluate(() => ({
+      logoLeft: document.querySelector('.lp-logo').getBoundingClientRect().left,
+      menuRight: document.querySelector('.wed-mobile-menu summary').getBoundingClientRect().right,
+      overflow: document.documentElement.scrollWidth - innerWidth,
+    }));
+    expect(sides.logoLeft).toBeGreaterThanOrEqual(59);
+    expect(sides.menuRight).toBeLessThanOrEqual(844 - 59);
+    expect(sides.overflow).toBeLessThanOrEqual(1);
+  });
+
   test('wedding mobile menu exposes navigation and follows the theme', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.addInitScript(() => localStorage.setItem('mc_theme', 'light'));
@@ -163,11 +237,56 @@ test.describe('premium media blocks', () => {
     await page.evaluate(() => {
       window.open = (url) => { window.weddingHandoff = url; return null; };
     });
-    await page.locator('#wedDate').fill('2026-12-12');
+    const chosen = await page.locator('#wedDate').evaluate((input) => {
+      const date = new Date(`${input.min}T12:00:00`);
+      date.setDate(date.getDate() + 45);
+      const iso = [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-');
+      return { iso, label: date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' }) };
+    });
+    await page.locator('#wedDate').fill(chosen.iso);
     await page.locator('.wed-date-form .wed-btn').click();
     const handoff = await page.evaluate(() => window.weddingHandoff);
     expect(handoff).toMatch(/^https:\/\/wa\.me\/79119038886\?text=/);
-    expect(decodeURIComponent(handoff)).toContain('12 декабря 2026');
+    expect(decodeURIComponent(handoff)).toContain(chosen.label);
+  });
+
+  test('wedding date rejects past dates but keeps an undated enquiry possible', async ({ page }) => {
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    const input = page.locator('#wedDate');
+    const dates = await input.evaluate(() => {
+      const parts = new Intl.DateTimeFormat('ru-RU', { timeZone: 'Europe/Moscow', numberingSystem: 'latn',
+        year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date());
+      const date = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+      const today = `${date.year}-${date.month}-${date.day}`;
+      const yesterday = new Date(`${today}T12:00:00`);
+      yesterday.setDate(yesterday.getDate() - 1);
+      return { today, past: [yesterday.getFullYear(), String(yesterday.getMonth() + 1).padStart(2, '0'), String(yesterday.getDate()).padStart(2, '0')].join('-') };
+    });
+    await expect(input).toHaveAttribute('min', dates.today);
+    await page.evaluate(() => { window.open = (url) => { window.weddingHandoff = url; return null; }; });
+    await input.fill(dates.past);
+    await page.locator('.wed-date-form .wed-btn').click();
+    expect(await input.evaluate((field) => field.validity.rangeUnderflow)).toBe(true);
+    expect(await page.evaluate(() => window.weddingHandoff)).toBeUndefined();
+    await input.fill('');
+    await page.locator('.wed-date-form .wed-btn').click();
+    expect(decodeURIComponent(await page.evaluate(() => window.weddingHandoff))).toContain('дата пока не выбрана');
+  });
+
+  test('wedding date follows Saint Petersburg time for visitors abroad', async ({ browser }) => {
+    const context = await browser.newContext({
+      baseURL: 'http://127.0.0.1:4173', timezoneId: 'Pacific/Honolulu',
+      storageState: 'tests/analytics-denied.storage-state.json', serviceWorkers: 'block',
+    });
+    try {
+      const page = await context.newPage();
+      await page.clock.install({ time: new Date('2026-10-17T22:30:00.000Z') });
+      await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+      expect(await page.evaluate(() => new Date().toLocaleDateString('sv-SE'))).toBe('2026-10-17');
+      await expect(page.locator('#wedDate')).toHaveAttribute('min', '2026-10-18');
+    } finally {
+      await context.close();
+    }
   });
 
   test('wedding guest calculator updates weight, tiers and budget on mobile', async ({ page }) => {
