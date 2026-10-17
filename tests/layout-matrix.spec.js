@@ -175,7 +175,7 @@ for (const width of [360, 390, 414, 561, 600, 768, 900, 1024, 1536]) {
           const image = element('.wed-hero-media img');
           const media = rect('.wed-hero-visual');
           const scale = Math.max(media.width / image.naturalWidth, media.height / image.naturalHeight);
-          const sourceLeft = image.naturalWidth - media.width / scale; // object-position: right
+          const sourceLeft = image.naturalWidth - media.width / scale + (image.naturalWidth === 900 ? 476 : 0); // compare the original artwork coordinates
           return {
             theme: document.documentElement.dataset.theme,
             overflow: document.documentElement.scrollWidth - innerWidth,
@@ -198,7 +198,7 @@ for (const width of [360, 390, 414, 561, 600, 768, 900, 1024, 1536]) {
         });
         const channels = (color) => (color.match(/\d+/g) || []).slice(0, 3).map(Number);
         expect(view.theme).toBe(theme);
-        expect(view.imageWidth).toBe(1376);
+        expect(view.imageWidth).toBe(width <= 500 ? 900 : 1376);
         expect(view.overflow).toBeLessThanOrEqual(1);
         expect(view.buttonOverflow).toBeLessThanOrEqual(1);
         expect(view.hero.bottom - view.meta.bottom).toBeGreaterThanOrEqual(48);
@@ -263,3 +263,94 @@ test('@layout-matrix @wedding-hero follows system dark mode without a saved them
     await context.close();
   }
 });
+
+for (const width of [360, 390, 414, 561, 600, 768, 900, 1024, 1536]) {
+  for (const theme of THEMES) {
+    test(`@layout-matrix @wedding-collection ${width}px ${theme}: columns, cards and detail spacing`, async ({ browser }) => {
+      const context = await browser.newContext({
+        baseURL: 'http://127.0.0.1:4173',
+        storageState: 'tests/analytics-denied.storage-state.json',
+        viewport: { width, height: width === 360 ? 800 : width === 390 ? 844 : 900 },
+        isMobile: width <= 768,
+        hasTouch: width <= 768,
+        colorScheme: theme,
+        reducedMotion: 'reduce',
+        serviceWorkers: 'block',
+      });
+      try {
+        await context.addInitScript((selectedTheme) => localStorage.setItem('mc_theme', selectedTheme), theme);
+        const page = await context.newPage();
+        const pageErrors = [];
+        page.on('pageerror', (error) => pageErrors.push(error.message));
+        await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+        await page.locator('.wed-collection-card img').evaluateAll(async (images) => {
+          images.forEach((image) => { image.loading = 'eager'; });
+          await Promise.all(images.map((image) => image.decode()));
+        });
+        const view = await page.evaluate(() => {
+          const element = (selector) => document.querySelector(selector);
+          const rect = (node) => {
+            const box = node.getBoundingClientRect();
+            return { top: box.top + scrollY, bottom: box.bottom + scrollY,
+              left: box.left, right: box.right, width: box.width };
+          };
+          const cards = [...document.querySelectorAll('.wed-collection-card')];
+          const images = cards.map((card) => card.querySelector('img'));
+          const banner = element('.wed-collection-detail');
+          return {
+            theme: document.documentElement.dataset.theme,
+            overflow: document.documentElement.scrollWidth - innerWidth,
+            columns: getComputedStyle(element('.wed-collection-grid')).gridTemplateColumns.split(' ').length,
+            background: getComputedStyle(element('.wed-collection')).backgroundColor,
+            headingColor: getComputedStyle(element('#wedCollectionTitle')).color,
+            motion: getComputedStyle(images[0]).transitionDuration,
+            mobileMenu: getComputedStyle(element('.wed-mobile-menu')).display,
+            hero: rect(element('.wed-hero')), section: rect(element('.wed-collection')),
+            heading: rect(element('#wedCollectionTitle')),
+            intro: rect(element('.wed-collection-head>p')),
+            cards: cards.map(rect), photos: cards.map((card) => rect(card.querySelector('.wed-collection-photo'))),
+            images: images.map((image) => ({ loaded: image.complete && image.naturalWidth > 0, src: image.currentSrc })),
+            titles: cards.map((card) => card.querySelector('h3').scrollWidth - card.querySelector('h3').clientWidth),
+            note: rect(element('.wed-collection-note')), banner: rect(banner),
+            bannerCopy: rect(banner.querySelector('.wed-collection-detail-copy')),
+            bannerAction: rect(banner.querySelector('a')),
+            calculator: rect(element('.wed-collection + .lp-section')),
+          };
+        });
+        const channels = (color) => (color.match(/\d+/g) || []).slice(0, 3).map(Number);
+        expect(view.theme).toBe(theme);
+        expect(view.overflow).toBeLessThanOrEqual(1);
+        expect(view.columns).toBe(width <= 860 ? 2 : 4);
+        expect(view.mobileMenu === 'none').toBe(width > 860);
+        expect(parseFloat(view.motion)).toBeLessThanOrEqual(0.00002);
+        expect(view.images.every(({ loaded, src }) => loaded && /wedding-style-.*\.avif$/.test(src))).toBe(true);
+        expect(Math.max(...view.titles)).toBeLessThanOrEqual(1);
+        expect(view.section.top).toBeGreaterThanOrEqual(view.hero.bottom - 1);
+        expect(view.photos[0].top - view.intro.bottom).toBeGreaterThanOrEqual(20);
+        expect(view.cards[0].top).toBeCloseTo(view.cards[1].top, 0);
+        if (width <= 860) expect(view.cards[2].top).toBeGreaterThanOrEqual(view.cards[0].bottom + 12);
+        else expect(view.cards[3].top).toBeCloseTo(view.cards[0].top, 0);
+        expect(view.note.top - view.cards[3].bottom).toBeGreaterThanOrEqual(20);
+        expect(view.banner.top - view.note.bottom).toBeGreaterThanOrEqual(32);
+        expect(view.bannerAction.bottom).toBeLessThanOrEqual(view.banner.bottom - 14);
+        expect(view.bannerCopy.left).toBeGreaterThanOrEqual(view.banner.left);
+        expect(view.section.bottom - view.banner.bottom).toBeGreaterThanOrEqual(70);
+        expect(view.calculator.top).toBeGreaterThanOrEqual(view.section.bottom - 1);
+        for (const card of view.cards) {
+          expect(card.left).toBeGreaterThanOrEqual(18);
+          expect(card.right).toBeLessThanOrEqual(width - 18);
+        }
+        if (theme === 'dark') {
+          expect(Math.max(...channels(view.background))).toBeLessThan(80);
+          expect(Math.min(...channels(view.headingColor))).toBeGreaterThan(180);
+        } else {
+          expect(Math.min(...channels(view.background))).toBeGreaterThan(180);
+          expect(Math.max(...channels(view.headingColor))).toBeLessThan(90);
+        }
+        expect(pageErrors).toEqual([]);
+      } finally {
+        await context.close();
+      }
+    });
+  }
+}

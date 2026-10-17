@@ -47,14 +47,63 @@ test.describe('new SEO landing pages', () => {
 });
 
 test.describe('premium media blocks', () => {
-  test('wedding page has editorial blocks and real portfolio media', async ({ page }) => {
+  test('wedding page has the concept collection and real portfolio media', async ({ page }) => {
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
-    await expect(page.locator('.bridal-editorial')).toBeVisible();
+    await expect(page.locator('.wed-collection')).toBeVisible();
+    await expect(page.locator('.wed-collection-card')).toHaveCount(4);
+    await expect(page.locator('.wed-collection-note')).toContainText('не фотографии выполненных заказов');
     await expect(page.locator('.bridal-route')).toBeVisible();
     await expect(page.locator('.bridal-callout')).toBeVisible();
     await expect(page.locator('.lp-media-showcase')).toBeVisible();
     await expect(page.locator('video source[src*="video-12-wedding-heart.webm"]')).toHaveCount(1);
     await expect(page.locator('img[src*="gallery-11.webp"]').first()).toBeVisible();
+  });
+
+  test('wedding style cards load small images lazily and open a named WhatsApp brief', async ({ page, request }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    const cards = page.locator('.wed-collection-card');
+    for (const [index, name] of ['Pure Ivory', 'Botanical Romance', 'Modern Sculptural', 'Golden Atelier'].entries()) {
+      const card = cards.nth(index);
+      await expect(card.locator('h3')).toContainText(name);
+      const image = card.locator('img');
+      await expect(image).toHaveAttribute('loading', 'lazy');
+      await expect(image).toHaveAttribute('decoding', 'async');
+      const candidates = (srcset) => srcset.split(',').map((candidate) => candidate.trim().split(' ')[0]);
+      const avif = candidates(await card.locator('source[type="image/avif"]').getAttribute('srcset'));
+      const webp = candidates(await image.getAttribute('srcset'));
+      expect(avif).toHaveLength(2);
+      expect(webp).toHaveLength(2);
+      expect(await image.getAttribute('sizes')).toContain('50vw');
+      for (const [asset, limit] of [[avif[0], 18_000], [avif[1], 45_000], [webp[0], 22_000], [webp[1], 65_000]]) {
+        const response = await request.get(asset);
+        expect(response.ok()).toBe(true);
+        expect((await response.body()).length).toBeLessThan(limit);
+      }
+      await image.scrollIntoViewIfNeeded();
+      await expect.poll(() => image.evaluate((img) => img.naturalWidth)).toBeGreaterThan(0);
+      await expect.poll(() => image.evaluate((img) => img.currentSrc)).toContain(`wedding-style-${['pure-ivory', 'botanical-romance', 'modern-sculptural', 'golden-atelier'][index]}-sm.avif`);
+      const handoff = new URL(await card.locator('a').getAttribute('href'));
+      expect(handoff.host).toBe('wa.me');
+      expect(handoff.searchParams.get('text')).toContain(name);
+    }
+  });
+
+  test('wedding mobile menu exposes navigation and follows the theme', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.addInitScript(() => localStorage.setItem('mc_theme', 'light'));
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    const menu = page.locator('.wed-mobile-menu');
+    await expect(menu.locator('summary')).toBeVisible();
+    await menu.locator('summary').click();
+    await expect(menu).toHaveAttribute('open', '');
+    await expect(menu.locator('nav a')).toHaveCount(4);
+    await expect(menu.locator('nav a').first()).toBeVisible();
+    await page.locator('.lp-theme-toggle').click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await expect(menu.locator('nav')).toHaveCSS('background-color', 'rgb(26, 17, 8)');
+    await menu.locator('summary').click();
+    await expect(menu).not.toHaveAttribute('open', '');
   });
 
   test('wedding date form still opens a prefilled WhatsApp brief after the mobile layout change', async ({ page }) => {
