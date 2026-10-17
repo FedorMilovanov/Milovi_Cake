@@ -144,3 +144,122 @@ test('@layout-matrix @gallery typography cannot trigger a late Google Fonts layo
   await page.waitForTimeout(250);
   expect(remoteFontFiles).toEqual([]);
 });
+
+// The wedding image is an editorial photo, not a background for mobile copy.
+// The crop guard covers the cake's approximate x=880–1230 region in wedding-hero.avif.
+for (const width of [360, 390, 414, 561, 600, 768, 900, 1024, 1536]) {
+  for (const theme of THEMES) {
+    test(`@layout-matrix @wedding-hero ${width}px ${theme}: cake, contrast and spacing`, async ({ browser }) => {
+      const height = width === 360 ? 800 : width === 390 ? 844 : width === 414 ? 896 : 900;
+      const context = await browser.newContext({
+        baseURL: 'http://127.0.0.1:4173',
+        storageState: 'tests/analytics-denied.storage-state.json',
+        viewport: { width, height },
+        isMobile: width <= 768,
+        hasTouch: width <= 768,
+        colorScheme: theme,
+        reducedMotion: 'reduce',
+        serviceWorkers: 'block',
+      });
+      try {
+        await context.addInitScript((selectedTheme) => localStorage.setItem('mc_theme', selectedTheme), theme);
+        const page = await context.newPage();
+        const pageErrors = [];
+        page.on('pageerror', (error) => pageErrors.push(error.message));
+        await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+        await page.locator('.wed-hero-media img').evaluate((image) => image.decode());
+
+        const view = await page.evaluate(() => {
+          const element = (selector) => document.querySelector(selector);
+          const rect = (selector) => element(selector).getBoundingClientRect().toJSON();
+          const image = element('.wed-hero-media img');
+          const media = rect('.wed-hero-visual');
+          const scale = Math.max(media.width / image.naturalWidth, media.height / image.naturalHeight);
+          const sourceLeft = image.naturalWidth - media.width / scale; // object-position: right
+          return {
+            theme: document.documentElement.dataset.theme,
+            overflow: document.documentElement.scrollWidth - innerWidth,
+            imageWidth: image.naturalWidth,
+            imagePosition: getComputedStyle(image).objectPosition,
+            visualPosition: getComputedStyle(element('.wed-hero-visual')).position,
+            scrollHint: getComputedStyle(element('.wed-scroll')).display,
+            scrim: getComputedStyle(element('.wed-hero'), '::before').backgroundImage,
+            background: getComputedStyle(element('.wed-hero')).backgroundColor,
+            headingColor: getComputedStyle(element('.wed-hero h1')).color,
+            buttonOverflow: Math.max(...[...document.querySelectorAll('.wed-btn, .lp-final .lp-btn')]
+              .map((button) => button.scrollWidth - button.clientWidth)),
+            crop: { left: sourceLeft, right: sourceLeft + media.width / scale },
+            header: rect('.lp-header'), kicker: rect('.wed-kicker'),
+            lead: rect('.wed-lead'), media, introText: rect('.wed-date-intro'),
+            badge: rect('.wed-badge'), hero: rect('.wed-hero'), meta: rect('.wed-meta'),
+            finalText: rect('.lp-final p'), finalActions: rect('.lp-final .lp-actions'),
+            final: rect('.lp-final'), footer: rect('.landing-footer-grid'),
+          };
+        });
+        const channels = (color) => (color.match(/\d+/g) || []).slice(0, 3).map(Number);
+        expect(view.theme).toBe(theme);
+        expect(view.imageWidth).toBe(1376);
+        expect(view.overflow).toBeLessThanOrEqual(1);
+        expect(view.buttonOverflow).toBeLessThanOrEqual(1);
+        expect(view.hero.bottom - view.meta.bottom).toBeGreaterThanOrEqual(48);
+        expect(view.finalActions.top - view.finalText.bottom).toBeGreaterThanOrEqual(20);
+        expect(view.final.bottom - view.finalActions.bottom).toBeGreaterThanOrEqual(60);
+        expect(view.footer.top).toBeGreaterThanOrEqual(view.final.bottom - 1);
+        expect(pageErrors).toEqual([]);
+
+        if (theme === 'dark') {
+          expect(Math.max(...channels(view.background))).toBeLessThan(80);
+          expect(Math.min(...channels(view.headingColor))).toBeGreaterThan(180);
+        } else {
+          expect(Math.min(...channels(view.background))).toBeGreaterThan(180);
+          expect(Math.max(...channels(view.headingColor))).toBeLessThan(90);
+        }
+        if (width <= 900) {
+          expect(view.visualPosition).toBe('relative');
+          expect(view.imagePosition).toBe('100% 50%');
+          expect(view.media.width).toBeGreaterThanOrEqual(width - 1);
+          expect(view.media.height).toBeGreaterThanOrEqual(350);
+          expect(view.crop.left).toBeLessThanOrEqual(880);
+          expect(view.crop.right).toBeGreaterThanOrEqual(1230);
+          expect(view.kicker.top - view.header.bottom).toBeGreaterThanOrEqual(24);
+          expect(view.media.top - view.lead.bottom).toBeGreaterThanOrEqual(24);
+          expect(view.introText.top - view.media.bottom).toBeGreaterThanOrEqual(28);
+          expect(view.media.top).toBeLessThan(height - 120);
+          expect(view.scrollHint).toBe('none');
+          expect(view.scrim).toBe('none');
+        } else {
+          expect(view.visualPosition).toBe('absolute');
+          expect(view.scrim.includes('linear-gradient')).toBe(theme === 'dark');
+        }
+        expect(view.badge.left).toBeGreaterThanOrEqual(view.media.left + 12);
+        expect(view.badge.right).toBeLessThanOrEqual(view.media.right - 12);
+        expect(view.badge.bottom).toBeLessThanOrEqual(view.media.bottom - 12);
+      } finally {
+        await context.close();
+      }
+    });
+  }
+}
+
+test('@layout-matrix @wedding-hero follows system dark mode without a saved theme', async ({ browser }) => {
+  const context = await browser.newContext({
+    baseURL: 'http://127.0.0.1:4173',
+    storageState: 'tests/analytics-denied.storage-state.json',
+    viewport: { width: 390, height: 844 },
+    isMobile: true,
+    hasTouch: true,
+    colorScheme: 'dark',
+    reducedMotion: 'reduce',
+  });
+  try {
+    const page = await context.newPage();
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await expect(page.locator('.wed-hero')).toHaveCSS('background-color', 'rgb(26, 17, 8)');
+    await page.locator('.lp-theme-toggle').click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await expect(page.locator('.wed-hero')).toHaveCSS('background-color', 'rgb(239, 231, 218)');
+  } finally {
+    await context.close();
+  }
+});

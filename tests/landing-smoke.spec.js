@@ -57,6 +57,37 @@ test.describe('premium media blocks', () => {
     await expect(page.locator('img[src*="gallery-11.webp"]').first()).toBeVisible();
   });
 
+  test('wedding date form still opens a prefilled WhatsApp brief after the mobile layout change', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    await page.evaluate(() => {
+      window.open = (url) => { window.weddingHandoff = url; return null; };
+    });
+    await page.locator('#wedDate').fill('2026-12-12');
+    await page.locator('.wed-date-form .wed-btn').click();
+    const handoff = await page.evaluate(() => window.weddingHandoff);
+    expect(handoff).toMatch(/^https:\/\/wa\.me\/79119038886\?text=/);
+    expect(decodeURIComponent(handoff)).toContain('12 декабря 2026');
+  });
+
+  test('wedding guest calculator updates weight, tiers and budget on mobile', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.emulateMedia({ colorScheme: 'dark', reducedMotion: 'reduce' });
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    const guests = page.locator('#wedGuests');
+    await guests.scrollIntoViewIfNeeded();
+    await guests.focus();
+    await expect(page.locator('#wedCalcPrice')).toContainText('23 800 ₽');
+    await guests.press('Home');
+    await expect(page.locator('#wedGuestsOut')).toHaveText('15');
+    await expect(page.locator('#wedCalcOut')).toHaveText('≈ 2,6 кг · 1–2 яруса');
+    await expect(page.locator('#wedCalcPrice')).toContainText('7 100 ₽');
+    await guests.press('End');
+    await expect(page.locator('#wedGuestsOut')).toHaveText('150');
+    await expect(page.locator('#wedCalcOut')).toHaveText('≈ 25,5 кг · 3–4 яруса');
+    await expect(page.locator('#wedCalcPrice')).toContainText('71 400 ₽');
+  });
+
   test('commercial pages include portfolio images or videos', async ({ page }) => {
     for (const pageInfo of pages.filter((p) => !['/o-konditere/', '/dostavka-i-oplata/', '/otzyvy/'].includes(p.path))) {
       await page.goto(pageInfo.path, { waitUntil: 'domcontentloaded' });
