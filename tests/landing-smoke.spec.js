@@ -151,6 +151,45 @@ test.describe('premium media blocks', () => {
     expect(galleryReel.desc).toBe(description);
   });
 
+  test.describe('wedding video format fallback', () => {
+    test.use({ serviceWorkers: 'block' });
+
+    test('plays MP4 after WebM fails, and fetches neither before the click', async ({ page }) => {
+      const requests = [];
+      await page.route('**/video-12-wedding-heart.webm', (route) => route.abort('failed'));
+      page.on('request', (request) => {
+        if (/video-12-wedding-heart\.(webm|mp4)$/.test(request.url())) requests.push(new URL(request.url()).pathname);
+      });
+      await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+      const button = page.locator('.wed-proof-video-play');
+      await button.scrollIntoViewIfNeeded();
+      expect(requests).toEqual([]);
+      await button.click();
+      const video = page.locator('.wed-proof-video-frame video');
+      await expect.poll(() => video.evaluate((el) =>
+        el.currentSrc.endsWith('.mp4') && el.readyState >= 2 && el.currentTime > 0.2 && !el.paused
+      ), { timeout: 15_000 }).toBe(true);
+      expect(requests).toContain('/img/gallery/videos/video-12-wedding-heart.webm');
+      expect(requests).toContain('/img/gallery/videos/video-12-wedding-heart.mp4');
+      await expect(video).toHaveAttribute('controls', '');
+    });
+  });
+
+  test.describe('wedding video without JavaScript', () => {
+    test.use({ javaScriptEnabled: false });
+
+    test('keeps native controls and hides the script-only play button', async ({ page }) => {
+      await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+      const video = page.locator('.wed-proof-video-frame video');
+      await video.scrollIntoViewIfNeeded();
+      await expect(video).toBeVisible();
+      await expect(video).toHaveAttribute('controls', '');
+      await expect(page.locator('.wed-proof-video-play')).toBeHidden();
+      await expect(video.locator('source[type="video/mp4"]'))
+        .toHaveAttribute('src', '/img/gallery/videos/video-12-wedding-heart.mp4');
+    });
+  });
+
   test('wedding style cards load small images lazily and open a named WhatsApp brief', async ({ page, request }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
