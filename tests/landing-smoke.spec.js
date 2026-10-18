@@ -177,6 +177,33 @@ test.describe('premium media blocks', () => {
     await expect(cards.nth(1)).toHaveCSS('transform', 'none');
   });
 
+  test('wedding format schema uses the shown imagery and does not invent a custom price', async ({ page }) => {
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    const formats = await page.evaluate(() => {
+      const schema = JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent);
+      const list = schema['@graph'].find((item) => item['@type'] === 'ItemList');
+      return list.itemListElement.map(({ item }, index) => {
+        const card = document.querySelectorAll('#wedStyles .lp-card')[index];
+        return {
+          product: item,
+          image: new URL(card.querySelector('img').getAttribute('src'), 'https://milovicake.ru').href,
+          credit: card.querySelector('.wed-collection-kicker').textContent.trim(),
+          label: card.querySelector('strong').textContent.trim(),
+        };
+      });
+    });
+    expect(formats).toHaveLength(3);
+    for (const { product, image, credit, label } of formats) {
+      expect(product.image).toBe(image);
+      if (credit === 'Визуализация стиля') expect(product.description).toContain('Визуализация стиля');
+      if (label === 'индивидуальный расчёт') expect(product.offers).toBeUndefined();
+      if (product.offers) {
+        expect(label.replace(/\s/g, '')).toContain(String(product.offers.price));
+        expect(product.offers.availability).toBeUndefined(); // A bespoke cake needs a date check, not a stock claim.
+      }
+    }
+  });
+
   test('wedding FAQ markup matches every visible answer', async ({ page }) => {
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
     const questions = await page.evaluate(() => {
@@ -199,6 +226,33 @@ test.describe('premium media blocks', () => {
     await expect(last.locator('summary')).toHaveCSS('outline-width', '2px');
     await page.locator('#wedGuests').focus();
     await expect(page.locator('#wedGuests')).toHaveCSS('outline-width', '2px');
+  });
+
+  test('wedding final invitation keeps the brief on this journey', async ({ page }) => {
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('.lp-final h2')).toContainText('свадебный торт');
+    await expect(page.locator('.lp-final p')).toContainText('площадке');
+    const brief = await page.locator('.bridal-callout a').getAttribute('href');
+    const message = new URL(brief).searchParams.get('text');
+    for (const prompt of ['Дата свадьбы:', 'Площадка:', 'Гостей:', 'Палитра:', 'Референсы:']) {
+      expect(message).toContain(prompt);
+    }
+    const final = page.locator('.lp-final .lp-btn-primary');
+    await expect(final).toHaveAttribute('href', brief);
+    await expect(final).toContainText('Отправить бриф');
+    for (const width of [320, 390, 561, 768, 1440]) {
+      await page.setViewportSize({ width, height: 844 });
+      const geometry = await final.evaluate((button) => {
+        const { left, right, height } = button.getBoundingClientRect();
+        return { left, right, height, overflow: button.scrollWidth - button.clientWidth,
+          pageOverflow: document.documentElement.scrollWidth - innerWidth };
+      });
+      expect(geometry.left).toBeGreaterThanOrEqual(0);
+      expect(geometry.right).toBeLessThanOrEqual(width);
+      expect(geometry.height).toBeGreaterThanOrEqual(44);
+      expect(geometry.overflow).toBeLessThanOrEqual(1);
+      expect(geometry.pageOverflow).toBeLessThanOrEqual(1);
+    }
   });
 
   test('wedding detail keeps its image and readable call to action on narrow phones', async ({ page }) => {
