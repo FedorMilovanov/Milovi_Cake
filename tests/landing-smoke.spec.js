@@ -470,6 +470,34 @@ test.describe('premium media blocks', () => {
     expect(decodeURIComponent(await page.evaluate(() => window.weddingHandoff))).toContain('дата пока не выбрана');
   });
 
+  test('wedding date cannot be sent as yesterday after Saint Petersburg midnight', async ({ browser }) => {
+    const context = await browser.newContext({
+      baseURL: 'http://127.0.0.1:4173', timezoneId: 'Pacific/Honolulu',
+      storageState: 'tests/analytics-denied.storage-state.json', serviceWorkers: 'block',
+    });
+    try {
+      const page = await context.newPage();
+      await page.clock.install({ time: new Date('2026-10-17T20:59:59.000Z') });
+      await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+      const date = page.locator('#wedDate');
+      await expect(date).toHaveAttribute('min', '2026-10-17');
+      await date.fill('2026-10-17');
+      await page.evaluate(() => { window.open = (url) => { window.weddingHandoff = url; return null; }; });
+      await page.clock.fastForward(2000);
+      expect(await page.evaluate(() => new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Moscow' })))
+        .toBe('2026-10-18');
+      await page.locator('.wed-date-form .wed-btn').click();
+      await expect(date).toHaveAttribute('min', '2026-10-18');
+      expect(await date.evaluate((field) => field.validity.rangeUnderflow)).toBe(true);
+      expect(await page.evaluate(() => window.weddingHandoff)).toBeUndefined();
+      await date.fill('');
+      await page.locator('.wed-date-form .wed-btn').click();
+      expect(decodeURIComponent(await page.evaluate(() => window.weddingHandoff))).toContain('дата пока не выбрана');
+    } finally {
+      await context.close();
+    }
+  });
+
   test('wedding date follows Saint Petersburg time for visitors abroad', async ({ browser }) => {
     const context = await browser.newContext({
       baseURL: 'http://127.0.0.1:4173', timezoneId: 'Pacific/Honolulu',

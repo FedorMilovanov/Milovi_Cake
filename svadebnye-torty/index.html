@@ -332,7 +332,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
         </div>
         <div class="wed-hero-details">
           <p class="wed-date-intro">Укажите дату свадьбы — проверим, свободна ли она, и предложим торт под ваш зал, палитру и число гостей.</p>
-          <form class="wed-date-form" onsubmit="event.preventDefault();var d=document.getElementById('wedDate').value;var w='дата пока не выбрана';if(d){w=new Date(d+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric',weekday:'long'});}var t='Здравствуйте! Хочу проверить дату свадьбы в Санкт-Петербурге. Дата свадьбы: '+w+'. Площадка: ___, гостей: ___. Подскажите, свободна ли дата и какой формат торта подойдёт?';window.open('https://wa.me/79119038886?text='+encodeURIComponent(t),'_blank');">
+          <form class="wed-date-form">
             <label class="wed-date-label" for="wedDate">Дата вашей свадьбы</label>
             <div class="wed-date-row"><input type="date" id="wedDate" name="weddingDate" aria-label="Дата свадьбы"><button class="wed-btn" type="submit">Проверить дату <span aria-hidden="true">→</span></button></div>
             <p class="wed-note">Откроется WhatsApp с заполненной датой — останется добавить площадку и число гостей.</p>
@@ -509,14 +509,33 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
       'use strict';
       var input = document.getElementById('wedDate');
       if (!input) return;
-      var parts = new Intl.DateTimeFormat('ru-RU', {
+      var formatter = new Intl.DateTimeFormat('ru-RU', {
         timeZone: 'Europe/Moscow', numberingSystem: 'latn', year: 'numeric', month: '2-digit', day: '2-digit'
-      }).formatToParts(new Date());
-      var date = {};
-      parts.forEach(function (part) {
-        if (part.type === 'year' || part.type === 'month' || part.type === 'day') date[part.type] = part.value;
       });
-      input.min = [date.year, date.month, date.day].join('-');
+      function refreshMinDate() {
+        var date = {};
+        formatter.formatToParts(new Date()).forEach(function (part) {
+          if (part.type === 'year' || part.type === 'month' || part.type === 'day') date[part.type] = part.value;
+        });
+        input.min = [date.year, date.month, date.day].join('-');
+      }
+      input.form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        refreshMinDate();
+        if (!input.reportValidity()) return;
+        var chosen = input.value;
+        var label = chosen ? new Date(chosen + 'T12:00:00').toLocaleDateString('ru-RU', {
+          day: 'numeric', month: 'long', year: 'numeric', weekday: 'long'
+        }) : 'дата пока не выбрана';
+        var text = 'Здравствуйте! Хочу проверить дату свадьбы в Санкт-Петербурге. Дата свадьбы: ' + label +
+          '. Площадка: ___, гостей: ___. Подскажите, свободна ли дата и какой формат торта подойдёт?';
+        window.open('https://wa.me/79119038886?text=' + encodeURIComponent(text), '_blank');
+      });
+      input.addEventListener('focus', refreshMinDate);
+      document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) refreshMinDate();
+      });
+      refreshMinDate();
     })();
   </script>
   <script>(function(){var r=document.getElementById('wedGuests');if(!r)return;var go=document.getElementById('wedGuestsOut'),out=document.getElementById('wedCalcOut'),pr=document.getElementById('wedCalcPrice');function fmt(n){return n.toLocaleString('ru-RU');}function upd(){var n=+r.value,w=n*0.17;go.textContent=n;out.textContent='≈ '+w.toFixed(1).replace('.',',')+' кг · '+(n<=30?'1–2 яруса':n<=70?'3 яруса':'3–4 яруса');pr.textContent='Ориентир по торту: ≈ '+fmt(Math.round(w*2800/100)*100)+' ₽. Декор живыми цветами, конструкция и доставка рассчитываются отдельно.';}r.addEventListener('input',upd);upd();})();</script>
