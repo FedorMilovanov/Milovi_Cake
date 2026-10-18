@@ -145,6 +145,62 @@ test.describe('premium media blocks', () => {
     }
   });
 
+  test('wedding formats credit the real work and frame the multi-tier concept', async ({ page }) => {
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    const cards = page.locator('#wedStyles .lp-card');
+    await expect(cards).toHaveCount(3);
+    await expect(cards.locator('.wed-collection-kicker')).toHaveText([
+      'Реальная работа', 'Визуализация стиля', 'Визуализация стиля',
+    ]);
+    await expect(cards.nth(1).locator('source[type="image/avif"]'))
+      .toHaveAttribute('srcset', '/img/wedding-style-golden-atelier.avif');
+    await expect(cards.nth(1).locator('img')).toHaveAttribute('loading', 'lazy');
+    await cards.nth(1).locator('img').scrollIntoViewIfNeeded();
+    await expect.poll(() => cards.nth(1).locator('img').evaluate((img) => img.naturalWidth)).toBeGreaterThan(0);
+    const portrait = await cards.nth(1).locator('img').evaluate((img) => img.naturalHeight > img.naturalWidth);
+    expect(portrait).toBe(true);
+    for (const width of [320, 390, 561, 768, 900, 1440]) {
+      await page.setViewportSize({ width, height: 844 });
+      const layout = await page.evaluate(() => ({
+        photos: [...document.querySelectorAll('#wedStyles .lp-card img')]
+          .map((img) => img.getBoundingClientRect().height),
+        labelSize: parseFloat(getComputedStyle(document.querySelector('.wed-collection-index')).fontSize),
+        columns: getComputedStyle(document.querySelector('.wed-collection-grid')).gridTemplateColumns.split(' ').length,
+        overflow: document.documentElement.scrollWidth - innerWidth,
+      }));
+      expect(layout.photos.every((height) => height <= 480 && Math.abs(height - layout.photos[0]) < 1)).toBe(true);
+      expect(layout.labelSize).toBeGreaterThanOrEqual(10);
+      expect(layout.columns).toBe(width <= 860 ? 2 : 4);
+      expect(layout.overflow).toBeLessThanOrEqual(1);
+    }
+    await cards.nth(1).hover();
+    await expect(cards.nth(1)).toHaveCSS('transform', 'none');
+  });
+
+  test('wedding FAQ markup matches every visible answer', async ({ page }) => {
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    const questions = await page.evaluate(() => {
+      const schema = JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent);
+      const faq = schema['@graph'].find((item) => item['@type'] === 'FAQPage');
+      return {
+        structured: faq.mainEntity.map((item) => [item.name, item.acceptedAnswer.text]),
+        visible: [...document.querySelectorAll('.lp-faq-item')]
+          .map((item) => [item.querySelector('summary').textContent.trim(), item.querySelector('p').textContent.trim()]),
+      };
+    });
+    expect(questions.visible).toHaveLength(5);
+    expect(questions.visible).toEqual(questions.structured);
+    const last = page.locator('.lp-faq-item').last();
+    await last.locator('summary').click();
+    await expect(last).toHaveAttribute('open', '');
+    await expect(last.locator('p')).toBeVisible();
+    await page.keyboard.press('Tab');
+    await last.locator('summary').focus();
+    await expect(last.locator('summary')).toHaveCSS('outline-width', '2px');
+    await page.locator('#wedGuests').focus();
+    await expect(page.locator('#wedGuests')).toHaveCSS('outline-width', '2px');
+  });
+
   test('wedding detail keeps its image and readable call to action on narrow phones', async ({ page }) => {
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
     for (const width of [320, 393, 440, 500, 501, 561, 1024]) {

@@ -3,8 +3,9 @@
  * Milovi Cake runtime CSS coverage probe.
  *
  * This is intentionally a dev-only tool (.cjs, not a runtime JS file).
- * It uses Chrome DevTools Protocol CSS.startRuleUsageTracking across real pages
- * and protected interactions, then writes audit/css-coverage-latest.md/json.
+ * It compares Chrome DevTools Protocol's observed matching rules with a CSSOM
+ * rule count across real pages and protected interactions, then writes
+ * audit/css-coverage-latest.md/json. Unobserved rules are NOT proven unused.
  */
 const { chromium } = require('@playwright/test');
 const http = require('http');
@@ -42,15 +43,6 @@ const SCENARIOS = [
   '/certificates/',
   '/prigorody/pushkin/',
   '/prigorody/murino/',
-];
-
-const PROTECTED_HINTS = [
-  'hero', 'messenger', 'ring', 'btn-hero', 'wa', 'tg', 'max',
-  'review', 'reviews', 'modal', 'stage', 'track', 'map-badge',
-  'gallery', 'lightbox', 'lb-', 'gx-', 'swiper', 'sc-',
-  'cart', 'theme', 'dark', 'burger', 'menu', 'nav',
-  'faq', 'video', 'bento', 'calc', 'order', 'prigorod', 'city',
-  'cookie', 'toast', 'reveal', 'bottom-nav'
 ];
 
 function contentType(file) {
@@ -106,17 +98,6 @@ function cssPathFromUrl(rawUrl) {
 
 function normalizeRuleText(s) {
   return s.replace(/\/\*[^]*?\*\//g, '').replace(/\s+/g, ' ').trim();
-}
-
-function selectorOfRule(ruleText) {
-  const i = ruleText.indexOf('{');
-  if (i < 0) return ruleText.slice(0, 180).trim();
-  return ruleText.slice(0, i).replace(/\s+/g, ' ').trim();
-}
-
-function isProtectedSelector(selector) {
-  const s = selector.toLowerCase();
-  return PROTECTED_HINTS.some(h => s.includes(h));
 }
 
 async function safe(locator, action, timeout = 1200) {
@@ -258,19 +239,48 @@ async function exercisePage(page, route) {
   }
 }
 
-async function collectFor(route, theme, viewport, globalRules) {
+async function countStyleRules(page, fileTotals) {
+  // CSS.stopRuleUsageTracking does not enumerate unmatched rules. Count the full
+  // stylesheet separately so an all-matched CDP response cannot look like 0 unused.
+  const counts = await page.evaluate(() => {
+    const result = [];
+    for (const sheet of document.styleSheets) {
+      if (!sheet.href) continue;
+      let count = 0;
+      try {
+        function walk(rules) {
+          for (const rule of rules) {
+            if (rule.type === CSSRule.STYLE_RULE) count++;
+            if (rule.cssRules) walk(rule.cssRules);
+          }
+        }
+        walk(sheet.cssRules);
+        result.push({ href: sheet.href, count });
+      } catch (_) { /* A cross-origin sheet cannot be inspected via CSSOM. */ }
+    }
+    return result;
+  });
+  for (const { href, count } of counts) {
+    const cssPath = cssPathFromUrl(href);
+    if (RUNTIME_CSS.has(cssPath)) fileTotals.set(cssPath, Math.max(fileTotals.get(cssPath) || 0, count));
+  }
+}
+
+async function collectFor(route, theme, viewport, globalRules, fileTotals) {
   const browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext({ viewport });
+  const context = await browser.newContext({ viewport, colorScheme: theme, serviceWorkers: 'block' });
   await context.addInitScript(({ theme }) => {
-    try { localStorage.setItem('theme', theme); } catch (_) {}
-    document.documentElement.setAttribute('data-theme', theme);
+    try {
+      localStorage.setItem('mc_theme', theme);
+      localStorage.setItem('milovi_analytics_consent_v1', 'denied');
+    } catch (_) {}
   }, { theme });
   const page = await context.newPage();
   const client = await context.newCDPSession(page);
   const styleSheets = new Map();
   client.on('CSS.styleSheetAdded', ev => {
     const h = ev.header;
-    const cssPath = cssPathFromUrl(h.sourceURL || h.sourceURL || '');
+    const cssPath = cssPathFromUrl(h.sourceURL || '');
     if (RUNTIME_CSS.has(cssPath)) styleSheets.set(h.styleSheetId, { header: h, cssPath });
   });
   await client.send('DOM.enable');
@@ -280,6 +290,7 @@ async function collectFor(route, theme, viewport, globalRules) {
   let error = null;
   try {
     await page.goto(BASE + route, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await countStyleRules(page, fileTotals);
     await exercisePage(page, route);
   } catch (e) {
     error = String(e.message || e).slice(0, 500);
@@ -288,7 +299,7 @@ async function collectFor(route, theme, viewport, globalRules) {
   const usage = await client.send('CSS.stopRuleUsageTracking');
   for (const u of usage.ruleUsage || []) {
     const meta = styleSheets.get(u.styleSheetId);
-    if (!meta) continue;
+    if (!meta || !u.used) continue;
     if (!meta.text) {
       try { meta.text = (await client.send('CSS.getStyleSheetText', { styleSheetId: u.styleSheetId })).text; }
       catch (_) { meta.text = ''; }
@@ -296,44 +307,35 @@ async function collectFor(route, theme, viewport, globalRules) {
     const raw = meta.text.slice(u.startOffset, u.endOffset);
     const normalized = normalizeRuleText(raw);
     if (!normalized || !normalized.includes('{')) continue;
-    const key = `${meta.cssPath}::${normalized}`;
-    const rec = globalRules.get(key) || {
-      cssPath: meta.cssPath,
-      selector: selectorOfRule(normalized),
-      ruleText: normalized,
-      bytes: Buffer.byteLength(raw, 'utf8'),
-      used: false,
-      usedIn: [],
-      seenIn: [],
-    };
-    rec.used = rec.used || !!u.used;
-    const label = `${route} ${theme} ${viewport.width}x${viewport.height}`;
-    rec.seenIn.push(label);
-    if (u.used) rec.usedIn.push(label);
-    globalRules.set(key, rec);
+    // Stable source offsets preserve two identical rules at different locations.
+    const key = `${meta.cssPath}::${u.startOffset}:${u.endOffset}`;
+    if (!globalRules.has(key)) {
+      globalRules.set(key, { cssPath: meta.cssPath, bytes: Buffer.byteLength(raw, 'utf8') });
+    }
   }
+  let actualTheme = null;
+  try { actualTheme = await page.evaluate(() => document.documentElement.getAttribute('data-theme')); }
+  catch (_) { /* A scenario may have navigated away or closed the page. */ }
   await browser.close();
-  return { route, theme, viewport, error };
+  return { route, theme, actualTheme, viewport, error };
 }
 
-function summarize(globalRules, scenarioResults) {
-  const byFile = new Map();
+function summarize(globalRules, scenarioResults, fileTotals) {
+  const byFile = new Map([...fileTotals].map(([cssPath, totalStyleRules]) => [
+    cssPath, { cssPath, totalStyleRules, observedMatchingRules: 0, observedBytes: 0 },
+  ]));
   for (const rec of globalRules.values()) {
-    const file = byFile.get(rec.cssPath) || { cssPath: rec.cssPath, rules: 0, used: 0, unused: 0, bytes: 0, unusedBytes: 0, candidates: [] };
-    file.rules += 1;
-    file.bytes += rec.bytes;
-    if (rec.used) file.used += 1;
-    else {
-      file.unused += 1;
-      file.unusedBytes += rec.bytes;
-      if (!isProtectedSelector(rec.selector)) file.candidates.push(rec);
-    }
-    byFile.set(rec.cssPath, file);
+    const file = byFile.get(rec.cssPath);
+    if (!file) continue;
+    file.observedMatchingRules++;
+    file.observedBytes += rec.bytes;
   }
-  for (const file of byFile.values()) {
-    file.candidates.sort((a, b) => b.bytes - a.bytes);
-  }
-  return { generatedAt: new Date().toISOString(), scenarios: scenarioResults, files: [...byFile.values()].sort((a, b) => a.cssPath.localeCompare(b.cssPath)) };
+  return {
+    generatedAt: new Date().toISOString(),
+    methodology: 'CSSOM counts all style rules; DevTools lists only rules observed matching in these scenarios. Unobserved does not imply unused.',
+    scenarios: scenarioResults,
+    files: [...byFile.values()].sort((a, b) => a.cssPath.localeCompare(b.cssPath)),
+  };
 }
 
 function writeReport(summary) {
@@ -349,23 +351,17 @@ function writeReport(summary) {
   lines.push('');
   lines.push('## Scenarios');
   for (const s of summary.scenarios) {
-    lines.push(`- ${s.route} | ${s.theme} | ${s.viewport.width}x${s.viewport.height}${s.error ? ` | ERROR: ${s.error}` : ''}`);
+    lines.push(`- ${s.route} | ${s.theme} | ${s.viewport.width}x${s.viewport.height}${s.actualTheme !== s.theme ? ` | DOM theme: ${s.actualTheme || 'not set'}` : ''}${s.error ? ` | ERROR: ${s.error}` : ''}`);
   }
+  lines.push('');
+  lines.push('## Interpretation');
+  lines.push(summary.methodology);
+  lines.push('CSSOM includes rules for other pages, viewports and interactions. DevTools does not list every unmatched rule; these counts are not a purge list or a percentage of dead CSS.');
   lines.push('');
   lines.push('## File summary');
-  lines.push('| CSS file | Rules seen | Used | Unused | Unused bytes seen |');
-  lines.push('|---|---:|---:|---:|---:|');
-  for (const f of summary.files) lines.push(`| ${f.cssPath} | ${f.rules} | ${f.used} | ${f.unused} | ${f.unusedBytes} |`);
-  lines.push('');
-  lines.push('## Non-protected unused candidates (evidence only; do not delete without review)');
-  for (const f of summary.files) {
-    const top = f.candidates.slice(0, 25);
-    if (!top.length) continue;
-    lines.push(`\n### ${f.cssPath}`);
-    for (const r of top) {
-      lines.push(`- ${r.bytes} bytes — \`${r.selector.slice(0, 220).replace(/`/g, '\\`')}\``);
-    }
-  }
+  lines.push('| CSS file | CSSOM style rules | Observed matching rules | Observed source bytes |');
+  lines.push('|---|---:|---:|---:|');
+  for (const f of summary.files) lines.push(`| ${f.cssPath} | ${f.totalStyleRules} | ${f.observedMatchingRules} | ${f.observedBytes} |`);
   lines.push('');
   fs.writeFileSync(mdPath, lines.join('\n'));
   return { jsonPath, mdPath };
@@ -374,24 +370,27 @@ function writeReport(summary) {
 (async () => {
   const server = await startServer();
   const globalRules = new Map();
+  const fileTotals = new Map();
   const scenarioResults = [];
+  const routeFilter = process.env.CSS_COVERAGE_ROUTE;
   try {
-    for (const route of SCENARIOS) {
+    if (routeFilter && !SCENARIOS.includes(routeFilter)) throw new Error(`Unknown CSS_COVERAGE_ROUTE: ${routeFilter}`);
+    for (const route of routeFilter ? [routeFilter] : SCENARIOS) {
       for (const theme of ['light', 'dark']) {
-        scenarioResults.push(await collectFor(route, theme, { width: 1440, height: 1100 }, globalRules));
+        scenarioResults.push(await collectFor(route, theme, { width: 1440, height: 1100 }, globalRules, fileTotals));
       }
     }
-    // Mobile coverage on the most fragile surfaces.
-    for (const route of ['/', '/gallery/', '/zakazat-tort-spb/', '/svadebnye-torty/', '/bento-torty/', '/otzyvy/', '/prigorody/pushkin/']) {
+    // Mobile coverage on the most fragile surfaces (or a selected route).
+    for (const route of routeFilter ? [routeFilter] : ['/', '/gallery/', '/zakazat-tort-spb/', '/svadebnye-torty/', '/bento-torty/', '/otzyvy/', '/prigorody/pushkin/']) {
       for (const theme of ['light', 'dark']) {
-        scenarioResults.push(await collectFor(route, theme, { width: 412, height: 915 }, globalRules));
+        scenarioResults.push(await collectFor(route, theme, { width: 412, height: 915 }, globalRules, fileTotals));
       }
     }
-    const summary = summarize(globalRules, scenarioResults);
+    const summary = summarize(globalRules, scenarioResults, fileTotals);
     const out = writeReport(summary);
     console.log(`CSS coverage written:\n- ${path.relative(ROOT, out.mdPath)}\n- ${path.relative(ROOT, out.jsonPath)}`);
     for (const f of summary.files) {
-      console.log(`${f.cssPath}: used ${f.used}/${f.rules}, unused ${f.unused}, non-protected candidates ${f.candidates.length}`);
+      console.log(`${f.cssPath}: ${f.observedMatchingRules} matching positions observed; ${f.totalStyleRules} CSSOM style rules (not an unused count)`);
     }
   } finally {
     server.close();
