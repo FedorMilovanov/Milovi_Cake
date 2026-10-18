@@ -461,6 +461,25 @@ test.describe('premium media blocks', () => {
     expect(decodeURIComponent(handoff)).toContain(chosen.label);
   });
 
+  test('wedding date opens a private WhatsApp tab even when the date is undecided', async ({ page }) => {
+    await page.context().route('https://wa.me/**', (route) => route.fulfill({
+      status: 200, contentType: 'text/html', body: '<!doctype html><title>WhatsApp handoff intercepted</title>',
+    }));
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('#wedDate')).toHaveAttribute('aria-describedby', 'wedDateHint');
+    await expect(page.locator('#wedDateHint')).toContainText('если выберете');
+    const popupPromise = page.context().waitForEvent('page');
+    await page.locator('.wed-date-form .wed-btn').click();
+    const popup = await popupPromise;
+    await popup.waitForLoadState('domcontentloaded');
+    const handoff = new URL(popup.url());
+    expect(handoff.origin).toBe('https://wa.me');
+    expect(handoff.pathname).toBe('/79119038886');
+    expect(handoff.searchParams.get('text')).toContain('дата пока не выбрана');
+    expect(await popup.evaluate(() => window.opener)).toBeNull();
+    await popup.close();
+  });
+
   test('wedding date rejects past dates but keeps an undated enquiry possible', async ({ page }) => {
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
     const input = page.locator('#wedDate');
