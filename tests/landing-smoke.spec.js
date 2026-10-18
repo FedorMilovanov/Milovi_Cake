@@ -54,10 +54,36 @@ test.describe('premium media blocks', () => {
     await expect(page.locator('.wed-collection-note')).toContainText('не фотографии выполненных заказов');
     await expect(page.locator('.bridal-route')).toBeVisible();
     await expect(page.locator('.bridal-callout')).toBeVisible();
-    await expect(page.locator('.lp-media-showcase')).toBeVisible();
+    const realMedia = page.locator('.lp-media-showcase');
+    await expect(realMedia).toBeVisible();
+    await expect(realMedia.locator('img, video')).toHaveCount(2);
+    await expect(realMedia).toContainText('разные торты');
+    await expect(realMedia.locator('img[src*="wedding-blush"], img[src*="wedding-table"]')).toHaveCount(0);
+    const gallery = await page.evaluate(() => JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent)
+      ['@graph'].find((item) => item['@type'] === 'ImageGallery'));
+    expect(gallery.image.map((item) => new URL(item.contentUrl).pathname)).toEqual(['/img/gallery/gallery-11.webp']);
+    await expect(page.locator('.wed-hero + .wed-proof')).toHaveCount(1);
     await expect(page.locator('video source[src*="video-12-wedding-heart.webm"]')).toHaveCount(1);
-    await expect(page.locator('.lp-media-showcase video')).toHaveAttribute('poster', '/img/gallery/video-12-wedding-heart-poster.webp');
+    await expect(realMedia.locator('source[type="video/mp4"]')).toHaveAttribute('src', '/img/gallery/videos/video-12-wedding-heart.mp4');
+    await expect(realMedia.locator('video')).toHaveAttribute('poster', '/img/gallery/video-12-wedding-heart-poster.webp');
     await expect(page.locator('img[src*="gallery-11.webp"]').first()).toBeVisible();
+  });
+
+  test('real wedding photo uses a compact mobile source and the process clip stays portrait', async ({ page }) => {
+    for (const width of [320, 390, 412]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+      const photo = page.locator('.wed-proof-cake-visual img');
+      await photo.scrollIntoViewIfNeeded();
+      await expect.poll(() => photo.evaluate((img) => img.currentSrc)).toContain('/img/gallery/gallery-11-mobile.avif');
+      const layout = await page.evaluate(() => {
+        const video = document.querySelector('.wed-proof-video-frame video');
+        const rect = video.getBoundingClientRect();
+        return { ratio: rect.height / rect.width, overflow: document.documentElement.scrollWidth - innerWidth };
+      });
+      expect(layout.ratio).toBeGreaterThan(1.7);
+      expect(layout.overflow).toBeLessThanOrEqual(1);
+    }
   });
 
   test('wedding portfolio link lands below the fixed header at every layout breakpoint', async ({ page }) => {
@@ -88,6 +114,7 @@ test.describe('premium media blocks', () => {
     expect(reel.name).toContain('малиной');
     expect(reel.description).toBe(description);
     await expect(page.locator('.lp-media-showcase video')).toHaveAttribute('preload', 'none');
+    await expect(page.locator('.lp-media-showcase video')).toHaveAttribute('loading', 'lazy');
     const playButton = page.locator('.lp-media-showcase button.lp-media-play');
     await playButton.focus();
     await expect(playButton).toBeFocused();
@@ -99,7 +126,16 @@ test.describe('premium media blocks', () => {
     await expect(playButton).toBeHidden();
     const response = await request.get(poster);
     expect(response.ok()).toBe(true);
-    expect((await response.body()).length).toBeLessThan(20_000);
+    expect((await response.body()).length).toBeLessThan(22_000);
+    const frame = await page.evaluate((src) => new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve([image.naturalWidth, image.naturalHeight]);
+      image.onerror = reject;
+      image.src = src;
+    }), poster);
+    expect(frame).toEqual([720, 1282]);
+    const videoFit = await page.locator('.wed-proof-video-frame video').evaluate((el) => getComputedStyle(el).objectFit);
+    expect(videoFit).toBe('contain');
     const sitemap = await (await request.get('/sitemap-videos.xml')).text();
     expect(sitemap).toContain(`<video:thumbnail_loc>https://milovicake.ru${poster}</video:thumbnail_loc>`);
     expect(sitemap).toContain(`<video:description>${description}</video:description>`);
@@ -588,7 +624,11 @@ test.describe('premium media blocks', () => {
       await page.goto(pageInfo.path, { waitUntil: 'domcontentloaded' });
       await expect(page.locator('.lp-media-showcase')).toBeVisible();
       const mediaCount = await page.locator('.lp-media-showcase img, .lp-media-showcase video').count();
-      expect(mediaCount).toBeGreaterThanOrEqual(4);
+      if (pageInfo.path === '/svadebnye-torty/') {
+        expect(mediaCount).toBe(2); // One real cake and one separate process clip; concepts live below.
+      } else {
+        expect(mediaCount).toBeGreaterThanOrEqual(4);
+      }
 
       const images = page.locator('.lp-media-showcase img, .lp-card img');
       const imageCount = await images.count();

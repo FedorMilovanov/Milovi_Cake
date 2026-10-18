@@ -36,7 +36,7 @@
   <link rel="preload" as="image" type="image/avif" media="(min-width: 501px)" href="/img/wedding-hero.avif" fetchpriority="high" />
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=optional" as="style" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=optional" rel="stylesheet" /></noscript>
-  <link rel="stylesheet" href="/css/style.css?v=20261018r05" />
+  <link rel="stylesheet" href="/css/style.css?v=20261018r06" />
   <script type="application/ld+json">
   {
   "@context": "https://schema.org",
@@ -242,25 +242,13 @@
     {
       "@type": "ImageGallery",
       "@id": "https://milovicake.ru/svadebnye-torty/#portfolio",
-      "name": "Портфолио Milovi Cake для страницы «svadebnye-torty»",
+      "name": "Реальная свадебная работа Milovi Cake",
       "image": [
         {
           "@type": "ImageObject",
           "contentUrl": "https://milovicake.ru/img/gallery/gallery-11.webp",
-          "name": "Светлый свадебный торт",
-          "caption": "Камерный белый торт для нежной свадьбы"
-        },
-        {
-          "@type": "ImageObject",
-          "contentUrl": "https://milovicake.ru/img/wedding-blush.webp",
-          "name": "Визуализация стиля: торт Blush и пионы",
-          "caption": "Идея оформления свадебного торта, визуализация стиля"
-        },
-        {
-          "@type": "ImageObject",
-          "contentUrl": "https://milovicake.ru/img/wedding-table.webp",
-          "name": "Визуализация стиля: свадебный десертный стол",
-          "caption": "Идея десертного стола к свадьбе, визуализация стиля"
+          "name": "Свадебный торт с сухоцветами",
+          "caption": "Светлая фактура и начинка в разрезе"
         }
       ]
     },
@@ -354,6 +342,52 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
       <div class="wed-scroll" aria-hidden="true">Листайте вниз</div>
     </section>
 
+    <section class="lp-media-showcase wed-proof" aria-labelledby="mediaShowcaseTitle">
+      <div class="wed-proof-inner">
+        <div class="wed-proof-head">
+          <div>
+            <p class="wed-collection-kicker">Из портфолио · Санкт-Петербург</p>
+            <h2 id="mediaShowcaseTitle">Настоящий торт.<br><em>Последние штрихи.</em></h2>
+          </div>
+          <p>Один свадебный торт в деталях и короткое видео, где Виктория завершает оформление другого уже на площадке.</p>
+        </div>
+        <div class="wed-proof-grid">
+          <figure class="wed-proof-cake">
+            <picture class="wed-proof-cake-visual">
+              <source media="(max-width: 700px)" type="image/avif" srcset="/img/gallery/gallery-11-mobile.avif">
+              <source type="image/avif" srcset="/img/gallery/gallery-11.avif">
+              <source media="(max-width: 700px)" type="image/webp" srcset="/img/gallery/gallery-11-mobile.webp">
+              <img src="/img/gallery/gallery-11.webp" alt="Светлый свадебный торт с сухоцветами и начинкой в разрезе" width="1000" height="526" loading="lazy" decoding="async">
+            </picture>
+            <figcaption class="wed-proof-caption">
+              <span class="wed-proof-number">01 / Свадебный торт</span>
+              <h3>Светлая фактура и сухоцветы</h3>
+              <p>Нежный камерный торт: виден и декор, и начинка в разрезе.</p>
+            </figcaption>
+          </figure>
+          <figure class="wed-proof-process">
+            <div class="wed-proof-video-frame">
+              <video controls preload="none" loading="lazy" playsinline poster="/img/gallery/video-12-wedding-heart-poster.webp" width="720" height="1282" aria-label="Видео: Виктория завершает оформление свадебного торта малиной">
+                <source src="/img/gallery/videos/video-12-wedding-heart.webm" type="video/webm">
+                <source src="/img/gallery/videos/video-12-wedding-heart.mp4" type="video/mp4">
+                <a href="/img/gallery/videos/video-12-wedding-heart.mp4">Смотреть видео оформления торта</a>
+              </video>
+              <button type="button" class="lp-media-play wed-proof-video-play" hidden>
+                <span class="wed-proof-play-icon" aria-hidden="true">▶</span>
+                <span>Смотреть процесс<small>10 секунд</small></span>
+              </button>
+            </div>
+            <figcaption class="wed-proof-caption">
+              <span class="wed-proof-number">02 / Реальный процесс</span>
+              <h3>Финальные штрихи на площадке</h3>
+              <p>Виктория поправляет свежую малину на уже привезённом торте.</p>
+            </figcaption>
+          </figure>
+        </div>
+        <p class="wed-proof-note">На фото и в видео — разные торты. Ниже — <a href="#wedCollection">визуализации возможных стилей</a>, а не фотографии выполненных заказов.</p>
+      </div>
+    </section>
+
     <section class="wed-collection" id="wedCollection" aria-labelledby="wedCollectionTitle">
       <div class="wed-collection-shell">
         <div class="wed-collection-head">
@@ -394,7 +428,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
             </a>
           </article>
         </div>
-        <p class="wed-collection-note">Эти четыре образа — визуализации стиля, а не фотографии выполненных заказов. Нажмите на карточку, чтобы обсудить идею в WhatsApp. <a href="#mediaShowcaseTitle">Реальные работы — в портфолио</a>.</p>
+        <p class="wed-collection-note">Эти четыре образа — визуализации стиля, а не фотографии выполненных заказов. Нажмите на карточку, чтобы обсудить идею в WhatsApp. <a href="#mediaShowcaseTitle">Реальные работы и видео — выше ↑</a>.</p>
         <div class="wed-collection-detail">
           <picture><source type="image/avif" srcset="/img/wedding-style-pure-ivory-sm.avif 480w, /img/wedding-style-pure-ivory.avif 720w" sizes="(max-width: 370px) calc(100vw - 40px), (max-width: 500px) calc(100vw - 48px), (max-width: 860px) calc(50vw - 24px), (max-width: 1600px) calc(55vw - 60px), 760px"><img src="/img/wedding-style-pure-ivory.webp" srcset="/img/wedding-style-pure-ivory-sm.webp 480w, /img/wedding-style-pure-ivory.webp 720w" sizes="(max-width: 370px) calc(100vw - 40px), (max-width: 500px) calc(100vw - 48px), (max-width: 860px) calc(50vw - 24px), (max-width: 1600px) calc(55vw - 60px), 760px" alt="" width="720" height="964" loading="lazy" decoding="async"/></picture>
           <div class="wed-collection-detail-copy"><span class="wed-collection-kicker">Внимание к деталям</span><h3>Детали, которые создают эмоции</h3><a href="#bridalRouteTitle">Как мы работаем <span aria-hidden="true">→</span></a></div>
@@ -427,7 +461,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
   </div>
 </section>
 
-<section class="lp-media-showcase" aria-labelledby="mediaShowcaseTitle"><div class="lp-media-head"><h2 id="mediaShowcaseTitle">Свадебная эстетика в портфолио</h2><p>Показываем честно: реальный свадебный торт, видео оформления торта с малиной и отдельно подписанные визуализации стиля.</p></div><div class="lp-media-grid"><figure class="lp-media-item"><picture><source type="image/avif" srcset="/img/gallery/gallery-11.avif"><img src="/img/gallery/gallery-11.webp" alt="Светлый свадебный торт — Milovi Cake" width="900" height="700" loading="lazy" decoding="async"/></picture><figcaption class="lp-media-caption"><strong>Светлый свадебный торт</strong><span>Камерный белый торт для нежной свадьбы</span></figcaption></figure><figure class="lp-media-item"><video preload="none" muted playsinline onclick="if(!this.controls){this.controls=true;this.tabIndex=0;this.closest('.lp-media-item').classList.add('is-playing');this.focus();this.play().catch(function(){})}" poster="/img/gallery/video-12-wedding-heart-poster.webp" aria-label="Видео: оформление торта с малиной"><source src="/img/gallery/videos/video-12-wedding-heart.webm" type="video/webm"></video><button type="button" class="lp-media-play" aria-label="Воспроизвести видео оформления торта с малиной" onclick="this.previousElementSibling.click()">▶</button><figcaption class="lp-media-caption"><strong>Видео: оформление торта с малиной</strong><span>Реальный процесс декора свежей малиной</span></figcaption></figure><figure class="lp-media-item"><picture><source type="image/avif" srcset="/img/wedding-blush.avif"><img src="/img/wedding-blush.webp" alt="Визуализация стиля: двухъярусный свадебный торт с пионами" width="900" height="700" loading="lazy" decoding="async"/></picture><figcaption class="lp-media-caption"><strong>Blush и пионы · визуализация стиля</strong><span>Идея оформления, а не готовая работа из портфолио</span></figcaption></figure><figure class="lp-media-item"><picture><source type="image/avif" srcset="/img/wedding-table.avif"><img src="/img/wedding-table.webp" alt="Визуализация стиля: свадебный десертный стол" width="900" height="700" loading="lazy" decoding="async"/></picture><figcaption class="lp-media-caption"><strong>Десертный стол · визуализация стиля</strong><span>Торт, мини-Павлова и капкейки в одной палитре</span></figcaption></figure></div><p class="lp-media-note">Реальные работы подписаны названием торта, идеи — словами «визуализация стиля». После каждой новой свадьбы будем заменять визуализации настоящими фотографиями.</p></section>
+
     <section class="lp-section" id="wedStyles"><div class="lp-section-head"><h2>Что можно заказать</h2><p>Каждый торт согласуем по вкусу, весу, цветовой гамме и декору. Ниже — практичные ориентиры по форматам.</p></div><div class="lp-grid">
         <article class="lp-card">
           <picture><source type="image/avif" srcset="/img/gallery/gallery-11.avif"><img src="/img/gallery/gallery-11.webp" alt="Камерный свадебный торт" width="640" height="480" loading="lazy" decoding="async"/></picture>
@@ -509,11 +543,30 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
   </main>
 </div>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
-
-
-
-
-
+  <script>
+    (function () {
+      'use strict';
+      var frame = document.querySelector('.wed-proof-video-frame');
+      if (!frame) return;
+      var video = frame.querySelector('video');
+      var button = frame.querySelector('.wed-proof-video-play');
+      if (!video.canPlayType('video/webm') && !video.canPlayType('video/mp4')) return;
+      // Native controls remain available if JavaScript is disabled.
+      video.controls = false;
+      button.hidden = false;
+      function playVideo() {
+        if (button.hidden) return;
+        video.controls = true;
+        video.tabIndex = 0;
+        button.hidden = true;
+        video.focus({ preventScroll: true });
+        var attempt = video.play();
+        if (attempt && attempt.catch) attempt.catch(function () {});
+      }
+      button.addEventListener('click', playVideo);
+      video.addEventListener('click', playVideo);
+    })();
+  </script>
   <script>
     (function () {
       'use strict';
