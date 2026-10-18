@@ -281,6 +281,43 @@ test.describe('premium media blocks', () => {
     await expect(menu).not.toHaveAttribute('open', '');
   });
 
+  test('wedding scroll header stays opaque and controls retain touch areas', async ({ page }) => {
+    for (const width of [320, 390, 501, 561, 600, 768, 900]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+      for (const theme of ['light', 'dark']) {
+        const result = await page.evaluate((chosenTheme) => {
+          document.documentElement.dataset.theme = chosenTheme;
+          const calculator = document.querySelector('.wed-calc');
+          scrollTo({ top: calculator.getBoundingClientRect().top + scrollY });
+          const header = getComputedStyle(document.querySelector('.wed-header'));
+          const height = (selector) => document.querySelector(selector).getBoundingClientRect().height;
+          return {
+            background: header.backgroundColor, blur: header.backdropFilter,
+            slider: height('#wedGuests'), video: height('.lp-media-play'),
+            detail: height('.wed-collection-detail a'), faq: height('.lp-faq-item summary'),
+            detailFont: parseFloat(getComputedStyle(document.querySelector('.wed-collection-detail a')).fontSize),
+            detailKicker: height('.wed-collection-detail .wed-collection-kicker'),
+            faqDisplay: getComputedStyle(document.querySelector('.lp-faq-item summary')).display,
+            toggle: height('.lp-theme-toggle'), menu: height('.wed-mobile-menu summary'),
+          };
+        }, theme);
+        expect(result.background).toBe(theme === 'dark' ? 'rgb(26, 17, 8)' : 'rgb(245, 240, 232)');
+        expect(result.blur).toBe('none');
+        expect(result.faqDisplay).toBe('list-item');
+        for (const target of ['slider', 'video', 'detail', 'faq']) expect(result[target]).toBeGreaterThanOrEqual(44);
+        if (width > 500 && width <= 860) {
+          expect(result.detailFont).toBeGreaterThanOrEqual(11);
+          expect(result.detailKicker).toBeLessThanOrEqual(20);
+        }
+        if (width <= 860) {
+          expect(result.toggle).toBeGreaterThanOrEqual(44);
+          expect(result.menu).toBeGreaterThanOrEqual(44);
+        }
+      }
+    }
+  });
+
   test('wedding date form still opens a prefilled WhatsApp brief after the mobile layout change', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });

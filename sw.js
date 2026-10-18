@@ -11,7 +11,7 @@ const CACHE_NAME = 'milovi-cake-v2026.09.15-r87';
 
 const PRECACHE = [
   '/',
-  '/css/style.css?v=20261018r03',
+  '/css/style.css?v=20261018r04',
   '/css/mc-2026.css?v=20260728r27',
   '/css/premium-overrides.css?v=20260728r27',
   '/css/v20-dark-and-fixes.css?v=20260728r27',
