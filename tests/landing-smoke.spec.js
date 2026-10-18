@@ -202,6 +202,20 @@ test.describe('premium media blocks', () => {
         expect(product.offers.availability).toBeUndefined(); // A bespoke cake needs a date check, not a stock claim.
       }
     }
+    expect(formats[0].label).toBe('от\u00a03\u00a0000\u00a0₽/кг'); // Keep the price together with real web fonts.
+    expect(formats[0].product.offers).toMatchObject({
+      price: '3000', priceCurrency: 'RUB',
+      priceSpecification: {
+        '@type': 'UnitPriceSpecification', price: '3000', priceCurrency: 'RUB',
+        referenceQuantity: { '@type': 'QuantitativeValue', value: 1, unitCode: 'KGM' },
+      },
+    });
+    expect(formats[2].product.offers.price).toBe('350'); // Wedding desserts retain their own price.
+    await expect(page.locator('.wed-meta')).toContainText('От 3 000 ₽/кг');
+    await expect(page.locator('.bridal-panel .lp-section-head')).toContainText('от 3 000 ₽/кг');
+    for (const selector of ['.wed-meta', '.bridal-panel .lp-section-head p']) {
+      expect(await page.locator(selector).textContent()).toContain('3\u00a0000\u00a0₽/кг');
+    }
   });
 
   test('wedding FAQ markup matches every visible answer', async ({ page }) => {
@@ -531,15 +545,23 @@ test.describe('premium media blocks', () => {
     expect(valueStyle.valueSize).toBe(valueStyle.headingSize);
     expect(valueStyle.valueColor).toBe(valueStyle.headingColor);
     expect(valueStyle.display).toBe('inline');
-    await expect(page.locator('#wedCalcPrice')).toContainText('23 800 ₽');
+    await expect(page.locator('#wedCalcPrice')).toHaveAttribute('role', 'status');
+    await expect(page.locator('#wedCalcPrice')).toContainText('25 500 ₽');
+    expect(await page.locator('#wedCalcPrice').textContent()).toContain('25\u00a0500\u00a0₽');
     await guests.press('Home');
     await expect(page.locator('#wedGuestsOut')).toHaveText('15');
     await expect(page.locator('#wedCalcOut')).toHaveText('≈ 2,6 кг · 1–2 яруса');
-    await expect(page.locator('#wedCalcPrice')).toContainText('7 100 ₽');
+    await expect(page.locator('#wedCalcPrice')).toContainText('7 800 ₽'); // 2,6 кг × 3 000 ₽, not 2,55 кг × 3 000 ₽.
+    await guests.press('ArrowRight');
+    await expect(page.locator('#wedCalcOut')).toHaveText('≈ 3,4 кг · 1–2 яруса');
+    await expect(page.locator('#wedCalcPrice')).toContainText('10 200 ₽');
+    await guests.press('ArrowRight');
+    await expect(page.locator('#wedCalcOut')).toHaveText('≈ 4,3 кг · 1–2 яруса');
+    await expect(page.locator('#wedCalcPrice')).toContainText('12 900 ₽');
     await guests.press('End');
     await expect(page.locator('#wedGuestsOut')).toHaveText('150');
     await expect(page.locator('#wedCalcOut')).toHaveText('≈ 25,5 кг · 3–4 яруса');
-    await expect(page.locator('#wedCalcPrice')).toContainText('71 400 ₽');
+    await expect(page.locator('#wedCalcPrice')).toContainText('76 500 ₽');
   });
 
   test('commercial pages include portfolio images or videos', async ({ page }) => {

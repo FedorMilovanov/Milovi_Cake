@@ -93,7 +93,17 @@
             "offers": {
               "@type": "Offer",
               "priceCurrency": "RUB",
-              "price": "2800",
+              "price": "3000",
+              "priceSpecification": {
+                "@type": "UnitPriceSpecification",
+                "price": "3000",
+                "priceCurrency": "RUB",
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 1,
+                  "unitCode": "KGM"
+                }
+              },
               "url": "https://milovicake.ru/svadebnye-torty/",
               "seller": {
                 "@id": "https://milovicake.ru/#business"
@@ -338,7 +348,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
             <p class="wed-note">Откроется WhatsApp с заполненной датой — останется добавить площадку и число гостей.</p>
           </form>
           <a class="wed-link" href="#wedCollection">Выбрать торт <span aria-hidden="true">→</span></a>
-          <div class="wed-meta">Санкт-Петербург и область · Доставка к площадке · От 2 800 ₽/кг</div>
+          <div class="wed-meta">Санкт-Петербург и область · Доставка к площадке · От&nbsp;3&nbsp;000&nbsp;₽/кг</div>
         </div>
       </div></div>
       <div class="wed-scroll" aria-hidden="true">Листайте вниз</div>
@@ -393,10 +403,10 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     </section>
 <section class="lp-section" aria-labelledby="wedCalcTitle">
   <div class="bridal-panel">
-    <div class="lp-section-head"><h2 id="wedCalcTitle">Сколько торта нужно вашим гостям</h2><p>Ориентир — 170 г на гостя. Подвигайте ползунок: покажем вес, число ярусов и примерный бюджет от 2 800 ₽/кг. Точную стоимость подтвердим после брифа и выбора декора.</p></div>
+    <div class="lp-section-head"><h2 id="wedCalcTitle">Сколько торта нужно вашим гостям</h2><p>Ориентир — 170 г на гостя. Ползунок покажет вес с округлением до 0,1 кг, число ярусов и бюджет от&nbsp;3&nbsp;000&nbsp;₽/кг по показанному весу. Точную стоимость согласуем после брифа.</p></div>
     <div class="wed-calc">
       <div class="bridal-mini"><strong><span id="wedGuestsOut">50</span> гостей</strong><label for="wedGuests" style="display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted)">Количество гостей</label><input type="range" id="wedGuests" min="15" max="150" step="5" value="50" aria-describedby="wedCalcOut"><span>От камерного торта до большой многоярусной композиции.</span></div>
-      <div class="bridal-mini"><strong id="wedCalcOut">≈ 8,5 кг · 3 яруса</strong><span id="wedCalcPrice">Ориентир по торту: ≈ 23 800 ₽. Декор живыми цветами, конструкция и доставка рассчитываются отдельно.</span></div>
+      <div class="bridal-mini"><strong id="wedCalcOut">≈ 8,5 кг · 3 яруса</strong><span id="wedCalcPrice" role="status">Ориентир по торту: ≈ 25&nbsp;500&nbsp;₽. Декор живыми цветами, конструкция и доставка рассчитываются отдельно.</span></div>
     </div>
   </div>
 </section>
@@ -425,7 +435,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
             <span class="wed-collection-kicker">Реальная работа</span>
             <h3>Камерный свадебный торт</h3>
             <p>Элегантный торт для небольшой свадьбы или семейного ужина.</p>
-            <strong>от 2 800 ₽/кг</strong>
+            <strong>от&nbsp;3&nbsp;000&nbsp;₽/кг</strong>
           </div>
         </article>
         <article class="lp-card">
@@ -538,7 +548,28 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
       refreshMinDate();
     })();
   </script>
-  <script>(function(){var r=document.getElementById('wedGuests');if(!r)return;var go=document.getElementById('wedGuestsOut'),out=document.getElementById('wedCalcOut'),pr=document.getElementById('wedCalcPrice');function fmt(n){return n.toLocaleString('ru-RU');}function upd(){var n=+r.value,w=n*0.17;go.textContent=n;out.textContent='≈ '+w.toFixed(1).replace('.',',')+' кг · '+(n<=30?'1–2 яруса':n<=70?'3 яруса':'3–4 яруса');pr.textContent='Ориентир по торту: ≈ '+fmt(Math.round(w*2800/100)*100)+' ₽. Декор живыми цветами, конструкция и доставка рассчитываются отдельно.';}r.addEventListener('input',upd);upd();})();</script>
+  <script>
+    (function () {
+      'use strict';
+      var slider = document.getElementById('wedGuests');
+      if (!slider) return;
+      var guestsOut = document.getElementById('wedGuestsOut');
+      var weightOut = document.getElementById('wedCalcOut');
+      var priceOut = document.getElementById('wedCalcPrice');
+      function update() {
+        var guests = Number(slider.value);
+        // 170 г на гостя: считаем по тому же весу, который показываем (точность 0,1 кг).
+        var weight = Math.round(guests * 17 / 10) / 10;
+        var tiers = guests <= 30 ? '1–2 яруса' : guests <= 70 ? '3 яруса' : '3–4 яруса';
+        guestsOut.textContent = guests;
+        weightOut.textContent = '≈ ' + weight.toFixed(1).replace('.', ',') + ' кг · ' + tiers;
+        priceOut.textContent = 'Ориентир по торту: ≈ ' + Math.round(weight * 3000).toLocaleString('ru-RU') +
+          '\u00a0₽. Декор живыми цветами, конструкция и доставка рассчитываются отдельно.';
+      }
+      slider.addEventListener('input', update);
+      update();
+    })();
+  </script>
 <script defer src="/js/consent-analytics.js"></script>
 </body>
 </html>
