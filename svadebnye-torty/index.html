@@ -36,7 +36,7 @@
   <link rel="preload" as="image" type="image/avif" media="(min-width: 501px)" href="/img/wedding-hero.avif" fetchpriority="high" />
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=optional" as="style" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=optional" rel="stylesheet" /></noscript>
-  <link rel="stylesheet" href="/css/style.css?v=20261018r06" />
+  <link rel="stylesheet" href="/css/style.css?v=20261023r01" />
   <script type="application/ld+json">
   {
   "@context": "https://schema.org",
@@ -593,7 +593,8 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
         }) : 'дата пока не выбрана';
         var text = 'Здравствуйте! Хочу проверить дату свадьбы в Санкт-Петербурге. Дата свадьбы: ' + label +
           '. Площадка: ___, гостей: ___. Подскажите, свободна ли дата и какой формат торта подойдёт?';
-        window.open('https://wa.me/79119038886?text=' + encodeURIComponent(text), '_blank', 'noopener,noreferrer');
+        var handoff = window.open('https://wa.me/79119038886?text=' + encodeURIComponent(text), '_blank', 'noopener,noreferrer');
+        if (handoff && window.MiloviConsent) window.MiloviConsent.leadHandoff('whatsapp', 'wedding_date');
       });
       input.addEventListener('focus', refreshMinDate);
       document.addEventListener('visibilitychange', function () {

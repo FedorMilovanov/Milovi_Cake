@@ -417,16 +417,39 @@ function clearCart() {
   if (document.getElementById('cartClearConfirm')) return;
   const confirm = document.createElement('div');
   confirm.id = 'cartClearConfirm';
-  confirm.style.cssText = `position:absolute;inset:0;background:rgba(245,240,232,0.96);backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;z-index:10;border-radius:inherit;animation:fadeInUp 0.2s ease;`;
-  confirm.innerHTML = `<div style="font-size:36px">🗑️</div><div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--brown);text-align:center">Очистить корзину?</div><div style="display:flex;gap:12px"><button type="button" id="cartClearNo" style="background:none;border:1.5px solid var(--cream-dark);border-radius:50px;padding:10px 28px;font-family:'Jost',sans-serif;font-size:14px;color:var(--text-muted);cursor:pointer;transition:border-color 0.2s,color 0.2s;">Нет</button><button type="button" id="cartClearYes" style="background:var(--brown);border:none;border-radius:50px;padding:10px 28px;font-family:'Jost',sans-serif;font-size:14px;color:#fff;cursor:pointer;transition:background 0.2s;">Да, очистить</button></div>`;
+  confirm.setAttribute('role', 'alertdialog');
+  confirm.setAttribute('aria-modal', 'true');
+  confirm.setAttribute('aria-labelledby', 'cartClearTitle');
+  confirm.style.cssText = `position:absolute;inset:0;background:var(--white);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;z-index:10;border-radius:inherit;animation:fadeInUp 0.2s ease;`;
+  confirm.innerHTML = `<div style="color:var(--cart-danger);line-height:0"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true"><path d="M4 7h16M10 4h4M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></div><div id="cartClearTitle" style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--brown);text-align:center">Очистить корзину?</div><div style="display:flex;gap:12px"><button type="button" id="cartClearNo" style="background:none;border:1.5px solid var(--cream-dark);border-radius:50px;padding:10px 28px;font-family:'Jost',sans-serif;font-size:14px;color:var(--cart-muted);cursor:pointer;transition:border-color 0.2s,color 0.2s;">Нет</button><button type="button" id="cartClearYes" style="background:var(--brown);border:none;border-radius:50px;padding:10px 28px;font-family:'Jost',sans-serif;font-size:14px;color:var(--cream);cursor:pointer;transition:background 0.2s;">Да, очистить</button></div>`;
   const drawer = document.getElementById('cartDrawer');
   if (!drawer) return;
   drawer.appendChild(confirm);
-  document.getElementById('cartClearNo').onclick = () => { confirm.style.animation = 'fadeOutDown 0.18s ease forwards'; setTimeout(() => confirm.remove(), 180); };
-  document.getElementById('cartClearYes').onclick = () => {
+  const cancel = document.getElementById('cartClearNo');
+  const accept = document.getElementById('cartClearYes');
+  if (window._trapFocus) window._cartConfirmTrapRelease = window._trapFocus(confirm);
+  cancel.focus({ preventScroll: true });
+  cancel.onclick = () => {
+    confirm.style.animation = 'fadeOutDown 0.18s ease forwards';
+    setTimeout(() => {
+      _cartDismissConfirm();
+      if (_cartState === 'open') document.getElementById('cartClearBtn').focus({ preventScroll: true });
+    }, 180);
+  };
+  accept.onclick = () => {
     const cartItems = body.querySelectorAll('.cart-item');
     cartItems.forEach((el, i) => { el.style.transition = `opacity 0.2s ease ${i * 50}ms, transform 0.2s ease ${i * 50}ms`; el.style.opacity = '0'; el.style.transform = 'translateX(30px)'; });
-    setTimeout(() => { confirm.remove(); cart = {}; saveCartToStorage(); setCartStep(1); const _cF = document.getElementById('cartFooter'); const _cB = document.getElementById('cartBody'); if (_cF) _cF.style.display = 'none'; if (_cB) _cB.style.display = ''; updateCartUI(); }, cartItems.length * 50 + 200);
+    setTimeout(() => {
+      _cartDismissConfirm();
+      cart = {};
+      saveCartToStorage();
+      setCartStep(1);
+      const cartFooter = document.getElementById('cartFooter');
+      if (cartFooter) cartFooter.style.display = 'none';
+      body.style.display = '';
+      updateCartUI();
+      if (_cartState === 'open') document.querySelector('#cartDrawer .cart-empty-cta')?.focus({ preventScroll: true });
+    }, cartItems.length * 50 + 200);
   };
 }
 
@@ -475,7 +498,7 @@ function updateCartUI() {
 
   const items = Object.entries(cart);
   if (!items.length) {
-    body.innerHTML = `<div class="cart-empty"><div style="font-size:48px;margin-bottom:16px">🧁</div><div style="font-size:18px;color:var(--brown);font-family:'Cormorant Garamond',serif;margin-bottom:8px">Корзина пуста</div><div style="font-size:14px;color:var(--text-muted);margin-bottom:28px">Добавьте что-нибудь вкусное!</div><a href="#catalog" onclick="closeCart()" style="display:inline-flex;align-items:center;gap:8px;background:var(--gold);color:#fff;padding:12px 24px;border-radius:50px;text-decoration:none;font-family:'Jost',sans-serif;font-size:14px;font-weight:500;box-shadow:0 6px 20px rgba(201,147,74,0.35)">Перейти в каталог →</a></div>`;
+    body.innerHTML = `<div class="cart-empty"><div style="font-size:48px;margin-bottom:16px">🧁</div><div style="font-size:18px;color:var(--brown);font-family:'Cormorant Garamond',serif;margin-bottom:8px">Корзина пуста</div><div class="cart-empty-message" style="font-size:14px;margin-bottom:28px">Добавьте что-нибудь вкусное!</div><a class="cart-empty-cta" href="#catalog" onclick="closeCart()" style="display:inline-flex;align-items:center;gap:8px;background:var(--gold);padding:12px 24px;border-radius:50px;text-decoration:none;font-family:'Jost',sans-serif;font-size:14px;font-weight:500;box-shadow:0 6px 20px rgba(201,147,74,0.35)">Перейти в каталог →</a></div>`;
     footer.style.display = 'none';
     return;
   }
@@ -497,22 +520,22 @@ function updateCartUI() {
     const dessertType = entry.dessertType || 'base';
     const isBase = dessertType === 'base';
 
-    const dessertToggle = `<div style="margin-top:8px;"><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;"><span style="font-size:11px;color:var(--text-muted);letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;">Тип:</span><button type="button" onclick="setCartItemDessertType('${cartKey}','base')" style="font-size:12px;font-family:'Jost',sans-serif;padding:3px 10px;border-radius:20px;border:1px solid ${isBase ? 'var(--gold)' : 'var(--cream-dark)'};background:${isBase ? 'var(--gold)' : 'transparent'};color:${isBase ? '#fff' : 'var(--text-muted)'};cursor:pointer;transition:all .2s;">Базовый</button><button type="button" onclick="setCartItemDessertType('${cartKey}','author')" style="font-size:12px;font-family:'Jost',sans-serif;padding:3px 10px;border-radius:20px;border:1px solid ${!isBase ? 'var(--gold)' : 'var(--cream-dark)'};background:${!isBase ? 'var(--gold)' : 'transparent'};color:${!isBase ? '#fff' : 'var(--text-muted)'};cursor:pointer;transition:all .2s;">Авторский</button></div>${(() => {
+    const dessertToggle = `<div style="margin-top:8px;"><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;"><span style="font-size:11px;color:var(--cart-muted);letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;">Тип:</span><button type="button" onclick="setCartItemDessertType('${cartKey}','base')" style="font-size:12px;font-family:'Jost',sans-serif;padding:3px 10px;border-radius:20px;border:1px solid ${isBase ? 'var(--gold)' : 'var(--cream-dark)'};background:${isBase ? 'var(--gold)' : 'transparent'};color:${isBase ? 'var(--cart-cta-ink)' : 'var(--cart-muted)'};cursor:pointer;transition:all .2s;">Базовый</button><button type="button" onclick="setCartItemDessertType('${cartKey}','author')" style="font-size:12px;font-family:'Jost',sans-serif;padding:3px 10px;border-radius:20px;border:1px solid ${!isBase ? 'var(--gold)' : 'var(--cream-dark)'};background:${!isBase ? 'var(--gold)' : 'transparent'};color:${!isBase ? 'var(--cart-cta-ink)' : 'var(--cart-muted)'};cursor:pointer;transition:all .2s;">Авторский</button></div>${(() => {
       const fills = getFillsForProduct(p);
       if (!fills.length) return '';
       const currentFill = parsed.fill || '';
       const opts = fills.map(f => `<option value="${f}" ${currentFill === f ? 'selected' : ''}>${f}</option>`).join('');
-      return `<div style="display:flex;align-items:center;gap:6px;margin-top:6px;"><span style="font-size:11px;color:var(--text-muted);letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;">Начинка:</span><select onchange="setCartItemFill('${cartKey}', this.value)" style="font-size:12px;font-family:'Jost',sans-serif;padding:3px 8px;border-radius:12px;border:1px solid var(--cream-dark);background:transparent;color:var(--text);cursor:pointer;flex:1;max-width:180px;"><option value="">— уточнить —</option>${opts}</select></div>`;
+      return `<label style="display:flex;align-items:center;gap:6px;margin-top:6px;min-width:0;"><span style="font-size:11px;color:var(--cart-muted);letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;">Начинка:</span><select onchange="setCartItemFill('${cartKey}', this.value)" style="font-size:12px;font-family:'Jost',sans-serif;padding:3px 8px;border-radius:12px;border:1px solid var(--cream-dark);background:transparent;color:var(--text);cursor:pointer;flex:1;max-width:180px;"><option value="">— уточнить —</option>${opts}</select></label>`;
     })()}</div>`;
 
-    return `<div class="cart-item" data-cart-id="${cartKey}"><div class="cart-item-info"><h4>${p.name}</h4><div class="item-price">${p.price}</div>${p.min && !entry.fill ? `<div class="item-min">${p.min}</div>` : ''}${entry.decor ? `<div class="item-min" style="opacity:0.7">🎨 ${entry.decor}</div>` : ''}${dessertToggle}</div><div class="qty-ctrl"><button type="button" class="qty-btn" onclick="changeQty('${cartKey}', -1)" ${atMin ? 'title="Минимальный заказ"' : ''}>−</button><span class="qty-val">${qtyLabel}</span><button type="button" class="qty-btn" onclick="changeQty('${cartKey}', 1)">+</button></div><div class="cart-item-right"><div class="cart-line-total">${lineTotalFmt}</div><button type="button" class="del-btn" onclick="removeFromCart('${cartKey}')" aria-label="Удалить">🗑</button></div></div>`;
+    return `<div class="cart-item" data-cart-id="${cartKey}"><div class="cart-item-info"><h4>${p.name}</h4><div class="item-price">${p.price}</div>${p.min && !entry.fill ? `<div class="item-min">${p.min}</div>` : ''}${entry.decor ? `<div class="item-min" style="opacity:0.7">🎨 ${entry.decor}</div>` : ''}${dessertToggle}</div><div class="qty-ctrl"><button type="button" class="qty-btn" onclick="changeQty('${cartKey}', -1)" ${atMin ? 'title="Минимальный заказ"' : ''}>−</button><span class="qty-val">${qtyLabel}</span><button type="button" class="qty-btn" onclick="changeQty('${cartKey}', 1)">+</button></div><div class="cart-item-right"><div class="cart-line-total">${lineTotalFmt}</div><button type="button" class="del-btn" onclick="removeFromCart('${cartKey}')" aria-label="Удалить"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true"><path d="M4 7h16M10 4h4M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></button></div></div>`;
   }).join('');
 
   const totalFmt = total.toLocaleString('ru') + ' ₽';
   const cartTotalEl = document.getElementById('cartTotal');
   if (cartTotalEl) cartTotalEl.textContent = totalFmt;
 
-  body.innerHTML += `<div id="cartStep1Footer" style="margin-top:16px;padding-top:14px;border-top:1px solid var(--cream-dark);"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:15px;color:var(--brown);">Итого (предварительно):</span><span class="cart-inline-total">${totalFmt}</span></div><p style="font-size:11px;color:var(--text-muted);margin-bottom:14px;line-height:1.5;">Окончательная цена согласовывается после обсуждения декора — каждый торт индивидуален.</p><button type="button" onclick="goToFormStep()" style="width:100%;background:var(--gold);color:#fff;border:none;border-radius:50px;padding:14px 24px;font-size:15px;font-family:'Jost',sans-serif;font-weight:500;cursor:pointer;box-shadow:0 6px 20px rgba(201,147,74,0.35);">Далее →</button></div>`;
+  body.innerHTML += `<div id="cartStep1Footer" style="margin-top:16px;padding-top:14px;border-top:1px solid var(--cream-dark);"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:15px;color:var(--brown);">Итого (предварительно):</span><span class="cart-inline-total">${totalFmt}</span></div><p style="font-size:11px;color:var(--cart-muted);margin-bottom:14px;line-height:1.5;">Окончательная цена согласовывается после обсуждения декора — каждый торт индивидуален.</p><button type="button" onclick="goToFormStep()" style="width:100%;background:var(--gold);color:var(--cart-cta-ink);border:none;border-radius:50px;padding:14px 24px;font-size:15px;font-family:'Jost',sans-serif;font-weight:500;cursor:pointer;box-shadow:0 6px 20px rgba(201,147,74,0.35);">Далее →</button></div>`;
   footer.style.display = 'none';
 }
 
@@ -583,7 +606,10 @@ function buildWA(e) {
     waUrl = 'https://wa.me/79119038886?text=' + encodeURIComponent(trimmed);
     showToast('Заказ очень длинный — сообщение сокращено');
   }
-  setTimeout(() => { window.open(waUrl, '_blank'); if (btn) btn.classList.remove('loading'); }, 300);
+  // Keep the popup in the user gesture; delayed opens are blocked on mobile.
+  const handoff = window.open(waUrl, '_blank');
+  if (handoff && window.MiloviConsent) window.MiloviConsent.leadHandoff('whatsapp', 'cart');
+  if (btn) btn.classList.remove('loading');
 }
 function buildTG(e) {
   e.preventDefault();
@@ -594,7 +620,9 @@ function buildTG(e) {
   if (btn) btn.classList.add('loading');
   /* r29: bug #17 — clipboard fallback */
   (function(text){ try { navigator.clipboard.writeText(text).then(function(){ showToast("Скопировано! Вставьте в чат Telegram (Ctrl+V)"); }).catch(function(){ var ta=document.createElement("textarea"); ta.value=text; ta.style.cssText="position:fixed;left:-9999px"; document.body.appendChild(ta); ta.select(); try{document.execCommand("copy");showToast("Скопировано! Вставьте в чат Telegram")}catch(e){showToast("Не удалось скопировать — выделите и скопируйте текст вручную")} document.body.removeChild(ta); }); } catch(e){ showToast("Не удалось скопировать текст"); } })(msg);
-  setTimeout(() => { window.open('https://t.me/MiloviCake', '_blank'); if (btn) btn.classList.remove('loading'); }, 300);
+  const handoff = window.open('https://t.me/MiloviCake', '_blank');
+  if (handoff && window.MiloviConsent) window.MiloviConsent.leadHandoff('telegram', 'cart');
+  if (btn) btn.classList.remove('loading');
 }
 
 function sendFormWA() {
@@ -604,7 +632,8 @@ function sendFormWA() {
   if (!phone) { showToast('Пожалуйста, укажите телефон'); document.getElementById('fphone').focus(); return; }
   const phoneDigits = phone.replace(/\D/g, '');
   if (phoneDigits.length < 11) { showToast('Введите корректный номер телефона'); document.getElementById('fphone').focus(); return; }
-  window.open(`https://wa.me/79119038886?text=${encodeURIComponent(`Привет! 👋\nИмя: ${name}\nТелефон: ${phone}\nКомментарий: ${comment}`)}`, '_blank');
+  const handoff = window.open(`https://wa.me/79119038886?text=${encodeURIComponent(`Привет! 👋\nИмя: ${name}\nТелефон: ${phone}\nКомментарий: ${comment}`)}`, '_blank');
+  if (handoff && window.MiloviConsent) window.MiloviConsent.leadHandoff('whatsapp', 'contact_form');
 }
 
 function navigateToStep(step) {
@@ -661,8 +690,35 @@ window.unlockBody = unlockBody;
 // ═══════════════════════════════════════════════════════════════
 var _cartState = 'closed';
 var _cartTimer = null;
+var _cartBodyLocked = false;
 
 function _cartClearTimer() { if (_cartTimer) { clearTimeout(_cartTimer); _cartTimer = null; } }
+
+function _cartSyncBodyLock() {
+  var shouldLock = _cartState === 'open' && window.innerWidth <= 900;
+  if (shouldLock === _cartBodyLocked) return;
+  _cartBodyLocked = shouldLock;
+  if (shouldLock) lockBody(); else unlockBody();
+}
+
+function _cartDismissConfirm() {
+  document.getElementById('cartClearConfirm')?.remove();
+  if (window._cartConfirmTrapRelease) {
+    window._cartConfirmTrapRelease();
+    window._cartConfirmTrapRelease = null;
+  }
+}
+
+function _cartReturnFocus(drawer) {
+  var previous = openCart._lastFocused;
+  openCart._lastFocused = null;
+  if (!drawer.contains(document.activeElement)) return;
+  var trigger = previous && previous.isConnected && typeof previous.focus === 'function'
+    ? previous : document.querySelector('#cartBtn, .cart-btn, .header-cart-btn');
+  if (trigger) trigger.focus({ preventScroll: true });
+  // A programmatic open may have no focusable trigger; never hide focused content.
+  if (drawer.contains(document.activeElement)) document.activeElement.blur();
+}
 
 function _cartForceClose() {
   _cartClearTimer();
@@ -671,12 +727,18 @@ function _cartForceClose() {
   if (drawer) { drawer.classList.remove('open', 'closing'); drawer.style.cssText = ''; }
   if (overlay) { overlay.classList.remove('open'); }
   document.body.classList.remove('cart-open');
-  if (_cartState === 'open' && window.innerWidth <= 900) unlockBody();
   _cartState = 'closed';
+  _cartSyncBodyLock();
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.remove('hidden');
   var mcn = document.getElementById('mcNav');
   if (mcn) { mcn.classList.remove('mc-nav--hidden'); document.body.classList.remove('mc-nav-hidden'); }
+  if (drawer) {
+    _cartReturnFocus(drawer);
+    _cartDismissConfirm();
+    drawer.inert = true;
+    drawer.setAttribute('aria-hidden', 'true');
+  }
 }
 
 function openCart() {
@@ -690,6 +752,8 @@ function openCart() {
   openCart._lastFocused = document.activeElement;
   _cartClearTimer();
   _cartState = 'opening';
+  drawer.inert = false;
+  drawer.setAttribute('aria-hidden', 'false');
   drawer.style.willChange = 'transform';
   drawer.classList.remove('closing');
   drawer.style.cssText = '';
@@ -699,13 +763,16 @@ function openCart() {
   document.body.classList.add('cart-open');
   drawer.setAttribute('role', 'dialog');
   drawer.setAttribute('aria-modal', 'true');
-  drawer.setAttribute('aria-hidden', 'false');
   drawer.setAttribute('aria-labelledby', 'cartDrawerTitle');
-  if (window.innerWidth <= 900) lockBody();
   _cartState = 'open';
+  _cartSyncBodyLock();
   setCartStep(1);
   updateCartUI();
-  setTimeout(function() { var closeBtn = drawer.querySelector('.cart-close, [aria-label="Закрыть"], [onclick="closeCart()"]'); if (closeBtn) closeBtn.focus(); }, 100);
+  setTimeout(function() {
+    if (_cartState !== 'open' || drawer.inert) return;
+    var closeBtn = drawer.querySelector('.cart-close, [aria-label="Закрыть"], [onclick="closeCart()"]');
+    if (closeBtn) closeBtn.focus({ preventScroll: true });
+  }, 100);
   /* r32: bug #38 — focus trap for cart */
   if (window._trapFocus) { window._cartTrapRelease = window._trapFocus(drawer); }
   var bn = document.getElementById('bottomNav');
@@ -728,8 +795,15 @@ function closeCart() {
   drawer.classList.add('closing');
   overlay.classList.remove('open');
   document.body.classList.remove('cart-open');
+  _cartSyncBodyLock();
+  var bn = document.getElementById('bottomNav');
+  if (bn) bn.classList.remove('hidden');
+  var mcn = document.getElementById('mcNav');
+  if (mcn) { mcn.classList.remove('mc-nav--hidden'); document.body.classList.remove('mc-nav-hidden'); }
+  _cartReturnFocus(drawer);
+  _cartDismissConfirm();
+  drawer.inert = true;
   drawer.setAttribute('aria-hidden', 'true');
-  if (window.innerWidth <= 900) unlockBody();
   var delay = window.innerWidth > 900 ? 220 : 350;
   _cartTimer = setTimeout(function() {
     _cartTimer = null;
@@ -737,15 +811,7 @@ function closeCart() {
     drawer.style.cssText = '';
     drawer.style.willChange = 'auto';
     _cartState = 'closed';
-    if (openCart._lastFocused && typeof openCart._lastFocused.focus === 'function') {
-      openCart._lastFocused.focus();
-      openCart._lastFocused = null;
-    }
   }, delay);
-  var bn = document.getElementById('bottomNav');
-  if (bn) bn.classList.remove('hidden');
-  var mcn = document.getElementById('mcNav');
-  if (mcn) { mcn.classList.remove('mc-nav--hidden'); document.body.classList.remove('mc-nav-hidden'); }
 }
 
 function toggleCart() { if (_cartState === 'open' || _cartState === 'opening') closeCart(); else openCart(); }
@@ -755,11 +821,7 @@ window.addEventListener('resize', (function() {
   var timer;
   return function() {
     clearTimeout(timer);
-    timer = setTimeout(function() {
-      if (_cartState !== 'open') return;
-      if (window.innerWidth <= 900) { lockBody(); }
-      else { unlockBody(); }
-    }, 200);
+    timer = setTimeout(_cartSyncBodyLock, 200);
   };
 })());
 
@@ -804,7 +866,7 @@ window.addEventListener('resize', (function() {
 window.addEventListener('orientationchange', function() {
   var heroEl = document.querySelector('.hero');
   if (heroEl) { heroEl.classList.add('hero--orient-change'); setTimeout(function() { heroEl.classList.remove('hero--orient-change'); }, 350); }
-  setTimeout(function() { if (_cartState === 'open') { if (window.innerWidth <= 900) lockBody(); else unlockBody(); } }, 300);
+  setTimeout(_cartSyncBodyLock, 300);
 });
 
 window.addEventListener('pageshow', function(e) {
