@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   MILOVI CAKE — Service Worker v1.8 (V20260907-R86)
+   MILOVI CAKE — Service Worker v1.8 (V20261023-R89)
    Strategy:
      - HTML (navigate): network-first, fallback to cache, fallback to "/"
      - Static (CSS/JS/img): stale-while-revalidate; video/range: browser-native
@@ -7,24 +7,24 @@
      - skipWaiting + clients.claim → обновления подхватываются мгновенно
    ═══════════════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'milovi-cake-v2026.09.15-r87';
+const CACHE_NAME = 'milovi-cake-v2026.10.23-r89';
 
 const PRECACHE = [
   '/',
-  '/css/style.css?v=20261018r06',
-  '/css/mc-2026.css?v=20261022r01',
+  '/css/style.css?v=20261023r01',
+  '/css/mc-2026.css?v=20261023r02',
   '/css/premium-overrides.css?v=20260728r27',
   '/css/v20-dark-and-fixes.css?v=20260728r27',
   '/css/v20-fixes.css?v=20260728r27',
-  '/css/final-fixes.css?v=20260815r78',
+  '/css/final-fixes.css?v=20261023r01',
   '/css/gallery/gallery-2026.css?v=20261022r04',
-  '/js/main.js?v=20260916r01',
+  '/js/main.js?v=20261023r02',
   '/js/nav.js?v=20260728r27',
   '/js/mc-2026.js?v=20260916r02',
   '/js/v20-faq-fix.js?v=20260728r27',
-  '/js/gallery/main.js?v=20261022r03',
-  '/js/gallery/data.js?v=20261022r02',
-  '/js/consent-analytics.js?v=20260815r78',
+  '/js/gallery/main.js?v=20261023r01',
+  '/js/gallery/data.js?v=20261023r01',
+  '/js/consent-analytics.js?v=20261023r01',
   '/img/head_mobile.avif',
   '/img/head_desktop.avif',
   '/img/head_mobile.webp',

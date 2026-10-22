@@ -152,6 +152,9 @@ for path in ['svadebnye-torty/index.html', 'bento-torty/index.html', 'zakazat-to
     require('loading="eager"' not in read(path), f'{path} reintroduced below-fold eager media')
 
 bento = read('bento-torty/index.html')
+require('<style id="bento-critical">' in bento, 'Bento first-screen geometry lost its critical CSS')
+require('rel="preload" as="style" href="/css/style.css?v=20261023r01" onload="this.onload=null;this.rel=\'stylesheet\'"' in bento, 'Bento shared CSS blocks its first paint again')
+require('<noscript><link rel="stylesheet" href="/css/style.css?v=20261023r01"' in bento, 'Bento no-script stylesheet fallback missing')
 require('/img/bento_1-mobile-640.avif" media="(max-width: 768px)" fetchpriority="high"' in bento, 'Bento mobile LCP preload missing')
 require('media="(max-width: 768px)" srcset="/img/bento_1-mobile-640.avif"' in bento, 'Bento mobile LCP source missing')
 require('/img/bento_1.avif" media="(min-width: 769px)" fetchpriority="high"' in bento, 'Bento desktop LCP preload lost its media guard')
@@ -165,15 +168,13 @@ for preview, source in [
     ('img/gallery/gallery-27-card.avif', 'img/gallery/gallery-27.avif'),
     ('img/bento_1-card.avif', 'img/bento_1.avif'),
     ('img/gallery/gallery-30-preview.avif', 'img/gallery/gallery-30.avif'),
-    ('img/gallery/gallery-19-preview.webp', 'img/gallery/gallery-19.webp'),
-    ('img/gallery/gallery-29-preview.webp', 'img/gallery/gallery-29.webp'),
 ]:
     require(Path(preview).is_file(), f'Bento preview derivative missing: {preview}')
     require(Path(preview).stat().st_size < Path(source).stat().st_size, f'Bento preview is not smaller than source: {preview}')
 require('/img/gallery/gallery-27-preview.avif' in bento, 'Bento first portfolio preview returned to the full AVIF')
 require('/img/gallery/gallery-30-preview.avif' in bento, 'Bento second portfolio preview returned to the full AVIF')
-require('poster="/img/gallery/gallery-19-preview.webp"' in bento, 'Bento first video poster returned to the full image')
-require('poster="/img/gallery/gallery-29-preview.webp"' in bento, 'Bento second video poster returned to the full image')
+require('poster="/img/gallery/video-07-bento-bday-poster.webp"' in bento, 'Bento birthday clip lost its own frame')
+require('poster="/img/gallery/video-06-bento-love-poster.webp"' in bento, 'Bento Love clip lost its own frame')
 require('/img/bento_1-card.avif' in bento, 'Bento product card returned to the full bento source')
 require('/img/gallery/gallery-27-card.avif' in bento, 'Bento birthday card returned to the full gallery source')
 
@@ -184,8 +185,8 @@ require('media="(max-width: 768px)" srcset="/img/head_mobile.avif"' in order, 'o
 gallery = read('gallery/index.html')
 require('id="preloader"' not in gallery, 'gallery blocking preloader returned')
 require('/img/gallery/gallery-01.avif" fetchpriority="high"' in gallery, 'gallery LCP preload missing')
-require('/js/gallery/main.js?v=20261022r03' in gallery, 'gallery runtime revision drift')
-require("./data.js?v=20261022r02" in read('js/gallery/main.js'), 'gallery data import revision drift')
+require('/js/gallery/main.js?v=20261023r01' in gallery, 'gallery runtime revision drift')
+require("./data.js?v=20261023r01" in read('js/gallery/main.js'), 'gallery data import revision drift')
 require('#galleryGrid[data-hydrating="true"] { min-height: 100svh; }' in gallery, 'gallery hydration reserve missing')
 require('#galleryGrid[data-static-lcp-root="true"] { animation: none; }' in gallery, 'gallery grid animation gates initial LCP again')
 require('data-static-lcp="p01"' in gallery, 'gallery initial LCP card is no longer parser-visible')
@@ -230,7 +231,7 @@ for event in ['pointerdown', 'focusin', 'click']:
 require('script.async = true;' in gallery, 'gallery Swiper interaction load is not asynchronous')
 require("script.addEventListener('error'" in gallery and 'loading = false;' in gallery, 'gallery Swiper loader cannot retry after CDN failure')
 require('/css/gallery/gallery-2026.css?v=20261022r04" />' in gallery, 'gallery critical local CSS became deferred')
-require('/css/final-fixes.css?v=20260815r78" />' in gallery, 'gallery final critical CSS became deferred')
+require('/css/final-fixes.css?v=20261023r01" />' in gallery, 'gallery final critical CSS became deferred')
 require('id="gallery-lcp-media-fastpath"' in gallery, 'gallery eager-media LCP fast path missing')
 require(
     '#galleryGrid .card:has(img.card-media[loading="eager"]) .card-skeleton { display: none; }' in gallery,
@@ -311,28 +312,28 @@ require(
     'landing footer link target-size contract regressed',
 )
 for path in ['svadebnye-torty/index.html', 'bento-torty/index.html', 'zakazat-tort-spb/index.html']:
-    require('/css/style.css?v=20261018r06' in read(path), f'{path} landing a11y CSS revision drifted')
+    require('/css/style.css?v=20261023r01' in read(path), f'{path} landing a11y CSS revision drifted')
 
 # Shared CSS and its service-worker generation must move as one release unit.
 for public_html in sorted(Path('.').rglob('*.html')):
     html = read(public_html)
     if 'style.css?v=' in html:
-        require('style.css?v=20261018r06' in html, f'{public_html} shared style revision drifted')
+        require('style.css?v=20261023r01' in html, f'{public_html} shared style revision drifted')
         require('style.css?v=20260728r27' not in html, f'{public_html} still references stale shared style revision')
 
 # Shared main.js and CSS identities must move together across every HTML consumer.
 for public_html in sorted(Path('.').rglob('*.html')):
     html = read(public_html)
     if 'js/main.js?v=' in html:
-        require('main.js?v=20260916r01' in html, f'{public_html} shared main.js revision drifted')
-        require('main.js?v=20260906r01' not in html, f'{public_html} still references stale shared main.js revision')
+        require('main.js?v=20261023r02' in html, f'{public_html} shared main.js revision drifted')
+        require('main.js?v=20260916r01' not in html, f'{public_html} still references stale shared main.js revision')
 
 sw = read('sw.js')
-require("const CACHE_NAME = 'milovi-cake-v2026.09.15-r87';" in sw, 'service-worker cache generation drifted')
-require("'/css/style.css?v=20261018r06'," in sw, 'service-worker precache still points at stale shared CSS revision')
-require("'/js/main.js?v=20260916r01'," in sw, 'service-worker precache still points at stale shared main.js revision')
-require("'/js/gallery/main.js?v=20261022r03'," in sw, 'service-worker precache still points at stale gallery runtime revision')
-require("'/js/gallery/data.js?v=20261022r02'," in sw, 'service-worker precache still points at stale gallery data revision')
+require("const CACHE_NAME = 'milovi-cake-v2026.10.23-r89';" in sw, 'service-worker cache generation drifted')
+require("'/css/style.css?v=20261023r01'," in sw, 'service-worker precache still points at stale shared CSS revision')
+require("'/js/main.js?v=20261023r02'," in sw, 'service-worker precache still points at stale shared main.js revision')
+require("'/js/gallery/main.js?v=20261023r01'," in sw, 'service-worker precache still points at stale gallery runtime revision')
+require("'/js/gallery/data.js?v=20261023r01'," in sw, 'service-worker precache still points at stale gallery data revision')
 
 cfg = json.loads(read('.github/lighthouse-config.json'))
 require(cfg['ci']['collect'].get('numberOfRuns') == 3, 'Lighthouse collection is not three runs')
