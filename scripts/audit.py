@@ -1126,6 +1126,9 @@ with R.section("12. robots.txt & Sitemap"):
         expected_images = {f"{SITE_URL}{path}": (title, desc) for path, title, desc in photos}
         if len(photos) != 30 or len(expected_images) != 30:
             gallery_issues.append("Gallery photo manifest must contain 30 unique reviewed works")
+        missing_photos = [path for path, _, _ in photos if not (ROOT / path.lstrip('/')).is_file()]
+        if missing_photos:
+            gallery_issues.append(f'Gallery HD photo files are missing: {missing_photos}')
         try:
             xml_root = ET.fromstring(sitemap_text)
             ns = {'s': 'http://www.sitemaps.org/schemas/sitemap/0.9',
@@ -1150,7 +1153,7 @@ with R.section("12. robots.txt & Sitemap"):
         for issue in gallery_issues:
             R.err(issue)
         if not gallery_issues:
-            R.ok('Gallery image sitemap labels match 30 reviewed photo records (one wedding work)')
+            R.ok('Gallery image sitemap labels and files match 30 reviewed photo records (one wedding work)')
     else:
         R.warn("sitemap.xml not found")
 

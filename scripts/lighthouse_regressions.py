@@ -245,6 +245,11 @@ require(
 )
 
 gallery_css = read('css/gallery/gallery-2026.css')
+require(
+    '@media (hover: hover) and (pointer: fine) {\n  .gallery-grid:has(.card:hover) .card:not(:hover) {' in gallery_css
+    and 'filter: blur(8px) brightness(0.7);' in gallery_css,
+    'gallery peer blur must remain desktop-hover-only, never sticky on touch',
+)
 require('.card-skeleton{' in gallery_css, 'gallery lazy-card skeleton contract disappeared globally')
 require('.card.is-loading .card-media{ opacity:0;' in gallery_css, 'gallery lazy media no longer keeps the premium reveal contract')
 
