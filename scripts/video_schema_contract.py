@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import re
 from urllib.parse import urlparse
+from xml.etree import ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "data" / "video-publication.json"
@@ -17,6 +18,11 @@ LD_JSON_RE = re.compile(
     re.IGNORECASE | re.DOTALL,
 )
 GALLERY_VIDEO_RE = re.compile(r"src:\s*['\"](/img/gallery/videos/[^'\"]+\.webm)['\"]")
+GALLERY_ENTRY_RE = re.compile(
+    r"\{\s*id:\s*'v\d+',\s*type:\s*'video',\s*src:\s*'(?P<src>[^']+)',"
+    r"\s*poster:\s*'(?P<poster>[^']+)',\s*title:\s*'(?P<title>[^']+)',"
+    r"\s*desc:\s*'(?P<desc>[^']+)'"
+)
 
 
 def fail(message: str) -> None:
@@ -55,6 +61,64 @@ def is_video_object(obj: dict) -> bool:
     return False
 
 
+def check_video_posters(gallery_text: str, published: dict[str, str]) -> dict[str, str]:
+    """Guard the reviewed video frame across gallery, homepage, sitemap and schema."""
+    entries = {match['src']: match.groupdict() for match in GALLERY_ENTRY_RE.finditer(gallery_text)}
+    if set(entries) != set(published):
+        fail(f"video poster entries mismatch publication manifest: {sorted(set(published) ^ set(entries))}")
+    if len(list(GALLERY_ENTRY_RE.finditer(gallery_text))) != len(entries):
+        fail("duplicate gallery video entries")
+
+    posters: dict[str, str] = {}
+    for src, item in entries.items():
+        expected = f"/img/gallery/{Path(src).stem}-poster.webp"
+        poster = item['poster']
+        if poster != expected:
+            fail(f"{src}: poster must be its own video frame ({expected}), not {poster}")
+        media = ROOT / poster.lstrip('/')
+        if not media.is_file():
+            fail(f"{src}: poster is missing: {poster}")
+        content = media.read_bytes()
+        if not (content[:4] == b'RIFF' and content[8:12] == b'WEBP'):
+            fail(f"{src}: poster is not a WebP image: {poster}")
+        if len(content) > 70_000:
+            fail(f"{src}: poster exceeds 70 KB: {len(content)} bytes")
+        posters[src] = poster
+
+    home = (ROOT / 'index.html').read_text(encoding='utf-8')
+    match = re.search(r"data-videos='([^']+)'", home, re.DOTALL)
+    if not match:
+        fail('homepage video-strip JSON not found')
+    strip = json.loads(unescape(match[1]))
+    if {video.get('v'): video.get('p') for video in strip} != posters or len(strip) != len(posters):
+        fail('homepage video strip must use the matching 16 frame posters')
+
+    xml = ET.fromstring((ROOT / 'sitemap-videos.xml').read_text(encoding='utf-8'))
+    ns = {'s': 'http://www.sitemaps.org/schemas/sitemap/0.9',
+          'v': 'http://www.google.com/schemas/sitemap-video/1.1'}
+    urls = xml.findall('s:url', ns)
+    if len(urls) != 1 or urls[0].findtext('s:loc', namespaces=ns) != 'https://milovicake.ru/gallery/':
+        fail('video sitemap must have a single gallery URL (not artificial watch pages)')
+    reels = urls[0].findall('v:video', ns)
+    if len(reels) != len(posters):
+        fail(f'video sitemap must list exactly {len(posters)} reels, got {len(reels)}')
+    seen: set[str] = set()
+    for reel in reels:
+        src = urlparse(reel.findtext('v:content_loc', default='', namespaces=ns)).path
+        if src in seen or src not in entries:
+            fail(f'video sitemap has an unknown or repeated content URL: {src}')
+        seen.add(src)
+        item = entries[src]
+        for field, expected in (
+            ('thumbnail_loc', 'https://milovicake.ru' + posters[src]),
+            ('title', item['title']), ('description', item['desc']),
+        ):
+            actual = reel.findtext('v:' + field, namespaces=ns)
+            if actual != expected:
+                fail(f'video sitemap {src} {field}: {actual!r} != {expected!r}')
+    return posters
+
+
 def main() -> None:
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     published = manifest.get("videos")
@@ -73,6 +137,7 @@ def main() -> None:
         missing = sorted(gallery_videos - manifest_videos)
         stale = sorted(manifest_videos - gallery_videos)
         fail(f"gallery/publication manifest mismatch; missing={missing}, stale={stale}")
+    posters = check_video_posters(gallery_text, published)
 
     errors: list[str] = []
     video_objects = 0
@@ -118,6 +183,8 @@ def main() -> None:
                             errors.append(
                                 f"{where}: uploadDate {upload_date!r} != provenance manifest {expected!r} for {parsed_path}"
                             )
+                        if parsed_path in posters and obj.get('thumbnailUrl') != 'https://milovicake.ru' + posters[parsed_path]:
+                            errors.append(f"{where}: thumbnailUrl does not match the reviewed video frame for {parsed_path}")
 
     if errors:
         raise SystemExit("Video schema contract FAILED:\n- " + "\n- ".join(errors))

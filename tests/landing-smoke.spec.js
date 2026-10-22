@@ -124,7 +124,10 @@ test.describe('premium media blocks', () => {
     const poster = '/img/gallery/video-12-wedding-heart-poster.webp';
     const description = 'Кондитер оформляет белый торт свежей малиной';
     const videoRequests = [];
-    page.on('request', (req) => { if (req.url().includes('/video-12-wedding-heart.webm')) videoRequests.push(req.url()); });
+    // Chromium may negotiate either real source; the lazy-load contract applies to both.
+    page.on('request', (req) => {
+      if (/\/video-12-wedding-heart\.(webm|mp4)(?:\?|$)/.test(req.url())) videoRequests.push(req.url());
+    });
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
     const schemas = await page.locator('script[type="application/ld+json"]').allTextContents();
     const reel = schemas.map(JSON.parse).flatMap((schema) => schema['@graph'] || [schema])
@@ -759,6 +762,15 @@ test.describe('SEO infrastructure', () => {
     }
     expect(xml).not.toContain('https://milovicake.ru/call/');
     expect(xml).toContain('<lastmod>2026-06-05</lastmod>');
+  });
+
+  test('robots allows crawlers to see /call/ noindex without putting it in the sitemap', async ({ request }) => {
+    const robots = await (await request.get('/robots.txt')).text();
+    expect(robots).not.toMatch(/^Disallow:\s*\/call\//m);
+    const call = await (await request.get('/call/')).text();
+    expect(call).toMatch(/<meta name="robots" content="noindex, nofollow"/);
+    const sitemap = await (await request.get('/sitemap.xml')).text();
+    expect(sitemap).not.toContain('https://milovicake.ru/call/');
   });
 
   test('homepage business hours are Monday-Saturday in visible text and schema', async ({ page }) => {

@@ -5,47 +5,27 @@
  * size: 'm' (1×1), 'tall' (1×2), 'wide' (2×1), 'big' (2×2)
  * tags: 3d | bento | meringue | wedding | pavlova | bday
  * ---------------------------------------------------------------------------
- * FIX r24 (2026-05-18):
- *   - v01: poster → gallery-28 (книги, нейтральное фото вместо десертного набора)
- *   - v08: poster → gallery-03 (детский 3D-торт, вместо gallery-10 «мышонок»)
- *   - v10: poster → gallery-16 (капкейки с кремом, вместо gallery-09 «торт в цилиндре»)
- *   - v11: poster → gallery-01 (шоколадный торт с мишками, вместо gallery-02 «цветы»)
- *   - v15: poster → gallery-05 (3D-торт с хоккеем, вместо gallery-17 «павлова»)
- *   - p07: title → 'Золотой торт с фактурным декором' (устраняет дубль с p18)
- *   - p27: title → 'Бенто «С днём рождения!»' (устраняет дубль с p12)
+ * Video posters v01–v16 are frames of their own footage (v12 was already correct).
  * --------------------------------------------------------------------------- */
 export const GALLERY_ITEMS = [
   // ========== VIDEOS (16) ==========
-  // FIX: v01 — poster был gallery-15 («Подарочный десертный набор»), видео — торт «Книги».
-  //      Меняем на gallery-28 (нейтральный десерт, не пересекается с содержимым видео).
-  { id: 'v01', type: 'video', src: '/img/gallery/videos/video-01-knigi.webm',          poster: '/img/gallery/gallery-28.webp', title: 'Видео: 3D-торт «Книги»',          desc: 'Скульптурный 3D-торт в виде книг — идея для персонального праздника', tags: ['3d','bday'], size: 'tall' },
-  { id: 'v02', type: 'video', src: '/img/gallery/videos/video-02-spb-cakes.webm',      poster: '/img/gallery/gallery-14.webp', title: 'Видео: фактурный торт с золотом', desc: 'Авторский праздничный торт с объёмным декором и золотыми акцентами', tags: ['bday'] },
-  { id: 'v03', type: 'video', src: '/img/gallery/videos/video-03-bday.webm',           poster: '/img/gallery/gallery-20.webp', title: 'Видео: торт на 20-летие',         desc: 'Голубой торт на день рождения с праздничным декором', tags: ['bday'], size: 'wide' },
-  // v04 — filename eclair.webm, но контент — меренговый рулет; poster gallery-25 корректен (меренговые рулеты).
-  //        Файл переименовать нельзя без изменения физического .webm, поэтому оставляем как есть.
-  { id: 'v04', type: 'video', src: '/img/gallery/videos/video-04-eclair.webm',         poster: '/img/gallery/gallery-25.webp', title: 'Видео: меренговый рулет',         desc: 'Нежный меренговый десерт с кремом и золотыми акцентами', tags: ['meringue'] },
-  { id: 'v05', type: 'video', src: '/img/gallery/videos/video-05-secret.webm',         poster: '/img/gallery/gallery-23.webp', title: 'Видео: бенто с признанием',       desc: 'Мини-торт с персональной надписью — компактный формат для подарка', tags: ['bento'] },
-  { id: 'v06', type: 'video', src: '/img/gallery/videos/video-06-bento-love.webm',     poster: '/img/gallery/gallery-29.webp', title: 'Видео: бенто Love',              desc: 'Романтичный бенто-торт с кремовым декором', tags: ['bento'] },
-  { id: 'v07', type: 'video', src: '/img/gallery/videos/video-07-bento-bday.webm',     poster: '/img/gallery/gallery-19.webp', title: 'Видео: бенто на день рождения',  desc: 'Небольшой праздничный торт с милой иллюстрацией и надписью', tags: ['bento','bday'], size: 'tall' },
-  // FIX: v08 — poster был gallery-10 «3D-торт с мышонком». Видео — лисёнок (foxes).
-  //      Меняем на gallery-03 «Детский торт с зайчиком» — тематически близко к детским 3D.
-  { id: 'v08', type: 'video', src: '/img/gallery/videos/video-08-foxes.webm',          poster: '/img/gallery/gallery-03.webp', title: 'Видео: 3D-торт с лисёнком',       desc: 'Детский 3D-торт с ручной лепкой персонажа', tags: ['3d','bday'] },
-  { id: 'v09', type: 'video', src: '/img/gallery/videos/video-09-cupcakes-berry.webm', poster: '/img/gallery/gallery-16.webp', title: 'Видео: капкейки с ягодами',       desc: 'Набор капкейков с кремом и ягодным декором', tags: ['bday'] },
-  // FIX: v10 — poster был gallery-09 «Праздничный торт в цилиндре». Видео — капкейки.
-  //      Меняем на gallery-16 «Капкейки с кремовым декором» (прямое совпадение).
-  //      v09 уже использует gallery-16, меняем v10 на gallery-13 (нейтральный торт).
-  { id: 'v10', type: 'video', src: '/img/gallery/videos/video-10-cupcakes.webm',       poster: '/img/gallery/gallery-13.webp', title: 'Видео: праздничные капкейки',     desc: 'Капкейки ручной работы с ярким кремовым оформлением', tags: ['bday'] },
-  // FIX: v11 — poster был gallery-02 «Розовый торт с цветами». Видео — торт с мишками.
-  //      Меняем на gallery-01 «Шоколадный торт с мишками» — прямое тематическое совпадение.
-  { id: 'v11', type: 'video', src: '/img/gallery/videos/video-11-bears.webm',          poster: '/img/gallery/gallery-01.webp', title: 'Видео: торт с мишками',          desc: 'Нежный детский торт с фигурками и розовым декором', tags: ['3d','bday'], size: 'wide' },
-  // v12: poster is a frame from this video, not a duplicate photo of another cake.
+  // Frames are reviewed against each corresponding self-hosted video.
+  { id: 'v01', type: 'video', src: '/img/gallery/videos/video-01-knigi.webm',          poster: '/img/gallery/video-01-knigi-poster.webp', title: 'Видео: 3D-торт «Книги»',          desc: 'Скульптурный 3D-торт в виде книг — идея для персонального праздника', tags: ['3d','bday'], size: 'tall' },
+  { id: 'v02', type: 'video', src: '/img/gallery/videos/video-02-spb-cakes.webm',      poster: '/img/gallery/video-02-spb-cakes-poster.webp', title: 'Видео: фактурный торт с золотом', desc: 'Авторский праздничный торт с объёмным декором и золотыми акцентами', tags: ['bday'] },
+  { id: 'v03', type: 'video', src: '/img/gallery/videos/video-03-bday.webm',           poster: '/img/gallery/video-03-bday-poster.webp', title: 'Видео: торт на 20-летие',         desc: 'Голубой торт на день рождения с праздничным декором', tags: ['bday'], size: 'wide' },
+  { id: 'v04', type: 'video', src: '/img/gallery/videos/video-04-eclair.webm',         poster: '/img/gallery/video-04-eclair-poster.webp', title: 'Видео: эклеры с золотым декором', desc: 'Эклеры с сахарной пудрой и золотыми акцентами', tags: [] },
+  { id: 'v05', type: 'video', src: '/img/gallery/videos/video-05-secret.webm',         poster: '/img/gallery/video-05-secret-poster.webp', title: 'Видео: торт с сюрпризом',       desc: 'Авторский торт с цветочным декором и скрытой надписью', tags: ['bday'] },
+  { id: 'v06', type: 'video', src: '/img/gallery/videos/video-06-bento-love.webm',     poster: '/img/gallery/video-06-bento-love-poster.webp', title: 'Видео: бенто Love',              desc: 'Романтичный бенто-торт с кремовым декором', tags: ['bento'] },
+  { id: 'v07', type: 'video', src: '/img/gallery/videos/video-07-bento-bday.webm',     poster: '/img/gallery/video-07-bento-bday-poster.webp', title: 'Видео: бенто на день рождения',  desc: 'Небольшой праздничный торт с милой иллюстрацией и надписью', tags: ['bento','bday'], size: 'tall' },
+  { id: 'v08', type: 'video', src: '/img/gallery/videos/video-08-foxes.webm',          poster: '/img/gallery/video-08-foxes-poster.webp', title: 'Видео: 3D-торт с лисёнком',       desc: 'Детский 3D-торт с ручной лепкой персонажа', tags: ['3d','bday'] },
+  { id: 'v09', type: 'video', src: '/img/gallery/videos/video-09-cupcakes-berry.webm', poster: '/img/gallery/video-09-cupcakes-berry-poster.webp', title: 'Видео: капкейки с кремовым декором', desc: 'Набор капкейков с розово-жёлтым кремовым декором', tags: ['bday'] },
+  { id: 'v10', type: 'video', src: '/img/gallery/videos/video-10-cupcakes.webm',       poster: '/img/gallery/video-10-cupcakes-poster.webp', title: 'Видео: праздничные капкейки',     desc: 'Капкейки ручной работы с ярким кремовым оформлением', tags: ['bday'] },
+  { id: 'v11', type: 'video', src: '/img/gallery/videos/video-11-bears.webm',          poster: '/img/gallery/video-11-bears-poster.webp', title: 'Видео: торт с мишками',          desc: 'Нежный детский торт с фигурками и розовым декором', tags: ['3d','bday'], size: 'wide' },
   { id: 'v12', type: 'video', src: '/img/gallery/videos/video-12-wedding-heart.webm',  poster: '/img/gallery/video-12-wedding-heart-poster.webp', title: 'Видео: оформление торта с малиной', desc: 'Кондитер оформляет белый торт свежей малиной', tags: ['wedding'], size: 'tall' },
-  { id: 'v13', type: 'video', src: '/img/gallery/videos/video-13-bunny.webm',          poster: '/img/gallery/gallery-03.webp', title: 'Видео: детский торт с зайчиком',  desc: 'Нежный детский торт с зайчиком и цветочным декором', tags: ['3d','bday'] },
-  { id: 'v14', type: 'video', src: '/img/gallery/videos/video-14-blue-balloons.webm',  poster: '/img/gallery/gallery-06.webp', title: 'Видео: торт с шарами',           desc: 'Праздничный торт с воздушными шарами и контрастным декором', tags: ['bday'] },
-  // FIX: v15 — poster был gallery-17 «Павлова с ягодной начинкой». Видео — баскетбол.
-  //      Меняем на gallery-05 «3D-торт с хоккейной сценой» — тематически спортивный.
-  { id: 'v15', type: 'video', src: '/img/gallery/videos/video-15-basketball.webm',     poster: '/img/gallery/gallery-05.webp', title: 'Видео: 3D-торт «Баскетбол»',     desc: 'Спортивный торт с баскетбольной тематикой', tags: ['3d','bday'] },
-  { id: 'v16', type: 'video', src: '/img/gallery/videos/video-16-moon-stars.webm',     poster: '/img/gallery/gallery-26.webp', title: 'Видео: торт «Луна и звёзды»',    desc: 'Голубой торт с космическими мотивами и золотыми звёздами', tags: ['bday'] },
+  { id: 'v13', type: 'video', src: '/img/gallery/videos/video-13-bunny.webm',          poster: '/img/gallery/video-13-bunny-poster.webp', title: 'Видео: детский торт с зайчиком',  desc: 'Нежный детский торт с зайчиком и цветочным декором', tags: ['3d','bday'] },
+  { id: 'v14', type: 'video', src: '/img/gallery/videos/video-14-blue-balloons.webm',  poster: '/img/gallery/video-14-blue-balloons-poster.webp', title: 'Видео: праздничный 3D-торт',           desc: 'Тёмно-синий торт с объёмной фигуркой и праздничным декором', tags: ['3d','bday'] },
+  { id: 'v15', type: 'video', src: '/img/gallery/videos/video-15-basketball.webm',     poster: '/img/gallery/video-15-basketball-poster.webp', title: 'Видео: 3D-торт «Баскетбол»',     desc: 'Спортивный торт с баскетбольной тематикой', tags: ['3d','bday'] },
+  { id: 'v16', type: 'video', src: '/img/gallery/videos/video-16-moon-stars.webm',     poster: '/img/gallery/video-16-moon-stars-poster.webp', title: 'Видео: торт «Луна и звёзды»',    desc: 'Голубой торт с космическими мотивами и золотыми звёздами', tags: ['bday'] },
 
   // ========== PHOTOS (30) ==========
   { id: 'p01', type: 'photo', src: '/img/gallery/gallery-01.webp', full: '/img/gallery/gallery-01-hd.webp', title: 'Шоколадный торт с мишками',       desc: 'Шоколадный праздничный торт с объёмным декором', tags: ['3d','bday'], size: 'big' },

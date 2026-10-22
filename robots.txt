@@ -1,5 +1,5 @@
 User-agent: *
-Disallow: /call/
+# /call/ is noindex in its HTML; crawlers must reach that directive.
 Disallow: /prigorody/build.py
 Disallow: /prigorody/_template.html
 Disallow: /prigorody/_cities.csv
@@ -7,7 +7,6 @@ Allow: /
 
 # Яндекс
 User-agent: Yandex
-Disallow: /call/
 Allow: /
 Host: milovicake.ru
 Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term&yclid&gclid

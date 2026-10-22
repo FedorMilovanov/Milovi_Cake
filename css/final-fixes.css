@@ -61,7 +61,7 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
 [data-theme="dark"] .hero .btn-primary.btn-primary--hero:hover,
 .hero .btn-primary.btn-primary--hero:hover {
   background: var(--gold-light, #d4a76a) !important;
-  color: #fff !important;
+  color: var(--btn-primary-hover-ink, #3d2b1f) !important;
   transform: translateY(-2px) !important;
   border: 0 !important;
   outline: 0 !important;

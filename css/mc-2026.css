@@ -19,11 +19,57 @@
   --tap-min:   44px;
   --tap-cosy:  48px;
 
-  
+  --cart-muted: var(--text-muted-acc);
+  --cart-step-active: var(--gold-acc);
+  --cart-cta-ink: var(--brown);
+  --cart-danger: #ad4141;
+  --btn-primary-ink: var(--white);
+  --btn-primary-hover-ink: var(--brown);
+
   --ease-premium: cubic-bezier(.22, 1, .36, 1);
 
 }
 
+
+[data-theme="dark"]{
+  --cart-muted: var(--text-muted);
+  --cart-step-active: var(--gold);
+  --cart-cta-ink: var(--cream);
+  --cart-danger: #f0a6a6;
+  --btn-primary-ink: var(--cream);
+  --btn-primary-hover-ink: var(--cream);
+}
+
+/* Keep small cart labels and gold-button text at AA contrast in both themes. */
+#cartDrawer .cart-progress .cart-step span{ color: var(--cart-muted); }
+#cartDrawer .cart-progress .cart-step.active span{ color: var(--cart-step-active); }
+#cartDrawer .cart-empty-message{ color: var(--cart-muted); }
+#cartDrawer .cart-empty-cta{ color: var(--cart-cta-ink); }
+#cartDrawer .del-btn{ color: var(--cart-danger); }
+
+#cartDrawer{ overscroll-behavior: contain; }
+
+/* Fit the quantity, price and remove controls inside the drawer at 320–440px. */
+#cartDrawer .cart-item{
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 12px;
+}
+#cartDrawer .cart-item-info{ grid-column: 1 / -1; min-width: 0; }
+#cartDrawer .qty-ctrl{ grid-column: 1; grid-row: 2; }
+#cartDrawer .cart-item-right{
+  grid-column: 2;
+  grid-row: 2;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+@media (max-width: 380px){
+  #cartDrawer .cart-item-right{ flex-direction: column; }
+}
+:root:not([data-theme="dark"]) #cartDrawer .item-price{
+  color: var(--gold-acc);
+}
 
 /* oklch fallback removed — using solid gold tokens */
 
@@ -184,8 +230,30 @@
 }
 
 /* Muted supporting copy must remain readable instead of relying on opacity. */
-:root:not([data-theme="dark"]) .about-compact-block p{
+:root:not([data-theme="dark"]) .about-compact-block p,
+:root:not([data-theme="dark"]) .calc-weight-hint{
   opacity: 1;
+}
+:root:not([data-theme="dark"]) .calc-type-card .calc-type-hint{
+  color: var(--text-muted-acc);
+  opacity: 1;
+}
+:root:not([data-theme="dark"]) .calc-type-card.selected .calc-type-hint{
+  color: var(--white);
+  opacity: 1;
+}
+/* The suburb calculator keeps its gold selection; small hints need dark ink. */
+:root:not([data-theme="dark"]) body.prigorody-page .calc-type-card.selected .calc-type-hint{
+  color: var(--text);
+}
+:root:not([data-theme="dark"]) body.prigorody-page .contact-primary-label{
+  color: var(--text-muted-acc);
+}
+[data-theme="dark"] .calc-type-card:not(.selected) .calc-type-hint{
+  opacity: 1;
+}
+[data-theme="dark"] #fillSheetSelect{
+  color: var(--cream);
 }
 
 

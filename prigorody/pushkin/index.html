@@ -96,8 +96,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=optional" rel="stylesheet" media="print" onload="this.media='all'" />
   <!-- noscript fonts -->
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=optional" rel="stylesheet"/></noscript>
-  <link rel="stylesheet" href="../../css/style.css?v=20261018r06" />
-  <link rel="stylesheet" href="../../css/mc-2026.css?v=20261022r01" />
+  <link rel="stylesheet" href="../../css/style.css?v=20261023r01" />
+  <link rel="stylesheet" href="../../css/mc-2026.css?v=20261023r02" />
   <link rel="stylesheet" href="../../css/premium-overrides.css?v=20260728r27" />
   <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260728r27">
   <script type="application/ld+json">
@@ -112,7 +112,7 @@
   }
   </script>
   <link rel="stylesheet" href="/css/v20-fixes.css?v=20260728r27">
-  <link rel="stylesheet" href="/css/final-fixes.css?v=20260815r78" />
+  <link rel="stylesheet" href="/css/final-fixes.css?v=20261023r01" />
   <style id="suburb-a11y-contrast">
     :root:not([data-theme="dark"]) .prigorody-page .calc-opt.selected{color:#2c1a10}
     :root:not([data-theme="dark"]) .prigorody-page .calc-stepper-val{color:#8a5723}
@@ -186,7 +186,7 @@
         <svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
       </button>
       <button type="button" class="header-cart-btn" id="cartBtn" onclick="openCart()" aria-label="Корзина">
-        🛒
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true"><path d="M4 7h16l-1 14H5L4 7zM9 8V6a3 3 0 0 1 6 0v2"/></svg>
         <span class="cart-badge" id="cartBadge">0</span>
       </button>
     </nav>
@@ -844,17 +844,81 @@
   </div>
 </section>
 
-<!-- ══════════ CART BUTTON ══════════ -->
-<button type="button" class="cart-btn" onclick="openCart()" aria-label="Корзина">
-  🛒
-  <span class="cart-badge" data-cart-badge="count">0</span>
+<!-- ══════════ GEO DELIVERY ══════════ -->
+<section class="geo-section">
+  <div class="container">
+    <h2>Доставка тортов по Санкт-Петербургу и пригородам</h2>
+    <p>Мы доставляем торты и десерты на заказ по всему Санкт-Петербургу, а также в пригороды и города Ленинградской области — Пушкин, Петергоф, Гатчину, Всеволожск, Колпино, Красное Село, Павловск, Сестрорецк, Ломоносов, Кронштадт, Тосно, Мурино, Кудрово, Шушары и другие. Доставка осуществляется собственной службой (по договорённости) или через Яндекс.Доставку. Самовывоз также доступен.</p>
+    <div class="geo-tags">
+      <a href="/prigorody/pushkin/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Пушкине</a>
+      <a href="/prigorody/peterhof/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Петергофе</a>
+      <a href="/prigorody/gatchina/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Гатчине</a>
+      <a href="/prigorody/vsevolozhsk/" class="geo-tag" style="text-decoration:none;">🎂 Торты во Всеволожске</a>
+      <a href="/prigorody/kolpino/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Колпино</a>
+      <a href="/prigorody/krasnoe-selo/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Красном Селе</a>
+      <a href="/prigorody/pavlovsk/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Павловске</a>
+      <a href="/prigorody/sestroretsk/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Сестрорецке</a>
+      <a href="/prigorody/lomonosov/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Ломоносове</a>
+      <a href="/prigorody/kronshtadt/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Кронштадте</a>
+      <a href="/prigorody/tosno/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Тосно</a>
+      <a href="/prigorody/murino/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Мурино</a>
+      <a href="/prigorody/kudrovo/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Кудрово</a>
+      <a href="/prigorody/shushary/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Шушарах</a>
+      <span class="geo-tag">Доставка по ЛО</span>
+    </div>
+  </div>
+</section>
+
+<script>var IMG_BASE = '../../img';</script>
+<script src="../../js/main.js?v=20261023r02" defer></script>
+<script src="../../js/nav.js?v=20260728r27" defer></script>
+<script src="../../js/mc-2026.js?v=20260916r02" defer></script>
+
+<!-- ══════════ BOTTOM SHEET: Начинка ══════════ -->
+<div class="fill-mobile-overlay" id="fillOverlay"></div>
+<div class="fill-mobile-popup" id="fillPopup" role="dialog" aria-modal="true" aria-label="Информация о начинке">
+<!-- fill popup kept for legacy/fallback, hidden by default -->
+</div>
+
+<!-- Fill toast snackbar -->
+<div class="fill-toast" id="fillToast" aria-live="polite">
+  <svg class="fill-toast-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  <div class="fill-toast-body">
+    <span class="fill-toast-title"></span>
+    <span class="fill-toast-desc"></span>
+  </div>
+</div>
+
+<!-- ══════════ COOKIE BANNER ══════════ -->
+
+
+
+
+
+<!-- FAQPage разметка перенесена в JSON-LD выше -->
+
+<button type="button" class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Наверх">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="18 15 12 9 6 15"/>
+  </svg>
 </button>
+
+<!-- PWA Service Worker -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .catch(() => {});
+    });
+  }
+</script><!-- ══════════ FOOTER ══════════ -->
+</main>
 
 <!-- ══════════ CART DRAWER ══════════ -->
 <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
-<div class="cart-drawer" id="cartDrawer">
+<div class="cart-drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-labelledby="cartDrawerTitle" aria-hidden="true" inert>
   <div class="cart-header">
-    <h3>🛒 Ваш заказ <span class="cart-count-badge" id="cartCountBadge">0</span></h3>
+    <h3 id="cartDrawerTitle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true"><path d="M4 7h16l-1 14H5L4 7zM9 8V6a3 3 0 0 1 6 0v2"/></svg> Ваш заказ <span class="cart-count-badge" id="cartCountBadge">0</span></h3>
     <div class="cart-header-right">
       <button type="button" class="cart-clear-btn" id="cartClearBtn" onclick="clearCart()" title="Очистить корзину" aria-label="Очистить корзину" style="display:none">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
@@ -933,75 +997,6 @@
   </div>
 </div>
 
-<!-- ══════════ GEO DELIVERY ══════════ -->
-<section class="geo-section">
-  <div class="container">
-    <h2>Доставка тортов по Санкт-Петербургу и пригородам</h2>
-    <p>Мы доставляем торты и десерты на заказ по всему Санкт-Петербургу, а также в пригороды и города Ленинградской области — Пушкин, Петергоф, Гатчину, Всеволожск, Колпино, Красное Село, Павловск, Сестрорецк, Ломоносов, Кронштадт, Тосно, Мурино, Кудрово, Шушары и другие. Доставка осуществляется собственной службой (по договорённости) или через Яндекс.Доставку. Самовывоз также доступен.</p>
-    <div class="geo-tags">
-      <a href="/prigorody/pushkin/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Пушкине</a>
-      <a href="/prigorody/peterhof/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Петергофе</a>
-      <a href="/prigorody/gatchina/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Гатчине</a>
-      <a href="/prigorody/vsevolozhsk/" class="geo-tag" style="text-decoration:none;">🎂 Торты во Всеволожске</a>
-      <a href="/prigorody/kolpino/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Колпино</a>
-      <a href="/prigorody/krasnoe-selo/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Красном Селе</a>
-      <a href="/prigorody/pavlovsk/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Павловске</a>
-      <a href="/prigorody/sestroretsk/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Сестрорецке</a>
-      <a href="/prigorody/lomonosov/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Ломоносове</a>
-      <a href="/prigorody/kronshtadt/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Кронштадте</a>
-      <a href="/prigorody/tosno/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Тосно</a>
-      <a href="/prigorody/murino/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Мурино</a>
-      <a href="/prigorody/kudrovo/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Кудрово</a>
-      <a href="/prigorody/shushary/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Шушарах</a>
-      <span class="geo-tag">Доставка по ЛО</span>
-    </div>
-  </div>
-</section>
-
-<script>var IMG_BASE = '../../img';</script>
-<script src="../../js/main.js?v=20260916r01" defer></script>
-<script src="../../js/nav.js?v=20260728r27" defer></script>
-<script src="../../js/mc-2026.js?v=20260916r02" defer></script>
-
-<!-- ══════════ BOTTOM SHEET: Начинка ══════════ -->
-<div class="fill-mobile-overlay" id="fillOverlay"></div>
-<div class="fill-mobile-popup" id="fillPopup" role="dialog" aria-modal="true" aria-label="Информация о начинке">
-<!-- fill popup kept for legacy/fallback, hidden by default -->
-</div>
-
-<!-- Fill toast snackbar -->
-<div class="fill-toast" id="fillToast" aria-live="polite">
-  <svg class="fill-toast-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-  <div class="fill-toast-body">
-    <span class="fill-toast-title"></span>
-    <span class="fill-toast-desc"></span>
-  </div>
-</div>
-
-<!-- ══════════ COOKIE BANNER ══════════ -->
-
-
-
-
-
-<!-- FAQPage разметка перенесена в JSON-LD выше -->
-
-<button type="button" class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Наверх">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <polyline points="18 15 12 9 6 15"/>
-  </svg>
-</button>
-
-<!-- PWA Service Worker -->
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .catch(() => {});
-    });
-  }
-</script><!-- ══════════ FOOTER ══════════ -->
-</main>
 <footer class="site-footer">
   <div class="container">
     <div class="footer-grid">

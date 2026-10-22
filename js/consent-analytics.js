@@ -119,6 +119,18 @@
     }
   }
 
+  // A contact-link click is not an order: forms validate separately and only
+  // record a lead after they actually start a messaging handoff. No PII in goals.
+  function recordLeadHandoff(channel, source) {
+    if (!['whatsapp', 'telegram'].includes(channel) ||
+        !['cart', 'contact_form', 'wedding_date'].includes(source)) return;
+    sendGoal('generate_lead', {
+      path: location.pathname,
+      lead_channel: channel,
+      lead_source: source
+    });
+  }
+
   function bindConversionGoals() {
     if (goalsBound) return;
     goalsBound = true;
@@ -132,12 +144,10 @@
         href: href,
         text: (link.textContent || '').trim().slice(0, 80)
       };
-      var leadChannel = '';
-      if (href.indexOf('wa.me') !== -1) { sendGoal('lp_wa_click', params); leadChannel = 'whatsapp'; }
-      else if (href.indexOf('t.me') !== -1) { sendGoal('lp_tg_click', params); leadChannel = 'telegram'; }
-      else if (href.indexOf('max.ru') !== -1) { sendGoal('lp_max_click', params); leadChannel = 'max'; }
-      else if (href.indexOf('tel:') === 0) { sendGoal('lp_phone_click', params); leadChannel = 'phone'; }
-      if (leadChannel) sendGoal('generate_lead', Object.assign({}, params, { lead_channel: leadChannel }));
+      if (href.indexOf('wa.me') !== -1) sendGoal('lp_wa_click', params);
+      else if (href.indexOf('t.me') !== -1) sendGoal('lp_tg_click', params);
+      else if (href.indexOf('max.ru') !== -1) sendGoal('lp_max_click', params);
+      else if (href.indexOf('tel:') === 0) sendGoal('lp_phone_click', params);
       if (link.classList.contains('lp-btn') || link.classList.contains('info-btn') || link.classList.contains('btn-primary')) {
         sendGoal('lp_cta_click', params);
       }
@@ -426,7 +436,8 @@
     getChoice: function () { return state; },
     grant: function () { setChoice('granted'); },
     deny: function () { setChoice('denied'); },
-    goal: sendGoal
+    goal: sendGoal,
+    leadHandoff: recordLeadHandoff
   };
 
   document.addEventListener('keydown', function (event) {
