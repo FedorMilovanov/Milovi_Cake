@@ -19,6 +19,11 @@ require(
 require('id="anti-fouc-body"' not in home, 'homepage body-level anti-FOUC gate returned')
 require('body:not(.ready){opacity:0}' not in home, 'homepage can still be hidden before DOMContentLoaded')
 require("classList.add('page-loaded')" not in home, 'homepage DOMContentLoaded main reveal reset returned')
+# Catalog images are below the fold. Eager hints compete with the hero and blocking CSS
+# on a first mobile visit; the catalog renderer loads them on scroll/intent instead.
+for below_fold in ('img/bento_maxi.webp', 'img/cake_3d.webp', 'img/cake_3d_2.webp'):
+    require(f'<link rel="prefetch" href="{below_fold}"' not in home,
+            f'homepage prefetch competes with the critical path: {below_fold}')
 # The parser-discoverable LCP hero must never participate in the generic pre-load fade.
 require(
     '<img class="hero-img" src="img/head_desktop.webp"' in home,
@@ -179,8 +184,8 @@ require('media="(max-width: 768px)" srcset="/img/head_mobile.avif"' in order, 'o
 gallery = read('gallery/index.html')
 require('id="preloader"' not in gallery, 'gallery blocking preloader returned')
 require('/img/gallery/gallery-01.avif" fetchpriority="high"' in gallery, 'gallery LCP preload missing')
-require('/js/gallery/main.js?v=20261017r01' in gallery, 'gallery runtime revision drift')
-require("./data.js?v=20261017r01" in read('js/gallery/main.js'), 'gallery data import revision drift')
+require('/js/gallery/main.js?v=20261022r03' in gallery, 'gallery runtime revision drift')
+require("./data.js?v=20261022r02" in read('js/gallery/main.js'), 'gallery data import revision drift')
 require('#galleryGrid[data-hydrating="true"] { min-height: 100svh; }' in gallery, 'gallery hydration reserve missing')
 require('#galleryGrid[data-static-lcp-root="true"] { animation: none; }' in gallery, 'gallery grid animation gates initial LCP again')
 require('data-static-lcp="p01"' in gallery, 'gallery initial LCP card is no longer parser-visible')
@@ -224,7 +229,7 @@ for event in ['pointerdown', 'focusin', 'click']:
     )
 require('script.async = true;' in gallery, 'gallery Swiper interaction load is not asynchronous')
 require("script.addEventListener('error'" in gallery and 'loading = false;' in gallery, 'gallery Swiper loader cannot retry after CDN failure')
-require('/css/gallery/gallery-2026.css?v=20260813r01" />' in gallery, 'gallery critical local CSS became deferred')
+require('/css/gallery/gallery-2026.css?v=20261022r04" />' in gallery, 'gallery critical local CSS became deferred')
 require('/css/final-fixes.css?v=20260815r78" />' in gallery, 'gallery final critical CSS became deferred')
 require('id="gallery-lcp-media-fastpath"' in gallery, 'gallery eager-media LCP fast path missing')
 require(
@@ -240,6 +245,11 @@ require(
 )
 
 gallery_css = read('css/gallery/gallery-2026.css')
+require(
+    '@media (hover: hover) and (pointer: fine) {\n  .gallery-grid:has(.card:hover) .card:not(:hover) {' in gallery_css
+    and 'filter: blur(8px) brightness(0.7);' in gallery_css,
+    'gallery peer blur must remain desktop-hover-only, never sticky on touch',
+)
 require('.card-skeleton{' in gallery_css, 'gallery lazy-card skeleton contract disappeared globally')
 require('.card.is-loading .card-media{ opacity:0;' in gallery_css, 'gallery lazy media no longer keeps the premium reveal contract')
 
@@ -321,8 +331,8 @@ sw = read('sw.js')
 require("const CACHE_NAME = 'milovi-cake-v2026.09.15-r87';" in sw, 'service-worker cache generation drifted')
 require("'/css/style.css?v=20261018r06'," in sw, 'service-worker precache still points at stale shared CSS revision')
 require("'/js/main.js?v=20260916r01'," in sw, 'service-worker precache still points at stale shared main.js revision')
-require("'/js/gallery/main.js?v=20261017r01'," in sw, 'service-worker precache still points at stale gallery runtime revision')
-require("'/js/gallery/data.js?v=20261017r01'," in sw, 'service-worker precache still points at stale gallery data revision')
+require("'/js/gallery/main.js?v=20261022r03'," in sw, 'service-worker precache still points at stale gallery runtime revision')
+require("'/js/gallery/data.js?v=20261022r02'," in sw, 'service-worker precache still points at stale gallery data revision')
 
 cfg = json.loads(read('.github/lighthouse-config.json'))
 require(cfg['ci']['collect'].get('numberOfRuns') == 3, 'Lighthouse collection is not three runs')
