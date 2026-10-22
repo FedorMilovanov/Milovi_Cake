@@ -124,7 +124,10 @@ test.describe('premium media blocks', () => {
     const poster = '/img/gallery/video-12-wedding-heart-poster.webp';
     const description = 'Кондитер оформляет белый торт свежей малиной';
     const videoRequests = [];
-    page.on('request', (req) => { if (req.url().includes('/video-12-wedding-heart.webm')) videoRequests.push(req.url()); });
+    // Chromium may negotiate either real source; the lazy-load contract applies to both.
+    page.on('request', (req) => {
+      if (/\/video-12-wedding-heart\.(webm|mp4)(?:\?|$)/.test(req.url())) videoRequests.push(req.url());
+    });
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
     const schemas = await page.locator('script[type="application/ld+json"]').allTextContents();
     const reel = schemas.map(JSON.parse).flatMap((schema) => schema['@graph'] || [schema])
