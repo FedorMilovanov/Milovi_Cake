@@ -56,7 +56,7 @@ export const GALLERY_ITEMS = [
   { id: 'p06', type: 'photo', src: '/img/gallery/gallery-06.webp', full: '/img/gallery/gallery-06-hd.webp', title: 'Чёрно-золотой торт с шарами',    desc: 'Премиальный торт в чёрно-золотой гамме', tags: ['bday'] },
   // FIX: p07 дублировал p18 — оба «Премиальный торт с золотом». Уникализируем p07.
   { id: 'p07', type: 'photo', src: '/img/gallery/gallery-07.webp', full: '/img/gallery/gallery-07-hd.webp', title: 'Золотой торт с фактурным декором', desc: 'Высокий авторский торт с золотым декором', tags: ['bday'], size: 'wide' },
-  { id: 'p08', type: 'photo', src: '/img/gallery/gallery-08.webp', full: '/img/gallery/gallery-08-hd.webp', title: 'Бенто «Горжусь тобой»',          desc: 'Мини-торт с персональной надписью', tags: ['bento'] },
+  { id: 'p08', type: 'photo', src: '/img/gallery/gallery-08.webp', full: '/img/gallery/gallery-08-hd.webp', title: 'Торт с портретом и надписью',    desc: 'Небольшой торт с нарисованным портретом и персональной надписью', tags: ['bento'] },
   { id: 'p09', type: 'photo', src: '/img/gallery/gallery-09.webp', full: '/img/gallery/gallery-09-hd.webp', title: 'Праздничный торт в цилиндре',    desc: 'Авторский торт с воздушными шарами и декором', tags: ['bday'] },
   { id: 'p10', type: 'photo', src: '/img/gallery/gallery-10.webp', full: '/img/gallery/gallery-10-hd.webp', title: '3D-торт с мышонком',            desc: 'Скульптурный торт с фигуркой персонажа', tags: ['3d','bday'] },
   { id: 'p11', type: 'photo', src: '/img/gallery/gallery-11.webp', full: '/img/gallery/gallery-11-hd.webp', title: 'Светлый свадебный торт',        desc: 'Элегантный белый торт для камерной свадьбы', tags: ['wedding'], size: 'tall' },

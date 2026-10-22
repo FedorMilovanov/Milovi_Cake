@@ -47,6 +47,26 @@ test.describe('new SEO landing pages', () => {
 });
 
 test.describe('premium media blocks', () => {
+  test('gallery labels and image sitemap describe the photographed work', async ({ page, request }) => {
+    await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
+    await page.locator('.gx-chip[data-filter="bento"]').click();
+    const portrait = page.locator('[data-id="p08"]');
+    await expect(portrait).toContainText('Торт с портретом и надписью');
+    if (await page.evaluate(() => matchMedia('(hover: none)').matches)) {
+      // A tap can leave :hover stuck on the card under the filter; peers must remain sharp.
+      await expect.poll(() => portrait.evaluate(card => getComputedStyle(card).filter)).not.toContain('blur(');
+      await expect.poll(() => page.locator('[data-id="p12"]').evaluate(card => getComputedStyle(card).filter)).not.toContain('blur(');
+    } else {
+      await page.locator('[data-id="p12"]').hover();
+      await expect.poll(() => portrait.evaluate(card => getComputedStyle(card).filter)).toContain('blur(8px)');
+    }
+
+    const sitemap = await (await request.get('/sitemap.xml')).text();
+    expect(sitemap).toContain('<image:title>Светлый свадебный торт</image:title>');
+    expect(sitemap).toContain('<image:title>Золотой торт с фактурным декором</image:title>');
+    expect(sitemap).not.toContain('Свадебный торт с живыми цветами, СПб');
+  });
+
   test('wedding page has the concept collection and real portfolio media', async ({ page }) => {
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('.wed-collection')).toBeVisible();
@@ -145,7 +165,7 @@ test.describe('premium media blocks', () => {
     await page.locator('.gx-chip[data-filter="wedding"]').click();
     await expect(page.locator('[data-id="v12"] video')).toHaveAttribute('poster', poster);
     const galleryReel = await page.evaluate(async () => {
-      const { GALLERY_ITEMS } = await import('/js/gallery/data.js?v=20261017r01');
+      const { GALLERY_ITEMS } = await import('/js/gallery/data.js?v=20261022r02');
       return GALLERY_ITEMS.find((item) => item.id === 'v12');
     });
     expect(galleryReel.desc).toBe(description);

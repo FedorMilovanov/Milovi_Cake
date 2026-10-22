@@ -85,9 +85,13 @@ button { -webkit-tap-highlight-color: transparent; }
 @media (min-width: 768px) {
   .gallery-grid { grid-template-columns: repeat(4, 1fr); grid-auto-rows: 260px; }
 }
-.gallery-grid:has(.card:hover) .card:not(:hover) {
-  filter: blur(8px) brightness(0.7);
-  transform: scale(0.96);
+/* Touch browsers can leave :hover stuck on the card under a tapped filter.
+   Dim peers only when a real fine pointer can hover. */
+@media (hover: hover) and (pointer: fine) {
+  .gallery-grid:has(.card:hover) .card:not(:hover) {
+    filter: blur(8px) brightness(0.7);
+    transform: scale(0.96);
+  }
 }
 @keyframes cardAppear { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 .card {

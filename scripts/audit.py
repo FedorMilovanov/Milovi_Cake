@@ -20,6 +20,7 @@ import re
 import sys
 import html.parser
 import time
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from urllib.parse import urlparse, unquote
 from datetime import datetime, timezone
@@ -1112,6 +1113,44 @@ with R.section("12. robots.txt & Sitemap"):
                 R.warn(f"Sitemap has non-indexable/unknown URL: {url}")
         if not missing:
             R.ok(f"sitemap.xml covers all indexable pages ({len(expected_locs)} URLs)")
+
+        # Image labels must describe the photographed work, not a rotating list of
+        # SEO phrases. The gallery photo titles/descriptions are the reviewed source.
+        gallery_data = (ROOT / "js/gallery/data.js").read_text(encoding="utf-8")
+        photos = re.findall(
+            r"\{ id: 'p\d+', type: 'photo', src: '/img/gallery/[^']+', "
+            r"full: '(/img/gallery/[^']+-hd\.webp)', title: '([^']+)',\s*desc: '([^']+)'",
+            gallery_data,
+        )
+        gallery_issues = []
+        expected_images = {f"{SITE_URL}{path}": (title, desc) for path, title, desc in photos}
+        if len(photos) != 30 or len(expected_images) != 30:
+            gallery_issues.append("Gallery photo manifest must contain 30 unique reviewed works")
+        try:
+            xml_root = ET.fromstring(sitemap_text)
+            ns = {'s': 'http://www.sitemaps.org/schemas/sitemap/0.9',
+                  'i': 'http://www.google.com/schemas/sitemap-image/1.1'}
+            gallery_entries = [entry for entry in xml_root.findall('s:url', ns)
+                               if entry.findtext('s:loc', namespaces=ns) == f'{SITE_URL}/gallery/']
+            if len(gallery_entries) != 1:
+                gallery_issues.append('Gallery must have exactly one sitemap URL entry')
+            else:
+                images = gallery_entries[0].findall('i:image', ns)
+                actual = {image.findtext('i:loc', namespaces=ns):
+                          (image.findtext('i:title', namespaces=ns), image.findtext('i:caption', namespaces=ns))
+                          for image in images}
+                if len(images) != len(expected_images) or actual != expected_images:
+                    gallery_issues.append('Gallery sitemap photos/titles/captions drifted from the reviewed photo metadata')
+                wedding_photos = [url for url, labels in actual.items()
+                                  if any('свадеб' in (label or '').lower() for label in labels)]
+                if wedding_photos != [f'{SITE_URL}/img/gallery/gallery-11-hd.webp']:
+                    gallery_issues.append('Gallery sitemap mislabels a non-wedding photo as wedding work')
+        except ET.ParseError as exc:
+            gallery_issues.append(f'Invalid XML sitemap: {exc}')
+        for issue in gallery_issues:
+            R.err(issue)
+        if not gallery_issues:
+            R.ok('Gallery image sitemap labels match 30 reviewed photo records (one wedding work)')
     else:
         R.warn("sitemap.xml not found")
 
