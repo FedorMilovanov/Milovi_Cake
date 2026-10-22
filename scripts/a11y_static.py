@@ -24,6 +24,12 @@ class GuardParser(html.parser.HTMLParser):
             if aria:
                 self.errors.append(f'{self.rel}:{line}: hidden input must not carry ARIA attributes: {aria}')
 
+        if data.get('id') == 'cartDrawer':
+            if 'inert' not in data or data.get('aria-hidden') != 'true':
+                self.errors.append(f'{self.rel}:{line}: initially closed cart must be inert and aria-hidden')
+            if data.get('role') != 'dialog' or data.get('aria-labelledby') != 'cartDrawerTitle':
+                self.errors.append(f'{self.rel}:{line}: cart dialog must name its visible heading')
+
         classes = set((data.get('class') or '').split())
         if 'calc-result-collapsed-arrow' in classes and 'aria-label' in data:
             self.errors.append(f'{self.rel}:{line}: decorative calculator arrow must not use aria-label')

@@ -761,6 +761,15 @@ test.describe('SEO infrastructure', () => {
     expect(xml).toContain('<lastmod>2026-06-05</lastmod>');
   });
 
+  test('robots allows crawlers to see /call/ noindex without putting it in the sitemap', async ({ request }) => {
+    const robots = await (await request.get('/robots.txt')).text();
+    expect(robots).not.toMatch(/^Disallow:\s*\/call\//m);
+    const call = await (await request.get('/call/')).text();
+    expect(call).toMatch(/<meta name="robots" content="noindex, nofollow"/);
+    const sitemap = await (await request.get('/sitemap.xml')).text();
+    expect(sitemap).not.toContain('https://milovicake.ru/call/');
+  });
+
   test('homepage business hours are Monday-Saturday in visible text and schema', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('body')).toContainText('Пн–Сб, 10:00–20:00');

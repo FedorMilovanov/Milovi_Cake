@@ -89,6 +89,10 @@ DEV_TOOLING_JS = {
     "tests/protected-interactions.spec.js",
     "tests/overlap-smoke.spec.js",
     "tests/layout-matrix.spec.js",
+    "tests/bento-critical.spec.js",
+    "tests/cart-accessibility.spec.js",
+    "tests/lead-handoff.spec.js",
+    "tests/video-posters.spec.js",
 }
 
 # Current !important debt is intentionally budgeted instead of blindly removed:
@@ -1069,6 +1073,13 @@ with R.section("12. robots.txt & Sitemap"):
     if robots_path.exists():
         R.ok("robots.txt found")
         robots_text = robots_path.read_text(encoding="utf-8", errors="replace")
+        call_meta = parse_html(ROOT / "call/index.html").metas.get("robots", "").lower()
+        if "noindex" not in call_meta:
+            R.err("/call/ must have a noindex meta directive")
+        elif re.search(r"(?im)^\s*Disallow:\s*/call(?:/|\s|$)", robots_text):
+            R.err("/call/ is disallowed in robots.txt: crawlers cannot see its noindex")
+        else:
+            R.ok("/call/ is crawlable so bots can read its noindex")
         if "Sitemap:" in robots_text:
             sitemap_urls = re.findall(r"Sitemap:\s*(\S+)", robots_text)
             R.ok(f"Sitemaps: {sitemap_urls}")
