@@ -790,7 +790,19 @@ input, textarea, select{
   .product-info h3 { font-size: 20px !important; }
   .product-info .desc { font-size: 14px !important; }
   .price { font-size: 20px !important; }
-  .btn-add { height: 44px !important; padding: 0 18px !important; font-size: 13px !important; }
+  /* Let both Bento labels wrap below its heading if the fallback font is wider. */
+  .bento-header-row { flex-wrap: wrap; }
+  /* The full CTA label must also fit when the web font is unavailable. */
+  .btn-add { height: 44px !important; padding: 0 14px !important; font-size: 13px !important; }
+}
+
+@media (min-width: 769px) {
+  @container product (max-width: 360px) {
+    /* Narrow desktop cards need the price and CTA on separate rows, too. */
+    .product-footer { flex-direction: column; align-items: stretch; gap: 10px; }
+    .price { white-space: nowrap; }
+    .btn-add { width: 100%; }
+  }
 }
 
 

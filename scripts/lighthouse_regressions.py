@@ -179,7 +179,8 @@ require('media="(max-width: 768px)" srcset="/img/head_mobile.avif"' in order, 'o
 gallery = read('gallery/index.html')
 require('id="preloader"' not in gallery, 'gallery blocking preloader returned')
 require('/img/gallery/gallery-01.avif" fetchpriority="high"' in gallery, 'gallery LCP preload missing')
-require('/js/gallery/main.js?v=20260916r06' in gallery, 'gallery runtime revision drift')
+require('/js/gallery/main.js?v=20261017r01' in gallery, 'gallery runtime revision drift')
+require("./data.js?v=20261017r01" in read('js/gallery/main.js'), 'gallery data import revision drift')
 require('#galleryGrid[data-hydrating="true"] { min-height: 100svh; }' in gallery, 'gallery hydration reserve missing')
 require('#galleryGrid[data-static-lcp-root="true"] { animation: none; }' in gallery, 'gallery grid animation gates initial LCP again')
 require('data-static-lcp="p01"' in gallery, 'gallery initial LCP card is no longer parser-visible')
@@ -300,13 +301,13 @@ require(
     'landing footer link target-size contract regressed',
 )
 for path in ['svadebnye-torty/index.html', 'bento-torty/index.html', 'zakazat-tort-spb/index.html']:
-    require('/css/style.css?v=20261017r01' in read(path), f'{path} landing a11y CSS revision drifted')
+    require('/css/style.css?v=20261018r06' in read(path), f'{path} landing a11y CSS revision drifted')
 
 # Shared CSS and its service-worker generation must move as one release unit.
 for public_html in sorted(Path('.').rglob('*.html')):
     html = read(public_html)
     if 'style.css?v=' in html:
-        require('style.css?v=20261017r01' in html, f'{public_html} shared style revision drifted')
+        require('style.css?v=20261018r06' in html, f'{public_html} shared style revision drifted')
         require('style.css?v=20260728r27' not in html, f'{public_html} still references stale shared style revision')
 
 # Shared main.js and CSS identities must move together across every HTML consumer.
@@ -318,9 +319,10 @@ for public_html in sorted(Path('.').rglob('*.html')):
 
 sw = read('sw.js')
 require("const CACHE_NAME = 'milovi-cake-v2026.09.15-r87';" in sw, 'service-worker cache generation drifted')
-require("'/css/style.css?v=20261017r01'," in sw, 'service-worker precache still points at stale shared CSS revision')
+require("'/css/style.css?v=20261018r06'," in sw, 'service-worker precache still points at stale shared CSS revision')
 require("'/js/main.js?v=20260916r01'," in sw, 'service-worker precache still points at stale shared main.js revision')
-require("'/js/gallery/main.js?v=20260916r06'," in sw, 'service-worker precache still points at stale gallery runtime revision')
+require("'/js/gallery/main.js?v=20261017r01'," in sw, 'service-worker precache still points at stale gallery runtime revision')
+require("'/js/gallery/data.js?v=20261017r01'," in sw, 'service-worker precache still points at stale gallery data revision')
 
 cfg = json.loads(read('.github/lighthouse-config.json'))
 require(cfg['ci']['collect'].get('numberOfRuns') == 3, 'Lighthouse collection is not three runs')

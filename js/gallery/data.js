@@ -38,7 +38,8 @@ export const GALLERY_ITEMS = [
   // FIX: v11 — poster был gallery-02 «Розовый торт с цветами». Видео — торт с мишками.
   //      Меняем на gallery-01 «Шоколадный торт с мишками» — прямое тематическое совпадение.
   { id: 'v11', type: 'video', src: '/img/gallery/videos/video-11-bears.webm',          poster: '/img/gallery/gallery-01.webp', title: 'Видео: торт с мишками',          desc: 'Нежный детский торт с фигурками и розовым декором', tags: ['3d','bday'], size: 'wide' },
-  { id: 'v12', type: 'video', src: '/img/gallery/videos/video-12-wedding-heart.webm',  poster: '/img/gallery/gallery-11.webp', title: 'Видео: свадебный торт с сердцем', desc: 'Светлый свадебный торт с минималистичным декором', tags: ['wedding'], size: 'tall' },
+  // v12: poster is a frame from this video, not a duplicate photo of another cake.
+  { id: 'v12', type: 'video', src: '/img/gallery/videos/video-12-wedding-heart.webm',  poster: '/img/gallery/video-12-wedding-heart-poster.webp', title: 'Видео: оформление торта с малиной', desc: 'Кондитер оформляет белый торт свежей малиной', tags: ['wedding'], size: 'tall' },
   { id: 'v13', type: 'video', src: '/img/gallery/videos/video-13-bunny.webm',          poster: '/img/gallery/gallery-03.webp', title: 'Видео: детский торт с зайчиком',  desc: 'Нежный детский торт с зайчиком и цветочным декором', tags: ['3d','bday'] },
   { id: 'v14', type: 'video', src: '/img/gallery/videos/video-14-blue-balloons.webm',  poster: '/img/gallery/gallery-06.webp', title: 'Видео: торт с шарами',           desc: 'Праздничный торт с воздушными шарами и контрастным декором', tags: ['bday'] },
   // FIX: v15 — poster был gallery-17 «Павлова с ягодной начинкой». Видео — баскетбол.
