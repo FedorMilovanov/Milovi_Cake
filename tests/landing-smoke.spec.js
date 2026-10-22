@@ -151,6 +151,25 @@ test.describe('premium media blocks', () => {
     expect(galleryReel.desc).toBe(description);
   });
 
+  test('wedding music caption loads without requesting the video', async ({ page }) => {
+    const videoRequests = [];
+    page.on('request', (request) => {
+      if (/video-12-wedding-heart\.(webm|mp4)(\?|$)/.test(request.url())) videoRequests.push(request.url());
+    });
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    const video = page.locator('.wed-proof-video-frame video');
+    await expect(video.locator('track[kind="captions"][srclang="ru"]'))
+      .toHaveAttribute('src', '/svadebnye-torty/video-12-wedding-heart.ru.vtt');
+    await video.evaluate((element) => { element.textTracks[0].mode = 'hidden'; });
+    await expect.poll(() => video.evaluate((element) => element.textTracks[0].cues?.length ?? 0)).toBe(1);
+    const cue = await video.evaluate((element) => {
+      const { startTime, endTime, text } = element.textTracks[0].cues[0];
+      return { startTime, endTime, text };
+    });
+    expect(cue).toEqual({ startTime: 0, endTime: 10.01, text: '[Звучит музыка]' });
+    expect(videoRequests).toEqual([]);
+  });
+
   test.describe('wedding video format fallback', () => {
     test.use({ serviceWorkers: 'block' });
 

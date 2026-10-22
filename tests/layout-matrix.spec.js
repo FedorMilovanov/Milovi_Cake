@@ -68,6 +68,79 @@ for (const width of WIDTHS) {
   }
 }
 
+// Prove the catalog CTA still fits if a visitor cannot reach Google Fonts.
+for (const theme of THEMES) {
+  test(`@layout-matrix home 561px ${theme}: buttons fit without web fonts`, async ({ page }) => {
+    await page.setViewportSize({ width: 561, height: 900 });
+    await page.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => route.abort('blockedbyclient'));
+    await page.addInitScript((selectedTheme) => localStorage.setItem('mc_theme', selectedTheme), theme);
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.locator('body').dispatchEvent('click');
+    await page.waitForSelector('.product-card');
+    await page.evaluate(() => document.fonts.ready);
+
+    const buttons = await page.locator('.product-card .btn-add').evaluateAll((elements) => elements
+      .filter((element) => element.getBoundingClientRect().width > 0)
+      .map((element) => ({ label: element.textContent.trim(), excess: element.scrollWidth - element.clientWidth })));
+    expect(buttons.length).toBeGreaterThan(0);
+    for (const { label, excess } of buttons) expect(excess, label).toBeLessThanOrEqual(1);
+    const bentoBounds = await page.locator('#card-2').evaluate((card) => ({
+      cardRight: card.getBoundingClientRect().right,
+      maxiRight: card.querySelector('.bento-seg-opt:last-child').getBoundingClientRect().right,
+    }));
+    expect(bentoBounds.maxiRight).toBeLessThanOrEqual(bentoBounds.cardRight - 1);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+  });
+}
+
+// Price and button must not squeeze each other on narrow desktop cards.
+for (const width of [900, 1024, 1280, 1440]) {
+  for (const theme of THEMES) {
+    test(`@layout-matrix home ${width}px ${theme}: narrow desktop prices stay on one line`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => route.abort('blockedbyclient'));
+      await page.addInitScript((selectedTheme) => localStorage.setItem('mc_theme', selectedTheme), theme);
+      await page.goto('/', { waitUntil: 'domcontentloaded' });
+      await page.waitForSelector('.product-card');
+      await page.evaluate(() => document.fonts.ready);
+
+      const footers = await page.locator('.product-card').evaluateAll((cards) => cards
+        .filter((card) => card.getBoundingClientRect().width > 0)
+        .map((card) => {
+          const footer = card.querySelector('.product-footer');
+          const price = footer.querySelector('.price');
+          const button = footer.querySelector('.btn-add');
+          const priceBox = price.getBoundingClientRect();
+          const buttonBox = button.getBoundingClientRect();
+          const footerBox = footer.getBoundingClientRect();
+          return {
+            label: price.textContent.trim(),
+            direction: getComputedStyle(footer).flexDirection,
+            priceHeight: priceBox.height,
+            priceRight: priceBox.right,
+            priceBottom: priceBox.bottom,
+            buttonTop: buttonBox.top,
+            buttonLeft: buttonBox.left,
+            buttonExcess: button.scrollWidth - button.clientWidth,
+            footerRight: footerBox.right,
+          };
+        }));
+      expect(footers.length).toBeGreaterThan(0);
+      for (const footer of footers) {
+        expect(footer.direction, footer.label).toBe(width <= 1280 ? 'column' : 'row');
+        expect(footer.priceHeight, footer.label).toBeLessThanOrEqual(30);
+        expect(footer.priceRight, footer.label).toBeLessThanOrEqual(footer.footerRight + 1);
+        if (footer.direction === 'column') {
+          expect(footer.priceBottom + 4, footer.label).toBeLessThanOrEqual(footer.buttonTop);
+        } else {
+          expect(footer.priceRight + 4, footer.label).toBeLessThanOrEqual(footer.buttonLeft);
+        }
+        expect(footer.buttonExcess, footer.label).toBeLessThanOrEqual(1);
+      }
+    });
+  }
+}
+
 test('@layout-matrix @gallery phone card media policy: measured cards use conditional AVIF and LCP stays full-size', async ({ page }) => {
   const optimizedIds = ['p05', 'p06', 'p09', 'p12', 'p18'];
   const phoneMedia = '(max-width: 430px) and (max-resolution: 1.75dppx)';
