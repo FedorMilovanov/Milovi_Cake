@@ -16,12 +16,12 @@ for (const theme of ['light', 'dark']) {
     // Hold only the shared CSS until we have measured the actual first-screen geometry.
     let releaseCss;
     const cssGate = new Promise((resolve) => { releaseCss = resolve; });
-    await page.route('**/css/style.css?v=20261023r01', async (route) => {
+    await page.route('**/css/style.css?v=*', async (route) => {
       await cssGate;
       await route.continue();
     });
     await page.goto('/bento-torty/', { waitUntil: 'domcontentloaded' });
-    const css = page.locator('link[href="/css/style.css?v=20261023r01"]');
+    const css = page.locator('link[href^="/css/style.css?v="]');
     await expect(css).toHaveAttribute('rel', 'preload');
     await expect(page.locator('#bento-critical')).toHaveCount(1);
     const hero = page.locator('.lp-hero');

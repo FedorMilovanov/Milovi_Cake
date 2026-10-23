@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+import re
 
 
 def read(path):
@@ -10,6 +11,18 @@ def require(condition, message):
     if not condition:
         raise SystemExit('Lighthouse regression: ' + message)
 
+
+def public_html_files():
+    excluded = {'.git', 'node_modules', '_site', 'playwright-report', 'test-results',
+                'audit', '_mockups', '_review_screens'}
+    return (path for path in sorted(Path('.').rglob('*.html'))
+            if not excluded.intersection(path.parts))
+
+
+sw = read('sw.js')
+style_match = re.search(r"'/css/style\.css\?v=([^']+)',", sw)
+require(style_match is not None, 'service-worker precache lost its versioned shared CSS')
+style_ref = f'/css/style.css?v={style_match.group(1)}'
 
 home = read('index.html')
 require(
@@ -153,8 +166,8 @@ for path in ['svadebnye-torty/index.html', 'bento-torty/index.html', 'zakazat-to
 
 bento = read('bento-torty/index.html')
 require('<style id="bento-critical">' in bento, 'Bento first-screen geometry lost its critical CSS')
-require('rel="preload" as="style" href="/css/style.css?v=20261023r01" onload="this.onload=null;this.rel=\'stylesheet\'"' in bento, 'Bento shared CSS blocks its first paint again')
-require('<noscript><link rel="stylesheet" href="/css/style.css?v=20261023r01"' in bento, 'Bento no-script stylesheet fallback missing')
+require(f'rel="preload" as="style" href="{style_ref}" onload="this.onload=null;this.rel=\'stylesheet\'"' in bento, 'Bento shared CSS blocks its first paint again')
+require(f'<noscript><link rel="stylesheet" href="{style_ref}"' in bento, 'Bento no-script stylesheet fallback missing')
 require('/img/bento_1-mobile-640.avif" media="(max-width: 768px)" fetchpriority="high"' in bento, 'Bento mobile LCP preload missing')
 require('media="(max-width: 768px)" srcset="/img/bento_1-mobile-640.avif"' in bento, 'Bento mobile LCP source missing')
 require('/img/bento_1.avif" media="(min-width: 769px)" fetchpriority="high"' in bento, 'Bento desktop LCP preload lost its media guard')
@@ -312,25 +325,24 @@ require(
     'landing footer link target-size contract regressed',
 )
 for path in ['svadebnye-torty/index.html', 'bento-torty/index.html', 'zakazat-tort-spb/index.html']:
-    require('/css/style.css?v=20261023r01' in read(path), f'{path} landing a11y CSS revision drifted')
+    require(style_ref in read(path), f'{path} landing a11y CSS revision drifted')
 
 # Shared CSS and its service-worker generation must move as one release unit.
-for public_html in sorted(Path('.').rglob('*.html')):
+for public_html in public_html_files():
     html = read(public_html)
     if 'style.css?v=' in html:
-        require('style.css?v=20261023r01' in html, f'{public_html} shared style revision drifted')
-        require('style.css?v=20260728r27' not in html, f'{public_html} still references stale shared style revision')
+        require(style_ref.lstrip('/') in html, f'{public_html} shared style revision drifted')
+        require('style.css?v=20261023r01' not in html, f'{public_html} still references stale shared style revision')
 
 # Shared main.js and CSS identities must move together across every HTML consumer.
-for public_html in sorted(Path('.').rglob('*.html')):
+for public_html in public_html_files():
     html = read(public_html)
     if 'js/main.js?v=' in html:
         require('main.js?v=20261023r02' in html, f'{public_html} shared main.js revision drifted')
         require('main.js?v=20260916r01' not in html, f'{public_html} still references stale shared main.js revision')
 
-sw = read('sw.js')
 require("const CACHE_NAME = 'milovi-cake-v2026.10.23-r89';" in sw, 'service-worker cache generation drifted')
-require("'/css/style.css?v=20261023r01'," in sw, 'service-worker precache still points at stale shared CSS revision')
+require(style_ref != '/css/style.css?v=20261023r01', 'service-worker precache still points at stale shared CSS revision')
 require("'/js/main.js?v=20261023r02'," in sw, 'service-worker precache still points at stale shared main.js revision')
 require("'/js/gallery/main.js?v=20261023r01'," in sw, 'service-worker precache still points at stale gallery runtime revision')
 require("'/js/gallery/data.js?v=20261023r01'," in sw, 'service-worker precache still points at stale gallery data revision')
