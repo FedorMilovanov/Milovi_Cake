@@ -46,6 +46,80 @@ test.describe('new SEO landing pages', () => {
   }
 });
 
+test.describe('commercial landing videos', () => {
+  const landings = [
+    { path: '/zakazat-tort-spb/', videos: 1 },
+    { path: '/tort-s-dostavkoy/', videos: 1 },
+    { path: '/tort-na-den-rozhdeniya/', videos: 2 },
+    { path: '/bento-torty/', videos: 2 },
+    { path: '/detskie-torty/', videos: 2 },
+  ];
+
+  for (const landing of landings) {
+    test(`${landing.path} defers video until an accessible play action`, async ({ page }) => {
+      const requests = [];
+      page.on('request', (req) => {
+        if (req.url().includes('/img/gallery/videos/')) requests.push(new URL(req.url()).pathname);
+      });
+      await page.goto(landing.path, { waitUntil: 'domcontentloaded' });
+      const videos = page.locator('.lp-media-showcase video');
+      const buttons = page.locator('.lp-media-showcase button.lp-media-play');
+      await expect(videos).toHaveCount(landing.videos);
+      await expect(buttons).toHaveCount(landing.videos);
+      await videos.last().scrollIntoViewIfNeeded();
+      await expect(buttons.first()).toBeVisible();
+      await page.waitForTimeout(350);
+      expect(requests).toEqual([]);
+      for (let i = 0; i < landing.videos; i += 1) {
+        await expect(videos.nth(i)).toHaveAttribute('preload', 'none');
+        await expect(videos.nth(i)).toHaveAttribute('loading', 'lazy');
+        await expect(buttons.nth(i)).toHaveAttribute('aria-label', /^Смотреть видео: /);
+      }
+      const button = buttons.first();
+      await button.focus();
+      await expect(button).toBeFocused();
+      expect(await button.evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe('none');
+      await page.keyboard.press('Enter');
+      await expect.poll(() => requests.length).toBeGreaterThan(0);
+      const firstVideo = videos.first();
+      const source = await firstVideo.locator('source').getAttribute('src');
+      expect(requests.every((path) => path === source)).toBe(true);
+      await expect(firstVideo).toHaveAttribute('controls', '');
+      await expect(firstVideo).toBeFocused();
+      await expect(button).toBeHidden();
+      if (landing.videos > 1) await expect(videos.nth(1)).not.toHaveAttribute('controls', '');
+    });
+  }
+
+  test('clicking the video poster still starts playback', async ({ page }) => {
+    await page.goto('/zakazat-tort-spb/', { waitUntil: 'domcontentloaded' });
+    const video = page.locator('.lp-media-showcase video');
+    await video.click({ position: { x: 25, y: 25 } });
+    await expect(video).toHaveAttribute('controls', '');
+    await expect(video).toBeFocused();
+    await expect(page.locator('.lp-media-showcase button.lp-media-play')).toBeHidden();
+  });
+
+  test('without JavaScript the poster retains native media controls', async ({ browser, baseURL }) => {
+    const context = await browser.newContext({ baseURL, javaScriptEnabled: false });
+    try {
+      const page = await context.newPage();
+      for (const landing of landings) {
+        await page.goto(landing.path, { waitUntil: 'domcontentloaded' });
+        const videos = page.locator('.lp-media-showcase video');
+        const buttons = page.locator('.lp-media-showcase button.lp-media-play');
+        await expect(videos).toHaveCount(landing.videos);
+        for (let i = 0; i < landing.videos; i += 1) {
+          await expect(videos.nth(i)).toHaveAttribute('controls', '');
+          await expect(buttons.nth(i)).toBeHidden();
+        }
+      }
+    } finally {
+      await context.close();
+    }
+  });
+});
+
 test.describe('premium media blocks', () => {
   test('gallery labels and image sitemap describe the photographed work', async ({ page, request }) => {
     await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
