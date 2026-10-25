@@ -55,9 +55,34 @@ node scripts/diagnostics/home_dom_lcp.cjs 8 full,contain
 
 В 48 `full/hero/comment` и 32 `full/contain` загрузках: h2=все, LCP-элемент `.hero-img`=все, `naturalWidth=640`, применён весь CSS, CLS=0, JS/локальных сетевых ошибок=0. Первые viewport PNG (`full/hero/comment`; также `full/contain`) имели **pixel AE=0**. Скрипт сохраняет сырые JSON и PNG в ignored `_review_screens/`; при пересоздании песочницы они могут пропасть, поэтому здесь оставлены условия и числа. `contain` сохраняет доступный DOM, но его **8–12 мс** локального эффекта при смешанных знаках и потенциальных изменениях layout недостаточно для production-патча.
 
+## Продолжение: вклад секций и контроль скриптов (read-only)
+
+В том же runner добавлены тестовые режимы без изменения сайта:
+
+```sh
+node scripts/diagnostics/home_dom_lcp.cjs 8 full,no-fillings,no-content-block,comment 4
+node scripts/diagnostics/home_dom_lcp.cjs 8 full,live 4
+node scripts/diagnostics/home_dom_lcp.cjs 8 live,main-enh-low 4
+```
+
+При CPU×4 по очереди превращали **одну** текстовую секцию в HTML-комментарий: весь ответ передавался, но её узлы не создавались. Восемь пар для двух крупнейших секций; картинки первого экрана побайтно совпали, CSS завершался примерно одновременно, все 32 загрузки: h2, hero `naturalWidth=640`, CLS=0, ошибок=0. Контроль `comment` убирает все секции ниже hero. Разницы между режимами **не складываются**.
+
+| Тестовый режим | DOM-узлов / gzip HTML | Медиана парной LCP (режим − `full`) | Знак |
+| --- | ---: | ---: | ---: |
+| `no-fillings` | 909 / 32 812 байт | **−36 мс** | 8/8 быстрее |
+| `no-content-block` | 935 / 32 807 байт | **−20 мс** | 7/8 быстрее |
+| `comment` (всё ниже hero) | 479 / 32 822 байта | **−124 мс** | 8/8 быстрее |
+
+Базис — 1112 узлов / 32 797 gzip-байт. Для `no-fillings` HTML responseEnd сдвигался примерно на −15 мс даже при почти равном gzip, поэтому **все 36 мс нельзя приписать только layout**. Дополнительный пилот по 4 пары: отзывы **−24 мс**, контакты **−28 мс**, оба 4/4; для релизного решения мало. Затраты распределены по нужному пользователю тексту, а не вызваны одним удаляемым декором.
+
+Для отдельного сравнения со **всеми исполняемыми скриптами** обнаружено ограничение fixture: заголовок `Cache-Control: no-store` на *статических* CSS в сочетании с inline-скриптами вызывал в Chromium **повторный запрос каждого из шести CSS** (12 вместо 6). Этот результат отброшен как артефакт стенда, **не баг сайта**. В `full,live` и `live,main-enh-low` runner отдаёт cacheable-ассеты (`max-age=600`), но создаёт новый контекст для каждого холодного прогона; дублей CSS нет. При ×4 в 8 парах `live` против no-JS `full`: FCP=LCP **1094→1422 мс**, парная разница **+324 мс** (8/8), CSS responseEnd **+315 мс**. Локальные запросы пяти `defer`-скриптов начинаются ещё до завершения CSS и конкурируют за канал; в JS-варианте меняются также HTML и DOM. Это не raw CI trace и **не доказательство production-причины**.
+
+Проверен потенциально меньший риск: тестово выставить `fetchpriority="low"` существующим `main.js`, `mc-2026.js` и `v20-faq-fix.js`, оставив `nav.js` и consent без изменения. В **8 парах** `live,main-enh-low` медиана парной разницы LCP всего **−6 мс**, знаки **4 быстрее / 4 медленнее**, CSS responseEnd **−0,85 мс**. Патч отвергнут: выигрыша нет, доступность корзины/интерактивности раньше первого кадра можно ухудшить.
+
 ## QA, ограничения и решение
 
-- На неизменном сайте в этом запуске: `npm ci` и audit — **0 vulnerabilities**; `npm run qa` — **265 passed / 5 skipped**, статический аудит **49 passed / 0 warnings / 0 errors**. Реальный HTML+JS/CSS: 8 состояний (главная/бенто × mobile 390 / desktop 1440 × light/dark), PNG просмотрены; JS/local request errors **0**, axe WCAG A/AA violations **0** (**1–4 inconclusive**), CLS mobile **0**, desktop максимум **0,000438**; декодирование hero mobile **640 px**, desktop главной **1440**, бенто **1280 px**. Внешние шрифты помечены `skipped: sandbox egress`; `document.fonts.status=loaded` здесь означает работу с fallback, **не** проверку CDN. Chromium-эмуляция — не нативный Safari.
+- На неизменном сайте в первом прогоне: `npm ci` и audit — **0 vulnerabilities**; `npm run qa` — **265 passed / 5 skipped**, статический аудит **49 passed / 0 warnings / 0 errors**. Реальный HTML+JS/CSS: 8 состояний (главная/бенто × mobile 390 / desktop 1440 × light/dark), PNG просмотрены; JS/local request errors **0**, axe WCAG A/AA violations **0** (**1–4 inconclusive**), CLS mobile **0**, desktop максимум **0,000438**; декодирование hero mobile **640 px**, desktop главной **1440**, бенто **1280 px**. Внешние шрифты помечены `skipped: sandbox egress`; `document.fonts.status=loaded` здесь означает работу с fallback, **не** проверку CDN. Chromium-эмуляция — не нативный Safari.
+- Повтор после нового `npm ci` на том же SHA: первый `npm run qa` завершился с кодом 0, но **264 passed / 5 skipped / 1 flaky** (mobile `cart-accessibility.spec.js`, фокус `#cartClearNo`); изолированные 3 повтора без retry: **2 failed / 1 passed**. После dev-only правки этого runner повторный **полный QA вышел с кодом 1: 264 passed / 5 skipped / 1 failed**, тот же тест упал и на retry; статический аудит остался **49/0/0**, npm audit — 0 vulnerabilities, Pages build/audit PASS. QA не загружает runner, production-код не менялся; ошибка проявлялась до нынешнего diff. Возможная гонка фокуса корзины вне performance-scope; sandbox Chromium `153.0.8010.0` отличается от ожидаемого Playwright `153.0.8010.12`. **Не считать текущий локальный QA зелёным** и не «чинить» корзину в performance PR без отдельного расследования; три проверки CI исходного PR были зелёными.
 - `content-visibility` у текстовых секций **уже удаляли** в `css/mc-2026.css` и `css/premium-overrides.css` из-за риска SEO/поиска на странице/a11y. Удаление или перенос нижеэкранного DOM за JS разрушает содержимое/режим без JS. Не выдавать экспериментальные `hero`/`comment` за исправление.
 - Исходные CI raw traces и #102 median не доступны. Публичный Lighthouse и локальные fixture не позволяют установить **production-причину** 3,18 с бенто или 4,07 с главной. Нельзя обещать сокращение LCP от документационного PR; CI Lighthouse запускается **после deploy**, не на PR.
 - **Решение самостоятельно:** оставить production HTML, CSS, runtime JS, SW и конфигурацию CI без изменений. Сохранить этот отчёт и dev-only runner в Git, потому что прошлый ignored отчёт не сохранился. Не мержить и не закрывать PR. Следующий инженерный шаг при появлении новых данных — экспортировать именно raw DevTools trace для медленного CI/Lighthouse-прогона и сравнить его с быстрым на **одном SHA** при идентичных условиях; если появится UX/SEO/a11y-безопасный кандидат, проверить его парным A/B и полным QA до выпуска.
