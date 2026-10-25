@@ -2,7 +2,8 @@
 // No HTML/CSS/JS served by production is modified. Requires Playwright Chromium.
 // Run: node scripts/diagnostics/home_dom_lcp.cjs [pairs=8] [full,hero,comment] [rates=1,4]
 // Optional modes: no-fillings, no-content-block, no-reviews, no-contacts;
-// live and main-enh-low compare actual JS with cacheable assets.
+// live / main-enh-low compare real JS with cacheable assets. Script-fetch and
+// early-CSS-preload variants are diagnostic only, never a deployable JS removal.
 'use strict';
 const fs = require('node:fs');
 const os = require('node:os');
@@ -17,10 +18,12 @@ const output = path.join(root, '_review_screens');
 const pairs = Number(process.argv[2] || 8);
 const variants = (process.argv[3] || 'full,hero,comment').split(',');
 const rates = (process.argv[4] || '1,4').split(',').map(Number);
-const runtime = variants.some(v => ['live', 'main-enh-low'].includes(v));
+const scriptModes = ['live', 'main-enh-low', 'live-no-exec', 'live-no-fetch',
+  'live-style-preload', 'live-css-preload'];
+const runtime = variants.some(v => scriptModes.includes(v));
 const baseline = variants.includes('full') ? 'full' : 'live';
 const allowed = ['full', 'hero', 'comment', 'contain', 'no-fillings',
-  'no-content-block', 'no-reviews', 'no-contacts', 'live', 'main-enh-low'];
+  'no-content-block', 'no-reviews', 'no-contacts', ...scriptModes];
 if (!Number.isInteger(pairs) || pairs < 1 || pairs > 20) throw Error('Expected 1–20 pairs');
 if (variants.length < 2 || !variants.includes(baseline) ||
     new Set(variants).size !== variants.length || variants.some(v => !allowed.includes(v)) ||
@@ -64,6 +67,28 @@ html['main-enh-low'] = original.replace(/<script\b[^>]*\bsrc=["']\/?js\/[^>]*>/g
 if ((html['main-enh-low'].match(/fetchpriority="low"/g) || []).length !== lowScripts.length) {
   throw Error('Deferred script tags changed');
 }
+// Same HTML and (almost) same gzip script bytes, but no JS evaluation.
+// Distinguish first-paint fetch contention from JS execution cost.
+const scriptFiles = ['main.js', 'nav.js', 'mc-2026.js', 'v20-faq-fix.js',
+  'consent-analytics.js'];
+html['live-no-exec'] = original;
+// The next mode deliberately removes all external JS *from the diagnostic only*.
+// Comparing it to live-no-exec isolates network transfer, not a safe site patch.
+html['live-no-fetch'] = original.replace(/<script\b[^>]*\bsrc=["']\/?js\/[^>]*>/gi,
+  tag => tag.replace('<script', '<script type="application/x-milovi-diagnostic"'));
+if ((html['live-no-fetch'].match(/application\/x-milovi-diagnostic/g) || []).length !==
+    scriptFiles.length) throw Error('External script tags changed');
+const cssHrefs = [...original.matchAll(/<link rel="stylesheet" href="([^"]+\.css\?v=[^"]+)"/g)]
+  .map(match => match[1]);
+if (cssHrefs.length !== 6) throw Error('Expected six stylesheet URLs');
+for (const [variant, hrefs] of Object.entries({
+  'live-style-preload': [cssHrefs[0]], 'live-css-preload': cssHrefs,
+})) {
+  const preloads = hrefs.map(href => `<link rel="preload" href="${href}" as="style" />`).join('\n');
+  html[variant] = original.replace('  <script type="application/ld+json">',
+    preloads + '\n  <script type="application/ld+json">');
+  if (!html[variant].includes(preloads)) throw Error('CSS preload injection failed');
+}
 const mime = { '.css': 'text/css', '.js': 'application/javascript', '.svg': 'image/svg+xml',
   '.webp': 'image/webp', '.avif': 'image/avif', '.png': 'image/png', '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg', '.woff2': 'font/woff2', '.json': 'application/json', '.ico': 'image/x-icon' };
@@ -104,6 +129,12 @@ async function main() {
         stream.respond({ ':status': 404 }); stream.end(); return;
       }
       body = fs.readFileSync(filename);
+      if (url.pathname.startsWith('/js/') &&
+          new URL(headers.referer || 'https://localhost/', 'https://localhost')
+            .searchParams.get('variant') === 'live-no-exec' &&
+          scriptFiles.includes(path.basename(filename))) {
+        body = Buffer.concat([Buffer.from('if (false) {\n'), body, Buffer.from('\n}\n')]);
+      }
       if (filename === path.join(root, 'css/final-fixes.css') &&
           /[?&]variant=contain(?:&|$)/.test(headers.referer || '')) {
         // Probe layout/style isolation without removing content from DOM/search/a11y.
@@ -183,13 +214,19 @@ async function main() {
           const data = await page.evaluate(() => {
             const nav = performance.getEntriesByType('navigation')[0];
             const resources = performance.getEntriesByType('resource');
+            const css = resources.filter(r => r.name.includes('/css/'));
+            const scripts = resources.filter(r => r.name.includes('/js/'));
+            const heroImage = resources.find(r => r.name.includes('/img/head_mobile-640.avif'));
             return { fcp: performance.getEntriesByType('paint')
               .find(p => p.name === 'first-contentful-paint')?.startTime || 0,
               lcp: window.__lcp.at(-1) || null, cls: window.__cls,
               responseEnd: nav.responseEnd, encodedBodySize: nav.encodedBodySize,
               domContentLoaded: nav.domContentLoadedEventEnd,
-              cssEnd: Math.max(...resources.filter(r => r.name.includes('/css/')).map(r => r.responseEnd)),
-              cssRequests: resources.filter(r => r.name.includes('/css/')).length,
+              cssEnd: Math.max(...css.map(r => r.responseEnd)),
+              cssStart: Math.min(...css.map(r => r.startTime)), cssRequests: css.length,
+              jsRequests: scripts.length,
+              jsEncodedBytes: scripts.reduce((sum, r) => sum + r.encodedBodySize, 0),
+              heroResourceEnd: heroImage?.responseEnd || 0,
               nodes: document.getElementsByTagName('*').length,
               heroWidth: document.querySelector('.hero-img')?.naturalWidth,
               fontStatus: document.fonts.status,
@@ -204,11 +241,14 @@ async function main() {
             path: path.join(output, `dom-${variant}-mobile.png`) });
           const row = { pair, rate, variant, fcp: round(data.fcp),
             lcp: round(data.lcp?.startTime || 0), element: data.lcp?.id,
-            cls: data.cls, cssEnd: round(data.cssEnd), cssRequests: data.cssRequests,
+            cls: data.cls, cssEnd: round(data.cssEnd), cssStart: round(data.cssStart),
+            cssRequests: data.cssRequests, jsRequests: data.jsRequests,
+            jsEncodedBytes: data.jsEncodedBytes, heroResourceEnd: round(data.heroResourceEnd),
             responseEnd: round(data.responseEnd), encodedBodySize: data.encodedBodySize,
             domContentLoaded: round(data.domContentLoaded), nodes: data.nodes,
             layoutMs: metric('LayoutDuration'), recalcMs: metric('RecalcStyleDuration'),
-            taskMs: metric('TaskDuration'), heroWidth: data.heroWidth,
+            scriptMs: metric('ScriptDuration'), taskMs: metric('TaskDuration'),
+            heroWidth: data.heroWidth,
             fontStatus: data.fontStatus, belowContain: data.belowContain,
             cssLoaded: data.cssLoaded,
             protocols: [...protocols].sort(), errors, status: response.status() };
@@ -217,6 +257,9 @@ async function main() {
           await context.close();
           if (row.status !== 200 || row.heroWidth < 640 || !row.cssLoaded ||
               !row.fcp || !row.lcp || errors.length || !protocols.has('h2') ||
+              (runtime && row.cssRequests !== 6) ||
+              (scriptModes.includes(variant) && row.jsRequests !==
+                (variant === 'live-no-fetch' ? 0 : scriptFiles.length)) ||
               (variant === 'contain' && row.belowContain !== 'layout style')) {
             throw Error('Invalid diagnostic load: ' + JSON.stringify(row));
           }
@@ -228,8 +271,9 @@ async function main() {
       const full = group.filter(r => r.variant === baseline);
       for (const variant of variants.filter(v => v !== baseline)) {
         const selected = group.filter(r => r.variant === variant);
-        for (const field of ['fcp', 'lcp', 'cssEnd', 'responseEnd', 'domContentLoaded',
-          'layoutMs', 'recalcMs']) {
+        for (const field of ['fcp', 'lcp', 'cssEnd',
+          ...(runtime ? ['cssStart', 'heroResourceEnd', 'scriptMs'] : []),
+          'responseEnd', 'domContentLoaded', 'layoutMs', 'recalcMs']) {
           const differences = full.map(f => selected.find(h => h.pair === f.pair)[field] - f[field]);
           console.log(`cpu=${rate} ${variant} ${field}: ${baseline} ${median(full.map(r => r[field]))}; ` +
             `${variant} ${median(selected.map(r => r[field]))}; paired delta ${median(differences)}; ` +
