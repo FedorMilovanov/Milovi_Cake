@@ -1,0 +1,63 @@
+# Lighthouse LCP после PR #103 — проверка 25.10.2026
+
+**Итог:** устойчивый безопасный патч для production **не найден**. Публичные отчёты подтверждают предупреждения, но не устанавливают причину различия двух CI-прогонов. В локальном опыте обнаружена измеримая цена стилизации содержимого главной ниже первого экрана; она намного меньше задержки из CI и её нельзя устранять удалением индексируемого/доступного содержимого. Этот PR содержит только отчёт и воспроизводимый диагностический скрипт, не меняет сайт.
+
+## Что сравнивали
+
+- Точное происхождение live: [`/release.json`](https://milovicake.ru/release.json) = `f325e00de47be2e6723f1c9e8e492b59d1a14843` на 25.10.2026. [CI #102](https://github.com/FedorMilovanov/Milovi_Cake/actions/runs/39875645018) проверял `49983047ffea631ad391e72a19cf9b73c3a427f9`; [CI #103](https://github.com/FedorMilovanov/Milovi_Cake/actions/runs/39945169569) — `f325e00…`.
+- **Бенто:** выбранный публичный [отчёт #102](https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/1792714102624-7712.report.html) FCP/LCP **925/1693 мс**; выбранный [#103](https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/1792754671508-23092.report.html) **1586/3183 мс**. Assertion в #103 использует **медиану трёх LCP = 3152,1265 мс**, а не 3183 мс; медиана #102 неизвестна. Сопоставлять эти два выбранных отчёта как парный эксперимент нельзя.
+- **Главная:** выбранные [#102](https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/1792714100462-34014.report.html) и [#103](https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/1792754667443-95236.report.html): FCP **3494→3451**, LCP **4068→4073 мс**. Warning на главной существовал и до #103. В #103 показаны TTFB **690**, load delay/time **0/0**, render delay **3390 мс**, Style & Layout **935 мс**, Other **933 мс**, Script Evaluation **134 мс**. Эти агрегаты Lighthouse/Lantern — не сохранённый raw trace.
+- Независимые PSI-прогоны **одного SHA** дали LCP главной **3239 и 3981 мс** (разброс **742 мс**); подробнее в [комментарии к #103](https://github.com/FedorMilovanov/Milovi_Cake/pull/103#issuecomment-6389150093). Задержка только внеэкранных изображений изменяла *simulated* LCP без идентичного сдвига observed LCP: [контроль](https://github.com/FedorMilovanov/Milovi_Cake/pull/103#issuecomment-6389559505).
+
+## Проверка exact-release до этого запуска
+
+При сравнении исходников #102/#103 на одинаковом локальном gzip/HTTPS/HTTP/2 (исторические результаты из предыдущего этапа расследования):
+
+| Страница / метод | Старый → новый LCP, медианы | Медиана парной разницы (новый − старый) |
+| --- | ---: | ---: |
+| Бенто, browser, 8 пар | 854 → 692 мс | **−168 мс**, новый быстрее в 8/8 |
+| Бенто, Lighthouse, 4 пары | 1865,5 → 1623,5 мс | **−245,5 мс**, новый быстрее в 4/4 |
+| Главная, browser, 8 пар | 1610 → 1640 мс | **+40 мс** |
+| Главная, Lighthouse, 4 пары | 2367,5 → 2373,5 мс | **+6,5 мс**, смешанные знаки |
+
+Бенто browser FCP **362→354**, Lighthouse FCP **1560→1560**; главная browser FCP=LCP, Lighthouse FCP **1830→1830 мс**. Первые PNG обоих релизов совпали, CLS=0, локальных JS-ошибок=0. **Ограничение:** это не production CDN/runner/шрифты. Прежние ignored JSON и TLS fixture не пережили пересоздание sandbox; числа сохранены в журнале расследования, но исходный raw-файл сейчас недоступен. При решении о production-патче этот A/B нужно воспроизвести, а не принимать за доказательство причины CI.
+
+Другой прежний опыт: старт **одного** CSS задерживали на 650 мс в 8 парах на каждый из 6 файлов (96 загрузок). Медиана парного FCP/LCP slow−baseline для `style.css`, `mc-2026.css`, `premium-overrides.css`, `v20-dark-and-fixes.css`, `v20-fixes.css`, `final-fixes.css` соответственно **+18, +2, −2, +8, −18, +46 мс**. Сильное искусственное запаздывание CSS (~1600 мс) уже сдвигало первый кадр. Из этого **не следует**, что CSS некритичен или что можно переключить его в async: возможны FOUC/CLS. Raw JSON этой матрицы также был ignored и утрачен после пересоздания sandbox.
+
+## Новый контролируемый опыт: нижеэкранный DOM главной
+
+Воспроизводимый dev-only скрипт: [`scripts/diagnostics/home_dom_lcp.cjs`](../scripts/diagnostics/home_dom_lcp.cjs). На машине с `npm ci`, Playwright Chromium и OpenSSL:
+
+```sh
+node scripts/diagnostics/home_dom_lcp.cjs 8 full,hero,comment
+node scripts/diagnostics/home_dom_lcp.cjs 8 full,contain
+```
+
+Только тестовый сервер: локальные HTTPS + gzip + **h2**, один HTML/одни CSS, новый browser context и отключённый cache на каждом запуске. 390×844, `isMobile`, DPR 2, light, reduced-motion, RTT 100 мс, 1600 Кбит/с, CPU ×1/×4; порядок вариантов циклически менялся. Google Fonts недоступны в sandbox: один и тот же **пустой CSS font mock** для всех вариантов. Выполняемые скрипты сайта удалены **в обоих сравниваемых ответах** (исходники в репозитории не менялись), чтобы отделить HTML/стили от runtime. Footer и мобильная панель остаются одинаковыми.
+
+- `full`: вся главная без исполняемых скриптов — **144 685 HTML-байт / 32 797 gzip**, 1112 DOM-элементов.
+- `hero`: нижеэкранные секции в `<main>` убраны только в памяти тестового сервера, footer сохранён — **82 279 / 19 562 gzip**, 479 элементов.
+- `comment`: те же нижеэкранные секции вместо DOM находятся в HTML-комментарии; **144 748 / 32 822 gzip**, 479 элементов. Эта пара почти уравнивает время/размер передачи HTML и CSS при одинаковом первом экране.
+- `contain`: полный DOM и HTML, тестовый CSS дополняется `#main-content > section:not(.hero) { contain: layout style; }`. Ничего из этого в production CSS не добавлено.
+
+**Медианы 8 пар в каждом режиме** (ms; `delta` = вариант − `full`):
+
+| CPU / вариант | FCP=LCP full → вариант | Парная delta | CSS responseEnd delta | LayoutDuration full → вариант* |
+| --- | ---: | ---: | ---: | ---: |
+| ×1 / `hero` | 906 → 810 | **−88**, 8/8 | −45,6 | 49,1 → 29,1 |
+| ×1 / `comment` | 906 → 856 | **−50**, 8/8 | −1,2 | 49,1 → 28,2 |
+| ×4 / `hero` | 1134 → 960 | **−162**, 8/8 | −21,9 | 178,4 → 100,9 |
+| ×4 / `comment` | 1134 → 988 | **−142**, 8/8 | −0,2 | 178,4 → 103,3 |
+| ×1 / `contain` | 888 → 880 | **−8**, 6/8 | −0,4 | 44,8 → 45,0 |
+| ×4 / `contain` | 1156 → 1138 | **−12**, 5/8 (2 равны) | −0,3 | 192,9 → 182,5 |
+
+\* `LayoutDuration` — накопленный CDP-счётчик после load + 850 мс, **не** точное время layout до LCP. В `comment` при ×4 `RecalcStyleDuration` уменьшился **88,3→36,0 мс**. У `hero` быстрее и передача HTML, поэтому его парная разница не изолирует именно стилизацию. У `comment` gzip отличается на **25 байт**, время CSS/HTML responseEnd в паре почти не менялось; это подтверждает измеримую цену нижеэкранных узлов **в локальном no-JS варианте**, не production-корень предупреждения.
+
+В 48 `full/hero/comment` и 32 `full/contain` загрузках: h2=все, LCP-элемент `.hero-img`=все, `naturalWidth=640`, применён весь CSS, CLS=0, JS/локальных сетевых ошибок=0. Первые viewport PNG (`full/hero/comment`; также `full/contain`) имели **pixel AE=0**. Скрипт сохраняет сырые JSON и PNG в ignored `_review_screens/`; при пересоздании песочницы они могут пропасть, поэтому здесь оставлены условия и числа. `contain` сохраняет доступный DOM, но его **8–12 мс** локального эффекта при смешанных знаках и потенциальных изменениях layout недостаточно для production-патча.
+
+## QA, ограничения и решение
+
+- На неизменном сайте в этом запуске: `npm ci` и audit — **0 vulnerabilities**; `npm run qa` — **265 passed / 5 skipped**, статический аудит **49 passed / 0 warnings / 0 errors**. Реальный HTML+JS/CSS: 8 состояний (главная/бенто × mobile 390 / desktop 1440 × light/dark), PNG просмотрены; JS/local request errors **0**, axe WCAG A/AA violations **0** (**1–4 inconclusive**), CLS mobile **0**, desktop максимум **0,000438**; декодирование hero mobile **640 px**, desktop главной **1440**, бенто **1280 px**. Внешние шрифты помечены `skipped: sandbox egress`; `document.fonts.status=loaded` здесь означает работу с fallback, **не** проверку CDN. Chromium-эмуляция — не нативный Safari.
+- `content-visibility` у текстовых секций **уже удаляли** в `css/mc-2026.css` и `css/premium-overrides.css` из-за риска SEO/поиска на странице/a11y. Удаление или перенос нижеэкранного DOM за JS разрушает содержимое/режим без JS. Не выдавать экспериментальные `hero`/`comment` за исправление.
+- Исходные CI raw traces и #102 median не доступны. Публичный Lighthouse и локальные fixture не позволяют установить **production-причину** 3,18 с бенто или 4,07 с главной. Нельзя обещать сокращение LCP от документационного PR; CI Lighthouse запускается **после deploy**, не на PR.
+- **Решение самостоятельно:** оставить production HTML, CSS, runtime JS, SW и конфигурацию CI без изменений. Сохранить этот отчёт и dev-only runner в Git, потому что прошлый ignored отчёт не сохранился. Не мержить и не закрывать PR. Следующий инженерный шаг при появлении новых данных — экспортировать именно raw DevTools trace для медленного CI/Lighthouse-прогона и сравнить его с быстрым на **одном SHA** при идентичных условиях; если появится UX/SEO/a11y-безопасный кандидат, проверить его парным A/B и полным QA до выпуска.
