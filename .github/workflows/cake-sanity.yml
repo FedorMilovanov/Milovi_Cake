@@ -57,32 +57,3 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
           include-hidden-files: false
-
-  review-saved-lcp-resources:
-    # Temporary, read-only job for PR 104. Remove after inspecting the original
-    # 40248432996 artifact. No new Lighthouse runs, site changes or deployment.
-    if: ${{ github.event.pull_request.number == 104 && github.event.pull_request.head.ref == 'arena/6233a51b-milovi-cake' }}
-    name: Temporary original LCP resource review (PR 104 only)
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: read
-      actions: read
-    steps:
-      - name: Checkout exact PR head
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          persist-credentials: false
-
-      - name: Download already-saved 12-run production artifact
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          mkdir -p /tmp/milovi-lcp-original
-          gh run download 40248432996 --repo "$GITHUB_REPOSITORY" \
-            --name live-lcp-traces-40248432996-1 \
-            --dir /tmp/milovi-lcp-original
-
-      - name: Inspect exact-SHA media and network requests; annotate compact result
-        run: python3 scripts/diagnostics/ci_lcp_resource_review.py /tmp/milovi-lcp-original
