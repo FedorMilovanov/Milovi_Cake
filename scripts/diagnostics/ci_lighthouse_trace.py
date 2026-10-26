@@ -155,5 +155,77 @@ def main(directory, expected_sha):
     return 0
 
 
+def lcp_element(path):
+    lhr = json.loads(path.read_text())
+    audit = lhr.get('audits', {}).get('largest-contentful-paint-element') or {}
+    for table in (audit.get('details') or {}).get('items', []):
+        for row in table.get('items', []):
+            node = row.get('node')
+            if isinstance(node, dict):
+                return {'selector': node.get('selector'), 'label': node.get('nodeLabel'),
+                        'bounds': node.get('boundingRect')}
+    return {'selector': None, 'label': None, 'bounds': None}
+
+
+def review(directory, expected_sha):
+    root = Path(directory)
+    records = json.loads((root / 'summary.json').read_text())
+    names = sorted([f'bento-{i:02d}' for i in range(1, 9)] +
+                   [f'home-{i:02d}' for i in range(1, 5)])
+    assert sorted(r['name'] for r in records) == names, 'Expected exactly 8 bento + 4 home reports'
+    checks = [line.split()[-1] for line in (root / 'release-checks.txt').read_text().splitlines()]
+    assert len(checks) == 14 and set(checks) == {expected_sha}, 'Release SHA checks mismatch'
+    assert all(r['sha'] == expected_sha and not r['runtimeError'] for r in records), 'Report provenance or runtime error mismatch'
+    by_name = {r['name']: r for r in records}
+    elements = {r['name']: lcp_element(root / (r['name'] + '.report.json')) for r in records}
+    annotation('LCP-evidence-provenance', {'sourceRun': 40248432996,
+               'shaChecks': len(checks), 'releaseSha': expected_sha,
+               'lighthouse': sorted({r['lighthouse'] for r in records}),
+               'userAgent': sorted({r['userAgent'] for r in records}),
+               'count': len(records), 'runtimeErrors': 0,
+               'consoleErrors': sum(r['consoleErrors'] for r in records)})
+
+    for page in ('bento', 'home'):
+        group = sorted((r for r in records if r['name'].startswith(page)), key=lambda r: r['name'])
+        rows = [{'name': r['name'], 'lcp': r['lcp'], 'fcp': r['fcp'], 'cls': r['cls'],
+                 'phases': r['phases'], 'element': elements[r['name']]['selector'],
+                 'rawLcp': r['trace'].get('rawLcp'),
+                 'heroRawEnd': next((v.get('end') for v in r['trace']['resources']
+                                     if '/img/bento_1-mobile-640.avif' in v.get('url', '') or
+                                     '/img/head_mobile-640.avif' in v.get('url', '')), None),
+                 'overlayPaint': r['trace']['overlayPaintBeforeLcp']}
+                for r in group]
+        annotation('LCP-' + page + '-12-run-table', {'medianLcp': finite(statistics.median(r['lcp'] for r in group)),
+                   'rows': rows})
+        for r in (min(group, key=lambda item: item['lcp']), max(group, key=lambda item: item['lcp'])):
+            trace = r['trace']
+            resources = [v for v in trace['resources'] if any(x in v.get('url', '') for x in
+                         ('/img/bento_1-mobile-640.avif', '/img/head_mobile-640.avif', '/css/style.css'))]
+            frames = {kind: (root / f"{r['name']}.{kind}.jpg").stat().st_size
+                      for kind in ('early', 'at-lcp', 'final')
+                      if (root / f"{r['name']}.{kind}.jpg").exists()}
+            annotation('LCP-detail-' + r['name'], {'element': elements[r['name']], 'lcp': r['lcp'],
+                       'rawLcp': trace['rawLcp'], 'rawImageLoadEnd': trace['lcpImageEnd'],
+                       'rawResources': resources, 'longestRawTasks': trace['longestTasks'][:3],
+                       'overlayPaintBeforeLcp': trace['overlayPaintBeforeLcp'],
+                       'screenshotCount': trace['screenshotCount'], 'extractedJpegsBytes': frames,
+                       'warnings': r['warnings']})
+    # The second outlier may have a different bottleneck than the slowest one.
+    for name in ('bento-01', 'bento-04'):
+        r = by_name[name]
+        trace = r['trace']
+        annotation('LCP-outlier-' + name, {'element': elements[name], 'lcp': r['lcp'],
+                   'phases': r['phases'], 'rawLcp': trace['rawLcp'],
+                   'rawImageLoadEnd': trace['lcpImageEnd'],
+                   'rawResources': [v for v in trace['resources'] if any(x in v.get('url', '')
+                                    for x in ('/img/bento_1-mobile-640.avif', '/css/style.css'))],
+                   'longestRawTasks': trace['longestTasks'][:3],
+                   'overlayPaintBeforeLcp': trace['overlayPaintBeforeLcp']})
+    print('Reviewed the original 12 raw traces and release checks, without rerunning Lighthouse.')
+    return 0
+
+
 if __name__ == '__main__':
+    if len(sys.argv) == 4 and sys.argv[3] == '--review':
+        raise SystemExit(review(sys.argv[1], sys.argv[2]))
     raise SystemExit(main(sys.argv[1], sys.argv[2]))

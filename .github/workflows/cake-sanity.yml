@@ -59,7 +59,8 @@ jobs:
           include-hidden-files: false
 
   lcp-live-diagnostic:
-    if: ${{ github.event.pull_request.number == 104 }}
+    # Original collection is immutable: the follow-up reads its artifact, not another 12 runs.
+    if: ${{ github.event.pull_request.number == 104 && github.event.pull_request.head.sha == '51f1e137e203b2fe008b9b229e90385cd2549764' }}
     name: Temporary live LCP traces (PR 104)
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -139,3 +140,35 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
           include-hidden-files: false
+
+  lcp-artifact-review:
+    if: ${{ github.event.pull_request.number == 104 }}
+    name: Review original LCP artifact (PR 104 only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    env:
+      EXPECTED_PROD_SHA: f325e00de47be2e6723f1c9e8e492b59d1a14843
+      TRACE_DIR: /tmp/milovi-lcp-evidence
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Read the already-captured artifact from run 40248432996
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$TRACE_DIR"
+          gh run download 40248432996 --repo "$GITHUB_REPOSITORY" \
+            --name live-lcp-traces-40248432996-1 --dir "$TRACE_DIR"
+          test -s "$TRACE_DIR/summary.json"
+          test -s "$TRACE_DIR/release-checks.txt"
+
+      - name: Annotate all 12 runs and the actual LCP elements
+        run: python3 scripts/diagnostics/ci_lighthouse_trace.py "$TRACE_DIR" "$EXPECTED_PROD_SHA" --review
