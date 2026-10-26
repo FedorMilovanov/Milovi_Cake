@@ -225,7 +225,26 @@ def review(directory, expected_sha):
     return 0
 
 
+def frame(directory, name):
+    allowed = {'bento-01.early', 'bento-01.final', 'bento-03.at-lcp',
+               'bento-03.final', 'bento-04.at-lcp', 'home-03.at-lcp', 'home-04.at-lcp'}
+    assert name in allowed, name
+    data = (Path(directory) / (name + '.jpg')).read_bytes()
+    assert data.startswith(b'\xff\xd8\xff') and len(data) < 28000, name
+    payload = base64.b64encode(data).decode('ascii')
+    chunks = [payload[i:i + 3500] for i in range(0, len(payload), 3500)]
+    assert len(chunks) <= 10, 'GitHub check step annotation limit'
+    digest = hashlib.sha256(data).hexdigest()[:16]
+    for index, chunk in enumerate(chunks, 1):
+        print(f'::notice file=.github/workflows/cake-sanity.yml,line=1,'
+              f'title=FramePart-{name}-{digest}-{index:02d}-of-{len(chunks):02d}::{chunk}',
+              flush=True)
+    return 0
+
+
 if __name__ == '__main__':
     if len(sys.argv) == 4 and sys.argv[3] == '--review':
         raise SystemExit(review(sys.argv[1], sys.argv[2]))
+    if len(sys.argv) == 4 and sys.argv[2] == '--frame':
+        raise SystemExit(frame(sys.argv[1], sys.argv[3]))
     raise SystemExit(main(sys.argv[1], sys.argv[2]))

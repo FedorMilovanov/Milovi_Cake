@@ -173,41 +173,19 @@ jobs:
       - name: Annotate all 12 runs and the actual LCP elements
         run: python3 scripts/diagnostics/ci_lighthouse_trace.py "$TRACE_DIR" "$EXPECTED_PROD_SHA" --review
 
-      - name: Expose selected early and final frames for visual inspection
-        run: |
-          python3 - <<'PY'
-          import base64
-          import hashlib
-          import os
-          from pathlib import Path
-
-          root = Path(os.environ['TRACE_DIR'])
-          names = ('bento-01', 'bento-03', 'bento-04', 'home-03', 'home-04')
-          for name in names:
-              for kind in ('early', 'final'):
-                  path = root / f'{name}.{kind}.jpg'
-                  data = path.read_bytes()
-                  assert data.startswith(b'\xff\xd8\xff') and len(data) < 28000, path
-                  digest = hashlib.sha256(data).hexdigest()[:16]
-                  payload = base64.b64encode(data).decode('ascii')
-                  print(f'::notice file=.github/workflows/cake-sanity.yml,line=1,'
-                        f'title=Frame-{name}-{kind}-{digest}::{payload}', flush=True)
-          PY
-
-      - name: Expose selected at-LCP frames separately (ten-note step limit)
-        run: |
-          python3 - <<'PY'
-          import base64
-          import hashlib
-          import os
-          from pathlib import Path
-
-          root = Path(os.environ['TRACE_DIR'])
-          for name in ('bento-01', 'bento-03', 'bento-04', 'home-03', 'home-04'):
-              data = (root / f'{name}.at-lcp.jpg').read_bytes()
-              assert data.startswith(b'\xff\xd8\xff') and len(data) < 28000, name
-              digest = hashlib.sha256(data).hexdigest()[:16]
-              payload = base64.b64encode(data).decode('ascii')
-              print(f'::notice file=.github/workflows/cake-sanity.yml,line=1,'
-                    f'title=Frame-{name}-at-lcp-{digest}::{payload}', flush=True)
-          PY
+      # Each notice is capped at 4096 characters by GitHub; one frame per step
+      # keeps the ten-annotations-per-step limit and avoids write permissions.
+      - name: Transfer slow bento first frame
+        run: python3 scripts/diagnostics/ci_lighthouse_trace.py "$TRACE_DIR" --frame bento-01.early
+      - name: Transfer slow bento final frame
+        run: python3 scripts/diagnostics/ci_lighthouse_trace.py "$TRACE_DIR" --frame bento-01.final
+      - name: Transfer fast bento LCP frame
+        run: python3 scripts/diagnostics/ci_lighthouse_trace.py "$TRACE_DIR" --frame bento-03.at-lcp
+      - name: Transfer fast bento final frame
+        run: python3 scripts/diagnostics/ci_lighthouse_trace.py "$TRACE_DIR" --frame bento-03.final
+      - name: Transfer second slow bento LCP frame
+        run: python3 scripts/diagnostics/ci_lighthouse_trace.py "$TRACE_DIR" --frame bento-04.at-lcp
+      - name: Transfer slow home LCP frame
+        run: python3 scripts/diagnostics/ci_lighthouse_trace.py "$TRACE_DIR" --frame home-03.at-lcp
+      - name: Transfer fast home LCP frame
+        run: python3 scripts/diagnostics/ci_lighthouse_trace.py "$TRACE_DIR" --frame home-04.at-lcp
