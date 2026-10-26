@@ -77,18 +77,65 @@ test('revoking consent before LCP finalization never sends an event', async ({ p
   expect(await vitalEvents(page)).toEqual([]);
 });
 
+test('an entry after an earlier hidden state is not a visible-load LCP', async ({ page }) => {
+  // Simulate a foreground return after an earlier hidden paint: consent may be
+  // granted after that transition, so a new observer alone cannot see it.
+  await page.addInitScript(() => {
+    const entries = performance.getEntriesByType.bind(performance);
+    performance.getEntriesByType = (type) => type === 'visibility-state' ?
+      [{ name: 'hidden', startTime: 0 }] : entries(type);
+    window.__rawLcp = [];
+    new PerformanceObserver((list) => {
+      window.__rawLcp.push(...list.getEntries().map((entry) => entry.startTime));
+    }).observe({ type: 'largest-contentful-paint', buffered: true });
+  });
+  await prepare(page, 'granted');
+  await page.goto('/bento-torty/', { waitUntil: 'load' });
+  await expect.poll(() => page.evaluate(() => window.__rawLcp.length)).toBeGreaterThan(0);
+  await page.locator('.lp-visual img').click({ force: true });
+  await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
+  expect(await vitalEvents(page)).toEqual([]);
+});
+
+test('prerendered pages do not misreport pre-activation time as visible LCP', async ({ page }) => {
+  // Headless CI does not reliably prerender tabs; simulate Navigation Timing
+  // activation while retaining a real browser LCP candidate.
+  await page.addInitScript(() => {
+    const entries = performance.getEntriesByType.bind(performance);
+    performance.getEntriesByType = (type) => type === 'navigation' ?
+      entries(type).map((entry) => ({ activationStart: 100 })) : entries(type);
+    window.__rawLcp = [];
+    new PerformanceObserver((list) => {
+      window.__rawLcp.push(...list.getEntries().map((entry) => entry.startTime));
+    }).observe({ type: 'largest-contentful-paint', buffered: true });
+  });
+  await prepare(page, 'granted');
+  await page.goto('/', { waitUntil: 'load' });
+  await expect.poll(() => page.evaluate(() => window.__rawLcp.length)).toBeGreaterThan(0);
+  await page.locator('.hero-img').click({ force: true });
+  await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
+  expect(await vitalEvents(page)).toEqual([]);
+});
+
 test('returning opt-in homepage sends a single LCP when interaction ends it', async ({ page }) => {
   await prepare(page, 'granted');
   await page.goto('/', { waitUntil: 'load' });
-  await page.evaluate(() => document.body.dispatchEvent(new Event('pointerdown', { bubbles: true })));
+  await page.evaluate(() => {
+    document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+    document.body.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    document.body.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Enter' }));
+  });
+  await page.waitForTimeout(100); // The former pointerdown reporter finalized on a 0-ms timer.
+  expect(await vitalEvents(page)).toEqual([]);
+  await page.locator('.hero-img').click({ force: true });
   await expect.poll(async () => (await vitalEvents(page)).length).toBe(1);
   const [[, , metric]] = await vitalEvents(page);
   expect(metric.lcp_page).toBe('home');
   expect(metric.lcp_consent).toBe('previously_granted');
   expect(metric.lcp_ms).toBeGreaterThan(0);
   if (metric.lcp_resource_end_ms !== undefined) {
-    expect(metric.lcp_after_resource_ms).toBeGreaterThanOrEqual(0);
-    expect(metric.lcp_resource_end_ms + metric.lcp_after_resource_ms).toBeCloseTo(metric.lcp_ms, -1);
+    expect(metric.lcp_resource_end_ms).toBeGreaterThanOrEqual(0);
+    expect(metric.lcp_resource_end_ms).toBeLessThanOrEqual(metric.lcp_ms + 1);
   }
   await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
   expect(await vitalEvents(page)).toHaveLength(1);

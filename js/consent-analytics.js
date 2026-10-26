@@ -117,37 +117,44 @@
     var route = location.pathname;
     var page = route === '/' || route === '/index.html' ? 'home' :
       (route === '/bento-torty/' || route === '/bento-torty/index.html' ? 'bento' : null);
-    if (!page || document.visibilityState === 'hidden' ||
-        !window.PerformanceObserver ||
-        !PerformanceObserver.supportedEntryTypes ||
-        PerformanceObserver.supportedEntryTypes.indexOf('largest-contentful-paint') === -1) return;
+    if (!page || document.visibilityState === 'hidden' || !window.PerformanceObserver) return;
 
+    var nav = performance.getEntriesByType('navigation')[0];
+    // Prerendered loading is not comparable to a visible navigation's LCP.
+    if (nav?.activationStart) return;
+    // Chromium exposes previous visibility changes even when consent came later.
+    var hidden = performance.getEntriesByType('visibility-state').find(function (entry) {
+      return entry.name === 'hidden';
+    });
     var candidate = null;
-    var firstHidden = Infinity;
+    var firstHidden = hidden?.startTime ?? Infinity;
     var observer = null;
     var finished = false;
 
     function capture(entries) {
       entries.forEach(function (entry) {
-        if (Number.isFinite(entry.startTime) && entry.startTime > 0 &&
-            entry.startTime < firstHidden) candidate = entry;
+        if (entry.startTime >= 0 && entry.startTime < firstHidden) candidate = entry;
       });
+    }
+
+    function onInput(event) {
+      if (event.isTrusted) setTimeout(finish, 0);
     }
 
     function finish() {
       if (finished) return;
       finished = true;
-      try { capture(observer.takeRecords()); } catch (_) {}
+      window.removeEventListener('click', onInput, true);
+      window.removeEventListener('keydown', onInput, true);
+      capture(observer.takeRecords());
       observer.disconnect();
       if (state !== 'granted' || !candidate || typeof window.gtag !== 'function') return;
 
       var lcp = Math.round(candidate.startTime);
-      var nav = performance.getEntriesByType('navigation')[0];
-      var meta = document.querySelector('meta[name="milovi-release-sha"]');
-      var release = meta && /^[a-f0-9]{40}$/.test(meta.content) ? meta.content : 'unverified';
-      var hero = candidate.element && (page === 'home' ?
-        candidate.element.matches('.hero-img') :
-        candidate.element.matches('.lp-visual img'));
+      var release = document.querySelector('meta[name="milovi-release-sha"]')?.content;
+      if (!/^[a-f0-9]{40}$/.test(release)) release = 'unverified';
+      var hero = candidate.element && candidate.element.matches(
+        page === 'home' ? '.hero-img' : '.lp-visual img');
       var payload = {
         lcp_ms: lcp,
         lcp_page: page,
@@ -156,9 +163,9 @@
         lcp_release: release,
         lcp_viewport: mobileMq.matches ? 'narrow' : 'wide'
       };
-      if (nav && Number.isFinite(nav.responseStart)) {
+      if (nav) {
         payload.lcp_ttfb_ms = Math.round(nav.responseStart);
-        payload.lcp_navigation = /^(navigate|reload|back_forward)$/.test(nav.type) ? nav.type : 'other';
+        payload.lcp_navigation = nav.type;
       }
       // The resource URL is used only locally to find timing; never send it,
       // image text, full page URL, cart data, or any visitor identifier.
@@ -168,10 +175,7 @@
           return resource.responseEnd > end && resource.responseEnd <= candidate.startTime ?
             resource.responseEnd : end;
         }, 0);
-        if (imageEnd) {
-          payload.lcp_resource_end_ms = Math.round(imageEnd);
-          payload.lcp_after_resource_ms = Math.round(candidate.startTime - imageEnd);
-        }
+        if (imageEnd) payload.lcp_resource_end_ms = Math.round(imageEnd);
       }
       try { window.gtag('event', 'web_vital_lcp', payload); } catch (_) {}
     }
@@ -189,8 +193,9 @@
       finish();
     }, { once: true });
     window.addEventListener('pagehide', finish, { once: true });
-    document.addEventListener('pointerdown', function () { setTimeout(finish, 0); }, { once: true, capture: true });
-    document.addEventListener('keydown', function () { setTimeout(finish, 0); }, { once: true, capture: true });
+    // Match browser LCP finalization: scripted pointer events are not real input.
+    window.addEventListener('click', onInput, true);
+    window.addEventListener('keydown', onInput, true);
     // Consent itself was the first interaction for a new opt-in visit.
     if (!consentAtNavigation) setTimeout(finish, 300);
   }
