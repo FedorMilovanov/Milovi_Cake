@@ -341,7 +341,7 @@ for public_html in public_html_files():
         require('main.js?v=20261023r02' in html, f'{public_html} shared main.js revision drifted')
         require('main.js?v=20260916r01' not in html, f'{public_html} still references stale shared main.js revision')
 
-require("const CACHE_NAME = 'milovi-cake-v2026.10.23-r89';" in sw, 'service-worker cache generation drifted')
+require("const CACHE_NAME = 'milovi-cake-v2026.10.26-r91';" in sw, 'service-worker cache generation drifted')
 require(style_ref != '/css/style.css?v=20261023r01', 'service-worker precache still points at stale shared CSS revision')
 require("'/js/main.js?v=20261023r02'," in sw, 'service-worker precache still points at stale shared main.js revision')
 require("'/js/gallery/main.js?v=20261023r01'," in sw, 'service-worker precache still points at stale gallery runtime revision')

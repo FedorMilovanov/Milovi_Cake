@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 from pathlib import Path
 
@@ -96,6 +97,20 @@ def main() -> int:
 
     (OUT / '.nojekyll').touch()
     release_sha = os.environ.get('RELEASE_SHA', '').strip() or 'development'
+    if not re.fullmatch(r'(?:[0-9a-f]{40}|development)', release_sha):
+        raise ValueError('RELEASE_SHA must be an exact Git SHA or development')
+
+    # One witness for the two opt-in LCP pages; the source of truth remains the
+    # same release.json. Inject only into the sanitized payload, not source HTML.
+    for route in ('index.html', 'bento-torty/index.html'):
+        page = OUT / route
+        html = page.read_text('utf-8')
+        if html.count('</head>') != 1 or 'name="milovi-release-sha"' in html:
+            raise ValueError(f'{route}: release meta injection is not unique')
+        html = html.replace('</head>',
+                            f'  <meta name="milovi-release-sha" content="{release_sha}">\n</head>', 1)
+        page.write_text(html, encoding='utf-8')
+
     release = {
         'repository': 'FedorMilovanov/Milovi_Cake',
         'sha': release_sha,
