@@ -57,3 +57,39 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
           include-hidden-files: false
+
+  review-historic-lighthouse-artifacts:
+    # PR #104 only. Read EXISTING #102/#103 reports; do not run Lighthouse.
+    # Remove this job and its parser after its annotations are verified.
+    if: ${{ github.event.pull_request.number == 104 && github.event.pull_request.head.ref == 'arena/6233a51b-milovi-cake' }}
+    name: Temporary old Lighthouse archive review (PR 104 only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Download already-saved #102 and #103 LHCI artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/historic-lhci/run-39875645018" \
+            "$RUNNER_TEMP/historic-lhci/run-39945169569"
+          gh run download 39875645018 --repo "$GITHUB_REPOSITORY" \
+            --name lighthouse-results \
+            --dir "$RUNNER_TEMP/historic-lhci/run-39875645018"
+          gh run download 39945169569 --repo "$GITHUB_REPOSITORY" \
+            --name lighthouse-results \
+            --dir "$RUNNER_TEMP/historic-lhci/run-39945169569"
+
+      - name: Read LHRs and publish bounded checksum-verified summary
+        shell: bash
+        run: python3 scripts/diagnostics/ci_historic_lhci_review.py "$RUNNER_TEMP/historic-lhci"
