@@ -12,6 +12,7 @@
   var YM_ID = 106945185;
   var mobileMq = window.matchMedia('(max-width: 768px)');
   var state = readChoice();
+  var consentAtNavigation = state === 'granted';
   var overlay = null;
   var dialog = null;
   var trigger = null;
@@ -106,6 +107,92 @@
     window['ga-disable-' + GA_ID] = false;
     loadGoogleAnalytics();
     loadYandexMetrika();
+    startLcpTracking();
+  }
+
+  // Only consented visits to the two investigated pages are measured. A buffered
+  // observer also sees LCP that happened before a first-visit consent decision;
+  // no LCP observer or analytics request starts while consent is denied/unknown.
+  function startLcpTracking() {
+    var route = location.pathname;
+    var page = route === '/' || route === '/index.html' ? 'home' :
+      (route === '/bento-torty/' || route === '/bento-torty/index.html' ? 'bento' : null);
+    if (!page || document.visibilityState === 'hidden' ||
+        !window.PerformanceObserver ||
+        !PerformanceObserver.supportedEntryTypes ||
+        PerformanceObserver.supportedEntryTypes.indexOf('largest-contentful-paint') === -1) return;
+
+    var candidate = null;
+    var firstHidden = Infinity;
+    var observer = null;
+    var finished = false;
+
+    function capture(entries) {
+      entries.forEach(function (entry) {
+        if (Number.isFinite(entry.startTime) && entry.startTime > 0 &&
+            entry.startTime < firstHidden) candidate = entry;
+      });
+    }
+
+    function finish() {
+      if (finished) return;
+      finished = true;
+      try { capture(observer.takeRecords()); } catch (_) {}
+      observer.disconnect();
+      if (state !== 'granted' || !candidate || typeof window.gtag !== 'function') return;
+
+      var lcp = Math.round(candidate.startTime);
+      var nav = performance.getEntriesByType('navigation')[0];
+      var meta = document.querySelector('meta[name="milovi-release-sha"]');
+      var release = meta && /^[a-f0-9]{40}$/.test(meta.content) ? meta.content : 'unverified';
+      var hero = candidate.element && (page === 'home' ?
+        candidate.element.matches('.hero-img') :
+        candidate.element.matches('.lp-visual img'));
+      var payload = {
+        lcp_ms: lcp,
+        lcp_page: page,
+        lcp_element: hero ? 'hero' : 'other',
+        lcp_consent: consentAtNavigation ? 'previously_granted' : 'granted_on_visit',
+        lcp_release: release,
+        lcp_viewport: mobileMq.matches ? 'narrow' : 'wide'
+      };
+      if (nav && Number.isFinite(nav.responseStart)) {
+        payload.lcp_ttfb_ms = Math.round(nav.responseStart);
+        payload.lcp_navigation = /^(navigate|reload|back_forward)$/.test(nav.type) ? nav.type : 'other';
+      }
+      // The resource URL is used only locally to find timing; never send it,
+      // image text, full page URL, cart data, or any visitor identifier.
+      if (candidate.url) {
+        var resources = performance.getEntriesByName(candidate.url, 'resource');
+        var imageEnd = resources.reduce(function (end, resource) {
+          return resource.responseEnd > end && resource.responseEnd <= candidate.startTime ?
+            resource.responseEnd : end;
+        }, 0);
+        if (imageEnd) {
+          payload.lcp_resource_end_ms = Math.round(imageEnd);
+          payload.lcp_after_resource_ms = Math.round(candidate.startTime - imageEnd);
+        }
+      }
+      try { window.gtag('event', 'web_vital_lcp', payload); } catch (_) {}
+    }
+
+    try {
+      observer = new PerformanceObserver(function (list) { capture(list.getEntries()); });
+      observer.observe({ type: 'largest-contentful-paint', buffered: true });
+    } catch (_) {
+      if (observer) observer.disconnect();
+      return;
+    }
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState !== 'hidden') return;
+      firstHidden = performance.now();
+      finish();
+    }, { once: true });
+    window.addEventListener('pagehide', finish, { once: true });
+    document.addEventListener('pointerdown', function () { setTimeout(finish, 0); }, { once: true, capture: true });
+    document.addEventListener('keydown', function () { setTimeout(finish, 0); }, { once: true, capture: true });
+    // Consent itself was the first interaction for a new opt-in visit.
+    if (!consentAtNavigation) setTimeout(finish, 300);
   }
 
   function sendGoal(name, params) {
@@ -347,7 +434,7 @@
         '<button class="mc-consent-close" type="button" aria-label="Закрыть настройки конфиденциальности">×</button>' +
         '<p class="mc-consent-eyebrow">Конфиденциальность</p>' +
         '<h2 class="mc-consent-title" id="mc-consent-title">Настройки аналитики</h2>' +
-        '<p class="mc-consent-text" id="mc-consent-description">Сайт полностью работает без аналитики. Google Analytics и Яндекс.Метрика подключаются только после разрешения и помогают понять, какие разделы удобны посетителям. Подробнее — в <a href="/privacy/">политике конфиденциальности</a>.</p>' +
+        '<p class="mc-consent-text" id="mc-consent-description">Сайт полностью работает без аналитики. Google Analytics и Яндекс.Метрика подключаются только после разрешения и помогают понять, какие разделы удобны и как быстро загружаются страницы. Подробнее — в <a href="/privacy/">политике конфиденциальности</a>.</p>' +
         '<div class="mc-consent-status" aria-live="polite"><span class="mc-consent-status-label">Текущее состояние</span><strong class="mc-consent-status-value"></strong></div>' +
         '<div class="mc-consent-actions"><button class="mc-consent-button mc-consent-button--deny" type="button" data-choice="denied" aria-pressed="false">Без аналитики</button><button class="mc-consent-button mc-consent-button--allow" type="button" data-choice="granted" aria-pressed="false">Разрешить аналитику</button></div>' +
       '</section>';

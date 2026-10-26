@@ -92,6 +92,7 @@ DEV_TOOLING_JS = {
     "tests/bento-critical.spec.js",
     "tests/cart-accessibility.spec.js",
     "tests/lead-handoff.spec.js",
+    "tests/lcp-consent.spec.js",
     "tests/video-posters.spec.js",
 }
 

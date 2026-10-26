@@ -130,6 +130,12 @@ def main() -> int:
 
         if relative.as_posix() == '404.html' and parser.canonical:
             errors.append('404.html must not emit canonical')
+        if relative.as_posix() in ('index.html', 'bento-torty/index.html'):
+            witness = f'<meta name="milovi-release-sha" content="{expected_sha}">'
+            if text.count(witness) != 1 or text.count('name="milovi-release-sha"') != 1:
+                errors.append(f'{relative}: release meta does not match release.json')
+        elif 'name="milovi-release-sha"' in text:
+            errors.append(f'{relative}: unexpected LCP release meta')
 
         for attr, ref in parser.refs:
             if not local_target_exists(page, ref):
