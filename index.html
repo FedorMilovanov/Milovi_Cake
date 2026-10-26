@@ -60,51 +60,18 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Jost:wght@400;500&display=optional" rel="stylesheet"/></noscript>
 
 
-  <!-- breadcrumb перемещён ниже с полной цепочкой -->
+  <!-- Основной граф структурированных данных сайта -->
   <script type="application/ld+json">
   {
   "@context": "https://schema.org",
   "@graph": [
-    {
-      "@type": "Organization",
-      "@id": "https://milovicake.ru/#organization",
-      "name": "Milovi Cake",
-      "alternateName": [
-        "Милови Кейк",
-        "Milovi"
-      ],
-      "url": "https://milovicake.ru/",
-      "logo": "https://milovicake.ru/icon-512.png",
-      "image": "https://milovicake.ru/img/og-cover.jpg",
-      "description": "Частная кондитерская в Санкт-Петербурге. Авторские торты, бенто, 3D-торты, меренговые рулеты, Павлова, капкейки. Доставка по СПб и Ленобласти.",
-      "founder": {
-        "@id": "https://milovicake.ru/#viktoria"
-      },
-      "foundingDate": "2018",
-      "areaServed": [
-        {
-          "@type": "City",
-          "name": "Санкт-Петербург"
-        },
-        {
-          "@type": "AdministrativeArea",
-          "name": "Ленинградская область"
-        }
-      ],
-      "sameAs": [
-        "https://vk.com/milovi_cake",
-        "https://t.me/MiloviCake",
-        "https://www.youtube.com/@milovi_cake",
-        "https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/"
-      ]
-    },
     {
       "@type": "Person",
       "@id": "https://milovicake.ru/#viktoria",
       "name": "Милованова Виктория",
       "jobTitle": "Частный кондитер",
       "worksFor": {
-        "@id": "https://milovicake.ru/#organization"
+        "@id": "https://milovicake.ru/#business"
       },
       "url": "https://milovicake.ru/o-konditere/",
       "image": "https://milovicake.ru/img/viktoria.webp",
@@ -161,14 +128,14 @@
         "@type": "PostalAddress",
         "streetAddress": "Пулковская ул., 19",
         "addressLocality": "Санкт-Петербург",
-        "postalCode": "196240",
+        "postalCode": "196158",
         "addressRegion": "Санкт-Петербург",
         "addressCountry": "RU"
       },
       "geo": {
         "@type": "GeoCoordinates",
-        "latitude": 59.838,
-        "longitude": 30.323
+        "latitude": 59.83494,
+        "longitude": 30.350265
       },
       "openingHoursSpecification": [
         {
@@ -188,129 +155,6 @@
       "priceRange": "₽₽",
       "servesCuisine": "Кондитерские изделия",
       "hasMap": "https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/",
-      "parentOrganization": {
-        "@id": "https://milovicake.ru/#organization"
-      },
-      "founder": {
-        "@id": "https://milovicake.ru/#viktoria"
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "reviewCount": "6",
-        "bestRating": "5",
-        "worstRating": "1"
-      },
-      "review": [
-        {
-          "@type": "Review",
-          "author": {
-            "@type": "Person",
-            "name": "Евгения Монтихо"
-          },
-          "datePublished": "2025-12-20",
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": "5",
-            "bestRating": "5"
-          },
-          "reviewBody": "Дважды заказывали торты. Первый раз сделали в стиле Острова с тропическими фруктами, второй в выдержанном стиле с начинкой «вишня в шоколаде». Оба торта шикарные — ваше творчество дарит эстетическое и гастрономическое удовольствие.",
-          "publisher": {
-            "@type": "Organization",
-            "name": "Яндекс Карты"
-          }
-        },
-        {
-          "@type": "Review",
-          "author": {
-            "@type": "Person",
-            "name": "Екатерина Гарсес Еникеева"
-          },
-          "datePublished": "2025-11-24",
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": "5",
-            "bestRating": "5"
-          },
-          "reviewBody": "Являюсь постоянным клиентом Виктории. Все торты на детские дни рождения берём у неё. Ценю индивидуальный подход, всегда всё вовремя, каждый раз воплощаем любые идеи — вкусно, красиво и качественно.",
-          "publisher": {
-            "@type": "Organization",
-            "name": "Яндекс Карты"
-          }
-        },
-        {
-          "@type": "Review",
-          "author": {
-            "@type": "Person",
-            "name": "Евгения Е."
-          },
-          "datePublished": "2025-11-29",
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": "5",
-            "bestRating": "5"
-          },
-          "reviewBody": "Заказывала у Виктории тортики много раз, на праздники и просто так — всегда безумно вкусно! Оформление и дизайн отличные, любой сложности. Виктория отзывчивый и доброжелательный мастер.",
-          "publisher": {
-            "@type": "Organization",
-            "name": "Яндекс Карты"
-          }
-        },
-        {
-          "@type": "Review",
-          "author": {
-            "@type": "Person",
-            "name": "Жанель"
-          },
-          "datePublished": "2026-02-02",
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": "5",
-            "bestRating": "5"
-          },
-          "reviewBody": "Огромное спасибо, Виктория! За оперативность, внимательный подход, рекомендации по вкусам и вашу работу! Торт получился отличным, именинница довольна.",
-          "publisher": {
-            "@type": "Organization",
-            "name": "Яндекс Карты"
-          }
-        },
-        {
-          "@type": "Review",
-          "author": {
-            "@type": "Person",
-            "name": "Татьяна"
-          },
-          "datePublished": "2024-05-01",
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": "5",
-            "bestRating": "5"
-          },
-          "reviewBody": "Изумительно! Заказала дочери — была поражена! Огромное спасибо Виктории! Всё на высшем уровне: картинка, заказ, фото, чеки, доставка, упаковка, открытки — всё с душой! Буду обращаться ещё.",
-          "publisher": {
-            "@type": "Organization",
-            "name": "Google Maps"
-          }
-        },
-        {
-          "@type": "Review",
-          "author": {
-            "@type": "Person",
-            "name": "Ирина Силантьева"
-          },
-          "datePublished": "2024-05-01",
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": "5",
-            "bestRating": "5"
-          },
-          "reviewBody": "Спасибо за прекрасно выполненную работу к 40-летию свадьбы! Всё на высшем уровне — и вкусовые качества, и шикарный дизайн, и внешнее оформление коробочки. И мы, и гости были в восторге.",
-          "publisher": {
-            "@type": "Organization",
-            "name": "Google Maps"
-          }
-        }
-      ],
       "sameAs": [
         "https://vk.com/milovi_cake",
         "https://t.me/MiloviCake",
@@ -326,15 +170,7 @@
       "description": "Авторские торты и десерты на заказ в Санкт-Петербурге",
       "inLanguage": "ru-RU",
       "publisher": {
-        "@id": "https://milovicake.ru/#organization"
-      },
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": {
-          "@type": "EntryPoint",
-          "urlTemplate": "https://milovicake.ru/#catalog"
-        },
-        "query-input": "required name=search_term_string"
+        "@id": "https://milovicake.ru/#business"
       }
     },
     {
@@ -368,32 +204,11 @@
           "item": {
             "@type": "Product",
             "name": "Бисквитный торт на заказ",
-            "description": "Воздушный торт с нежнейшим кремом и авторским декором. Заказ от 2 кг.",
+            "description": "Воздушный торт с нежнейшим кремом и авторским декором. Заказ от 2 кг. Ориентир — от 2 800 ₽/кг.",
             "image": "https://milovicake.ru/img/cake_biscuit_0.webp",
             "brand": {
               "@type": "Brand",
               "name": "Milovi Cake"
-            },
-            "offers": {
-              "@type": "Offer",
-              "priceCurrency": "RUB",
-              "price": "2800",
-              "availability": "https://schema.org/InStock",
-              "priceValidUntil": "2026-12-31",
-              "url": "https://milovicake.ru/#catalog",
-              "seller": {
-                "@id": "https://milovicake.ru/#business"
-              },
-              "priceSpecification": {
-                "@type": "UnitPriceSpecification",
-                "price": "2800",
-                "priceCurrency": "RUB",
-                "referenceQuantity": {
-                  "@type": "QuantitativeValue",
-                  "value": "1",
-                  "unitCode": "KGM"
-                }
-              }
             }
           }
         },
@@ -413,9 +228,7 @@
               "@type": "Offer",
               "priceCurrency": "RUB",
               "price": "1600",
-              "availability": "https://schema.org/InStock",
-              "priceValidUntil": "2026-12-31",
-              "url": "https://milovicake.ru/#catalog",
+              "url": "https://milovicake.ru/bento-torty/",
               "seller": {
                 "@id": "https://milovicake.ru/#business"
               }
@@ -428,32 +241,11 @@
           "item": {
             "@type": "Product",
             "name": "3D Торт",
-            "description": "Уникальный дизайнерский торт с объёмными элементами. Заказ от 3 кг.",
+            "description": "Уникальный дизайнерский торт с объёмными элементами. Заказ от 3 кг. Ориентир — от 5 000 ₽/кг.",
             "image": "https://milovicake.ru/img/cake_3d.webp",
             "brand": {
               "@type": "Brand",
               "name": "Milovi Cake"
-            },
-            "offers": {
-              "@type": "Offer",
-              "priceCurrency": "RUB",
-              "price": "5000",
-              "availability": "https://schema.org/InStock",
-              "priceValidUntil": "2026-12-31",
-              "url": "https://milovicake.ru/#catalog",
-              "seller": {
-                "@id": "https://milovicake.ru/#business"
-              },
-              "priceSpecification": {
-                "@type": "UnitPriceSpecification",
-                "price": "5000",
-                "priceCurrency": "RUB",
-                "referenceQuantity": {
-                  "@type": "QuantitativeValue",
-                  "value": "1",
-                  "unitCode": "KGM"
-                }
-              }
             }
           }
         },
@@ -463,7 +255,7 @@
           "item": {
             "@type": "Product",
             "name": "Меренговый рулет",
-            "description": "Хрустящая меренга с нежным кремом — фирменный десерт. Без глютена.",
+            "description": "Хрустящая меренга с нежным кремом — фирменный десерт.",
             "image": "https://milovicake.ru/img/meringue_roll.webp",
             "brand": {
               "@type": "Brand",
@@ -473,9 +265,7 @@
               "@type": "Offer",
               "priceCurrency": "RUB",
               "price": "2500",
-              "availability": "https://schema.org/InStock",
-              "priceValidUntil": "2026-12-31",
-              "url": "https://milovicake.ru/#catalog",
+              "url": "https://milovicake.ru/meringue-roll/",
               "seller": {
                 "@id": "https://milovicake.ru/#business"
               }
@@ -488,22 +278,11 @@
           "item": {
             "@type": "Product",
             "name": "Пирожное Павлова",
-            "description": "Воздушная меренга с кремом и начинкой из ягод. Без глютена.",
+            "description": "Воздушная меренга с кремом и начинкой из ягод. Цена — от 350 ₽/шт., минимальный заказ от 2 шт.",
             "image": "https://milovicake.ru/img/pavlova.webp",
             "brand": {
               "@type": "Brand",
               "name": "Milovi Cake"
-            },
-            "offers": {
-              "@type": "Offer",
-              "priceCurrency": "RUB",
-              "price": "350",
-              "availability": "https://schema.org/InStock",
-              "priceValidUntil": "2026-12-31",
-              "url": "https://milovicake.ru/#catalog",
-              "seller": {
-                "@id": "https://milovicake.ru/#business"
-              }
             }
           }
         },
@@ -513,22 +292,11 @@
           "item": {
             "@type": "Product",
             "name": "Капкейки на заказ",
-            "description": "Авторские капкейки с кремом и декором. Минимальный заказ от 6 шт.",
+            "description": "Авторские капкейки с кремом и декором. Минимальный заказ от 6 шт. Цена — от 350 ₽/шт. одного вкуса.",
             "image": "https://milovicake.ru/img/cupcakes.webp",
             "brand": {
               "@type": "Brand",
               "name": "Milovi Cake"
-            },
-            "offers": {
-              "@type": "Offer",
-              "priceCurrency": "RUB",
-              "price": "350",
-              "availability": "https://schema.org/InStock",
-              "priceValidUntil": "2026-12-31",
-              "url": "https://milovicake.ru/#catalog",
-              "seller": {
-                "@id": "https://milovicake.ru/#business"
-              }
             }
           }
         }
@@ -543,7 +311,7 @@
           "name": "Где заказать торт в СПб с доставкой на дом?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Milovi Cake доставляет по всему Санкт-Петербургу и пригородам — Пушкин, Петергоф, Гатчина, Всеволожск, Колпино и другие. Собственная служба доставки или Яндекс.Доставка. Самовывоз тоже доступен."
+            "text": "Доставка возможна по Санкт-Петербургу и пригородам, в том числе в Пушкин, Петергоф, Гатчину, Всеволожск и Колпино. Адрес, дату и стоимость согласуем при заказе; самовывоз тоже доступен."
           }
         },
         {
@@ -551,7 +319,7 @@
           "name": "Как быстро ответите и сколько ждать торт?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Отвечаем в WhatsApp, Telegram или MAX в рабочее время. Стандартный срок изготовления — 2–3 дня, срочные заказы обсуждаются индивидуально."
+            "text": "Отвечаем в WhatsApp, Telegram или MAX в рабочее время. Согласуем состав, дату и удобный способ доставки. Стандартный срок — 2–3 дня, срочные заказы обсуждаются индивидуально."
           }
         },
         {
@@ -559,15 +327,15 @@
           "name": "Можно заказать бенто-торт, свадебный или торт на рождение ребёнка?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Да! Бенто-торты от 1 600 ₽, свадебные с живыми или сахарными цветами, детские с индивидуальным тематическим декором, торты на день рождения, крестины, юбилеи и корпоративы."
+            "text": "Да! Бенто-торты от 1 600 ₽, свадебные с живыми или сахарными цветами, детские с индивидуальным тематическим декором, торты на день рождения, крестины, юбилеи и корпоративы. Просто напишите — подберём идеальный вариант."
           }
         },
         {
           "@type": "Question",
-          "name": "Есть ли торты без глютена?",
+          "name": "Из чего готовят меренговые десерты?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Меренговый рулет и пирожное Павлова — без глютена. Детские торты делаем с натуральными ингредиентами, безопасным составом и индивидуальным тематическим декором."
+            "text": "Меренговый рулет и пирожное Павлова готовят на основе меренги с кремом и ягодами. При аллергии или ограничениях в питании уточняйте состав и риск следов аллергенов при заказе."
           }
         },
         {
@@ -599,7 +367,7 @@
           "name": "Делаете ли торты без орехов, без лактозы или для аллергиков?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Да. Можно заменить орехи на безореховые начинки, использовать сливочный сыр без лактозы, подобрать состав под конкретные аллергены. Сообщите о них при заказе — обсудим варианты."
+            "text": "Сообщите об аллергии или ограничениях при заказе. Обсудим состав, возможность замены ингредиентов и риск следов аллергенов; подходящий вариант нужно подтвердить индивидуально."
           }
         },
         {
@@ -607,79 +375,8 @@
           "name": "Как хранить торт до подачи?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Бисквитные торты — в холодильнике при +4–6 °C, за 1–2 часа до подачи достать и подержать при комнатной температуре. Меренговый рулет и Павлова — в прохладном месте, без сильных перепадов. Подробная памятка — при доставке."
+            "text": "Храните десерт в холодильнике до подачи. Срок, температура хранения и условия подачи зависят от состава — уточните их при получении заказа."
           }
-        }
-      ]
-    },
-    {
-      "@type": "HowTo",
-      "@id": "https://milovicake.ru/#order-howto",
-      "name": "Как заказать торт в Milovi Cake (СПб)",
-      "description": "5 простых шагов для заказа авторского торта с доставкой по Санкт-Петербургу.",
-      "totalTime": "PT3M",
-      "estimatedCost": {
-        "@type": "MonetaryAmount",
-        "currency": "RUB",
-        "value": "2800"
-      },
-      "image": "https://milovicake.ru/img/head.webp",
-      "step": [
-        {
-          "@type": "HowToStep",
-          "position": 1,
-          "name": "Выберите тип торта в каталоге",
-          "text": "Бисквитный, бенто, 3D-торт, меренговый рулет, Павлова или капкейки.",
-          "url": "https://milovicake.ru/#catalog"
-        },
-        {
-          "@type": "HowToStep",
-          "position": 2,
-          "name": "Подберите вес и начинку в калькуляторе",
-          "text": "Используйте интерактивный калькулятор: укажите вес, выберите начинку и декор — стоимость рассчитается мгновенно.",
-          "url": "https://milovicake.ru/#calculator"
-        },
-        {
-          "@type": "HowToStep",
-          "position": 3,
-          "name": "Свяжитесь через WhatsApp / Telegram / MAX",
-          "text": "Кнопки мессенджеров на сайте — обсудите детали заказа, дату и доставку."
-        },
-        {
-          "@type": "HowToStep",
-          "position": 4,
-          "name": "Согласуйте детали и подтвердите заказ",
-          "text": "Кондитер подтвердит дату, итоговую стоимость и доставку (СПб + пригороды или самовывоз)."
-        },
-        {
-          "@type": "HowToStep",
-          "position": 5,
-          "name": "Получите торт в назначенное время",
-          "text": "Доставка по СПб собственной службой или Яндекс.Доставка. Самовывоз также доступен."
-        }
-      ]
-    },
-    {
-      "@type": "BreadcrumbList",
-      "@id": "https://milovicake.ru/#breadcrumbs",
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Главная",
-          "item": "https://milovicake.ru/"
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": "Каталог тортов и десертов",
-          "item": "https://milovicake.ru/#catalog"
-        },
-        {
-          "@type": "ListItem",
-          "position": 3,
-          "name": "Калькулятор стоимости",
-          "item": "https://milovicake.ru/#calculator"
         }
       ]
     }
@@ -719,12 +416,7 @@
   <link rel="stylesheet" href="css/mc-2026.css?v=20261023r02" />
   <link rel="stylesheet" href="css/premium-overrides.css?v=20260728r27" />
   <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260728r27">
-<!-- Google tag (gtag.js) — ОТЛОЖЕНА: грузится из js/mc-2026.js после первого взаимодействия пользователя для уменьшения TBT/INP -->
-  <!-- prev sync gtag removed for Core Web Vitals 2026 compliance -->
-
-  <!-- HowTo schema: процесс заказа торта (для AI Overviews / Яндекс.Видео) -->
-<!-- BreadcrumbList: расширенная навигация (Главная → Каталог) -->
-<!-- Organization schema (расширенная для E-E-A-T) -->
+<!-- Необязательная аналитика и LCP-телеметрия управляются согласием пользователя. -->
 <link rel="stylesheet" href="/css/v20-fixes.css?v=20260728r27">
   <link rel="stylesheet" href="/css/final-fixes.css?v=20261023r01" />
 </head>
@@ -742,8 +434,8 @@
   <a href="#home" class="header-logo">Milovi Cake<span class="header-logo-sub">частный кондитер · СПб</span></a>
   <div class="header-trust">
     <a href="/certificates/" class="header-trust-badge" title="Сертификаты кондитера Виктории Миловановой">
-      <span class="trust-stars">★★★★★</span>
-      <span class="trust-label">4.8 · Сертифицированный кондитер</span>
+      <span class="trust-stars" aria-hidden="true">✦</span>
+      <span class="trust-label">Сертификаты обучения</span>
     </a>
   </div>
   <nav class="header-nav">
@@ -895,7 +587,7 @@
         </div>
         <div class="hero-feature-item">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,220,150,0.85)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22 C2 22 6 17 12 17 C18 17 22 12 22 2 C22 2 12 2 7 7 C2 12 2 22 2 22z"/><path d="M2 22 L12 12"/></svg>
-          <span>Только натуральные продукты</span>
+          <span>Индивидуальные заказы</span>
         </div>
       </div>
       <div class="hero-actions">
@@ -935,17 +627,17 @@
         </div>
     </div>
     <div class="hero-trust" style="display:flex;align-items:center;gap:10px;margin-top:14px;">
-      <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/reviews/" target="_blank" rel="noopener noreferrer" class="hero-trust-badge">
+      <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/reviews/" target="_blank" rel="noopener noreferrer" class="hero-trust-badge" aria-label="Яндекс Карты: рейтинг 4,8 из 5">
         <svg class="hero-trust-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;border-radius:50%;overflow:hidden;"><circle cx="10" cy="10" r="10" fill="#FC3F1D"/><text x="10" y="14.5" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="12" fill="#fff">Я</text></svg>
         <span class="hero-trust-stars">★★★★★</span>
         <span class="hero-trust-rating">4.8</span>
       </a>
-      <a href="https://maps.app.goo.gl/R3mdjxpnebUYMQES6" target="_blank" rel="noopener noreferrer" class="hero-trust-badge">
+      <a href="https://maps.app.goo.gl/R3mdjxpnebUYMQES6" target="_blank" rel="noopener noreferrer" class="hero-trust-badge" aria-label="Google Maps: рейтинг 4,7 из 5">
         <svg class="hero-trust-icon" width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
         <span class="hero-trust-stars">★★★★★</span>
         <span class="hero-trust-rating">4.7</span>
       </a>
-      <span class="hero-trust-count">5 лет успешной работы</span>
+      <span class="hero-trust-count">Индивидуальный подход</span>
     </div>
   </div>
 </div>
@@ -1247,9 +939,9 @@
 <div class="section-fade-divider" aria-hidden="true"></div>
 <div class="stats-section">
   <div class="stats-grid">
-    <div class="stat-item reveal"><span class="stat-num" data-target="5" data-suffix=" лет">5 лет</span><div class="stat-label">Опыта работы</div></div>
-    <div class="stat-item reveal"><span class="stat-num" data-target="98" data-suffix="%">98%</span><div class="stat-label">Довольных клиентов</div></div>
-    <div class="stat-item reveal"><span class="stat-num" data-target="9" data-suffix=" видов">9 видов</span><div class="stat-label">Десертов в меню</div></div>
+    <div class="stat-item reveal"><span class="stat-num" data-target="5">5</span><div class="stat-label">Сертификатов об обучении</div></div>
+    <div class="stat-item reveal"><span class="stat-num" data-target="6">6</span><div class="stat-label">Позиций в каталоге</div></div>
+    <div class="stat-item reveal"><span class="stat-num" data-target="14">14</span><div class="stat-label">Направлений в пригороды</div></div>
     <div class="stat-item stat-item--text reveal">
       <div class="stat-text-title">С душой</div>
       <div class="stat-text-desc">Индивидуальный подход и внимание к каждой детали <span class="stat-text-heart">❤️</span></div>
@@ -1263,7 +955,7 @@
     <h2 class="section-title reveal"><span class="ht-word">Почему</span> <em class="ht-em" style="font-style:italic;">Выбирают</em> <span class="ht-word">Нас</span></h2>
     <div class="features-grid">
       <div class="feature reveal"><div class="feature-icon">🤍</div><h3>Ручная Работа</h3><p>Каждый десерт создаётся с любовью и заботой вручную</p></div>
-      <div class="feature reveal"><div class="feature-icon">🌿</div><h3>Натуральные Ингредиенты</h3><p>Только качественные продукты без искусственных добавок</p></div>
+      <div class="feature reveal"><div class="feature-icon">🌿</div><h3>Внимание к составу</h3><p>Ингредиенты и пищевые ограничения обсудим при заказе</p></div>
       <div class="feature reveal"><div class="feature-icon">🎯</div><h3>Свежесть под заказ</h3><p>Готовим специально для вас, всегда свежее</p></div>
       <div class="feature reveal"><div class="feature-icon">📦</div><h3>Доставка по СПб</h3><p>Аккуратная доставка в красивой упаковке</p></div>
     </div>
@@ -1274,7 +966,7 @@
 <section class="geo-section">
   <div class="container">
     <h2>Доставка тортов по Санкт-Петербургу и пригородам</h2>
-    <p>Мы доставляем торты и десерты на заказ по всему Санкт-Петербургу, а также в пригороды и города Ленинградской области — Пушкин, Петергоф, Гатчину, Всеволожск, Колпино, Красное Село, Павловск, Сестрорецк, Ломоносов, Кронштадт, Тосно, Мурино, Кудрово, Шушары и другие. Доставка осуществляется собственной службой (по договорённости) или через Яндекс.Доставку. Самовывоз также доступен.</p>
+    <p>Доставку тортов и десертов по Санкт-Петербургу и пригородам — в том числе в Пушкин, Петергоф, Гатчину, Всеволожск, Колпино, Красное Село, Павловск, Сестрорецк, Ломоносов, Кронштадт, Тосно, Мурино, Кудрово и Шушары — согласуем по адресу и дате заказа. Доставка осуществляется собственной службой (по договорённости) или через Яндекс.Доставку. Бесплатный самовывоз в Московском районе СПб: Пулковская ул., 19, рядом с м. Звёздная.</p>
     <div class="geo-tags">
       <a href="/prigorody/pushkin/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Пушкине</a>
       <a href="/prigorody/peterhof/" class="geo-tag" style="text-decoration:none;">🎂 Торты в Петергофе</a>
@@ -1330,18 +1022,18 @@
       </div>
     </div>
 
-    <!-- Без глютена -->
-    <div class="cb-section-label"><span>Воздушные десерты без глютена</span></div>
+    <!-- Меренговые десерты -->
+    <div class="cb-section-label"><span>Воздушные десерты из меренги</span></div>
     <div class="cb-gluten-grid">
       <div class="cb-gluten-card">
-        <div class="cb-gluten-badge">без глютена</div>
+        <div class="cb-gluten-badge">из меренги</div>
         <div class="cb-gluten-name">Меренговый рулет</div>
-        <p class="cb-gluten-desc">Наша особая гордость. Хрустящая корочка безе, нежнейший крем и облако свежих ягод — готовится по безглютеновому рецепту на основе взбитых белков.</p>
+        <p class="cb-gluten-desc">Хрустящая корочка меренги, нежный крем и свежие ягоды. Состав уточняйте при заказе.</p>
       </div>
       <div class="cb-gluten-card">
-        <div class="cb-gluten-badge">без глютена</div>
+        <div class="cb-gluten-badge">из меренги</div>
         <div class="cb-gluten-name">Пирожное Павлова</div>
-        <p class="cb-gluten-desc">Воздушная меренга с нежным кремом и свежими ягодами. Лёгкое, изящное, безглютеновое — идеально для тех, кто следит за составом.</p>
+        <p class="cb-gluten-desc">Воздушная меренга с нежным кремом и свежими ягодами. При пищевых ограничениях обсудите состав при заказе.</p>
       </div>
     </div>
 
@@ -1359,7 +1051,7 @@
     <div class="cb-faq">
       <div class="cb-faq-item" onclick="cbFaq(this)">
         <div class="cb-faq-q"><span>Где заказать торт в СПб с доставкой на дом?</span><div class="cb-faq-ico"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg></div></div>
-        <div class="cb-faq-a"><div class="cb-faq-a-inner">Milovi Cake доставляет по всему Санкт-Петербургу и пригородам — Пушкин, Петергоф, Гатчина, Всеволожск, Колпино и другие. Собственная служба доставки или Яндекс.Доставка. Самовывоз тоже доступен.</div></div>
+        <div class="cb-faq-a"><div class="cb-faq-a-inner">Доставка возможна по Санкт-Петербургу и пригородам, в том числе в Пушкин, Петергоф, Гатчину, Всеволожск и Колпино. Адрес, дату и стоимость согласуем при заказе; самовывоз тоже доступен.</div></div>
       </div>
       <div class="cb-faq-item" onclick="cbFaq(this)">
         <div class="cb-faq-q"><span>Как быстро ответите и сколько ждать торт?</span><div class="cb-faq-ico"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg></div></div>
@@ -1370,8 +1062,8 @@
         <div class="cb-faq-a"><div class="cb-faq-a-inner">Да! Бенто-торты от 1 600 ₽, свадебные с живыми или сахарными цветами, детские с индивидуальным тематическим декором, торты на день рождения, крестины, юбилеи и корпоративы. Просто напишите — подберём идеальный вариант.</div></div>
       </div>
       <div class="cb-faq-item" onclick="cbFaq(this)">
-        <div class="cb-faq-q"><span>Есть ли торты без глютена и безопасные для детей?</span><div class="cb-faq-ico"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg></div></div>
-        <div class="cb-faq-a"><div class="cb-faq-a-inner">Меренговый рулет и пирожное Павлова — без глютена. Детские торты делаем с натуральными ингредиентами, безопасным составом и индивидуальным тематическим декором.</div></div>
+        <div class="cb-faq-q"><span>Из чего готовят меренговые десерты?</span><div class="cb-faq-ico"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg></div></div>
+        <div class="cb-faq-a"><div class="cb-faq-a-inner">Меренговый рулет и пирожное Павлова готовят на основе меренги с кремом и ягодами. При аллергии или ограничениях в питании уточняйте состав и риск следов аллергенов при заказе.</div></div>
       </div>
       <div class="cb-faq-item" onclick="cbFaq(this)">
         <div class="cb-faq-q"><span>Какая предоплата и можно ли оплатить при получении?</span><div class="cb-faq-ico"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg></div></div>
@@ -1383,11 +1075,11 @@
       </div>
       <div class="cb-faq-item" onclick="cbFaq(this)">
         <div class="cb-faq-q"><span>Делаете ли торты без орехов, без лактозы или для аллергиков?</span><div class="cb-faq-ico"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg></div></div>
-        <div class="cb-faq-a"><div class="cb-faq-a-inner">Да. Можно заменить орехи на безореховые начинки, использовать сливочный сыр без лактозы, подобрать состав под конкретные аллергены. Сообщите о них при заказе — обсудим варианты.</div></div>
+        <div class="cb-faq-a"><div class="cb-faq-a-inner">Сообщите об аллергии или ограничениях при заказе. Обсудим состав, возможность замены ингредиентов и риск следов аллергенов; подходящий вариант нужно подтвердить индивидуально.</div></div>
       </div>
       <div class="cb-faq-item" onclick="cbFaq(this)">
         <div class="cb-faq-q"><span>Как хранить торт до подачи?</span><div class="cb-faq-ico"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg></div></div>
-        <div class="cb-faq-a"><div class="cb-faq-a-inner">Бисквитные торты — в холодильнике при +4–6 °C, за 1–2 часа до подачи достать и подержать при комнатной температуре. Меренговый рулет и Павлова — в прохладном месте, без сильных перепадов. Подробная памятка — при доставке.</div></div>
+        <div class="cb-faq-a"><div class="cb-faq-a-inner">Храните десерт в холодильнике до подачи. Срок, температура хранения и условия подачи зависят от состава — уточните их при получении заказа.</div></div>
       </div>
       <div class="cb-faq-item" onclick="cbFaq(this)">
         <div class="cb-faq-q"><span>Сколько стоит торт на заказ в СПб?</span><div class="cb-faq-ico"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg></div></div>
@@ -1397,9 +1089,9 @@
 
     <!-- Теги -->
     <div class="cb-tags-wrap">
-      <div class="cb-tags-label">Также ищут</div>
+      <div class="cb-tags-label">Разделы сайта</div>
       <div class="cb-tags">
-        <a href="/zakazat-tort-spb/">заказать торт СПб</a><a href="/bento-torty/">бенто торт на заказ</a><a href="/svadebnye-torty/">свадебный торт СПб</a><a href="/detskie-torty/">детский торт на заказ</a><a href="/tort-s-dostavkoy/">торт с доставкой на дом</a><a href="/zakazat-tort-spb/">частный кондитер СПб</a><a href="/tort-na-den-rozhdeniya/">торт на день рождения</a><a href="/meringue-roll/">меренговый рулет заказать</a><a href="/meringue-roll/">Павлова на заказ</a><a href="/tort-na-den-rozhdeniya/">торт на рождение ребёнка</a><a href="/bento-torty/">торт сестре заказать</a><a href="/zakazat-tort-spb/">домашние торты СПб</a>
+        <a href="/zakazat-tort-spb/">Торты на заказ</a><a href="/bento-torty/">Бенто-торты</a><a href="/svadebnye-torty/">Свадебные торты</a><a href="/detskie-torty/">Детские торты</a><a href="/tort-na-den-rozhdeniya/">Торты на день рождения</a><a href="/meringue-roll/">Меренговый рулет и Павлова</a><a href="/tort-s-dostavkoy/">Доставка тортов</a><a href="/gallery/">Фото и видео работ</a><a href="/prigorody/">Доставка в пригороды</a>
       </div>
     </div>
 
@@ -1503,7 +1195,7 @@
       </div>
       <div class="footer-col">
         <h4>Навигация</h4>
-        <nav><a href="/o-konditere/">О кондитере</a><a href="/dostavka-i-oplata/">Доставка и оплата</a><a href="/otzyvy/">Отзывы</a><a href="/zakazat-tort-spb/">Заказать торт СПб</a><a href="/tort-s-dostavkoy/">Торт с доставкой</a><a href="/tort-na-den-rozhdeniya/">Торт на день рождения</a><a href="/bento-torty/">Бенто</a><a href="/detskie-torty/">Детские</a><a href="/svadebnye-torty/">Свадебные</a><a href="#contacts">Контакты</a></nav>
+        <nav><a href="/o-konditere/">О кондитере</a><a href="/dostavka-i-oplata/">Доставка и оплата</a><a href="/otzyvy/">Отзывы</a><a href="/zakazat-tort-spb/">Заказать торт СПб</a><a href="/tort-s-dostavkoy/">Торт с доставкой</a><a href="/tort-na-den-rozhdeniya/">Торт на день рождения</a><a href="/bento-torty/">Бенто</a><a href="/detskie-torty/">Детские</a><a href="/svadebnye-torty/">Свадебные</a><a href="/meringue-roll/">Меренговый рулет</a><a href="/gallery/">Галерея работ</a><a href="/prigorody/">Пригороды СПб</a><a href="#contacts">Контакты</a></nav>
       </div>
       <div class="footer-col">
         <h4>Контакты</h4>

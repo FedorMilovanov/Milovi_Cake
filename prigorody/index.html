@@ -37,6 +37,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Торты на заказ с доставкой по пригородам СПб — Milovi Cake</title>
   <meta name="description" content="Доставка авторских тортов от Milovi Cake в пригороды Санкт-Петербурга: Пушкин, Петергоф, Гатчина, Всеволожск, Колпино и другие города ЛО." />
+  <meta name="keywords" content="доставка тортов пригороды СПб, торт на заказ Пушкин, торт на заказ Петергоф, торт на заказ Гатчина, торт на заказ Всеволожск, торт на заказ Мурино, торт на заказ Кудрово, торт на заказ Колпино, торт на заказ Сестрорецк, торт на заказ Шушары, Milovi Cake" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://milovicake.ru/prigorody/" />
   <link rel="icon" href="/favicon.svg?v=20260728r27" type="image/svg+xml" />
@@ -45,7 +46,7 @@
   <link rel="manifest" href="/manifest.json" />
   <meta property="og:title" content="Доставка тортов по пригородам СПб — Milovi Cake" />
   <meta property="og:description" content="Авторские торты ручной работы с доставкой в Пушкин, Петергоф, Гатчину, Всеволожск, Колпино и другие пригороды." />
-  <meta property="og:image" content="https://milovicake.ru/img/hero.jpg" />
+  <meta property="og:image" content="https://milovicake.ru/img/og-cover.jpg" />
   <meta property="og:image:alt" content="Доставка авторских тортов по пригородам Санкт-Петербурга — Milovi Cake" />
   <meta property="og:url" content="https://milovicake.ru/prigorody/" />
   <meta property="og:site_name" content="Milovi Cake" />
@@ -62,10 +63,53 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {"@type": "ListItem", "position": 1, "name": "Главная", "item": "https://milovicake.ru/"},
-      {"@type": "ListItem", "position": 2, "name": "Пригороды СПб", "item": "https://milovicake.ru/prigorody/"}
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": "https://milovicake.ru/prigorody/#webpage",
+        "url": "https://milovicake.ru/prigorody/",
+        "name": "Торты на заказ с доставкой в пригороды СПб — Milovi Cake",
+        "inLanguage": "ru-RU",
+        "isPartOf": { "@id": "https://milovicake.ru/#website" },
+        "about": { "@id": "https://milovicake.ru/#business" }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {"@type": "ListItem", "position": 1, "name": "Главная", "item": "https://milovicake.ru/"},
+          {"@type": "ListItem", "position": 2, "name": "Пригороды СПб", "item": "https://milovicake.ru/prigorody/"}
+        ]
+      },
+      {
+        "@type": "LocalBusiness",
+        "@id": "https://milovicake.ru/#business",
+        "name": "Milovi Cake",
+        "url": "https://milovicake.ru/",
+        "image": "https://milovicake.ru/img/og-cover.jpg",
+        "telephone": "+79119038886",
+        "hasMap": "https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/",
+        "priceRange": "₽₽",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Пулковская ул., 19",
+          "addressLocality": "Санкт-Петербург",
+          "addressRegion": "Санкт-Петербург",
+          "postalCode": "196158",
+          "addressCountry": "RU"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 59.83494,
+          "longitude": 30.350265
+        },
+        "openingHours": "Mo-Sa 10:00-20:00",
+        "sameAs": [
+          "https://vk.com/milovi_cake",
+          "https://t.me/MiloviCake",
+          "https://www.youtube.com/@milovi_cake",
+          "https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/"
+        ]
+      }
     ]
   }
   </script>
@@ -96,6 +140,19 @@
     .site-header .header-logo { color: var(--brown); }
     .site-header .header-logo-sub { color: var(--text-muted, #9a7a62); }
     [data-theme="dark"] .site-header .header-logo { color: var(--brown); }
+    .hub-seo { max-width: 960px; margin: 0 auto; padding: 0 24px 56px; font-family: "Jost", sans-serif; color: var(--brown); }
+    .hub-seo h2 { font-family: "Cormorant Garamond", serif; font-size: clamp(24px, 4vw, 36px); font-weight: 400; margin: 0 0 14px; color: var(--brown); }
+    .hub-seo p { font-size: 15px; line-height: 1.7; color: var(--text-muted, #7a6a5a); margin: 0 0 20px; }
+    .hub-cats { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 36px; }
+    .hub-cats a { display: inline-flex; align-items: center; padding: 8px 16px; border-radius: 999px; border: 1px solid rgba(201,147,74,0.32); background: var(--card-bg, #fff); color: var(--brown); text-decoration: none; font-size: 14px; transition: border-color 0.2s, transform 0.15s; }
+    .hub-cats a:hover { border-color: var(--gold); transform: translateY(-1px); }
+    .hub-faq { display: grid; gap: 12px; }
+    .hub-faq-item { background: var(--card-bg, #fff); border: 1.5px solid var(--cream-dark); border-radius: 14px; padding: 16px 20px; }
+    .hub-faq-item summary { cursor: pointer; font-weight: 500; font-size: 15px; color: var(--brown); list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .hub-faq-item summary::-webkit-details-marker { display: none; }
+    .hub-faq-item summary::after { content: "+"; color: var(--gold); font-size: 18px; }
+    .hub-faq-item[open] summary::after { content: "−"; }
+    .hub-faq-item p { margin: 10px 0 0; font-size: 14px; line-height: 1.65; }
   </style>
 
   <script type="application/ld+json">
@@ -124,7 +181,7 @@
         "name": "Как быстро можно заказать торт с доставкой в пригород?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Принимаем заказы за 1–2 дня. Для срочных заказов — пишите, постараемся помочь. Работаем с понедельника по субботу с 10:00 до 20:00."
+          "text": "Срок изготовления и возможность срочного заказа уточняйте при обращении. Работаем с понедельника по субботу с 10:00 до 20:00."
         }
       },
       {
@@ -132,7 +189,7 @@
         "name": "Какие десерты доставляются в пригороды?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Доставляем все позиции: бисквитные торты, бенто-торты, 3D-торты, меренговые рулеты, Павлова, капкейки. Каждый десерт упакован в фирменную коробку."
+          "text": "Доступны бисквитные торты, бенто-торты, 3D-торты, меренговые рулеты, Павлова и капкейки. Упаковку и возможность доставки согласуем при заказе."
         }
       }
     ]
@@ -158,21 +215,58 @@
     <p>Авторские торты и десерты ручной работы. Доставляем в 14 городов Ленинградской области — выберите ваш:</p>
   </div>
   <div class="hub-grid">
-      <a href="/prigorody/pushkin/" class="hub-card"><span>🎂</span><strong>Пушкин</strong><span class="hub-arrow">→</span></a>
-      <a href="/prigorody/peterhof/" class="hub-card"><span>🎂</span><strong>Петергоф</strong><span class="hub-arrow">→</span></a>
-      <a href="/prigorody/gatchina/" class="hub-card"><span>🎂</span><strong>Гатчина</strong><span class="hub-arrow">→</span></a>
-      <a href="/prigorody/vsevolozhsk/" class="hub-card"><span>🎂</span><strong>Всеволожск</strong><span class="hub-arrow">→</span></a>
-      <a href="/prigorody/kolpino/" class="hub-card"><span>🎂</span><strong>Колпино</strong><span class="hub-arrow">→</span></a>
-      <a href="/prigorody/krasnoe-selo/" class="hub-card"><span>🎂</span><strong>Красное Село</strong><span class="hub-arrow">→</span></a>
-      <a href="/prigorody/pavlovsk/" class="hub-card"><span>🎂</span><strong>Павловск</strong><span class="hub-arrow">→</span></a>
-      <a href="/prigorody/sestroretsk/" class="hub-card"><span>🎂</span><strong>Сестрорецк</strong><span class="hub-arrow">→</span></a>
-      <a href="/prigorody/lomonosov/" class="hub-card"><span>🎂</span><strong>Ломоносов</strong><span class="hub-arrow">→</span></a>
-      <a href="/prigorody/kronshtadt/" class="hub-card"><span>🎂</span><strong>Кронштадт</strong><span class="hub-arrow">→</span></a>
-      <a href="/prigorody/tosno/" class="hub-card"><span>🎂</span><strong>Тосно</strong><span class="hub-arrow">→</span></a>
-      <a href="/prigorody/murino/" class="hub-card"><span>🎂</span><strong>Мурино</strong><span class="hub-arrow">→</span></a>
-      <a href="/prigorody/kudrovo/" class="hub-card"><span>🎂</span><strong>Кудрово</strong><span class="hub-arrow">→</span></a>
-      <a href="/prigorody/shushary/" class="hub-card"><span>🎂</span><strong>Шушары</strong><span class="hub-arrow">→</span></a>
+      <a href="/prigorody/pushkin/" class="hub-card"><span>🎂</span><strong>Пушкин · от 1 000 ₽</strong><span class="hub-arrow">→</span></a>
+      <a href="/prigorody/peterhof/" class="hub-card"><span>🎂</span><strong>Петергоф · от 1 500 ₽</strong><span class="hub-arrow">→</span></a>
+      <a href="/prigorody/gatchina/" class="hub-card"><span>🎂</span><strong>Гатчина · от 1 500 ₽</strong><span class="hub-arrow">→</span></a>
+      <a href="/prigorody/vsevolozhsk/" class="hub-card"><span>🎂</span><strong>Всеволожск · от 1 500 ₽</strong><span class="hub-arrow">→</span></a>
+      <a href="/prigorody/kolpino/" class="hub-card"><span>🎂</span><strong>Колпино · от 1 000 ₽</strong><span class="hub-arrow">→</span></a>
+      <a href="/prigorody/krasnoe-selo/" class="hub-card"><span>🎂</span><strong>Красное Село · от 800 ₽</strong><span class="hub-arrow">→</span></a>
+      <a href="/prigorody/pavlovsk/" class="hub-card"><span>🎂</span><strong>Павловск · от 1 000 ₽</strong><span class="hub-arrow">→</span></a>
+      <a href="/prigorody/sestroretsk/" class="hub-card"><span>🎂</span><strong>Сестрорецк · от 1 500 ₽</strong><span class="hub-arrow">→</span></a>
+      <a href="/prigorody/lomonosov/" class="hub-card"><span>🎂</span><strong>Ломоносов · от 1 500 ₽</strong><span class="hub-arrow">→</span></a>
+      <a href="/prigorody/kronshtadt/" class="hub-card"><span>🎂</span><strong>Кронштадт · от 1 500 ₽</strong><span class="hub-arrow">→</span></a>
+      <a href="/prigorody/tosno/" class="hub-card"><span>🎂</span><strong>Тосно · от 1 500 ₽</strong><span class="hub-arrow">→</span></a>
+      <a href="/prigorody/murino/" class="hub-card"><span>🎂</span><strong>Мурино · от 1 200 ₽</strong><span class="hub-arrow">→</span></a>
+      <a href="/prigorody/kudrovo/" class="hub-card"><span>🎂</span><strong>Кудрово · от 900 ₽</strong><span class="hub-arrow">→</span></a>
+      <a href="/prigorody/shushary/" class="hub-card"><span>🎂</span><strong>Шушары · от 600 ₽</strong><span class="hub-arrow">→</span></a>
   </div>
+  <section class="hub-seo" aria-labelledby="hubSeoTitle">
+    <h2 id="hubSeoTitle">Что мы доставляем в пригороды Санкт-Петербурга и Ленобласть</h2>
+    <p>Кондитерская Виктории Миловановой (Московский район СПб, м. Звёздная, Пулковская ул., 19) готовит авторские торты и десерты ручной работы под конкретную дату и бережно доставляет их на дом, в загородные коттеджи, отели и банкетные залы Ленинградской области.</p>
+    <div class="hub-cats" aria-label="Категории десертов с доставкой">
+      <a href="/zakazat-tort-spb/">Заказать торт в СПб (от 2 800 ₽/кг)</a>
+      <a href="/tort-s-dostavkoy/">Торт с доставкой по СПб</a>
+      <a href="/bento-torty/">Бенто-торты (1 600 ₽)</a>
+      <a href="/detskie-torty/">Детские и 3D-торты</a>
+      <a href="/svadebnye-torty/">Свадебные торты (от 3 000 ₽/кг)</a>
+      <a href="/tort-na-den-rozhdeniya/">Торты на день рождения и юбилей</a>
+      <a href="/meringue-roll/">Меренговый рулет (2 500 ₽)</a>
+      <a href="/dostavka-i-oplata/">Условия доставки и самовывоза</a>
+      <a href="/otzyvy/">Отзывы (★ 4.8)</a>
+      <a href="/o-konditere/">О кондитере</a>
+      <a href="/certificates/">Сертификаты</a>
+      <a href="/gallery/">Галерея работ</a>
+    </div>
+    <h2>Частые вопросы о доставке в пригороды СПб</h2>
+    <div class="hub-faq">
+      <details class="hub-faq-item">
+        <summary>В какие пригороды Санкт-Петербурга вы доставляете торты?</summary>
+        <p>Milovi Cake доставляет торты и десерты в Пушкин (Царское Село), Петергоф, Гатчину, Всеволожск, Мурино, Кудрово, Колпино, Сестрорецк, Ломоносов, Кронштадт, Павловск, Тосно, Шушары и другие населённые пункты Ленинградской области.</p>
+      </details>
+      <details class="hub-faq-item">
+        <summary>Сколько стоит доставка торта в пригород СПб?</summary>
+        <p>Стоимость доставки зависит от удалённости. Уточняйте при заказе — пишите в WhatsApp или Telegram. Самовывоз с Пулковской ул., 19 бесплатно.</p>
+      </details>
+      <details class="hub-faq-item">
+        <summary>Как быстро можно заказать торт с доставкой в пригород?</summary>
+        <p>Срок изготовления и возможность срочного заказа уточняйте при обращении. Работаем с понедельника по субботу с 10:00 до 20:00.</p>
+      </details>
+      <details class="hub-faq-item">
+        <summary>Какие десерты доставляются в пригороды?</summary>
+        <p>Доступны бисквитные торты, бенто-торты, 3D-торты, меренговые рулеты, Павлова и капкейки. Упаковку и возможность доставки согласуем при заказе.</p>
+      </details>
+    </div>
+  </section>
   <div class="hub-back">
     <a href="/">← На главную</a>
   </div>

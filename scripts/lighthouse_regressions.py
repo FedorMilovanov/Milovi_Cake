@@ -198,8 +198,8 @@ require('media="(max-width: 768px)" srcset="/img/head_mobile.avif"' in order, 'o
 gallery = read('gallery/index.html')
 require('id="preloader"' not in gallery, 'gallery blocking preloader returned')
 require('/img/gallery/gallery-01.avif" fetchpriority="high"' in gallery, 'gallery LCP preload missing')
-require('/js/gallery/main.js?v=20261023r01' in gallery, 'gallery runtime revision drift')
-require("./data.js?v=20261023r01" in read('js/gallery/main.js'), 'gallery data import revision drift')
+require('/js/gallery/main.js?v=20261026r01' in gallery, 'gallery runtime revision drift')
+require("./data.js?v=20261026r01" in read('js/gallery/main.js'), 'gallery data import revision drift')
 require('#galleryGrid[data-hydrating="true"] { min-height: 100svh; }' in gallery, 'gallery hydration reserve missing')
 require('#galleryGrid[data-static-lcp-root="true"] { animation: none; }' in gallery, 'gallery grid animation gates initial LCP again')
 require('data-static-lcp="p01"' in gallery, 'gallery initial LCP card is no longer parser-visible')
@@ -297,7 +297,7 @@ for number in [5, 6, 9, 12, 18]:
     require(Path(f'img/gallery/gallery-{number:02d}-card.avif').is_file(), f'gallery phone-card derivative missing for gallery-{number:02d}')
 
 gatchina = read('prigorody/gatchina/index.html')
-for title in ['Ручная Работа', 'Натуральные Ингредиенты', 'Свежесть под заказ', 'Доставка по СПб']:
+for title in ['Ручная Работа', 'Внимание к составу', 'Свежесть под заказ', 'Доставка по СПб']:
     require(f'<h3>{title}</h3>' in gatchina and f'<h4>{title}</h4>' not in gatchina, f'Gatchina heading order drift: {title}')
 require(gatchina.count('<button type="button" class="cb-faq-q"') == 3, 'Gatchina FAQ is not three native buttons')
 require('min-height:48px' in gatchina, 'Gatchina FAQ target-size contract missing')
@@ -341,11 +341,11 @@ for public_html in public_html_files():
         require('main.js?v=20261023r02' in html, f'{public_html} shared main.js revision drifted')
         require('main.js?v=20260916r01' not in html, f'{public_html} still references stale shared main.js revision')
 
-require("const CACHE_NAME = 'milovi-cake-v2026.10.26-r91';" in sw, 'service-worker cache generation drifted')
+require("const CACHE_NAME = 'milovi-cake-v2026.10.26-r92';" in sw, 'service-worker cache generation drifted')
 require(style_ref != '/css/style.css?v=20261023r01', 'service-worker precache still points at stale shared CSS revision')
 require("'/js/main.js?v=20261023r02'," in sw, 'service-worker precache still points at stale shared main.js revision')
-require("'/js/gallery/main.js?v=20261023r01'," in sw, 'service-worker precache still points at stale gallery runtime revision')
-require("'/js/gallery/data.js?v=20261023r01'," in sw, 'service-worker precache still points at stale gallery data revision')
+require("'/js/gallery/main.js?v=20261026r01'," in sw, 'service-worker precache still points at stale gallery runtime revision')
+require("'/js/gallery/data.js?v=20261026r01'," in sw, 'service-worker precache still points at stale gallery data revision')
 
 cfg = json.loads(read('.github/lighthouse-config.json'))
 require(cfg['ci']['collect'].get('numberOfRuns') == 3, 'Lighthouse collection is not three runs')

@@ -23,8 +23,11 @@ import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from urllib.parse import urlparse, unquote
+from urllib.robotparser import RobotFileParser
 from datetime import datetime, timezone
 from collections import Counter
+
+from faq_contract import compare_faq
 
 # ─── Configuration ────────────────────────────────────────────────────────
 
@@ -79,6 +82,7 @@ EXCLUDED_AUDIT_DIRS = {
     ".pytest_cache",
     "playwright-report",
     "test-results",
+    "_site",           # generated Pages artifact; audited separately
     "_mockups",         # dev-only prototypes (not deployed, not indexable)
     "_review_screens",  # dev-only reference screenshots
 }
@@ -227,18 +231,14 @@ def extract_json_ld(text: str) -> list[str]:
 
 
 def iter_schema_nodes(data):
-    """Yield top-level schema nodes, expanding @graph and JSON arrays."""
+    """Yield schema objects recursively, including Products nested in ItemLists."""
     if isinstance(data, dict):
         yield data
-        graph = data.get("@graph")
-        if isinstance(graph, list):
-            for item in graph:
-                if isinstance(item, dict):
-                    yield item
+        for value in data.values():
+            yield from iter_schema_nodes(value)
     elif isinstance(data, list):
-        for item in data:
-            if isinstance(item, dict):
-                yield item
+        for value in data:
+            yield from iter_schema_nodes(value)
 
 
 # ─── Reporting ────────────────────────────────────────────────────────────
@@ -554,18 +554,25 @@ with R.section("4. SEO Validation"):
 
         # Canonical
         canonicals = [h for k, h in parsed.links if k == "canonical"]
-        if not canonicals and rel != "prigorody/index.html":
+        if not canonicals and "noindex" not in parsed.metas.get("robots", "").lower():
             seo_issues.append(f"{rel}: missing <link rel='canonical'>")
 
-        # Open Graph
-        if not parsed.og_tags:
-            if rel not in ("index.html",):
+        # Open Graph & Twitter Cards on indexable pages
+        if "noindex" not in parsed.metas.get("robots", "").lower():
+            if not parsed.og_tags:
                 seo_issues.append(f"{rel}: no Open Graph tags")
+            for og_key in ("og:title", "og:description", "og:image", "og:url", "og:type", "og:locale", "og:site_name"):
+                if og_key not in parsed.og_tags:
+                    seo_issues.append(f"{rel}: missing <meta property='{og_key}'>")
+            if canonicals and parsed.og_tags.get("og:url") and canonicals[0] != parsed.og_tags.get("og:url"):
+                seo_issues.append(f"{rel}: canonical ({canonicals[0]}) != og:url ({parsed.og_tags.get('og:url')})")
+            for tw_key in ("twitter:card", "twitter:title", "twitter:description", "twitter:image"):
+                if tw_key not in parsed.metas:
+                    seo_issues.append(f"{rel}: missing <meta name='{tw_key}'>")
 
         # H1
         if not parsed.h1s:
-            if "prigorody/" not in rel:
-                seo_issues.append(f"{rel}: missing <h1>")
+            seo_issues.append(f"{rel}: missing <h1>")
         elif len(parsed.h1s) > 1:
             seo_issues.append(f"{rel}: multiple <h1> tags ({len(parsed.h1s)})")
 
@@ -578,11 +585,48 @@ with R.section("4. SEO Validation"):
         if "viewport" not in parsed.metas:
             seo_issues.append(f"{rel}: missing viewport meta")
 
+        # Guard against meta-SEO prompt leaks and flavor tautology
+        page_raw = path.read_text(encoding="utf-8", errors="replace")
+        for leak in (
+            "Страница усиливает",
+            "Главная коммерческая точка входа",
+            "Страница закрывает",
+            "Контент помогает закрыть",
+            "«Шоколадная карамель с арахисом» с арахисом",
+        ):
+            if leak in page_raw:
+                seo_issues.append(f"{rel}: forbidden meta-SEO leak or tautology '{leak}'")
+
+    # Explicit AI-bot groups are not required: verify effective access instead.
+    llms_path = ROOT / "llms.txt"
+    robots_path = ROOT / "robots.txt"
+    if not llms_path.exists():
+        seo_issues.append("llms.txt missing at root")
+    else:
+        llms_text = llms_path.read_text(encoding="utf-8", errors="replace")
+        for required_llms in ("196158", "Исполнитель:", "french.milovicake.ru", "не являются коммерческим меню"):
+            if required_llms not in llms_text:
+                seo_issues.append(f"llms.txt missing required fact: {required_llms}")
+    if not robots_path.exists():
+        seo_issues.append("robots.txt missing at root")
+    else:
+        robot_rules = RobotFileParser()
+        robot_rules.parse(robots_path.read_text(encoding="utf-8").splitlines())
+        # The disallows precede Allow: / in robots.txt for robotparser's
+        # first-match implementation; robots-compliant crawlers use specificity.
+        for bot in ("Googlebot", "Yandex", "YandexAdditional", "OAI-SearchBot", "PerplexityBot"):
+            for public_path in ("/", "/svadebnye-torty/", "/call/"):
+                if not robot_rules.can_fetch(bot, public_path):
+                    seo_issues.append(f"robots.txt blocks {bot} from public path {public_path}")
+            for internal_path in ("/scripts/audit.py", "/audit/report.md", "/prigorody/_template.html"):
+                if robot_rules.can_fetch(bot, internal_path):
+                    seo_issues.append(f"robots.txt allows {bot} to crawl internal path {internal_path}")
+
     for issue in seo_issues:
         R.err(f"SEO: {issue}")
 
     if not seo_issues:
-        R.ok(f"SEO validation passed for {len(html_pages)} pages")
+        R.ok(f"SEO & GEO validation passed for {len(html_pages)} pages + llms.txt + robots.txt")
 
 # ═══════════════════════════════════════════════════════════════════════════
 # CHECK 4b: Structured Data JSON-LD Integrity
@@ -591,6 +635,7 @@ with R.section("4. SEO Validation"):
 with R.section("4b. Structured Data JSON-LD Integrity"):
     schema_issues = []
     schema_pages = 0
+    faq_pages = 0
 
     for rel, path in html_pages:
         if any(rel.startswith(p) for p in ("404.html", "google", "yandex")):
@@ -609,6 +654,8 @@ with R.section("4b. Structured Data JSON-LD Integrity"):
         schema_pages += 1
         page_ids = []
         page_types = []
+        faq_nodes = []
+
         for idx, block in enumerate(blocks, start=1):
             try:
                 data = json.loads(block)
@@ -617,21 +664,79 @@ with R.section("4b. Structured Data JSON-LD Integrity"):
                 continue
             for node in iter_schema_nodes(data):
                 node_type = node.get("@type")
+                types_list = []
                 if node_type:
                     if isinstance(node_type, list):
-                        page_types.extend(str(t) for t in node_type)
+                        types_list = [str(t) for t in node_type]
                     else:
-                        page_types.append(str(node_type))
+                        types_list = [str(node_type)]
+                    page_types.extend(types_list)
                 node_id = node.get("@id")
-                if node_id:
+                if node_id and len(node.keys()) > 1:
                     page_ids.append(str(node_id))
+
+                # LocalBusiness NAP & geo accuracy guard
+                if "LocalBusiness" in types_list or "Bakery" in types_list:
+                    addr = node.get("address")
+                    if isinstance(addr, dict):
+                        postal = addr.get("postalCode")
+                        if postal and postal != "196158":
+                            schema_issues.append(f"{rel}: LocalBusiness postalCode={postal}, expected 196158")
+                    geo = node.get("geo")
+                    if isinstance(geo, dict):
+                        lat = geo.get("latitude")
+                        lon = geo.get("longitude")
+                        if lat != 59.83494 or lon != 30.350265:
+                            schema_issues.append(f"{rel}: LocalBusiness geo=({lat}, {lon}), expected (59.83494, 30.350265)")
+                    if not node.get("image"):
+                        schema_issues.append(f"{rel}: LocalBusiness missing 'image'")
+                    if not node.get("hasMap"):
+                        schema_issues.append(f"{rel}: LocalBusiness missing 'hasMap'")
+                    if node.get("@id") != f"{SITE_URL}/#business":
+                        schema_issues.append(f"{rel}: LocalBusiness does not use the site's canonical business @id")
+                    if isinstance(node.get("parentOrganization"), dict) and node["parentOrganization"].get("@id") == node.get("@id"):
+                        schema_issues.append(f"{rel}: LocalBusiness cannot be its own parentOrganization")
+                    if not node.get("sameAs"):
+                        schema_issues.append(f"{rel}: LocalBusiness missing 'sameAs'")
+                    if not node.get("priceRange"):
+                        schema_issues.append(f"{rel}: LocalBusiness missing 'priceRange'")
+
+                # Product schema completeness guard
+                if "Product" in types_list:
+                    prod_name = node.get("name", "unnamed")
+                    for req_field in ("brand", "image", "description"):
+                        if not node.get(req_field):
+                            schema_issues.append(f"{rel}: Product '{prod_name}' missing '{req_field}'")
+                    offers = node.get("offers")
+                    if isinstance(offers, dict) and offers.get("priceValidUntil"):
+                        try:
+                            datetime.fromisoformat(str(offers["priceValidUntil"]))
+                        except ValueError:
+                            schema_issues.append(f"{rel}: Product '{prod_name}' has invalid priceValidUntil")
+
+                if "FAQPage" in types_list:
+                    faq_nodes.append(node)
+
+        if faq_nodes:
+            faq_pages += 1
+        for issue in compare_faq(text, faq_nodes):
+            schema_issues.append(f"{rel}: {issue}")
 
         duplicate_ids = sorted({sid for sid in page_ids if page_ids.count(sid) > 1})
         if duplicate_ids:
             schema_issues.append(f"{rel}: duplicate JSON-LD @id within page: {duplicate_ids[:5]}")
 
+        # The homepage has no breadcrumb navigation; do not invent a hierarchy
+        # between sibling sections such as catalog and calculator.
+        if rel != "index.html" and "BreadcrumbList" not in page_types:
+            schema_issues.append(f"{rel}: missing BreadcrumbList schema")
+        if not any(pt in page_types for pt in ("WebPage", "CollectionPage", "AboutPage", "ProfilePage")):
+            schema_issues.append(f"{rel}: missing page-level schema (WebPage/CollectionPage/AboutPage/ProfilePage)")
+
         if rel == "index.html":
-            required = {"Organization", "Person", "LocalBusiness", "Bakery", "WebSite", "WebPage", "ItemList", "FAQPage", "HowTo", "BreadcrumbList"}
+            # Bakery/LocalBusiness are Organization subtypes. Requiring a second
+            # Organization node would falsely imply a separate parent business.
+            required = {"Person", "LocalBusiness", "Bakery", "WebSite", "WebPage", "ItemList", "FAQPage"}
             missing = sorted(required - set(page_types))
             if missing:
                 schema_issues.append(f"index.html: homepage schema missing required types: {missing}")
@@ -642,7 +747,7 @@ with R.section("4b. Structured Data JSON-LD Integrity"):
         for issue in schema_issues:
             R.err(f"Schema: {issue}")
     else:
-        R.ok(f"JSON-LD validation passed for {schema_pages} indexable pages")
+        R.ok(f"JSON-LD validation passed for {schema_pages} indexable pages; FAQ question/answer parity checked on {faq_pages} pages")
 
 # ═══════════════════════════════════════════════════════════════════════════
 # CHECK 5: Accessibility (a11y) Basics

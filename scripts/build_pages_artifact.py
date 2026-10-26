@@ -7,6 +7,7 @@ site to the exact Git commit promoted by Actions.
 """
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import re
@@ -80,6 +81,7 @@ def copy_runtime_dir(name: str) -> int:
 
 
 def main() -> int:
+    argparse.ArgumentParser(description='Build the Pages artifact into the fixed _site/ directory.').parse_args()
     if OUT.exists():
         shutil.rmtree(OUT)
     OUT.mkdir(parents=True)

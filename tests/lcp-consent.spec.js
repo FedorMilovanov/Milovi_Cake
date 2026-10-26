@@ -22,15 +22,41 @@ async function prepare(page, consent) {
 const vitalEvents = (page) => page.evaluate(() => window.__vitalEvents.filter(
   ([command, name]) => command === 'event' && name === 'web_vital_lcp'));
 
+async function instrumentLcpObservers(page, captureCandidate = false) {
+  await page.addInitScript((capture) => {
+    const NativeObserver = window.PerformanceObserver;
+    window.__siteLcpObservers = 0;
+    window.PerformanceObserver = class extends NativeObserver {
+      observe(options) {
+        if (options.type === 'largest-contentful-paint' ||
+            options.entryTypes?.includes('largest-contentful-paint')) window.__siteLcpObservers++;
+        return super.observe(options);
+      }
+    };
+    if (capture) {
+      // The test's own native observer is not a site observer. load alone does
+      // not guarantee a candidate has been delivered before the consent click.
+      window.__rawLcpBeforeConsent = [];
+      new NativeObserver((list) => {
+        window.__rawLcpBeforeConsent.push(...list.getEntries().map((entry) => entry.startTime));
+      }).observe({ type: 'largest-contentful-paint', buffered: true });
+    }
+  }, captureCandidate);
+}
+
 test('first-visit bento LCP is buffered but sent exactly once only after opt-in', async ({ page }) => {
+  await instrumentLcpObservers(page, true);
   const vendors = await prepare(page, null);
   await page.goto('/bento-torty/', { waitUntil: 'load' });
   await expect(page.locator('.mc-consent-overlay')).toHaveClass(/is-open/);
+  await expect.poll(() => page.evaluate(() => window.__rawLcpBeforeConsent.length)).toBeGreaterThan(0);
+  expect(await page.evaluate(() => window.__siteLcpObservers)).toBe(0);
   expect(vendors).toEqual([]);
   expect(await vitalEvents(page)).toEqual([]);
 
   await page.locator('.mc-consent-button--allow').click();
   await expect.poll(async () => (await vitalEvents(page)).length).toBe(1);
+  expect(await page.evaluate(() => window.__siteLcpObservers)).toBe(1);
   const [[, , metric]] = await vitalEvents(page);
   expect(metric).toMatchObject({
     lcp_page: 'bento', lcp_consent: 'granted_on_visit', lcp_release: 'unverified',
@@ -49,12 +75,14 @@ test('first-visit bento LCP is buffered but sent exactly once only after opt-in'
 });
 
 test('denied homepage never starts analytics or sends a performance event', async ({ page }) => {
+  await instrumentLcpObservers(page);
   const vendors = await prepare(page, 'denied');
   await page.goto('/', { waitUntil: 'load' });
   await page.evaluate(() => {
     document.body.dispatchEvent(new Event('pointerdown', { bubbles: true }));
     window.dispatchEvent(new Event('pagehide'));
   });
+  expect(await page.evaluate(() => window.__siteLcpObservers)).toBe(0);
   expect(vendors).toEqual([]);
   expect(await vitalEvents(page)).toEqual([]);
   await expect(page.locator('script[data-milovi-ga]')).toHaveCount(0);
