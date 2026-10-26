@@ -133,7 +133,7 @@ def main(directory, expected_sha):
             item = summary_of(path, expected_sha)
             records.append(item)
             # One short annotation per run survives even when GitHub's artifact CDN is unreachable.
-            annotation('LCP-' + item['name'], {k: item[k] for k in ('name', 'lcp', 'fcp', 'cls', 'phases', 'consoleErrors', 'runtimeError')}
+            annotation('LCP-' + item['name'], {k: item[k] for k in ('name', 'sha', 'lighthouse', 'userAgent', 'lcp', 'fcp', 'cls', 'phases', 'consoleErrors', 'runtimeError', 'traceSha256')}
                        | {'rawLcp': item['trace'].get('rawLcp'),
                           'overlayPaintBeforeLcp': item['trace'].get('overlayPaintBeforeLcp'),
                           'resources': item['trace'].get('resources'),
