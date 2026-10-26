@@ -57,3 +57,61 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
           include-hidden-files: false
+
+  paired-oldnew-real-fonts:
+    # PR #104 only: exact old/new source on a single Linux runner, local h2,
+    # Chrome 155 and real Google Fonts. No deploy or changes to the live site.
+    # Remove this job and its script once its traces/frames have been inspected.
+    if: ${{ github.event.pull_request.number == 104 && github.event.pull_request.head.ref == 'arena/6233a51b-milovi-cake' }}
+    name: Temporary old/new LCP with real fonts (PR 104 only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout exact PR head and fetch merged historical sources
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Verify original #102 and #103 commit trees
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --quiet --no-tags --depth=12 origin main
+          test "$(git cat-file -t 49983047ffea631ad391e72a19cf9b73c3a427f9)" = commit
+          test "$(git cat-file -t f325e00de47be2e6723f1c9e8e492b59d1a14843)" = commit
+
+      - name: Setup pinned Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          cache: npm
+
+      - name: Install pinned Lighthouse (diagnostics only)
+        run: |
+          npm ci
+          npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund lighthouse@12.6.1
+
+      - name: Paired cold LCP with true HTTP Range and real fonts
+        shell: bash
+        env:
+          OUTPUT_DIR: /tmp/milovi-lhci-realfonts
+          REQUIRE_FONTS: '1'
+        run: |
+          set -euo pipefail
+          export CHROME_PATH="$(command -v google-chrome || command -v chromium)"
+          "$CHROME_PATH" --version
+          node scripts/diagnostics/ci_paired_oldnew_lighthouse.cjs 8 bento,home
+
+      - name: Keep the local-fixture LHRs, raw traces and filmstrip frames
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: oldnew-realfonts-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/milovi-lhci-realfonts/
+          if-no-files-found: warn
+          retention-days: 30
+          include-hidden-files: false
