@@ -57,38 +57,3 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
           include-hidden-files: false
-
-  inspect-existing-realfont-frames:
-    # PR #104 only: read prior completed paired experiment; no new Lighthouse run.
-    # Each frame is a separate step to respect the ten-notices-per-step cap.
-    if: ${{ github.event.pull_request.number == 104 && github.event.pull_request.head.ref == 'arena/6233a51b-milovi-cake' }}
-    name: Temporary saved first-pair visuals (PR 104 only)
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: read
-      actions: read
-    steps:
-      - name: Checkout exact PR head
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          persist-credentials: false
-
-      - name: Download original first-pair frames from successful CI artifact
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          gh run download 40367413639 --repo "$GITHUB_REPOSITORY" \
-            --name oldnew-realfonts-40367413639-1 --dir /tmp/milovi-original-pair-frames
-
-      - name: Review saved bento old frame
-        run: python3 scripts/diagnostics/ci_transfer_saved_lcp_frame.py /tmp/milovi-original-pair-frames bento-old
-      - name: Review saved bento new frame
-        run: python3 scripts/diagnostics/ci_transfer_saved_lcp_frame.py /tmp/milovi-original-pair-frames bento-newer
-      - name: Review saved home old frame
-        run: python3 scripts/diagnostics/ci_transfer_saved_lcp_frame.py /tmp/milovi-original-pair-frames home-old
-      - name: Review saved home new frame
-        run: python3 scripts/diagnostics/ci_transfer_saved_lcp_frame.py /tmp/milovi-original-pair-frames home-newer
