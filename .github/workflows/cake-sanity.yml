@@ -79,36 +79,35 @@ jobs:
             -H 'Accept: application/vnd.github+json' \
             -H "Authorization: Bearer $GH_TOKEN" \
             "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/jobs/121493036312/logs" \
-            --output /tmp/pr104-failed-qa-log.zip
+            --output /tmp/pr104-failed-qa-log.txt
           python3 - <<'PY'
           import base64
           import gzip
           import hashlib
           import json
           import re
-          import zipfile
+          from pathlib import Path
 
-          with zipfile.ZipFile('/tmp/pr104-failed-qa-log.zip') as archive:
-              choices = [f for f in archive.infolist() if not f.is_dir()]
-              assert choices, 'Empty job-log ZIP'
-              step = max(choices, key=lambda item: item.file_size)
-              text = archive.read(step).decode('utf-8', errors='replace')
-              # Carry the first actual Playwright failure and final summary only;
-              # no GitHub token, full job archive or other step logs are emitted.
-              match = re.search(r'(?m)^\s*1\) \[', text)
-              start = text[match.start():match.start() + 9000] if match else ''
-              excerpt = start + '\n-- end of failing step --\n' + text[-11000:]
-              payload = gzip.compress(json.dumps({
-                  'step': step.filename, 'bytes': step.file_size,
-                  'excerpt': excerpt}, ensure_ascii=False).encode())
-              data = base64.b64encode(payload).decode('ascii')
-              chunks = [data[i:i + 3200] for i in range(0, len(data), 3200)]
-              assert 1 <= len(chunks) <= 9, 'GitHub annotation limit'
-              digest = hashlib.sha256(payload).hexdigest()[:16]
-              for index, part in enumerate(chunks, 1):
-                  print('::notice file=.github/workflows/cake-sanity.yml,line=1,'
-                        f'title=FailedQaLogPart-{digest}-{index:02d}-of-{len(chunks):02d}::{part}',
-                        flush=True)
-              print(f'Inspected existing failure: {step.filename} ({step.file_size} bytes), '
-                    f'{len(chunks)} bounded annotations')
+          # The *job* log endpoint returns plaintext, unlike the run ZIP.
+          log = Path('/tmp/pr104-failed-qa-log.txt')
+          text = log.read_text(encoding='utf-8', errors='replace')
+          assert len(text) > 100, 'Empty job log'
+          # Carry the first actual Playwright failure and final summary only;
+          # no GitHub token or full job archive is emitted.
+          match = re.search(r'(?m)^\s*1\) \[', text)
+          start = text[match.start():match.start() + 9000] if match else ''
+          excerpt = start + '\n-- end of failing job --\n' + text[-11000:]
+          payload = gzip.compress(json.dumps({
+              'job': '121493036312', 'bytes': log.stat().st_size,
+              'excerpt': excerpt}, ensure_ascii=False).encode())
+          data = base64.b64encode(payload).decode('ascii')
+          chunks = [data[i:i + 3200] for i in range(0, len(data), 3200)]
+          assert 1 <= len(chunks) <= 9, 'GitHub annotation limit'
+          digest = hashlib.sha256(payload).hexdigest()[:16]
+          for index, part in enumerate(chunks, 1):
+              print('::notice file=.github/workflows/cake-sanity.yml,line=1,'
+                    f'title=FailedQaLogPart-{digest}-{index:02d}-of-{len(chunks):02d}::{part}',
+                    flush=True)
+          print(f'Inspected existing failed job log ({log.stat().st_size} bytes), '
+                f'{len(chunks)} bounded annotations')
           PY
