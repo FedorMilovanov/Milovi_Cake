@@ -84,17 +84,45 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
   });
 
   test('late Swiper initializes at the current fallback slide even after close and reopen', async ({ page }) => {
-    let release;
-    const holdScript = new Promise((resolve) => { release = resolve; });
-    await page.route('**/swiper-bundle.min.css', (route) => route.fulfill({ contentType: 'text/css', body: swiperCss }));
-    await page.route('**/swiper-bundle.min.js', async (route) => {
-      await holdScript;
-      await route.fulfill({ contentType: 'application/javascript', body: swiperStub });
+    // A same-origin server delays the real HTTP response without leaving a
+    // Playwright route handler pending while the lightbox is exercised.
+    const http = require('node:http');
+    const fs = require('node:fs');
+    const html = fs.readFileSync('gallery/index.html', 'utf8');
+    const src = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js';
+    expect(html.split(src)).toHaveLength(2);
+    let response;
+    let markRequested;
+    const requested = new Promise((resolve) => { markRequested = resolve; });
+    const server = http.createServer((req, res) => {
+      if (req.url === '/gallery/') {
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }).end(html.replace(src, '/delayed-swiper.js'));
+      } else if (req.url === '/delayed-swiper.js') {
+        response = res;
+        markRequested();
+      } else {
+        const upstream = http.request({ hostname: '127.0.0.1', port: 4173, path: req.url, method: req.method, headers: req.headers }, (result) => {
+          res.writeHead(result.statusCode, result.headers);
+          result.pipe(res);
+        });
+        upstream.on('error', () => { if (!res.headersSent) res.writeHead(502); res.end(); });
+        req.pipe(upstream);
+      }
     });
+    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+    const release = () => {
+      if (response && !response.writableEnded && !response.destroyed) {
+        response.writeHead(200, { 'Content-Type': 'application/javascript' }).end(swiperStub);
+      }
+    };
     try {
-      await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
+      await page.route('**/swiper-bundle.min.css', (route) => route.fulfill({ contentType: 'text/css', body: swiperCss }));
+      await page.route('https://fonts.googleapis.com/**', (route) => route.abort());
+      await page.goto(`http://127.0.0.1:${server.address().port}/gallery/`, { waitUntil: 'load' });
+      await page.locator('.mc-consent-button--deny').click();
       const card = page.locator('#galleryGrid [data-id="p01"]');
       await card.click();
+      await requested;
       // The former implementation stopped waiting after roughly two seconds.
       await page.waitForTimeout(2200);
       await page.locator('#lbNext').click();
@@ -109,7 +137,11 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       await expect(page.locator('#lbCounter')).toHaveText('03 / 46');
       await page.locator('#lbNext').click();
       await expect(page.locator('#lbCounter')).toHaveText('04 / 46');
-    } finally { release(); }
+    } finally {
+      release();
+      server.closeAllConnections();
+      await new Promise((resolve) => server.close(resolve));
+    }
   });
 
   test('a loaded script alone cannot replace the fallback when Swiper CSS fails', async ({ page }) => {
