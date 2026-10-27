@@ -511,10 +511,51 @@ test('cart rejects a quantity merge that would overflow safe prices without losi
   expect(await page.evaluate((key) => JSON.parse(localStorage.getItem('milovicake_cart'))[key].qty, cakeKey)).toBe(cakeMax);
 });
 
+async function traceCalculatorEvents(page) {
+  await page.addInitScript(() => {
+    window.__calcTrace = [];
+    const record = (event) => {
+      const target = event.target;
+      window.__calcTrace.push({
+        type: event.type, key: event.key || '',
+        target: target?.id || (typeof target?.className === 'string' ? target.className : target?.nodeName) || '',
+        active: document.activeElement?.id || (typeof document.activeElement?.className === 'string' ? document.activeElement.className : document.activeElement?.nodeName) || '',
+        expanded: document.querySelector('#calcCollapsedBar')?.getAttribute('aria-expanded'),
+        scrollY: window.scrollY,
+      });
+      if (window.__calcTrace.length > 80) window.__calcTrace.shift();
+    };
+    for (const type of ['focusin', 'focusout', 'keydown', 'click']) document.addEventListener(type, record, true);
+    window.addEventListener('scroll', record, { passive: true });
+  });
+}
+
+async function calculatorDiagnostics(page) {
+  return page.evaluate(() => {
+    const bar = document.querySelector('#calcCollapsedBar');
+    const panel = document.querySelector('#calcRightCol');
+    const active = document.activeElement;
+    return {
+      active: active?.outerHTML?.slice(0, 400),
+      expanded: bar?.getAttribute('aria-expanded'), panel: panel?.className,
+      barDisplay: bar && getComputedStyle(bar).display,
+      scrollY: window.scrollY, trace: window.__calcTrace?.slice(-35),
+    };
+  });
+}
+
+async function expectCalculatorFocus(page, locator) {
+  try { await expect(locator).toBeFocused(); }
+  catch (error) {
+    throw new Error(`${error.message}\nCalculator focus diagnostics: ${JSON.stringify(await calculatorDiagnostics(page))}`, { cause: error });
+  }
+}
+
 test('mobile calculator panel stays reachable and restores keyboard focus', async ({ page }) => {
   test.setTimeout(90_000);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
+  await traceCalculatorEvents(page);
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
   for (const route of ['/', '/prigorody/pushkin/']) {
@@ -537,10 +578,10 @@ test('mobile calculator panel stays reachable and restores keyboard focus', asyn
     await expect(bar).toHaveAttribute('aria-expanded', 'true');
     await expect(add).toBeVisible();
     await page.keyboard.press('Tab');
-    await expect(add).toBeFocused();
+    await expectCalculatorFocus(page, add);
     await page.keyboard.press('Escape');
     await expect(bar).toHaveAttribute('aria-expanded', 'false');
-    await expect(bar).toBeFocused();
+    await expectCalculatorFocus(page, bar);
     await expect(add).toBeHidden();
     await bar.click();
     await add.click();
@@ -645,11 +686,15 @@ test('cart refuses incompatible catalog and calculator additions without changin
   expect(errors).toEqual([]);
 });
 
-test('mobile calculator after fast scroll keeps its panel open when catalog hydrates', async ({ page }) => {
+test('mobile calculator after fast scroll keeps its panel open when catalog hydrates', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  await page.mouse.wheel(0, 4500);
+  // Playwright cannot issue mouse.wheel in a mobile WebKit context. The native
+  // scrolling API still emits the browser's real scroll event; it does not
+  // manipulate the catalog or the panel under test.
+  if (testInfo.project.name === 'webkit-mobile') await page.evaluate(() => window.scrollBy(0, 4500));
+  else await page.mouse.wheel(0, 4500);
   // A real scroll must release the lazy catalog even when it skips the section.
   await expect(page.locator('#card-2 .btn-add')).toBeAttached();
   await page.locator('#fillings').scrollIntoViewIfNeeded();
@@ -666,6 +711,7 @@ test('mobile calculator resize clears its backdrop before desktop and on return'
   test.setTimeout(90_000);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
+  await traceCalculatorEvents(page);
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
   for (const route of ['/', '/prigorody/pushkin/']) {
@@ -687,7 +733,10 @@ test('mobile calculator resize clears its backdrop before desktop and on return'
     await page.locator('#fillings').scrollIntoViewIfNeeded();
     await page.locator('#calcCollapsedBar').click();
     await page.locator('.calc-add-btn').click();
-    await page.locator('#calcOpenCartBtn').click();
+    try { await page.locator('#calcOpenCartBtn').click({ timeout: 10_000 }); }
+    catch (error) {
+      throw new Error(`${error.message}\nCalculator resize diagnostics: ${JSON.stringify(await calculatorDiagnostics(page))}`, { cause: error });
+    }
     await expect(page.locator('#cartDrawer .cart-item')).toHaveCount(1);
     await page.locator('#cartDrawer .cart-close').click();
   }

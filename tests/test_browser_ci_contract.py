@@ -16,6 +16,8 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         self.assertEqual(lock['packages']['node_modules/playwright']['version'], version)
         self.assertEqual(lock['packages']['node_modules/@playwright/test']['version'], version)
         self.assertIn(f'image: mcr.microsoft.com/playwright:v{version}-noble', workflow)
+        self.assertIn('options: --shm-size=1g', workflow)
+        self.assertIn('Record browser shared memory', workflow)
         self.assertRegex(workflow, r'--reporter=[^\n]*github')
 
     def test_webkit_storage_and_gallery_are_repeated_without_retries(self):

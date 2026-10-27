@@ -19,6 +19,9 @@ jobs:
     # contains its browsers and system libraries, avoiding apt/CDN setup stalls.
     container:
       image: mcr.microsoft.com/playwright:v1.63.0-noble
+      # Provide headless browsers ample shared memory for media-heavy pages;
+      # this does not alter page assets or assertions.
+      options: --shm-size=1g
     timeout-minutes: 30
     env:
       MILOVI_BROWSER_COMPAT: '1'
@@ -47,6 +50,9 @@ jobs:
 
       - name: Install project dependencies
         run: npm ci
+
+      - name: Record browser shared memory
+        run: echo "::notice title=Browser shared memory::$(df -h /dev/shm | tail -n 1)"
 
       - name: Exercise desktop and narrow-screen fault contracts
         # The container runs as root; Firefox requires HOME to belong to it.
