@@ -13,7 +13,8 @@ __pycache__/
 .env
 .env.*
 
-# Local/generated audit reports
+# Local/generated audit reports and GitHub Pages artifact
+_site/
 .audit/
 audit/
 coverage/

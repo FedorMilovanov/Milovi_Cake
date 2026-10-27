@@ -94,6 +94,24 @@
     }
     .btn-wa:hover { background: rgba(37,211,102,0.08); border-color: rgba(37,211,102,0.6); }
     .actions { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .error-nav {
+      margin-top: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px 14px;
+      max-width: 560px;
+    }
+    .error-nav a {
+      color: var(--brown);
+      text-decoration: none;
+      font-size: 13px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(201,147,74,0.28);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .error-nav a:hover { border-color: var(--gold); color: var(--gold); }
     .brand {
       margin-top: 48px;
       font-family: 'Cormorant Garamond', Georgia, serif;
@@ -120,6 +138,16 @@
       Написать в WhatsApp
     </a>
   </div>
+  <nav class="error-nav" aria-label="Популярные разделы каталога">
+    <a href="/zakazat-tort-spb/">Заказать торт в СПб</a>
+    <a href="/bento-torty/">Бенто-торты</a>
+    <a href="/detskie-torty/">Детские торты</a>
+    <a href="/svadebnye-torty/">Свадебные торты</a>
+    <a href="/tort-na-den-rozhdeniya/">На день рождения</a>
+    <a href="/meringue-roll/">Меренговый рулет</a>
+    <a href="/gallery/">Галерея работ</a>
+    <a href="/prigorody/">Доставка в пригороды</a>
+  </nav>
   <div class="brand">Milovi Cake · Санкт-Петербург</div>
   <script defer src="/js/consent-analytics.js"></script>
 </body>

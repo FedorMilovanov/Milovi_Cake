@@ -2,6 +2,7 @@
 """Fail-closed audit for the sanitized `_site/` Pages payload."""
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import sys
@@ -82,6 +83,7 @@ def local_target_exists(page: Path, raw: str) -> bool:
 
 
 def main() -> int:
+    argparse.ArgumentParser(description='Audit the Pages artifact in the fixed _site/ directory.').parse_args()
     errors: list[str] = []
     if not SITE.is_dir():
         print('_site is missing; run npm run build:pages', file=sys.stderr)

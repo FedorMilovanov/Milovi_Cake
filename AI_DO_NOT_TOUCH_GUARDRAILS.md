@@ -36,7 +36,7 @@
 - `prigorody/_template.html` — эталон для пригородов и обязательный lightbox
 - `css/premium-overrides.css` — блок `AI DO NOT TOUCH — R10 PROTECTED BLOCK` и `PATCH R9/R10`
 - `js/main.js` — `R15 fallback` рядом с обработкой messenger SVG
-- `llms.txt` — продублированные правила для будущих AI-агентов
+- `llms.txt` — публичная фактологическая справка о сайте; правила для разработчиков находятся в `AGENTS.md` и этом документе.
 
 ## 3. Пригороды — фото тортов
 
@@ -100,27 +100,20 @@ CSS управляет только `display: block/none` в зависимос�
 ## 8. Перед деплоем — обязательные проверки
 
 ```bash
-node --check js/main.js
-node --check js/nav.js
-node --check js/mc-2026.js
-node --check js/v20-faq-fix.js
-node --check js/gallery/main.js
-node --check sw.js
-python3 prigorody/build.py
+npm run qa
+npm run build:pages
+npm run audit:pages
 ```
 
-И **поднять cache-bust версию** `?v=` синхронно в:
-- `index.html`
-- `gallery/index.html`
-- `meringue-roll/index.html`
-- `certificates/index.html`
-- `call/index.html`
-- `404.html`
-- `prigorody/index.html`
-- `prigorody/_template.html` (затем `build.py` для генерации городов)
-- `sw.js` (PRECACHE + CACHE_NAME)
+`npm run qa` включает статические аудиты и все браузерные тесты Playwright; перед его запуском должны быть установлены зависимости проекта и Chromium для Playwright. В CI для сборки и проверки кандидата задаётся один и тот же `RELEASE_SHA`. Локальный `_site/` генерируется заново и не должен попадать в Git.
 
-## 9. Cтруктура CSS/JS — фиксирована
+При изменении любого версионируемого CSS/JS ассета — **поднять cache-bust версию** `?v=` синхронно во всех HTML-потребителях и в `sw.js` (`PRECACHE` + `CACHE_NAME`), а при изменении `prigorody/_template.html` или `prigorody/_cities.csv` запустить:
+```bash
+python3 prigorody/build.py
+python3 scripts/sync_prigorody_sitemap.py
+```
+
+## 9. Структура CSS/JS — фиксирована
 
 См. `AGENTS.md` §2.
 
@@ -129,9 +122,19 @@ python3 prigorody/build.py
 - `v20-dark-and-fixes.css`, `v20-fixes.css`, `final-fixes.css`
 - `gallery/gallery-2026.css`
 
-**Файловая структура JS — ровно 6 файлов:**
-- `main.js`, `nav.js`, `mc-2026.js`, `v20-faq-fix.js`
+**Файловая структура JS — ровно 7 файлов:**
+- `main.js`, `nav.js`, `mc-2026.js`, `consent-analytics.js`, `v20-faq-fix.js`
 - `gallery/main.js`, `gallery/data.js`
+
+## 10. SEO / Schema.org / GEO Guardrails (проверяются `scripts/audit.py`)
+
+- **Единый граф сущностей**:
+  - `LocalBusiness` (`https://milovicake.ru/#business`): индекс строго `196158` (Пулковская ул., 19), координаты строго `59.83494, 30.350265`, непустые поля `image` и `hasMap`. У главного бизнес-узла `image` может быть списком, а ссылка на карту ведёт на соответствующую карточку кондитерской.
+  - `Person` (`https://milovicake.ru/#viktoria`): не отождествлять адрес кондитерской с личным адресом и не требовать `taxID` в разметке. Связь профиля с бизнесом на главной проверяется контрактом.
+  - `Product`: проверяются `"brand"`, `"image"` и `"description"`, включая продукты внутри `ItemList`. `priceValidUntil` необязателен и допустим только для подтверждённой даты окончания цены.
+- **Паритет `FAQPage`**: вопросы и ответы JSON-LD должны соответствовать видимым FAQ-компонентам страницы. `scripts/faq_contract.py` проверяет оба направления, а не простое наличие вопроса в произвольном тексте.
+- **Граница с `french.milovicake.ru`**: *Patisserie Russe / Milovi School* (`https://french.milovicake.ru/`) — отдельная образовательная библиотека, поддерживаемая Milovi Cake. Запрещено выдавать её материалы за меню кондитерской или утверждать, что `milovicake.ru` печёт на заказ десерты по рецептам библиотеки.
+- **Даты `sitemap.xml`**: `<lastmod>` отражает фактическое существенное изменение страницы, должен быть корректной и не будущей датой. Для пригородов обновлять дату в `_cities.csv` и синхронизировать карту; браузерный тест не закрепляет исторические даты. Дата в миграционном fallback `scripts/analytics_contract.py` используется только при добавлении отсутствующей записи `/privacy/`.
 
 ## История
 
@@ -140,4 +143,5 @@ python3 prigorody/build.py
 | R10 | 2026-05-16 | Hero-мессенджеры, lightbox пригородов |
 | R15 | 2026-05-16 | Иконка телефона, footer-chips, subtitle-типографика, JS fallback |
 | R18 | 2026-05-16 | Корзина (`buildCartKey`), theme toggle, hero-мессенджеры финал |
-| R18+ | 2026-05-17 | Зафиксирована структура CSS/JS (7+5 файлов), добавлен `AGENTS.md` |
+| R18+ | 2026-05-17 | Зафиксирована структура CSS/JS, добавлен `AGENTS.md` |
+| R2026-10 | 2026-10-26 | Актуализированы 7 JS-файлов (`consent-analytics.js`), добавлены SEO/GEO/Schema-инварианты в `scripts/audit.py` |

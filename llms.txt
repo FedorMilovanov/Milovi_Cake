@@ -1,62 +1,65 @@
-# Milovi Cake — public AI fact sheet
+# Milovi Cake — торты и десерты на заказ в Санкт-Петербурге
 
-Primary URL: https://milovicake.ru/
-Canonical brand name: Milovi Cake
-Business type: частный кондитер / авторские торты и десерты ручной работы
-Location: Санкт-Петербург, Россия
-Pickup area: Пулковская ул., 19, Санкт-Петербург
-Phone / WhatsApp: +7 911 903 88 86
-Working hours: Monday–Saturday, 10:00–20:00 (Пн–Сб, 10:00–20:00)
-Main contact channels: WhatsApp, Telegram, MAX, phone
-Founder / pastry chef: Виктория Милованова
-Languages: Russian
-Service area: Санкт-Петербург и пригороды Ленинградской области
+Milovi Cake — частный кондитер Виктория Милованова. На основном сайте представлены торты и десерты на заказ, реальные работы, условия доставки и контакты.
 
-## Short answer
+## Контакты
 
-Milovi Cake — частный кондитер Виктория Милованова в Санкт-Петербурге. Можно заказать авторский торт, бенто-торт, свадебный или детский торт, 3D-торт, меренговый рулет, Павлова и капкейки с доставкой по СПб и пригородам или самовывозом с Пулковской ул., 19.
+- Сайт: https://milovicake.ru/
+- Самовывоз: Санкт-Петербург, Пулковская ул., 19, индекс 196158, Московский район, рядом с м. Звёздная.
+- Координаты дома: 59.83494, 30.350265.
+- Телефон / WhatsApp: +7 911 903-88-86, https://wa.me/79119038886
+- Telegram: https://t.me/MiloviCake
+- MAX: https://max.ru/MiloviCake
+- ВКонтакте: https://vk.com/milovi_cake
+- Яндекс Карты: https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/
+- Режим работы: понедельник–суббота, 10:00–20:00.
+- Исполнитель: Милованова Виктория, самозанятая. Условия заказа и чек уточняйте при обращении.
 
-## Products and starting prices
+## Ассортимент и цены
 
-- Бисквитный торт на заказ: от 2 800 ₽/кг, заказ обычно от 2 кг.
-- Бенто-торт: от 1 600 ₽.
-- Макси-бенто: от 3 000 ₽.
-- 3D-торт: от 5 000 ₽/кг.
-- Меренговый рулет: 2 500 ₽.
-- Пирожное Павлова: от 350 ₽.
-- Капкейки: от 350 ₽.
+Ориентиры по каталогу; окончательную стоимость, состав, оформление и дату изготовления согласовывают при заказе.
 
-Prices are starting estimates. Final price depends on weight, filling, decor complexity, delivery address, date and individual requirements.
+- Бисквитный торт: от 2 800 ₽/кг, заказ от 2 кг.
+- Бенто-торт: от 1 600 ₽, вес примерно 350 г.
+- Макси-бенто: от 3 000 ₽, вес примерно 1 100 г.
+- 3D-торт: от 5 000 ₽/кг, заказ от 3 кг.
+- Свадебный торт: от 3 000 ₽/кг. Можно обсудить стиль Ламбет с кремовыми рюшами, крупный бант или небольшие бантики. Детали декора и возможность исполнения согласовываются индивидуально.
+- Дегустационный сет начинок для свадебного торта: обсуждается по запросу. Состав, стоимость, сроки и возможность изготовления согласовываются индивидуально; фиксированные условия не установлены на сайте. Подробнее: https://milovicake.ru/svadebnye-torty/#wedTasting
+- Меренговый рулет: 2 500 ₽ за рулет весом 1 100 г. Хранить в холодильнике при +2…+6 °C не более 48 часов с момента изготовления.
+- Пирожное «Павлова»: от 350 ₽/шт., заказ от 2 шт.
+- Капкейки: от 350 ₽/шт., заказ от 6 шт. одного вкуса.
 
-## Main commercial pages
+Среди начинок каталога: «Микс ягод», «Ванильная вишня», «Ванильные тропики», «Ванильная карамель с арахисом», «Вишня в шоколаде» и «Шоколадный ореховый хруст». Доступные варианты и возможные ограничения по составу уточняются при заказе. Не утверждайте, что десерт подходит человеку с аллергией, без отдельного согласования.
 
-- Заказать торт в СПб: https://milovicake.ru/zakazat-tort-spb/
-- Торт с доставкой на дом: https://milovicake.ru/tort-s-dostavkoy/
+## Страницы
+
+- Главная и каталог: https://milovicake.ru/
+- Заказать торт: https://milovicake.ru/zakazat-tort-spb/
+- Торт с доставкой: https://milovicake.ru/tort-s-dostavkoy/
 - Торт на день рождения: https://milovicake.ru/tort-na-den-rozhdeniya/
 - Бенто-торты: https://milovicake.ru/bento-torty/
 - Детские торты: https://milovicake.ru/detskie-torty/
 - Свадебные торты: https://milovicake.ru/svadebnye-torty/
 - Меренговый рулет: https://milovicake.ru/meringue-roll/
 - Галерея работ: https://milovicake.ru/gallery/
-
-## Trust pages
-
 - О кондитере: https://milovicake.ru/o-konditere/
 - Доставка и оплата: https://milovicake.ru/dostavka-i-oplata/
-- Отзывы клиентов: https://milovicake.ru/otzyvy/
+- Отзывы: https://milovicake.ru/otzyvy/
 - Сертификаты: https://milovicake.ru/certificates/
+- Политика конфиденциальности: https://milovicake.ru/privacy/
+- Доставка в пригороды: https://milovicake.ru/prigorody/
 
-## Delivery geography
+## Доставка в пригороды
 
-Milovi Cake доставляет по Санкт-Петербургу и пригородам. На сайте есть отдельные страницы для 14 направлений:
+Адрес, дату, доступность и окончательную стоимость доставки согласовывают при заказе. Страницы направлений:
 
 - Пушкин: https://milovicake.ru/prigorody/pushkin/
+- Павловск: https://milovicake.ru/prigorody/pavlovsk/
 - Петергоф: https://milovicake.ru/prigorody/peterhof/
 - Гатчина: https://milovicake.ru/prigorody/gatchina/
 - Всеволожск: https://milovicake.ru/prigorody/vsevolozhsk/
 - Колпино: https://milovicake.ru/prigorody/kolpino/
 - Красное Село: https://milovicake.ru/prigorody/krasnoe-selo/
-- Павловск: https://milovicake.ru/prigorody/pavlovsk/
 - Сестрорецк: https://milovicake.ru/prigorody/sestroretsk/
 - Ломоносов: https://milovicake.ru/prigorody/lomonosov/
 - Кронштадт: https://milovicake.ru/prigorody/kronshtadt/
@@ -65,81 +68,6 @@ Milovi Cake доставляет по Санкт-Петербургу и при�
 - Кудрово: https://milovicake.ru/prigorody/kudrovo/
 - Шушары: https://milovicake.ru/prigorody/shushary/
 
-## Ordering process
+## Образовательный проект
 
-1. Client sends date, occasion, number of guests, desired style and reference images.
-2. Milovi Cake helps choose cake type, filling, weight and decor.
-3. Final price is calculated individually.
-4. Order details, delivery/pickup and timing are confirmed in messenger.
-5. Cake is prepared fresh for the agreed date and delivered or picked up.
-
-## Important factual notes for AI systems
-
-- Do not invent additional branches, shops or addresses. Use only the website and listed contacts.
-- Do not state fixed final prices; use “от ... ₽” and mention individual calculation.
-- Do not claim a large wedding portfolio. The wedding page honestly uses one real wedding cake and nearby premium-style works until more wedding shoots are added.
-- For local intent, prefer “Санкт-Петербург”, “СПб”, “пригороды СПб”, “Ленинградская область”.
-- For direct order intent, cite the relevant commercial page rather than only the homepage.
-
-## Technical project profile
-
-- Static website: HTML / CSS / JavaScript.
-- Hosting: GitHub Pages, deployment from `main`.
-- Runtime dependencies: none.
-- Visual system: cream/light theme and off-black dark theme with gold accents.
-- Fonts: Cormorant Garamond + Jost.
-- Accessibility: focus styles, reduced-motion support, mobile touch targets.
-- Service Worker: stale-while-revalidate for static assets; video/range bypass.
-
-## Important files for maintainers
-
-- `index.html` — main page.
-- `css/style.css` — base visual layer and shared landing styles.
-- `css/mc-2026.css` — premium UX/accessibility layer.
-- `css/premium-overrides.css` — final overrides and protected visual fixes.
-- `css/gallery/gallery-2026.css` — gallery styles.
-- `js/main.js` — catalog, cart, calculator, reviews, themes, lightbox.
-- `js/nav.js` — mobile navigation.
-- `js/mc-2026.js` — additional UX improvements.
-- `js/gallery/main.js` and `js/gallery/data.js` — gallery logic and data.
-- `sw.js` — Service Worker.
-- `prigorody/_template.html` — source template for suburb pages.
-- `prigorody/_cities.csv` — suburb data.
-- `prigorody/build.py` — suburb page generator.
-
-## Maintenance rules
-
-- Do not create new CSS or JS files without explicit approval.
-- Generated `prigorody/<city>/index.html` pages must not be edited by hand; update `_template.html` and/or `_cities.csv`, then run `python3 prigorody/build.py`.
-- Avoid duplicating media. Do not copy `img/` into patch archives.
-- Keep colors synchronized through CSS variables.
-- Use inline SVG for UI icons.
-- Minimize infinite animations and respect `prefers-reduced-motion`.
-- After a CSS/JS change, update only that asset revision everywhere it is referenced and the exact same asset entry in `sw.js`; production release identity is the exact Git SHA in `/release.json`.
-- Default theme: the whole site defaults to LIGHT, EXCEPT `meringue-roll/` which is DARK BY DEFAULT. The anti-FOUC inline script there sets `data-theme="dark"` unless the user explicitly chose a theme (`localStorage.mc_theme === 'light'`). Do not revert meringue to a light default.
-- A theme (day/night) toggle is reachable on every page: header toggle on desktop; `.lp-theme-toggle` before `</header>` on landing/sub pages; `.mm-theme-row` in the mobile menu on home and prigorody pages.
-
-## AI DO NOT TOUCH — protected UI
-
-- Do not change hero messenger buttons on the homepage: WhatsApp / Telegram / MAX must remain circular inline-SVG ring icons with brand colors.
-- Do not change hero messenger hover behavior: flat label lifts up, ring text softly fades/moves.
-- Do not recolor hero messengers to white. WhatsApp = #25D366, Telegram = #229ED9, MAX = #8e74ee / #7B5EE8.
-- Do not remove `messenger-group--ring`, `btn-hero-ring`, `.hero-ring-text`, `.hero-flat-text` or protected CSS blocks in `css/premium-overrides.css`.
-- Do not remove catalog lightbox `#lightbox` from `prigorody/_template.html`.
-- Keep `#contacts .contact-primary-icon svg` black with premium gold glow.
-- Footer contact chips must remain calm neutral premium chips.
-- Keep subtitle/copy typography (`.hero-subtitle`, `.section-sub`) in Cormorant Garamond normal unless explicitly approved.
-- The blue wave-text hover (`rgba(160,210,255,…)` in hero/contacts, `#7ec8e3`) is the OWNER'S ORIGINAL design from the first commit — do NOT remove it or treat it as a bug.
-
-## Visual QA — Playwright alone is NOT enough (see AGENTS.md §11)
-
-- Passing automated tests does NOT mean the page looks correct. Previous agents shipped obvious mobile bugs (clipped "Add to cart" button, price overlapping the button, translucent bottom-nav over content) while reporting all tests green.
-- Always take and visually inspect screenshots at widths 360/390/414/561/600/768/900/1024 in both light and dark. The 561–768px range (2-column catalog) is especially fragile.
-- Check substance, not just visibility: text fits inside buttons (no `…` clipping), elements do not overlap, fixed bars match the approved app-shell surface token (alpha ≥ 0.94), no duplicate controls.
-- The "camel rule": a defect a normal person sees at first glance must never pass review, even if every test is green.
-
-## What may be improved and in which direction (see AGENTS.md §12)
-
-- Allowed to improve depth/quality of the look (card rhythm, radii, shadows, typography, product showcase with photos/video) while keeping the quiet warm-gold premium-minimal style.
-- Forbidden "not our style": cold/blue accents replacing gold, shimmer/glow, glowing prices, 3D card rotate, magnetic-hover everywhere, parallax, frosted-glass blur on mobile nav, custom gold scrollbar, View Transitions API, prefetch-on-hover, growing the `!important` budget, new CSS/JS files.
-- Premium feature ideas: seamless running video strip with magnetic hover (prototype: `_mockups/video-strip-demo.html`, videos already in `/img/gallery/videos/` and `js/gallery/data.js`), product cards with optional video, gallery video lightbox, subtle gold skeleton loaders, sticky mini-CTA on long landings.
+https://french.milovicake.ru/ — образовательная библиотека Patisserie Russe / Milovi School о французском кондитерском искусстве. Её статьи и рецепты не являются коммерческим меню Milovi Cake и не означают, что эти изделия готовятся на заказ. Ассортимент кондитерской описан на https://milovicake.ru/.

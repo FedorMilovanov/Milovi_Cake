@@ -53,6 +53,27 @@ test('suburb calculator and contact labels retain AA contrast', async ({ page })
   }
 });
 
+test('cart opening does not steal focus from a quick interaction', async ({ page }) => {
+  for (const route of ['/', '/prigorody/pushkin/']) {
+    for (const confirm of [false, true]) {
+      await page.goto(route, { waitUntil: 'domcontentloaded' });
+      const focus = await page.evaluate(async (showConfirm) => {
+        addToCart(2);
+        openCart();
+        const clear = document.getElementById('cartClearBtn');
+        clear.focus({ preventScroll: true });
+        if (showConfirm) clear.click();
+        const before = document.activeElement.id;
+        // The drawer's initial focus task is scheduled for 100 ms; let it run.
+        await new Promise((resolve) => setTimeout(resolve, 200));
+        return { before, after: document.activeElement.id };
+      }, confirm);
+      const expected = confirm ? 'cartClearNo' : 'cartClearBtn';
+      expect(focus, `${route}, confirmation=${confirm}`).toEqual({ before: expected, after: expected });
+    }
+  }
+});
+
 test('clear-cart confirmation is themed, labelled and keyboard-contained', async ({ page }, testInfo) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   for (const theme of ['light', 'dark']) {

@@ -30,77 +30,91 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Сертификаты кондитера | Milovi Cake — Виктория Милованова</title>
-  <!-- FIX r24: trimmed to <160 chars (was 164) -->
-  <meta name="description" content="Сертификаты кондитера Milovi Cake — авторские торты, детская выпечка, шоколадная флористика. Санкт-Петербург." />
-  <meta name="keywords" content="сертификат кондитера, диплом кондитера, квалификация кондитера, обучение кондитер, Виктория Милованова сертификат, Milovi Cake" />
+  <meta name="description" content="Сертификаты кондитера Виктории Миловановой (Milovi Cake, СПб): обучение тортам, барельефу и шоколадной флористике." />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://milovicake.ru/certificates/" />
 
   <!-- Open Graph -->
   <meta property="og:title" content="Сертификаты кондитера Виктории Миловановой | Milovi Cake" />
-  <meta property="og:description" content="Подтверждённая квалификация: курсы по авторским тортам, детским тортам, шоколадной флористике и художественному оформлению от ведущих кондитеров России." />
+  <meta property="og:description" content="Сертификаты о прохождении курсов по тортам, шоколадной флористике и художественному оформлению." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://milovicake.ru/certificates/" />
   <meta property="og:image" content="https://milovicake.ru/img/og-cover.jpg" />
   <meta property="og:locale" content="ru_RU" />
+  <meta property="og:site_name" content="Milovi Cake" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Сертификаты кондитера Виктории Миловановой | Milovi Cake" />
+  <meta name="twitter:description" content="Сертификаты о прохождении курсов по тортам, шоколадной флористике и художественному оформлению." />
+  <meta name="twitter:image" content="https://milovicake.ru/img/og-cover.jpg" />
 
   <!-- Schema.org: Person + hasCredential -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "Person",
-    "name": "Милованова Виктория",
-    "jobTitle": "Частный кондитер",
+    "@id": "https://milovicake.ru/#viktoria",
+    "name": "Виктория Викторовна Милованова",
+    "alternateName": "Виктория Милованова",
+    "jobTitle": "Частный кондитер Milovi Cake",
     "worksFor": { "@id": "https://milovicake.ru/#business" },
-    "url": "https://milovicake.ru/",
+    "url": "https://milovicake.ru/o-konditere/",
     "hasCredential": [
       {
         "@type": "EducationalOccupationalCredential",
         "name": "Торт от А до Я",
         "credentialCategory": "Certificate",
-        "recognizedBy": { "@type": "Organization", "name": "Кондитерская школа Praline / Припутнева Юлия" },
         "dateCreated": "2022-10-30"
       },
       {
         "@type": "EducationalOccupationalCredential",
         "name": "Торт на миллион 3.0",
         "credentialCategory": "Certificate",
-        "recognizedBy": { "@type": "Organization", "name": "Ксения Большан @mafita.cakes" },
         "dateCreated": "2022-10-13"
       },
       {
         "@type": "EducationalOccupationalCredential",
         "name": "Основы акварельной росписи по мастике. Барельеф",
         "credentialCategory": "Certificate",
-        "recognizedBy": { "@type": "Organization", "name": "Кондитерская школа Praline / Припутнева Юлия" },
         "dateCreated": "2023-12-08"
       },
       {
         "@type": "EducationalOccupationalCredential",
         "name": "Детские торты",
         "credentialCategory": "Certificate",
-        "recognizedBy": { "@type": "Organization", "name": "Кондитерская школа Praline / Припутнева Юлия" },
         "dateCreated": "2024-05-22"
       },
       {
         "@type": "EducationalOccupationalCredential",
         "name": "Шоколадная флористика",
         "credentialCategory": "Certificate",
-        "recognizedBy": { "@type": "Organization", "name": "Ирина Мошкина — золотой призёр чемпионата России по кондитерскому искусству" },
         "dateCreated": "2024-05-25"
       }
     ]
   }
   </script>
 
-  <!-- Breadcrumb Schema -->
+  <!-- Breadcrumb & WebPage Schema -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://milovicake.ru/" },
-      { "@type": "ListItem", "position": 2, "name": "Сертификаты", "item": "https://milovicake.ru/certificates/" }
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": "https://milovicake.ru/certificates/#webpage",
+        "url": "https://milovicake.ru/certificates/",
+        "name": "Сертификаты кондитера | Milovi Cake — Виктория Милованова",
+        "inLanguage": "ru-RU",
+        "isPartOf": { "@id": "https://milovicake.ru/#website" },
+        "mainEntity": { "@id": "https://milovicake.ru/#viktoria" }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "https://milovicake.ru/certificates/#breadcrumbs",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://milovicake.ru/" },
+          { "@type": "ListItem", "position": 2, "name": "Сертификаты", "item": "https://milovicake.ru/certificates/" }
+        ]
+      }
     ]
   }
   </script>
@@ -742,7 +756,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
         <div class="cert-img-wrap">
           <img src="../img/cert_tort_million.webp"
                alt="Сертификат Виктории Миловановой — курс «Торт на миллион 3.0», Ксения Большан, октябрь 2022"
-               width="1388" height="948" loading="eager" />
+               width="1536" height="1024" loading="eager" />
         </div>
         <div class="cert-info">
           <div class="cert-year">Октябрь 2022</div>
@@ -770,7 +784,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
         <div class="cert-img-wrap">
           <img src="../img/cert_detskie_torty.webp"
                alt="Сертификат мастер-класса «Детские торты» — Виктория Милованова, школа Praline, май 2024"
-               width="1535" height="1024" loading="lazy" />
+               width="1536" height="1024" loading="lazy" />
         </div>
         <div class="cert-info">
           <div class="cert-year">Май 2024</div>
@@ -784,7 +798,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
         <div class="cert-img-wrap">
           <img src="../img/cert_akvarel.webp"
                alt="Сертификат — основы акварельной росписи по мастике, техника «Барельеф», школа Praline, декабрь 2023"
-               width="1536" height="1024" loading="lazy" />
+               width="1535" height="1024" loading="lazy" />
         </div>
         <div class="cert-info">
           <div class="cert-year">Декабрь 2023</div>
@@ -814,7 +828,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
   <section class="trust-section" style="padding-bottom: 0;">
     <div class="trust-label-top">Помимо сертификатов</div>
     <p class="trust-text" style="font-size: clamp(16px, 2.5vw, 22px); font-style: normal; font-weight: 400; max-width: 640px; margin: 0 auto 0;">
-      Здесь показаны курсы, по которым выданы документы. За рамками этого списка — значительное количество мастер-классов, онлайн-интенсивов и практических занятий без итоговых сертификатов. Обучение продолжается постоянно.
+      Здесь показаны курсы, по которым выданы документы. За рамками этого списка — мастер-классы, онлайн-интенсивы и практические занятия без итоговых сертификатов. Milovi Cake также поддерживает отдельную образовательную библиотеку <a href="https://french.milovicake.ru/" target="_blank" rel="noopener noreferrer" style="color: var(--gold); text-decoration: underline;">Patisserie Russe</a>; её материалы не являются меню кондитерской на заказ.
     </p>
   </section>
 
@@ -893,7 +907,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 
   <!-- FOOTER -->
   <footer class="cert-footer">
-    <p>© 2026 Milovi Cake — <a href="/">Авторские торты на заказ в Санкт-Петербурге</a> · <a href="/meringue-roll/">Меренговый рулет</a></p>
+    <p>© 2026 Milovi Cake — <a href="/">Авторские торты на заказ в Санкт-Петербурге</a> · <a href="/o-konditere/">О кондитере</a> · <a href="/zakazat-tort-spb/">Заказать торт СПб</a> · <a href="/bento-torty/">Бенто-торты</a> · <a href="/detskie-torty/">Детские торты</a> · <a href="/svadebnye-torty/">Свадебные торты</a> · <a href="/tort-na-den-rozhdeniya/">Торт на день рождения</a> · <a href="/meringue-roll/">Меренговый рулет</a> · <a href="/tort-s-dostavkoy/">Доставка</a> · <a href="/otzyvy/">Отзывы</a> · <a href="/gallery/">Галерея работ</a> · <a href="/prigorody/">Пригороды СПб</a></p>
   </footer>
 
   <!-- LIGHTBOX -->

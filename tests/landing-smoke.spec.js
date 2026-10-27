@@ -1,5 +1,31 @@
 const { test, expect } = require('@playwright/test');
 
+async function contrastOnBackground(locator, backgroundSelector, overlaySelector = null) {
+  return locator.evaluate((element, selectors) => {
+    const channels = (color) => {
+      const values = color.match(/[\d.]+/g).map(Number);
+      return [values[0], values[1], values[2], values.length > 3 ? values[3] : 1];
+    };
+    const blend = (front, back, opacity = 1) => {
+      const alpha = front[3] * opacity;
+      return front.slice(0, 3).map((value, index) => value * alpha + back[index] * (1 - alpha)).concat(1);
+    };
+    const luminance = (color) => color.slice(0, 3).map((value) => {
+      value /= 255;
+      return value <= 0.04045 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4);
+    }).reduce((sum, value, index) => sum + value * [0.2126, 0.7152, 0.0722][index], 0);
+    const background = element.closest(selectors.background);
+    if (!background) throw new Error(`Missing background ancestor ${selectors.background}`);
+    let back = channels(getComputedStyle(background).backgroundColor);
+    if (selectors.overlay) back = blend(channels(getComputedStyle(element.closest(selectors.overlay)).backgroundColor), back);
+    const style = getComputedStyle(element);
+    const foreground = blend(channels(style.color), back, Number(style.opacity));
+    const a = luminance(foreground);
+    const b = luminance(back);
+    return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+  }, { background: backgroundSelector, overlay: overlaySelector });
+}
+
 const pages = [
   { path: '/zakazat-tort-spb/', h1: /Заказать торт в СПб/i },
   { path: '/tort-s-dostavkoy/', h1: /Торт с доставкой/i },
@@ -133,6 +159,10 @@ test.describe('premium media blocks', () => {
     }
     // Desktop hover retains its original rule; the source contract checks its
     // fine-pointer media gate without racing the filter's smooth scrolling.
+    await page.locator('.gx-chip[data-filter="meringue"]').click();
+    await expect(page.locator('[data-id="p17"]')).toContainText('Срез меренгового рулета');
+    await page.locator('.gx-chip[data-filter="pavlova"]').click();
+    await expect(page.locator('[data-id="p17"]')).toHaveCount(0);
 
     const sitemap = await (await request.get('/sitemap.xml')).text();
     expect(sitemap).toContain('<image:title>Светлый свадебный торт</image:title>');
@@ -241,7 +271,7 @@ test.describe('premium media blocks', () => {
     await page.locator('.gx-chip[data-filter="wedding"]').click();
     await expect(page.locator('[data-id="v12"] video')).toHaveAttribute('poster', poster);
     const galleryReel = await page.evaluate(async () => {
-      const { GALLERY_ITEMS } = await import('/js/gallery/data.js?v=20261022r02');
+      const { GALLERY_ITEMS } = await import('/js/gallery/data.js?v=20261026r01');
       return GALLERY_ITEMS.find((item) => item.id === 'v12');
     });
     expect(galleryReel.desc).toBe(description);
@@ -387,21 +417,15 @@ test.describe('premium media blocks', () => {
     for (const { product, image, credit, label } of formats) {
       expect(product.image).toBe(image);
       if (credit === 'Визуализация стиля') expect(product.description).toContain('Визуализация стиля');
-      if (label === 'индивидуальный расчёт') expect(product.offers).toBeUndefined();
-      if (product.offers) {
-        expect(label.replace(/\s/g, '')).toContain(String(product.offers.price));
-        expect(product.offers.availability).toBeUndefined(); // A bespoke cake needs a date check, not a stock claim.
-      }
+      // These are starting rates or require a minimum quantity, not the total
+      // purchase price of a single fixed offer.
+      expect(product.offers).toBeUndefined();
     }
     expect(formats[0].label).toBe('от\u00a03\u00a0000\u00a0₽/кг'); // Keep the price together with real web fonts.
-    expect(formats[0].product.offers).toMatchObject({
-      price: '3000', priceCurrency: 'RUB',
-      priceSpecification: {
-        '@type': 'UnitPriceSpecification', price: '3000', priceCurrency: 'RUB',
-        referenceQuantity: { '@type': 'QuantitativeValue', value: 1, unitCode: 'KGM' },
-      },
-    });
-    expect(formats[2].product.offers.price).toBe('350'); // Wedding desserts retain their own price.
+    expect(formats[0].product.description).toContain('от 3 000 ₽/кг');
+    expect(formats[2].label).toBe('от 350 ₽/шт.');
+    expect(formats[2].product.description).toContain('минимальный заказ — 2 пирожных или 6 капкейков');
+    await expect(page.locator('#wedStyles .lp-card').nth(2)).toContainText('Минимальный заказ — 2 пирожных или 6 капкейков');
     await expect(page.locator('.wed-meta')).toContainText('От 3 000 ₽/кг');
     await expect(page.locator('.bridal-panel .lp-section-head')).toContainText('от 3 000 ₽/кг');
     for (const selector of ['.wed-meta', '.bridal-panel .lp-section-head p']) {
@@ -420,8 +444,9 @@ test.describe('premium media blocks', () => {
           .map((item) => [item.querySelector('summary').textContent.trim(), item.querySelector('p').textContent.trim()]),
       };
     });
-    expect(questions.visible).toHaveLength(5);
+    expect(questions.visible).toHaveLength(6);
     expect(questions.visible).toEqual(questions.structured);
+    expect(questions.visible.some(([question]) => /дегустационный сет/i.test(question))).toBe(true);
     const last = page.locator('.lp-faq-item').last();
     await last.locator('summary').click();
     await expect(last).toHaveAttribute('open', '');
@@ -431,6 +456,32 @@ test.describe('premium media blocks', () => {
     await expect(last.locator('summary')).toHaveCSS('outline-width', '2px');
     await page.locator('#wedGuests').focus();
     await expect(page.locator('#wedGuests')).toHaveCSS('outline-width', '2px');
+  });
+
+  test('wedding tasting request states individual terms and hands off to WhatsApp', async ({ page }) => {
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    const section = page.locator('#wedTasting');
+    const link = section.getByRole('link', { name: /обсудить дегустацию/i });
+    await expect(section).toContainText(/по запросу/i);
+    await expect(section).toContainText('стоимость, сроки и возможность изготовления');
+    for (const theme of ['light', 'dark']) {
+      await page.locator('html').evaluate((root, value) => root.setAttribute('data-theme', value), theme);
+      for (const width of [320, 360, 390, 414, 561, 600, 768, 900, 1024, 1440]) {
+        await page.setViewportSize({ width, height: 900 });
+        await link.scrollIntoViewIfNeeded();
+        await expect(link).toBeVisible();
+        const box = await link.boundingBox();
+        expect(box.x).toBeGreaterThanOrEqual(0);
+        expect(box.x + box.width).toBeLessThanOrEqual(width + 1);
+        expect(await link.evaluate((node) => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
+      }
+    }
+    await page.route('https://wa.me/**', (route) => route.abort());
+    const request = page.waitForRequest((req) => req.url().startsWith('https://wa.me/79119038886?'));
+    await link.click();
+    const handoff = new URL((await request).url());
+    expect(handoff.searchParams.get('text')).toContain('дегустационный сет начинок');
+    expect(handoff.searchParams.get('text')).toContain('свадебного торта');
   });
 
   test('wedding final invitation keeps the brief on this journey', async ({ page }) => {
@@ -809,11 +860,171 @@ test.describe('homepage structured data and links', () => {
     expect(graphTypes.flat()).toContain('LocalBusiness');
     expect(graphTypes.flat()).toContain('Bakery');
     expect(graphTypes).toContain('FAQPage');
-    expect(graphTypes).toContain('HowTo');
+    // The homepage has no visible step-by-step block or breadcrumb trail.
+    expect(graphTypes).not.toContain('HowTo');
+    expect(graphTypes).not.toContain('BreadcrumbList');
 
     for (const href of ['/zakazat-tort-spb/', '/tort-s-dostavkoy/', '/bento-torty/', '/detskie-torty/', '/svadebnye-torty/', '/o-konditere/', '/dostavka-i-oplata/', '/otzyvy/']) {
       await expect(page.locator(`a[href="${href}"]`).first()).toBeVisible();
     }
+  });
+});
+
+test.describe('revised navigation and credentials', () => {
+  test('meringue storage terms remain readable and match the FAQ schema', async ({ page }) => {
+    await page.goto('/meringue-roll/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('#loader')).toBeHidden();
+    const storage = page.locator('.ingredient').filter({ has: page.locator('.ingredient-name', { hasText: 'Хранение' }) });
+    await expect(storage).toHaveCount(1);
+    const description = storage.locator('.ingredient-desc');
+    await expect(description).toHaveText('48 ч · +2…+6 °C');
+    for (const theme of ['dark', 'light']) {
+      await page.evaluate((value) => document.documentElement.setAttribute('data-theme', value), theme);
+      for (const width of [320, 390, 1440]) {
+        await page.setViewportSize({ width, height: 900 });
+        await storage.scrollIntoViewIfNeeded();
+        await expect(description).toBeVisible();
+        await expect.poll(() => storage.evaluate((row) => Number(getComputedStyle(row.closest('.reveal')).opacity))).toBeGreaterThan(0.99);
+        const bounds = await storage.evaluate((row) => {
+          const title = row.querySelector('.ingredient-name').getBoundingClientRect();
+          const detail = row.querySelector('.ingredient-desc');
+          const rect = detail.getBoundingClientRect();
+          return { titleRight: title.right, left: rect.left, right: rect.right,
+            clientWidth: detail.clientWidth, scrollWidth: detail.scrollWidth };
+        });
+        expect(bounds.left, `${theme} ${width}px storage text starts outside viewport`).toBeGreaterThanOrEqual(0);
+        expect(bounds.right, `${theme} ${width}px storage text ends outside viewport`).toBeLessThanOrEqual(width);
+        expect(bounds.titleRight, `${theme} ${width}px storage label overlaps value`).toBeLessThanOrEqual(bounds.left + 1);
+        expect(bounds.scrollWidth, `${theme} ${width}px storage text is clipped`).toBeLessThanOrEqual(bounds.clientWidth + 1);
+        expect(await contrastOnBackground(storage.locator('.ingredient-name'), '.split-text'), `${theme} storage label contrast`).toBeGreaterThanOrEqual(4.5);
+        expect(await contrastOnBackground(description, '.split-text'), `${theme} storage value contrast`).toBeGreaterThanOrEqual(4.5);
+      }
+    }
+    const faq = page.locator('details.mr-faq-item').filter({ hasText: 'Сколько хранится меренговый рулет?' });
+    await faq.locator('summary').click();
+    const answer = 'Храните рулет в холодильнике при температуре +2…+6 °C не более 48 часов с момента изготовления.';
+    await expect(faq.locator('p')).toHaveText(answer);
+    const schemaAnswer = await page.locator('script[type="application/ld+json"]').evaluateAll((scripts) =>
+      scripts.map((script) => JSON.parse(script.textContent)).find((schema) => schema['@type'] === 'FAQPage')
+        .mainEntity.find((item) => item.name === 'Сколько хранится меренговый рулет?').acceptedAnswer.text);
+    expect(schemaAnswer).toBe(answer);
+  });
+
+  test('all meringue FAQ answers open completely and have readable contrast', async ({ page }) => {
+    await page.goto('/meringue-roll/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('#loader')).toBeHidden();
+    const items = page.locator('details.mr-faq-item');
+    await expect(items).toHaveCount(5);
+    for (let index = 0; index < 5; index += 1) {
+      const item = items.nth(index);
+      const summary = item.locator('summary');
+      const wrapper = item.locator('.mr-faq-answer');
+      const answer = wrapper.locator('p');
+      await summary.click();
+      await expect(item).toHaveAttribute('open', '');
+      await expect(wrapper).toHaveCSS('opacity', '1');
+      await expect(answer).toBeVisible();
+      await expect.poll(() => wrapper.evaluate((box) => {
+        const child = box.querySelector('p').getBoundingClientRect();
+        const parent = box.getBoundingClientRect();
+        return parent.bottom >= child.bottom - 1;
+      }), { message: `FAQ answer ${index + 1} is clipped` }).toBe(true);
+      for (const theme of ['dark', 'light']) {
+        await page.evaluate((value) => document.documentElement.setAttribute('data-theme', value), theme);
+        expect(await contrastOnBackground(summary, '.mr-faq', '.mr-faq-item'), `${theme} FAQ question contrast`).toBeGreaterThanOrEqual(4.5);
+        expect(await contrastOnBackground(answer, '.mr-faq', '.mr-faq-item'), `${theme} FAQ answer contrast`).toBeGreaterThanOrEqual(4.5);
+      }
+      await summary.click();
+      await expect(item).not.toHaveAttribute('open', '');
+    }
+  });
+
+  test('all suburb FAQ answers open completely and have readable contrast', async ({ page }) => {
+    await page.goto('/prigorody/', { waitUntil: 'domcontentloaded' });
+    const items = page.locator('details.hub-faq-item');
+    await expect(items).toHaveCount(4);
+    for (let index = 0; index < 4; index += 1) {
+      const item = items.nth(index);
+      const summary = item.locator('summary');
+      const wrapper = item.locator('.hub-faq-answer');
+      const answer = wrapper.locator('p');
+      await summary.click();
+      await expect(item).toHaveAttribute('open', '');
+      await expect(wrapper).toHaveCSS('opacity', '1');
+      await expect(answer).toBeVisible();
+      await expect.poll(() => wrapper.evaluate((box) => {
+        const child = box.querySelector('p').getBoundingClientRect();
+        const parent = box.getBoundingClientRect();
+        return parent.bottom >= child.bottom - 1;
+      }), { message: `Suburb FAQ answer ${index + 1} is clipped` }).toBe(true);
+      for (const theme of ['dark', 'light']) {
+        await page.evaluate((value) => document.documentElement.setAttribute('data-theme', value), theme);
+        expect(await contrastOnBackground(summary, '.hub-faq-item'), `${theme} suburb question contrast`).toBeGreaterThanOrEqual(4.5);
+        expect(await contrastOnBackground(answer, '.hub-faq-item'), `${theme} suburb answer contrast`).toBeGreaterThanOrEqual(4.5);
+      }
+      await summary.click();
+      await expect(item).not.toHaveAttribute('open', '');
+    }
+  });
+
+  test('meringue storage and FAQ on both pages work without JavaScript', async ({ browser, baseURL }, testInfo) => {
+    const width = testInfo.project.name.includes('mobile') ? 320 : 1440;
+    const context = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width, height: 900 } });
+    try {
+      const page = await context.newPage();
+      await page.goto('/meringue-roll/', { waitUntil: 'domcontentloaded' });
+      await expect(page.locator('#loader')).toBeHidden();
+      const storage = page.locator('.ingredient').filter({ hasText: 'Хранение' });
+      await storage.scrollIntoViewIfNeeded();
+      await expect(storage.locator('.ingredient-desc')).toBeVisible();
+      await expect(storage.locator('.ingredient-desc')).toHaveText('48 ч · +2…+6 °C');
+      const faq = page.locator('details.mr-faq-item').filter({ hasText: 'Сколько хранится меренговый рулет?' });
+      await faq.locator('summary').click();
+      await expect(faq.locator('p')).toBeVisible();
+      await expect(faq.locator('p')).toContainText('не более 48 часов с момента изготовления');
+      await page.goto('/prigorody/', { waitUntil: 'domcontentloaded' });
+      const suburbFaq = page.locator('details.hub-faq-item').first();
+      await suburbFaq.locator('summary').click();
+      await expect(suburbFaq.locator('p')).toBeVisible();
+    } finally {
+      await context.close();
+    }
+  });
+
+  test('homepage section links are readable, unique and lead to real sections', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    const sectionLinks = page.locator('.cb-tags a');
+    await expect(sectionLinks).toHaveCount(9);
+    const destinations = await sectionLinks.evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    expect(new Set(destinations).size).toBe(destinations.length);
+    expect(destinations).toEqual(expect.arrayContaining(['/gallery/', '/prigorody/', '/meringue-roll/']));
+    await expect(page.locator('.cb-tags-label')).toHaveText('Разделы сайта');
+    await expect(sectionLinks.first()).toBeVisible();
+  });
+
+  test('confectioner portrait reserves its real aspect ratio', async ({ page }) => {
+    await page.goto('/o-konditere/', { waitUntil: 'domcontentloaded' });
+    const portrait = page.locator('.info-visual img');
+    await expect(portrait).toHaveAttribute('width', '600');
+    await expect(portrait).toHaveAttribute('height', '900');
+    await expect(portrait).toHaveJSProperty('naturalWidth', 600);
+    await expect(portrait).toHaveJSProperty('naturalHeight', 900);
+  });
+
+  test('training certificates remain visible and open in their lightbox', async ({ page }) => {
+    await page.goto('/certificates/', { waitUntil: 'domcontentloaded' });
+    const cards = page.locator('.cert-card');
+    await expect(cards).toHaveCount(5);
+    const firstImage = cards.first().locator('img');
+    await expect(firstImage).toHaveAttribute('width', '1536');
+    await expect(firstImage).toHaveAttribute('height', '1024');
+    await expect(firstImage).toHaveJSProperty('naturalWidth', 1536);
+    await cards.first().click();
+    await expect(page.locator('#lbOverlay')).toHaveClass(/active/);
+    await expect(page.locator('#lbCaption')).toContainText('Торт на миллион');
+    await expect(page.locator('#lbImg')).toHaveAttribute('src', /cert_tort_million\.webp$/);
+    await page.locator('#lbOverlay').getByRole('button', { name: 'Закрыть' }).click();
+    await expect(page.locator('#lbOverlay')).not.toHaveClass(/active/);
   });
 });
 
@@ -836,7 +1047,23 @@ test.describe('SEO infrastructure', () => {
       expect(xml).toContain(`https://milovicake.ru${href}`);
     }
     expect(xml).not.toContain('https://milovicake.ru/call/');
-    expect(xml).toContain('<lastmod>2026-06-05</lastmod>');
+    const entries = await page.evaluate((body) => {
+      const doc = new DOMParser().parseFromString(body, 'application/xml');
+      if (doc.querySelector('parsererror')) throw new Error('Invalid sitemap XML');
+      return [...doc.getElementsByTagNameNS('http://www.sitemaps.org/schemas/sitemap/0.9', 'url')]
+        .map((entry) => ({
+          loc: entry.getElementsByTagNameNS('*', 'loc')[0]?.textContent,
+          lastmod: entry.getElementsByTagNameNS('*', 'lastmod')[0]?.textContent,
+        }));
+    }, xml);
+    expect(entries.length).toBeGreaterThanOrEqual(pages.length);
+    for (const { loc, lastmod } of entries) {
+      expect(lastmod, `${loc} must have a lastmod`).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      const timestamp = Date.parse(`${lastmod}T00:00:00Z`);
+      expect(Number.isNaN(timestamp), `${loc} has an invalid date`).toBe(false);
+      expect(new Date(timestamp).toISOString().slice(0, 10), `${loc} has a non-calendar date`).toBe(lastmod);
+      expect(timestamp, `${loc} has a future date`).toBeLessThanOrEqual(Date.now());
+    }
   });
 
   test('robots allows crawlers to see /call/ noindex without putting it in the sitemap', async ({ request }) => {

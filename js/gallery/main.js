@@ -1,4 +1,4 @@
-import { GALLERY_ITEMS } from './data.js?v=20261023r01';
+import { GALLERY_ITEMS } from './data.js?v=20261026r01';
 
 var _gLockY = 0; /* r31: gallery scroll lock state */
 const $ = (s, c = document) => c.querySelector(s);
