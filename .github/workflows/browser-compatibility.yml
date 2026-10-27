@@ -145,6 +145,8 @@ jobs:
           module.exports = {
             ...base,
             testDir: path.join(root, 'tests'),
+            // The generated config lives outside the checkout; serve the real site.
+            webServer: { ...base.webServer, cwd: root, url: 'http://127.0.0.1:4173/gallery/' },
             use: { ...base.use, video: 'off', trace: { mode: 'retain-on-failure', screenshots: false } },
           };
           NODE

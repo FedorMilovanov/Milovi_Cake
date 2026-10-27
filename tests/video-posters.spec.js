@@ -72,6 +72,15 @@ const swiperStub = `
 `;
 const swiperCss = '.swiper-wrapper{display:flex;width:100%;height:100%}.swiper-slide{flex-shrink:0}';
 
+async function enlargeCaptionText(page) {
+  // Simulate 200% text-only zoom without changing layout or scroll positions.
+  await page.evaluate(() => {
+    const elements = [...document.querySelectorAll('.lb-info, .lb-info *')];
+    const sizes = elements.map((element) => parseFloat(getComputedStyle(element).fontSize));
+    elements.forEach((element, index) => { element.style.fontSize = `${sizes[index] * 2}px`; });
+  });
+}
+
 test.describe('gallery lightbox with missing or late CDN assets', () => {
   test.use({ serviceWorkers: 'block' });
 
@@ -107,8 +116,10 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     page.on('crash', () => { diagnostic.crashed = true; diagnostic.resources = browserCrashResources(); });
     try {
       await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
-      await page.goto('/gallery/', { waitUntil: 'load' });
+      const response = await page.goto('/gallery/', { waitUntil: 'load' });
+      expect(response.status(), 'gallery must come from the site server').toBe(200);
       const card = page.locator('#galleryGrid [data-id="p01"]');
+      await expect(card).toBeVisible();
       await card.click();
       await page.locator('#lbNext').click();
       await expect(page.locator('#lbCounter')).toHaveText('02 / 46');
@@ -185,12 +196,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       await page.locator('#galleryGrid [data-id="p20"]').click();
       await expect(page.locator('#lbClose')).toBeFocused();
 
-      // Simulate 200% text-only zoom, without changing layout or scroll positions.
-      await page.evaluate(() => {
-        const elements = [...document.querySelectorAll('.lb-info, .lb-info *')];
-        const sizes = elements.map((element) => parseFloat(getComputedStyle(element).fontSize));
-        elements.forEach((element, index) => { element.style.fontSize = `${sizes[index] * 2}px`; });
-      });
+      await enlargeCaptionText(page);
       const info = page.locator('.lb-info');
       await expect(info).toHaveAccessibleName('Описание работы и действия');
       await expect.poll(() => info.evaluate((el) => el.scrollHeight - el.clientHeight)).toBeGreaterThan(100);
@@ -258,6 +264,47 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       await page.keyboard.press('Escape');
       await expect(page.locator('#lbRoot')).toHaveCount(0);
     }
+  });
+
+  test('enlarged caption scrolls with the wheel over its padded edge', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name.endsWith('-mobile'), 'A wheel is a desktop input');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+    for (const viewport of [{ width: 320, height: 568 }, { width: 568, height: 320 }]) {
+      await page.setViewportSize(viewport);
+      await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
+      await page.locator('#galleryGrid [data-id="p20"]').click();
+      await enlargeCaptionText(page);
+      const info = page.locator('.lb-info');
+      await expect.poll(() => info.evaluate((el) => el.scrollHeight - el.clientHeight)).toBeGreaterThan(100);
+      const box = await info.boundingBox();
+      for (const x of [box.x + box.width - 4, box.x + box.width / 2]) {
+        const before = await info.evaluate((el) => el.scrollTop);
+        await page.mouse.move(x, box.y + Math.min(30, box.height / 2));
+        await page.mouse.wheel(0, 75);
+        await expect.poll(() => info.evaluate((el) => el.scrollTop)).toBeGreaterThan(before);
+      }
+      await page.locator('#lbClose').click();
+    }
+  });
+
+  test('narrow-screen arrow buttons stay clickable where enlarged caption overlaps', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+    await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
+    await page.locator('#galleryGrid [data-id="p20"]').click();
+    await enlargeCaptionText(page);
+    const info = page.locator('.lb-info');
+    await expect.poll(() => info.evaluate((el) => el.scrollHeight - el.clientHeight)).toBeGreaterThan(100);
+    const next = page.locator('#lbNext');
+    const box = await next.boundingBox();
+    const position = { x: box.width / 2, y: box.height * .85 };
+    // Use an actual edge click/tap rather than invoking the handler directly.
+    if (await page.evaluate(() => navigator.maxTouchPoints > 0)) await next.tap({ position, timeout: 5000 });
+    else await next.click({ position, timeout: 5000 });
+    await expect(page.locator('#lbCounter')).toHaveText('31 / 46');
+    await page.locator('#lbClose').click();
   });
 
   test('photo-only gallery can repeatedly open and close without CDN', async ({ page }) => {
@@ -467,19 +514,19 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       }
       expect(boxes.thumbs.bottom).toBeLessThanOrEqual(viewport.height - insets.bottom);
 
-      await page.evaluate(() => {
-        const elements = [...document.querySelectorAll('.lb-info, .lb-info *')];
-        const sizes = elements.map((element) => parseFloat(getComputedStyle(element).fontSize));
-        elements.forEach((element, index) => { element.style.fontSize = `${sizes[index] * 2}px`; });
-      });
+      await enlargeCaptionText(page);
       const info = page.locator('.lb-info');
       await expect.poll(() => info.evaluate((el) => el.scrollHeight - el.clientHeight)).toBeGreaterThan(100);
       const box = await info.boundingBox();
-      const x = Math.round(box.x + box.width / 2), y = Math.round(box.y + box.height * .8);
-      await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
-      await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: y - 80 }] });
-      await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-      await expect.poll(() => info.evaluate((el) => el.scrollTop)).toBeGreaterThan(0);
+      const y = Math.round(box.y + box.height * .8);
+      // Both the padded edge and the content must allow a real touch swipe.
+      for (const x of [Math.round(box.x + box.width - 4), Math.round(box.x + box.width / 2)]) {
+        const before = await info.evaluate((el) => el.scrollTop);
+        await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+        await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: y - 50 }] });
+        await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+        await expect.poll(() => info.evaluate((el) => el.scrollTop)).toBeGreaterThan(before);
+      }
       await page.locator('#lbClose').tap();
     }
     await client.detach();

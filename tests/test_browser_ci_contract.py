@@ -54,6 +54,10 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         self.assertIn("if: failure() && matrix.engine == 'webkit'", no_capture)
         self.assertIn("steps.webkit_baseline.outcome != 'skipped'", no_capture)
         self.assertIn("require(path.join(root, 'playwright.config.js'))", no_capture)
+        # This config is generated in RUNNER_TEMP; otherwise Playwright serves
+        # that directory instead of the checkout and the comparison hits 404.
+        self.assertIn("webServer: { ...base.webServer, cwd: root", no_capture)
+        self.assertIn("url: 'http://127.0.0.1:4173/gallery/'", no_capture)
         self.assertIn("video: 'off'", no_capture)
         self.assertIn('screenshots: false', no_capture)
         self.assertIn('--repeat-each=4', no_capture)
