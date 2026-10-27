@@ -116,8 +116,11 @@ test('cart quantity and remove controls fit at narrow and desktop widths', async
     const card = page.locator('#cartDrawer .cart-item');
     await expect(card).toBeVisible();
     for (const selector of ['.qty-ctrl .qty-btn:last-child', '.cart-item-right .del-btn']) {
-      const control = await card.locator(selector).boundingBox();
-      const bounds = await card.boundingBox();
+      // Measure both real elements in one frame: the drawer may still be transitioning.
+      const { control, bounds } = await card.evaluate((element, target) => {
+        const rect = (node) => { const { x, width } = node.getBoundingClientRect(); return { x, width }; };
+        return { control: rect(element.querySelector(target)), bounds: rect(element) };
+      }, selector);
       expect(control.x, `${width}px ${selector} left`).toBeGreaterThanOrEqual(bounds.x - 1);
       expect(control.x + control.width, `${width}px ${selector} right`).toBeLessThanOrEqual(bounds.x + bounds.width + 1);
     }
@@ -192,4 +195,86 @@ for (const theme of ['light', 'dark']) {
       }
     });
   }
+}
+
+test('cart restoration rejects corrupt entries and preserves valid quantities', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const scenarios = [
+    { saved: '{broken', quantities: [] },
+    { saved: 'null', quantities: [] },
+    { saved: '[]', quantities: [] },
+    { saved: JSON.stringify({ '2': null, '4': { qty: 'oops' } }), quantities: [] },
+    { saved: JSON.stringify({ '2': { qty: -3 }, '4': { qty: 0 }, '5': { qty: 2.5 }, '3': { qty: 3.25 }, '6': { qty: {} } }), quantities: [] },
+    { saved: JSON.stringify({ '2': { qty: 1, fill: {} }, '4': { qty: 1e100 } }), quantities: [] },
+    { saved: JSON.stringify({ '2:regular': { qty: 21 }, '1:regular': { qty: 2.5 }, '4': { qty: -1 } }), quantities: ['21 шт.', '2.5 кг'] },
+    { saved: JSON.stringify({ '2:maxi': { qty: 3 } }), quantities: ['3 шт.'] },
+  ];
+  for (const { saved, quantities } of scenarios) {
+    await page.evaluate((value) => localStorage.setItem('milovicake_cart', value), saved);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.evaluate(() => openCart());
+    await expect(page.locator('#cartDrawer .qty-val')).toHaveText(quantities);
+    if (!quantities.length) await expect(page.locator('#cartDrawer .cart-empty')).toBeVisible();
+    await expect(page.locator('#cartDrawer')).not.toContainText(/NaN|не число/);
+  }
+  // A valid quantity above the stepper limit can be created by repeated adds.
+  await page.evaluate(() => localStorage.setItem('milovicake_cart', JSON.stringify({ '2:regular': { qty: 21 } })));
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.evaluate(() => openCart());
+  const item = page.locator('#cartDrawer .cart-item');
+  await item.locator('.qty-btn:last-child').click();
+  await expect(item.locator('.qty-val')).toHaveText('21 шт.');
+  await item.locator('.qty-btn:first-child').click();
+  await expect(item.locator('.qty-val')).toHaveText('20 шт.');
+  expect(errors).toEqual([]);
+});
+
+test('cart restores unusual labels as text and keeps their controls functional', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const entry = { qty: 1, fill: `Начинка'\");window.__cartXss=1;//`, decor: '<img src=x onerror="window.__cartXss=2">' };
+  await page.evaluate((value) => localStorage.setItem('milovicake_cart', JSON.stringify({ '2:regular': value })), entry);
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.evaluate(() => openCart());
+  const item = page.locator('#cartDrawer .cart-item');
+  await expect(item).toContainText(entry.decor);
+  await expect(item.locator('.cart-item-info img')).toHaveCount(0);
+  await item.locator('.qty-btn:last-child').click();
+  await expect(item.locator('.qty-val')).toHaveText('2 шт.');
+  expect(await page.evaluate(() => window.__cartXss)).toBeUndefined();
+  expect(errors).toEqual([]);
+});
+
+for (const failure of ['QuotaExceededError', 'SecurityError']) {
+  test(`cart stays usable and warns when storage throws ${failure}`, async ({ page }) => {
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await page.addInitScript((name) => {
+      const write = Storage.prototype.setItem;
+      Storage.prototype.setItem = function(key, value) {
+        if (key === 'milovicake_cart') throw new DOMException('Storage unavailable', name);
+        return write.call(this, key, value);
+      };
+    }, failure);
+    await page.setViewportSize({ width: 320, height: 800 });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.locator('#card-2 .btn-add').click();
+    await expect(page.locator('#toast')).toBeVisible();
+    await expect(page.locator('#toast')).toHaveAttribute('role', 'status');
+    await expect(page.locator('#toast')).toContainText('Корзина не сохранится при обновлении');
+    const bounds = await page.locator('#toast').boundingBox();
+    expect(bounds.x).toBeGreaterThanOrEqual(0);
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(320);
+    await page.evaluate(() => openCart());
+    await expect(page.locator('#cartDrawer .qty-val')).toHaveText('1 шт.');
+    await page.locator('#cartDrawer .qty-btn:last-child').click();
+    await expect(page.locator('#cartDrawer .qty-val')).toHaveText('2 шт.');
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.evaluate(() => openCart());
+    await expect(page.locator('#cartDrawer .cart-empty')).toBeVisible();
+    expect(errors).toEqual([]);
+  });
 }

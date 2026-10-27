@@ -34,3 +34,134 @@ test('all gallery clips show their own lightweight, decodable frame before playb
   const card = page.locator('#galleryGrid [data-id="v01"] video');
   await expect(card).toHaveAttribute('poster', '/img/gallery/video-01-knigi-poster.webp');
 });
+
+// This small test double verifies the loading lifecycle without depending on CDN
+// availability in CI. Real Swiper is also exercised separately in browser QA.
+const swiperStub = `
+  window.Swiper = class {
+    constructor(selector, options) {
+      this.el = document.querySelector(selector);
+      this.options = options;
+      this.activeIndex = options.initialSlide;
+      this.el.classList.add('swiper-initialized');
+      this.mark();
+      options.on.afterInit.call(this);
+    }
+    mark() { this.el.querySelectorAll('.swiper-slide').forEach((s, i) => s.classList.toggle('swiper-slide-active', i === this.activeIndex)); }
+    slideTo(index) { this.activeIndex = index; this.mark(); this.options.on.slideChange.call(this); }
+    update() {}
+    destroy() { this.el.classList.remove('swiper-initialized'); }
+  };
+`;
+const swiperCss = '.swiper-wrapper{display:flex;width:100%;height:100%}.swiper-slide{flex-shrink:0}';
+
+test.describe('gallery lightbox with missing or late CDN assets', () => {
+  test.use({ serviceWorkers: 'block' });
+
+  test('fallback supports buttons, thumbnails, keyboard and focus return without CDN', async ({ page }) => {
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+    await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
+    const card = page.locator('#galleryGrid [data-id="p01"]');
+    await card.focus();
+    await card.press('Enter');
+    await expect(page.locator('#lbCounter')).toHaveText('01 / 46');
+    await expect(page.locator('#lbWrapper .swiper-slide-active')).toHaveCount(1);
+    await expect(page.locator('#lbWrapper .swiper-slide').nth(0)).toBeVisible();
+    await expect(page.locator('#lbWrapper .swiper-slide').nth(1)).toBeHidden();
+    await page.locator('#lbNext').click();
+    await expect(page.locator('#lbCounter')).toHaveText('02 / 46');
+    await expect(page.locator('#lbWrapper .swiper-slide').nth(1)).toBeVisible();
+    await page.locator('#lbThumbs .lb-thumb').nth(5).click();
+    await expect(page.locator('#lbCounter')).toHaveText('06 / 46');
+    await page.keyboard.press('ArrowLeft');
+    await expect(page.locator('#lbCounter')).toHaveText('05 / 46');
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#lbRoot')).toHaveCount(0);
+    await expect(card).toBeFocused();
+    expect(errors).toEqual([]);
+  });
+
+  test('late Swiper initializes at the current fallback slide even after close and reopen', async ({ page }) => {
+    let release;
+    const holdScript = new Promise((resolve) => { release = resolve; });
+    await page.route('**/swiper-bundle.min.css', (route) => route.fulfill({ contentType: 'text/css', body: swiperCss }));
+    await page.route('**/swiper-bundle.min.js', async (route) => {
+      await holdScript;
+      await route.fulfill({ contentType: 'application/javascript', body: swiperStub });
+    });
+    try {
+      await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
+      const card = page.locator('#galleryGrid [data-id="p01"]');
+      await card.click();
+      // The former implementation stopped waiting after roughly two seconds.
+      await page.waitForTimeout(2200);
+      await page.locator('#lbNext').click();
+      await expect(page.locator('#lbCounter')).toHaveText('02 / 46');
+      await page.locator('#lbClose').click();
+      await card.click();
+      await page.locator('#lbNext').click();
+      await page.locator('#lbNext').click();
+      await expect(page.locator('#lbCounter')).toHaveText('03 / 46');
+      release();
+      await expect(page.locator('#lbSwiper')).toHaveClass(/swiper-initialized/);
+      await expect(page.locator('#lbCounter')).toHaveText('03 / 46');
+      await page.locator('#lbNext').click();
+      await expect(page.locator('#lbCounter')).toHaveText('04 / 46');
+    } finally { release(); }
+  });
+
+  test('a loaded script alone cannot replace the fallback when Swiper CSS fails', async ({ page }) => {
+    await page.route('**/swiper-bundle.min.css', (route) => route.abort());
+    await page.route('**/swiper-bundle.min.js', (route) => route.fulfill({ contentType: 'application/javascript', body: swiperStub }));
+    await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
+    await page.locator('#galleryGrid [data-id="p01"]').click();
+    await page.waitForFunction(() => !!window.Swiper);
+    await expect(page.locator('#lbSwiper')).not.toHaveClass(/swiper-initialized/);
+    await page.locator('#lbNext').click();
+    await expect(page.locator('#lbCounter')).toHaveText('02 / 46');
+  });
+
+  test('mobile fallback accepts a real browser touch swipe', async ({ page, browserName }, testInfo) => {
+    test.skip(browserName !== 'chromium' || testInfo.project.name !== 'chromium-mobile', 'Chromium touch input contract');
+    await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+    await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
+    await page.locator('#galleryGrid [data-id="p01"]').tap();
+    const box = await page.locator('#lbSwiper').boundingBox();
+    const x = Math.round(box.x + box.width / 2), y = Math.round(box.y + box.height / 2);
+    const client = await page.context().newCDPSession(page);
+    await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: x + 65, y }] });
+    await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x - 65, y }] });
+    await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    await expect(page.locator('#lbCounter')).toHaveText('02 / 46');
+    await client.detach();
+  });
+});
+
+test.describe('video strip fault handling', () => {
+  test.use({ serviceWorkers: 'block' });
+  test('video strip ignores non-array JSON and malformed entries without breaking the page', async ({ page }) => {
+    const fs = require('node:fs');
+    const original = fs.readFileSync('index.html', 'utf8');
+    expect(original.match(/data-videos='[\s\S]*?'/g)).toHaveLength(1);
+    let data = 'null';
+    await page.route((url) => url.origin === 'http://127.0.0.1:4173' && url.pathname === '/', (route) =>
+      route.fulfill({ contentType: 'text/html; charset=utf-8', body: original.replace(/data-videos='[\s\S]*?'/, `data-videos='${data}'`) }));
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    const cases = [
+      ['null', 0], ['{broken', 0], ['{}', 0], ['[]', 0],
+      ['[null,{},"bad",{"v":"/img/gallery/videos/video-01-knigi.webm","p":"/img/gallery/video-01-knigi-poster.webp","t":"Торт"}]', 2],
+    ];
+    for (const [payload, count] of cases) {
+      data = payload;
+      await page.goto('/', { waitUntil: 'domcontentloaded' });
+      await expect(page.locator('#mcVideoTrack .vtile')).toHaveCount(count);
+      await page.evaluate(() => addToCart(2));
+      await expect(page.locator('#cartBadge')).toHaveText('1');
+      await page.evaluate(() => localStorage.removeItem('milovicake_cart'));
+    }
+    expect(errors).toEqual([]);
+  });
+});

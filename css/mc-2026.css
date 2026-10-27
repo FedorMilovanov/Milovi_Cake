@@ -1145,3 +1145,6 @@ button:focus-visible, a:focus-visible {
 @media (prefers-reduced-motion:reduce){
   .catalog-grid .product-card:hover .slider-wrap img{ transform:none; }
 }
+
+/* Keep status messages readable within narrow viewports. */
+.toast { width:max-content; max-width:calc(100vw - 32px); white-space:normal; overflow-wrap:anywhere; text-align:center; }

@@ -325,7 +325,7 @@ function lightboxTemplate(){
         <p class="lb-desc" id="lbDesc"></p>
         <div class="lb-actions">
           <button type="button" class="lb-action" id="lbShare">Поделиться</button>
-          <div class="lb-order-choice" aria-label="Написать пожелания по этой работе">
+          <div class="lb-order-choice" role="group" aria-label="Написать пожелания по этой работе">
             <span class="lb-order-label">Хочу такой</span>
             <a class="lb-order-icon lb-order-wa" id="lbWantWa" target="_blank" rel="noopener noreferrer" aria-label="Написать в WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.08-.3-.15-1.26-.46-2.39-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.08-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.07c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.69.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35z"/><path d="M12.05 2.01A9.88 9.88 0 0 0 2.16 11.9c0 1.75.46 3.45 1.34 4.95L2.06 22l5.28-1.38a9.88 9.88 0 0 0 4.71 1.2h.01a9.89 9.89 0 0 0-.01-19.81zm0 18.14h-.01a8.2 8.2 0 0 1-4.18-1.14l-.3-.18-3.13.82.84-3.05-.2-.31a8.18 8.18 0 1 1 6.98 3.86z"/></svg></a>
             <a class="lb-order-icon lb-order-tg" id="lbWantTg" target="_blank" rel="noopener noreferrer" data-copy-msg="1" aria-label="Написать в Telegram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.7 4.3 2.7 11.7c-1.1.44-1.08 1.05-.2 1.32l4.88 1.52 1.87 5.86c.24.66.12.92.82.92.54 0 .78-.25 1.08-.54l2.6-2.53 5.4 3.99c.99.55 1.7.27 1.95-.92l3.53-16.62c.36-1.45-.55-2.1-1.99-1.5zm-3.26 3.82-8.58 7.75-.34 3.6-1.53-5.1 10.45-6.25z"/></svg></a>
@@ -344,6 +344,7 @@ function openLightbox(index){
     closeLightbox._skipObserverRestore = true; // don't rebuild observer, we'll disconnect it immediately
     closeLightbox();
   }
+  state.lbReturnFocus = document.activeElement;
   // Pause grid videos
   if(state.observer) state.observer.disconnect();
   $$('#galleryGrid video').forEach(v => v.pause());
@@ -398,15 +399,15 @@ function openLightbox(index){
     th.type='button'; 
     th.setAttribute('aria-label',item.title); 
     th.innerHTML=`<img src="${item.src}" alt="" loading="lazy" decoding="async">${item.type==='video'?'<span class="thumb-play"><svg viewBox="0 0 12 12"><path d="M3.5 2v8l6.5-4z"/></svg></span>':''}`; 
-    th.addEventListener('click',e=>{e.stopPropagation(); state.swiper?.slideTo(i);}); 
+    th.addEventListener('click',e=>{e.stopPropagation(); showLightboxSlide(i);});
     thumbs.appendChild(th); 
   });
   
   $('#lbRoot').addEventListener('click',e=>{ if(e.target.id==='lbRoot') closeLightbox(); }); 
   $('.lb-backdrop')?.addEventListener('click',e=>{e.stopPropagation(); closeLightbox();}); 
   $('#lbClose').addEventListener('click',e=>{e.stopPropagation(); closeLightbox();}); 
-  $('#lbPrev').addEventListener('click',e=>{e.stopPropagation(); state.swiper?.slidePrev();}); 
-  $('#lbNext').addEventListener('click',e=>{e.stopPropagation(); state.swiper?.slideNext();}); 
+  $('#lbPrev').addEventListener('click',e=>{e.stopPropagation(); showLightboxSlide(state.lbIndex-1);});
+  $('#lbNext').addEventListener('click',e=>{e.stopPropagation(); showLightboxSlide(state.lbIndex+1);});
   $('#lbShare')?.addEventListener('click', e=>{ e.stopPropagation(); shareCurrentWork(); }); 
   $('#lbCopy')?.addEventListener('click', e=>{ e.stopPropagation(); copyCurrentLink(); }); 
   // FIX r25/r26: copy wish text without delaying popup navigation; delayed window.open on mobile
@@ -418,9 +419,21 @@ function openLightbox(index){
     if (href) window.open(href, '_blank', 'noopener,noreferrer');
   })); 
   
-  initSwiperWhenReady(index); 
-  updateLightbox(index,true); 
-  requestAnimationFrame(() => warmupLightboxMedia(index));
+  // Keep the lightbox usable when either Swiper asset is unavailable.
+  let touchStart;
+  $('#lbSwiper').addEventListener('touchstart', e=>{
+    if (!state.swiper && e.touches.length === 1) touchStart = [e.touches[0].clientX, e.touches[0].clientY];
+  }, {passive:true});
+  $('#lbSwiper').addEventListener('touchend', e=>{
+    if (!state.swiper && touchStart && e.changedTouches.length === 1) {
+      const dx = e.changedTouches[0].clientX-touchStart[0];
+      const dy = e.changedTouches[0].clientY-touchStart[1];
+      if (Math.abs(dx)>40 && Math.abs(dx)>Math.abs(dy)) showLightboxSlide(state.lbIndex+(dx<0?1:-1));
+    }
+    touchStart = null;
+  }, {passive:true});
+  showLightboxSlide(index,true);
+  initSwiperWhenReady();
   window.addEventListener('keydown',onLightboxKey);
   window.addEventListener('popstate', onPopState);
   window.addEventListener('resize', onLightboxResize, { passive: true });
@@ -433,20 +446,21 @@ function onPopState() {
   if ($('#lbRoot')) closeLightbox(false);
 }
 
-function initSwiperWhenReady(index){ 
-  let _swiperTries = 0;
-  const _swiperToken = {};
-  state._swiperAbort = _swiperToken;
-  const init=()=>{ 
-    if(state._swiperAbort !== _swiperToken) return;
-    if(!window.Swiper){ 
-      if(++_swiperTries >= 40){ /* r34: #29 — reduced from 120 (6s) to 40 (2s) */
-        /* Swiper CDN timeout — silent in prod */
-        return;
-      }
-      setTimeout(init,50); 
-      return; 
-    } 
+function showLightboxSlide(index, immediate=false){
+  index=Math.max(0,Math.min(index,state.visible.length-1));
+  if(state.swiper){ state.swiper.slideTo(index); return; }
+  $$('#lbWrapper .swiper-slide').forEach((slide,i)=>slide.classList.toggle('swiper-slide-active',i===index));
+  updateLightbox(index,immediate);
+}
+
+function initSwiperWhenReady(){
+  const controller = new AbortController();
+  state._swiperAbort = controller;
+  const css = document.querySelector('link[href*="swiper-bundle.min.css"]');
+  const script = document.querySelector('script[data-gallery-swiper]');
+  const init=()=>{
+    if(controller.signal.aborted || state.swiper || !window.Swiper || !css?.sheet || css.media === 'print') return;
+    const index=state.lbIndex;
     const mobile=window.innerWidth<768; 
     const tablet=window.innerWidth<1024;
     state.swiper=new Swiper('#lbSwiper',{
@@ -483,9 +497,12 @@ function initSwiperWhenReady(index){
           centerThumb(this.activeIndex, 'auto');
         }
       }
-    }); 
-  }; 
-  requestAnimationFrame(init); 
+    });
+  };
+  const options = {once:true, signal:controller.signal};
+  script?.addEventListener('load',init,options);
+  css?.addEventListener('load',init,options);
+  requestAnimationFrame(init);
 }
 function updateLightbox(index, immediate=false){ 
   state.lbIndex=index; 
@@ -670,8 +687,8 @@ function onLightboxResize() {
 
 function onLightboxKey(e){ 
   if(e.key==='Escape') closeLightbox(); 
-  if(e.key==='ArrowLeft') state.swiper?.slidePrev(); 
-  if(e.key==='ArrowRight') state.swiper?.slideNext(); 
+  if(e.key==='ArrowLeft') showLightboxSlide(state.lbIndex-1);
+  if(e.key==='ArrowRight') showLightboxSlide(state.lbIndex+1);
   if(e.key==='Tab') {
     const focusables = $$('button, a', $('#lbRoot'));
     const first = focusables[0];
@@ -681,7 +698,8 @@ function onLightboxKey(e){
   }
 }
 function closeLightbox(updateState = true){ 
-  state._swiperAbort = null; // abort pending Swiper init
+  state._swiperAbort?.abort();
+  state._swiperAbort = null;
   window.removeEventListener('keydown',onLightboxKey); 
   window.removeEventListener('popstate', onPopState);
   window.removeEventListener('resize', onLightboxResize);
@@ -693,7 +711,11 @@ function closeLightbox(updateState = true){
   $('#lbRoot')?.remove(); 
   /* r31: bug #40 — iOS-safe scroll unlock */ document.body.style.position=''; document.body.style.top=''; document.body.style.left=''; document.body.style.right=''; document.body.style.overflow=''; window.scrollTo(0,_gLockY||0); 
   if (updateState) history.replaceState(null,'',location.pathname+location.search); 
-  if (!closeLightbox._skipObserverRestore) setupVideoObserver(); // Re-enable grid videos
+  if (!closeLightbox._skipObserverRestore) {
+    setupVideoObserver(); // Re-enable grid videos
+    if (state.lbReturnFocus?.isConnected) state.lbReturnFocus.focus({preventScroll:true});
+  }
+  state.lbReturnFocus = null;
   closeLightbox._skipObserverRestore = false;
 }
 function boot(){ 
