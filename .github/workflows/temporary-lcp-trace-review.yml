@@ -1,0 +1,32 @@
+# PR-only and temporary. Reads existing artifact files, never runs Lighthouse or deploys.
+# Delete this workflow and its reviewer after the diagnosis.
+name: Temporary read-only LCP trace review
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/temporary-lcp-trace-review.yml
+      - scripts/diagnostics/lcp_trace_review_temp.py
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Download already captured SHA-verified production traces and release reports
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 40340625141 --repo "${{ github.repository }}" \
+            -n original-lcp-12-raw-traces-40248432996-40340625141-1 -D /tmp/lcp-original
+          gh run download 40408519461 --repo "${{ github.repository }}" \
+            -n lighthouse-results -D /tmp/lcp-release
+      - name: Summarize traces in check annotations only
+        run: python3 scripts/diagnostics/lcp_trace_review_temp.py /tmp/lcp-original /tmp/lcp-release
