@@ -1,0 +1,85 @@
+# TEMPORARY PR-only readout of already-captured anonymous Lighthouse reports.
+# No new browser visits, deploy, site change, permanent CI, or visitor data.
+# Remove after recording the bounded findings in docs.
+name: Temporary Gatchina LHR frame-delay readout
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/temporary-lcp-gatchina-readout.yml
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  readout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Verify source run and retrieve only existing artifacts
+        run: |
+          test "$(gh api repos/${{ github.repository }}/actions/runs/40549733312 --jq '.head_sha')" = \
+            '44895971262aaba1923246afc4e204ebc5572c4d'
+          test "$(gh api repos/${{ github.repository }}/actions/artifacts/12755371152 --jq '.digest')" = \
+            'sha256:8393d7dee1c168d422c0a0da2fe9b3fad3cde1d1549f2cc1cb9db3c9a91ee132'
+          gh run download 40549733312 --repo "${{ github.repository }}" \
+            -n temporary-gatchina-sim-40549733312-1 -D /tmp/lcp-new
+          gh run download 40435836396 --repo "${{ github.repository }}" \
+            -n lighthouse-results -D /tmp/lcp-release
+
+      - name: Read single live outlier and release baselines without extrapolating
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          from statistics import median
+          root = Path('/tmp/lcp-new')
+          summary = json.loads((root / 'summary.json').read_text())
+          live = json.loads((root / 'live-reference.json').read_text())
+          assert summary['expectedRelease'] == 'e4cc47a5478a2cd1cc29096f51e310633919f3e2'
+          assert summary['pilot'] is False and len(summary['rows']) == 24
+          assert summary['live']['simLcp'] == round(live['audits']['largest-contentful-paint']['numericValue'], 1)
+          assert summary['live']['finalUrl'] == live['finalUrl'] == 'https://milovicake.ru/prigorody/gatchina/'
+          assert live['lighthouseVersion'] == '12.6.1'
+          def report(lhr):
+              a = lhr['audits']
+              m = a['metrics']['details']['items'][0]
+              n = a['largest-contentful-paint-element']['details']['items']
+              requests = a['network-requests']['details']['items']
+              find = lambda s: [round(x['networkEndTime']) for x in requests if s in x['url'] and x['statusCode'] == 200]
+              phases = {x['phase']: round(x['timing']) for x in n[1]['items']}
+              long = a.get('long-tasks', {}).get('details', {}).get('items', [])
+              return dict(sim=round(a['largest-contentful-paint']['numericValue']),
+                  rawFcp=round(m['observedFirstContentfulPaint']),
+                  rawLcp=round(m['observedLargestContentfulPaint']),
+                  simFcp=round(a['first-contentful-paint']['numericValue']),
+                  tbt=round(a['total-blocking-time']['numericValue']),
+                  phases=phases, element=n[0]['items'][0]['node']['selector'],
+                  htmlEnd=find('/prigorody/gatchina/'),
+                  cssEnd=find('/css/style.css'), avifEnd=find('/img/head_mobile.avif'),
+                  webpEnd=find('/img/head_mobile.webp'),
+                  fontCssEnd=find('fonts.googleapis.com'),
+                  fontFileEnd=find('fonts.gstatic.com'),
+                  longTasks=len(long), maxTask=round(max((x.get('duration',0) for x in long), default=0)))
+          print('::notice title=Single live reference (NOT a field percentile)::' + json.dumps(report(live), ensure_ascii=False))
+          reports = []
+          for p in Path('/tmp/lcp-release').rglob('*.report.json'):
+              lhr = json.loads(p.read_text())
+              if lhr.get('finalUrl') == live['finalUrl']:
+                  reports.append(report(lhr))
+          assert len(reports) == 3, f'Expected three already-published #106 Gatchina LHRs: {len(reports)}'
+          for i, r in enumerate(reports, 1):
+              print(f'::notice title=Existing #106 Gatchina #{i}::' + json.dumps(r, ensure_ascii=False))
+          originals = [r for r in summary['rows'] if r['arm'] == 'published']
+          assert len(originals) == 8
+          print('::notice title=Fixture original FCP/raw and candidate ranges::' + json.dumps({
+              'rawFcp': [r['rawFcp'] for r in originals],
+              'rawLcp': [r['rawLcp'] for r in originals],
+              'simLcp': [r['simLcp'] for r in originals],
+              'candidate': [r['candidate'] for r in originals],
+              'medianRawFcp': median(r['rawFcp'] for r in originals),
+          }))
+          PY
