@@ -65,6 +65,7 @@ def lcp_element(audits):
 
 def read_reports(root, release):
     files = sorted(root.rglob('*.report.json'))
+    notice(release + '-files', {'count': len(files), 'sample': [x.name for x in files[:3]]})
     if len(files) < 24:
         raise RuntimeError(f'{root}: expected 24 report JSON, found {len(files)}')
     results = defaultdict(list)
@@ -163,6 +164,29 @@ def trace_gap(path):
             sub = [e for e in sub if '/sw.js' in str(e.get('args', {}))
                    or '/css/style.css' in str(e.get('args', {}))]
         timeline[name] = [at(e) for e in sub][-18:]
+    if path.name.startswith('bento-01'):
+        # A missing DrawFrame is not necessarily a missing presented compositor frame.
+        main = next(((p['pid'], p['tid']) for p in per_thread
+                     if p['process'] == 'Renderer' and p['thread'] == 'CrRendererMain'), None)
+        stages = ('DrawFrame', 'BeginFrame', 'BeginMainThreadFrame', 'Screenshot',
+                  'RasterTask', 'SubmitCompositorFrameToPresentationCompositorFrame',
+                  'StartDrawToSwapStart', 'ResourceSendRequest')
+        bins = []
+        for lo, hi in ((0, 250), (250, 500), (500, 750), (750, 1000),
+                       (1000, 1250), (1250, 1500)):
+            a, b = zero + lo * 1000, zero + hi * 1000
+            counts = Counter(e['name'] for e in events if a <= e.get('ts', 0) < b
+                             and e.get('name') in stages)
+            tasks = [e for e in events if e.get('name') == 'RunTask'
+                     and main and (e.get('pid'), e.get('tid')) == main]
+            bins.append({'range': f'{lo}-{hi}', 'mainBusyMs': clip_union(tasks, a, b),
+                         'events': {k: counts[k] for k in stages if counts[k]}})
+        visibility = [{'name': e['name'], 'at': at(e)} for e in events
+                      if zero <= e.get('ts', 0) <= lcp
+                      and any(term in e.get('name', '').lower()
+                              for term in ('visibility', 'occlud', 'background', 'freeze', 'resume'))]
+        notice('bento-01-frame-pipeline', {'bins': bins, 'visibilityEvents': visibility[:25],
+                                           'visibilityCounts': Counter(x['name'] for x in visibility)})
     notice('trace-' + path.name.split('.')[0], {
         'file': path.name, 'navURL': nav.get('args', {}).get('data', {}).get('documentLoaderURL'),
         'rawLcpMs': round((lcp - zero) / 1000, 1),

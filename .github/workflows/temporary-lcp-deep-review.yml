@@ -36,11 +36,34 @@ jobs:
       - name: Trace process and compositor work around the historic delayed frame
         run: python3 scripts/diagnostics/lcp_forensics_temp.py trace /tmp/lcp-raw
 
-      - name: Break down all 24 historical #103 Lighthouse results
-        run: python3 scripts/diagnostics/lcp_forensics_temp.py release /tmp/lhr-103 103
+      - name: Break down all 24 historical Lighthouse results
+        run: |
+          if python3 scripts/diagnostics/lcp_forensics_temp.py release /tmp/lhr-103 103 > /tmp/lhr-103.log 2>&1; then
+            cat /tmp/lhr-103.log
+          else
+            cat /tmp/lhr-103.log
+            echo "::error title=LHR 103 readout failed::$(tail -n 12 /tmp/lhr-103.log | tr '\n' ' ')"
+            exit 1
+          fi
 
-      - name: Break down all 24 post-telemetry #104 Lighthouse results
-        run: python3 scripts/diagnostics/lcp_forensics_temp.py release /tmp/lhr-104 104
+      - name: Break down all 24 post-telemetry Lighthouse results
+        if: always()
+        run: |
+          if python3 scripts/diagnostics/lcp_forensics_temp.py release /tmp/lhr-104 104 > /tmp/lhr-104.log 2>&1; then
+            cat /tmp/lhr-104.log
+          else
+            cat /tmp/lhr-104.log
+            echo "::error title=LHR 104 readout failed::$(tail -n 12 /tmp/lhr-104.log | tr '\n' ' ')"
+            exit 1
+          fi
 
-      - name: Break down all 24 currently deployed #106 Lighthouse results
-        run: python3 scripts/diagnostics/lcp_forensics_temp.py release /tmp/lhr-106 106
+      - name: Break down all 24 currently deployed Lighthouse results
+        if: always()
+        run: |
+          if python3 scripts/diagnostics/lcp_forensics_temp.py release /tmp/lhr-106 106 > /tmp/lhr-106.log 2>&1; then
+            cat /tmp/lhr-106.log
+          else
+            cat /tmp/lhr-106.log
+            echo "::error title=LHR 106 readout failed::$(tail -n 12 /tmp/lhr-106.log | tr '\n' ' ')"
+            exit 1
+          fi
