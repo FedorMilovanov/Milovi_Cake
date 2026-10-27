@@ -42,8 +42,9 @@ def network_summary(audits, page):
                         'bytes': x.get('transferSize'), 'priority': x.get('priority'),
                         'protocol': x.get('protocol'), 'status': x.get('statusCode')}
                        for x in found], key=lambda x: x['end'] or -1)
-    doc = finish(lambda u: urlparse(u).path in (('/' if page == 'home' else '/' + page + '/'),)
-                 and 'milovicake.ru' in u)
+    doc_path = {'home': '/', 'gatchina': '/prigorody/gatchina/',
+                'about': '/o-konditere/', 'order': '/zakazat-tort-spb/'}.get(page, '/' + page + '/')
+    doc = finish(lambda u: urlparse(u).path == doc_path and 'milovicake.ru' in u)
     hero = finish(lambda u: HERO.get(page, '\0') in u)
     css = finish(lambda u: '/css/style.css' in u)
     fonts = finish(lambda u: 'fonts.gstatic.com' in u)
@@ -64,7 +65,8 @@ def lcp_element(audits):
 
 
 def read_reports(root, release):
-    files = sorted(root.rglob('*.report.json'))
+    # LHCI artifacts use timestamped .json names, not *.report.json.
+    files = sorted(root.rglob('*.json'))
     notice(release + '-files', {'count': len(files), 'sample': [x.name for x in files[:3]]})
     if len(files) < 24:
         raise RuntimeError(f'{root}: expected 24 report JSON, found {len(files)}')
