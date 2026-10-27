@@ -88,11 +88,15 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     // Playwright route handler pending while the lightbox is exercised.
     const http = require('node:http');
     const fs = require('node:fs');
+    const path = require('node:path');
+    const root = process.cwd();
     const html = fs.readFileSync('gallery/index.html', 'utf8');
     const src = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js';
     expect(html.split(src)).toHaveLength(2);
     let response;
     let markRequested;
+    const stats = { assets: 0, images: 0, videos: 0, missing: 0, crashed: false };
+    page.on('crash', () => { stats.crashed = true; });
     const requested = new Promise((resolve) => { markRequested = resolve; });
     const server = http.createServer((req, res) => {
       if (req.url === '/gallery/') {
@@ -101,12 +105,35 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
         response = res;
         markRequested();
       } else {
-        const upstream = http.request({ hostname: '127.0.0.1', port: 4173, path: req.url, method: req.method, headers: req.headers }, (result) => {
-          res.writeHead(result.statusCode, result.headers);
-          result.pipe(res);
+        // Serve actual repository files directly, without an extra proxy
+        // connection for every gallery image and video.
+        const pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
+        const file = path.resolve(root, `.${pathname}`);
+        stats.assets++;
+        if (/\.(?:webp|avif|png|jpe?g)$/i.test(pathname)) stats.images++;
+        if (/\.webm$/i.test(pathname)) stats.videos++;
+        if (!file.startsWith(root + path.sep)) return res.writeHead(403).end();
+        fs.stat(file, (error, stat) => {
+          if (error || !stat.isFile()) { stats.missing++; return res.writeHead(404).end(); }
+          const types = {
+            '.js': 'application/javascript', '.css': 'text/css', '.html': 'text/html; charset=utf-8',
+            '.webp': 'image/webp', '.avif': 'image/avif', '.svg': 'image/svg+xml', '.webm': 'video/webm',
+            '.png': 'image/png', '.jpg': 'image/jpeg', '.json': 'application/json',
+          };
+          let start = 0, end = stat.size - 1, status = 200;
+          const range = /^bytes=(\d+)-(\d*)$/.exec(req.headers.range || '');
+          const headers = { 'Content-Type': types[path.extname(file)] || 'application/octet-stream' };
+          if (range) {
+            start = Number(range[1]); end = range[2] ? Math.min(Number(range[2]), end) : end;
+            if (start > end) return res.writeHead(416, { 'Content-Range': `bytes */${stat.size}` }).end();
+            status = 206; headers['Content-Range'] = `bytes ${start}-${end}/${stat.size}`;
+          }
+          headers['Content-Length'] = end - start + 1;
+          headers['Accept-Ranges'] = 'bytes';
+          res.writeHead(status, headers);
+          if (req.method === 'HEAD' || stat.size === 0) return res.end();
+          fs.createReadStream(file, { start, end }).on('error', () => res.destroy()).pipe(res);
         });
-        upstream.on('error', () => { if (!res.headersSent) res.writeHead(502); res.end(); });
-        req.pipe(upstream);
       }
     });
     await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
@@ -158,6 +185,8 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       await expect(page.locator('#lbCounter')).toHaveText('03 / 46');
       await page.locator('#lbNext').click();
       await expect(page.locator('#lbCounter')).toHaveText('04 / 46');
+    } catch (error) {
+      throw new Error(`${error.message}\nGallery server diagnostics: ${JSON.stringify(stats)}`);
     } finally {
       release();
       server.closeAllConnections();
