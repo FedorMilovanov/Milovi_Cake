@@ -100,7 +100,6 @@ GOOGLE_REVIEWS = {
                 <div class="map-reviewer-avatar" style="background:#8B4513;color:#fff;">Т</div>
                 <div class="map-reviewer-info">
                   <span class="map-reviewer-name">Татьяна</span>
-                  <span class="map-reviewer-date"><time datetime="2024-05-01">год назад</time></span>
                   <span class="map-reviewer-stars">★★★★★</span>
                 </div>
               </div>
@@ -112,7 +111,6 @@ GOOGLE_REVIEWS = {
                 <div class="map-reviewer-avatar" style="background:#4285F4;">Л</div>
                 <div class="map-reviewer-info">
                   <span class="map-reviewer-name">Liras Магазин</span>
-                  <span class="map-reviewer-date"><time datetime="2023-05-01">2 года назад</time></span>
                   <span class="map-reviewer-stars">★★★★★</span>
                 </div>
               </div>
@@ -124,7 +122,6 @@ GOOGLE_REVIEWS = {
                 <div class="map-reviewer-avatar" style="background:#34A853;">И</div>
                 <div class="map-reviewer-info">
                   <span class="map-reviewer-name">Ирина Силантьева</span>
-                  <span class="map-reviewer-date"><time datetime="2024-05-01">год назад</time></span>
                   <span class="map-reviewer-stars">★★★★★</span>
                 </div>
               </div>
@@ -136,7 +133,6 @@ GOOGLE_REVIEWS = {
                 <div class="map-reviewer-avatar" style="background:#EA4335;">Е</div>
                 <div class="map-reviewer-info">
                   <span class="map-reviewer-name">Елена Кузнецова</span>
-                  <span class="map-reviewer-date"><time datetime="2023-05-01">2 года назад</time></span>
                   <span class="map-reviewer-stars">★★★★★</span>
                 </div>
               </div>

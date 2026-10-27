@@ -343,7 +343,7 @@ for public_html in public_html_files():
 
 # Changed shared styles must agree between every consumer and the precache.
 for asset in ('style.css', 'mc-2026.css', 'premium-overrides.css', 'v20-dark-and-fixes.css'):
-    revision = '20261027r04' if asset == 'premium-overrides.css' else '20261027r03'
+    revision = {'style.css': '20261027r04', 'premium-overrides.css': '20261027r05'}.get(asset, '20261027r03')
     require(f"'/css/{asset}?v={revision}'," in sw, f'{asset} service-worker revision drifted')
     for public_html in public_html_files():
         refs = re.findall(rf'css/{re.escape(asset)}\?v=([0-9a-z]+)', read(public_html))
@@ -355,7 +355,7 @@ for public_html in public_html_files():
     refs = re.findall(r'js/main\.js\?v=([0-9a-z]+)', html)
     require(all(ref == '20261027r04' for ref in refs), f'{public_html} shared main.js revision drifted')
 
-require("const CACHE_NAME = 'milovi-cake-v2026.10.27-r97';" in sw, 'service-worker cache generation drifted')
+require("const CACHE_NAME = 'milovi-cake-v2026.10.27-r98';" in sw, 'service-worker cache generation drifted')
 require(style_ref != '/css/style.css?v=20261023r01', 'service-worker precache still points at stale shared CSS revision')
 require("'/js/main.js?v=20261027r04'," in sw, 'service-worker precache still points at stale shared main.js revision')
 require("'/js/gallery/main.js?v=20261027r04'," in sw, 'service-worker precache still points at stale gallery runtime revision')

@@ -73,6 +73,24 @@ class SchemaContentContractTest(unittest.TestCase):
                         self.assertNotEqual(offer.get('availability'), 'https://schema.org/InStock')
                         self.assertNotIn('priceValidUntil', offer)
 
+    def test_unverified_google_review_dates_are_not_fabricated_or_left_relative(self):
+        with (ROOT / 'prigorody/_cities.csv').open(encoding='utf-8', newline='') as source:
+            slugs = [row['slug'] for row in csv.DictReader(source)]
+        for relative in ['index.html', 'prigorody/_template.html',
+                         *(f'prigorody/{slug}/index.html' for slug in slugs)]:
+            html = (ROOT / relative).read_text(encoding='utf-8')
+            google = html.split('id="reviewsGoogle"', 1)[1].split('class="reviews-modal-footer"', 1)[0]
+            with self.subTest(page=relative):
+                self.assertEqual(google.count('class="modal-review"'), 4)
+                self.assertNotIn('modal-review-date', google)
+                self.assertNotIn('<time', google)
+                self.assertNotRegex(google, r'\b(?:год|года|лет|месяц(?:а|ев)?|дн(?:я|ей))\s+назад\b')
+        generator = (ROOT / 'prigorody/build.py').read_text(encoding='utf-8')
+        google_cards = generator.split('GOOGLE_REVIEWS = {', 1)[1].split('REVIEW_SETS = {', 1)[0]
+        self.assertNotIn('map-reviewer-date', google_cards)
+        self.assertNotIn('<time', google_cards)
+        self.assertNotIn('назад', google_cards)
+
     def test_business_does_not_aggregate_external_or_nonvisible_reviews(self):
         for relative in ('index.html', 'otzyvy/index.html'):
             businesses = [node for node in page_nodes(relative)

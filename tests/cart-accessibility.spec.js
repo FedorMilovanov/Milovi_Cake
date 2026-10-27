@@ -53,6 +53,55 @@ test('suburb calculator and contact labels retain AA contrast', async ({ page })
   }
 });
 
+test('selected calculator decor retains contrast in both themes', async ({ page }, testInfo) => {
+  test.setTimeout(90_000);
+  await page.setViewportSize({ width: testInfo.project.name.endsWith('mobile') ? 390 : 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  for (const route of ['/', '/prigorody/pushkin/']) {
+    for (const theme of ['light', 'dark']) {
+      await page.evaluate((mode) => localStorage.setItem('mc_theme', mode), theme);
+      await page.goto(route, { waitUntil: 'domcontentloaded' });
+      for (let index = 0; index < 2; index++) {
+        const option = page.locator('#calcDecor .calc-opt').nth(index);
+        if (index) {
+          await option.focus();
+          await page.keyboard.press('Enter');
+        }
+        await expect(option).toHaveClass(/selected/);
+        // Measure the settled selected state, not a transient mid-transition color.
+        await option.evaluate(async (el) => {
+          await new Promise(requestAnimationFrame);
+          await Promise.all(el.getAnimations({ subtree: true }).map((animation) => animation.finished.catch(() => {})));
+        });
+        // Axe leaves gradient contrast incomplete; evaluate both opaque stops.
+        await expect.poll(async () => {
+          const sample = await option.evaluate((el) => {
+            const background = getComputedStyle(el);
+            const label = getComputedStyle(el.querySelector('.opt-label'));
+            return { foreground: label.webkitTextFillColor || label.color,
+              image: background.backgroundImage, color: background.backgroundColor };
+          });
+          const colors = sample.image === 'none' ? [sample.color] : (sample.image.match(/rgba?\([^)]*\)/g) || []);
+          if (!colors.length || (sample.image !== 'none' && colors.length < 2)) throw new Error('Recheck decor gradient contrast');
+          return Math.min(...colors.map((background) => {
+            const alpha = background.match(/rgba\([^,]+,[^,]+,[^,]+,\s*([\d.]+)\)/);
+            if (alpha && Number(alpha[1]) < 1) throw new Error('Recheck translucent decor contrast');
+            const values = [luminance(sample.foreground), luminance(background)].sort((a, b) => b - a);
+            return (values[0] + 0.05) / (values[1] + 0.05);
+          }));
+        }, { message: `${route} ${theme} decor option ${index}` }).toBeGreaterThanOrEqual(4.5);
+        if (index) {
+          const hint = page.locator('#calcDecorHint');
+          await expect(hint).toHaveClass(/visible/);
+          await expect.poll(() => hint.evaluate((el) => Number(getComputedStyle(el).opacity))).toBe(1);
+          expect(await contrast(page, '#calcDecorHint'), `${route} ${theme} decor hint`).toBeGreaterThanOrEqual(4.5);
+        }
+      }
+    }
+  }
+});
+
 test('cart opening does not steal focus from a quick interaction', async ({ page }) => {
   for (const route of ['/', '/prigorody/pushkin/']) {
     for (const confirm of [false, true]) {
@@ -631,15 +680,58 @@ test('mobile calculator panel stays reachable and restores keyboard focus', asyn
   expect(errors).toEqual([]);
 });
 
-test('desktop calculator skips its unboxed result region when tabbing', async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/', { waitUntil: 'domcontentloaded' });
-  await expect(page.locator('#calcExpandable')).toHaveCSS('display', 'contents');
-  await page.locator('#calcDecor .calc-opt').last().focus();
-  await page.keyboard.press('Tab');
-  await expect(page.locator('.calc-add-btn')).toBeFocused();
-  await page.keyboard.press('Tab');
-  await expect(page.locator('#calcOpenCartBtn')).toBeFocused();
+test('mobile calculator fast Tab keeps actions available with reduced motion', async ({ page }) => {
+  test.setTimeout(90_000);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  for (const route of ['/', '/prigorody/pushkin/']) {
+    await page.goto(route, { waitUntil: 'domcontentloaded' });
+    await page.locator('#mcNav [data-section="catalog"]').click();
+    await expect(page.locator('#card-2 .btn-add')).toBeVisible();
+    await page.locator('#fillings').scrollIntoViewIfNeeded();
+    const bar = page.locator('#calcCollapsedBar');
+    await bar.focus();
+    await page.keyboard.press('Enter');
+    await expect(bar).toHaveAttribute('aria-expanded', 'true');
+    // Do not wait for the button to become visible before tabbing to it.
+    await page.keyboard.press('Tab');
+    const first = await page.evaluate(() => document.activeElement.id);
+    await page.keyboard.press('Tab');
+    const second = await page.evaluate(() => document.activeElement.className);
+    expect({ first, second }, route).toEqual({ first: 'calcExpandable', second: 'calc-add-btn' });
+    await expect(page.locator('.calc-add-btn')).toBeVisible();
+    await expect(bar).toHaveAttribute('aria-expanded', 'true');
+  }
+});
+
+test('wider calculator result keeps its labelled keyboard focus visible', async ({ page }) => {
+  test.setTimeout(90_000);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  for (const width of [561, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const route of ['/', '/prigorody/pushkin/']) {
+      await page.goto(route, { waitUntil: 'domcontentloaded' });
+      const region = page.locator('#calcExpandable');
+      await expect(region).toHaveCSS('display', 'flex');
+      await expect(region).toHaveAccessibleName('Итог расчёта торта');
+      await page.locator('#calcDecor .calc-opt').last().focus();
+      await page.keyboard.press('Tab');
+      await expectCalculatorFocus(page, region, true);
+      expect(await region.evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe('none');
+      expect((await region.boundingBox()).height).toBeGreaterThan(0);
+      await page.keyboard.press('Tab');
+      await expectCalculatorFocus(page, page.locator('.calc-add-btn'), true);
+      if (width <= 768) {
+        // Native focus scrolling must leave the button above the fixed app bar.
+        await expect.poll(() => page.evaluate(() =>
+          document.querySelector('#mcNav').getBoundingClientRect().top -
+          document.querySelector('.calc-add-btn').getBoundingClientRect().bottom),
+        { message: `${route} ${width}px focused add button vs. navigation` }).toBeGreaterThanOrEqual(0);
+      }
+      await page.keyboard.press('Tab');
+      await expectCalculatorFocus(page, page.locator('#calcOpenCartBtn'), true);
+    }
+  }
 });
 
 test('mobile calculator ignores a stale scroll event but closes on a real scroll', async ({ page, browserName }, testInfo) => {

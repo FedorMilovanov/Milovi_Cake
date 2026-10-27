@@ -170,6 +170,20 @@ test.describe('premium baseline consolidation contracts', () => {
     await expect(page.locator('.mc-consent-overlay')).not.toHaveClass(/is-open/);
   });
 
+  test('review modal keeps Google entries without unverified dates', async ({ page }) => {
+    for (const route of ['/', '/prigorody/pushkin/']) {
+      await page.goto(route, { waitUntil: 'domcontentloaded' });
+      await page.locator('.map-badge-google').click();
+      await expect(page.locator('#reviewsModal')).toHaveClass(/open/);
+      await expect(page.locator('#reviewsGoogle .modal-review')).toHaveCount(4);
+      await expect(page.locator('#reviewsGoogle .modal-review-date, #reviewsGoogle time')).toHaveCount(0);
+      await page.locator('#tabYandex').click();
+      await expect(page.locator('#reviewsYandex .modal-review-date')).toHaveCount(4);
+      await page.locator('.reviews-modal-close').click();
+      await expect(page.locator('#reviewsModal')).not.toHaveClass(/open/);
+    }
+  });
+
   test('review and calculator controls keep explicit accessible names', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
 

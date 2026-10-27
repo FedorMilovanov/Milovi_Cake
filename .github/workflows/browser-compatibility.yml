@@ -93,3 +93,52 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
           include-hidden-files: false
+
+      # Failure-only A/B diagnostics. The primary exact-HEAD step above stays
+      # failed; these are independent comparisons, not retries that can turn it green.
+      - name: Diagnose WebKit 1.63 active-video baseline
+        id: webkit_baseline
+        if: failure() && matrix.engine == 'webkit'
+        env:
+          HOME: /root
+        run: |
+          echo '::notice title=WebKit diagnostic::Original 1.63 source, four independent active-video runs'
+          npx playwright test tests/video-posters.spec.js --project=webkit-desktop \
+            --grep='gallery can close an active video' --repeat-each=4 --workers=1 --retries=0 --reporter=list,github
+
+      - name: Compare without the additional video load call
+        id: webkit_no_load
+        if: failure() && matrix.engine == 'webkit' && steps.webkit_baseline.outcome != 'skipped'
+        env:
+          HOME: /root
+        run: |
+          cp js/gallery/main.js "$RUNNER_TEMP/gallery-main-original.js"
+          python3 -c 'from pathlib import Path; p=Path("js/gallery/main.js"); s=p.read_text(); old="    video.load();\n"; assert s.count(old) == 1; p.write_text(s.replace(old, ""))'
+          echo '::notice title=WebKit diagnostic::Experimental source without the extra video.load call; not the exact HEAD'
+          npx playwright test tests/video-posters.spec.js --project=webkit-desktop \
+            --grep='gallery can close an active video' --repeat-each=4 --workers=1 --retries=0 --reporter=list,github
+
+      - name: Restore exact source after WebKit comparison
+        id: webkit_restore
+        if: always() && matrix.engine == 'webkit' && steps.webkit_no_load.outcome != 'skipped'
+        run: |
+          cp "$RUNNER_TEMP/gallery-main-original.js" js/gallery/main.js
+          git diff --exit-code -- js/gallery/main.js
+
+      - name: Install Playwright 1.64 for a separate diagnostic
+        id: webkit_newer
+        if: failure() && matrix.engine == 'webkit' && steps.webkit_restore.outcome == 'success'
+        env:
+          HOME: /root
+        run: |
+          npm install --no-save --package-lock=false @playwright/test@1.64.1 playwright@1.64.1
+          npx playwright install webkit
+
+      - name: Compare WebKit 1.64 with unchanged source
+        if: failure() && matrix.engine == 'webkit' && steps.webkit_newer.outcome == 'success'
+        env:
+          HOME: /root
+        run: |
+          echo '::notice title=WebKit diagnostic::Original source with temporary Playwright 1.64.1; four independent active-video runs'
+          npx playwright test tests/video-posters.spec.js --project=webkit-desktop \
+            --grep='gallery can close an active video' --repeat-each=4 --workers=1 --retries=0 --reporter=list,github
