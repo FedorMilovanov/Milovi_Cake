@@ -1,0 +1,53 @@
+# Temporary read-only reviewer. No browser, no new measurements, no deploy.
+# Remove together with the paired experiment workflow and script after documenting.
+name: Temporary live CDN LCP artifact review
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/temporary-lcp-cdn-review.yml
+      - scripts/diagnostics/lcp_cdn_review_temp.py
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  readout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Retrieve already-captured production CDN pairs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 40495962326 --repo "${{ github.repository }}" \
+            -n temporary-live-lcp-pairs-40495962326-1 -D /tmp/lcp-cdn-readout
+      - name: Verify archive and print compact paired summaries
+        run: python3 scripts/diagnostics/lcp_cdn_review_temp.py /tmp/lcp-cdn-readout
+      - name: Summarize already-existing new-release Lighthouse data, separately from raw pairs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 40435836396 --repo "${{ github.repository }}" -n lighthouse-results -D /tmp/lcp-release-lhr
+          python3 - <<'PY'
+          import json, pathlib, statistics
+          by_page = {}
+          for f in pathlib.Path('/tmp/lcp-release-lhr').rglob('*.report.json'):
+              d = json.loads(f.read_text())
+              url = d.get('finalUrl', '')
+              if url in ('https://milovicake.ru/', 'https://milovicake.ru/bento-torty/'):
+                  audits = d['audits']
+                  by_page.setdefault(url, []).append({
+                      'simulated': round(audits['largest-contentful-paint']['numericValue']),
+                      'raw': round(audits['metrics']['details']['items'][0]['observedLargestContentfulPaint']),
+                  })
+          if len(by_page) != 2:
+              raise SystemExit(f'Expected two URLs, found {list(by_page)}')
+          for url, rows in by_page.items():
+              med = round(statistics.median(x['simulated'] for x in rows))
+              print(f'::notice title=Existing #106 LHR {url}::simulated/raw {rows}; simulated median {med} ms')
+          PY
