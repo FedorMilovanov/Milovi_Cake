@@ -1,0 +1,127 @@
+# TEMPORARY read-only PR reviewer for already-captured anonymous Chrome traces.
+# No new visit, production change, field export or permanent CI; delete after review.
+name: Temporary first-paint trace artifact readout
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/temporary-lcp-frame-readout.yml
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  readout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Verify exact source run and download archived traces
+        run: |
+          test "$(gh api repos/${{ github.repository }}/actions/runs/40567596181 --jq '.head_sha')" = \
+            'db8f0bc50c8a3098416361486fd581a945c3a06e'
+          test "$(gh api repos/${{ github.repository }}/actions/artifacts/12764705132 --jq '.digest')" = \
+            'sha256:c55b561757d0ab798f5fc10b2dcd232996a34adeb3a9bd14d097e6cc9a2e0f7c'
+          gh run download 40567596181 --repo "${{ github.repository }}" \
+            -n temporary-lcp-frame-trace-40567596181-1 -D /tmp/milovi-frame-readout
+      - name: Compare renderer and compositor stages after resources arrive
+        run: |
+          python3 - <<'PY'
+          import collections
+          import gzip
+          import json
+          from pathlib import Path
+          root = Path('/tmp/milovi-frame-readout')
+          summary = json.loads((root / 'summary.json').read_text())
+          assert summary['release'] == 'e4cc47a5478a2cd1cc29096f51e310633919f3e2'
+          assert summary['browser'].startswith('155.') and len(summary['rows']) == 8
+          rows = summary['rows']
+          for page in ('gatchina', 'privacy'):
+              sample = sorted((r for r in rows if r['page'] == page), key=lambda r: r['rawFcp'])
+              assert len(sample) == 4
+              for row in (sample[0], sample[-1]):
+                  path = root / (row['run'] + '-0.trace.json.gz')
+                  assert path.is_file(), f'Missing representative trace: {path.name}'
+          def clip_busy(tasks, lo, hi):
+              spans = sorted((max(lo, e['ts']), min(hi, e['ts'] + e['dur'])) for e in tasks
+                  if e.get('dur', 0) > 0 and e['ts'] < hi and e['ts'] + e['dur'] > lo)
+              cursor, busy = lo, 0
+              for start, end in spans:
+                  busy += max(0, end - max(start, cursor))
+                  cursor = max(cursor, end)
+              return round(busy / 1000, 1)
+          def trace_read(row):
+              path = root / (row['run'] + '-0.trace.json.gz')
+              with gzip.open(path, 'rt') as f:
+                  events = json.load(f)['traceEvents']
+              nav = next(e for e in events if e['name'] == 'navigationStart'
+                  and e.get('args', {}).get('data', {}).get('isOutermostMainFrame')
+                  and e['args']['data'].get('documentLoaderURL', '').endswith(
+                      '/prigorody/gatchina/' if row['page'] == 'gatchina' else '/privacy/'))
+              zero = nav['ts']
+              paints = [e for e in events if e['name'] == 'firstContentfulPaint' and e['ts'] >= zero]
+              assert paints, f'FCP missing: {path.name}'
+              fcp = paints[0]['ts']
+              assert abs((fcp - zero) / 1000 - row['rawFcp']) < 150
+              ready = zero + row['frame']['readyMs'] * 1000
+              if ready >= fcp:
+                  return {'run': row['run'], 'note': 'Fonts still transferring at raw FCP',
+                      'cssEnd': row['responseEndMs']['css'], 'avifEnd': row['responseEndMs']['avif'],
+                      'fontEnd': row['responseEndMs']['font'], 'rawFcp': row['rawFcp']}
+              threads = {(e['pid'], e['tid']): e.get('args', {}).get('name', '')
+                  for e in events if e['name'] == 'thread_name'}
+              procs = {e['pid']: e.get('args', {}).get('name', '') for e in events
+                  if e['name'] == 'process_name'}
+              tasks = collections.defaultdict(list)
+              for e in events:
+                  if e['name'] == 'RunTask' and e.get('dur', 0) > 0 and e['ts'] < fcp \
+                      and e['ts'] + e['dur'] > ready:
+                      tasks[(e['pid'], e['tid'])].append(e)
+              top = sorted(({'process': procs.get(pid), 'thread': threads.get((pid, tid)),
+                  'busyMs': clip_busy(group, ready, fcp), 'maxTaskMs': round(max(
+                      e['dur'] for e in group) / 1000, 1)} for (pid, tid), group in tasks.items()),
+                  key=lambda x: -x['busyMs'])[:9]
+              stage = ('DrawFrame', 'BeginFrame', 'BeginMainThreadFrame',
+                  'SubmitCompositorFrameToPresentationCompositorFrame', 'Screenshot',
+                  'RasterTask', 'Paint', 'Layout', 'ImageDecodeTask', 'DecodeImage')
+              bins = []
+              lo = ready
+              while lo < fcp:
+                  hi = min(fcp, lo + 150000)
+                  names = collections.Counter(e['name'] for e in events if lo <= e['ts'] < hi)
+                  main = tasks.get((nav['pid'], nav['tid']), [])
+                  bins.append({'window': [round((lo-zero)/1000), round((hi-zero)/1000)],
+                      'mainBusy': clip_busy(main, lo, hi),
+                      'events': {s: names[s] for s in stage if names[s]}})
+                  lo = hi
+              names = collections.Counter(e['name'] for e in events if ready <= e['ts'] < fcp)
+              keywords = ('decode', 'activation', 'raster', 'paint', 'abort', 'skip', 'occlud', 'visibility')
+              suspicious = {n:c for n,c in names.most_common() if any(k in n.lower()
+                  for k in keywords) and n not in stage and c > 0}
+              last = sorted(({'name': e['name'], 'ms': round((e['ts']-zero)/1000),
+                  'thread': threads.get((e['pid'], e['tid']))} for e in events
+                  if fcp-90000 <= e['ts'] <= fcp and e['name'] in stage),
+                  key=lambda e: e['ms'])[-20:]
+              return {'run': row['run'], 'rawFcp': row['rawFcp'],
+                  'gapMs': row['frame']['gapAfterLastResourceMs'], 'topThreads': top,
+                  'frameBins': bins, 'otherEvents': dict(list(suspicious.items())[:20]),
+                  'lastStages': last}
+          for page in ('privacy', 'gatchina'):
+              sample = sorted((r for r in rows if r['page'] == page), key=lambda r: r['rawFcp'])
+              for row in (sample[0], sample[-1]):
+                  readout = trace_read(row)
+                  title = page + '-' + ('fast' if row is sample[0] else 'slow')
+                  timing = {k:v for k,v in readout.items() if k not in
+                      ('topThreads','frameBins','otherEvents','lastStages')}
+                  print(f'::notice title={title}-timing::' + json.dumps(timing))
+                  if page == 'privacy':
+                      if 'frameBins' in readout:
+                          print(f'::notice title={title}-frames::' + json.dumps(readout['frameBins']))
+                  elif row is sample[-1]:
+                      print(f'::notice title={title}-threads::' + json.dumps(readout['topThreads']))
+                      print(f'::notice title={title}-frames::' + json.dumps(readout['frameBins']))
+                      print(f'::notice title={title}-rendering::' + json.dumps({
+                          'otherEvents':readout['otherEvents'],'lastStages':readout['lastStages']}))
+          PY
