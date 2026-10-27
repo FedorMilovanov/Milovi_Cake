@@ -99,6 +99,55 @@ def inspect_trace(path, data):
     }
 
 
+def explain_gap(path, data):
+    """Separate read-only event/CPU timeline for long first-paint gaps."""
+    events = data['traceEvents']
+    nav = min((e for e in events if e.get('name') == 'navigationStart'
+               and e.get('args', {}).get('data', {}).get('isOutermostMainFrame')),
+              key=lambda e: e['ts'])
+    zero = nav['ts']
+    last = max(e['ts'] for e in events if e.get('name') == 'largestContentfulPaint::Candidate'
+               and e['ts'] >= zero)
+    threads = {(e['pid'], e['tid']): e.get('args', {}).get('name')
+               for e in events if e.get('name') == 'thread_name'}
+    renderer = {t for t, name in threads.items() if name == 'CrRendererMain'}
+    names = ('firstContentfulPaint', 'firstPaint', 'Screenshot', 'DrawFrame',
+             'BeginMainThreadFrame', 'Paint', 'PaintImage', 'RasterTask', 'ImageDecodeTask',
+             'DroppedFrame', 'ResourceSendRequest')
+    timeline = {}
+    for name in names:
+        subset = [e for e in events if e.get('name') == name and zero <= e.get('ts', 0) <= last]
+        if name in ('Paint', 'PaintImage'):
+            subset = [e for e in subset if '/img/bento_1-mobile-640.avif' in
+                      e.get('args', {}).get('data', {}).get('url', '')]
+        if name == 'ResourceSendRequest':
+            subset = [e for e in subset if '/sw.js' in str(e.get('args', {})) or
+                      '/css/style.css' in str(e.get('args', {}))]
+        timeline[name] = [ms(e['ts'], zero) for e in subset]
+    raster = [e for e in events if e.get('name') == 'RasterTask'
+              and zero <= e.get('ts', 0) <= last]
+    tasks = [e for e in events if e.get('name') == 'RunTask'
+             and (e.get('pid'), e.get('tid')) in renderer
+             and zero <= e.get('ts', 0) <= last]
+    bins = ((0, 250), (250, 500), (500, 750), (750, 1000), (1000, 1250), (1250, 1600))
+    def buckets(items):
+        return [{'range': f'{lo}-{hi}', 'n': sum(lo <= ms(e['ts'], zero) < hi for e in items),
+                 'sumMs': round(sum(e.get('dur', 0) / 1000 for e in items
+                                    if lo <= ms(e['ts'], zero) < hi), 1)} for lo, hi in bins]
+    return {'file': path.name, 'rawLcp': ms(last, zero),
+            'firstPaint': timeline['firstPaint'], 'firstContentfulPaint': timeline['firstContentfulPaint'],
+            'heroPaintImage': timeline['PaintImage'], 'drawFrame': timeline['DrawFrame'][-25:],
+            'beginMainFrame': timeline['BeginMainThreadFrame'][-15:],
+            'screenshots': timeline['Screenshot'][-18:],
+            'droppedFrames': timeline['DroppedFrame'][-15:],
+            'resourceRequestsSWorCSS': timeline['ResourceSendRequest'][:15],
+            'decode': timeline['ImageDecodeTask'][-15:],
+            'rasterTask': buckets(raster), 'rasterLongest': sorted(
+                [[ms(e['ts'], zero), round(e.get('dur', 0) / 1000, 1)] for e in raster],
+                key=lambda x: x[1], reverse=True)[:5],
+            'rendererRunTask': buckets(tasks)}
+
+
 def release_row(path, lhr):
     url = lhr.get('finalUrl') or lhr.get('requestedUrl', '')
     if not any(x in url for x in ('/bento-torty/', '/svadebnye-torty/', '/prigorody/gatchina/')) and not re.search(r'milovicake\.ru/?$', url):
@@ -130,6 +179,9 @@ def main():
             continue
         obj = read_json(p)
         if isinstance(obj, dict) and isinstance(obj.get('traceEvents'), list):
+            if p.name in ('bento-01.report-0.trace.json', 'bento-03.report-0.trace.json',
+                          'home-03.report-0.trace.json'):
+                notice('Gap-' + p.name[:40], explain_gap(p, obj))
             traces.append(inspect_trace(p, obj))
     if len(traces) < 12:
         notice('Trace-review-missing', {'count': len(traces), 'found': [x['file'] for x in traces]})
