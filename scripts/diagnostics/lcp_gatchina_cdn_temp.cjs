@@ -83,6 +83,7 @@ async function trial(browser, profile, pair, mode) {
     const fontFile = requests.filter(x => x.url.includes('fonts.gstatic.com') && x.status === 200).length;
     const row = { profile, pair, mode, chrome: browser.version(), code: EXPECTED,
       rawLcp: round(data.lcp?.at), rawFcp: round(data.fcp), lcpUrl: data.lcp?.url,
+      heroSrc: data.heroSrc,
       avif: data.avif.map(x => ({ ...x, start: round(x.start), end: round(x.end) })),
       webp: data.webp.map(x => ({ ...x, start: round(x.start), end: round(x.end) })),
       width: data.width, visible: data.visible, focused: data.focused, fontCss, fontFile,
