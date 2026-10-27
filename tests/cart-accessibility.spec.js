@@ -595,7 +595,9 @@ test('mobile calculator panel stays reachable and restores keyboard focus', asyn
     await expect(page.locator('#card-2 .btn-add')).toBeVisible();
     await page.locator('#fillings').scrollIntoViewIfNeeded();
     const bar = page.locator('#calcCollapsedBar');
+    const region = page.locator('#calcExpandable');
     const add = page.locator('.calc-add-btn');
+    await expect(region).toHaveAttribute('role', 'region');
     await expect(bar).toHaveAttribute('aria-expanded', 'false');
     await expect(add).toBeHidden();
     const closed = await page.evaluate(() => ({
@@ -610,6 +612,10 @@ test('mobile calculator panel stays reachable and restores keyboard focus', asyn
       throw new Error(`${error.message}\nCalculator open diagnostics: ${JSON.stringify(await calculatorDiagnostics(page))}`, { cause: error });
     }
     await expect(add).toBeVisible();
+    await expect(region).toHaveAccessibleName('Итог расчёта торта');
+    await page.keyboard.press('Tab');
+    await expectCalculatorFocus(page, region, true);
+    expect(await region.evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe('none');
     await page.keyboard.press('Tab');
     await expectCalculatorFocus(page, add, true);
     await page.keyboard.press('Escape');
@@ -623,6 +629,17 @@ test('mobile calculator panel stays reachable and restores keyboard focus', asyn
     await page.locator('#cartDrawer .cart-close').click();
   }
   expect(errors).toEqual([]);
+});
+
+test('desktop calculator skips its unboxed result region when tabbing', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('#calcExpandable')).toHaveCSS('display', 'contents');
+  await page.locator('#calcDecor .calc-opt').last().focus();
+  await page.keyboard.press('Tab');
+  await expect(page.locator('.calc-add-btn')).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(page.locator('#calcOpenCartBtn')).toBeFocused();
 });
 
 test('mobile calculator ignores a stale scroll event but closes on a real scroll', async ({ page, browserName }, testInfo) => {

@@ -1207,6 +1207,10 @@ form .btn-wa {
     transition:
       max-height 0.46s cubic-bezier(0.22, 1, 0.36, 1) !important;
   }
+  .calc-result-expandable:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: -2px;
+  }
 }
 
 

@@ -25,10 +25,7 @@ function phoneCardAvifFor(item) {
   return item.src.replace(/\.webp(\?|$)/i, '-card.avif$1');
 }
 
-/* r57/r60: AVIF support for gallery cards AND lightbox photos.
-   Wraps an <img src="...webp"> into a <picture> with an AVIF <source>.
-   If the AVIF twin does not exist on the server the browser will silently
-   ignore the source and fall back to the <img>. Safe and idempotent. */
+/* Wrap WebP cards and lightbox photos in an AVIF-aware picture. */
 function wrapInPictureWithAvif(img) {
   const src = img.getAttribute('src') || '';
   // только для webp; если уже не webp — отдаём <img> как есть
@@ -319,7 +316,7 @@ function lightboxTemplate(){
     <button class="lb-nav lb-nav-prev" id="lbPrev" type="button" aria-label="Предыдущая"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
     <button class="lb-nav lb-nav-next" id="lbNext" type="button" aria-label="Следующая"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
     <div class="lb-swiper-wrap"><div class="swiper lb-swiper" id="lbSwiper"><div class="swiper-wrapper" id="lbWrapper"></div></div></div>
-    <div class="lb-info">
+    <div class="lb-info" role="region" aria-label="Описание работы и действия" tabindex="0">
       <div class="lb-info-inner">
         <h2 class="lb-title" id="lbTitle"></h2>
         <p class="lb-desc" id="lbDesc"></p>

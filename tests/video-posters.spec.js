@@ -116,6 +116,15 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       await expect(video).toBeVisible();
       await expect(video).toHaveAttribute('src', /video-01-knigi\.webm/);
       await expect.poll(() => video.evaluate((v) => v.readyState >= 2 || !!v.error)).toBe(true);
+      diagnostic.beforeClose = await page.evaluate(() => {
+        const describe = (v) => ({ source: v.getAttribute('src'), readyState: v.readyState,
+          paused: v.paused, networkState: v.networkState, error: v.error?.code || null });
+        const grid = Array.from(document.querySelectorAll('#galleryGrid video'));
+        const lightbox = Array.from(document.querySelectorAll('#lbWrapper video'));
+        return { active: describe(document.querySelector('#lbWrapper .swiper-slide-active video')),
+          gridWithSource: grid.filter((v) => v.getAttribute('src')).map(describe),
+          lightboxWithSource: lightbox.filter((v) => v.getAttribute('src')).map(describe) };
+      });
       await page.locator('#lbClose').click();
       await expect(page.locator('#lbRoot')).toHaveCount(0);
       await card.click();
@@ -124,6 +133,99 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     } catch (error) {
       diagnostic.resources ||= browserCrashResources();
       throw new Error(`${error.message}\nGallery video diagnostics: ${JSON.stringify({ ...diagnostic, errors })}`, { cause: error });
+    }
+  });
+
+  test('gallery media, caption and controls do not overlap without CDN', async ({ page }) => {
+    test.setTimeout(90_000);
+    await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+    for (const viewport of [
+      { width: 320, height: 800 }, { width: 390, height: 844 },
+      { width: 560, height: 844 }, { width: 1440, height: 900 },
+      { width: 568, height: 320 },
+    ]) {
+      await page.setViewportSize(viewport);
+      await page.goto('/gallery/', { waitUntil: 'load' });
+      await page.locator('#galleryGrid [data-id="p01"]').click();
+      if (viewport.height === 320) {
+        await page.locator('.lb-thumb[aria-label="3D-торт с игровым тематическим декором"]').click();
+      } else {
+        await page.locator('#lbNext').click();
+        await page.locator('#lbNext').click();
+      }
+      await page.locator('#lbRoot').evaluate(async (root) => {
+        await Promise.all(root.getAnimations().map((animation) => animation.finished.catch(() => {})));
+      });
+      await expect.poll(() => page.locator('#lbWrapper .swiper-slide-active img').evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
+      const rects = await page.evaluate(() => {
+        const bounds = (selector) => document.querySelector(selector).getBoundingClientRect().toJSON();
+        const info = document.querySelector('.lb-info');
+        return {
+          media: bounds('#lbWrapper .swiper-slide-active .lb-media'), title: bounds('#lbTitle'),
+          info: info.getBoundingClientRect().toJSON(), thumbs: bounds('#lbThumbs'), copy: bounds('#lbCopy'),
+          infoHeight: info.clientHeight, infoScrollHeight: info.scrollHeight,
+        };
+      });
+      if (viewport.height === 320) expect(rects.media.right, `${viewport.width} landscape media vs. info`).toBeLessThanOrEqual(rects.info.left);
+      else expect(rects.media.bottom, `${viewport.width} portrait media vs. caption`).toBeLessThanOrEqual(rects.title.top);
+      expect(rects.info.bottom, `${viewport.width} info vs. thumbnails`).toBeLessThanOrEqual(rects.thumbs.top);
+      expect(rects.copy.bottom, `${viewport.width} copy action remains visible`).toBeLessThanOrEqual(rects.info.bottom + 1);
+      expect(rects.infoScrollHeight, `${viewport.width} content fits without clipping`).toBeLessThanOrEqual(rects.infoHeight + 1);
+      await page.locator('#lbClose').click();
+      await expect(page.locator('#lbRoot')).toHaveCount(0);
+    }
+  });
+
+  test('caption reflows and remains keyboard reachable with enlarged text', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+    for (const viewport of [{ width: 320, height: 568 }, { width: 568, height: 320 }]) {
+      await page.setViewportSize(viewport);
+      await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
+      await page.locator('#galleryGrid [data-id="p20"]').click();
+      await expect(page.locator('#lbClose')).toBeFocused();
+
+      // Simulate 200% text-only zoom, without changing layout or scroll positions.
+      await page.evaluate(() => {
+        const elements = [...document.querySelectorAll('.lb-info, .lb-info *')];
+        const sizes = elements.map((element) => parseFloat(getComputedStyle(element).fontSize));
+        elements.forEach((element, index) => { element.style.fontSize = `${sizes[index] * 2}px`; });
+      });
+      const info = page.locator('.lb-info');
+      await expect(info).toHaveAccessibleName('Описание работы и действия');
+      await expect.poll(() => info.evaluate((el) => el.scrollHeight - el.clientHeight)).toBeGreaterThan(100);
+      await expect.poll(() => info.evaluate((el) => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(1);
+      await expect.poll(() => page.locator('#lbWrapper .swiper-slide-active img').evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
+      const boxes = await page.evaluate(() => {
+        const rect = (selector) => document.querySelector(selector).getBoundingClientRect().toJSON();
+        return { media: rect('#lbWrapper .swiper-slide-active .lb-media'), info: rect('.lb-info'), thumbs: rect('#lbThumbs') };
+      });
+      expect(boxes.media.height).toBeGreaterThan(32);
+      if (viewport.width < viewport.height) expect(boxes.media.bottom).toBeLessThanOrEqual(boxes.info.top);
+      else expect(boxes.media.right).toBeLessThanOrEqual(boxes.info.left);
+      expect(boxes.thumbs.bottom).toBeLessThanOrEqual(viewport.height);
+
+      for (let step = 0; step < 5 && !(await info.evaluate((el) => el === document.activeElement)); step++) {
+        await page.keyboard.press('Tab');
+      }
+      await expect(info).toBeFocused();
+      expect(await info.evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe('none');
+      await page.keyboard.press('ArrowDown');
+      await expect.poll(() => info.evaluate((el) => el.scrollTop)).toBeGreaterThan(0);
+
+      const copy = page.locator('#lbCopy');
+      for (let step = 0; step < 10 && !(await copy.evaluate((el) => el === document.activeElement)); step++) {
+        await page.keyboard.press('Tab');
+      }
+      await expect(copy).toBeFocused();
+      await expect.poll(() => copy.evaluate((el) => {
+        const bounds = el.getBoundingClientRect();
+        const container = el.closest('.lb-info').getBoundingClientRect();
+        return bounds.top >= container.top - 1 && bounds.bottom <= container.bottom + 1;
+      })).toBe(true);
+      await expect.poll(() => info.evaluate((el) => el.scrollTop)).toBeGreaterThan(0);
+      await page.keyboard.press('Escape');
+      await expect(page.locator('#lbRoot')).toHaveCount(0);
     }
   });
 
@@ -301,6 +403,55 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     await expect(page.locator('#lbSwiper')).not.toHaveClass(/swiper-initialized/);
     await page.locator('#lbNext').click();
     await expect(page.locator('#lbCounter')).toHaveText('02 / 46');
+  });
+
+  test('mobile lightbox respects safe areas and touch-scrolls enlarged captions', async ({ page, browserName }, testInfo) => {
+    test.skip(browserName !== 'chromium' || testInfo.project.name !== 'chromium-mobile', 'Chromium safe-area and touch input contract');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+    const client = await page.context().newCDPSession(page);
+    for (const { viewport, insets } of [
+      { viewport: { width: 390, height: 844 }, insets: { top: 44, bottom: 34, left: 0, right: 0 } },
+      { viewport: { width: 568, height: 320 }, insets: { top: 0, bottom: 21, left: 44, right: 44 } },
+    ]) {
+      await page.setViewportSize(viewport);
+      await client.send('Emulation.setSafeAreaInsetsOverride', { insets });
+      await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
+      await page.locator('#galleryGrid [data-id="p20"]').tap();
+      await expect(page.locator('#lbRoot')).toHaveCSS('transform', 'none');
+      await page.locator('#lbRoot').evaluate(async (root) => {
+        await Promise.all(root.getAnimations().map((animation) => animation.finished.catch(() => {})));
+      });
+      await expect.poll(() => page.locator('#lbWrapper .swiper-slide-active img').evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
+      const boxes = await page.evaluate(() => {
+        const rect = (selector) => document.querySelector(selector).getBoundingClientRect().toJSON();
+        return { close: rect('#lbClose'), prev: rect('#lbPrev'), next: rect('#lbNext'),
+          media: rect('#lbWrapper .swiper-slide-active .lb-media'), thumbs: rect('#lbThumbs') };
+      });
+      expect(boxes.close.top).toBeGreaterThanOrEqual(insets.top);
+      expect(boxes.media.top).toBeGreaterThanOrEqual(boxes.close.bottom);
+      for (const box of [boxes.close, boxes.prev, boxes.next, boxes.thumbs]) {
+        expect(box.left).toBeGreaterThanOrEqual(insets.left);
+        expect(box.right).toBeLessThanOrEqual(viewport.width - insets.right);
+      }
+      expect(boxes.thumbs.bottom).toBeLessThanOrEqual(viewport.height - insets.bottom);
+
+      await page.evaluate(() => {
+        const elements = [...document.querySelectorAll('.lb-info, .lb-info *')];
+        const sizes = elements.map((element) => parseFloat(getComputedStyle(element).fontSize));
+        elements.forEach((element, index) => { element.style.fontSize = `${sizes[index] * 2}px`; });
+      });
+      const info = page.locator('.lb-info');
+      await expect.poll(() => info.evaluate((el) => el.scrollHeight - el.clientHeight)).toBeGreaterThan(100);
+      const box = await info.boundingBox();
+      const x = Math.round(box.x + box.width / 2), y = Math.round(box.y + box.height * .8);
+      await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+      await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: y - 80 }] });
+      await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+      await expect.poll(() => info.evaluate((el) => el.scrollTop)).toBeGreaterThan(0);
+      await page.locator('#lbClose').tap();
+    }
+    await client.detach();
   });
 
   test('mobile fallback accepts a real browser touch swipe', async ({ page, browserName }, testInfo) => {

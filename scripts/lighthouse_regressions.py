@@ -198,7 +198,7 @@ require('media="(max-width: 768px)" srcset="/img/head_mobile.avif"' in order, 'o
 gallery = read('gallery/index.html')
 require('id="preloader"' not in gallery, 'gallery blocking preloader returned')
 require('/img/gallery/gallery-01.avif" fetchpriority="high"' in gallery, 'gallery LCP preload missing')
-require('/js/gallery/main.js?v=20261027r03' in gallery, 'gallery runtime revision drift')
+require('/js/gallery/main.js?v=20261027r04' in gallery, 'gallery runtime revision drift')
 require("./data.js?v=20261026r01" in read('js/gallery/main.js'), 'gallery data import revision drift')
 require('#galleryGrid[data-hydrating="true"] { min-height: 100svh; }' in gallery, 'gallery hydration reserve missing')
 require('#galleryGrid[data-static-lcp-root="true"] { animation: none; }' in gallery, 'gallery grid animation gates initial LCP again')
@@ -243,7 +243,7 @@ for event in ['pointerdown', 'focusin', 'click']:
     )
 require('script.async = true;' in gallery, 'gallery Swiper interaction load is not asynchronous')
 require("script.addEventListener('error'" in gallery and 'loading = false;' in gallery, 'gallery Swiper loader cannot retry after CDN failure')
-require('/css/gallery/gallery-2026.css?v=20261027r02" />' in gallery, 'gallery critical local CSS became deferred')
+require('/css/gallery/gallery-2026.css?v=20261027r03" />' in gallery, 'gallery critical local CSS became deferred')
 require('/css/final-fixes.css?v=20261023r01" />' in gallery, 'gallery final critical CSS became deferred')
 require('id="gallery-lcp-media-fastpath"' in gallery, 'gallery eager-media LCP fast path missing')
 require(
@@ -343,7 +343,7 @@ for public_html in public_html_files():
 
 # Changed shared styles must agree between every consumer and the precache.
 for asset in ('style.css', 'mc-2026.css', 'premium-overrides.css', 'v20-dark-and-fixes.css'):
-    revision = '20261027r03'
+    revision = '20261027r04' if asset == 'premium-overrides.css' else '20261027r03'
     require(f"'/css/{asset}?v={revision}'," in sw, f'{asset} service-worker revision drifted')
     for public_html in public_html_files():
         refs = re.findall(rf'css/{re.escape(asset)}\?v=([0-9a-z]+)', read(public_html))
@@ -355,10 +355,10 @@ for public_html in public_html_files():
     refs = re.findall(r'js/main\.js\?v=([0-9a-z]+)', html)
     require(all(ref == '20261027r04' for ref in refs), f'{public_html} shared main.js revision drifted')
 
-require("const CACHE_NAME = 'milovi-cake-v2026.10.27-r96';" in sw, 'service-worker cache generation drifted')
+require("const CACHE_NAME = 'milovi-cake-v2026.10.27-r97';" in sw, 'service-worker cache generation drifted')
 require(style_ref != '/css/style.css?v=20261023r01', 'service-worker precache still points at stale shared CSS revision')
 require("'/js/main.js?v=20261027r04'," in sw, 'service-worker precache still points at stale shared main.js revision')
-require("'/js/gallery/main.js?v=20261027r03'," in sw, 'service-worker precache still points at stale gallery runtime revision')
+require("'/js/gallery/main.js?v=20261027r04'," in sw, 'service-worker precache still points at stale gallery runtime revision')
 require("'/js/gallery/data.js?v=20261026r01'," in sw, 'service-worker precache still points at stale gallery data revision')
 
 cfg = json.loads(read('.github/lighthouse-config.json'))
