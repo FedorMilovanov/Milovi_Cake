@@ -15,9 +15,14 @@ jobs:
   compatibility:
     name: ${{ matrix.engine }} resilient interactions
     runs-on: ubuntu-24.04
+    # Match the Playwright version in package.json: this official image already
+    # contains its browsers and system libraries, avoiding apt/CDN setup stalls.
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
     timeout-minutes: 30
     env:
       MILOVI_BROWSER_COMPAT: '1'
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
     strategy:
       fail-fast: false
       matrix:
@@ -35,16 +40,13 @@ jobs:
           node-version: '22.13.0'
           cache: npm
 
+      - name: Setup Python for the local test server
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+
       - name: Install project dependencies
         run: npm ci
-
-      - name: Install browser system packages
-        timeout-minutes: 12
-        run: npx playwright install-deps ${{ matrix.engine }}
-
-      - name: Download browser binary
-        timeout-minutes: 8
-        run: npx playwright install ${{ matrix.engine }}
 
       - name: Exercise desktop and narrow-screen fault contracts
         run: >-
