@@ -14,8 +14,8 @@ concurrency:
 jobs:
   compatibility:
     name: ${{ matrix.engine }} resilient interactions
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
     env:
       MILOVI_BROWSER_COMPAT: '1'
     strategy:
@@ -35,10 +35,16 @@ jobs:
           node-version: '22.13.0'
           cache: npm
 
-      - name: Install dependencies and browser
-        run: |
-          npm ci
-          npx playwright install --with-deps ${{ matrix.engine }}
+      - name: Install project dependencies
+        run: npm ci
+
+      - name: Install browser system packages
+        timeout-minutes: 12
+        run: npx playwright install-deps ${{ matrix.engine }}
+
+      - name: Download browser binary
+        timeout-minutes: 8
+        run: npx playwright install ${{ matrix.engine }}
 
       - name: Exercise desktop and narrow-screen fault contracts
         run: >-
