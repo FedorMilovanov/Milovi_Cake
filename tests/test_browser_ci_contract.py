@@ -18,6 +18,19 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         self.assertIn(f'image: mcr.microsoft.com/playwright:v{version}-noble', workflow)
         self.assertRegex(workflow, r'--reporter=[^\n]*github')
 
+    def test_webkit_storage_and_gallery_are_repeated_without_retries(self):
+        workflow = (ROOT / '.github/workflows/browser-compatibility.yml').read_text(encoding='utf-8')
+        for name in (
+            'Repeat WebKit storage fault interactions',
+            'Repeat WebKit gallery close and delayed-load interactions',
+        ):
+            with self.subTest(name=name):
+                section = workflow.split(f'- name: {name}', 1)[1].split('\n      - name:', 1)[0]
+                self.assertIn('--repeat-each=3', section)
+                self.assertIn('--retries=0', section)
+        gallery = workflow.split('- name: Repeat WebKit gallery close and delayed-load interactions', 1)[1]
+        self.assertIn('--project=webkit-desktop --project=webkit-mobile', gallery)
+
 
 if __name__ == '__main__':
     unittest.main()

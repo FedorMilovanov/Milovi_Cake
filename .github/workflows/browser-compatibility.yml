@@ -66,6 +66,16 @@ jobs:
           --project=webkit-desktop --grep='cart stays usable and warns'
           --repeat-each=3 --workers=1 --retries=0 --reporter=list,github
 
+      - name: Repeat WebKit gallery close and delayed-load interactions
+        if: matrix.engine == 'webkit'
+        env:
+          HOME: /root
+        run: >-
+          npx playwright test tests/video-posters.spec.js
+          --project=webkit-desktop --project=webkit-mobile
+          --grep='gallery can close an active video|late Swiper initializes'
+          --repeat-each=3 --workers=1 --retries=0 --reporter=list,github
+
       - name: Upload failed browser artifacts
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

@@ -83,6 +83,26 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     expect(errors).toEqual([]);
   });
 
+  test('gallery can close an active video and reopen without CDN', async ({ page }) => {
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+    await page.goto('/gallery/', { waitUntil: 'load' });
+    const card = page.locator('#galleryGrid [data-id="p01"]');
+    await card.click();
+    await page.locator('#lbNext').click();
+    await expect(page.locator('#lbCounter')).toHaveText('02 / 46');
+    const video = page.locator('#lbWrapper .swiper-slide-active video');
+    await expect(video).toBeVisible();
+    await expect(video).toHaveAttribute('src', /video-01-knigi\.webm/);
+    await expect.poll(() => video.evaluate((v) => v.readyState >= 2 || !!v.error)).toBe(true);
+    await page.locator('#lbClose').click();
+    await expect(page.locator('#lbRoot')).toHaveCount(0);
+    await card.click();
+    await expect(page.locator('#lbCounter')).toHaveText('01 / 46');
+    expect(errors).toEqual([]);
+  });
+
   test('late Swiper initializes at the current fallback slide even after close and reopen', async ({ page }) => {
     // A same-origin server delays the real HTTP response without leaving a
     // Playwright route handler pending while the lightbox is exercised.
@@ -132,7 +152,9 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
           headers['Accept-Ranges'] = 'bytes';
           res.writeHead(status, headers);
           if (req.method === 'HEAD' || stat.size === 0) return res.end();
-          fs.createReadStream(file, { start, end }).on('error', () => res.destroy()).pipe(res);
+          const stream = fs.createReadStream(file, { start, end });
+          res.on('close', () => stream.destroy());
+          stream.on('error', () => res.destroy()).pipe(res);
         });
       }
     });
