@@ -1,0 +1,55 @@
+# Temporary PR-only free lab experiment on the *already deployed* release.
+# Delete this workflow and its runner after collecting evidence. No deploy/merge.
+name: Temporary production CDN LCP pairs
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/temporary-lcp-cdn-pairs.yml
+      - scripts/diagnostics/lcp_cdn_pairs_temp.cjs
+
+permissions:
+  contents: read
+
+jobs:
+  pairs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      EXPECTED_RELEASE_SHA: f7c2aa08dd19568ea01776f66e5e22cd4454bf62
+    steps:
+      - name: Checkout PR diagnostic tools only
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          cache: npm
+
+      - name: Install isolated browser tooling
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Verify deployed release SHA before measurements
+        run: python3 scripts/production_release_smoke.py --retries 2 --delay 5
+
+      - name: Run alternating allow/block SW pairs against real production CDN and fonts
+        run: node scripts/diagnostics/lcp_cdn_pairs_temp.cjs
+
+      - name: Verify deployed release SHA after measurements
+        run: python3 scripts/production_release_smoke.py --retries 1
+
+      - name: Keep bounded anonymous lab traces outside Git
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: temporary-live-lcp-pairs-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/milovi-lcp-cdn-pairs/
+          if-no-files-found: warn
+          retention-days: 30
+          include-hidden-files: false
