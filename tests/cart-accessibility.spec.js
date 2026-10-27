@@ -296,3 +296,400 @@ for (const failure of ['QuotaExceededError', 'SecurityError']) {
     expect(errors).toEqual([]);
   });
 }
+
+async function openCartByUser(page, testInfo) {
+  const mobile = testInfo.project.name.endsWith('-mobile');
+  const trigger = page.locator(mobile ? '#mcNav .mc-btn--order' : '#cartBtn');
+  await expect(trigger).toBeVisible();
+  await trigger.click();
+  await expect(page.locator('#cartDrawer')).toHaveAttribute('aria-hidden', 'false');
+}
+
+test('cart merges matching fillings without losing quantity or the checkout total', async ({ page }, testInfo) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.addInitScript(() => { window.__cartHandoffs = []; window.open = (url) => { window.__cartHandoffs.push(url); return {}; }; });
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.locator('#card-2 .btn-add').click();
+  await openCartByUser(page, testInfo);
+  await page.locator('#cartDrawer .cart-item select').selectOption({ label: 'Малина' });
+  for (let i = 0; i < 19; i++) await page.locator('#cartDrawer .cart-item .qty-btn:last-child').click();
+  await page.locator('#cartDrawer .cart-close').click();
+  await page.locator('#card-2 .btn-add').click();
+  await openCartByUser(page, testInfo);
+  await expect(page.locator('#cartDrawer .qty-val')).toHaveText(['20 шт.', '1 шт.']);
+  await page.locator('#cartDrawer .cart-item').last().locator('select').selectOption({ label: 'Малина' });
+  await expect(page.locator('#cartDrawer .qty-val')).toHaveText(['21 шт.']);
+  await expect(page.locator('#cartDrawer .cart-inline-total')).toContainText(/33\s?600\s*₽/);
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await openCartByUser(page, testInfo);
+  await expect(page.locator('#cartDrawer .qty-val')).toHaveText(['21 шт.']);
+  await page.locator('#cartStep1Footer button').click();
+  await page.locator('#cphone').fill('+7 911 555 44 33');
+  await page.locator('#btnWA').click();
+  const url = await page.evaluate(() => window.__cartHandoffs[0]);
+  const message = new URL(url).searchParams.get('text');
+  expect(message).toContain('21 шт.');
+  expect(message).toContain('начинка: Малина');
+  expect(message).toMatch(/33\s?600\s*₽/);
+  expect(errors).toEqual([]);
+});
+
+test('cart preserves different dessert types when fillings would collide', async ({ page }, testInfo) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.locator('#card-2 .btn-add').click();
+  await openCartByUser(page, testInfo);
+  await page.locator('#cartDrawer .cart-item select').selectOption({ label: 'Малина' });
+  await page.locator('#cartDrawer .cart-item').getByRole('button', { name: 'Авторский' }).click();
+  await page.locator('#cartDrawer .cart-close').click();
+  await page.locator('#card-2 .btn-add').click();
+  await openCartByUser(page, testInfo);
+  const items = page.locator('#cartDrawer .cart-item');
+  const select = items.last().locator('select');
+  await select.focus();
+  await select.selectOption({ label: 'Малина' });
+  await expect(items).toHaveCount(2);
+  await expect(items.locator('.qty-val')).toHaveText(['1 шт.', '1 шт.']);
+  await expect(select).toHaveValue('');
+  await expect(select).toBeFocused();
+  await expect(page.locator('#toast')).toContainText('одинаковый тип десерта');
+  await expect(page.locator('#toast')).toHaveAttribute('role', 'status');
+  await items.last().getByRole('button', { name: 'Авторский' }).click();
+  await items.last().locator('select').selectOption({ label: 'Малина' });
+  await expect(items.locator('.qty-val')).toHaveText(['2 шт.']);
+  const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('milovicake_cart')));
+  expect(Object.values(stored)[0]).toMatchObject({ qty: 2, dessertType: 'author', fill: 'Малина' });
+  expect(errors).toEqual([]);
+});
+
+test('cart keeps repeated calculator additions instead of silently truncating them', async ({ page }, testInfo) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  if (testInfo.project.name.endsWith('-mobile')) {
+    await page.locator('#fillings').scrollIntoViewIfNeeded();
+    // Wait for the lazy catalog to settle before tapping the fixed price panel.
+    await expect(page.locator('#card-2 .btn-add')).toBeAttached();
+    await page.locator('#fillings').scrollIntoViewIfNeeded();
+    await page.locator('#calcCollapsedBar').click();
+    await expect(page.locator('#calcCollapsedBar')).toHaveAttribute('aria-expanded', 'true');
+  }
+  for (let i = 0; i < 6; i++) await page.locator('.calc-add-btn').click();
+  await page.locator('#calcOpenCartBtn').click();
+  await expect(page.locator('#cartDrawer .qty-val')).toHaveText(['12 кг']);
+  await expect(page.locator('#cartDrawer .cart-inline-total')).toContainText(/33\s?600\s*₽/);
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await openCartByUser(page, testInfo);
+  await expect(page.locator('#cartDrawer .qty-val')).toHaveText(['12 кг']);
+  expect(errors).toEqual([]);
+});
+
+test('cart restores legacy conflicts without merging types or dropping valid quantities', async ({ page }, testInfo) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const restore = async (entries) => {
+    await page.evaluate((value) => localStorage.setItem('milovicake_cart', JSON.stringify(value)), entries);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await openCartByUser(page, testInfo);
+  };
+
+  await restore({
+    '2': { qty: 1, fill: 'Малина', dessertType: 'author' },
+    '2:regular:Малина': { qty: 1, fill: 'Малина', dessertType: 'base' },
+  });
+  let items = page.locator('#cartDrawer .cart-item');
+  await expect(items).toHaveCount(2);
+  await expect(items.locator('.qty-val')).toHaveText(['1 шт.', '1 шт.']);
+  await expect(items.first().locator('select')).toHaveValue('Малина');
+  await items.first().locator('select').selectOption({ label: 'Малина' });
+  await expect(page.locator('#toast')).toContainText('Выберите одинаковый тип');
+  await expect(items.first().locator('select')).toHaveValue('Малина');
+  await items.first().locator('select').selectOption({ label: 'Вишня' });
+  let stored = await page.evaluate(() => JSON.parse(localStorage.getItem('milovicake_cart')));
+  expect(stored['2:regular:Вишня']).toMatchObject({ qty: 1, dessertType: 'author', fill: 'Вишня' });
+  expect(stored['2:regular:Малина']).toMatchObject({ qty: 1, dessertType: 'base', fill: 'Малина' });
+
+  const max = Math.floor(Number.MAX_SAFE_INTEGER / 1600);
+  await restore({ '2': { qty: max }, '2:regular': { qty: 1 } });
+  items = page.locator('#cartDrawer .cart-item');
+  await expect(items).toHaveCount(2);
+  await expect(page.locator('.cart-inline-total')).toHaveText('Цена уточняется');
+  stored = await page.evaluate(() => JSON.parse(localStorage.getItem('milovicake_cart')));
+  expect(Object.values(stored).map(({ qty }) => qty)).toEqual([max, 1]);
+
+  await restore({
+    '2': { qty: 1, dessertType: 'author' },
+    '2:regular': { qty: 2, dessertType: 'author' },
+    '2:regular:': { qty: 3, dessertType: 'base' },
+  });
+  await expect(page.locator('#cartDrawer .qty-val')).toHaveText(['1 шт.', '2 шт.', '3 шт.']);
+
+  await restore({
+    '2': { qty: 1, mode: 'maxi', fill: 'Малина', decor: 'Бант', dessertType: 'author' },
+    '2:maxi:Малина:Бант': { qty: 1, mode: 'maxi', fill: 'Малина', decor: 'Бант', dessertType: 'base' },
+  });
+  items = page.locator('#cartDrawer .cart-item');
+  await expect(items).toHaveCount(2);
+  await items.first().locator('select').selectOption({ label: 'Вишня' });
+  stored = await page.evaluate(() => JSON.parse(localStorage.getItem('milovicake_cart')));
+  expect(stored['2:maxi:Вишня:Бант']).toMatchObject({ qty: 1, mode: 'maxi', decor: 'Бант', dessertType: 'author' });
+  expect(stored['2:maxi:Малина:Бант']).toMatchObject({ qty: 1, mode: 'maxi', decor: 'Бант', dessertType: 'base' });
+
+  await restore({ '2': { qty: 1, dessertType: {} }, '2:regular': { qty: 2 } });
+  await expect(page.locator('#cartDrawer .qty-val')).toHaveText(['3 шт.']);
+  await expect(page.locator('#cartDrawer .cart-item').getByRole('button', { name: 'Базовый' }))
+    .toHaveAttribute('style', /background:var\(--gold\)/);
+});
+
+test('cart keeps the total honest when several safe item prices overflow the precise range', async ({ page }, testInfo) => {
+  const entries = {
+    '5:regular': { qty: 25734855007186, fill: '' },
+    '2:regular': { qty: 5629499531146, fill: '' },
+    '4:regular': { qty: 3602879694788, fill: '' },
+    '1:regular': { qty: 3216856871802, fill: '' },
+    '2:maxi': { qty: 3002399744588, fill: '' },
+    '3:regular': { qty: 1801439840973, fill: '' },
+  };
+  await page.addInitScript((saved) => localStorage.setItem('milovicake_cart', JSON.stringify(saved)), entries);
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await openCartByUser(page, testInfo);
+  await expect(page.locator('.cart-item')).toHaveCount(6);
+  await expect(page.locator('.cart-inline-total')).toHaveText('Цена уточняется');
+  await page.locator('#cartStep1Footer button').click();
+  await page.locator('#cphone').fill('+7 911 555 44 33');
+  await page.evaluate(() => {
+    window.__totalHandoff = '';
+    window.open = (url) => { window.__totalHandoff = url; return {}; };
+  });
+  await page.locator('#btnWA').click();
+  const handoff = await page.evaluate(() => window.__totalHandoff);
+  expect(new URL(handoff).searchParams.get('text')).toContain('Итого (предварительно): Цена уточняется');
+});
+
+test('cart rejects a quantity merge that would overflow safe prices without losing either entry', async ({ page }, testInfo) => {
+  test.setTimeout(90_000);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const max = Math.floor(Number.MAX_SAFE_INTEGER / 1600);
+  await page.evaluate((qty) => localStorage.setItem('milovicake_cart', JSON.stringify({
+    '2:regular:Малина': { qty, fill: 'Малина', mode: 'regular', dessertType: 'base' },
+    '2:regular': { qty: 1, mode: 'regular', dessertType: 'base' },
+  })), max);
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await openCartByUser(page, testInfo);
+  const items = page.locator('#cartDrawer .cart-item');
+  const select = items.last().locator('select');
+  await select.selectOption({ label: 'Малина' });
+  await expect(items).toHaveCount(2);
+  await expect(select).toHaveValue('');
+  await expect(page.locator('#toast')).toContainText('Слишком большое количество');
+  const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('milovicake_cart')));
+  expect(Object.values(stored).map((entry) => entry.qty)).toEqual([max, 1]);
+
+  await page.evaluate((qty) => localStorage.setItem('milovicake_cart', JSON.stringify({ '2:regular': { qty, mode: 'regular' } })), max);
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.locator('#card-2 .btn-add').click();
+  await expect(page.locator('#toast')).toContainText('Слишком большое количество');
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('milovicake_cart'))['2:regular'].qty)).toBe(max);
+
+  const cakeMax = Math.floor(Number.MAX_SAFE_INTEGER / 2800);
+  const cakeKey = '1:regular:Микс ягод:Базовый декор';
+  await page.evaluate(({ qty, key }) => localStorage.setItem('milovicake_cart', JSON.stringify({
+    [key]: { qty, fill: 'Микс ягод', decor: 'Базовый декор', mode: 'regular' },
+  })), { qty: cakeMax, key: cakeKey });
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.locator('#card-2 .btn-add').waitFor({ state: 'visible' });
+  await page.locator('#fillings').scrollIntoViewIfNeeded();
+  if (testInfo.project.name.includes('mobile')) await page.locator('#calcCollapsedBar').click();
+  await page.locator('.calc-add-btn').click();
+  await expect(page.locator('#toast')).toContainText('Слишком большое количество');
+  expect(await page.evaluate((key) => JSON.parse(localStorage.getItem('milovicake_cart'))[key].qty, cakeKey)).toBe(cakeMax);
+});
+
+test('mobile calculator panel stays reachable and restores keyboard focus', async ({ page }) => {
+  test.setTimeout(90_000);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  for (const route of ['/', '/prigorody/pushkin/']) {
+    await page.goto(route, { waitUntil: 'domcontentloaded' });
+    // A real navigation click releases the deferred catalog before scrolling.
+    await page.locator('#mcNav [data-section="catalog"]').click();
+    await expect(page.locator('#card-2 .btn-add')).toBeVisible();
+    await page.locator('#fillings').scrollIntoViewIfNeeded();
+    const bar = page.locator('#calcCollapsedBar');
+    const add = page.locator('.calc-add-btn');
+    await expect(bar).toHaveAttribute('aria-expanded', 'false');
+    await expect(add).toBeHidden();
+    const closed = await page.evaluate(() => ({
+      panel: document.getElementById('calcRightCol').getBoundingClientRect().bottom,
+      nav: document.getElementById('mcNav').getBoundingClientRect().top,
+    }));
+    expect(closed.panel, `${route} closed panel and navigation`).toBeLessThanOrEqual(closed.nav + 1);
+    await bar.focus();
+    await page.keyboard.press('Enter');
+    await expect(bar).toHaveAttribute('aria-expanded', 'true');
+    await expect(add).toBeVisible();
+    await page.keyboard.press('Tab');
+    await expect(add).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(bar).toHaveAttribute('aria-expanded', 'false');
+    await expect(bar).toBeFocused();
+    await expect(add).toBeHidden();
+    await bar.click();
+    await add.click();
+    await page.locator('#calcOpenCartBtn').click();
+    await expect(page.locator('#cartDrawer .cart-item')).toHaveCount(1);
+    await page.locator('#cartDrawer .cart-close').click();
+  }
+  expect(errors).toEqual([]);
+});
+
+test('light calculator summary colors contrast with their desktop panel', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.addInitScript(() => localStorage.setItem('mc_theme', 'light'));
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const samples = await page.evaluate(() => {
+    const panel = document.querySelector('#calcResultBox');
+    const panelStyle = getComputedStyle(panel);
+    if (panelStyle.backgroundImage !== 'none') throw new Error('Recheck summary contrast for the new background');
+    const parse = (value) => {
+      const parts = value.match(/[\d.]+/g).map(Number);
+      return [parts[0], parts[1], parts[2], parts[3] === undefined ? 1 : parts[3]];
+    };
+    const blend = (front, back) => front.slice(0, 3).map((value, i) => value * front[3] + back[i] * (1 - front[3]));
+    const base = parse(panelStyle.backgroundColor);
+    if (base[3] !== 1) throw new Error('Recheck summary contrast for a translucent background');
+    return ['.calc-result-price', '.calc-summary-chip .chip-val', '.calc-result-label', '#calcNote'].map((selector) => {
+      const element = panel.querySelector(selector);
+      const chip = element.closest('.calc-summary-chip');
+      const background = chip ? blend(parse(getComputedStyle(chip).backgroundColor), base) : base.slice(0, 3);
+      const foreground = blend(parse(getComputedStyle(element).color), background);
+      return { selector, foreground: `rgb(${foreground.map(Math.round).join(', ')})`, background: `rgb(${background.map(Math.round).join(', ')})` };
+    });
+  });
+  for (const sample of samples) {
+    const values = [luminance(sample.foreground), luminance(sample.background)].sort((a, b) => b - a);
+    const ratio = (values[0] + 0.05) / (values[1] + 0.05);
+    expect(ratio, sample.selector).toBeGreaterThanOrEqual(4.5);
+  }
+});
+
+test('mobile calculator clears the navigation above a safe-area inset', async ({ page, browserName }, testInfo) => {
+  test.skip(browserName !== 'chromium' || testInfo.project.name !== 'chromium-mobile', 'Chromium safe-area emulation');
+  test.setTimeout(90_000);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send('Emulation.setSafeAreaInsetsOverride', { insets: { top: 44, bottom: 34, left: 0, right: 0 } });
+  try {
+    for (const route of ['/', '/prigorody/pushkin/']) {
+      await page.goto(route, { waitUntil: 'domcontentloaded' });
+      await page.locator('#mcNav [data-section="catalog"]').click();
+      await expect(page.locator('#card-2 .btn-add')).toBeVisible();
+      await page.locator('#fillings').scrollIntoViewIfNeeded();
+      const closed = await page.evaluate(() => ({
+        panel: document.querySelector('#calcRightCol').getBoundingClientRect().bottom,
+        nav: document.querySelector('#mcNav').getBoundingClientRect().top,
+      }));
+      expect(closed.panel, route).toBeLessThanOrEqual(closed.nav);
+      await page.locator('#calcCollapsedBar').click();
+      await page.locator('.calc-add-btn').click();
+      await expect.poll(() => page.locator('#mcNav').evaluate((nav) => nav.getBoundingClientRect().top)).toBeGreaterThanOrEqual(844);
+      const button = await page.locator('.calc-add-btn').boundingBox();
+      expect(button.y + button.height, route).toBeLessThanOrEqual(844 - 34);
+    }
+  } finally {
+    await cdp.detach();
+  }
+});
+
+test('cart refuses incompatible catalog and calculator additions without changing author items', async ({ page }, testInfo) => {
+  test.setTimeout(90_000);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const cardAdd = page.locator('#card-2 .btn-add');
+  await cardAdd.click();
+  await openCartByUser(page, testInfo);
+  await page.locator('#cartDrawer .cart-item').getByRole('button', { name: 'Авторский' }).click();
+  await page.locator('#cartDrawer .cart-close').click();
+  await cardAdd.click();
+  await expect(page.locator('#toast')).toContainText('одинаковый тип десерта');
+  await openCartByUser(page, testInfo);
+  await expect(page.locator('#cartDrawer .qty-val')).toHaveText('1 шт.');
+  let saved = await page.evaluate(() => JSON.parse(localStorage.getItem('milovicake_cart')));
+  expect(Object.values(saved)[0]).toMatchObject({ qty: 1, dessertType: 'author' });
+  await page.locator('#cartDrawer .del-btn').click();
+  await expect(page.locator('#cartDrawer .cart-item')).toHaveCount(0);
+  await page.locator('#cartDrawer .cart-close').click();
+
+  await page.locator('#fillings').scrollIntoViewIfNeeded();
+  if (testInfo.project.name.endsWith('-mobile')) await page.locator('#calcCollapsedBar').click();
+  await page.locator('.calc-add-btn').click();
+  await page.locator('#calcOpenCartBtn').click();
+  await page.locator('#cartDrawer .cart-item').getByRole('button', { name: 'Авторский' }).click();
+  await page.locator('#cartDrawer .cart-close').click();
+  if (testInfo.project.name.endsWith('-mobile')) await page.locator('#calcCollapsedBar').click();
+  await page.locator('.calc-add-btn').click();
+  await expect(page.locator('#toast')).toContainText('одинаковый тип десерта');
+  saved = await page.evaluate(() => JSON.parse(localStorage.getItem('milovicake_cart')));
+  expect(Object.values(saved)[0]).toMatchObject({ qty: 2, dessertType: 'author' });
+  expect(errors).toEqual([]);
+});
+
+test('mobile calculator after fast scroll keeps its panel open when catalog hydrates', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.mouse.wheel(0, 4500);
+  // A real scroll must release the lazy catalog even when it skips the section.
+  await expect(page.locator('#card-2 .btn-add')).toBeAttached();
+  await page.locator('#fillings').scrollIntoViewIfNeeded();
+  await page.locator('#calcCollapsedBar').click();
+  await expect(page.locator('#calcCollapsedBar')).toHaveAttribute('aria-expanded', 'true');
+  await page.waitForTimeout(500);
+  await expect(page.locator('#calcCollapsedBar')).toHaveAttribute('aria-expanded', 'true');
+  await page.locator('.calc-add-btn').click();
+  await page.locator('#calcOpenCartBtn').click();
+  await expect(page.locator('#cartDrawer .qty-val')).toHaveText('2 кг');
+});
+
+test('mobile calculator resize clears its backdrop before desktop and on return', async ({ page }) => {
+  test.setTimeout(90_000);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  for (const route of ['/', '/prigorody/pushkin/']) {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(route, { waitUntil: 'domcontentloaded' });
+    await page.locator('#mcNav [data-section="catalog"]').click();
+    await expect(page.locator('#card-2 .btn-add')).toBeVisible();
+    await page.locator('#fillings').scrollIntoViewIfNeeded();
+    await page.locator('#calcCollapsedBar').click();
+    await expect(page.locator('#calcCollapsedBar')).toHaveAttribute('aria-expanded', 'true');
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await expect(page.locator('#calcCollapsedBar')).toHaveAttribute('aria-expanded', 'false');
+    await expect(page.locator('#calcPanelBackdrop')).not.toHaveClass(/\bvisible\b/);
+    await page.locator('#cartBtn').click();
+    await expect(page.locator('#cartDrawer')).toHaveAttribute('aria-hidden', 'false');
+    await page.locator('#cartDrawer .cart-close').click();
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(page.locator('#calcPanelBackdrop')).toBeHidden();
+    await page.locator('#fillings').scrollIntoViewIfNeeded();
+    await page.locator('#calcCollapsedBar').click();
+    await page.locator('.calc-add-btn').click();
+    await page.locator('#calcOpenCartBtn').click();
+    await expect(page.locator('#cartDrawer .cart-item')).toHaveCount(1);
+    await page.locator('#cartDrawer .cart-close').click();
+  }
+  expect(errors).toEqual([]);
+});
