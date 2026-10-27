@@ -33,6 +33,27 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         gallery = workflow.split('- name: Repeat WebKit gallery close and delayed-load interactions', 1)[1]
         self.assertIn('--project=webkit-desktop --project=webkit-mobile', gallery)
 
+    def test_failure_diagnostics_keep_the_primary_result_and_restore_source(self):
+        workflow = (ROOT / '.github/workflows/browser-compatibility.yml').read_text(encoding='utf-8')
+
+        def step(name):
+            return workflow.split(f'- name: {name}', 1)[1].split('\n      - name:', 1)[0]
+
+        primary = step('Exercise desktop and narrow-screen fault contracts')
+        firefox = step('Diagnose Firefox failures on exact source')
+        experiment = step('Compare without the additional video load call')
+        restore = step('Restore exact source after WebKit comparison')
+        install_newer = step('Install Playwright 1.64 for a separate diagnostic')
+        newer = step('Compare WebKit 1.64 with unchanged source')
+        self.assertNotIn('continue-on-error', primary)
+        self.assertIn('steps.primary_contracts.outcome == \'failure\'', firefox)
+        self.assertIn('--repeat-each=3', firefox)
+        self.assertIn('--retries=0', firefox)
+        self.assertLess(experiment.index('sha256sum js/gallery/main.js'), experiment.index('p.write_text'))
+        self.assertIn('sha256sum --check', restore)
+        self.assertIn('steps.webkit_restore.outcome == \'success\'', install_newer)
+        self.assertIn('steps.webkit_newer.outcome == \'success\'', newer)
+
 
 if __name__ == '__main__':
     unittest.main()

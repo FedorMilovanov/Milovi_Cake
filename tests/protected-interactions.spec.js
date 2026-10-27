@@ -171,10 +171,41 @@ test.describe('premium baseline consolidation contracts', () => {
   });
 
   test('review modal keeps Google entries without unverified dates', async ({ page }) => {
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await page.addInitScript(() => {
+      const events = [];
+      window.__reviewDiagnostic = events;
+      const record = (phase, event) => {
+        const target = event.target instanceof Element ? event.target : null;
+        events.push({ phase, type: event.type, target: target?.tagName, id: target?.id,
+          classes: target ? [...target.classList].slice(0, 3) : [], google: !!target?.closest('.map-badge-google'),
+          trusted: event.isTrusted, modal: document.getElementById('reviewsModal')?.className,
+          lock: document.body?.dataset.lockCount });
+      };
+      for (const type of ['pointerdown', 'pointerup', 'click']) document.addEventListener(type, (event) => record('capture', event), true);
+      document.addEventListener('click', (event) => record('bubble', event));
+      document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('reviewsModal');
+        if (modal) new MutationObserver(() => events.push({ type: 'modal-class', value: modal.className })).observe(modal, { attributes: true, attributeFilter: ['class'] });
+      });
+    });
     for (const route of ['/', '/prigorody/pushkin/']) {
       await page.goto(route, { waitUntil: 'domcontentloaded' });
       await page.locator('.map-badge-google').click();
-      await expect(page.locator('#reviewsModal')).toHaveClass(/open/);
+      try {
+        await expect(page.locator('#reviewsModal')).toHaveClass(/open/);
+      } catch (error) {
+        const state = await page.evaluate(() => {
+          const button = document.querySelector('.map-badge-google');
+          const rect = button?.getBoundingClientRect();
+          const hit = rect && document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
+          return { ready: document.readyState, lock: document.body.dataset.lockCount, bodyPosition: document.body.style.position,
+            modal: document.getElementById('reviewsModal')?.className, buttonRect: rect?.toJSON(),
+            hit: hit ? `${hit.tagName}#${hit.id}.${[...hit.classList].join('.')}` : null, events: window.__reviewDiagnostic.slice(-20) };
+        }).catch((diagnosticError) => ({ diagnosticError: diagnosticError.message }));
+        throw new Error(`${error.message}\nReview diagnostics: ${JSON.stringify({ route, ...state, errors })}`, { cause: error });
+      }
       await expect(page.locator('#reviewsGoogle .modal-review')).toHaveCount(4);
       await expect(page.locator('#reviewsGoogle .modal-review-date, #reviewsGoogle time')).toHaveCount(0);
       await page.locator('#tabYandex').click();

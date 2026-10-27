@@ -248,8 +248,29 @@ for (const theme of ['light', 'dark']) {
 
 test('cart restoration rejects corrupt entries and preserves valid quantities', async ({ page }) => {
   const errors = [];
+  const pending = new Map();
+  const failed = [];
+  const requestLabel = (request) => {
+    const url = new URL(request.url());
+    return `${request.resourceType()} ${url.origin}${url.pathname}`;
+  };
   page.on('pageerror', (error) => errors.push(error.message));
+  page.on('request', (request) => pending.set(request, requestLabel(request)));
+  page.on('requestfinished', (request) => pending.delete(request));
+  page.on('requestfailed', (request) => {
+    pending.delete(request);
+    failed.push(`${requestLabel(request)}: ${request.failure()?.errorText || 'unknown'}`);
+  });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const reloadCart = async (saved, scenario) => {
+    await page.evaluate((value) => localStorage.setItem('milovicake_cart', value), saved);
+    try {
+      await page.reload({ waitUntil: 'domcontentloaded' });
+    } catch (error) {
+      const diagnostic = { scenario, url: page.url(), pending: [...pending.values()].slice(0, 20), pendingCount: pending.size, failed: failed.slice(-10), errors };
+      throw new Error(`${error.message}\nCart reload diagnostics: ${JSON.stringify(diagnostic)}`, { cause: error });
+    }
+  };
   const scenarios = [
     { saved: '{broken', quantities: [] },
     { saved: 'null', quantities: [] },
@@ -260,17 +281,15 @@ test('cart restoration rejects corrupt entries and preserves valid quantities', 
     { saved: JSON.stringify({ '2:regular': { qty: 21 }, '1:regular': { qty: 2.5 }, '4': { qty: -1 } }), quantities: ['21 шт.', '2.5 кг'] },
     { saved: JSON.stringify({ '2:maxi': { qty: 3 } }), quantities: ['3 шт.'] },
   ];
-  for (const { saved, quantities } of scenarios) {
-    await page.evaluate((value) => localStorage.setItem('milovicake_cart', value), saved);
-    await page.reload({ waitUntil: 'domcontentloaded' });
+  for (const [index, { saved, quantities }] of scenarios.entries()) {
+    await reloadCart(saved, `scenario ${index + 1}/${scenarios.length}`);
     await page.evaluate(() => openCart());
     await expect(page.locator('#cartDrawer .qty-val')).toHaveText(quantities);
     if (!quantities.length) await expect(page.locator('#cartDrawer .cart-empty')).toBeVisible();
     await expect(page.locator('#cartDrawer')).not.toContainText(/NaN|не число/);
   }
   // A valid quantity above the stepper limit can be created by repeated adds.
-  await page.evaluate(() => localStorage.setItem('milovicake_cart', JSON.stringify({ '2:regular': { qty: 21 } })));
-  await page.reload({ waitUntil: 'domcontentloaded' });
+  await reloadCart(JSON.stringify({ '2:regular': { qty: 21 } }), 'stepper');
   await page.evaluate(() => openCart());
   const item = page.locator('#cartDrawer .cart-item');
   await item.locator('.qty-btn:last-child').click();

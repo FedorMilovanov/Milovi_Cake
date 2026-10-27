@@ -55,6 +55,7 @@ jobs:
         run: echo "::notice title=Browser shared memory::$(df -h /dev/shm | tail -n 1)"
 
       - name: Exercise desktop and narrow-screen fault contracts
+        id: primary_contracts
         # The container runs as root; Firefox requires HOME to belong to it.
         env:
           HOME: /root
@@ -94,8 +95,29 @@ jobs:
           retention-days: 7
           include-hidden-files: false
 
-      # Failure-only A/B diagnostics. The primary exact-HEAD step above stays
+      # Failure-only diagnostics. The primary exact-HEAD step above stays
       # failed; these are independent comparisons, not retries that can turn it green.
+      - name: Diagnose Firefox failures on exact source
+        id: firefox_diagnostic
+        if: failure() && matrix.engine == 'firefox' && steps.primary_contracts.outcome == 'failure'
+        env:
+          HOME: /root
+        run: |
+          echo '::notice title=Firefox diagnostic::Three independent runs of the two observed failures; the primary step remains failed'
+          npx playwright test tests/cart-accessibility.spec.js tests/protected-interactions.spec.js \
+            --project=firefox-desktop --grep='cart restoration rejects|review modal keeps Google' \
+            --repeat-each=3 --workers=1 --retries=0 --reporter=list,github
+
+      - name: Upload Firefox diagnostic artifacts
+        if: always() && matrix.engine == 'firefox' && steps.firefox_diagnostic.outcome == 'failure'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: firefox-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+          include-hidden-files: false
+
       - name: Diagnose WebKit 1.63 active-video baseline
         id: webkit_baseline
         if: failure() && matrix.engine == 'webkit'
@@ -113,6 +135,7 @@ jobs:
           HOME: /root
         run: |
           cp js/gallery/main.js "$RUNNER_TEMP/gallery-main-original.js"
+          sha256sum js/gallery/main.js > "$RUNNER_TEMP/gallery-main-original.sha256"
           python3 -c 'from pathlib import Path; p=Path("js/gallery/main.js"); s=p.read_text(); old="    video.load();\n"; assert s.count(old) == 1; p.write_text(s.replace(old, ""))'
           echo '::notice title=WebKit diagnostic::Experimental source without the extra video.load call; not the exact HEAD'
           npx playwright test tests/video-posters.spec.js --project=webkit-desktop \
@@ -123,7 +146,7 @@ jobs:
         if: always() && matrix.engine == 'webkit' && steps.webkit_no_load.outcome != 'skipped'
         run: |
           cp "$RUNNER_TEMP/gallery-main-original.js" js/gallery/main.js
-          git diff --exit-code -- js/gallery/main.js
+          sha256sum --check "$RUNNER_TEMP/gallery-main-original.sha256"
 
       - name: Install Playwright 1.64 for a separate diagnostic
         id: webkit_newer
