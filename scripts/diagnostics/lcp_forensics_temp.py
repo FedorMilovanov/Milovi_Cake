@@ -22,7 +22,9 @@ PAGES = {'/': 'home', '/bento-torty/': 'bento', '/gallery/': 'gallery',
          '/svadebnye-torty/': 'wedding', '/zakazat-tort-spb/': 'order',
          '/o-konditere/': 'about', '/prigorody/gatchina/': 'gatchina', '/privacy/': 'privacy'}
 HERO = {'home': 'head_mobile-640.avif', 'bento': 'bento_1-mobile-640.avif',
-        'wedding': 'wedding-hero-mobile.avif'}
+        'wedding': 'wedding-hero-mobile.avif', 'gatchina': 'head_mobile.avif',
+        'order': 'head_mobile.avif', 'about': 'viktoria.avif',
+        'gallery': 'gallery-01.avif'}
 
 
 def notice(title, data):
@@ -46,11 +48,13 @@ def network_summary(audits, page):
                 'about': '/o-konditere/', 'order': '/zakazat-tort-spb/'}.get(page, '/' + page + '/')
     doc = finish(lambda u: urlparse(u).path == doc_path and 'milovicake.ru' in u)
     hero = finish(lambda u: HERO.get(page, '\0') in u)
+    # The published Gatchina HTML preloads WebP, but Chrome displays AVIF in <picture>.
+    wrong_preload = finish(lambda u: page == 'gatchina' and '/img/head_mobile.webp' in u)
     css = finish(lambda u: '/css/style.css' in u)
     fonts = finish(lambda u: 'fonts.gstatic.com' in u)
     google = finish(lambda u: 'fonts.googleapis.com' in u)
     js = finish(lambda u: '/js/main.js' in u)
-    return {'doc': doc[:2], 'hero': hero[:2], 'css': css[:3],
+    return {'doc': doc[:2], 'hero': hero[:2], 'wrongPreloadWebP': wrong_preload[:2], 'css': css[:3],
             'fonts': {'n': len(fonts), 'lastEnd': max((x['end'] or 0 for x in fonts), default=None)},
             'googleCss': google[:1], 'mainJs': js[:1], 'nRequests': len(items)}
 
