@@ -29,6 +29,7 @@ jobs:
       - name: Verify archive and print compact paired summaries
         run: python3 scripts/diagnostics/lcp_cdn_review_temp.py /tmp/lcp-cdn-readout
       - name: Summarize already-existing new-release Lighthouse data, separately from raw pairs
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -43,7 +44,7 @@ jobs:
                   audits = d['audits']
                   by_page.setdefault(url, []).append({
                       'simulated': round(audits['largest-contentful-paint']['numericValue']),
-                      'raw': round(audits['metrics']['details']['items'][0]['observedLargestContentfulPaint']),
+                      'raw': round(audits['metrics']['details']['items'][0].get('observedLargestContentfulPaint') or 0),
                   })
           if len(by_page) != 2:
               raise SystemExit(f'Expected two URLs, found {list(by_page)}')

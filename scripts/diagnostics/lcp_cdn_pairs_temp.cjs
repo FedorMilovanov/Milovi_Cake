@@ -9,6 +9,7 @@ const { gzipSync } = require('node:zlib');
 const { chromium, request } = require('playwright');
 
 const ORIGIN = process.env.LCP_PROBE_ORIGIN || 'https://milovicake.ru';
+const CHANNEL = process.env.LCP_PROBE_CHANNEL || 'chromium';
 const EXPECTED = process.env.EXPECTED_RELEASE_SHA || 'e4cc47a5478a2cd1cc29096f51e310633919f3e2';
 const OUT = process.env.LCP_PROBE_OUT || '/tmp/milovi-lcp-cdn-pairs';
 const PAGES = [
@@ -208,7 +209,7 @@ async function collect(browser, page, pair, mode) {
 
 async function main() {
   const summary = { expected: EXPECTED, origin: ORIGIN, dateUTC: new Date().toISOString(),
-    profile: 'cold anonymous mobile 412x915 DPR 1.75, no network/CPU throttling, 3500ms post-load observation; no mocks',
+    profile: `cold anonymous mobile 412x915 DPR 1.75, ${CHANNEL} channel, no network/CPU throttling, 3500ms post-load observation; no mocks`,
     order: 'AB/BA alternating within fresh browser per pair; independent empty context per navigation',
     rows: [], errors: [] };
   const api = await request.newContext();
@@ -218,8 +219,12 @@ async function main() {
       const count = process.env.LCP_PROBE_SMALL === '1' ? 1 : page.pairs;
       for (let i = 0; i < count; i++) {
         await verifyRelease(api);
-        const browser = await chromium.launch({ headless: true });
+        const browser = await chromium.launch({ headless: true,
+          ...(CHANNEL === 'chrome' ? { channel: 'chrome' } : {}) });
         try {
+          const major = process.env.LCP_REQUIRE_CHROME_MAJOR;
+          if (major && !browser.version().startsWith(major + '.'))
+            throw Error(`Expected Chrome ${major}, got ${browser.version()} (${CHANNEL})`);
           for (const mode of i % 2 ? ['block', 'allow'] : ['allow', 'block'])
             summary.rows.push(await collect(browser, page, i, mode));
         } catch (e) { summary.errors.push(`${page.name} pair ${i + 1}: ${e.stack || e}`); throw e; }

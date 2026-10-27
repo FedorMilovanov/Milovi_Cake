@@ -19,6 +19,9 @@ jobs:
     env:
       # PR #106 deployed while this experiment was being prepared; never mix releases.
       EXPECTED_RELEASE_SHA: e4cc47a5478a2cd1cc29096f51e310633919f3e2
+      # Existing Lighthouse release report uses Chrome 155; do not mix Chrome 153.
+      LCP_PROBE_CHANNEL: chrome
+      LCP_REQUIRE_CHROME_MAJOR: '155'
     steps:
       - name: Checkout PR diagnostic tools only
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -55,6 +58,9 @@ jobs:
             echo "::error title=CDN pairs failed::$(tail -n 8 /tmp/lcp-cdn-pairs.log | tr '\n' ' ')"
             exit 1
           fi
+
+      - name: Summarize all captured trials in compact check annotations
+        run: python3 scripts/diagnostics/lcp_cdn_review_temp.py /tmp/milovi-lcp-cdn-pairs
 
       - name: Verify deployed release SHA after measurements
         run: |
