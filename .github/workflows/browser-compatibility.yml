@@ -50,7 +50,7 @@ jobs:
         run: >-
           npx playwright test
           --project=${{ matrix.engine }}-desktop --project=${{ matrix.engine }}-mobile
-          --workers=1 --retries=0
+          --workers=1 --retries=0 --reporter=list,github,html
 
       - name: Upload failed browser artifacts
         if: failure()
