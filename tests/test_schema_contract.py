@@ -168,7 +168,7 @@ class SchemaContentContractTest(unittest.TestCase):
                      and node.get('name') == 'Сколько хранится меренговый рулет?']
         self.assertEqual(len(questions), 1)
         answer = ('Храните рулет в холодильнике при температуре +2…+6 °C не более 48 часов '
-                  'с момента изготовления. Дату и время изготовления уточняйте при получении.')
+                  'с момента изготовления.')
         self.assertEqual(questions[0]['acceptedAnswer']['text'], answer)
         self.assertIn(f'<p>{answer}</p>', html)
         self.assertIn('48 ч · +2…+6 °C', html)

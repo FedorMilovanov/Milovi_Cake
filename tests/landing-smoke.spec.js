@@ -902,7 +902,7 @@ test.describe('revised navigation and credentials', () => {
     }
     const faq = page.locator('details.mr-faq-item').filter({ hasText: 'Сколько хранится меренговый рулет?' });
     await faq.locator('summary').click();
-    const answer = 'Храните рулет в холодильнике при температуре +2…+6 °C не более 48 часов с момента изготовления. Дату и время изготовления уточняйте при получении.';
+    const answer = 'Храните рулет в холодильнике при температуре +2…+6 °C не более 48 часов с момента изготовления.';
     await expect(faq.locator('p')).toHaveText(answer);
     const schemaAnswer = await page.locator('script[type="application/ld+json"]').evaluateAll((scripts) =>
       scripts.map((script) => JSON.parse(script.textContent)).find((schema) => schema['@type'] === 'FAQPage')
