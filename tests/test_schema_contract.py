@@ -154,22 +154,36 @@ class SchemaContentContractTest(unittest.TestCase):
         answer = questions[0]['acceptedAnswer']['text']
         self.assertIn('возможность доставки по Санкт-Петербургу и пригородам согласуем при заказе', answer)
         self.assertIn('Стоимость зависит от адреса.', answer)
-        self.assertNotIn('по всему Санкт-Петербургу и Ленинградской области', html)
+        for unsupported in ('по всему Санкт-Петербургу и Ленинградской области', 'в любую точку', 'весь город'):
+            self.assertNotIn(unsupported, html)
+        self.assertIn('по согласованию', html)
         self.assertIn('aria-label="Меренговый рулет с доставкой в Гатчину"', html)
         self.assertIn('aria-label="Меренговый рулет с доставкой во Всеволожск"', html)
 
-    def test_meringue_storage_and_order_time_are_not_unverified_guarantees(self):
+    def test_meringue_storage_terms_are_consistent_and_order_timing_is_not_promised(self):
         relative = 'meringue-roll/index.html'
         html = (ROOT / relative).read_text(encoding='utf-8')
         questions = [node for node in page_nodes(relative)
                      if node.get('@type') == 'Question'
                      and node.get('name') == 'Сколько хранится меренговый рулет?']
         self.assertEqual(len(questions), 1)
-        self.assertEqual(questions[0]['acceptedAnswer']['text'],
-                         'Храните рулет в холодильнике. Точный срок и условия хранения уточняйте при заказе.')
-        for unconfirmed in ('48 часов', '48 ч хранения', '1–2 дня', 'Готовим в день доставки'):
+        answer = ('Храните рулет в холодильнике при температуре +2…+6 °C не более 48 часов '
+                  'с момента изготовления. Дату и время изготовления уточняйте при получении.')
+        self.assertEqual(questions[0]['acceptedAnswer']['text'], answer)
+        self.assertIn(f'<p>{answer}</p>', html)
+        self.assertIn('48 ч · +2…+6 °C', html)
+        facts = (ROOT / 'llms.txt').read_text(encoding='utf-8')
+        self.assertIn('при +2…+6 °C не более 48 часов с момента изготовления', facts)
+        for unconfirmed in ('1–2 дня', 'Готовим в день доставки'):
             with self.subTest(claim=unconfirmed):
                 self.assertNotIn(unconfirmed, html)
+
+    def test_lomonosov_delivery_is_qualified_in_source_and_generated_faq(self):
+        for relative in ('prigorody/_cities.csv', 'prigorody/lomonosov/index.html'):
+            with self.subTest(path=relative):
+                text = (ROOT / relative).read_text(encoding='utf-8')
+                self.assertIn('Возможность и стоимость доставки уточним по адресу.', text)
+                self.assertNotIn('доставляем в весь город', text)
 
     def test_delivery_claims_do_not_invent_city_rate_photos_or_packaging(self):
         for relative in ('dostavka-i-oplata/index.html', 'tort-s-dostavkoy/index.html'):

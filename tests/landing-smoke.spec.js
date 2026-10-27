@@ -1,5 +1,31 @@
 const { test, expect } = require('@playwright/test');
 
+async function contrastOnBackground(locator, backgroundSelector, overlaySelector = null) {
+  return locator.evaluate((element, selectors) => {
+    const channels = (color) => {
+      const values = color.match(/[\d.]+/g).map(Number);
+      return [values[0], values[1], values[2], values.length > 3 ? values[3] : 1];
+    };
+    const blend = (front, back, opacity = 1) => {
+      const alpha = front[3] * opacity;
+      return front.slice(0, 3).map((value, index) => value * alpha + back[index] * (1 - alpha)).concat(1);
+    };
+    const luminance = (color) => color.slice(0, 3).map((value) => {
+      value /= 255;
+      return value <= 0.04045 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4);
+    }).reduce((sum, value, index) => sum + value * [0.2126, 0.7152, 0.0722][index], 0);
+    const background = element.closest(selectors.background);
+    if (!background) throw new Error(`Missing background ancestor ${selectors.background}`);
+    let back = channels(getComputedStyle(background).backgroundColor);
+    if (selectors.overlay) back = blend(channels(getComputedStyle(element.closest(selectors.overlay)).backgroundColor), back);
+    const style = getComputedStyle(element);
+    const foreground = blend(channels(style.color), back, Number(style.opacity));
+    const a = luminance(foreground);
+    const b = luminance(back);
+    return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+  }, { background: backgroundSelector, overlay: overlaySelector });
+}
+
 const pages = [
   { path: '/zakazat-tort-spb/', h1: /Заказать торт в СПб/i },
   { path: '/tort-s-dostavkoy/', h1: /Торт с доставкой/i },
@@ -845,6 +871,126 @@ test.describe('homepage structured data and links', () => {
 });
 
 test.describe('revised navigation and credentials', () => {
+  test('meringue storage terms remain readable and match the FAQ schema', async ({ page }) => {
+    await page.goto('/meringue-roll/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('#loader')).toBeHidden();
+    const storage = page.locator('.ingredient').filter({ has: page.locator('.ingredient-name', { hasText: 'Хранение' }) });
+    await expect(storage).toHaveCount(1);
+    const description = storage.locator('.ingredient-desc');
+    await expect(description).toHaveText('48 ч · +2…+6 °C');
+    for (const theme of ['dark', 'light']) {
+      await page.evaluate((value) => document.documentElement.setAttribute('data-theme', value), theme);
+      for (const width of [320, 390, 1440]) {
+        await page.setViewportSize({ width, height: 900 });
+        await storage.scrollIntoViewIfNeeded();
+        await expect(description).toBeVisible();
+        await expect.poll(() => storage.evaluate((row) => Number(getComputedStyle(row.closest('.reveal')).opacity))).toBeGreaterThan(0.99);
+        const bounds = await storage.evaluate((row) => {
+          const title = row.querySelector('.ingredient-name').getBoundingClientRect();
+          const detail = row.querySelector('.ingredient-desc');
+          const rect = detail.getBoundingClientRect();
+          return { titleRight: title.right, left: rect.left, right: rect.right,
+            clientWidth: detail.clientWidth, scrollWidth: detail.scrollWidth };
+        });
+        expect(bounds.left, `${theme} ${width}px storage text starts outside viewport`).toBeGreaterThanOrEqual(0);
+        expect(bounds.right, `${theme} ${width}px storage text ends outside viewport`).toBeLessThanOrEqual(width);
+        expect(bounds.titleRight, `${theme} ${width}px storage label overlaps value`).toBeLessThanOrEqual(bounds.left + 1);
+        expect(bounds.scrollWidth, `${theme} ${width}px storage text is clipped`).toBeLessThanOrEqual(bounds.clientWidth + 1);
+        expect(await contrastOnBackground(storage.locator('.ingredient-name'), '.split-text'), `${theme} storage label contrast`).toBeGreaterThanOrEqual(4.5);
+        expect(await contrastOnBackground(description, '.split-text'), `${theme} storage value contrast`).toBeGreaterThanOrEqual(4.5);
+      }
+    }
+    const faq = page.locator('details.mr-faq-item').filter({ hasText: 'Сколько хранится меренговый рулет?' });
+    await faq.locator('summary').click();
+    const answer = 'Храните рулет в холодильнике при температуре +2…+6 °C не более 48 часов с момента изготовления. Дату и время изготовления уточняйте при получении.';
+    await expect(faq.locator('p')).toHaveText(answer);
+    const schemaAnswer = await page.locator('script[type="application/ld+json"]').evaluateAll((scripts) =>
+      scripts.map((script) => JSON.parse(script.textContent)).find((schema) => schema['@type'] === 'FAQPage')
+        .mainEntity.find((item) => item.name === 'Сколько хранится меренговый рулет?').acceptedAnswer.text);
+    expect(schemaAnswer).toBe(answer);
+  });
+
+  test('all meringue FAQ answers open completely and have readable contrast', async ({ page }) => {
+    await page.goto('/meringue-roll/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('#loader')).toBeHidden();
+    const items = page.locator('details.mr-faq-item');
+    await expect(items).toHaveCount(5);
+    for (let index = 0; index < 5; index += 1) {
+      const item = items.nth(index);
+      const summary = item.locator('summary');
+      const wrapper = item.locator('.mr-faq-answer');
+      const answer = wrapper.locator('p');
+      await summary.click();
+      await expect(item).toHaveAttribute('open', '');
+      await expect(wrapper).toHaveCSS('opacity', '1');
+      await expect(answer).toBeVisible();
+      await expect.poll(() => wrapper.evaluate((box) => {
+        const child = box.querySelector('p').getBoundingClientRect();
+        const parent = box.getBoundingClientRect();
+        return parent.bottom >= child.bottom - 1;
+      }), { message: `FAQ answer ${index + 1} is clipped` }).toBe(true);
+      for (const theme of ['dark', 'light']) {
+        await page.evaluate((value) => document.documentElement.setAttribute('data-theme', value), theme);
+        expect(await contrastOnBackground(summary, '.mr-faq', '.mr-faq-item'), `${theme} FAQ question contrast`).toBeGreaterThanOrEqual(4.5);
+        expect(await contrastOnBackground(answer, '.mr-faq', '.mr-faq-item'), `${theme} FAQ answer contrast`).toBeGreaterThanOrEqual(4.5);
+      }
+      await summary.click();
+      await expect(item).not.toHaveAttribute('open', '');
+    }
+  });
+
+  test('all suburb FAQ answers open completely and have readable contrast', async ({ page }) => {
+    await page.goto('/prigorody/', { waitUntil: 'domcontentloaded' });
+    const items = page.locator('details.hub-faq-item');
+    await expect(items).toHaveCount(4);
+    for (let index = 0; index < 4; index += 1) {
+      const item = items.nth(index);
+      const summary = item.locator('summary');
+      const wrapper = item.locator('.hub-faq-answer');
+      const answer = wrapper.locator('p');
+      await summary.click();
+      await expect(item).toHaveAttribute('open', '');
+      await expect(wrapper).toHaveCSS('opacity', '1');
+      await expect(answer).toBeVisible();
+      await expect.poll(() => wrapper.evaluate((box) => {
+        const child = box.querySelector('p').getBoundingClientRect();
+        const parent = box.getBoundingClientRect();
+        return parent.bottom >= child.bottom - 1;
+      }), { message: `Suburb FAQ answer ${index + 1} is clipped` }).toBe(true);
+      for (const theme of ['dark', 'light']) {
+        await page.evaluate((value) => document.documentElement.setAttribute('data-theme', value), theme);
+        expect(await contrastOnBackground(summary, '.hub-faq-item'), `${theme} suburb question contrast`).toBeGreaterThanOrEqual(4.5);
+        expect(await contrastOnBackground(answer, '.hub-faq-item'), `${theme} suburb answer contrast`).toBeGreaterThanOrEqual(4.5);
+      }
+      await summary.click();
+      await expect(item).not.toHaveAttribute('open', '');
+    }
+  });
+
+  test('meringue storage and FAQ on both pages work without JavaScript', async ({ browser, baseURL }, testInfo) => {
+    const width = testInfo.project.name.includes('mobile') ? 320 : 1440;
+    const context = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width, height: 900 } });
+    try {
+      const page = await context.newPage();
+      await page.goto('/meringue-roll/', { waitUntil: 'domcontentloaded' });
+      await expect(page.locator('#loader')).toBeHidden();
+      const storage = page.locator('.ingredient').filter({ hasText: 'Хранение' });
+      await storage.scrollIntoViewIfNeeded();
+      await expect(storage.locator('.ingredient-desc')).toBeVisible();
+      await expect(storage.locator('.ingredient-desc')).toHaveText('48 ч · +2…+6 °C');
+      const faq = page.locator('details.mr-faq-item').filter({ hasText: 'Сколько хранится меренговый рулет?' });
+      await faq.locator('summary').click();
+      await expect(faq.locator('p')).toBeVisible();
+      await expect(faq.locator('p')).toContainText('не более 48 часов с момента изготовления');
+      await page.goto('/prigorody/', { waitUntil: 'domcontentloaded' });
+      const suburbFaq = page.locator('details.hub-faq-item').first();
+      await suburbFaq.locator('summary').click();
+      await expect(suburbFaq.locator('p')).toBeVisible();
+    } finally {
+      await context.close();
+    }
+  });
+
   test('homepage section links are readable, unique and lead to real sections', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     const sectionLinks = page.locator('.cb-tags a');

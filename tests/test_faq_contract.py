@@ -16,6 +16,11 @@ class FAQContractTest(unittest.TestCase):
         <p>Да, состав &nbsp;и <strong>стоимость</strong> согласуем.</p></details>'''
         self.assertEqual(compare_faq(html, [faq()]), [])
 
+    def test_nested_details_answer_remains_part_of_faq_contract(self):
+        html = '''<details class="mr-faq-item"><summary>Можно ли обсудить сет?</summary>
+        <div class="mr-faq-answer"><p>Да, состав и стоимость согласуем.</p></div></details>'''
+        self.assertEqual(compare_faq(html, [faq()]), [])
+
     def test_mismatched_answer_fails_even_when_question_matches(self):
         html = '<details class="lp-faq-item"><summary>Можно ли обсудить сет?</summary><p>Бесплатно.</p></details>'
         self.assertTrue(any('answer differs' in issue for issue in compare_faq(html, [faq()])))
