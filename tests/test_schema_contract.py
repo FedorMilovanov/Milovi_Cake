@@ -134,6 +134,49 @@ class SchemaContentContractTest(unittest.TestCase):
             self.assertFalse(any('french.milovicake.ru' in value or '/milovi_cake' in value
                                  or '/MiloviCake' in value for value in same_as))
 
+    def test_fourteen_suburbs_have_distinct_dessert_links_and_consistent_business_identity(self):
+        with (ROOT / 'prigorody/_cities.csv').open(encoding='utf-8', newline='') as source:
+            rows = list(csv.DictReader(source))
+        self.assertEqual(len(rows), 14)
+        for row in rows:
+            slug = row['slug']
+            relative = f'prigorody/{slug}/index.html'
+            html = (ROOT / relative).read_text(encoding='utf-8')
+            with self.subTest(city=slug):
+                promo = re.search(r'<section class="meringue-promo".*?</section>', html, re.S).group()
+                self.assertIn(f'href="/meringue-roll/?city={slug}" class="meringue-promo__link">меренговый рулет</a>', promo)
+                self.assertIn('href="#catalog" class="meringue-promo__link">пирожное Павлова</a>', promo)
+                self.assertIn('<section id="catalog"', html)
+                for tail in ('цена, состав, доставка по Санкт-Петербургу',
+                             'частный кондитер Milovi Cake в Санкт-Петербурге</span>',
+                             'заказать торт в Санкт-Петербурге, доставка по СПб</span>'):
+                    self.assertNotIn(tail, html)
+                all_nodes = page_nodes(relative)
+                business = next(node for node in all_nodes if node.get('@type') == 'LocalBusiness')
+                self.assertEqual(business['@id'], 'https://milovicake.ru/#business')
+                self.assertEqual(business['url'], 'https://milovicake.ru/')
+                self.assertEqual(business['areaServed'], {
+                    '@type': 'Place' if slug == 'shushary' else 'City', 'name': row['ld_area']})
+                for kind in ('WebPage', 'ItemList'):
+                    page = next(node for node in all_nodes if node.get('@type') == kind)
+                    self.assertEqual(page['url'], f'https://milovicake.ru/prigorody/{slug}/')
+
+    def test_suburb_hub_covers_fourteen_directions_without_geography_or_faq_drift(self):
+        relative = 'prigorody/index.html'
+        html = (ROOT / relative).read_text(encoding='utf-8')
+        self.assertNotIn('14 городов Ленинградской области', html)
+        self.assertIn('14 направлениям Санкт-Петербурга и Ленинградской области', html)
+        answers = [node['acceptedAnswer']['text'] for node in page_nodes(relative)
+                   if node.get('name') == 'В какие пригороды Санкт-Петербурга вы доставляете торты?']
+        self.assertEqual(len(answers), 1)
+        for city in ('Пушкин', 'Петергоф', 'Гатчину', 'Всеволожск', 'Мурино', 'Кудрово',
+                     'Колпино', 'Красное Село', 'Сестрорецк', 'Ломоносов', 'Кронштадт',
+                     'Павловск', 'Тосно', 'Шушары'):
+            self.assertIn(city, answers[0])
+        self.assertIn('Другие адреса в Санкт-Петербурге и Ленинградской области согласуем', answers[0])
+        self.assertIn(answers[0], html)
+        self.assertNotIn('свадебные многоярусные торты', (ROOT / 'gallery/index.html').read_text(encoding='utf-8'))
+
     def test_suburb_copy_and_image_sitemap_do_not_assert_unverified_gluten_status(self):
         with (ROOT / 'prigorody/_cities.csv').open(encoding='utf-8', newline='') as source:
             rows = list(csv.DictReader(source))

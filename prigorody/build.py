@@ -196,6 +196,7 @@ def render_city(template, p):
         f'с доставкой {_pre(p["ld_city"])} {p["ld_city"]} от частного кондитера.",'
     )
     html = html.replace('{{ld_area_name}}', f'"name": "{p["ld_area"]}"')
+    html = html.replace('{{ld_area_type}}', p['ld_area_type'])
 
     # Delivery note block
     note = p.get('delivery_note', '').strip()
@@ -272,7 +273,7 @@ def main():
     # ── r34: bug #34 — CSV structure validation ──
     with open(CSV_PATH, encoding='utf-8') as vf:
         vreader = csv.DictReader(vf)
-        required_cols = ['slug', 'title', 'meta_desc', 'h1_city', 'hero_p', 'delivery_price', 'lastmod']
+        required_cols = ['slug', 'title', 'meta_desc', 'h1_city', 'hero_p', 'delivery_price', 'lastmod', 'ld_area_type']
         for col in required_cols:
             if col not in vreader.fieldnames:
                 print(f'ОШИБКА: столбец "{col}" отсутствует в CSV')
@@ -280,6 +281,9 @@ def main():
         for rn, row in enumerate(vreader, 2):
             if not row.get('slug', '').strip():
                 print(f'ОШИБКА: строка {rn} — пустой slug')
+                exit(1)
+            if row.get('ld_area_type') not in {'City', 'Place', 'AdministrativeArea'}:
+                print(f'ОШИБКА: строка {rn} — неверный ld_area_type')
                 exit(1)
 
     with open(TEMPLATE_PATH, encoding='utf-8') as f:
