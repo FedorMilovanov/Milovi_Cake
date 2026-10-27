@@ -65,8 +65,8 @@ def lcp_element(audits):
 
 
 def read_reports(root, release):
-    # LHCI artifacts use timestamped .json names, not *.report.json.
-    files = sorted(root.rglob('*.json'))
+    # LHCI artifacts use timestamped lhr-*.json names; assertion-results.json is a list.
+    files = sorted(root.rglob('lhr-*.json'))
     notice(release + '-files', {'count': len(files), 'sample': [x.name for x in files[:3]]})
     if len(files) < 24:
         raise RuntimeError(f'{root}: expected 24 report JSON, found {len(files)}')
@@ -97,9 +97,12 @@ def read_reports(root, release):
     count = sum(len(x) for x in results.values())
     if count != 24 or any(len(results[x]) != 3 for x in PAGES.values()):
         raise RuntimeError(f'{release}: expected 8 URLs x3, got { {k:len(v) for k,v in results.items()} }')
+    sample = json.loads(files[0].read_text('utf-8'))
     notice(release + '-archive', {'reports': count, 'pages': sorted(results),
         'chrome': sorted({json.loads(f.read_text('utf-8')).get('userAgent', '')[-60:]
-                          for f in files[:2]}), 'files': len(files)})
+                          for f in files[:2]}), 'files': len(files),
+        'lcpAuditKeys': [k for k in sample['audits'] if 'lcp' in k or 'largest-contentful-paint' in k],
+        'throttling': sample.get('configSettings', {}).get('throttling')})
     for name in PAGES.values():
         rows = sorted(results[name], key=lambda x: x['simLcp'] or 0)
         raw_values = [x['rawLcp'] for x in rows if x['rawLcp'] is not None]
