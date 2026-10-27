@@ -88,7 +88,8 @@ async function trial(browser, profile, pair, mode) {
       webp: data.webp.map(x => ({ ...x, start: round(x.start), end: round(x.end) })),
       width: data.width, visible: data.visible, focused: data.focused, fontCss, fontFile,
       fontStatus: data.fontStatus, rewrite, status: response?.status(), errors };
-    if (!row.chrome.startsWith('155.') || row.rewrite !== 1 || row.status !== 200 ||
+    // Hosted Chrome can update from 155 to 156; only compare arms within one run.
+    if (!/^15[56]\./.test(row.chrome) || row.rewrite !== 1 || row.status !== 200 ||
         !row.lcpUrl?.endsWith('/img/head_mobile.avif') ||
         !row.heroSrc?.endsWith('/img/head_mobile.avif') || !row.width ||
         row.visible !== 'visible' || !row.focused || !fontCss || !fontFile ||
@@ -114,6 +115,7 @@ async function main() {
         console.log('valid pair', profile, pair, rows.filter(x => x.pair === pair)
           .map(x => [x.mode, x.rawLcp, x.avif[0].end, x.webp[0]?.end]));
       }
+      if (rows.some(x => x.chrome !== rows[0].chrome)) throw Error('Browser version changed within control');
       const a = rows.filter(x => x.mode === 'published');
       const b = rows.filter(x => x.mode === 'fixed');
       const deltas = a.map(x => round(b.find(y => y.pair === x.pair).rawLcp - x.rawLcp));
