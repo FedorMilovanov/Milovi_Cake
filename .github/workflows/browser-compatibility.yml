@@ -57,6 +57,15 @@ jobs:
           --project=${{ matrix.engine }}-desktop --project=${{ matrix.engine }}-mobile
           --workers=1 --retries=0 --reporter=list,github,html
 
+      - name: Repeat WebKit storage fault interactions
+        if: matrix.engine == 'webkit'
+        env:
+          HOME: /root
+        run: >-
+          npx playwright test tests/cart-accessibility.spec.js
+          --project=webkit-desktop --grep='cart stays usable and warns'
+          --repeat-each=3 --workers=1 --retries=0 --reporter=list,github
+
       - name: Upload failed browser artifacts
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

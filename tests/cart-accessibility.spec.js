@@ -254,17 +254,35 @@ for (const failure of ['QuotaExceededError', 'SecurityError']) {
     page.on('pageerror', (error) => errors.push(error.message));
     await page.addInitScript((name) => {
       const write = Storage.prototype.setItem;
+      window.__cartFaultAttempts = 0;
+      window.__cartFaultClicks = 0;
+      document.addEventListener('click', (event) => {
+        if (event.target.closest('#card-2 .btn-add')) window.__cartFaultClicks++;
+      }, true);
       Storage.prototype.setItem = function(key, value) {
-        if (key === 'milovicake_cart') throw new DOMException('Storage unavailable', name);
+        if (key === 'milovicake_cart') {
+          window.__cartFaultAttempts++;
+          throw new DOMException('Storage unavailable', name);
+        }
         return write.call(this, key, value);
       };
     }, failure);
     await page.setViewportSize({ width: 320, height: 800 });
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.locator('#card-2 .btn-add').click();
-    await expect(page.locator('#toast')).toBeVisible();
-    await expect(page.locator('#toast')).toHaveAttribute('role', 'status');
-    await expect(page.locator('#toast')).toContainText('Корзина не сохранится при обновлении');
+    try {
+      await expect(page.locator('#cartBadge')).toHaveText('1');
+      await expect(page.locator('#toast')).toBeVisible();
+      await expect(page.locator('#toast')).toHaveAttribute('role', 'status');
+      await expect(page.locator('#toast')).toContainText('Корзина не сохранится при обновлении');
+    } catch (error) {
+      const state = await page.evaluate(() => ({
+        clicks: window.__cartFaultClicks, writes: window.__cartFaultAttempts,
+        badge: document.querySelector('#cartBadge')?.textContent,
+        toast: document.querySelector('#toast')?.outerHTML,
+      }));
+      throw new Error(`${error.message}\nStorage fault diagnostics: ${JSON.stringify({ ...state, errors })}`);
+    }
     const bounds = await page.locator('#toast').boundingBox();
     expect(bounds.x).toBeGreaterThanOrEqual(0);
     expect(bounds.x + bounds.width).toBeLessThanOrEqual(320);
