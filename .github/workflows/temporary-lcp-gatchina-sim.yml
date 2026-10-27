@@ -1,0 +1,89 @@
+# TEMPORARY read-only PR job: local Lighthouse fixture, no deploy or site change.
+# Delete this workflow and its script once paired evidence is documented.
+name: Temporary Gatchina simulated LCP control
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/temporary-lcp-gatchina-sim.yml
+      - scripts/diagnostics/lcp_gatchina_sim_temp.cjs
+
+permissions:
+  contents: read
+
+jobs:
+  simulated:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      EXPECTED_RELEASE_SHA: e4cc47a5478a2cd1cc29096f51e310633919f3e2
+      LCP_FIXTURE_ROOT: /tmp/milovi-lh-fixture
+      LCP_LIGHTHOUSE_CLI: /tmp/milovi-lighthouse/node_modules/lighthouse/cli/index.js
+      LCP_OUTPUT: /tmp/milovi-lh-gatchina-pairs
+    steps:
+      - name: Checkout PR-only diagnostic runner
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Setup Node for isolated Lighthouse tooling
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          cache: npm
+
+      - name: Prove exact published SHA before local measurements
+        run: |
+          if python3 scripts/production_release_smoke.py --retries 2 --delay 5 > /tmp/lh-release-proof.log 2>&1; then
+            cat /tmp/lh-release-proof.log
+          else
+            echo "::error title=Published release changed; no measurements::$(head -n 8 /tmp/lh-release-proof.log | tr '\n' ' ')"
+            exit 1
+          fi
+
+      - name: Extract exact published Git tree to temporary HTTPS fixture
+        run: |
+          git fetch --no-tags --depth=1 origin "$EXPECTED_RELEASE_SHA"
+          test "$(git rev-parse FETCH_HEAD)" = "$EXPECTED_RELEASE_SHA"
+          mkdir -p "$LCP_FIXTURE_ROOT"
+          git archive "$EXPECTED_RELEASE_SHA" | tar -x -C "$LCP_FIXTURE_ROOT"
+          test "$(sha256sum "$LCP_FIXTURE_ROOT/prigorody/gatchina/index.html" | cut -d' ' -f1)" = \
+            "b58eb52b98129587b55e2ef3eb2a56c527ca2b805c783108684d85362fd6429f"
+
+      - name: Install Lighthouse outside checkout and discover hosted Chrome
+        run: |
+          npm install --prefix /tmp/milovi-lighthouse --no-save --ignore-scripts lighthouse@12.6.1
+          CHROME_PATH="$(command -v google-chrome-stable || command -v google-chrome || true)"
+          test -n "$CHROME_PATH" && test -x "$CHROME_PATH"
+          "$CHROME_PATH" --version
+          echo "CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
+
+      - name: Pair published, no-preload and AVIF-preload Lighthouse runs
+        run: |
+          if node scripts/diagnostics/lcp_gatchina_sim_temp.cjs > /tmp/lh-pairs.log 2>&1; then
+            cat /tmp/lh-pairs.log
+          else
+            cat /tmp/lh-pairs.log
+            echo "::error title=Paired Lighthouse control failed::$(tail -n 11 /tmp/lh-pairs.log | tr '\n' ' ')"
+            exit 1
+          fi
+
+      - name: Re-prove published SHA after local measurements
+        run: |
+          if python3 scripts/production_release_smoke.py --retries 1 > /tmp/lh-release-proof.log 2>&1; then
+            cat /tmp/lh-release-proof.log
+          else
+            echo "::error title=Published release changed during control::$(head -n 8 /tmp/lh-release-proof.log | tr '\n' ' ')"
+            exit 1
+          fi
+
+      - name: Keep bounded anonymous lab reports outside Git
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: temporary-gatchina-sim-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/milovi-lh-gatchina-pairs/
+          if-no-files-found: warn
+          retention-days: 30
+          include-hidden-files: false
