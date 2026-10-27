@@ -127,7 +127,28 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       await page.waitForTimeout(2200);
       await page.locator('#lbNext').click();
       await expect(page.locator('#lbCounter')).toHaveText('02 / 46');
-      await page.locator('#lbClose').click();
+      try {
+        await page.locator('#lbClose').click({ timeout: 10_000 });
+      } catch (error) {
+        const diagnostics = await Promise.race([
+          page.evaluate(() => {
+            const button = document.querySelector('#lbClose');
+            if (!button) return { missing: true };
+            const rect = button.getBoundingClientRect();
+            const style = getComputedStyle(button);
+            const hit = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
+            return {
+              rect: rect.toJSON(), display: style.display, visibility: style.visibility, transform: style.transform,
+              hit: hit?.outerHTML?.slice(0, 250), active: document.activeElement?.outerHTML?.slice(0, 250),
+              animations: document.querySelector('#lbRoot').getAnimations({ subtree: true }).map((a) => ({
+                target: a.effect?.target?.className, state: a.playState, time: a.currentTime,
+              })).slice(0, 30),
+            };
+          }).catch((reason) => ({ evaluateError: String(reason) })),
+          new Promise((resolve) => setTimeout(() => resolve({ unresponsive: true }), 3000)),
+        ]);
+        throw new Error(`${error.message}\nGallery close diagnostics: ${JSON.stringify(diagnostics)}`);
+      }
       await card.click();
       await page.locator('#lbNext').click();
       await page.locator('#lbNext').click();
