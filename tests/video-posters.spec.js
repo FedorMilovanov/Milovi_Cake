@@ -1,5 +1,22 @@
 const { test, expect } = require('@playwright/test');
 
+// A crash may be caused by the engine or its environment. Record actual
+// cgroup/process evidence at the time of failure instead of assuming OOM.
+function browserCrashResources() {
+  const fs = require('node:fs');
+  const { execFileSync } = require('node:child_process');
+  const read = (path) => { try { return fs.readFileSync(path, 'utf8').trim(); } catch { return 'unavailable'; } };
+  let processes;
+  try { processes = execFileSync('ps', ['-eo', 'pid,rss,comm', '--sort=-rss'], { timeout: 2000, encoding: 'utf8' }).split('\n').slice(0, 16); }
+  catch { processes = ['unavailable']; }
+  return {
+    memoryCurrent: read('/sys/fs/cgroup/memory.current'), memoryPeak: read('/sys/fs/cgroup/memory.peak'),
+    memoryMax: read('/sys/fs/cgroup/memory.max'), memoryEvents: read('/sys/fs/cgroup/memory.events'),
+    memoryPressure: read('/sys/fs/cgroup/memory.pressure'),
+    meminfo: read('/proc/meminfo').split('\n').slice(0, 5), processes,
+  };
+}
+
 test('all gallery clips show their own lightweight, decodable frame before playback', async ({ page, request }) => {
   await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
   const reels = await page.evaluate(async () => {
@@ -85,22 +102,29 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
 
   test('gallery can close an active video and reopen without CDN', async ({ page }) => {
     const errors = [];
+    const diagnostic = { crashed: false };
     page.on('pageerror', (error) => errors.push(error.message));
-    await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
-    await page.goto('/gallery/', { waitUntil: 'load' });
-    const card = page.locator('#galleryGrid [data-id="p01"]');
-    await card.click();
-    await page.locator('#lbNext').click();
-    await expect(page.locator('#lbCounter')).toHaveText('02 / 46');
-    const video = page.locator('#lbWrapper .swiper-slide-active video');
-    await expect(video).toBeVisible();
-    await expect(video).toHaveAttribute('src', /video-01-knigi\.webm/);
-    await expect.poll(() => video.evaluate((v) => v.readyState >= 2 || !!v.error)).toBe(true);
-    await page.locator('#lbClose').click();
-    await expect(page.locator('#lbRoot')).toHaveCount(0);
-    await card.click();
-    await expect(page.locator('#lbCounter')).toHaveText('01 / 46');
-    expect(errors).toEqual([]);
+    page.on('crash', () => { diagnostic.crashed = true; diagnostic.resources = browserCrashResources(); });
+    try {
+      await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+      await page.goto('/gallery/', { waitUntil: 'load' });
+      const card = page.locator('#galleryGrid [data-id="p01"]');
+      await card.click();
+      await page.locator('#lbNext').click();
+      await expect(page.locator('#lbCounter')).toHaveText('02 / 46');
+      const video = page.locator('#lbWrapper .swiper-slide-active video');
+      await expect(video).toBeVisible();
+      await expect(video).toHaveAttribute('src', /video-01-knigi\.webm/);
+      await expect.poll(() => video.evaluate((v) => v.readyState >= 2 || !!v.error)).toBe(true);
+      await page.locator('#lbClose').click();
+      await expect(page.locator('#lbRoot')).toHaveCount(0);
+      await card.click();
+      await expect(page.locator('#lbCounter')).toHaveText('01 / 46');
+      expect(errors).toEqual([]);
+    } catch (error) {
+      diagnostic.resources ||= browserCrashResources();
+      throw new Error(`${error.message}\nGallery video diagnostics: ${JSON.stringify({ ...diagnostic, errors })}`, { cause: error });
+    }
   });
 
   test('late Swiper initializes at the current fallback slide even after close and reopen', async ({ page }) => {
@@ -116,7 +140,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     let response;
     let markRequested;
     const stats = { assets: 0, images: 0, videos: 0, missing: 0, crashed: false };
-    page.on('crash', () => { stats.crashed = true; });
+    page.on('crash', () => { stats.crashed = true; stats.resources = browserCrashResources(); });
     const requested = new Promise((resolve) => { markRequested = resolve; });
     const server = http.createServer((req, res) => {
       if (req.url === '/gallery/') {
@@ -208,7 +232,8 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       await page.locator('#lbNext').click();
       await expect(page.locator('#lbCounter')).toHaveText('04 / 46');
     } catch (error) {
-      throw new Error(`${error.message}\nGallery server diagnostics: ${JSON.stringify(stats)}`);
+      stats.resources ||= browserCrashResources();
+      throw new Error(`${error.message}\nGallery server diagnostics: ${JSON.stringify(stats)}`, { cause: error });
     } finally {
       release();
       server.closeAllConnections();

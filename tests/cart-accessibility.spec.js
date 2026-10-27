@@ -256,9 +256,19 @@ for (const failure of ['QuotaExceededError', 'SecurityError']) {
       const write = Storage.prototype.setItem;
       window.__cartFaultAttempts = 0;
       window.__cartFaultClicks = 0;
-      document.addEventListener('click', (event) => {
-        if (event.target.closest('#card-2 .btn-add')) window.__cartFaultClicks++;
-      }, true);
+      window.__cartFaultEvents = [];
+      for (const type of ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click']) {
+        document.addEventListener(type, (event) => {
+          if (type === 'click' && event.target.closest('#card-2 .btn-add')) window.__cartFaultClicks++;
+          window.__cartFaultEvents.push({
+            type, time: Math.round(performance.now()),
+            target: event.target?.id || event.target?.className || event.target?.nodeName,
+            card: event.target?.closest?.('.product-card')?.id || '',
+            x: event.clientX, y: event.clientY, scrollY: window.scrollY,
+          });
+          if (window.__cartFaultEvents.length > 20) window.__cartFaultEvents.shift();
+        }, true);
+      }
       Storage.prototype.setItem = function(key, value) {
         if (key === 'milovicake_cart') {
           window.__cartFaultAttempts++;
@@ -278,6 +288,7 @@ for (const failure of ['QuotaExceededError', 'SecurityError']) {
     } catch (error) {
       const state = await page.evaluate(() => ({
         clicks: window.__cartFaultClicks, writes: window.__cartFaultAttempts,
+        events: window.__cartFaultEvents, documentHasFocus: document.hasFocus(),
         badge: document.querySelector('#cartBadge')?.textContent,
         toast: document.querySelector('#toast')?.outerHTML,
       }));
@@ -517,8 +528,9 @@ async function traceCalculatorEvents(page) {
     const record = (event) => {
       const target = event.target;
       window.__calcTrace.push({
-        type: event.type, key: event.key || '',
+        type: event.type, key: event.key || '', time: Math.round(performance.now()),
         target: target?.id || (typeof target?.className === 'string' ? target.className : target?.nodeName) || '',
+        related: event.relatedTarget?.id || (typeof event.relatedTarget?.className === 'string' ? event.relatedTarget.className : event.relatedTarget?.nodeName) || '',
         active: document.activeElement?.id || (typeof document.activeElement?.className === 'string' ? document.activeElement.className : document.activeElement?.nodeName) || '',
         expanded: document.querySelector('#calcCollapsedBar')?.getAttribute('aria-expanded'),
         scrollY: window.scrollY,
@@ -534,20 +546,36 @@ async function calculatorDiagnostics(page) {
   return page.evaluate(() => {
     const bar = document.querySelector('#calcCollapsedBar');
     const panel = document.querySelector('#calcRightCol');
+    const region = document.querySelector('#calcExpandable');
     const active = document.activeElement;
+    const style = region && getComputedStyle(region);
     return {
-      active: active?.outerHTML?.slice(0, 400),
+      active: active?.outerHTML?.slice(0, 400), documentHasFocus: document.hasFocus(),
       expanded: bar?.getAttribute('aria-expanded'), panel: panel?.className,
       barDisplay: bar && getComputedStyle(bar).display,
+      region: region && { tabIndex: region.tabIndex, display: style.display, visibility: style.visibility,
+        overflowY: style.overflowY, clientHeight: region.clientHeight, scrollHeight: region.scrollHeight },
       scrollY: window.scrollY, trace: window.__calcTrace?.slice(-35),
     };
   });
 }
 
-async function expectCalculatorFocus(page, locator) {
+async function expectCalculatorFocus(page, locator, investigateTabOrder = false) {
   try { await expect(locator).toBeFocused(); }
   catch (error) {
-    throw new Error(`${error.message}\nCalculator focus diagnostics: ${JSON.stringify(await calculatorDiagnostics(page))}`, { cause: error });
+    const before = await calculatorDiagnostics(page);
+    const subsequentTabs = [];
+    if (investigateTabOrder) {
+      for (let i = 0; i < 3; i++) {
+        await page.keyboard.press('Tab');
+        subsequentTabs.push(await page.evaluate(() => ({
+          active: document.activeElement?.outerHTML?.slice(0, 200),
+          expanded: document.querySelector('#calcCollapsedBar')?.getAttribute('aria-expanded'),
+          scrollY: window.scrollY,
+        })));
+      }
+    }
+    throw new Error(`${error.message}\nCalculator focus diagnostics: ${JSON.stringify({ before, subsequentTabs })}`, { cause: error });
   }
 }
 
@@ -575,10 +603,13 @@ test('mobile calculator panel stays reachable and restores keyboard focus', asyn
     expect(closed.panel, `${route} closed panel and navigation`).toBeLessThanOrEqual(closed.nav + 1);
     await bar.focus();
     await page.keyboard.press('Enter');
-    await expect(bar).toHaveAttribute('aria-expanded', 'true');
+    try { await expect(bar).toHaveAttribute('aria-expanded', 'true'); }
+    catch (error) {
+      throw new Error(`${error.message}\nCalculator open diagnostics: ${JSON.stringify(await calculatorDiagnostics(page))}`, { cause: error });
+    }
     await expect(add).toBeVisible();
     await page.keyboard.press('Tab');
-    await expectCalculatorFocus(page, add);
+    await expectCalculatorFocus(page, add, true);
     await page.keyboard.press('Escape');
     await expect(bar).toHaveAttribute('aria-expanded', 'false');
     await expectCalculatorFocus(page, bar);
