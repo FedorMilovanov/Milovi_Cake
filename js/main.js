@@ -63,18 +63,33 @@ function normalizeCartKey(key, entry) {
   return buildCartKey(parsed.numId, mode, !!p.hasMaxi, fill, decor);
 }
 
-function setCartItemFill(oldCartKey, fill) {
+function isSafeCartQty(qty, product) {
+  return Number.isSafeInteger(qty * (product.unit === 'кг' ? 2 : 1)) && Number.isSafeInteger(qty * product.priceNum);
+}
+
+function addCartQty(entry, amount, product, isAuthor = false) {
+  if ((entry.dessertType === 'author') !== isAuthor) { showToast('Выберите одинаковый тип десерта'); return false; }
+  const qty = entry.qty + amount;
+  if (!isSafeCartQty(qty, product)) { showToast('Слишком большое количество'); return false; }
+  entry.qty = qty;
+  return true;
+}
+
+function setCartItemFill(oldCartKey, fill, select) {
   const entry = cart[oldCartKey];
   if (!entry) return;
   const newFill = fill || '';
   const parsed  = parseCartKey(oldCartKey);
   const p       = products.find(x => x.id === parsed.numId);
-  const newKey  = p ? buildCartKey(parsed.numId, parsed.mode, !!p.hasMaxi, newFill, parsed.decor || '') : oldCartKey;
+  const mode    = entry.mode || parsed.mode;
+  const newKey  = p ? buildCartKey(parsed.numId, mode, !!p.hasMaxi, newFill, entry.decor || parsed.decor || '') : oldCartKey;
 
   if (newKey !== oldCartKey) {
     if (cart[newKey]) {
-      const maxQty = p && p.unit === 'кг' ? (p.maxiVariant ? 5 : 20) : 20;
-      cart[newKey].qty = Math.min(Math.round((cart[newKey].qty + entry.qty) * 10) / 10, maxQty);
+      if (!addCartQty(cart[newKey], entry.qty, mode === 'maxi' ? p.maxiVariant : p, entry.dessertType === 'author')) {
+        if (select) select.value = entry.fill || parsed.fill || '';
+        return;
+      }
     } else {
       cart[newKey] = { ...entry, fill: newFill };
     }
@@ -325,6 +340,8 @@ function loadCartFromStorage() {
     if (!saved) return;
     const parsed = JSON.parse(saved);
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) { saveCartToStorage(); return; }
+    const originals = {};
+    let preserve = false;
     Object.keys(parsed).forEach(key => {
       const entry = parsed[key];
       const parsedKey = parseCartKey(key);
@@ -335,17 +352,19 @@ function loadCartFromStorage() {
       if ((mode !== 'regular' && mode !== 'maxi') || (mode === 'maxi' && !product.hasMaxi)) return;
       const variant = mode === 'maxi' ? product.maxiVariant : product;
       const qty = entry.qty;
-      const units = variant.unit === 'кг' ? 2 : 1;
       const min = variant.minQty || variant.minKg || 1;
-      if (typeof qty !== 'number' || qty < min || !Number.isSafeInteger(qty * units) || !Number.isSafeInteger(qty * variant.priceNum)) return;
+      if (typeof qty !== 'number' || qty < min || !isSafeCartQty(qty, variant)) return;
+      originals[key] = { ...entry, mode };
       const normalizedKey = normalizeCartKey(key, entry);
-      const combined = (cart[normalizedKey]?.qty || 0) + qty;
-      if (!Number.isSafeInteger(combined * units) || !Number.isSafeInteger(combined * variant.priceNum)) return;
+      const existing = cart[normalizedKey];
+      const combined = (existing?.qty || 0) + qty;
+      if (existing && ((existing.dessertType === 'author') !== (entry.dessertType === 'author') || !isSafeCartQty(combined, variant))) { preserve = true; return; }
       if (cart[normalizedKey]) cart[normalizedKey].qty = combined;
       else cart[normalizedKey] = entry;
       if (!cart[normalizedKey].mode) cart[normalizedKey].mode = mode;
       bentoModes[parsedKey.numId] = cart[normalizedKey].mode;
     });
+    if (preserve) cart = originals;
     saveCartToStorage();
   } catch(e) {}
 }
@@ -387,7 +406,7 @@ function addToCart(id, e) {
     cart[cartKey] = { qty: defaultQty, mode, dessertType: 'base' };
   } else {
     const step = p.unit === 'кг' ? 0.5 : 1;
-    cart[cartKey].qty = Math.round((cart[cartKey].qty + step) * 10) / 10;
+    if (!addCartQty(cart[cartKey], step, p)) return;
   }
   updateCartUI();
   saveCartToStorage();
@@ -471,7 +490,7 @@ function changeQty(cartKey, delta) {
   if (p.hasMaxi && entry.mode === 'maxi') p = { ...p, ...p.maxiVariant };
   const step = p.unit === 'кг' ? 0.5 : 1;
   const minQty = p.minQty || (p.unit === 'кг' ? (p.minKg || 1) : 1);
-  var maxQty = p.unit === 'кг' ? (p.maxiVariant ? 5 : 20) : 20; /* r29: bug #16 */
+  var maxQty = p.unit === 'кг' ? (p.maxiVariant ? 5 : 20) : 20;
   const nextQty = Math.round((entry.qty + delta * step) * 10) / 10;
   entry.qty = delta > 0 ? Math.min(nextQty, Math.max(maxQty, entry.qty)) : nextQty;
   if (entry.qty < minQty) delete cart[cartKey];
@@ -495,6 +514,10 @@ function escapeCartHtml(value) {
   return String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[ch]));
 }
 
+function cartTotalText(total) {
+  return Number.isSafeInteger(total) ? total.toLocaleString('ru') + ' ₽' : 'Цена уточняется';
+}
+
 function updateCartUI() {
   const totalItems = Object.keys(cart).length;
   document.querySelectorAll('#cartBadge, [data-cart-badge]').forEach(badge => {
@@ -503,7 +526,7 @@ function updateCartUI() {
   });
   const countBadge = document.getElementById('cartCountBadge');
   if (countBadge) countBadge.textContent = totalItems;
-  if (typeof updateCalcCartBadge === 'function') updateCalcCartBadge();
+  updateCalcCartBadge();
   const clearBtn = document.getElementById('cartClearBtn');
   if (clearBtn) clearBtn.style.display = totalItems > 0 ? 'inline-flex' : 'none';
 
@@ -533,22 +556,22 @@ function updateCartUI() {
     const minQty = isKg ? (p.minKg || 1) : (p.minQty || 1);
     const atMin = qty <= minQty;
     const dessertType = entry.dessertType || 'base';
-    const isBase = dessertType === 'base';
+    const isBase = dessertType !== 'author';
     const keyAttr = escapeCartHtml(cartKey);
     const keyArg = escapeCartHtml(JSON.stringify(cartKey));
 
     const dessertToggle = `<div style="margin-top:8px;"><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;"><span style="font-size:11px;color:var(--cart-muted);letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;">Тип:</span><button type="button" onclick="setCartItemDessertType(${keyArg},'base')" style="font-size:12px;font-family:'Jost',sans-serif;padding:3px 10px;border-radius:20px;border:1px solid ${isBase ? 'var(--gold)' : 'var(--cream-dark)'};background:${isBase ? 'var(--gold)' : 'transparent'};color:${isBase ? 'var(--cart-cta-ink)' : 'var(--cart-muted)'};cursor:pointer;transition:all .2s;">Базовый</button><button type="button" onclick="setCartItemDessertType(${keyArg},'author')" style="font-size:12px;font-family:'Jost',sans-serif;padding:3px 10px;border-radius:20px;border:1px solid ${!isBase ? 'var(--gold)' : 'var(--cream-dark)'};background:${!isBase ? 'var(--gold)' : 'transparent'};color:${!isBase ? 'var(--cart-cta-ink)' : 'var(--cart-muted)'};cursor:pointer;transition:all .2s;">Авторский</button></div>${(() => {
       const fills = getFillsForProduct(p);
       if (!fills.length) return '';
-      const currentFill = parsed.fill || '';
+      const currentFill = entry.fill || parsed.fill || '';
       const opts = fills.map(f => `<option value="${f}" ${currentFill === f ? 'selected' : ''}>${f}</option>`).join('');
-      return `<label style="display:flex;align-items:center;gap:6px;margin-top:6px;min-width:0;"><span style="font-size:11px;color:var(--cart-muted);letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;">Начинка:</span><select onchange="setCartItemFill(${keyArg}, this.value)" style="font-size:12px;font-family:'Jost',sans-serif;padding:3px 8px;border-radius:12px;border:1px solid var(--cream-dark);background:transparent;color:var(--text);cursor:pointer;flex:1;max-width:180px;"><option value="">— уточнить —</option>${opts}</select></label>`;
+      return `<label style="display:flex;align-items:center;gap:6px;margin-top:6px;min-width:0;"><span style="font-size:11px;color:var(--cart-muted);letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;">Начинка:</span><select onchange="setCartItemFill(${keyArg}, this.value, this)" style="font-size:12px;font-family:'Jost',sans-serif;padding:3px 8px;border-radius:12px;border:1px solid var(--cream-dark);background:transparent;color:var(--text);cursor:pointer;flex:1;max-width:180px;"><option value="">— уточнить —</option>${opts}</select></label>`;
     })()}</div>`;
 
     return `<div class="cart-item" data-cart-id="${keyAttr}"><div class="cart-item-info"><h4>${p.name}</h4><div class="item-price">${p.price}</div>${p.min && !entry.fill ? `<div class="item-min">${p.min}</div>` : ''}${entry.decor ? `<div class="item-min" style="opacity:0.7">🎨 ${escapeCartHtml(entry.decor)}</div>` : ''}${dessertToggle}</div><div class="qty-ctrl"><button type="button" class="qty-btn" onclick="changeQty(${keyArg}, -1)" ${atMin ? 'title="Минимальный заказ"' : ''}>−</button><span class="qty-val">${qtyLabel}</span><button type="button" class="qty-btn" onclick="changeQty(${keyArg}, 1)">+</button></div><div class="cart-item-right"><div class="cart-line-total">${lineTotalFmt}</div><button type="button" class="del-btn" onclick="removeFromCart(${keyArg})" aria-label="Удалить"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true"><path d="M4 7h16M10 4h4M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></button></div></div>`;
   }).join('');
 
-  const totalFmt = total.toLocaleString('ru') + ' ₽';
+  const totalFmt = cartTotalText(total);
   const cartTotalEl = document.getElementById('cartTotal');
   if (cartTotalEl) cartTotalEl.textContent = totalFmt;
 
@@ -592,7 +615,7 @@ function buildMessage() {
     const dessertLabel = entry.dessertType === 'author' ? 'авторский' : 'базовый';
     let details = [`десерт: ${dessertLabel}`];
     if (entry.fill)  details.push(`начинка: ${entry.fill}`);
-    // FIX r24: was incorrectly checking numId===2 (Бенто). Biscuit type belongs to id===1 (Бисквитный торт).
+    // Biscuit is product 1.
     if ((parsed.numId === 1) && window._calcBiscuit) details.push(`бисквит: ${window._calcBiscuit === 'vanilla' ? 'ванильный' : 'шоколадный'}`);
     if (entry.decor) details.push(`декор: ${entry.decor}`);
     return `• ${p.name} — ${label} (${p.price})\n  ${details.join(' · ')}`;
@@ -606,7 +629,7 @@ function buildMessage() {
     return s + (p.priceNum || 0) * (entry.qty || 1);
   }, 0);
 
-  return `Привет! Хочу сделать заказ 🎂\n\n${items}\n\nИтого (предварительно): ${total.toLocaleString('ru')} ₽\n⚠️ Цена предварительная — окончательная стоимость согласовывается после обсуждения декора и нюансов.\n\nИмя: ${name}\nТелефон: ${phone}\nДата: ${date}\nКомментарий: ${comment}`;
+  return `Привет! Хочу сделать заказ 🎂\n\n${items}\n\nИтого (предварительно): ${cartTotalText(total)}\n⚠️ Цена предварительная — окончательная стоимость согласовывается после обсуждения декора и нюансов.\n\nИмя: ${name}\nТелефон: ${phone}\nДата: ${date}\nКомментарий: ${comment}`;
 }
 
 function buildWA(e) {
@@ -830,12 +853,11 @@ function closeCart() {
   }, delay);
 }
 
-function toggleCart() { if (_cartState === 'open' || _cartState === 'opening') closeCart(); else openCart(); }
-
 /* r34: bug #33 — sync cart scroll lock on resize (desktop↔mobile) */
 window.addEventListener('resize', (function() {
   var timer;
   return function() {
+    if (window.innerWidth > 560) closeCalcPanel();
     clearTimeout(timer);
     timer = setTimeout(_cartSyncBodyLock, 200);
   };
@@ -1034,7 +1056,7 @@ function scrollToProduct(id) {
   const top = card.getBoundingClientRect().top + window.scrollY - offset;
   window.scrollTo({ top, behavior: 'smooth' });
   document.querySelectorAll('.catalog-nav-item').forEach(el => { el.classList.toggle('active', el.dataset.target === 'card-' + id); });
-  /* r29: bug #35 — removed destructive 2s timeout, IO handles active state */
+  // Active state is observer-owned.
 }
 
 function initCatalogNavScroll() {
@@ -1220,13 +1242,14 @@ function scheduleCatalogHydration() {
   if (!catalog) return;
   const release = () => hydrateCatalog();
 
-  if (location.hash === '#catalog') {
+  if (location.hash) {
     release();
     return;
   }
 
   document.addEventListener('click', release, { once: true });
   document.addEventListener('keydown', () => setTimeout(release, 0), { once: true });
+  window.addEventListener('scroll', release, { once: true, passive: true });
 
   if (typeof IntersectionObserver !== 'undefined') {
     _catalogHydrationIO = new IntersectionObserver(entries => {
@@ -1405,7 +1428,7 @@ function wireProductLightbox() {
 // ══════════════════════════════════════════
 
 function selectCakeType(el, type) {
-  /* r29: removed destructive tooltip cleanup — tooltips now persist in body (bug #15) */
+  // Keep tooltips in the DOM.
   document.querySelectorAll('#calcType .calc-opt').forEach(o => o.classList.remove('selected'));
   el.classList.add('selected');
   _cakeType = type;
@@ -1633,12 +1656,17 @@ function toggleCalcPanel() {
 }
 function closeCalcPanel() {
   const col = document.getElementById('calcRightCol');
+  if (col?.classList.contains('calc-result-open') && document.getElementById('calcExpandable')?.contains(document.activeElement)) {
+    document.getElementById('calcCollapsedBar')?.focus({ preventScroll: true });
+  }
   if (col) col.classList.remove('calc-result-open');
   _setCalcBackdrop(false);
 }
 function _setCalcBackdrop(show) {
-  if (window.innerWidth > 560) return;
+  if (window.innerWidth > 560 && show) return;
+  document.getElementById('calcCollapsedBar')?.setAttribute('aria-expanded', String(!!show));
   let bd = document.getElementById('calcPanelBackdrop');
+  if (!bd && !show) return;
   if (!bd) { bd = document.createElement('div'); bd.id = 'calcPanelBackdrop'; bd.setAttribute('aria-hidden', 'true'); bd.addEventListener('click', closeCalcPanel); document.body.appendChild(bd); }
   bd.classList.toggle('visible', !!show);
   document.body.classList.toggle('calc-panel-open', !!show);
@@ -1666,27 +1694,11 @@ function showFillToast(optEl, groupId) {
   _fillToastTimer = setTimeout(() => { toast.classList.add('fill-toast--out'); toast.addEventListener('animationend', () => { toast.classList.remove('fill-toast--in', 'fill-toast--out'); }, { once: true }); }, 2800);
 }
 
-function openFillPopup(optEl, groupId) {
-  if (!optEl) return;
-  _fillSheetPendingEl = optEl; _fillSheetPendingGroupId = groupId || 'calcFill';
-  _fillPopupRender(optEl);
-  const popup = document.getElementById('fillPopup'), overlay = document.getElementById('fillOverlay');
-  if (!popup || !overlay) return;
-  popup.classList.add('open'); overlay.classList.add('open');
-  document.body.classList.add('fill-open');
-  popup.style.willChange = 'transform';
-  lockBody();
-  var _mcNavFill = document.getElementById('mcNav');
-  if (_mcNavFill) { _mcNavFill.classList.add('mc-nav--hidden'); document.body.classList.add('mc-nav-hidden'); }
-  setTimeout(() => document.getElementById('fillSheetSelect')?.focus({ preventScroll: true }), 80);
-}
-
 function closeFillPopup() {
   const popup = document.getElementById('fillPopup'), overlay = document.getElementById('fillOverlay');
   if (popup) popup.classList.remove('open');
   if (overlay) overlay.classList.remove('open');
   document.body.classList.remove('fill-open');
-  // [r18] Удалён dead code fill-open-ios (логика переведена на lockBody)
   unlockBody();
   var _mcNavFill = document.getElementById('mcNav');
   if (_mcNavFill) { _mcNavFill.classList.remove('mc-nav--hidden'); document.body.classList.remove('mc-nav-hidden'); }
@@ -2242,11 +2254,8 @@ function updateCalcCartBadge() {
   badge.classList.toggle('visible', rounded > 0);
 }
 
-function addCalcToCartAnimated(btn) { addCalcToCartOnly(btn); }
-
 function addCalcToCartOnly(btn) {
-  addCalcToCart();
-  updateCalcCartBadge();
+  if (addCalcToCart() === false) return;
   const badge = document.getElementById('calcCartBadge');
   if (badge) { badge.classList.remove('pop'); void badge.offsetWidth; badge.classList.add('pop'); }
   const icon = btn && btn.querySelector('.calc-add-cart-icon');
@@ -2268,12 +2277,9 @@ function addCalcToCart() {
   const decorName = decorEl ? decorEl.textContent.trim() : '';
   // [r18] buildCartKey — единый формат для всех
   const cartKey = buildCartKey(id, mode, !!(p && p.hasMaxi), fillName, decorName);
-  let qty;
-  if (cfg.fixedPrice !== null) { qty = _calcQty; }
-  else { qty = _calcWeight; }
+  const qty = cfg.fixedPrice !== null ? _calcQty : _calcWeight;
   if (cart[cartKey] && cart[cartKey].mode === mode) {
-    const maxQty = cfg.fixedPrice !== null ? 20 : (cfg.weightMax || 20);
-    cart[cartKey].qty = Math.min(Math.round((cart[cartKey].qty + qty) * 10) / 10, maxQty);
+    if (!addCartQty(cart[cartKey], qty, mode === 'maxi' ? p.maxiVariant : p)) return false;
   } else { cart[cartKey] = { qty, mode }; }
   cart[cartKey].fill = fillName; cart[cartKey].decor = decorName;
   updateCartUI();
@@ -2297,7 +2303,7 @@ window.goToFormStep = goToFormStep;
 window.enforceSingleSelected = enforceSingleSelected;
 window.selectCakeType = selectCakeType;
 window.addCalcToCart = addCalcToCart;
-window.addCalcToCartAnimated = addCalcToCartAnimated;
+window.addCalcToCartAnimated = addCalcToCartOnly;
 window.addCalcToCartOnly = addCalcToCartOnly;
 window.updateCalcCartBadge = updateCalcCartBadge;
 window.stepQty = stepQty;

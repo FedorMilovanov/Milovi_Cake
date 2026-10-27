@@ -412,10 +412,10 @@
     @media(max-width:768px){#catalogGrid{grid-template-columns:repeat(2,1fr);gap:16px;padding:0 16px 32px}}
     @media(max-width:560px){#catalogGrid{grid-template-columns:1fr;gap:20px;padding:0 16px 36px}}
   </style>
-<link rel="stylesheet" href="css/style.css?v=20261023r02" />
-  <link rel="stylesheet" href="css/mc-2026.css?v=20261027r02" />
-  <link rel="stylesheet" href="css/premium-overrides.css?v=20260728r27" />
-  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260728r27">
+<link rel="stylesheet" href="css/style.css?v=20261027r03" />
+  <link rel="stylesheet" href="css/mc-2026.css?v=20261027r03" />
+  <link rel="stylesheet" href="css/premium-overrides.css?v=20261027r03" />
+  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20261027r03">
 <!-- Необязательная аналитика и LCP-телеметрия управляются согласием пользователя. -->
 <link rel="stylesheet" href="/css/v20-fixes.css?v=20260728r27">
   <link rel="stylesheet" href="/css/final-fixes.css?v=20261023r01" />
@@ -850,7 +850,7 @@
           <div class="calc-result" id="calcResultBox">
 
             <!-- Компактная полоска — всегда видна, тап раскрывает -->
-            <div class="calc-result-collapsed" id="calcCollapsedBar" onclick="toggleCalcPanel()">
+            <div class="calc-result-collapsed" id="calcCollapsedBar" aria-controls="calcExpandable" aria-expanded="false" onclick="toggleCalcPanel()">
               <div class="calc-result-collapsed-handle"></div>
               <div style="display:flex;flex-direction:column;gap:1px;flex:1;padding-top:6px;">
                 <span class="calc-result-collapsed-label">Примерная стоимость</span>
@@ -1512,7 +1512,7 @@
 </script>
 
 <script>var IMG_BASE = 'img';</script>
-<script src="js/main.js?v=20261027r02" defer></script>
+<script src="js/main.js?v=20261027r03" defer></script>
 
 
 <script src="js/nav.js?v=20260728r27" defer></script>

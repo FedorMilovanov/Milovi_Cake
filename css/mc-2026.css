@@ -79,7 +79,7 @@
   .calc-wrap.reveal,
   .calc-wrap.reveal.visible{
     transform: none !important;
-    will-change: opacity !important;
+    will-change: auto !important;
     transition: opacity .65s ease !important;
   }
   
@@ -205,8 +205,6 @@
 :root:not([data-theme="dark"]) .cb-fl-name,
 :root:not([data-theme="dark"]) .cb-occ-name,
 :root:not([data-theme="dark"]) .review-quote,
-:root:not([data-theme="dark"]) .calc-result-price,
-:root:not([data-theme="dark"]) .calc-summary-chip .chip-val,
 :root:not([data-theme="dark"]) .stats-grid .stat-num,
 :root:not([data-theme="dark"]) .features-grid .feature-num,
 :root:not([data-theme="dark"]) .cb-section-label span,

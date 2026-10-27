@@ -380,9 +380,9 @@ function openLightbox(index){
     } else { 
       const img=document.createElement('img'); 
       img.className='lb-media lb-media-photo'; 
+      img.loading=Math.abs(i-index)<=1?'eager':'lazy';
       img.src=item.src; 
       img.alt=item.title; 
-      img.loading=Math.abs(i-index)<=1?'eager':'lazy'; 
       img.decoding='async';
       img.fetchPriority = i === index ? 'high' : 'auto';
       img.dataset.previewSrc = item.src;

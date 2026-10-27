@@ -1799,14 +1799,14 @@ button[disabled] {
   
   body:has(.calc-right-col.calc-result-open) #mcNav,
   body:has(.calc-right-col.calc-result-open) .mc-nav {
-    transform: translateY(110%) !important;
+    transform: translateY(calc(110% + env(safe-area-inset-bottom, 0px))) !important;
   }
 }
 @supports not selector(:has(*)) {
   @media (max-width: 560px) {
     body.calc-panel-open #mcNav,
     body.calc-panel-open .mc-nav {
-      transform: translateY(110%) !important;
+      transform: translateY(calc(110% + env(safe-area-inset-bottom, 0px))) !important;
     }
   }
 }

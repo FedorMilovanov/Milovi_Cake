@@ -758,7 +758,7 @@
 
 @media (max-width: 560px) {
   .calc-right-col {
-    z-index: 104 !important; 
+    z-index: 160 !important;
   }
 }
 

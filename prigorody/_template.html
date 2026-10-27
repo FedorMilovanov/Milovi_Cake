@@ -120,10 +120,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=optional" rel="stylesheet" media="print" onload="this.media='all'" />
   <!-- noscript fonts -->
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=optional" rel="stylesheet"/></noscript>
-  <link rel="stylesheet" href="../../css/style.css?v=20261023r02" />
-  <link rel="stylesheet" href="../../css/mc-2026.css?v=20261027r02" />
-  <link rel="stylesheet" href="../../css/premium-overrides.css?v=20260728r27" />
-  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260728r27">
+  <link rel="stylesheet" href="../../css/style.css?v=20261027r03" />
+  <link rel="stylesheet" href="../../css/mc-2026.css?v=20261027r03" />
+  <link rel="stylesheet" href="../../css/premium-overrides.css?v=20261027r03" />
+  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20261027r03">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -536,7 +536,7 @@
           <div class="calc-result" id="calcResultBox">
 
             <!-- Компактная полоска — всегда видна, тап раскрывает -->
-            <div class="calc-result-collapsed" id="calcCollapsedBar" onclick="toggleCalcPanel()">
+            <div class="calc-result-collapsed" id="calcCollapsedBar" aria-controls="calcExpandable" aria-expanded="false" onclick="toggleCalcPanel()">
               <div class="calc-result-collapsed-handle"></div>
               <div style="display:flex;flex-direction:column;gap:1px;flex:1;padding-top:6px;">
                 <span class="calc-result-collapsed-label">Примерная стоимость</span>
@@ -878,7 +878,7 @@
 </section>
 
 <script>var IMG_BASE = '../../img';</script>
-<script src="../../js/main.js?v=20261027r02" defer></script>
+<script src="../../js/main.js?v=20261027r03" defer></script>
 <script src="../../js/nav.js?v=20260728r27" defer></script>
 <script src="../../js/mc-2026.js?v=20261027r02" defer></script>
 
