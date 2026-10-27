@@ -109,6 +109,86 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     expect(errors).toEqual([]);
   });
 
+  test('late gallery load does not restart grid videos behind the open lightbox', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+    let releaseImage;
+    let blockedImages = 0;
+    const imageGate = new Promise((resolve) => { releaseImage = resolve; });
+    // A slow first image keeps the real load event pending without changing
+    // the gallery, its observer, or any video state.
+    await page.route(/\/img\/gallery\/gallery-01\.(avif|webp)$/, async (route) => {
+      blockedImages++;
+      await imageGate;
+      await route.continue().catch(() => {});
+    });
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    try {
+      const response = await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
+      expect(response.status()).toBe(200);
+      await page.locator('#galleryGrid [data-id="v01"]').click();
+      await expect(page.locator('#lbCounter')).toHaveText('02 / 46');
+      await expect(page.locator('#lbWrapper .swiper-slide-active video')).toBeVisible();
+      await expect(page.locator('#galleryGrid')).not.toHaveAttribute('data-hydrating', 'true');
+      expect(blockedImages).toBeGreaterThan(0);
+      expect(await page.evaluate(() => document.readyState)).not.toBe('complete');
+      const gridVideos = page.locator('#galleryGrid video');
+      expect(await gridVideos.evaluateAll((videos) => videos.filter((video) => video.hasAttribute('src')).length)).toBe(0);
+
+      releaseImage();
+      await page.waitForLoadState('load');
+      // Observe the negative condition after the load and observer callbacks.
+      await page.waitForTimeout(2000);
+      expect(await gridVideos.evaluateAll((videos) => videos.filter((video) => video.hasAttribute('src') || !video.paused).length)).toBe(0);
+      await page.locator('#lbClose').click();
+      await expect(page.locator('#galleryGrid [data-id="v01"] video')).toHaveAttribute('src', /video-01-knigi\.webm/);
+      expect(errors).toEqual([]);
+    } finally {
+      releaseImage();
+    }
+  });
+
+  test('queued grid observer callbacks do not restart video after opening', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+    // Hold real intersection entries until after the user's click, modelling
+    // a callback already queued when the lightbox disconnects the observer.
+    await page.addInitScript(() => {
+      const NativeObserver = window.IntersectionObserver;
+      const gate = window.__galleryObserverGate = { pending: [], hold: true };
+      window.IntersectionObserver = class extends NativeObserver {
+        constructor(callback, options) {
+          super((entries, observer) => {
+            if (gate.hold && entries.some((entry) => entry.isIntersecting && entry.target.closest('#galleryGrid'))) {
+              gate.pending.push(() => callback(entries, observer));
+            } else callback(entries, observer);
+          }, options);
+        }
+      };
+    });
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    const response = await page.goto('/gallery/', { waitUntil: 'load' });
+    expect(response.status()).toBe(200);
+    const card = page.locator('#galleryGrid [data-id="v01"]');
+    await card.scrollIntoViewIfNeeded();
+    await page.waitForFunction(() => window.__galleryObserverGate.pending.length > 0);
+    await card.click();
+    await expect(page.locator('#lbCounter')).toHaveText('02 / 46');
+    const gridVideos = page.locator('#galleryGrid video');
+    expect(await gridVideos.evaluateAll((videos) => videos.filter((video) => video.hasAttribute('src')).length)).toBe(0);
+    await page.evaluate(() => {
+      const gate = window.__galleryObserverGate;
+      gate.hold = false;
+      gate.pending.splice(0).forEach((deliver) => deliver());
+    });
+    expect(await gridVideos.evaluateAll((videos) => videos.filter((video) => video.hasAttribute('src') || !video.paused).length)).toBe(0);
+    await page.locator('#lbClose').click();
+    await expect(card.locator('video')).toHaveAttribute('src', /video-01-knigi\.webm/);
+    expect(errors).toEqual([]);
+  });
+
   test('gallery can close an active video and reopen without CDN', async ({ page }) => {
     const errors = [];
     const diagnostic = { crashed: false };

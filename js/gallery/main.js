@@ -272,7 +272,7 @@ function attachCardTilt(card){
 }
 function setupVideoObserver(){ 
   if(state.observer) state.observer.disconnect(); 
-  if(!('IntersectionObserver' in window)) return; 
+  if(!('IntersectionObserver' in window) || $('#lbRoot')) return;
   /* r16 perf: on Save-Data or slow (2g) connections, keep posters only and skip
      auto-downloading grid videos (each is ~1–2.5 MB). Saves mobile data. */
   var conn = navigator.connection || navigator.webkitConnection || navigator.mozConnection;
@@ -294,6 +294,7 @@ function setupVideoObserver(){
     try { v.pause(); } catch(e){}
   }
   state.observer=new IntersectionObserver(entries=>{
+    if($('#lbRoot')) return; // A queued observer callback may arrive after opening.
     entries.forEach(entry=>{
       const v=entry.target; 
       if(entry.isIntersecting){ 

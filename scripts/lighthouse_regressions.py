@@ -198,7 +198,7 @@ require('media="(max-width: 768px)" srcset="/img/head_mobile.avif"' in order, 'o
 gallery = read('gallery/index.html')
 require('id="preloader"' not in gallery, 'gallery blocking preloader returned')
 require('/img/gallery/gallery-01.avif" fetchpriority="high"' in gallery, 'gallery LCP preload missing')
-require('/js/gallery/main.js?v=20261027r04' in gallery, 'gallery runtime revision drift')
+require('/js/gallery/main.js?v=20261027r05' in gallery, 'gallery runtime revision drift')
 require("./data.js?v=20261026r01" in read('js/gallery/main.js'), 'gallery data import revision drift')
 require('#galleryGrid[data-hydrating="true"] { min-height: 100svh; }' in gallery, 'gallery hydration reserve missing')
 require('#galleryGrid[data-static-lcp-root="true"] { animation: none; }' in gallery, 'gallery grid animation gates initial LCP again')
@@ -355,11 +355,11 @@ for public_html in public_html_files():
     refs = re.findall(r'js/main\.js\?v=([0-9a-z]+)', html)
     require(all(ref == '20261027r04' for ref in refs), f'{public_html} shared main.js revision drifted')
 
-require("const CACHE_NAME = 'milovi-cake-v2026.10.27-r99';" in sw, 'service-worker cache generation drifted')
+require("const CACHE_NAME = 'milovi-cake-v2026.10.27-r100';" in sw, 'service-worker cache generation drifted')
 require("'/css/gallery/gallery-2026.css?v=20261027r04'," in sw, 'gallery CSS service-worker revision drifted')
 require(style_ref != '/css/style.css?v=20261023r01', 'service-worker precache still points at stale shared CSS revision')
 require("'/js/main.js?v=20261027r04'," in sw, 'service-worker precache still points at stale shared main.js revision')
-require("'/js/gallery/main.js?v=20261027r04'," in sw, 'service-worker precache still points at stale gallery runtime revision')
+require("'/js/gallery/main.js?v=20261027r05'," in sw, 'service-worker precache still points at stale gallery runtime revision')
 require("'/js/gallery/data.js?v=20261026r01'," in sw, 'service-worker precache still points at stale gallery data revision')
 
 cfg = json.loads(read('.github/lighthouse-config.json'))
