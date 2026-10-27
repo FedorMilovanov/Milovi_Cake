@@ -51,12 +51,15 @@ jobs:
           test "$(sha256sum "$LCP_FIXTURE_ROOT/prigorody/gatchina/index.html" | cut -d' ' -f1)" = \
             "b58eb52b98129587b55e2ef3eb2a56c527ca2b805c783108684d85362fd6429f"
 
-      - name: Install Lighthouse outside checkout and discover hosted Chrome
+      - name: Pin Lighthouse and Chrome 155 outside checkout
         run: |
-          npm install --prefix /tmp/milovi-lighthouse --no-save --ignore-scripts lighthouse@12.6.1
-          CHROME_PATH="$(command -v google-chrome-stable || command -v google-chrome || true)"
-          test -n "$CHROME_PATH" && test -x "$CHROME_PATH"
-          "$CHROME_PATH" --version
+          npm install --prefix /tmp/milovi-lighthouse --no-save --ignore-scripts \
+            lighthouse@12.6.1 @puppeteer/browsers@3.2.6
+          /tmp/milovi-lighthouse/node_modules/.bin/browsers install \
+            chrome@155.0.8059.39 --path /tmp/milovi-browser
+          CHROME_PATH=/tmp/milovi-browser/chrome/linux-155.0.8059.39/chrome-linux64/chrome
+          test -x "$CHROME_PATH"
+          "$CHROME_PATH" --version | grep -F 155.0.8059.39
           echo "CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
 
       - name: Pair published, no-preload and AVIF-preload Lighthouse runs
