@@ -127,6 +127,57 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     }
   });
 
+  test('photo-only gallery can repeatedly open and close without CDN', async ({ page }) => {
+    const diagnostic = { crashed: false, errors: [] };
+    page.on('pageerror', (error) => diagnostic.errors.push(error.message));
+    page.on('crash', () => { diagnostic.crashed = true; diagnostic.resources = browserCrashResources(); });
+    try {
+      await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+      await page.goto('/gallery/', { waitUntil: 'load' });
+      await page.locator('.gx-chip[data-filter="photo"]').click();
+      await expect(page.locator('#videoCount')).toHaveText('0 видео');
+      await expect(page.locator('#galleryGrid')).not.toHaveAttribute('data-hydrating', 'true');
+      const card = page.locator('#galleryGrid [data-id="p01"]');
+      for (let i = 0; i < 2; i++) {
+        await card.click();
+        await expect(page.locator('#lbCounter')).toHaveText('01 / 30');
+        await page.locator('#lbClose').click();
+        await expect(page.locator('#lbRoot')).toHaveCount(0);
+      }
+      expect(diagnostic.errors).toEqual([]);
+    } catch (error) {
+      diagnostic.resources ||= browserCrashResources();
+      throw new Error(`${error.message}\nPhoto-only gallery diagnostics: ${JSON.stringify(diagnostic)}`, { cause: error });
+    }
+  });
+
+  test('gallery can reopen when video requests fail without CDN', async ({ page }) => {
+    const diagnostic = { crashed: false, blocked: 0, errors: [] };
+    page.on('pageerror', (error) => diagnostic.errors.push(error.message));
+    page.on('crash', () => { diagnostic.crashed = true; diagnostic.resources = browserCrashResources(); });
+    try {
+      await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+      await page.route('**/*.webm', (route) => { diagnostic.blocked++; return route.abort(); });
+      await page.goto('/gallery/', { waitUntil: 'load' });
+      const card = page.locator('#galleryGrid [data-id="p01"]');
+      await card.click();
+      await page.locator('#lbNext').click();
+      const video = page.locator('#lbWrapper .swiper-slide-active video');
+      await expect(video).toBeVisible();
+      await expect(video).toHaveAttribute('src', /video-01-knigi\.webm/);
+      await expect.poll(() => video.evaluate((v) => !!v.error)).toBe(true);
+      expect(diagnostic.blocked).toBeGreaterThan(0);
+      await page.locator('#lbClose').click();
+      await expect(page.locator('#lbRoot')).toHaveCount(0);
+      await card.click();
+      await expect(page.locator('#lbCounter')).toHaveText('01 / 46');
+      expect(diagnostic.errors).toEqual([]);
+    } catch (error) {
+      diagnostic.resources ||= browserCrashResources();
+      throw new Error(`${error.message}\nUnavailable video diagnostics: ${JSON.stringify(diagnostic)}`, { cause: error });
+    }
+  });
+
   test('late Swiper initializes at the current fallback slide even after close and reopen', async ({ page }) => {
     // A same-origin server delays the real HTTP response without leaving a
     // Playwright route handler pending while the lightbox is exercised.

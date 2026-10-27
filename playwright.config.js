@@ -27,7 +27,7 @@ module.exports = defineConfig({
   // The ordinary full QA remains Chromium-only. CI opts into a separate
   // cross-engine lane for the user-facing failure and accessibility contracts.
   grep: compatibility
-    ? /cart restoration rejects|cart restores unusual|cart restores legacy conflicts|cart stays usable|cart merges matching|cart preserves different|cart refuses incompatible|cart keeps repeated|cart keeps the total honest|cart rejects a quantity|mobile calculator panel stays reachable|mobile calculator after fast scroll|mobile calculator resize clears|gallery lightbox with missing or late CDN assets|video strip fault handling|suburb links and page-specific resilience/
+    ? /cart restoration rejects|cart restores unusual|cart restores legacy conflicts|cart stays usable|cart merges matching|cart preserves different|cart refuses incompatible|cart keeps repeated|cart keeps the total honest|cart rejects a quantity|mobile calculator panel stays reachable|mobile calculator ignores a stale scroll|mobile calculator after fast scroll|mobile calculator resize clears|gallery lightbox with missing or late CDN assets|video strip fault handling|suburb links and page-specific resilience/
     : undefined,
   projects: compatibility ? [
     { name: 'firefox-desktop', use: { ...devices['Desktop Firefox'], viewport: { width: 1440, height: 1100 } } },

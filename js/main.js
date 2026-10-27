@@ -1652,6 +1652,7 @@ function toggleCalcPanel() {
   const col = document.getElementById('calcRightCol');
   if (!col) return;
   const isOpen = col.classList.toggle('calc-result-open');
+  col._scrollY = window.scrollY;
   _setCalcBackdrop(isOpen);
 }
 function closeCalcPanel() {
@@ -1674,7 +1675,7 @@ function _setCalcBackdrop(show) {
 
 document.addEventListener('click', function(e) { if (window.innerWidth > 560) return; const col = document.getElementById('calcRightCol'); if (!col || !col.classList.contains('calc-result-open')) return; if (!col.contains(e.target)) closeCalcPanel(); }, { passive: true });
 
-window.addEventListener('scroll', function() { if (window.innerWidth > 560) return; const col = document.getElementById('calcRightCol'); if (col && col.classList.contains('calc-result-open')) closeCalcPanel(); }, { passive: true });
+window.addEventListener('scroll', function() { if (window.innerWidth > 560) return; const col = document.getElementById('calcRightCol'); if (col?.classList.contains('calc-result-open') && col._scrollY !== window.scrollY) closeCalcPanel(); }, { passive: true });
 
 let _fillToastTimer = null;
 function showFillToast(optEl, groupId) {

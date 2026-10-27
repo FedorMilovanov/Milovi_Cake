@@ -550,12 +550,14 @@ async function calculatorDiagnostics(page) {
     const active = document.activeElement;
     const style = region && getComputedStyle(region);
     return {
-      active: active?.outerHTML?.slice(0, 400), documentHasFocus: document.hasFocus(),
+      active: active?.id || active?.className || active?.nodeName, documentHasFocus: document.hasFocus(),
       expanded: bar?.getAttribute('aria-expanded'), panel: panel?.className,
       barDisplay: bar && getComputedStyle(bar).display,
       region: region && { tabIndex: region.tabIndex, display: style.display, visibility: style.visibility,
         overflowY: style.overflowY, clientHeight: region.clientHeight, scrollHeight: region.scrollHeight },
-      scrollY: window.scrollY, trace: window.__calcTrace?.slice(-35),
+      scrollY: window.scrollY,
+      trace: window.__calcTrace?.filter((event) => event.type !== 'scroll').slice(-12),
+      recentScroll: window.__calcTrace?.filter((event) => event.type === 'scroll').slice(-3),
     };
   });
 }
@@ -569,13 +571,13 @@ async function expectCalculatorFocus(page, locator, investigateTabOrder = false)
       for (let i = 0; i < 3; i++) {
         await page.keyboard.press('Tab');
         subsequentTabs.push(await page.evaluate(() => ({
-          active: document.activeElement?.outerHTML?.slice(0, 200),
+          active: document.activeElement?.id || document.activeElement?.className || document.activeElement?.nodeName,
           expanded: document.querySelector('#calcCollapsedBar')?.getAttribute('aria-expanded'),
           scrollY: window.scrollY,
         })));
       }
     }
-    throw new Error(`${error.message}\nCalculator focus diagnostics: ${JSON.stringify({ before, subsequentTabs })}`, { cause: error });
+    throw new Error(`${error.message}\nCalculator focus diagnostics: ${JSON.stringify({ subsequentTabs, before })}`, { cause: error });
   }
 }
 
@@ -621,6 +623,30 @@ test('mobile calculator panel stays reachable and restores keyboard focus', asyn
     await page.locator('#cartDrawer .cart-close').click();
   }
   expect(errors).toEqual([]);
+});
+
+test('mobile calculator ignores a stale scroll event but closes on a real scroll', async ({ page, browserName }, testInfo) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.locator('#mcNav [data-section="catalog"]').click();
+  await page.locator('#fillings').scrollIntoViewIfNeeded();
+  const bar = page.locator('#calcCollapsedBar');
+  await bar.click();
+  await expect(bar).toHaveAttribute('aria-expanded', 'true');
+  const before = await page.evaluate(() => window.scrollY);
+  // Model a previously queued scroll event without changing the page position.
+  await page.evaluate(() => window.dispatchEvent(new Event('scroll')));
+  await expect(bar).toHaveAttribute('aria-expanded', 'true');
+  expect(await page.evaluate(() => window.scrollY)).toBe(before);
+  if (browserName === 'webkit' && testInfo.project.name.endsWith('-mobile')) {
+    await page.evaluate(() => window.scrollBy(0, 500));
+  } else {
+    await page.mouse.move(20, 200);
+    await page.mouse.wheel(0, 500);
+  }
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(before);
+  await expect(bar).toHaveAttribute('aria-expanded', 'false');
 });
 
 test('light calculator summary colors contrast with their desktop panel', async ({ page }) => {
