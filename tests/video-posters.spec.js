@@ -210,8 +210,39 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       }
       await expect(info).toBeFocused();
       expect(await info.evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe('none');
+      await page.evaluate(() => {
+        window.__galleryScrollKeys = [];
+        document.addEventListener('keydown', (event) => {
+          if (event.key !== 'ArrowDown' && event.key !== 'PageDown') return;
+          const key = event.key;
+          const target = event.target?.className || event.target?.nodeName;
+          // Observe cancellation after every handler has had a chance to run.
+          setTimeout(() => window.__galleryScrollKeys.push({ key, target, defaultPrevented: event.defaultPrevented }), 0);
+        }, { capture: true });
+      });
       await page.keyboard.press('ArrowDown');
-      await expect.poll(() => info.evaluate((el) => el.scrollTop)).toBeGreaterThan(0);
+      try {
+        await expect.poll(() => info.evaluate((el) => el.scrollTop)).toBeGreaterThan(0);
+      } catch (error) {
+        // Keep the ArrowDown failure; probe PageDown only to diagnose it.
+        let diagnostic;
+        try {
+          const before = await info.evaluate((el) => ({
+            scrollTop: el.scrollTop, scrollHeight: el.scrollHeight, clientHeight: el.clientHeight,
+            overflowY: getComputedStyle(el).overflowY, pointerEvents: getComputedStyle(el).pointerEvents,
+            focused: el === document.activeElement,
+          }));
+          await page.keyboard.press('PageDown');
+          try {
+            await expect.poll(() => info.evaluate((el) => el.scrollTop), { timeout: 3000 }).toBeGreaterThan(before.scrollTop);
+          } catch { /* retain the original ArrowDown failure */ }
+          diagnostic = { before, afterPageDown: await info.evaluate((el) => el.scrollTop),
+            keys: await page.evaluate(() => window.__galleryScrollKeys) };
+        } catch (diagnosticError) {
+          diagnostic = { error: diagnosticError.message };
+        }
+        throw new Error(`${error.message}\nGallery keyboard diagnostics: ${JSON.stringify(diagnostic)}`, { cause: error });
+      }
 
       const copy = page.locator('#lbCopy');
       for (let step = 0; step < 10 && !(await copy.evaluate((el) => el === document.activeElement)); step++) {

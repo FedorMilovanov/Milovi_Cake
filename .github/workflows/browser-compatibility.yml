@@ -22,7 +22,8 @@ jobs:
       # Provide headless browsers ample shared memory for media-heavy pages;
       # this does not alter page assets or assertions.
       options: --shm-size=1g
-    timeout-minutes: 30
+    # Failure-only comparisons can run after the unchanged primary matrix.
+    timeout-minutes: 40
     env:
       MILOVI_BROWSER_COMPAT: '1'
       PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
@@ -127,6 +128,40 @@ jobs:
           echo '::notice title=WebKit diagnostic::Original 1.63 source, four independent active-video runs'
           npx playwright test tests/video-posters.spec.js --project=webkit-desktop \
             --grep='gallery can close an active video' --repeat-each=4 --workers=1 --retries=0 --reporter=list,github
+
+      - name: Compare WebKit without screencast capture
+        id: webkit_no_capture
+        if: failure() && matrix.engine == 'webkit' && steps.webkit_baseline.outcome != 'skipped'
+        env:
+          HOME: /root
+        run: |
+          # Diagnostic only: keep the original source, tests and assertions.
+          # Trace snapshots remain available, but video and trace screenshots
+          # are disabled together to isolate capture instrumentation as a group.
+          cat > "$RUNNER_TEMP/milovi-no-capture.config.cjs" <<'NODE'
+          const path = require('node:path');
+          const root = process.env.GITHUB_WORKSPACE;
+          const base = require(path.join(root, 'playwright.config.js'));
+          module.exports = {
+            ...base,
+            testDir: path.join(root, 'tests'),
+            use: { ...base.use, video: 'off', trace: { mode: 'retain-on-failure', screenshots: false } },
+          };
+          NODE
+          echo '::notice title=WebKit diagnostic::Original 1.63 source without video or trace screenshots; primary result remains failed'
+          npx playwright test tests/video-posters.spec.js --config="$RUNNER_TEMP/milovi-no-capture.config.cjs" \
+            --project=webkit-desktop --grep='gallery can close an active video' \
+            --repeat-each=4 --workers=1 --retries=0 --reporter=list,github --output="$RUNNER_TEMP/milovi-no-capture-results"
+
+      - name: Upload WebKit capture diagnostic artifacts
+        if: always() && matrix.engine == 'webkit' && steps.webkit_no_capture.outcome == 'failure'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: webkit-no-capture-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/milovi-no-capture-results/
+          if-no-files-found: ignore
+          retention-days: 7
+          include-hidden-files: false
 
       - name: Compare without the additional video load call
         id: webkit_no_load

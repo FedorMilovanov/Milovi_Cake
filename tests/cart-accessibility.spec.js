@@ -328,11 +328,25 @@ for (const failure of ['QuotaExceededError', 'SecurityError']) {
       for (const type of ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click']) {
         document.addEventListener(type, (event) => {
           if (type === 'click' && event.target.closest('#card-2 .btn-add')) window.__cartFaultClicks++;
+          const card = document.getElementById('card-2');
+          const button = card?.querySelector('.btn-add');
+          const measure = (element) => {
+            if (!element) return null;
+            const rect = element.getBoundingClientRect();
+            return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+          };
+          const pointerBoundary = type === 'pointerdown' || type === 'pointerup';
           window.__cartFaultEvents.push({
-            type, time: Math.round(performance.now()),
+            type, time: Math.round(performance.now()), trusted: event.isTrusted,
             target: event.target?.id || event.target?.className || event.target?.nodeName,
             card: event.target?.closest?.('.product-card')?.id || '',
             x: event.clientX, y: event.clientY, scrollY: window.scrollY,
+            buttonRect: pointerBoundary ? measure(button) : null,
+            cardRect: pointerBoundary ? measure(card) : null,
+            cardClass: pointerBoundary ? card?.className : null,
+            cardTransform: pointerBoundary && card ? getComputedStyle(card).transform : null,
+            buttonTransform: pointerBoundary && button ? getComputedStyle(button).transform : null,
+            fonts: pointerBoundary ? document.fonts?.status : null,
           });
           if (window.__cartFaultEvents.length > 20) window.__cartFaultEvents.shift();
         }, true);
