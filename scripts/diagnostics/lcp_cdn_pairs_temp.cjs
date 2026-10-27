@@ -9,7 +9,7 @@ const { gzipSync } = require('node:zlib');
 const { chromium, request } = require('playwright');
 
 const ORIGIN = process.env.LCP_PROBE_ORIGIN || 'https://milovicake.ru';
-const EXPECTED = process.env.EXPECTED_RELEASE_SHA || 'f7c2aa08dd19568ea01776f66e5e22cd4454bf62';
+const EXPECTED = process.env.EXPECTED_RELEASE_SHA || 'e4cc47a5478a2cd1cc29096f51e310633919f3e2';
 const OUT = process.env.LCP_PROBE_OUT || '/tmp/milovi-lcp-cdn-pairs';
 const PAGES = [
   { name: 'bento', url: '/bento-torty/', hero: 'bento_1-mobile-640.avif', pairs: 8 },

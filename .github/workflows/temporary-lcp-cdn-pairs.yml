@@ -10,13 +10,15 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   pairs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
-      EXPECTED_RELEASE_SHA: f7c2aa08dd19568ea01776f66e5e22cd4454bf62
+      # PR #106 deployed while this experiment was being prepared; never mix releases.
+      EXPECTED_RELEASE_SHA: e4cc47a5478a2cd1cc29096f51e310633919f3e2
     steps:
       - name: Checkout PR diagnostic tools only
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -36,13 +38,54 @@ jobs:
           npx playwright install --with-deps chromium
 
       - name: Verify deployed release SHA before measurements
-        run: python3 scripts/production_release_smoke.py --retries 2 --delay 5
+        run: |
+          if python3 scripts/production_release_smoke.py --retries 2 --delay 5 > /tmp/lcp-release-proof.log 2>&1; then
+            cat /tmp/lcp-release-proof.log
+          else
+            echo "::error title=Live release proof failed::$(head -n 8 /tmp/lcp-release-proof.log | tr '\n' ' ')"
+            exit 1
+          fi
 
       - name: Run alternating allow/block SW pairs against real production CDN and fonts
-        run: node scripts/diagnostics/lcp_cdn_pairs_temp.cjs
+        run: |
+          if node scripts/diagnostics/lcp_cdn_pairs_temp.cjs > /tmp/lcp-cdn-pairs.log 2>&1; then
+            cat /tmp/lcp-cdn-pairs.log
+          else
+            cat /tmp/lcp-cdn-pairs.log
+            echo "::error title=CDN pairs failed::$(tail -n 8 /tmp/lcp-cdn-pairs.log | tr '\n' ' ')"
+            exit 1
+          fi
 
       - name: Verify deployed release SHA after measurements
-        run: python3 scripts/production_release_smoke.py --retries 1
+        run: |
+          if python3 scripts/production_release_smoke.py --retries 1 > /tmp/lcp-release-proof.log 2>&1; then
+            cat /tmp/lcp-release-proof.log
+          else
+            echo "::error title=Live release changed during experiment::$(head -n 8 /tmp/lcp-release-proof.log | tr '\n' ' ')"
+            exit 1
+          fi
+
+      - name: Read already existing new-release Lighthouse results (no new audit)
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 40435836396 --repo "${{ github.repository }}" -n lighthouse-results -D /tmp/lcp-new-release-lhr
+          python3 - <<'PY'
+          import json, pathlib, statistics
+          rows = {}
+          for f in pathlib.Path('/tmp/lcp-new-release-lhr').rglob('*.report.json'):
+              d = json.loads(f.read_text())
+              url = d.get('finalUrl', '')
+              if url in ('https://milovicake.ru/', 'https://milovicake.ru/bento-torty/'):
+                  a = d.get('audits', {})
+                  rows.setdefault(url, []).append((round(a['largest-contentful-paint']['numericValue']),
+                      round(a['metrics']['details']['items'][0].get('observedLargestContentfulPaint', 0))))
+          for url, values in rows.items():
+              print(f'::notice title=Existing #106 LHR {url}::simulated/raw {values}, simulated median {statistics.median(x[0] for x in values)}')
+          if len(rows) != 2:
+              raise SystemExit(f'Expected both production URLs, found {list(rows)}')
+          PY
 
       - name: Keep bounded anonymous lab traces outside Git
         if: always()
