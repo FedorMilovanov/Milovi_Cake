@@ -1,0 +1,154 @@
+name: One-shot observed vs simulated TBT
+
+# TEMPORARY measurement job (delete after use).
+# Compares two throttling modes on the same production bytes in one session:
+#   C = throttlingMethod "devtools"  -> total-blocking-time comes from the
+#       observed trace (real 4x CPU + 150ms/1638.4kbps network throttling)
+#   D = throttlingMethod "simulate"  -> the value the CI gate actually asserts
+#       (Lighthouse Lantern simulation)
+# Both use the repository's mobile profile. Nothing in
+# .github/lighthouse-config.json, the site or sw.js is changed.
+
+on:
+  push:
+    branches: [arena/b2e5e24a-milovi-cake]
+    paths:
+      - .github/workflows/_temp-lhci-observed.yml
+
+permissions:
+  contents: read
+
+jobs:
+  observed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      EXPECTED_RELEASE_SHA: c0d1a516a19e62952abb580981f1def358413338
+    steps:
+      - name: Checkout session branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Prove exact live release
+        run: python3 scripts/production_release_smoke.py --retries 3 --delay 10
+
+      - name: Audit C - devtools throttling (observed TBT)
+        id: audit-c
+        uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12
+        with:
+          configPath: ./.github/_temp-lhci-replication-c.json
+          uploadArtifacts: true
+          artifactName: lh-observed-c
+          temporaryPublicStorage: true
+
+      - name: Snapshot C
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/lh-c /tmp/lh-d && mkdir -p /tmp/lh-c
+          cp -a .lighthouseci/. /tmp/lh-c/
+
+      - name: Audit D - simulated throttling (the CI gate value)
+        id: audit-d
+        uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12
+        with:
+          configPath: ./.github/_temp-lhci-replication-d.json
+          uploadArtifacts: true
+          artifactName: lh-observed-d
+          temporaryPublicStorage: true
+
+      - name: Snapshot D
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/lh-d
+          for file in .lighthouseci/lhr-*.json; do
+            if [ ! -f "/tmp/lh-c/$(basename "$file")" ]; then cp -a "$file" /tmp/lh-d/; fi
+          done
+          echo "C: $(ls /tmp/lh-c/lhr-*.json | wc -l), D: $(ls /tmp/lh-d/lhr-*.json | wc -l)"
+
+      - name: Prove exact live release after audits
+        run: python3 scripts/production_release_smoke.py --retries 2 --delay 10
+
+      - name: Publish comparison as annotations
+        env:
+          LINKS_C: ${{ steps.audit-c.outputs.links }}
+          LINKS_D: ${{ steps.audit-d.outputs.links }}
+        run: |
+          python3 - <<'PY'
+          import glob
+          import json
+          import os
+
+          def esc(text):
+              return str(text).replace('%', '%25').replace('\r', '').replace('\n', '%0A')
+
+          def note(title, body):
+              print('::warning title=%s::%s' % (esc(title), esc(body)))
+              print(title)
+              print(body)
+              print('-' * 70)
+
+          def num(value):
+              if value is None:
+                  return 'n/a'
+              if isinstance(value, float):
+                  return ('%.1f' % value).rstrip('0').rstrip('.') or '0'
+              return str(value)
+
+          def groups(lhr):
+              items = ((lhr.get('audits', {}).get('mainthread-work-breakdown') or {})
+                       .get('details', {}).get('items') or [])
+              return {item.get('group'): item.get('duration') for item in items}
+
+          def diagnostics(lhr):
+              items = ((lhr.get('audits', {}).get('diagnostics') or {})
+                       .get('details', {}).get('items') or [{}])
+              return items[0]
+
+          def metric_items(lhr):
+              items = ((lhr.get('audits', {}).get('metrics') or {})
+                       .get('details', {}).get('items') or [{}])
+              return items[0]
+
+          for label, directory, links in (('C-devtools', '/tmp/lh-c', os.environ.get('LINKS_C', '')),
+                                          ('D-simulate', '/tmp/lh-d', os.environ.get('LINKS_D', ''))):
+              lhrs = []
+              for path in sorted(glob.glob(os.path.join(directory, 'lhr-*.json'))):
+                  with open(path) as handle:
+                      lhrs.append(json.load(handle))
+              if not lhrs:
+                  note('OBS %s empty' % label, 'no LHR files')
+                  continue
+              first = lhrs[0]
+              note('OBS %s environment' % label, 'lhrs=%d | method=%s | chrome=%s | benchIndex=%s' % (
+                  len(lhrs),
+                  (first.get('configSettings') or {}).get('throttlingMethod'),
+                  (first.get('userAgent') or '').split('Chrome/')[-1].split(' ')[0],
+                  ','.join(str((lhr.get('environment') or {}).get('benchmarkIndex')) for lhr in lhrs)))
+              if links.strip() not in ('', '{}'):
+                  note('OBS %s links' % label, links)
+
+              rows = []
+              for lhr in sorted(lhrs, key=lambda item: (item.get('finalUrl') or '', item.get('fetchTime') or '')):
+                  rows.append('%s | %s | TBT_audit=%s | metrics.totalBlockingTime=%s | FCP=%s | LCP=%s | TTI=%s' % (
+                      (lhr.get('finalUrl') or '?').replace('https://milovicake.ru', ''),
+                      str(lhr.get('fetchTime'))[:19],
+                      num((lhr.get('audits', {}).get('total-blocking-time') or {}).get('numericValue')),
+                      num(metric_items(lhr).get('totalBlockingTime')),
+                      num((lhr.get('audits', {}).get('first-contentful-paint') or {}).get('numericValue')),
+                      num((lhr.get('audits', {}).get('largest-contentful-paint') or {}).get('numericValue')),
+                      num((lhr.get('audits', {}).get('interactive') or {}).get('numericValue'))))
+                  rows.append('    tasks>50ms=%s totalTaskTime=%s mainthread=%s style=%s other=%s' % (
+                      num(diagnostics(lhr).get('numTasksOver50ms')),
+                      num(diagnostics(lhr).get('totalTaskTime')),
+                      num(round(sum(groups(lhr).values()), 1) if groups(lhr) else None),
+                      num(round(groups(lhr).get('styleLayout'), 1) if groups(lhr).get('styleLayout') is not None else None),
+                      num(round(groups(lhr).get('other'), 1) if groups(lhr).get('other') is not None else None)))
+                  tasks = ((lhr.get('audits', {}).get('long-tasks') or {})
+                           .get('details', {}).get('items') or [])
+                  rows.append('    longtasks: ' + (' | '.join(
+                      '%s %s@%s' % ((task.get('url') or 'unattributable').replace('https://milovicake.ru', ''),
+                                    num(task.get('duration')), num(task.get('startTime')))
+                      for task in tasks) or 'none'))
+              note('OBS %s per-run' % label, '\n'.join(rows))
+          PY
