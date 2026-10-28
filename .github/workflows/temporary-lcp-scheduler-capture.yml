@@ -1,69 +1,130 @@
-# Temporary PR-only browser-feature control; delete with its runner after review.
-# Independent replication: identical runner, release, 12 triplets and only one
-# feature-flag difference inside the same pinned Chrome 158 binary.
-name: Temporary LCP upstream Viz feature control
+# Temporary PR-only read-only review of TWO independently captured feature controls.
+# No site visit; verify each published release, exact job SHA and artifact digest.
+name: Temporary LCP Viz feature replication review
 
 on:
   pull_request:
     paths:
       - .github/workflows/temporary-lcp-scheduler-capture.yml
-      - scripts/diagnostics/lcp_scheduler_state_temp.mjs
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
-  upstream-feature:
+  review:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 12
     env:
-      EXPECTED_RELEASE_SHA: e4cc47a5478a2cd1cc29096f51e310633919f3e2
+      GH_TOKEN: ${{ github.token }}
     steps:
-      - name: Checkout exact PR-only lab control
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          persist-credentials: false
-      - name: Set up Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: '22.13.0'
-          cache: npm
-      - name: Verify unchanged published SHA and exact PR head
+      - name: Verify and download both existing immutable artifacts
+        shell: bash
         run: |
-          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
-          python3 scripts/production_release_smoke.py --retries 2 --delay 5
-      - name: Install isolated Lighthouse trace categories and two pinned Chromes
-        run: |
-          npm install --prefix /tmp/milovi-lighthouse --no-save --ignore-scripts \
-            lighthouse@12.6.1 @puppeteer/browsers@3.2.6
-          for VERSION in 155.0.8059.39 158.0.8117.2; do
-            /tmp/milovi-lighthouse/node_modules/.bin/browsers install \
-              "chrome@$VERSION" --path /tmp/milovi-browser
-            CHROME_PATH="/tmp/milovi-browser/chrome/linux-$VERSION/chrome-linux64/chrome"
-            test -x "$CHROME_PATH"
-            "$CHROME_PATH" --version | grep -F "$VERSION"
+          set -euo pipefail
+          repo="repos/${{ github.repository }}"
+          for entry in \
+            '40711920685:ebd5e1475ee8d7e5b234032f7b89fce33e13eced:12827325568:sha256:7236d09b7235adb52c8327520aee628cbff2c29d0777f1ae907dfa3636a67735' \
+            '40714190104:257adb4761596953a95d6be1547dbec4a3c96286:12828285378:sha256:3c1efd4a58f6aa0c289163fce7eac6c87b1bb3c21442bb515cf2ca8f4cd8b7ff'; do
+            IFS=: read -r run sha artifact method digest <<< "$entry"
+            test "$(gh api "$repo/actions/runs/$run" --jq '.head_sha')" = "$sha"
+            test "$(gh api "$repo/actions/artifacts/$artifact" --jq '.digest')" = "$method:$digest"
+            gh run download "$run" --repo "${{ github.repository }}" \
+              -n "temporary-lcp-upstream-control-$run-1" -D "/tmp/lcp-control-$run"
           done
-          echo 'CHROME_155_PATH=/tmp/milovi-browser/chrome/linux-155.0.8059.39/chrome-linux64/chrome' >> "$GITHUB_ENV"
-          echo 'CHROME_158_PATH=/tmp/milovi-browser/chrome/linux-158.0.8117.2/chrome-linux64/chrome' >> "$GITHUB_ENV"
-      - name: Compare Chromium upstream Viz guard on identical Chrome 158
+      - name: Cross-check 72 visits and classify all late first frames
+        shell: bash
         run: |
-          if node --expose-gc scripts/diagnostics/lcp_scheduler_state_temp.mjs \
-              > /tmp/milovi-upstream-feature.log 2>&1; then
-            cat /tmp/milovi-upstream-feature.log
-          else
-            grep -E '^([A-Za-z]+Error|Error):' /tmp/milovi-upstream-feature.log | tail -n 2 || true
-            echo "::error title=Upstream feature control failed::$(grep -E '^([A-Za-z]+Error|Error):' /tmp/milovi-upstream-feature.log | tail -n 1 | cut -c 1-180)"
-            exit 1
-          fi
-      - name: Verify same published SHA again
-        if: always()
-        run: python3 scripts/production_release_smoke.py --retries 1
-      - name: Retain anonymous lab reports and selected traces outside Git
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: temporary-lcp-upstream-control-${{ github.run_id }}-${{ github.run_attempt }}
-          path: /tmp/milovi-lcp-upstream-control/
-          if-no-files-found: warn
-          retention-days: 21
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          from collections import Counter
+          import gzip,json
+          arms=('chrome155','chrome158-fixed','chrome158-fix-off')
+          release='e4cc47a5478a2cd1cc29096f51e310633919f3e2'
+          root=Path('/tmp')
+          def emit(name,data):
+            print('::notice title='+name+'::'+json.dumps(data,separators=(',',':')))
+          all_rows=[]
+          for run in (40711920685,40714190104):
+            folder=root/f'lcp-control-{run}'
+            summary=json.loads((folder/'summary.json').read_text())
+            assert summary['release']==release
+            assert summary['browsers']==['155.0.8059.39','158.0.8117.2']
+            rows=summary['rows'];assert len(rows)==36
+            for block in range(1,13):
+              b=[r for r in rows if r['block']==block]
+              assert sorted(r['arm'] for r in b)==sorted(arms)
+              fixed=next(r for r in b if r['arm']=='chrome158-fixed')
+              off=next(r for r in b if r['arm']=='chrome158-fix-off')
+              assert len(fixed['flags'])==len(off['flags'])==1
+              assert off['flags'][0]==fixed['flags'][0]+',NoUndrawnFrameThrottleWhileEmbedderWaits'
+            for row in rows:
+              assert row['resources']=={'css':1,'avif':1,'webp':1,
+                'main':1,'fontCss':2,'woff':5} or all(
+                  value>=1 for value in row['resources'].values())
+              assert row['lab']['paint']['visible']=='visible'
+              assert row['lab']['paint']['focused']
+              assert abs(row['trace']['traceFcp']-row['rawFcp'])<150
+              assert row['state']['hero'].endswith('/img/head_mobile.avif')
+              row['run']=run
+            all_rows+=rows
+            classified=[{'block':r['block'],'arm':r['arm'],'fcp':r['rawFcp'],
+              'gap':r['trace']['gapMs'],'throttle':r['trace']['allVizReasons'].get(
+                'ThrottleUndrawnFrames:false',0),'awaited':r['trace']['allVizReasons'].get(
+                'SendAwaitedByEmbedder:true',0),
+              'dcl':next((e['ms'] for e in r['lab']['milestones'] if
+                e['name']=='DOMContentLoaded'),None),
+              'load':next((e['ms'] for e in r['lab']['milestones'] if
+                e['name']=='load'),None),
+              'raf':r['lab']['raf'][:1]}
+              for r in rows if r['rawFcp']>=750]
+            emit(f'run-{run}-late',classified)
+          assert len(all_rows)==72
+          for arm in arms:
+            s=[r for r in all_rows if r['arm']==arm]
+            print_arm={'arm':arm,'count':len(s),
+              'late':sum(r['rawFcp']>=750 for r in s),
+              'lateWithLongThrottle':sum(r['rawFcp']>=750 and
+                r['trace']['allVizReasons'].get('ThrottleUndrawnFrames:false',0)>=30
+                for r in s),
+              'throttles':sum(r['trace']['allVizReasons'].get(
+                'ThrottleUndrawnFrames:false',0) for r in s),
+              'awaited':sum(r['trace']['allVizReasons'].get(
+                'SendAwaitedByEmbedder:true',0) for r in s)}
+            emit('combined-'+arm,print_arm)
+          for run in (40711920685,40714190104):
+            folder=root/f'lcp-control-{run}'
+            selected=[r for r in all_rows if r['run']==run and
+              r['rawFcp']>=750]
+            notes=[]
+            for r in selected:
+              files=list(folder.glob(f"{r['block']}-{r['arm']}-{r['rawFcp']}.trace.json.gz"))
+              if not files: continue
+              with gzip.open(files[0],'rt') as f:
+                events=json.load(f)['traceEvents']
+              assert len(events)==r['trace']['traceEvents']>1000
+              nav=next(e for e in events if e['name']=='navigationStart' and
+                e.get('args',{}).get('data',{}).get('documentLoaderURL')==
+                'https://milovicake.ru/prigorody/gatchina/' and
+                e['args']['data'].get('isOutermostMainFrame'))
+              resource_send={}
+              resource_finish=[]
+              for e in events:
+                data=e.get('args',{}).get('data',{})
+                if e['name']=='ResourceSendRequest':
+                  resource_send[data.get('requestId')]=data.get('url','')
+                if e['name']=='ResourceFinish':
+                  url=resource_send.get(data.get('requestId'),'')
+                  if any(x in url for x in ('style.css','head_mobile.',
+                    'fonts.googleapis.com','fonts.gstatic.com')):
+                    resource_finish.append({'url':url.split('?')[0][-75:],
+                      'ms':round((e['ts']-nav['ts'])/1000,1)})
+              notes.append({'block':r['block'],'arm':r['arm'],'fcp':r['rawFcp'],
+                'gap':r['trace']['gapMs'],
+                'gapReasons':r['trace']['vizReasons'],
+                'resourceFinish':resource_finish,
+                'mainBusy':r['trace']['mainBusyMs'],
+                'rasterBusy':r['trace']['rasterBusyMs']})
+            emit(f'run-{run}-selected-traces',notes)
+          PY
