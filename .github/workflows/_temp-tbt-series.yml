@@ -1,0 +1,165 @@
+name: One-shot TBT series readout
+
+# TEMPORARY diagnostic workflow (remove after use).
+# Read-only on production: it never visits the site and never changes CI gates.
+# It re-reads the already saved `lighthouse-results` artifacts of every existing
+# Lighthouse workflow run, writes one compact evidence JSON into the branch and
+# exits. The file is deleted right after the numbers are folded into the report.
+
+on:
+  push:
+    branches: [arena/b2e5e24a-milovi-cake]
+    paths:
+      - .github/workflows/_temp-tbt-series.yml
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  series:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout session branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: arena/b2e5e24a-milovi-cake
+
+      - name: Collect saved Lighthouse CI results
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import subprocess
+          import tempfile
+          import urllib.request
+          import zipfile
+
+          REPO = os.environ['REPO']
+          TOKEN = os.environ['GH_TOKEN']
+          API = 'https://api.github.com'
+
+          def api(path):
+              request = urllib.request.Request(
+                  API + path,
+                  headers={
+                      'Authorization': 'Bearer ' + TOKEN,
+                      'Accept': 'application/vnd.github+json',
+                      'X-GitHub-Api-Version': '2022-11-28',
+                  },
+              )
+              with urllib.request.urlopen(request, timeout=60) as response:
+                  return json.load(response)
+
+          def paginate(path):
+              page = 1
+              items = []
+              while True:
+                  sep = '&' if '?' in path else '?'
+                  chunk = api('%s%sper_page=100&page=%d' % (path, sep, page))
+                  items.extend(chunk.get('workflow_runs') or chunk.get('artifacts') or [])
+                  if not (chunk.get('workflow_runs') or chunk.get('artifacts')) or len(items) % 100:
+                      return items
+                  page += 1
+
+          def download_artifact(artifact_id, target):
+              url = '%s/repos/%s/actions/artifacts/%d/zip' % (API, REPO, artifact_id)
+              subprocess.run(
+                  ['curl', '-sSL', '-H', 'Authorization: Bearer ' + TOKEN,
+                   '-H', 'Accept: application/vnd.github+json', url, '-o', target],
+                  check=True,
+              )
+
+          runs = [run for run in paginate('/repos/%s/actions/workflows/lighthouse.yml/runs' % REPO)
+                  if run.get('status') == 'completed']
+
+          records = []
+          run_meta = []
+          for run in runs:
+              artifacts = api('/repos/%s/actions/runs/%d/artifacts' % (REPO, run['id'])).get('artifacts') or []
+              artifact = next((item for item in artifacts
+                               if item.get('name') == 'lighthouse-results' and not item.get('expired')), None)
+              run_meta.append({
+                  'run': run['id'],
+                  'sha': run['head_sha'],
+                  'created_at': run['created_at'],
+                  'conclusion': run['conclusion'],
+                  'attempt': run['run_attempt'],
+                  'artifact': artifact['id'] if artifact else None,
+                  'artifact_bytes': artifact['size_in_bytes'] if artifact else None,
+                  'artifact_created_at': artifact['created_at'] if artifact else None,
+              })
+              if not artifact:
+                  continue
+              with tempfile.TemporaryDirectory() as workdir:
+                  archive = os.path.join(workdir, 'artifact.zip')
+                  download_artifact(artifact['id'], archive)
+                  with zipfile.ZipFile(archive) as bundle:
+                      for name in bundle.namelist():
+                          if not (name.endswith('.json') and 'lhr-' in os.path.basename(name)):
+                              continue
+                          try:
+                              lhr = json.loads(bundle.read(name))
+                          except Exception:
+                              continue
+                          audits = lhr.get('audits') or {}
+                          metrics = ((audits.get('metrics') or {}).get('details') or {}).get('items') or [{}]
+                          diagnostics = ((audits.get('diagnostics') or {}).get('details') or {}).get('items') or [{}]
+                          groups = ((audits.get('mainthread-work-breakdown') or {}).get('details') or {}).get('items') or []
+                          by_group = {item.get('group'): item.get('duration') for item in groups}
+
+                          def value(key):
+                              return (audits.get(key) or {}).get('numericValue')
+
+                          records.append({
+                              'run': run['id'],
+                              'sha': run['head_sha'],
+                              'created_at': run['created_at'],
+                              'url': lhr.get('finalUrl') or lhr.get('requestedUrl'),
+                              'fetch_time': lhr.get('fetchTime'),
+                              'chrome': ((lhr.get('userAgent') or '').split('Chrome/')[-1].split(' ')[0]
+                                         if 'Chrome/' in (lhr.get('userAgent') or '') else None),
+                              'lighthouse': lhr.get('lighthouseVersion'),
+                              'tbt': value('total-blocking-time'),
+                              'lcp': value('largest-contentful-paint'),
+                              'fcp': value('first-contentful-paint'),
+                              'tti': value('interactive'),
+                              'perf': ((lhr.get('categories') or {}).get('performance') or {}).get('score'),
+                              'obs_lcp': metrics[0].get('observedLargestContentfulPaint'),
+                              'obs_fcp': metrics[0].get('observedFirstContentfulPaint'),
+                              'mt_total': round(sum(by_group.values()), 1) if by_group else None,
+                              'mt_style': round(by_group.get('styleLayout'), 1) if by_group.get('styleLayout') is not None else None,
+                              'mt_other': round(by_group.get('other'), 1) if by_group.get('other') is not None else None,
+                              'tasks50': diagnostics[0].get('numTasksOver50ms'),
+                              'tasks100': diagnostics[0].get('numTasksOver100ms'),
+                              'task_time': diagnostics[0].get('totalTaskTime'),
+                              'benchmark': (lhr.get('environment') or {}).get('benchmarkIndex'),
+                              'warnings': len(lhr.get('runWarnings') or []),
+                              'warning_text': ((lhr.get('runWarnings') or [''])[0] or '')[:90] or None,
+                          })
+
+          payload = {'generated_at': __import__('datetime').datetime.utcnow().isoformat() + 'Z',
+                     'runs': run_meta, 'lhrs': records}
+          with open('docs/tbt-series-evidence.json', 'w') as handle:
+              json.dump(payload, handle, indent=1, sort_keys=True)
+          print('runs with artifacts: %d/%d, lhrs: %d' % (
+              sum(1 for item in run_meta if item['artifact']), len(run_meta), len(records)))
+          PY
+
+      - name: Publish evidence file on the session branch
+        run: |
+          set -euo pipefail
+          ls -l docs/tbt-series-evidence.json
+          git config user.name "arena-agent"
+          git config user.email "297053741+arena-agent@users.noreply.github.com"
+          git add docs/tbt-series-evidence.json
+          if git diff --cached --quiet; then
+            echo "no change"
+            exit 0
+          fi
+          git commit -m "TBT: temporarily publish saved Lighthouse series evidence"
+          git push origin HEAD:arena/b2e5e24a-milovi-cake
