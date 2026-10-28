@@ -12,7 +12,7 @@
 | время (UTC) | 28.10 17:32:42 → 17:40:41 | 27.10 01:59:59 → 02:05:50 |
 | Lighthouse / браузер | 12.6.1 / **Chrome 156.0.0.0** | 12.6.1 / **Chrome 155.0.0.0** |
 
-Аннотации красного рана (check-run annotations, 5 записей): `zakazat-tort-spb` **❌ `total-blocking-time` Expected <= 300, but found 529.7090000000001** — единственная error-ассерция. Остальное — warning-уровень: `/` LCP 3664,392 + perf 0,80; `/bento-torty/` LCP 2842,193; `/o-konditere/` LCP 2604,456. `/gallery/` и `/prigorody/gatchina/` — чисто.
+Аннотации красного рана (check-run annotations: 4 записи по ассерциям + 1 notice о раннере): `zakazat-tort-spb` **❌ `total-blocking-time` Expected <= 300, but found 529.7090000000001** — единственная error-ассерция. Остальное — warning-уровень: `/` LCP 3664,392 + perf 0,80; `/bento-torty/` LCP 2842,193; `/o-konditere/` LCP 2604,456. `/gallery/` и `/prigorody/gatchina/` — чисто.
 
 Важно для чтения гейта: **warning не валит ран**. `core.setFailed` вызывается только если есть ассерция уровня `error` (исходник действия: `src/utils/annotations.js`). Строка «1 result for URL» в аннотации — это **количество проваленных ассерций для URL**, а не число прогонов (`assertions.length` в том же файле). Прогонов на URL по-прежнему **три** (в артефактах рана 24 LHR = 8 URL × 3).
 
@@ -137,6 +137,6 @@ CrUX для этих URL отдаёт insufficient data (зафиксирова�
 
 - Локально: `git` (полная история, sha256/blob-контроли), `gh api` для метаданных ранов и аннотаций. Скачивание артефактов Actions в песочнице недоступно (обрыв на artifact CDN).
 - Временные read-only задания в этой ветке (удалены, в CI ничего не осталось):
-  1. `_temp-tbt-readout.yml` — прочитал сохранённые `lighthouse-results` ранов `40736722642`, `40435836396`, `40408519461` и вывел per-run TBT/LCP/наблюдаемые метрики/main-thread/`benchmarkIndex` аннотациями: ран [`40744583506`](https://github.com/FedorMilovanov/Milovi_Cake/actions/runs/40744583506).
+  1. `_temp-tbt-readout.yml` — прочитал сохранённые `lighthouse-results` ранов `40736722642` и `40435836396` и вывел per-run TBT/LCP/наблюдаемые метрики/main-thread/`benchmarkIndex` аннотациями: ран [`40744583506`](https://github.com/FedorMilovanov/Milovi_Cake/actions/runs/40744583506). Третий артефакт (`40408519461`) скачался, но его аннотации отсек лимит GitHub «10 аннотаций на шаг» — он полностью покрыт второй серией.
   2. `_temp-tbt-series.yml` — прочитал артефакты всех доступных ранов Lighthouse (68 с артефактами, 1312 LHR) и опубликовал сводку в ветку: ран [`40745164643`](https://github.com/FedorMilovanov/Milovi_Cake/actions/runs/40745164643). Сводка после анализа удалена; исходные артефакты остаются в GitHub Actions до истечения retention.
 - Оба задания не посещали сайт, не меняли пороги, конфиг Lighthouse, runtime и `sw.js`.
