@@ -116,9 +116,8 @@ function renderFilters(){
     state.filter=btn.dataset.filter; 
     renderFilters(); 
     renderGrid(); 
-    $('#galleryGrid')?.scrollIntoView({behavior:'smooth',block:'start'});
-    // Restore focus
-    $(`.gx-chip[data-filter="${state.filter}"]`, wrap)?.focus();
+    // Keep the selected filter focused without starting a competing scroll.
+    $(`.gx-chip[data-filter="${state.filter}"]`, wrap)?.focus({preventScroll:true});
   })); 
 }
 function sizeClasses(size){ if(size==='2x2') return 'col-span-2 row-span-2'; if(size==='2x1') return 'col-span-2'; if(size==='1x2') return 'row-span-2'; return ''; }

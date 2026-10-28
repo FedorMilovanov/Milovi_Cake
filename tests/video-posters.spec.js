@@ -773,6 +773,25 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     await page.locator('#lbClose').click();
   });
 
+  test('gallery filter keeps its position and opens a photo without a competing scroll', async ({ page }) => {
+    await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+    await page.goto('/gallery/', { waitUntil: 'load' });
+    await page.locator('.gx-header').evaluate((header) => Promise.all(header.getAnimations().map((animation) => animation.finished)));
+    await expect(page.locator('#galleryGrid')).not.toHaveAttribute('data-hydrating', 'true');
+    const photoFilter = page.locator('.gx-chip[data-filter="photo"]');
+    const scrollBefore = await page.evaluate(() => window.scrollY);
+    await photoFilter.click();
+    await expect(page.locator('#videoCount')).toHaveText('0 видео');
+    await expect(photoFilter).toBeFocused();
+    // Observe the whole old smooth-scroll window, not just its first frame.
+    await page.waitForTimeout(900);
+    expect(Math.abs((await page.evaluate(() => window.scrollY)) - scrollBefore)).toBeLessThanOrEqual(1);
+    await page.locator('#galleryGrid [data-id="p01"]').click();
+    await expect(page.locator('#lbCounter')).toHaveText('01 / 30');
+    await page.locator('#lbClose').click();
+    await expect(page.locator('#lbRoot')).toHaveCount(0);
+  });
+
   test('photo-only gallery can repeatedly open and close without CDN', async ({ page }, testInfo) => {
     const diagnostic = { crashed: false, errors: [] };
     if (testInfo.project.name.startsWith('firefox-')) {
