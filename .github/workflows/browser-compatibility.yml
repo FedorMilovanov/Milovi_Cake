@@ -60,10 +60,17 @@ jobs:
         # The container runs as root; Firefox requires HOME to belong to it.
         env:
           HOME: /root
-        run: >-
-          npx playwright test
-          --project=${{ matrix.engine }}-desktop --project=${{ matrix.engine }}-mobile
-          --workers=1 --retries=0 --reporter=list,github,html
+          DEBUG: ${{ matrix.engine == 'webkit' && 'pw:browser' || '' }}
+          DEBUG_COLORS: '0'
+        run: |
+          set -o pipefail
+          npx playwright test \
+            --project=${{ matrix.engine }}-desktop --project=${{ matrix.engine }}-mobile \
+            --workers=1 --retries=0 --reporter=list,github,html 2>&1 | tee "$RUNNER_TEMP/${{ matrix.engine }}-primary-browser.log"
+
+      - name: Summarize WebKit primary process events
+        if: failure() && matrix.engine == 'webkit' && steps.primary_contracts.outcome == 'failure'
+        run: python3 scripts/browser_log_summary.py "$RUNNER_TEMP/webkit-primary-browser.log"
 
       - name: Repeat WebKit storage fault interactions
         if: matrix.engine == 'webkit'
@@ -92,6 +99,7 @@ jobs:
           path: |
             playwright-report/
             test-results/
+            ${{ runner.temp }}/${{ matrix.engine }}-primary-browser.log
           if-no-files-found: ignore
           retention-days: 7
           include-hidden-files: false
@@ -146,10 +154,27 @@ jobs:
         if: failure() && matrix.engine == 'webkit'
         env:
           HOME: /root
+          DEBUG: pw:browser
+          DEBUG_COLORS: '0'
         run: |
+          set -o pipefail
           echo '::notice title=WebKit diagnostic::Original 1.63 source, four independent active-video runs'
           npx playwright test tests/video-posters.spec.js --project=webkit-desktop \
-            --grep='gallery can close an active video' --repeat-each=4 --workers=1 --retries=0 --reporter=list,github
+            --grep='gallery can close an active video' --repeat-each=4 --workers=1 --retries=0 --reporter=list,github \
+            2>&1 | tee "$RUNNER_TEMP/webkit-baseline-browser.log"
+
+      - name: Summarize WebKit baseline process events
+        if: failure() && matrix.engine == 'webkit' && steps.webkit_baseline.outcome != 'skipped'
+        run: python3 scripts/browser_log_summary.py "$RUNNER_TEMP/webkit-baseline-browser.log"
+
+      - name: Upload WebKit baseline process log
+        if: always() && matrix.engine == 'webkit' && steps.webkit_baseline.outcome != 'skipped'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: webkit-baseline-process-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/webkit-baseline-browser.log
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Compare WebKit without screencast capture
         id: webkit_no_capture
@@ -207,20 +232,171 @@ jobs:
           cp "$RUNNER_TEMP/gallery-main-original.js" js/gallery/main.js
           sha256sum --check "$RUNNER_TEMP/gallery-main-original.sha256"
 
-      - name: Install Playwright 1.64 for a separate diagnostic
-        id: webkit_newer
-        if: failure() && matrix.engine == 'webkit' && steps.webkit_restore.outcome == 'success'
-        env:
-          HOME: /root
-        run: |
-          npm install --no-save --package-lock=false @playwright/test@1.64.1 playwright@1.64.1
-          npx playwright install webkit
+  # Reference only: the pinned 1.63 primary above remains authoritative and
+  # failed even if this separate official 1.64.1 container happens to pass.
+  webkit-newer-reference:
+    name: WebKit 1.64 reference on unchanged source
+    needs: compatibility
+    if: ${{ !cancelled() && needs.compatibility.result == 'failure' }}
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --shm-size=1g
+    timeout-minutes: 15
+    env:
+      HOME: /root
+      MILOVI_BROWSER_COMPAT: '1'
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+      DEBUG: pw:browser
+      DEBUG_COLORS: '0'
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
 
-      - name: Compare WebKit 1.64 with unchanged source
-        if: failure() && matrix.engine == 'webkit' && steps.webkit_newer.outcome == 'success'
-        env:
-          HOME: /root
+      - name: Setup pinned Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          cache: npm
+
+      - name: Setup Python for the local test server
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        with:
+          python-version: '3.12'
+
+      - name: Install temporary matching Playwright
         run: |
-          echo '::notice title=WebKit diagnostic::Original source with temporary Playwright 1.64.1; four independent active-video runs'
+          npm ci
+          npm install --no-save --package-lock=false @playwright/test@1.64.1 playwright@1.64.1
+          git diff --exit-code
+          echo "::notice title=WebKit reference version::$(npx playwright --version); source $(git rev-parse HEAD)"
+
+      - name: Compare active video in the official 1.64.1 image
+        id: newer_video
+        run: |
+          set -o pipefail
+          echo '::notice title=WebKit reference::Four independent checks in official Playwright 1.64.1; the failed primary remains failed'
           npx playwright test tests/video-posters.spec.js --project=webkit-desktop \
-            --grep='gallery can close an active video' --repeat-each=4 --workers=1 --retries=0 --reporter=list,github
+            --grep='gallery can close an active video' --repeat-each=4 --workers=1 --retries=0 --reporter=list,github \
+            2>&1 | tee "$RUNNER_TEMP/webkit-newer-browser.log"
+
+      - name: Summarize WebKit 1.64 process events
+        if: failure() && steps.newer_video.outcome == 'failure'
+        run: python3 scripts/browser_log_summary.py "$RUNNER_TEMP/webkit-newer-browser.log"
+
+      - name: Upload WebKit 1.64 reference artifacts
+        if: failure() && steps.newer_video.outcome == 'failure'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: webkit-164-reference-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            test-results/
+            ${{ runner.temp }}/webkit-newer-browser.log
+          if-no-files-found: ignore
+          retention-days: 7
+          include-hidden-files: false
+
+  # Diagnostic A/B only. Both variants retain the existing tests and browser
+  # configuration; neither can change the result of the primary matrix.
+  webkit-filter-reference:
+    name: WebKit filter-transition comparison (${{ matrix.variant }})
+    needs: compatibility
+    if: ${{ !cancelled() && needs.compatibility.result == 'failure' }}
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --shm-size=1g
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [original, no-filter-interpolation]
+    env:
+      HOME: /root
+      MILOVI_BROWSER_COMPAT: '1'
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+      DEBUG: pw:browser
+      DEBUG_COLORS: '0'
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Setup pinned Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          cache: npm
+
+      - name: Setup Python for the local test server
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        with:
+          python-version: '3.12'
+
+      - name: Install pinned dependencies
+        run: npm ci
+
+      - name: Prepare controlled stylesheet variant
+        run: |
+          cp css/gallery/gallery-2026.css "$RUNNER_TEMP/gallery-original.css"
+          sha256sum css/gallery/gallery-2026.css > "$RUNNER_TEMP/gallery-original.sha256"
+          if [ '${{ matrix.variant }}' = 'no-filter-interpolation' ]; then
+            python3 scripts/gallery_filter_experiment.py css/gallery/gallery-2026.css "$RUNNER_TEMP/gallery-experiment.css"
+            cp "$RUNNER_TEMP/gallery-experiment.css" css/gallery/gallery-2026.css
+          fi
+          echo '::notice title=WebKit filter comparison::Variant ${{ matrix.variant }}; filter values and assertions remain unchanged'
+
+      - name: Compare real gallery interactions
+        id: filter_tests
+        run: |
+          set -o pipefail
+          npx playwright test tests/video-posters.spec.js --project=webkit-desktop --project=webkit-mobile \
+            --grep='fallback supports buttons|gallery can close an active video|gallery media, caption and controls do not overlap' \
+            --repeat-each=2 --workers=1 --retries=0 --reporter=list,github \
+            2>&1 | tee "$RUNNER_TEMP/webkit-filter-${{ matrix.variant }}.log"
+
+      - name: Measure filter-transition precondition
+        id: filter_probe
+        if: ${{ !cancelled() && steps.filter_tests.outcome != 'skipped' }}
+        run: |
+          set -o pipefail
+          python3 -m http.server 4173 --bind 127.0.0.1 > "$RUNNER_TEMP/filter-http.log" 2>&1 &
+          server_pid=$!
+          cleanup() { if kill -0 "$server_pid" 2>/dev/null; then kill "$server_pid"; fi; }
+          trap cleanup EXIT
+          MILOVI_FILTER_VARIANT='${{ matrix.variant }}' MILOVI_FILTER_SERVER_PID="$server_pid" node scripts/gallery_filter_probe.cjs \
+            2>&1 | tee "$RUNNER_TEMP/webkit-filter-probe-${{ matrix.variant }}.log"
+          kill -0 "$server_pid" # Reject a server that exited during the probe.
+
+      - name: Restore and verify exact stylesheet
+        if: always()
+        run: |
+          cp "$RUNNER_TEMP/gallery-original.css" css/gallery/gallery-2026.css
+          sha256sum --check "$RUNNER_TEMP/gallery-original.sha256"
+          git diff --exit-code
+
+      - name: Summarize filter-comparison process events
+        if: failure() && steps.filter_tests.outcome == 'failure'
+        run: python3 scripts/browser_log_summary.py "$RUNNER_TEMP/webkit-filter-${{ matrix.variant }}.log"
+
+      - name: Summarize filter-probe process events
+        if: failure() && steps.filter_probe.outcome == 'failure'
+        run: python3 scripts/browser_log_summary.py "$RUNNER_TEMP/webkit-filter-probe-${{ matrix.variant }}.log"
+
+      - name: Upload filter-comparison artifacts
+        if: failure() && (steps.filter_tests.outcome == 'failure' || steps.filter_probe.outcome == 'failure')
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: webkit-filter-${{ matrix.variant }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            test-results/
+            ${{ runner.temp }}/webkit-filter-${{ matrix.variant }}.log
+            ${{ runner.temp }}/webkit-filter-probe-${{ matrix.variant }}.log
+          if-no-files-found: ignore
+          retention-days: 7
+          include-hidden-files: false
