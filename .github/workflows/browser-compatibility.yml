@@ -715,3 +715,68 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
           include-hidden-files: false
+
+  # Failure-only experiment: keep HEAD assets and unchanged primary assertions,
+  # compare normal decoding with an independently verified WebP fallback.
+  webkit-image-investigation:
+    name: WebKit image comparison (${{ matrix.image }})
+    needs: compatibility
+    if: ${{ !cancelled() && needs.compatibility.result == 'failure' }}
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --shm-size=1g
+    timeout-minutes: 20
+    env:
+      HOME: /root
+      MILOVI_BROWSER_COMPAT: '1'
+      MILOVI_DIAGNOSTIC_IMAGE_MODE: ${{ matrix.image }}
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+      DEBUG: pw:browser
+      DEBUG_COLORS: '0'
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [original, webp]
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Setup pinned Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          cache: npm
+      - name: Setup Python for the local test server
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        with:
+          python-version: '3.12'
+      - name: Install project dependencies
+        run: npm ci
+      - name: Compare gallery image decoding
+        shell: bash
+        id: image_tests
+        run: |
+          set -o pipefail
+          echo '::notice title=Image comparison::Exact HEAD; ${{ matrix.image }} image requests; same tests and assertions; diagnostic only'
+          npx playwright test tests/video-posters.spec.js \
+            --project=webkit-desktop --project=webkit-mobile \
+            --grep='photo-only gallery can repeatedly open and close|gallery can close an active video' \
+            --repeat-each=4 --workers=1 --retries=0 --reporter=list,github \
+            2>&1 | tee "$RUNNER_TEMP/webkit-image-${{ matrix.image }}.log"
+      - name: Summarize image-comparison process events
+        if: failure() && steps.image_tests.outcome == 'failure'
+        run: python3 scripts/browser_log_summary.py "$RUNNER_TEMP/webkit-image-${{ matrix.image }}.log"
+      - name: Upload image-comparison artifacts
+        if: failure() && steps.image_tests.outcome == 'failure'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: webkit-image-${{ matrix.image }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            test-results/
+            ${{ runner.temp }}/webkit-image-${{ matrix.image }}.log
+          if-no-files-found: ignore
+          retention-days: 7
+          include-hidden-files: false

@@ -17,6 +17,27 @@ function browserCrashResources() {
   };
 }
 
+// Optional failure-only comparison. Normal CI never changes image requests.
+async function configureDiagnosticImages(page) {
+  const mode = process.env.MILOVI_DIAGNOSTIC_IMAGE_MODE || 'original';
+  if (mode === 'original') return null;
+  if (mode !== 'webp') throw new Error(`Unknown diagnostic image mode: ${mode}`);
+  let blocked = 0;
+  await page.route(/\/img\/gallery\/[^?]+\.avif(?:\?|$)/, (route) => {
+    blocked++;
+    return route.abort();
+  });
+  return () => blocked;
+}
+
+async function verifyDiagnosticImages(page, blocked) {
+  if (!blocked) return;
+  const image = page.locator('#galleryGrid [data-id="p01"] img');
+  await expect.poll(() => image.evaluate((img) => img.complete && img.naturalWidth > 0 && /\.webp(?:\?|$)/.test(img.currentSrc))).toBe(true);
+  expect(blocked(), 'AVIF comparison must intercept at least one real request').toBeGreaterThan(0);
+  console.log(`::notice title=Image comparison precondition::${blocked()} AVIF requests blocked; first gallery photo loaded as WebP`);
+}
+
 test('all gallery clips show their own lightweight, decodable frame before playback', async ({ page, request }) => {
   await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
   const reels = await page.evaluate(async () => {
@@ -553,8 +574,10 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     page.on('crash', () => { diagnostic.crashed = true; diagnostic.resources = browserCrashResources(); });
     try {
       await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+      const blockedImages = await configureDiagnosticImages(page);
       const response = await page.goto('/gallery/', { waitUntil: 'load' });
       expect(response.status(), 'gallery must come from the site server').toBe(200);
+      await verifyDiagnosticImages(page, blockedImages);
       const card = page.locator('#galleryGrid [data-id="p01"]');
       await expect(card).toBeVisible();
       await card.click();
@@ -822,6 +845,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     page.on('crash', () => { diagnostic.crashed = true; diagnostic.resources = browserCrashResources(); });
     try {
       await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+      const blockedImages = await configureDiagnosticImages(page);
       // Only for a separately labelled CI comparison: prevent media decoding
       // from the first navigation, before the visitor can choose photo-only.
       const blockedMedia = process.env.MILOVI_DIAGNOSTIC_BLOCK_VIDEO === '1';
@@ -833,6 +857,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
         });
       }
       await page.goto('/gallery/', { waitUntil: 'load' });
+      await verifyDiagnosticImages(page, blockedImages);
       if (blockedMedia) {
         await expect.poll(() => page.locator('#galleryGrid video').evaluateAll(
           (videos) => videos.filter((video) => video.readyState >= 2 || !video.paused).length

@@ -34,6 +34,23 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         self.assertNotIn('needs: compatibility', motion)
         self.assertNotIn('continue-on-error', motion)
 
+    def test_image_comparison_is_failure_only_and_requires_real_webp_fallback(self):
+        workflow = (ROOT / '.github/workflows/browser-compatibility.yml').read_text(encoding='utf-8')
+        comparison = workflow.split('  webkit-image-investigation:', 1)[1]
+        source = (ROOT / 'tests/video-posters.spec.js').read_text(encoding='utf-8')
+        self.assertIn("needs.compatibility.result == 'failure'", comparison)
+        self.assertIn('image: [original, webp]', comparison)
+        self.assertIn('ref: ${{ github.event.pull_request.head.sha }}', comparison)
+        self.assertIn('--project=webkit-desktop --project=webkit-mobile', comparison)
+        self.assertIn('--repeat-each=4 --workers=1 --retries=0', comparison)
+        self.assertIn('gallery can close an active video', comparison)
+        self.assertIn('photo-only gallery can repeatedly open and close', comparison)
+        self.assertIn("if (mode === 'original') return null", source)
+        self.assertIn('img.naturalWidth > 0', source)
+        self.assertIn('img.currentSrc', source)
+        self.assertIn('expect(blocked()', source)
+        self.assertNotIn('continue-on-error', comparison)
+
     def test_audio_investigation_uses_isolated_source_and_keeps_assertions(self):
         workflow = (ROOT / '.github/workflows/browser-compatibility.yml').read_text(encoding='utf-8')
         audio = workflow.split('  webkit-audio-investigation:', 1)[1]
