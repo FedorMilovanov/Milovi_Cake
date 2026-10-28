@@ -1,219 +1,64 @@
-# PR-only, read-only trace investigation. Remove immediately after review.
-# Verify the exact prior cold visits before using their existing anonymous artifacts.
-name: Temporary LCP paint scheduler review
+# Temporary PR-only Chrome feature control; delete with its runner after review.
+# Exact published release, real fonts and eight alternating pairs; no site edits.
+name: Temporary LCP paint-holding control
 
 on:
   pull_request:
     paths:
       - .github/workflows/temporary-lcp-timeline-review.yml
+      - scripts/diagnostics/lcp_paint_holding_temp.mjs
 
 permissions:
   contents: read
-  actions: read
 
 jobs:
-  review:
+  paint-holding:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 45
     env:
-      GH_TOKEN: ${{ github.token }}
+      EXPECTED_RELEASE_SHA: e4cc47a5478a2cd1cc29096f51e310633919f3e2
     steps:
-      - name: Verify trace provenance and fetch existing runs without another site visit
-        shell: bash
+      - name: Checkout exact PR-only runner
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          cache: npm
+      - name: Verify unchanged deployed SHA before measuring
         run: |
-          set -euo pipefail
-          repo="repos/${{ github.repository }}"
-          test "$(gh api "$repo/actions/runs/40613509451" --jq '.head_sha')" = \
-            '6aa4636198810340cca35153aba27ddad6a84966'
-          test "$(gh api "$repo/actions/artifacts/12784865375" --jq '.digest')" = \
-            'sha256:e6b35e8f0b1dafd1c9f7cc28d96cfd7d5fd9201f0ea70af1ed9b534a0743b003'
-          test "$(gh api "$repo/actions/runs/40615617077" --jq '.head_sha')" = \
-            'c638592db2371a0917b1a4b69b41d1a296ca22dc'
-          test "$(gh api "$repo/actions/artifacts/12784868656" --jq '.digest')" = \
-            'sha256:57ade51a02936bdde2af67bfd668137bc469c25a6efa862543c96632345eab13'
-          gh run download 40613509451 --repo "${{ github.repository }}" \
-            -n temporary-lcp-hero-motion-40613509451-1 -D /tmp/lcp-motion
-          gh run download 40615617077 --repo "${{ github.repository }}" \
-            -n temporary-lcp-hero-consent-40615617077-1 -D /tmp/lcp-consent
-      - name: Align site callbacks, paint and compositor events with first paint
-        shell: bash
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          python3 scripts/production_release_smoke.py --retries 2 --delay 5
+      - name: Install isolated Lighthouse 12.6.1 and pinned Chrome 155
         run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from collections import Counter
-          from pathlib import Path
-          import gzip, json
-
-          release = 'e4cc47a5478a2cd1cc29096f51e310633919f3e2'
-          target = 'https://milovicake.ru/prigorody/gatchina/'
-          slow, fast, unusual = [], [], Counter()
-          names_by_group = {'fast': Counter(), 'slow': Counter()}
-          def emit(title, obj):
-              print('::notice title=' + title + '::' + json.dumps(obj, ensure_ascii=False,
-                  separators=(',',':')))
-          for mode, n in (('consent',16), ('motion',8)):
-              root = Path('/tmp/lcp-' + mode)
-              summary = json.loads((root/'summary.json').read_text())
-              assert summary['release'] == release
-              assert summary['browser'].startswith('155.')
-              assert len(summary['rows']) == n
-              for r in summary['rows']:
-                  stem = f"{r['block']:02d}-{r['arm']}"
-                  lhr = json.loads((root/(stem+'.lhr.json')).read_text())
-                  assert lhr['lighthouseVersion'] == '12.6.1' and lhr['finalUrl'] == target
-                  with gzip.open(root/(stem+'.trace.json.gz'),'rt') as f:
-                      events = json.load(f)['traceEvents']
-                  assert len(events) == r['traceEvents'] > 1000
-                  navs = [e for e in events if e['name'] == 'navigationStart'
-                      and e.get('args',{}).get('data',{}).get('isOutermostMainFrame')
-                      and e['args']['data'].get('documentLoaderURL') == target]
-                  assert navs, stem
-                  nav = navs[0]
-                  zero = nav['ts']
-                  nav_id = nav['args']['data']['navigationId']
-                  fcp = next(e for e in events if e['name'] == 'firstContentfulPaint'
-                      and e['ts'] >= zero and e.get('args',{}).get('data',{}).get('navigationId') == nav_id)
-                  assert abs((fcp['ts']-zero)/1000-r['rawFcp']) < 150
-                  ms = lambda e: round((e['ts']-zero)/1000,1)
-                  end = fcp['ts']
-                  before = [e for e in events if zero <= e['ts'] <= end]
-                  main = [e for e in before if e['pid'] == nav['pid'] and e['tid'] == nav['tid']]
-                  late = [e for e in main if end-350000 <= e['ts'] <= end]
-                  group = 'slow' if r['rawFcp'] >= 750 else 'fast'
-                  for e in before:
-                      names_by_group[group][e['name']] += 1
-                      if any(s in e['name'].lower() for s in ('paint.hold','visibility','occlud','throttl')):
-                          unusual[e['name']] += 1
-                  def tail(name, limit=3):
-                      return [[ms(e),round(e.get('dur',0)/1000,1)]
-                          for e in before if e['name'] == name][-limit:]
-                  timers = []
-                  for e in late:
-                      if e['name'] in ('TimerFire','FireAnimationFrame','FireIdleCallback'):
-                          timers.append([e['name'],ms(e),round(e.get('dur',0)/1000,1),
-                              e.get('args',{}).get('data',{}).get('timerId')])
-                  functions = []
-                  for e in late:
-                      if e['name'] != 'FunctionCall': continue
-                      d = e.get('args',{}).get('data',{})
-                      url = d.get('url','')
-                      if '/js/' not in url: continue
-                      functions.append([ms(e),url.split('/js/')[-1].split('?')[0],
-                          d.get('lineNumber'),round(e.get('dur',0)/1000,1)])
-                  near = Counter(e['name'] for e in before if end-150000 <= e['ts'] <= end)
-                  tasks = [e for e in main if e['name']=='RunTask'
-                      and e['ts'] >= zero and e['ts'] < end]
-                  dcl = next((x['ms'] for x in r['page']['lab']['milestones']
-                      if x['kind']=='domcontentloaded'),None)
-                  row = {'id':f'{mode}-{stem}','fcp':r['rawFcp'],
-                      'ready':round(max(r['resources'][x] for x in ('css','avif','lastFont')),1),
-                      'dcl':dcl,'element':'hero' if 'hero-photo-bg' in r['hero'] else 'other',
-                      'draw':tail('DrawFrame'), 'paint':tail('Paint'),
-                      'layout':tail('Layout',2), 'mainFrame':tail('BeginMainThreadFrame'),
-                      'timers350':timers[-5:],'js350':functions[-5:],
-                      'maxMainTask':round(max((e.get('dur',0) for e in tasks),default=0)/1000,1),
-                      'near150':{x:near[x] for x in ('RunTask','Paint','DrawFrame',
-                          'RasterTask','ImageDecodeTask','TimerFire','FireAnimationFrame') if near[x]}}
-                  (slow if group=='slow' else fast).append(row)
-          assert len(slow) >= 5 and len(fast)+len(slow)==24
-          for mode in ('consent','motion'):
-              matches = [r for r in slow if r['id'].startswith(mode)]
-              for offset in range(0,len(matches),3):
-                  emit(mode+'-late-'+str(offset//3+1),matches[offset:offset+3])
-          emit('paint-fast-controls',fast[:2]+fast[-2:])
-          emit('paint-visibility-holding-names',dict(unusual))
-          for group in ('fast','slow'):
-              hits = [(k,v) for k,v in names_by_group[group].items() if any(
-                  x in k.lower() for x in ('paint','frame','raster','visible','schedul',
-                      'deco','commit','layout','timer','holding','activation'))]
-              emit('paint-event-names-'+group,sorted(hits,key=lambda x:-x[1])[:42])
-          PY
-      - name: Check whether frame requests waited for delivery or raster workers
-        shell: bash
+          npm install --prefix /tmp/milovi-lighthouse --no-save --ignore-scripts \
+            lighthouse@12.6.1 @puppeteer/browsers@3.2.6
+          /tmp/milovi-lighthouse/node_modules/.bin/browsers install \
+            chrome@155.0.8059.39 --path /tmp/milovi-browser
+          CHROME_PATH=/tmp/milovi-browser/chrome/linux-155.0.8059.39/chrome-linux64/chrome
+          test -x "$CHROME_PATH"
+          "$CHROME_PATH" --version | grep -F 155.0.8059.39
+          echo "CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
+      - name: Pair identical Chrome flags except PaintHolding, keep published page unchanged
         run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-          from collections import Counter
-          import gzip, json
-          target = 'https://milovicake.ru/prigorody/gatchina/'
-          inspect = {'consent': {('01','original'),('01','pre-denied'),
-              ('07','pre-denied')}, 'motion': {('01','animation-off')}}
-          def emit(name,obj):
-              print('::notice title='+name+'::'+json.dumps(obj,separators=(',',':')))
-          samples = {}
-          for mode, cases in inspect.items():
-              root = Path('/tmp/lcp-'+mode)
-              summary = json.loads((root/'summary.json').read_text())
-              for block,arm in sorted(cases):
-                  row = next(r for r in summary['rows'] if r['block']==int(block)
-                      and r['arm']==arm)
-                  assert row['rawFcp'] >= 750
-                  with gzip.open(root/(block+'-'+arm+'.trace.json.gz'),'rt') as f:
-                      events = json.load(f)['traceEvents']
-                  nav = next(e for e in events if e['name']=='navigationStart'
-                      and e.get('args',{}).get('data',{}).get('isOutermostMainFrame')
-                      and e['args']['data'].get('documentLoaderURL') == target)
-                  zero = nav['ts']
-                  fcp = next(e for e in events if e['name']=='firstContentfulPaint'
-                      and e['ts']>=zero and e.get('args',{}).get('data',{}).get(
-                          'navigationId')==nav['args']['data']['navigationId'])
-                  assert abs((fcp['ts']-zero)/1000-row['rawFcp'])<150
-                  ms=lambda e:round((e['ts']-zero)/1000,1)
-                  before=[e for e in events if zero<=e['ts']<=fcp['ts']]
-                  pid=nav['pid']; main_tid=nav['tid']
-                  wanted=('RequestMainThreadFrame','BeginMainThreadFrame','DrawFrame',
-                      'NeedsBeginFrameChanged','DroppedFrame','RasterTask','BeginFrame',
-                      'BeginImplFrameToSendBeginMainFrame','AnimationFrame::Presentation',
-                      'TimerFire','FireAnimationFrame')
-                  by={x:sorted((e for e in before if e['name']==x and
-                      (e['pid']==pid or x in ('BeginFrame','AnimationFrame::Presentation'))),
-                      key=lambda e:e['ts']) for x in wanted}
-                  draws=by['DrawFrame'][-3:]
-                  def segment(lo,hi):
-                      if lo>=hi: return {}
-                      contained=[e for e in before if lo<=e['ts']<hi]
-                      count=Counter(e['name'] for e in contained)
-                      def busy(name,tid=None):
-                          return round(sum(max(0,min(hi,e['ts']+e.get('dur',0))-
-                              max(lo,e['ts'])) for e in contained if e['name']==name
-                              and (tid is None or e['tid']==tid))/1000,1)
-                      raster=[e.get('dur',0) for e in contained if e['name']=='RasterTask']
-                      return {'span':[round((lo-zero)/1000,1),round((hi-zero)/1000,1)],
-                          'begin':count['BeginFrame'],
-                          'implToMain':count['BeginImplFrameToSendBeginMainFrame'],
-                          'request':count['RequestMainThreadFrame'],
-                          'mainBegin':count['BeginMainThreadFrame'],
-                          'dropped':count['DroppedFrame'],
-                          'raster':count['RasterTask'],
-                          'rasterBusyMs':busy('RasterTask'),
-                          'rasterMaxMs':round(max(raster,default=0)/1000,1),
-                          'mainBusyMs':busy('RunTask',main_tid),
-                          'timers':count['TimerFire'],'rAF':count['FireAnimationFrame']}
-                  start=max(row['resources'][x] for x in ('css','avif','lastFont'))
-                  gaps=[segment(draws[i-1]['ts'],draws[i]['ts'])
-                      for i in range(1,len(draws))]
-                  def times(name,limit=10):
-                      xs=by[name]
-                      return [ms(e) for e in xs] if len(xs)<=limit else (
-                          [ms(e) for e in xs[:2]]+[None]+
-                          [ms(e) for e in xs[-(limit-2):]])
-                  result={'id':f'{mode}-{block}-{arm}',
-                      'fcp':row['rawFcp'],'ready':start,
-                      'draw':times('DrawFrame',6),
-                      'req':times('RequestMainThreadFrame'),
-                      'mainFrames':times('BeginMainThreadFrame'),
-                      'needs':times('NeedsBeginFrameChanged'),
-                      'gaps':gaps,
-                      'last300':segment(max(zero,fcp['ts']-300000),fcp['ts'])}
-                  emit('scheduler-'+mode+'-'+block+'-'+arm,result)
-                  if mode=='consent' and block=='01' and arm=='pre-denied':
-                      for name in ('RequestMainThreadFrame','BeginMainThreadFrame',
-                          'NeedsBeginFrameChanged','DroppedFrame','RasterTask',
-                          'AnimationFrame::Presentation'):
-                          xs=by.get(name,[])
-                          samples[name]=[{'ms':ms(e),'pid':e['pid'],'tid':e['tid'],
-                              'dur':round(e.get('dur',0)/1000,1),
-                              'args':e.get('args',{})} for e in xs[:1]]
-          emit('scheduler-event-args-sample',samples)
-          PY
+          if node scripts/diagnostics/lcp_paint_holding_temp.mjs > /tmp/milovi-paint-control.log 2>&1; then
+            cat /tmp/milovi-paint-control.log
+          else
+            cat /tmp/milovi-paint-control.log
+            echo "::error title=Paint-holding control failed::$(tail -n 12 /tmp/milovi-paint-control.log | tr '\n' ' ')"
+            exit 1
+          fi
+      - name: Verify deployed SHA again after measuring
+        if: always()
+        run: python3 scripts/production_release_smoke.py --retries 1
+      - name: Retain anonymous lab reports and traces outside Git
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: temporary-lcp-paint-control-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/milovi-lcp-paint-holding/
+          if-no-files-found: warn
+          retention-days: 21
