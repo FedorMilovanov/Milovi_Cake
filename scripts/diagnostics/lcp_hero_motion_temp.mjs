@@ -1,6 +1,7 @@
-// Temporary PR-only Lighthouse control; remove after recording results.
-// Exact live CDN, real Fonts, pinned Chrome. Only the hero animation declaration
-// differs between arms inside the laboratory tab. No production patch or field data.
+// Temporary PR-only Lighthouse controls; remove after recording results.
+// Exact live CDN, real Fonts, pinned Chrome. Motion mode changes only the hero
+// animation; consent mode pre-records denial in the lab tab so the dialog stays
+// closed. No production patch, analytics opt-in or field data.
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
@@ -12,15 +13,28 @@ const chromeLauncher = require('/tmp/milovi-lighthouse/node_modules/chrome-launc
 const puppeteer = require('/tmp/milovi-lighthouse/node_modules/puppeteer-core');
 const URL = 'https://milovicake.ru/prigorody/gatchina/';
 const RELEASE = 'e4cc47a5478a2cd1cc29096f51e310633919f3e2';
-const OUT = '/tmp/milovi-lh-motion-control';
-const ORDERS = [['original', 'animation-off'], ['animation-off', 'original'],
-  ['original', 'animation-off'], ['animation-off', 'original']];
+const CONTROL = process.env.LCP_CONTROL === 'consent' ? 'consent' : 'motion';
+const OUT = `/tmp/milovi-lh-${CONTROL}-control`;
+const comparisonArm = CONTROL === 'consent' ? 'pre-denied' : 'animation-off';
+const ORDERS = Array.from({length: CONTROL === 'consent' ? 8 : 4}, (_, i) =>
+  i % 2 === 0 ? ['original', comparisonArm] : [comparisonArm, 'original']);
 const round = n => Number.isFinite(n) ? Math.round(n * 10) / 10 : null;
 const median = values => { const s = [...values].sort((a, b) => a - b);
   return (s[Math.floor((s.length - 1) / 2)] + s[Math.floor(s.length / 2)]) / 2; };
 const notice = (title, obj) => console.log(`::notice title=${title}::${JSON.stringify(obj)}`);
 
 function initDocument(arm) {
+  // Lighthouse clears storage before navigating. A true fresh visit and a
+  // returning, already-denied visit must both keep analytics disabled. Only
+  // the modal auto-open differs; never grant consent or suppress the script.
+  let consentAtStart = null;
+  try {
+    if (location.origin === 'https://milovicake.ru') {
+      if (arm === 'pre-denied')
+        localStorage.setItem('milovi_analytics_consent_v1', 'denied');
+      consentAtStart = localStorage.getItem('milovi_analytics_consent_v1');
+    }
+  } catch (error) { consentAtStart = 'storage-error'; }
   function inject() {
     if (document.getElementById('__hero_motion_lab')) return;
     const root = document.head || document.documentElement;
@@ -28,11 +42,11 @@ function initDocument(arm) {
     const style = document.createElement('style');
     style.id = '__hero_motion_lab';
     const selector = '.hero--visible.hero--motion-ready .hero-photo-bg img';
-    // A is inert. B changes only the animation property, not opacity, preload or fonts.
+    // Both consent arms are inert here. Motion B changes only animation.
     style.textContent = selector + '{' + (arm === 'animation-off' ?
       'animation:none !important' : '--lcp-diagnostic-inert:0') + '}';
     root.appendChild(style);
-    window.__heroMotionLab = {arm, insertedMs: performance.now(),
+    window.__heroMotionLab = {arm, consentAtStart, insertedMs: performance.now(),
       insertionParent: root.tagName, milestones: []};
   }
   inject();
@@ -46,10 +60,13 @@ function initDocument(arm) {
   const stamp = kind => {
     const img = document.querySelector('.hero-photo-bg img');
     if (!window.__heroMotionLab) return;
+    const overlay = document.querySelector('.mc-consent-overlay');
     window.__heroMotionLab.milestones.push({kind, ms: Math.round(performance.now()),
       complete: img?.complete, width: img?.naturalWidth, inlineOpacity: img?.style.opacity,
       currentSrc: img?.currentSrc, animation: img && getComputedStyle(img).animationName,
       heroClass: img?.closest('.hero')?.className,
+      consentOpen: overlay && !overlay.hidden,
+      consentChoice: window.MiloviConsent?.getChoice(),
       fonts: document.fonts?.status, readyState: document.readyState});
   };
   document.addEventListener('DOMContentLoaded', () => stamp('domcontentloaded'), {once: true});
@@ -123,7 +140,13 @@ function summary(lhr, arm, block, pageData, trace) {
         x.currentSrc?.endsWith('/img/head_mobile.avif')) ||
       pageData.injection !== '.hero--visible.hero--motion-ready .hero-photo-bg img{' +
         (arm === 'animation-off' ? 'animation:none !important' : '--lcp-diagnostic-inert:0') + '}' ||
-      pageData.animation !== (arm === 'animation-off' ? 'none' : 'heroKenBurns')) {
+      pageData.animation !== (arm === 'animation-off' ? 'none' : 'heroKenBurns') ||
+      (CONTROL === 'consent' && (
+        pageData.lab.consentAtStart !== (arm === 'original' ? null : 'denied') ||
+        pageData.consent?.choice !== 'denied' ||
+        pageData.consent?.open !== (arm === 'original') ||
+        pageData.consent?.analyticsLoaded || pageData.consent?.bodyOpen !==
+          (arm === 'original')))) {
     throw Error('Invalid pinned live trial: ' + JSON.stringify(row));
   }
   return row;
@@ -150,20 +173,26 @@ async function trial(block, arm) {
     // currentSrc recorded at DOMContentLoaded/load, not post-audit currentSrc.
     const data = await page.evaluate(() => {
       const img = document.querySelector('.hero-photo-bg img');
+      const overlay = document.querySelector('.mc-consent-overlay');
       return {lab: window.__heroMotionLab || null,
         injection: document.getElementById('__hero_motion_lab')?.textContent,
         currentSrc: img?.currentSrc || '', animation: img && getComputedStyle(img).animationName,
-        opacity: img && getComputedStyle(img).opacity, heroClass: img?.closest('.hero')?.className};
+        opacity: img && getComputedStyle(img).opacity, heroClass: img?.closest('.hero')?.className,
+        consent: {choice: window.MiloviConsent?.getChoice(),
+          open: Boolean(overlay && !overlay.hidden && overlay.classList.contains('is-open')),
+          bodyOpen: document.body.classList.contains('mc-consent-open'),
+          analyticsLoaded: Boolean(document.querySelector('[data-milovi-ga], [data-milovi-ym]'))}};
     });
     const row = summary(result.lhr, arm, block, data, result.artifacts.Trace);
     const prefix = path.join(OUT, `${String(block).padStart(2, '0')}-${arm}`);
     fs.writeFileSync(prefix + '.lhr.json', JSON.stringify(result.lhr));
     fs.writeFileSync(prefix + '.trace.json.gz', zlib.gzipSync(
       JSON.stringify(result.artifacts.Trace), {level: 3}));
-    notice(`motion-${block}-${arm}`, {block, arm, sim: row.simLcp,
+    notice(`${CONTROL}-${block}-${arm}`, {block, arm, sim: row.simLcp,
       rawFcp: row.rawFcp, rawLcp: row.rawLcp, element: row.hero,
       resourceEnd: row.resources, animation: row.page.animation,
-      milestones: row.page.lab.milestones, frame: row.frame, cls: row.cls});
+      consent: row.page.consent, milestones: row.page.lab.milestones,
+      frame: row.frame, cls: row.cls});
     return row;
   } finally {
     await browser?.disconnect().catch(() => {});
@@ -179,11 +208,11 @@ async function main() {
   for (let block = 1; block <= ORDERS.length; block++) {
     for (const arm of ORDERS[block - 1]) rows.push(await trial(block, arm));
   }
-  if (rows.length !== 8 || new Set(rows.map(r => r.browser)).size !== 1)
+  if (rows.length !== ORDERS.length * 2 || new Set(rows.map(r => r.browser)).size !== 1)
     throw Error('Mismatched Chrome builds or incomplete comparison');
   const deltas = ORDERS.map((_, i) => {
     const a = rows.find(r => r.block === i + 1 && r.arm === 'original');
-    const b = rows.find(r => r.block === i + 1 && r.arm === 'animation-off');
+    const b = rows.find(r => r.block === i + 1 && r.arm === comparisonArm);
     return {block: i + 1, rawFcp: round(b.rawFcp - a.rawFcp),
       rawLcp: round(b.rawLcp - a.rawLcp), simLcp: round(b.simLcp - a.simLcp),
       sameLcpElement: a.hero === b.hero};
@@ -196,12 +225,12 @@ async function main() {
       warning: r.filter(x => x.simLcp > 2500).length,
       heroLcp: r.filter(x => x.hero.includes('hero-photo-bg')).length}];
   }));
-  const output = {release: RELEASE, browser: rows[0].browser,
+  const output = {release: RELEASE, browser: rows[0].browser, control: CONTROL,
     lighthouse: '12.6.1', label: 'paired lab CDP override on live CDN, NOT a deploy or field p75',
     group, deltas, rows};
   fs.writeFileSync(path.join(OUT, 'summary.json'), JSON.stringify(output, null, 2));
-  notice('motion-summary', {release: RELEASE, browser: output.browser, group, deltas,
+  notice(`${CONTROL}-summary`, {release: RELEASE, browser: output.browser, group, deltas,
     medianRawFcpDelta: round(median(deltas.map(x => x.rawFcp))),
-    offRawFcpFaster: deltas.filter(x => x.rawFcp < 0).length});
+    comparisonFaster: deltas.filter(x => x.rawFcp < 0).length});
 }
 main().catch(err => {console.error(err); process.exitCode = 1;});
