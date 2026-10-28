@@ -51,6 +51,19 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         self.assertIn('expect(blocked()', source)
         self.assertNotIn('continue-on-error', comparison)
 
+    def test_native_debugging_is_an_isolated_failure_only_investigation(self):
+        workflow = (ROOT / '.github/workflows/browser-compatibility.yml').read_text(encoding='utf-8')
+        native = workflow.split('  webkit-native-investigation:', 1)[1]
+        self.assertIn("needs.compatibility.result == 'failure'", native)
+        self.assertIn('ref: ${{ github.event.pull_request.head.sha }}', native)
+        self.assertIn('--cap-add=SYS_PTRACE', native)
+        self.assertIn('Verify debugger on a controlled native signal', native)
+        self.assertIn('received signal SIGABRT', native)
+        self.assertIn('Debugger attachment changes timing', native)
+        self.assertIn('--repeat-each=4 --workers=1 --retries=0', native)
+        self.assertIn('scripts/webkit_native_monitor.py summary', native)
+        self.assertNotIn('continue-on-error', native)
+
     def test_audio_investigation_uses_isolated_source_and_keeps_assertions(self):
         workflow = (ROOT / '.github/workflows/browser-compatibility.yml').read_text(encoding='utf-8')
         audio = workflow.split('  webkit-audio-investigation:', 1)[1]
