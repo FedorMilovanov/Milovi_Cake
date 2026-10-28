@@ -48,6 +48,7 @@ function initDocument(arm) {
     if (!window.__heroMotionLab) return;
     window.__heroMotionLab.milestones.push({kind, ms: Math.round(performance.now()),
       complete: img?.complete, width: img?.naturalWidth, inlineOpacity: img?.style.opacity,
+      currentSrc: img?.currentSrc, animation: img && getComputedStyle(img).animationName,
       heroClass: img?.closest('.hero')?.className,
       fonts: document.fonts?.status, readyState: document.readyState});
   };
@@ -116,12 +117,13 @@ function summary(lhr, arm, block, pageData, trace) {
       pageData.lab?.arm !== arm || !pageData.lab?.insertedMs ||
       pageData.lab?.insertedMs > 1200 ||
       pageData.lab?.insertedMs >= row.rawFcp ||
-      !pageData.lab?.milestones?.some(x => x.kind === 'domcontentloaded') ||
-      !pageData.lab?.milestones?.some(x => x.kind === 'load') ||
+      !pageData.lab?.milestones?.some(x => x.kind === 'domcontentloaded' &&
+        x.currentSrc?.endsWith('/img/head_mobile.avif')) ||
+      !pageData.lab?.milestones?.some(x => x.kind === 'load' &&
+        x.currentSrc?.endsWith('/img/head_mobile.avif')) ||
       pageData.injection !== '.hero--visible.hero--motion-ready .hero-photo-bg img{' +
         (arm === 'animation-off' ? 'animation:none !important' : '--lcp-diagnostic-inert:0') + '}' ||
-      pageData.animation !== (arm === 'animation-off' ? 'none' : 'heroKenBurns') ||
-      !pageData.currentSrc.endsWith('/img/head_mobile.avif')) {
+      pageData.animation !== (arm === 'animation-off' ? 'none' : 'heroKenBurns')) {
     throw Error('Invalid pinned live trial: ' + JSON.stringify(row));
   }
   return row;
@@ -144,6 +146,8 @@ async function trial(block, arm) {
       deviceScaleFactor: 1.75, disabled: false}, maxWaitForLoad: 45000};
     const result = await lighthouse(URL, flags, undefined, page);
     if (!result?.lhr || !result.artifacts?.Trace) throw Error('Missing Lighthouse result/trace');
+    // Lighthouse restores viewport emulation after gathering. Read the mobile
+    // currentSrc recorded at DOMContentLoaded/load, not post-audit currentSrc.
     const data = await page.evaluate(() => {
       const img = document.querySelector('.hero-photo-bg img');
       return {lab: window.__heroMotionLab || null,
