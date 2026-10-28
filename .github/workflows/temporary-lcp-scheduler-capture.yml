@@ -1,0 +1,65 @@
+# Temporary PR-only read-only browser experiment; delete after reviewing result.
+# Capture scheduler state, CC skip reasons, and exact resource completion times.
+name: Temporary LCP Chrome scheduler capture
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/temporary-lcp-scheduler-capture.yml
+      - scripts/diagnostics/lcp_scheduler_state_temp.mjs
+
+permissions:
+  contents: read
+
+jobs:
+  scheduler-state:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      EXPECTED_RELEASE_SHA: e4cc47a5478a2cd1cc29096f51e310633919f3e2
+    steps:
+      - name: Checkout exact PR-only diagnostic
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          cache: npm
+      - name: Verify published release and exact PR code before capture
+        run: |
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          python3 scripts/production_release_smoke.py --retries 2 --delay 5
+      - name: Install isolated Lighthouse tracing categories and pinned Chrome 155
+        run: |
+          npm install --prefix /tmp/milovi-lighthouse --no-save --ignore-scripts \
+            lighthouse@12.6.1 @puppeteer/browsers@3.2.6
+          /tmp/milovi-lighthouse/node_modules/.bin/browsers install \
+            chrome@155.0.8059.39 --path /tmp/milovi-browser
+          CHROME_PATH=/tmp/milovi-browser/chrome/linux-155.0.8059.39/chrome-linux64/chrome
+          test -x "$CHROME_PATH"
+          "$CHROME_PATH" --version | grep -F 155.0.8059.39
+          echo "CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
+      - name: Read Chrome scheduler state during natural late first paint
+        run: |
+          if node scripts/diagnostics/lcp_scheduler_state_temp.mjs \
+              > /tmp/milovi-scheduler-capture.log 2>&1; then
+            cat /tmp/milovi-scheduler-capture.log
+          else
+            cat /tmp/milovi-scheduler-capture.log
+            echo "::error title=Scheduler capture failed::$(tail -n 12 /tmp/milovi-scheduler-capture.log | tr '\n' ' ')"
+            exit 1
+          fi
+      - name: Verify same published release after capture
+        if: always()
+        run: python3 scripts/production_release_smoke.py --retries 1
+      - name: Retain anonymous lab trace outside Git
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: temporary-lcp-scheduler-state-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/milovi-lcp-scheduler-state/
+          if-no-files-found: warn
+          retention-days: 21
