@@ -1,68 +1,113 @@
-# Temporary PR-only display-mode control; delete with its runner after review.
-# Match mobile direct Chrome, real fonts and exact release in headless and Xvfb.
-# No Lighthouse, tracing or site edits.
-name: Temporary LCP display-mode control
+# Read-only review of two completed pinned-browser controls; remove after review.
+# No new site navigation or production/CI changes. Artifacts stay outside Git.
+name: Temporary LCP display and frame review
 
 on:
   pull_request:
     paths:
       - .github/workflows/temporary-lcp-timeline-review.yml
-      - scripts/diagnostics/lcp_paint_holding_temp.mjs
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
-  display-modes:
+  review:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 12
     env:
-      EXPECTED_RELEASE_SHA: e4cc47a5478a2cd1cc29096f51e310633919f3e2
+      GH_TOKEN: ${{ github.token }}
     steps:
-      - name: Checkout exact PR-only runner
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          persist-credentials: false
-      - name: Set up Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: '22.13.0'
-          cache: npm
-      - name: Verify unchanged deployed SHA before measuring
+      - name: Check recorded run and artifact provenance before downloading
+        shell: bash
         run: |
-          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
-          python3 scripts/production_release_smoke.py --retries 2 --delay 5
-      - name: Install isolated Lighthouse 12.6.1 and pinned Chrome 155
+          set -euo pipefail
+          repo="repos/${{ github.repository }}"
+          test "$(gh api "$repo/actions/runs/40692443886" --jq '.head_sha')" = \
+            '3347edbb0458e380e049cbf83ac05a4265ec3bbb'
+          test "$(gh api "$repo/actions/artifacts/12817971849" --jq '.digest')" = \
+            'sha256:2c4d04b1bfdabef3044f361a1d514456979b3c2e6eb16bb8fa285f0eedcc3b3e'
+          test "$(gh api "$repo/actions/runs/40694717120" --jq '.head_sha')" = \
+            'b55393559ff915c61d539b5f69c78c3b67e3d2e3'
+          test "$(gh api "$repo/actions/artifacts/12819595594" --jq '.digest')" = \
+            'sha256:4456f972f180dda3ae44e5d3688ea68e712d91b240c485be7e6bff07cbbb8092'
+          gh run download 40692443886 --repo "${{ github.repository }}" \
+            -n temporary-lcp-mode-control-40692443886-1 -D /tmp/lcp-mode
+          gh run download 40694717120 --repo "${{ github.repository }}" \
+            -n temporary-lcp-display-control-40694717120-1 -D /tmp/lcp-display
+      - name: Check all display pairs and replay recorded direct Chrome traces
+        shell: bash
         run: |
-          npm install --prefix /tmp/milovi-lighthouse --no-save --ignore-scripts \
-            lighthouse@12.6.1 @puppeteer/browsers@3.2.6
-          /tmp/milovi-lighthouse/node_modules/.bin/browsers install \
-            chrome@155.0.8059.39 --path /tmp/milovi-browser
-          CHROME_PATH=/tmp/milovi-browser/chrome/linux-155.0.8059.39/chrome-linux64/chrome
-          test -x "$CHROME_PATH"
-          "$CHROME_PATH" --version | grep -F 155.0.8059.39
-          echo "CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
-      - name: Compare headed and headless direct Chrome on a virtual display
-        run: |
-          command -v xvfb-run
-          command -v Xvfb
-          if xvfb-run -a -s '-screen 0 1920x1080x24' \
-              node scripts/diagnostics/lcp_paint_holding_temp.mjs > /tmp/milovi-display-control.log 2>&1; then
-            cat /tmp/milovi-display-control.log
-          else
-            cat /tmp/milovi-display-control.log
-            echo "::error title=Display-mode control failed::$(tail -n 12 /tmp/milovi-display-control.log | tr '\n' ' ')"
-            exit 1
-          fi
-      - name: Verify deployed SHA again after measuring
-        if: always()
-        run: python3 scripts/production_release_smoke.py --retries 1
-      - name: Retain anonymous lab reports and traces outside Git
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: temporary-lcp-display-control-${{ github.run_id }}-${{ github.run_attempt }}
-          path: /tmp/milovi-lcp-display-control/
-          if-no-files-found: warn
-          retention-days: 21
+          set -euo pipefail
+          python3 - <<'PY'
+          import gzip, json
+          from collections import Counter
+          from pathlib import Path
+          target='https://milovicake.ru/prigorody/gatchina/'
+          release='e4cc47a5478a2cd1cc29096f51e310633919f3e2'
+          display=json.loads(Path('/tmp/lcp-display/summary.json').read_text())
+          mode=json.loads(Path('/tmp/lcp-mode/summary.json').read_text())
+          assert display['release']==mode['release']==release
+          assert display['browser']==mode['browser']=='Chrome 155.0.8059.39'
+          assert len(display['rows'])==32 and len(mode['rows'])==24
+          def emit(title,obj):
+            print('::notice title='+title+'::'+json.dumps(obj,separators=(',',':')))
+          emit('all-16-display-pairs-summary',{x:display[x] for x in (
+            'group','pairedMedian','pairedDelta')})
+          for label,rows in (('display',display['rows']),('mode',mode['rows'])):
+            assert all(abs(r['lab']['paint']['ms']-r['rawFcp'])<150 and
+              r['lab']['paint']['visibility']=='visible' and
+              r['lab']['paint']['focused'] and
+              r['network']['css']>0 and r['network']['avif']>0 and
+              r['network']['fontFiles']>0 for r in rows)
+            counts=Counter(r['mode'] for r in rows if r['rawFcp']>=750)
+            emit(label+'-slow-count',dict(counts))
+          for block in range(1,17):
+            pair=[r for r in display['rows'] if r['block']==block]
+            assert {r['mode'] for r in pair}=={'headed','headless'}
+            if block in (1,4,8,12,16):
+              emit('display-pair-'+str(block),[{
+                'mode':r['mode'],'fcp':r['rawFcp'],
+                'dcl':next(x['ms'] for x in r['lab']['milestones']
+                  if x['kind']=='domcontentloaded'),
+                'raf':[[x['requested'],x['fired']] for x in r['lab']['raf'][:2]],
+                'visibility':r['lab']['initial'],
+                'changes':r['lab']['stateChanges']} for r in pair])
+          for block in (1,2,4,6,7,8):
+            r=next(r for r in mode['rows'] if r['block']==block and
+              r['mode']=='direct-traced')
+            with gzip.open(Path('/tmp/lcp-mode')/
+              (f'{block:02d}-direct-traced.trace.json.gz'),'rt') as f:
+              events=json.load(f)['traceEvents']
+            assert len(events)==r['traceEvents']>1000
+            nav=next(e for e in events if e['name']=='navigationStart' and
+              e.get('args',{}).get('data',{}).get('isOutermostMainFrame') and
+              e['args']['data'].get('documentLoaderURL')==target)
+            zero=nav['ts']
+            fcp=next(e for e in events if e['name']=='firstContentfulPaint'
+              and e['ts']>=zero and e.get('args',{}).get('data',{}).get(
+                'navigationId')==nav['args']['data']['navigationId'])
+            assert abs((fcp['ts']-zero)/1000-r['rawFcp'])<150
+            before=[e for e in events if zero<=e['ts']<=fcp['ts']]
+            draws=sorted((e for e in before if e['name']=='DrawFrame'),
+              key=lambda e:e['ts'])
+            last=draws[-1]['ts'] if draws else zero
+            waiting=[e for e in before if last<e['ts']<=fcp['ts']]
+            t=lambda e:round((e['ts']-zero)/1000,1)
+            names=Counter(e['name'] for e in waiting)
+            req=[e for e in waiting if e['name']=='RequestMainThreadFrame'
+              and e['pid']==nav['pid']]
+            # Tasks on renderer main, and renderer raster work during the gap.
+            busy=lambda name,tid=None:round(sum(e.get('dur',0) for e in waiting
+              if e['pid']==nav['pid'] and e['name']==name and
+              (tid is None or e['tid']==tid))/1000,1)
+            emit('direct-traced-frame-'+str(block),{
+              'fcp':r['rawFcp'],'lastDraw':round((last-zero)/1000,1),
+              'gap':round((fcp['ts']-last)/1000,1),
+              'request':[t(e) for e in req[-4:]],
+              'beginFrame':names['BeginFrame'],
+              'dropped':names['DroppedFrame'],
+              'rendererMainBusy':busy('RunTask',nav['tid']),
+              'rasterBusy':busy('RasterTask'),
+              'frameRelated':names.most_common(9)})
+          PY
