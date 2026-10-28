@@ -51,6 +51,20 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         self.assertIn('--repeat-each=4 --workers=1 --retries=0', audio)
         self.assertNotIn('continue-on-error', audio)
 
+    def test_base_comparison_is_separate_and_checks_exact_revisions(self):
+        workflow = (ROOT / '.github/workflows/browser-compatibility.yml').read_text(encoding='utf-8')
+        base = workflow.split('  webkit-base-investigation:', 1)[1]
+        self.assertIn("needs.compatibility.result == 'failure'", base)
+        self.assertIn('source: [head, base]', base)
+        self.assertIn('media: [normal, blocked]', base)
+        self.assertIn('BASE_SHA: ${{ github.event.pull_request.base.sha }}', base)
+        self.assertIn('HEAD_SHA: ${{ github.event.pull_request.head.sha }}', base)
+        self.assertIn('archive "$BASE_SHA"', base)
+        self.assertIn('reuseExistingServer: false', base)
+        self.assertIn('MILOVI_DIAGNOSTIC_BLOCK_VIDEO:', base)
+        self.assertIn('--repeat-each=4 --workers=1 --retries=0', base)
+        self.assertNotIn('continue-on-error', base)
+
     def test_webkit_storage_and_gallery_are_repeated_without_retries(self):
         workflow = (ROOT / '.github/workflows/browser-compatibility.yml').read_text(encoding='utf-8')
         for name in (

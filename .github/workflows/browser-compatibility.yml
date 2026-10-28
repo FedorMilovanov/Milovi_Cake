@@ -601,3 +601,105 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
           include-hidden-files: false
+
+  # Reference only: compare the PR and its base with the same real photo UI.
+  # A separate media-blocked lane is an experiment, not a primary test change.
+  webkit-base-investigation:
+    name: WebKit base comparison (${{ matrix.source }}, ${{ matrix.media }})
+    needs: compatibility
+    if: ${{ !cancelled() && needs.compatibility.result == 'failure' }}
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --shm-size=1g
+    timeout-minutes: 20
+    env:
+      HOME: /root
+      MILOVI_BROWSER_COMPAT: '1'
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+      DEBUG: pw:browser
+      DEBUG_COLORS: '0'
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [head, base]
+        media: [normal, blocked]
+    steps:
+      - name: Checkout exact PR head and base history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Setup pinned Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          cache: npm
+      - name: Setup Python for the local test server
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        with:
+          python-version: '3.12'
+      - name: Install project dependencies
+        run: npm ci
+      - name: Prepare isolated base comparison
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git -c safe.directory="$GITHUB_WORKSPACE" rev-parse HEAD)" = "$HEAD_SHA"
+          git -c safe.directory="$GITHUB_WORKSPACE" diff --exit-code
+          git -c safe.directory="$GITHUB_WORKSPACE" cat-file -e "$BASE_SHA^{commit}"
+          scratch="$RUNNER_TEMP/base-investigation"
+          mkdir -p "$scratch"
+          if [ '${{ matrix.source }}' = 'base' ]; then
+            # Release assets from exact base, plus the same HEAD tests/config.
+            git -c safe.directory="$GITHUB_WORKSPACE" archive "$BASE_SHA" | tar -x -C "$scratch"
+            cp -a tests "$scratch/tests"
+            cp playwright.config.js package.json "$scratch/"
+            source_sha="$BASE_SHA"
+          else
+            git -c safe.directory="$GITHUB_WORKSPACE" ls-files -z | tar --null -T - -cf - | tar -x -C "$scratch"
+            source_sha="$HEAD_SHA"
+          fi
+          ln -s "$GITHUB_WORKSPACE/node_modules" "$scratch/node_modules"
+          cat > "$scratch/base-playwright.config.cjs" <<'CONFIG'
+          const base = require('./playwright.config.js');
+          const storageState = require('./tests/analytics-denied.storage-state.json');
+          const oldOrigin = 'http://127.0.0.1:4173', newOrigin = 'http://127.0.0.1:4179';
+          if (!storageState.origins.some(entry => entry.origin === oldOrigin)) throw new Error('Missing original consent fixture');
+          storageState.origins = storageState.origins.map(entry => ({ ...entry, origin: entry.origin === oldOrigin ? newOrigin : entry.origin }));
+          module.exports = { ...base, use: { ...base.use, baseURL: newOrigin, storageState },
+            webServer: { ...base.webServer, command: 'python3 -m http.server 4179 --bind 127.0.0.1',
+              url: 'http://127.0.0.1:4179/gallery/', reuseExistingServer: false } };
+          CONFIG
+          echo "::notice title=Base comparison::site SHA $source_sha; HEAD tests; media ${{ matrix.media }}"
+      - name: Compare real photo interactions on base and head
+        shell: bash
+        id: base_tests
+        env:
+          MILOVI_DIAGNOSTIC_BLOCK_VIDEO: ${{ matrix.media == 'blocked' && '1' || '0' }}
+        run: |
+          set -o pipefail
+          cd "$RUNNER_TEMP/base-investigation"
+          npx playwright test tests/video-posters.spec.js --config=base-playwright.config.cjs \
+            --project=webkit-desktop --project=webkit-mobile \
+            --grep='photo-only gallery can repeatedly open and close without CDN' \
+            --repeat-each=4 --workers=1 --retries=0 --reporter=list,github \
+            2>&1 | tee "$RUNNER_TEMP/base-${{ matrix.source }}-${{ matrix.media }}.log"
+      - name: Summarize base comparison process events
+        if: failure() && steps.base_tests.outcome == 'failure'
+        run: python3 scripts/browser_log_summary.py "$RUNNER_TEMP/base-${{ matrix.source }}-${{ matrix.media }}.log"
+      - name: Upload base comparison artifacts
+        if: failure() && steps.base_tests.outcome == 'failure'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: webkit-base-${{ matrix.source }}-${{ matrix.media }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/base-investigation/test-results/
+            ${{ runner.temp }}/base-${{ matrix.source }}-${{ matrix.media }}.log
+          if-no-files-found: ignore
+          retention-days: 7
+          include-hidden-files: false

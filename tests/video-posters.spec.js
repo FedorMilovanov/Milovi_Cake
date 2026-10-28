@@ -779,10 +779,27 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     page.on('crash', () => { diagnostic.crashed = true; diagnostic.resources = browserCrashResources(); });
     try {
       await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+      // Only for a separately labelled CI comparison: prevent media decoding
+      // from the first navigation, before the visitor can choose photo-only.
+      const blockedMedia = process.env.MILOVI_DIAGNOSTIC_BLOCK_VIDEO === '1';
+      let blockedRequests = 0;
+      if (blockedMedia) {
+        await page.route(/\/img\/gallery\/videos\/[^?]+\.(?:webm|mp4)(?:\?|$)/, (route) => {
+          blockedRequests++;
+          return route.abort();
+        });
+      }
       await page.goto('/gallery/', { waitUntil: 'load' });
+      if (blockedMedia) {
+        await expect.poll(() => page.locator('#galleryGrid video').evaluateAll(
+          (videos) => videos.filter((video) => video.readyState >= 2 || !video.paused).length
+        )).toBe(0);
+      }
       await page.locator('.gx-chip[data-filter="photo"]').click();
       await expect(page.locator('#videoCount')).toHaveText('0 видео');
+      if (blockedMedia) diagnostic.blockedRequests = blockedRequests;
       await expect(page.locator('#galleryGrid')).not.toHaveAttribute('data-hydrating', 'true');
+      if (blockedMedia) await expect(page.locator('#galleryGrid video')).toHaveCount(0);
       const card = page.locator('#galleryGrid [data-id="p01"]');
       for (let i = 0; i < 2; i++) {
         await card.click();
@@ -791,6 +808,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
         await expect(page.locator('#lbRoot')).toHaveCount(0);
       }
       expect(diagnostic.errors).toEqual([]);
+      if (blockedMedia) console.log(`::notice title=Blocked-media precondition::${blockedRequests} video requests blocked; no grid video decoded or playing before filtering`);
     } catch (error) {
       diagnostic.resources ||= browserCrashResources();
       throw new Error(`${error.message}\nPhoto-only gallery diagnostics: ${JSON.stringify(diagnostic)}`, { cause: error });
