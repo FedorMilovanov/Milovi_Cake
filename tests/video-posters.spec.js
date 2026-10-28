@@ -3,7 +3,7 @@ const { test, expect } = require('@playwright/test');
 test('all gallery clips show their own lightweight, decodable frame before playback', async ({ page, request }) => {
   await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
   const reels = await page.evaluate(async () => {
-    const { GALLERY_ITEMS } = await import('/js/gallery/data.js?v=20261023r01');
+    const { GALLERY_ITEMS } = await import('/js/gallery/data.js?v=20261026r01');
     return GALLERY_ITEMS.filter(({ type }) => type === 'video');
   });
   expect(reels).toHaveLength(16);
