@@ -1,6 +1,8 @@
-// PR-only Chrome scheduler capture on the unchanged published Gatchina page.
-// Stops once both slow and fast raw FCP are observed; NOT a prevalence sample.
-// Delete this and its temporary workflow after reading the anonymous trace.
+// Temporary PR-only A/B: the same unchanged CDN page in Chrome 155 vs
+// pinned Chrome 158 before/after disabling its exact upstream Viz fix.
+// Only the new feature flag differs between the two Chrome 158 arms.
+// Lab FCP and Viz begin-frame reasons; NOT a field p75 or release candidate.
+// Delete with temporary workflow after reviewing the controls.
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
@@ -12,204 +14,154 @@ const launcher=require('/tmp/milovi-lighthouse/node_modules/chrome-launcher');
 const puppeteer=require('/tmp/milovi-lighthouse/node_modules/puppeteer-core');
 const URL='https://milovicake.ru/prigorody/gatchina/';
 const RELEASE='e4cc47a5478a2cd1cc29096f51e310633919f3e2';
-const OUT='/tmp/milovi-lcp-scheduler-state';
-const EXTRA=['renderer.scheduler','renderer.scheduler.status',
-  'disabled-by-default-renderer.scheduler.debug','cc',
-  'disabled-by-default-cc.debug.scheduler',
-  'disabled-by-default-cc.debug.scheduler.frames','viz','network.scheduler'];
+const FEATURE='NoUndrawnFrameThrottleWhileEmbedderWaits';
+const OUT='/tmp/milovi-lcp-upstream-control';
+const ARMS=['chrome155','chrome158-fixed','chrome158-fix-off'];
+const ORDERS=Array.from({length:12},(_,i)=>[
+  ARMS[i%3],ARMS[(i+1)%3],ARMS[(i+2)%3]]);
 const round=x=>Number.isFinite(x)?Math.round(x*10)/10:null;
-const notice=(title,data)=>console.log(`::notice title=${title}::${JSON.stringify(data)}`);
+const median=xs=>{const s=[...xs].sort((a,b)=>a-b);
+  return round((s[Math.floor((s.length-1)/2)]+s[Math.floor(s.length/2)])/2);};
+const notice=(title,obj)=>console.log(`::notice title=${title}::${JSON.stringify(obj)}`);
+const stored=new Map();
 
-function instrumentDocument(){
-  const lab=window.__frameLab={initial:{visibility:document.visibilityState,
-    focused:document.hasFocus()},raf:[],visibility:[],paint:null,milestones:[]};
-  const raf=window.requestAnimationFrame;
+function instrument(){
+  const lab=window.__lab={raf:[],paint:null,milestones:[],states:[]};
+  const native=window.requestAnimationFrame;
   window.requestAnimationFrame=function(callback){
     const requested=performance.now();
-    return raf.call(window,function(timestamp){
+    return native.call(window,function(ts){
       if(lab.raf.length<30)lab.raf.push({requested:Math.round(requested),
-        fired:Math.round(performance.now()),visibility:document.visibilityState});
-      return callback(timestamp);
+        fired:Math.round(performance.now()),visible:document.visibilityState});
+      return callback(ts);
     });
   };
   new PerformanceObserver(list=>{
-    for(const x of list.getEntries())if(x.name==='first-contentful-paint')
-      lab.paint={ms:Math.round(x.startTime),visibility:document.visibilityState,
+    for(const e of list.getEntries())if(e.name==='first-contentful-paint')
+      lab.paint={ms:Math.round(e.startTime),visible:document.visibilityState,
         focused:document.hasFocus()};
   }).observe({type:'paint',buffered:true});
-  document.addEventListener('visibilitychange',()=>lab.visibility.push({
-    ms:Math.round(performance.now()),value:document.visibilityState}));
-  for(const event of ['DOMContentLoaded','load']){
-    const target=event==='load'?window:document;
-    target.addEventListener(event,()=>{
+  document.addEventListener('visibilitychange',()=>lab.states.push({
+    ms:Math.round(performance.now()),state:document.visibilityState}));
+  for(const name of ['DOMContentLoaded','load']){
+    (name==='load'?window:document).addEventListener(name,()=>{
       const image=document.querySelector('.hero-photo-bg img');
-      lab.milestones.push({event,ms:Math.round(performance.now()),
+      lab.milestones.push({name,ms:Math.round(performance.now()),
         visible:document.visibilityState,focused:document.hasFocus(),
         hero:image?.currentSrc||'',complete:image?.complete,
-        naturalWidth:image?.naturalWidth});
+        width:image?.naturalWidth||0});
     },{once:true});
   }
 }
 
-function summariseTrace(events,observed,finished){
-  const nav=events.find(e=>e.name==='navigationStart' &&
-    e.args?.data?.isOutermostMainFrame && e.args.data.documentLoaderURL===URL);
-  if(!nav)throw Error('Exact outermost navigation missing in trace');
-  const fcp=events.find(e=>e.name==='firstContentfulPaint' && e.ts>nav.ts &&
+function inspect(events,rawFcp){
+  const nav=events.find(e=>e.name==='navigationStart'&&
+    e.args?.data?.isOutermostMainFrame&&e.args.data.documentLoaderURL===URL);
+  const fcp=events.find(e=>nav&&e.name==='firstContentfulPaint'&&e.ts>nav.ts&&
     e.args?.data?.navigationId===nav.args.data.navigationId);
-  if(!fcp||Math.abs((fcp.ts-nav.ts)/1000-observed)>150)
-    throw Error('Observed FCP and trace FCP disagree');
-  const ms=e=>round((e.ts-nav.ts)/1000);
+  if(!fcp||Math.abs((fcp.ts-nav.ts)/1000-rawFcp)>150)
+    throw Error('Observed paint and exact trace navigation disagree');
   const before=events.filter(e=>e.ts>=nav.ts&&e.ts<=fcp.ts);
-  const frames=before.filter(e=>e.name==='DrawFrame').sort((a,b)=>a.ts-b.ts);
-  const next=frames.at(-1)?.ts??fcp.ts, prior=frames.at(-2)?.ts??nav.ts;
-  const gap=before.filter(e=>e.ts>=prior&&e.ts<=next);
-  const requests=gap.filter(e=>e.name==='RequestMainThreadFrame'&&e.pid===nav.pid);
-  const frameBegins=gap.filter(e=>e.name==='BeginMainThreadFrame'&&e.pid===nav.pid);
-  const states=gap.filter(e=>e.name==='SchedulerStateMachine'&&
-    e.pid===nav.pid&&e.args?.cc_scheduler_state?.state_machine);
-  const snapshots=before.filter(e=>e.name==='MainThreadScheduler:snapshot'&&
-    e.pid===nav.pid&&e.tid===nav.tid);
-  const samples=[0,Math.floor(states.length/2),Math.max(states.length-1,0)]
-    .filter((index,pos,all)=>all.indexOf(index)===pos).map(index=>{
-      const e=states[index], s=e?.args?.cc_scheduler_state;
-      const major=s?.state_machine?.major_state||{},minor=s?.state_machine?.minor_state||{};
-      return e&&{ms:ms(e),next:major.next_action,
-        main:major.begin_main_frame_state,need:minor.needs_begin_main_frame,
-        defer:minor.defer_begin_main_frame,missed:minor.main_thread_missed_last_deadline,
-        canDraw:minor.can_draw,visible:minor.visible,
-        paused:minor.begin_frame_source_paused||s.begin_frame_source_state?.paused,
-        pending:minor.pending_submit_frames,first:minor.active_tree_needs_first_draw};
-    }).filter(Boolean);
-  const flagCounts={};
-  for(const e of states){const s=e.args.cc_scheduler_state.state_machine;
-    const key=`need:${s.minor_state?.needs_begin_main_frame}/defer:${s.minor_state?.defer_begin_main_frame}/next:${s.major_state?.next_action}`;
-    flagCounts[key]=(flagCounts[key]||0)+1;}
-  const queued=before.filter(e=>e.name==='LayerTreeHostImpl::DidNotProduceFrame'&&
-    e.pid===nav.pid && e.ts>=prior&&e.ts<=next);
-  const dropReasons={};for(const e of queued){const reason=e.args?.FrameSkippedReason||'unknown';
-    dropReasons[reason]=(dropReasons[reason]||0)+1;}
-  const timing=before.filter(e=>e.name==='SendBeginFrameDecision'&&
-    e.ts>=prior&&e.ts<=next);
-  const sendReasons={};for(const e of timing){const k=`${e.args?.reason}:${e.args?.should_send}`;
-    sendReasons[k]=(sendReasons[k]||0)+1;}
-  const nearbySnapshots=snapshots.filter(e=>e.ts>=prior-100000&&
-    e.ts<=next+100000);
-  const snapshotDetails=[nearbySnapshots[0],
-    nearbySnapshots[Math.floor(nearbySnapshots.length/2)],nearbySnapshots.at(-1)]
-    .filter((e,i,all)=>e&&all.indexOf(e)===i)
-    .map(e=>{const s=e.args.snapshot,p=s?.page_schedulers?.[0],
-      f=p?.frame_schedulers?.find(x=>x.frame_type==='MainFrame');
-      return{ms:ms(e),useCase:s?.current_use_case,
-        backgrounded:s?.renderer_backgrounded,hidden:s?.renderer_hidden,
-        batterySaver:s?.battery_saver_enabled,
-        virtualTime:s?.virtual_time,virtualStopped:s?.virtual_time_stopped,
-        pageVisible:p?.page_visible,frozen:p?.is_frozen,
-        frameVisible:f?.frame_visible,disableBgTimer:f?.disable_background_timer_throttling,
-        cpuBudgetEnabled:p?.cpu_time_budget_pool?.is_enabled};});
-  const duration=name=>round(gap.filter(e=>e.name===name&&e.pid===nav.pid)
+  const draws=before.filter(e=>e.name==='DrawFrame').sort((a,b)=>a.ts-b.ts);
+  const prev=draws.at(-2)?.ts??nav.ts,last=draws.at(-1)?.ts??fcp.ts;
+  const gap=before.filter(e=>e.ts>=prev&&e.ts<=last);
+  const reasonCount=(subset)=>{
+    const result={};for(const e of subset.filter(e=>e.name==='SendBeginFrameDecision')){
+      const reason=e.args?.reason;
+      if(reason)result[`${reason}:${e.args?.should_send}`]=
+        (result[`${reason}:${e.args?.should_send}`]||0)+1;
+    }return result;
+  };
+  const t=e=>round((e.ts-nav.ts)/1000);
+  const throttled=before.filter(e=>e.name==='SendBeginFrameDecision'&&
+    e.args?.reason==='ThrottleUndrawnFrames'&&e.args?.should_send===false);
+  const awaited=before.filter(e=>e.name==='SendBeginFrameDecision'&&
+    e.args?.reason==='SendAwaitedByEmbedder'&&e.args?.should_send===true);
+  const busy=name=>round(gap.filter(e=>e.name===name&&e.pid===nav.pid)
     .reduce((sum,e)=>sum+(e.dur||0),0)/1000);
-  const request=requests.at(-1);
-  const aroundRequest=before.filter(e=>request&&
-    e.pid===nav.pid&&e.ts>=request.ts-10000&&e.ts<request.ts+2000)
-    .sort((a,b)=>a.ts-b.ts).slice(-16).map(e=>[e.name,ms(e)]);
-  const possibleWakeups=gap.filter(e=>e.pid===nav.pid&&
-    /TimerFire|FireAnimationFrame|ScheduleAnimation|SetNeedsCommit|ResourceFinish/.test(e.name))
-    .slice(-18).map(e=>[e.name,ms(e)]);
-  return{traceFcp:ms(fcp),priorDraw:round((prior-nav.ts)/1000),
-    nextDraw:round((next-nav.ts)/1000),gapMs:round((next-prior)/1000),
-    beginFrame:gap.filter(e=>e.name==='BeginFrame').length,
+  return {traceFcp:t(fcp),gapMs:round((last-prev)/1000),
+    previousDraw:round((prev-nav.ts)/1000),nextDraw:round((last-nav.ts)/1000),
+    requests:gap.filter(e=>e.name==='RequestMainThreadFrame'&&e.pid===nav.pid)
+      .map(t).slice(-3),
+    begin:gap.filter(e=>e.name==='BeginFrame').length,
     dropped:gap.filter(e=>e.name==='DroppedFrame').length,
-    request:requests.map(ms).slice(-4),mainFrames:frameBegins.map(ms).slice(-4),
     mainBusyMs:round(gap.filter(e=>e.name==='RunTask'&&e.pid===nav.pid&&
       e.tid===nav.tid).reduce((sum,e)=>sum+(e.dur||0),0)/1000),
-    rasterBusyMs:duration('RasterTask'),
-    resourceEnd:finished.filter(e=>e.timestamp*1e6>=nav.ts&&
-      e.timestamp*1e6<=fcp.ts).map(e=>[e.name,round((e.timestamp*1e6-nav.ts)/1000)]).slice(-20),
-    skipped:dropReasons,
-    sent:sendReasons,schedulerSamples:samples,flags:flagCounts,
-    snapshots:snapshotDetails,schedulerStateCount:states.length,
-    nearRequest:aroundRequest,wakeups:possibleWakeups,
-    eventCount:events.length};
+    rasterBusyMs:busy('RasterTask'),vizReasons:reasonCount(gap),
+    allVizReasons:reasonCount(before),
+    throttled:[throttled[0]&&t(throttled[0]),
+      throttled.at(-1)&&t(throttled.at(-1))],
+    awaited:[awaited[0]&&t(awaited[0]),awaited.at(-1)&&t(awaited.at(-1))],
+    traceEvents:events.length};
 }
 
-async function visit(number){
-  const chromeFlags=[...launcher.Launcher.defaultFlags(),
-    '--disable-setuid-sandbox','--headless=new','--no-sandbox','--disable-dev-shm-usage'];
-  const chrome=await launcher.launch({chromePath:process.env.CHROME_PATH,
-    chromeFlags,ignoreDefaultFlags:true,logLevel:'error'});
+async function trial(block,arm){
+  const chromePath=process.env[arm==='chrome155'?'CHROME_155_PATH':'CHROME_158_PATH'];
+  const chromeFlags=[...launcher.Launcher.defaultFlags()].map(f=>
+    arm==='chrome158-fix-off'&&f.startsWith('--disable-features=')?
+      `${f},${FEATURE}`:f).concat(['--disable-setuid-sandbox',
+      '--headless=new','--no-sandbox','--disable-dev-shm-usage']);
+  const chrome=await launcher.launch({chromePath,chromeFlags,
+    ignoreDefaultFlags:true,logLevel:'error'});
   let browser,session;
   try{
     browser=await puppeteer.connect({browserURL:`http://127.0.0.1:${chrome.port}`,
       defaultViewport:null});
-    const page=await browser.newPage();
-    await page.bringToFront();
+    const version=await browser.version();
+    const major=arm==='chrome155'?'155':'158';
+    if(!version.includes(`/${major}.`))throw Error('Unexpected Chrome version: '+version);
+    const page=await browser.newPage();await page.bringToFront();
     await page.setViewport({width:412,height:915,deviceScaleFactor:1.75,
       isMobile:true,hasTouch:true});
-    await page.evaluateOnNewDocument(instrumentDocument);
+    await page.evaluateOnNewDocument(instrument);
     const responses=[];
     page.on('response',r=>responses.push({url:r.url(),status:r.status()}));
     session=await page.createCDPSession();
-    const requestUrls=new Map(),finished=[];
-    session.on('Network.requestWillBeSent',e=>requestUrls.set(e.requestId,e.request.url));
-    session.on('Network.loadingFinished',e=>{
-      const url=requestUrls.get(e.requestId)||'';
-      const type=['/css/style.css','/img/head_mobile.avif','/img/head_mobile.webp',
-        '/js/main.js','fonts.googleapis.com','fonts.gstatic.com']
-        .find(needle=>url.includes(needle));
-      if(type)finished.push({name:type,timestamp:e.timestamp});
-    });
-    await session.send('Network.enable');
-    const supported=(await session.send('Tracing.getCategories')).categories;
-    const enabled=EXTRA.filter(cat=>supported.includes(cat));
-    const missing=EXTRA.filter(cat=>!supported.includes(cat));
-    const alternatives=enabled.includes('disabled-by-default-cc.debug.scheduler')?[]:
-      ['cc.debug','disabled-by-default-cc.debug','scheduler',
-        'disabled-by-default-renderer.scheduler','renderer.scheduler']
-        .filter(cat=>supported.includes(cat)&&!enabled.includes(cat));
-    if(number===1)notice('scheduler-trace-categories',{enabled,missing,
-      alternatives,available:supported.filter(cat=>/schedul|^cc/.test(cat))});
-    if(!enabled.includes('disabled-by-default-cc.debug.scheduler')&&
-      !alternatives.includes('cc.debug')&&
-      !alternatives.includes('disabled-by-default-cc.debug'))
-      throw Error('Chrome 155 has no scheduler state category: '+missing.join(','));
-    const categories=[...Trace.getDefaultTraceCategories(),...enabled,...alternatives];
-    const chunks=[];
-    session.on('Tracing.dataCollected',event=>chunks.push(...event.value));
-    const done=new Promise(resolve=>session.once('Tracing.tracingComplete',resolve));
-    await session.send('Tracing.start',{categories:categories.join(','),
+    const traceEvents=[];
+    session.on('Tracing.dataCollected',e=>traceEvents.push(...e.value));
+    const complete=new Promise(resolve=>session.once('Tracing.tracingComplete',resolve));
+    await session.send('Tracing.start',{categories:[
+      ...Trace.getDefaultTraceCategories(),'viz','cc'].join(','),
       options:'sampling-frequency=10000'});
     await page.goto(URL,{waitUntil:'load',timeout:60000});
-    // The node-side wait must not request frames or mutate the page.
-    await new Promise(resolve=>setTimeout(resolve,3500));
-    await session.send('Tracing.end');await done;
-    const lab=await page.evaluate(()=>window.__frameLab||null);
-    const state=await page.evaluate(()=>({consent:window.MiloviConsent?.getChoice(),
+    // No page-side frame requests or polling by the diagnostic.
+    await new Promise(resolve=>setTimeout(resolve,3600));
+    await session.send('Tracing.end');await complete;
+    const lab=await page.evaluate(()=>window.__lab||null);
+    const state=await page.evaluate(()=>({
+      consent:window.MiloviConsent?.getChoice(),
       dialog:Boolean(document.querySelector('.mc-consent-overlay.is-open')),
-      focused:document.hasFocus(),visibility:document.visibilityState,
       hero:document.querySelector('.hero-photo-bg img')?.currentSrc||'',
-      browser:navigator.userAgent}));
-    const net=needle=>responses.filter(r=>r.url.includes(needle)&&r.status===200).length;
-    const resourceCounts={css:net('/css/style.css'),avif:net('/img/head_mobile.avif'),
-      webp:net('/img/head_mobile.webp'),main:net('/js/main.js'),
-      fontCss:net('fonts.googleapis.com'),woff:net('fonts.gstatic.com')};
+      visible:document.visibilityState,focused:document.hasFocus(),
+      userAgent:navigator.userAgent}));
+    const count=needle=>responses.filter(x=>x.status===200&&
+      x.url.includes(needle)).length;
+    const resources={css:count('/css/style.css'),
+      avif:count('/img/head_mobile.avif'),
+      webp:count('/img/head_mobile.webp'),main:count('/js/main.js'),
+      fontCss:count('fonts.googleapis.com'),woff:count('fonts.gstatic.com')};
     const rawFcp=lab?.paint?.ms;
-    const trace=summariseTrace(chunks,rawFcp,finished);
-    const row={number,rawFcp,lab,state,resourceCounts,trace};
-    if(!rawFcp||lab.paint.visibility!=='visible'||!lab.paint.focused||
-      !lab.milestones.some(x=>x.event==='DOMContentLoaded'&&
-        x.hero.endsWith('/img/head_mobile.avif')&&x.complete)||
-      !lab.milestones.some(x=>x.event==='load'&&
+    const trace=inspect(traceEvents,rawFcp);
+    const row={block,arm,version,rawFcp,
+      flags:chromeFlags.filter(x=>x.startsWith('--disable-features=')),
+      lab,state,resources,trace};
+    if(!rawFcp||lab.paint.visible!=='visible'||!lab.paint.focused||
+      !lab.milestones.some(x=>x.name==='DOMContentLoaded'&&
         x.hero.endsWith('/img/head_mobile.avif'))||
-      state.consent!=='denied'||!state.dialog||!state.focused||
-      state.visibility!=='visible'||!state.browser.includes('Chrome/155.')||
-      Object.values(resourceCounts).some(value=>value<1)||
-      trace.eventCount<1000)
-      throw Error('Invalid cold visit: '+JSON.stringify(row));
-    if(rawFcp>=750||number===1){
-      const stem=path.join(OUT,`${number}-${rawFcp}`);
-      fs.writeFileSync(stem+'.trace.json.gz',zlib.gzipSync(
-        JSON.stringify({traceEvents:chunks}),{level:3}));
+      !lab.milestones.some(x=>x.name==='load'&&
+        x.hero.endsWith('/img/head_mobile.avif')&&x.complete&&x.width===768)||
+      state.visible!=='visible'||!state.focused||
+      !state.hero.endsWith('/img/head_mobile.avif')||
+      state.consent!=='denied'||!state.dialog||
+      Object.values(resources).some(x=>x<1)||
+      !state.userAgent.includes(`Chrome/${major}.`)||trace.traceEvents<1000)
+      throw Error('Invalid cold Chrome visit: '+JSON.stringify(row));
+    const bucket=`${arm}:${rawFcp>=750?'late':'fast'}`;
+    const kept=stored.get(bucket)||0;
+    if(kept<(rawFcp>=750?2:1)){
+      stored.set(bucket,kept+1);
+      fs.writeFileSync(path.join(OUT,`${block}-${arm}-${rawFcp}.trace.json.gz`),
+        zlib.gzipSync(JSON.stringify({traceEvents}),{level:3}));
     }
     return row;
   }finally{
@@ -220,27 +172,41 @@ async function visit(number){
 }
 
 async function main(){
-  if(!process.env.CHROME_PATH||!fs.existsSync(process.env.CHROME_PATH))
-    throw Error('Pinned Chrome 155 not installed');
+  for(const key of ['CHROME_155_PATH','CHROME_158_PATH'])
+    if(!process.env[key]||!fs.existsSync(process.env[key]))
+      throw Error('Missing pinned browser: '+key);
   fs.mkdirSync(OUT,{recursive:true});
   const rows=[];
-  for(let number=1;number<=20;number++){
-    const row=await visit(number);rows.push(row);
-    fs.writeFileSync(path.join(OUT,'summary.json'),JSON.stringify({
-      release:RELEASE,browser:'Chrome 155.0.8059.39',
-      label:'anonymous laboratory; selection stops after 3 slow and 3 fast',rows},null,2));
-    if(row.rawFcp>=750||number===1)
-      notice(`scheduler-visit-${number}`,{fcp:row.rawFcp,
-        raf:row.lab.raf.slice(0,3),milestones:row.lab.milestones,
-        resources:row.resourceCounts,trace:row.trace});
-    const slow=rows.filter(x=>x.rawFcp>=750).length;
-    const fast=rows.length-slow;
-    if(slow>=3&&fast>=3)break;
+  for(let i=0;i<ORDERS.length;i++){
+    const sample=[];
+    for(const arm of ORDERS[i]){
+      const row=await trial(i+1,arm);rows.push(row);sample.push({
+        arm,rawFcp:row.rawFcp,oldThrottle:row.trace.allVizReasons['ThrottleUndrawnFrames:false']||0,
+        newFix:row.trace.allVizReasons['SendAwaitedByEmbedder:true']||0});
+      fs.writeFileSync(path.join(OUT,'summary.json'),JSON.stringify({
+        release:RELEASE,browsers:['155.0.8059.39','158.0.8117.2'],
+        label:'raw laboratory; not simulated Lighthouse or field p75',rows},null,2));
+      globalThis.gc?.();
+    }
+    if((i+1)%3===0)notice(`upstream-blocks-${i-1}-${i+1}`,sample);
   }
-  const slow=rows.filter(x=>x.rawFcp>=750).length;
-  notice('scheduler-sample',{release:RELEASE,visits:rows.length,slow,
-    fast:rows.length-slow,fcp:rows.map(x=>x.rawFcp),
-    caveat:'Selected until both frame states seen; not incidence or field p75'});
-  if(slow<1)throw Error('No late raw frame reproduced; control inconclusive');
+  if(rows.length!==36)throw Error('Incomplete 12-block three-arm control');
+  const group=Object.fromEntries(ARMS.map(arm=>{
+    const selected=rows.filter(r=>r.arm===arm);
+    return[arm,{rawFcp: selected.map(r=>r.rawFcp),
+      median:median(selected.map(r=>r.rawFcp)),
+      late:selected.filter(r=>r.rawFcp>=750).length,
+      over2500:selected.filter(r=>r.rawFcp>2500).length,
+      throttleCount:selected.reduce((s,r)=>s+(r.trace.allVizReasons['ThrottleUndrawnFrames:false']||0),0),
+      awaitedCount:selected.reduce((s,r)=>s+(r.trace.allVizReasons['SendAwaitedByEmbedder:true']||0),0)}];
+  }));
+  const differences=Array.from({length:12},(_,i)=>{
+    const r=arm=>rows.find(x=>x.block===i+1&&x.arm===arm).rawFcp;
+    return {block:i+1,fixOffMinusFixed:r('chrome158-fix-off')-r('chrome158-fixed'),
+      fixedMinus155:r('chrome158-fixed')-r('chrome155')};
+  });
+  notice('upstream-feature-summary',{release:RELEASE,group,differences,
+    medianFixEffect:median(differences.map(d=>d.fixOffMinusFixed)),
+    caveat:'same published release, different lab browser; not field p75 or CI threshold'});
 }
 main().catch(error=>{console.error(error);process.exitCode=1;});
