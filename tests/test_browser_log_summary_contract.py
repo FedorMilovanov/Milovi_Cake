@@ -37,6 +37,16 @@ class BrowserLogSummaryContractTest(unittest.TestCase):
         self.assertIn('event 40 WebContent process crashed', summary)
         self.assertIn('76 matching events omitted', summary)
 
+    def test_automation_warning_does_not_displace_signal_or_overflow_notice(self):
+        warning = ('pw:browser [pid=42][err] ** CRITICAL ** WebKitWebView '
+                   'is-controlled-by-automation set but automation is not allowed ' + 'я%' * 80)
+        events = [warning + str(i) for i in range(100)]
+        events[50] = 'pw:browser [pid=99] <process did exit: exitCode=null, signal=SIGABRT>'
+        summary = summarize_browser_log('\n'.join(events))
+        self.assertIn('signal=SIGABRT', summary)
+        self.assertIn('matching events omitted', summary)
+        self.assertLessEqual(len(github_notice(summary).encode('utf-8')), 3600)
+
 
 if __name__ == '__main__':
     unittest.main()

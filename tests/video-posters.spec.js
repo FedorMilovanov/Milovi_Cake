@@ -144,6 +144,32 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       await page.locator('#lbClose').click();
       await expect(page.locator('#galleryGrid [data-id="v01"] video')).toHaveAttribute('src', /video-01-knigi\.webm/);
       expect(errors).toEqual([]);
+    } catch (error) {
+      // Keep the assertion and the gated image unchanged. If it fails, capture
+      // whether the main thread and animation frames are still progressing.
+      let snapshotTimer;
+      const snapshot = await Promise.race([
+        page.evaluate(async () => {
+          const grid = document.querySelector('#galleryGrid');
+          const active = document.querySelector('#lbWrapper .swiper-slide-active video');
+          const details = {
+            readyState: document.readyState, visibility: document.visibilityState,
+            hydrating: grid?.getAttribute('data-hydrating'), cards: grid?.children.length,
+            total: document.querySelector('#gxTotalCount')?.textContent,
+            gridVideosWithSource: grid?.querySelectorAll('video[src]').length,
+            activeVideoPaused: active?.paused ?? null,
+          };
+          let frames = 0, done = false;
+          const tick = () => { frames++; if (!done) requestAnimationFrame(tick); };
+          requestAnimationFrame(tick);
+          await new Promise((resolve) => setTimeout(resolve, 750));
+          done = true;
+          return { ...details, animationFramesIn750ms: frames };
+        }).catch((failure) => ({ snapshotError: String(failure) })),
+        new Promise((resolve) => { snapshotTimer = setTimeout(() => resolve({ snapshotError: 'page did not respond within 2.5s' }), 2500); }),
+      ]);
+      clearTimeout(snapshotTimer);
+      throw new Error(`${error.message}\nGallery hydration diagnostics: ${JSON.stringify({ blockedImages, snapshot, errors })}`, { cause: error });
     } finally {
       releaseImage();
     }
