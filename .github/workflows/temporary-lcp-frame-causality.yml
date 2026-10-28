@@ -1,0 +1,124 @@
+# Temporary PR-only readout of previously saved Chrome traces; remove after review.
+# No new browser visit, no visitor data, no production or permanent CI change.
+name: Temporary first-frame causality readout
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/temporary-lcp-frame-causality.yml
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  readout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Verify saved trace provenance and download on the GitHub runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(gh api repos/${{ github.repository }}/actions/runs/40567596181 --jq '.head_sha')" = \
+            'db8f0bc50c8a3098416361486fd581a945c3a06e'
+          test "$(gh api repos/${{ github.repository }}/actions/artifacts/12764705132 --jq '.digest')" = \
+            'sha256:c55b561757d0ab798f5fc10b2dcd232996a34adeb3a9bd14d097e6cc9a2e0f7c'
+          gh run download 40567596181 --repo "${{ github.repository }}" \
+            -n temporary-lcp-frame-trace-40567596181-1 -D /tmp/milovi-frame-cause
+      - name: Align each navigation, DOM lifecycle and image/script callbacks on one timeline
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import collections, gzip, json
+          root = Path('/tmp/milovi-frame-cause')
+          summary = json.loads((root / 'summary.json').read_text())
+          assert summary['release'] == 'e4cc47a5478a2cd1cc29096f51e310633919f3e2'
+          assert summary['browser'].startswith('155.')
+          rows = sorted((r for r in summary['rows'] if r['page'] == 'gatchina'),
+              key=lambda r: r['rawFcp'])
+          assert len(rows) == 4
+          def notice(title, obj):
+              print(f'::notice title={title}::' + json.dumps(obj, ensure_ascii=False))
+          for row in (rows[0], rows[-1]):
+              phase = 'fast' if row is rows[0] else 'slow'
+              with gzip.open(root / (row['run'] + '-0.trace.json.gz'), 'rt') as f:
+                  events = json.load(f)['traceEvents']
+              navs = [e for e in events if e['name'] == 'navigationStart' and
+                  e.get('args', {}).get('data', {}).get('isOutermostMainFrame') and
+                  e['args']['data'].get('documentLoaderURL', '').endswith('/prigorody/gatchina/')]
+              assert navs
+              nav = navs[0]
+              zero = nav['ts']
+              nid = nav['args']['data']['navigationId']
+              frame = nav['args']['data'].get('frame')
+              fcp = next(e for e in events if e['name'] == 'firstContentfulPaint' and
+                  e['ts'] >= zero and e.get('args', {}).get('data', {}).get('navigationId') == nid)
+              assert abs((fcp['ts']-zero)/1000-row['rawFcp']) < 150
+              ms = lambda e: round((e['ts'] - zero) / 1000, 1)
+              limit = fcp['ts'] + 100000
+              selected = [e for e in events if zero <= e['ts'] <= limit]
+              req = {e.get('args', {}).get('data', {}).get('requestId'):
+                  e.get('args', {}).get('data', {}) for e in selected
+                  if e['name'] == 'ResourceSendRequest'}
+              resources = []
+              for e in selected:
+                  if e['name'] not in ('ResourceSendRequest','ResourceFinish'):
+                      continue
+                  d = e.get('args', {}).get('data', {})
+                  original = req.get(d.get('requestId'), {})
+                  url = original.get('url', '')
+                  if any(needle in url for needle in ('head_mobile.avif','/js/main.js',
+                      'fonts.gstatic.com','/css/style.css')):
+                      resources.append({'name':e['name'], 'ms':ms(e), 'url':url.split('?')[0]
+                          .replace('https://milovicake.ru',''),
+                          'frame':d.get('frame') or original.get('frame'),
+                          'encoded':d.get('encodedDataLength')})
+              lifecycle = []
+              for e in selected:
+                  d = e.get('args', {}).get('data', {})
+                  if (e['name'] in ('MarkDOMContent', 'MarkLoad') or
+                      (e['name'] == 'EventDispatch' and d.get('type') in
+                      ('DOMContentLoaded','readystatechange'))):
+                      lifecycle.append({'name':e['name'], 'ms':ms(e),
+                          'frame':d.get('frame'), 'main':d.get('isOutermostMainFrame'),
+                          'type':d.get('type')})
+              javascript = []
+              for e in selected:
+                  if (e['pid'] != nav['pid'] or e['tid'] != nav['tid'] or
+                      e['name'] not in ('EvaluateScript','FunctionCall')):
+                      continue
+                  d = e.get('args', {}).get('data', {})
+                  if '/js/main.js' in d.get('url',''):
+                      javascript.append({'name':e['name'], 'ms':ms(e),
+                          'durMs':round(e.get('dur',0)/1000,1),
+                          'frame':d.get('frame'), 'line':d.get('lineNumber'),
+                          'function':d.get('functionName')})
+              fade_handlers = [e for e in javascript if e['name'] == 'FunctionCall'
+                  and 940 <= (e['line'] or 0) <= 955]
+              # This counts only trace-visible callback invocations, not branches of EvaluateScript.
+              names = collections.Counter(e['name'] for e in selected)
+              notice(phase + '-frames', {'run':row['run'], 'rawFcp':row['rawFcp'],
+                  'navFrame':frame,'navId':nid,'navigationStarts':[
+                  {'ms':ms(e), 'frame':e['args']['data'].get('frame'),
+                   'navId':e['args']['data'].get('navigationId')}
+                  for e in navs[:4]], 'lifecycle':lifecycle[:24]})
+              notice(phase + '-resources', {'run':row['run'], 'events':resources[:26]})
+              notice(phase + '-script', {'run':row['run'],
+                  'initialScript':javascript[:3], 'fadeCallbacks':fade_handlers,
+                  'beforeFcpScriptCalls':sum(e['name']=='FunctionCall' and e['ms'] < row['rawFcp']
+                      for e in javascript), 'eventCount':{k:names[k] for k in
+                      ('EvaluateScript','FunctionCall','MarkDOMContent','MarkLoad')}})
+              stage = ('BeginMainThreadFrame','UpdateLayoutTree','Layout','PrePaint',
+                  'Paint','DrawFrame','RasterTask','ImageDecodeTask','DecodeImage')
+              bins=[]
+              for lo in range(0,int(row['rawFcp'])+1,150):
+                  c=collections.Counter(e['name'] for e in selected if
+                      zero+lo*1000 <= e['ts'] < min(fcp['ts'],zero+(lo+150)*1000))
+                  bins.append([lo, {k:c[k] for k in stage if c[k]}])
+              notice(phase + '-render-bins', {'run':row['run'],'bins':bins})
+          PY
