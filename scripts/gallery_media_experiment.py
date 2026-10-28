@@ -27,8 +27,12 @@ REPLACEMENTS = (
         '    try { releaseGridVideo(v); } catch(e){}\n  }\n  state.observer=new IntersectionObserver',
     ),
     (
-        "$$('#galleryGrid video').forEach(v => v.pause());",
-        "$$('#galleryGrid video').forEach(releaseGridVideo);",
+        "  // Pause grid videos\n"
+        "  if(state.observer) state.observer.disconnect();\n"
+        "  $$('#galleryGrid video').forEach(v => v.pause());",
+        "  // Pause grid videos\n"
+        "  if(state.observer) state.observer.disconnect();\n"
+        "  $$('#galleryGrid video').forEach(releaseGridVideo);",
     ),
 )
 

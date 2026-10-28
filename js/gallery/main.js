@@ -6,6 +6,7 @@ const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
 const SIZE_MAP = { tall: '1x2', wide: '2x1', big: '2x2', m: '1x1' };
 const PHONE_CARD_MEDIA = '(max-width: 430px) and (max-resolution: 1.75dppx)';
 const PHONE_CARD_IDS = new Set(['p05', 'p06', 'p09', 'p12', 'p18']);
+const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
 const GRID_RENDER_BATCH_SIZE = 6;
 const filterButtons = [
   { id: 'all', label: 'Все' }, { id: 'photo', label: 'Фото' }, { id: 'video', label: 'Видео' },
@@ -15,7 +16,7 @@ const filterButtons = [
 ];
 const CONTACT_PHONE = '79119038886';
 const TELEGRAM_USERNAME = 'milovi_cake';
-const state = { filter:'all', items:[], visible:[], swiper:null, lbIndex:0, observer:null, bgTimer:null, isNavigating: false, mediaWarmupTimer: null, gridRenderToken: 0 };
+const state = { filter:'all', items:[], visible:[], swiper:null, lbIndex:0, observer:null, bgTimer:null, mediaWarmupTimer: null, gridRenderToken: 0 };
 
 
 function esc(s=''){ return String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
@@ -23,6 +24,13 @@ function esc(s=''){ return String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':
 function phoneCardAvifFor(item) {
   if (!item || !PHONE_CARD_IDS.has(item.id) || !/\.webp(\?|$)/i.test(item.src || '')) return '';
   return item.src.replace(/\.webp(\?|$)/i, '-card.avif$1');
+}
+
+function enablePhotoFallback(img) {
+  const picture = img.parentElement;
+  const fallback = () => picture.querySelectorAll('source').forEach(source => source.remove());
+  img.addEventListener('error', fallback, { once: true });
+  if (img.complete && !img.naturalWidth) fallback();
 }
 
 /* Wrap WebP cards and lightbox photos in an AVIF-aware picture. */
@@ -45,6 +53,7 @@ function wrapInPictureWithAvif(img) {
   source.srcset = avifSrc;
   picture.appendChild(source);
   picture.appendChild(img);
+  enablePhotoFallback(img);
   return picture;
 }
 
@@ -140,20 +149,13 @@ function renderGrid(){
   const reuseStaticLcp = state.filter === 'all' && staticCard && visibleItems[0]?.id === staticCard.dataset.id;
   if (reuseStaticLcp) {
     Array.from(grid.children).forEach(child => { if (child !== staticCard) child.remove(); });
-    staticCard.dataset.index = '0';
   } else {
     grid.innerHTML='';
   }
-  if(empty) {
-    // FIX r24: HTML has inline style="display:none". JS was only toggling .hidden attr,
-    // but inline style overrides CSS rules. Fix: removeProperty so CSS takes full control.
-    if (visibleItems.length > 0) {
-      empty.hidden = true;
-      empty.style.removeProperty('display');
-    } else {
-      empty.hidden = false;
-      empty.style.removeProperty('display');
-    }
+  if (empty) {
+    empty.hidden = visibleItems.length > 0;
+    // Clear the inline display:none so the hidden attribute controls visibility.
+    empty.style.removeProperty('display');
   }
   if(!visibleItems.length) {
     grid.removeAttribute('data-hydrating');
@@ -170,6 +172,7 @@ function renderGrid(){
       const item=visibleItems[index];
       if (reuseStaticLcp && index === 0) {
         if (staticCard.dataset.hydrated !== 'true') {
+          enablePhotoFallback($('img', staticCard));
           staticCard.addEventListener('click',()=>openLightbox(0));
           attachCardTilt(staticCard);
           staticCard.dataset.hydrated = 'true';
@@ -182,7 +185,6 @@ function renderGrid(){
       // Animation is handled by CSS now (added to fixes), but we keep delay for stagger
       if(index<4) card.style.animation='none';
       else card.style.animationDelay=`${Math.min(index*0.04, 1.2)}s`;
-      card.dataset.index=String(index);
       card.dataset.id=item.id;
       card.setAttribute('aria-label',`${item.title}. Открыть в 3D-галерее`);
       if(item.type==='video') {
@@ -204,7 +206,6 @@ function renderGrid(){
         img.loading=index<4?'eager':'lazy';
         img.decoding='async';
         if(index===0) img.fetchPriority='high';
-        img.onerror=()=>{ if(img.src!==item.src) img.src=item.src; };
         /* r18: premium skeleton — soft golden shimmer until the image loads, then fade in */
         card.classList.add('is-loading');
         var _reveal=function(){ card.classList.remove('is-loading'); card.classList.add('is-loaded'); };
@@ -272,7 +273,7 @@ function attachCardTilt(card){
 }
 function setupVideoObserver(){ 
   if(state.observer) state.observer.disconnect(); 
-  if(!('IntersectionObserver' in window) || $('#lbRoot')) return;
+  if(!('IntersectionObserver' in window) || $('#lbRoot') || motionPreference.matches) return;
   /* r16 perf: on Save-Data or slow (2g) connections, keep posters only and skip
      auto-downloading grid videos (each is ~1–2.5 MB). Saves mobile data. */
   var conn = navigator.connection || navigator.webkitConnection || navigator.mozConnection;
@@ -294,7 +295,7 @@ function setupVideoObserver(){
     try { v.pause(); } catch(e){}
   }
   state.observer=new IntersectionObserver(entries=>{
-    if($('#lbRoot')) return; // A queued observer callback may arrive after opening.
+    if ($('#lbRoot') || motionPreference.matches) return; // Callbacks can arrive after either state changes.
     entries.forEach(entry=>{
       const v=entry.target; 
       if(entry.isIntersecting){ 
@@ -356,7 +357,6 @@ function openLightbox(index){
   state.visible.forEach((item,i)=>{ 
     const slide=document.createElement('div'); 
     slide.className='swiper-slide'; 
-    slide.dataset.index = String(i);
     const wrap=document.createElement('div'); 
     wrap.className='lb-media-wrap'; 
     if(item.type==='video'){ 
@@ -383,11 +383,13 @@ function openLightbox(index){
       img.alt=item.title; 
       img.decoding='async';
       img.fetchPriority = i === index ? 'high' : 'auto';
-      img.dataset.previewSrc = item.src;
       img.dataset.fullSrc = item.fullSrc || item.src;
       img.dataset.resolved = (item.fullSrc && item.fullSrc !== item.src) ? 'preview' : 'full';
       if (img.dataset.resolved === 'preview') img.classList.add('is-preview');
-      img.onerror=()=>{ if(img.src!==item.src) img.src=item.src; wrap.classList.remove('is-loading'); }; 
+      img.onerror = () => {
+        if (!img.parentElement?.querySelector('source') && img.getAttribute('src') !== item.src) img.src = item.src;
+        wrap.classList.remove('is-loading');
+      };
       wrap.appendChild(wrapInPictureWithAvif(img)); 
     } 
     slide.appendChild(wrap); 
@@ -655,13 +657,6 @@ function ensureSlideMedia(index, priority = 'auto') {
 }
 function warmupLightboxMedia(index) {
   clearTimeout(state.mediaWarmupTimer);
-  /* r34: #27 — cancel stale video preloads from previous slides */
-  $$('#lbWrapper .swiper-slide').forEach(function(slide, i) {
-    if (Math.abs(i - index) > 2) {
-      var v = slide.querySelector('video[preload="low"]');
-      if (v && !v.paused) { v.pause(); }
-    }
-  });
   ensureSlideMedia(index, 'high');
   ensureSlideMedia(index - 1, 'auto');
   ensureSlideMedia(index + 1, 'auto');
@@ -716,7 +711,15 @@ function closeLightbox(updateState = true){
   state.lbReturnFocus = null;
   closeLightbox._skipObserverRestore = false;
 }
-function boot(){ 
+function boot(){
+  const onMotionChange = () => {
+    if (motionPreference.matches) {
+      state.observer?.disconnect();
+      $$('#galleryGrid video').forEach(v => v.pause());
+    } else setupVideoObserver();
+  };
+  if (motionPreference.addEventListener) motionPreference.addEventListener('change', onMotionChange);
+  else motionPreference.addListener(onMotionChange);
   const seal = $('#gxSeal');
   if(seal) seal.innerHTML=luxeSeal(); 
   state.items=buildInterleavedItems(); 

@@ -110,7 +110,8 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
   });
 
   test('late gallery load does not restart grid videos behind the open lightbox', async ({ page }) => {
-    await page.emulateMedia({ reducedMotion: 'reduce' });
+    // This race is only observable when grid autoplay is permitted.
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
     let releaseImage;
     let blockedImages = 0;
@@ -176,7 +177,8 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
   });
 
   test('queued grid observer callbacks do not restart video after opening', async ({ page }) => {
-    await page.emulateMedia({ reducedMotion: 'reduce' });
+    // This race is only observable when grid autoplay is permitted.
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
     // Hold real intersection entries until after the user's click, modelling
     // a callback already queued when the lightbox disconnects the observer.
@@ -215,9 +217,276 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     expect(errors).toEqual([]);
   });
 
+  for (const legacyListener of [false, true]) {
+    test(`gallery grid respects changing reduced-motion preference (${legacyListener ? 'legacy' : 'modern'} listener)`, async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+      if (legacyListener) {
+        // Safari before 14 exposes addListener, but not addEventListener, on MediaQueryList.
+        await page.addInitScript(() => {
+          const nativeMatchMedia = window.matchMedia.bind(window);
+          window.matchMedia = (query) => {
+            const list = nativeMatchMedia(query);
+            if (query === '(prefers-reduced-motion: reduce)') {
+              Object.defineProperty(list, 'addEventListener', { value: undefined });
+            }
+            return list;
+          };
+        });
+      }
+      const errors = [];
+      page.on('pageerror', (error) => errors.push(error.message));
+      const response = await page.goto('/gallery/', { waitUntil: 'load' });
+      expect(response.status()).toBe(200);
+      await expect(page.locator('#galleryGrid')).not.toHaveAttribute('data-hydrating', 'true');
+      const gridVideos = page.locator('#galleryGrid video');
+      await expect(gridVideos).toHaveCount(16);
+      // Observe past the initial intersection delivery, not just the HTML parse.
+      await page.waitForTimeout(1000);
+      expect(await gridVideos.evaluateAll((videos) => videos.filter((video) => video.hasAttribute('src') || !video.paused).length)).toBe(0);
+
+      const card = page.locator('#galleryGrid [data-id="v01"]');
+      await card.click();
+      const active = page.locator('#lbWrapper .swiper-slide-active video');
+      await expect(active).toBeVisible();
+      await expect.poll(() => active.evaluate((video) => !video.paused && video.readyState >= 2)).toBe(true);
+      // An explicit click starts the selected video, but changing the system
+      // preference while the lightbox is open must not restart the grid.
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
+      await page.waitForTimeout(500);
+      expect(await gridVideos.evaluateAll((videos) => videos.filter((video) => video.hasAttribute('src') || !video.paused).length)).toBe(0);
+      await page.locator('#lbClose').click();
+      const firstVideo = card.locator('video');
+      await expect(firstVideo).toHaveAttribute('src', /video-01-knigi\.webm/);
+      await expect.poll(() => firstVideo.evaluate((video) => !video.paused)).toBe(true);
+
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await expect.poll(() => gridVideos.evaluateAll((videos) => videos.filter((video) => !video.paused).length)).toBe(0);
+      await page.waitForTimeout(500);
+      expect(await gridVideos.evaluateAll((videos) => videos.filter((video) => !video.paused).length)).toBe(0);
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
+      await expect.poll(() => firstVideo.evaluate((video) => !video.paused)).toBe(true);
+      expect(errors).toEqual([]);
+    });
+  }
+
+  test('queued grid observer callbacks respect a newly reduced-motion preference', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+    await page.addInitScript(() => {
+      const NativeObserver = window.IntersectionObserver;
+      const gate = window.__motionObserverGate = { pending: [], hold: true };
+      window.IntersectionObserver = class extends NativeObserver {
+        constructor(callback, options) {
+          super((entries, observer) => {
+            if (gate.hold && entries.some((entry) => entry.isIntersecting && entry.target.closest('#galleryGrid'))) {
+              gate.pending.push(() => callback(entries, observer));
+            } else callback(entries, observer);
+          }, options);
+        }
+      };
+    });
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    const response = await page.goto('/gallery/', { waitUntil: 'load' });
+    expect(response.status()).toBe(200);
+    await page.waitForFunction(() => window.__motionObserverGate.pending.length > 0);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.waitForFunction(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
+    await page.evaluate(() => {
+      const gate = window.__motionObserverGate;
+      gate.hold = false;
+      gate.pending.splice(0).forEach((deliver) => deliver());
+    });
+    const gridVideos = page.locator('#galleryGrid video');
+    expect(await gridVideos.evaluateAll((videos) => videos.filter((video) => video.hasAttribute('src') || !video.paused).length)).toBe(0);
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await expect(page.locator('#galleryGrid [data-id="v01"] video')).toHaveAttribute('src', /video-01-knigi\.webm/);
+    expect(errors).toEqual([]);
+  });
+
+  test('static gallery photo recovers if AVIF fails before the module loads', async ({ page }) => {
+    await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+    let releaseModule;
+    const gate = new Promise((resolve) => { releaseModule = resolve; });
+    const requests = [];
+    page.on('request', (request) => {
+      if (/\/img\/gallery\/gallery-01\.(avif|webp)$/.test(new URL(request.url()).pathname)) {
+        requests.push(new URL(request.url()).pathname);
+      }
+    });
+    await page.route(/\/js\/gallery\/main\.js(?:\?|$)/, async (route) => {
+      await gate;
+      await route.continue();
+    });
+    await page.route(/\/img\/gallery\/gallery-01\.avif(?:\?|$)/, (route) =>
+      route.fulfill({ status: 404, body: 'Image unavailable' }));
+    try {
+      const response = await page.goto('/gallery/', { waitUntil: 'commit' });
+      expect(response.status()).toBe(200);
+      const image = page.locator('#galleryGrid [data-id="p01"] img');
+      await expect.poll(() => image.evaluate((img) => img.complete && img.naturalWidth === 0)).toBe(true);
+      expect(requests.some((url) => url.endsWith('.avif'))).toBe(true);
+      releaseModule();
+      await expect.poll(() => image.evaluate((img) => img.naturalWidth)).toBeGreaterThan(0);
+      await expect.poll(() => image.evaluate((img) => img.currentSrc)).toContain('/img/gallery/gallery-01.webp');
+      await page.waitForTimeout(500);
+      expect(requests.filter((url) => url.endsWith('.avif')).length).toBeLessThanOrEqual(2);
+    } finally {
+      releaseModule();
+    }
+  });
+
+  test('lightbox photo uses HD WebP if HD AVIF is unavailable', async ({ page }) => {
+    await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+    let avifRequests = 0;
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await page.route(/\/img\/gallery\/gallery-01-hd\.avif(?:\?|$)/, async (route) => {
+      avifRequests++;
+      await route.fulfill({ status: 404, body: 'Image unavailable' });
+    });
+    await page.goto('/gallery/', { waitUntil: 'load' });
+    await page.locator('#galleryGrid [data-id="p01"]').click();
+    const image = page.locator('#lbWrapper .swiper-slide-active img');
+    await expect.poll(() => image.evaluate((img) => img.naturalWidth)).toBeGreaterThan(0);
+    await expect.poll(() => image.evaluate((img) => img.currentSrc)).toContain('/img/gallery/gallery-01-hd.webp');
+    await page.waitForTimeout(500);
+    expect(avifRequests).toBeGreaterThan(0);
+    expect(avifRequests).toBeLessThanOrEqual(2);
+    expect(errors).toEqual([]);
+  });
+
+  test('lightbox keeps the preview if the HD warmup fails', async ({ page }) => {
+    await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+    let hdRequests = 0;
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await page.route(/\/img\/gallery\/gallery-01-hd\.webp(?:\?|$)/, async (route) => {
+      hdRequests++;
+      await route.fulfill({ status: 404, body: 'Image unavailable' });
+    });
+    await page.goto('/gallery/', { waitUntil: 'load' });
+    await page.locator('#galleryGrid [data-id="p01"]').click();
+    const image = page.locator('#lbWrapper .swiper-slide-active img');
+    await expect.poll(() => hdRequests).toBeGreaterThan(0);
+    await expect.poll(() => image.evaluate((img) => img.naturalWidth)).toBeGreaterThan(0);
+    await expect.poll(() => image.evaluate((img) => img.currentSrc)).toMatch(/\/img\/gallery\/gallery-01\.(avif|webp)$/);
+    await page.waitForTimeout(500);
+    expect(hdRequests).toBeLessThanOrEqual(2);
+    expect(errors).toEqual([]);
+  });
+
+  for (const webpAlsoFails of [false, true]) {
+    test(`gallery photo fallback stops after ${webpAlsoFails ? 'both formats fail' : 'AVIF fails'}`, async ({ page }) => {
+      await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+      const requests = [];
+      const errors = [];
+      page.on('request', (request) => {
+        if (/\/img\/gallery\/gallery-02\.(avif|webp)$/.test(new URL(request.url()).pathname)) {
+          requests.push(new URL(request.url()).pathname);
+        }
+      });
+      page.on('pageerror', (error) => errors.push(error.message));
+      await page.route(/\/img\/gallery\/gallery-02\.(avif|webp)(?:\?|$)/, async (route) => {
+        if (route.request().url().includes('.avif') || webpAlsoFails) {
+          await route.fulfill({ status: 404, body: 'Image unavailable' });
+        } else await route.continue();
+      });
+      const response = await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
+      expect(response.status()).toBe(200);
+      const image = page.locator('#galleryGrid [data-id="p02"] img');
+      await expect.poll(() => image.evaluate((img) => ({ complete: img.complete, hasPixels: img.naturalWidth > 0 })))
+        .toEqual({ complete: true, hasPixels: !webpAlsoFails });
+      if (!webpAlsoFails) {
+        await expect.poll(() => image.evaluate((img) => img.currentSrc)).toContain('/img/gallery/gallery-02.webp');
+      }
+      await expect(image.locator('..').locator('source')).toHaveCount(0);
+      // Leave enough time to detect an error handler re-requesting an unavailable source.
+      await page.waitForTimeout(500);
+      expect(requests.filter((url) => url.endsWith('.avif')).length).toBeGreaterThan(0);
+      expect(requests.filter((url) => url.endsWith('.webp')).length).toBeGreaterThan(0);
+      expect(requests.length).toBeLessThanOrEqual(3);
+      expect(errors).toEqual([]);
+    });
+  }
+
+  test.describe('low-density phone photo fallback', () => {
+    test.use({ deviceScaleFactor: 1 });
+
+    test('a missing mobile AVIF falls back to the photo WebP', async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+      let mobileRequests = 0;
+      await page.route(/\/img\/gallery\/gallery-05-card\.avif(?:\?|$)/, async (route) => {
+        mobileRequests++;
+        await route.fulfill({ status: 404, body: 'Image unavailable' });
+      });
+      const response = await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
+      expect(response.status()).toBe(200);
+      const image = page.locator('#galleryGrid [data-id="p05"] img');
+      await image.scrollIntoViewIfNeeded();
+      await expect.poll(() => image.evaluate((img) => img.naturalWidth)).toBeGreaterThan(0);
+      await expect.poll(() => image.evaluate((img) => img.currentSrc)).toContain('/img/gallery/gallery-05.webp');
+      await expect(image.locator('..').locator('source')).toHaveCount(0);
+      await page.waitForTimeout(500);
+      expect(mobileRequests).toBe(1);
+    });
+  });
+
+  test('gallery empty state can be reset after a category has no works', async ({ page }) => {
+    await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+    await page.route(/\/js\/gallery\/data\.js(?:\?|$)/, async (route) => {
+      const response = await route.fetch();
+      const source = await response.text();
+      const marker = "tags: ['pavlova']";
+      expect(source.split(marker)).toHaveLength(3);
+      await route.fulfill({ response, body: source.replaceAll(marker, 'tags: []') });
+    });
+    const response = await page.goto('/gallery/', { waitUntil: 'load' });
+    expect(response.status()).toBe(200);
+    await page.locator('#gxFilters [data-filter="pavlova"]').click();
+    await expect(page.locator('#gxEmpty')).toBeVisible();
+    await expect(page.locator('#galleryGrid .card')).toHaveCount(0);
+    await page.locator('#resetFilter').click();
+    await expect(page.locator('#gxEmpty')).toBeHidden();
+    await expect(page.locator('#galleryGrid .card')).toHaveCount(46);
+  });
+
+  test('gallery video warmup uses valid preload values when switching works', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await page.goto('/gallery/', { waitUntil: 'load' });
+    await page.locator('#galleryGrid [data-id="v01"]').click();
+    await expect(page.locator('#lbCounter')).toHaveText('02 / 46');
+    await page.locator('#lbThumbs .lb-thumb').nth(4).click();
+    await expect(page.locator('#lbCounter')).toHaveText('05 / 46');
+    const active = page.locator('#lbWrapper .swiper-slide-active video');
+    await expect(active).toBeVisible();
+    await expect.poll(() => active.evaluate((video) => !video.paused)).toBe(true);
+    const videoStates = await page.locator('#lbWrapper video').evaluateAll((videos) => videos.map((video) => ({
+      preload: video.getAttribute('preload'), paused: video.paused, active: video.closest('.swiper-slide-active') !== null,
+    })));
+    expect(videoStates.every((video) => ['auto', 'metadata'].includes(video.preload))).toBe(true);
+    expect(videoStates.filter((video) => !video.paused).every((video) => video.active)).toBe(true);
+    await page.locator('#lbThumbs .lb-thumb').nth(1).click();
+    await expect(page.locator('#lbCounter')).toHaveText('02 / 46');
+    await expect.poll(() => page.locator('#lbWrapper .swiper-slide-active video').evaluate((video) => !video.paused)).toBe(true);
+    expect(errors).toEqual([]);
+  });
+
   test('gallery can close an active video and reopen without CDN', async ({ page }) => {
     const errors = [];
     const diagnostic = { crashed: false };
+    const imageRequests = new Map();
+    page.on('request', (request) => {
+      const path = new URL(request.url()).pathname;
+      if (/^\/img\/gallery\/.*\.(avif|webp)$/.test(path)) {
+        imageRequests.set(path, (imageRequests.get(path) || 0) + 1);
+      }
+    });
     page.on('pageerror', (error) => errors.push(error.message));
     page.on('crash', () => { diagnostic.crashed = true; diagnostic.resources = browserCrashResources(); });
     try {
@@ -249,6 +518,8 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       expect(errors).toEqual([]);
     } catch (error) {
       diagnostic.resources ||= browserCrashResources();
+      diagnostic.repeatedImages = [...imageRequests.entries()].filter(([, count]) => count > 1)
+        .sort((a, b) => b[1] - a[1]).slice(0, 8);
       throw new Error(`${error.message}\nGallery video diagnostics: ${JSON.stringify({ ...diagnostic, errors })}`, { cause: error });
     }
   });

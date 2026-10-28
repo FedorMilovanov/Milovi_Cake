@@ -19,7 +19,7 @@ class GalleryMediaExperimentContractTest(unittest.TestCase):
         self.assertIn("$$('#galleryGrid video').forEach(releaseGridVideo);", result)
         self.assertIn('if (old && old !== v) { try { old.pause(); } catch(e){} }', result)
         self.assertIn('if(!v.src&&v.dataset.src)v.src=v.dataset.src;', result)
-        self.assertIn('if($(\'#lbRoot\')) return;', result)
+        self.assertIn("if ($('#lbRoot') || motionPreference.matches) return;", result)
         # Undo the exact edits and prove every unrelated byte was preserved.
         restored = result
         for old, new in reversed(REPLACEMENTS):
@@ -27,13 +27,21 @@ class GalleryMediaExperimentContractTest(unittest.TestCase):
             restored = restored.replace(new, old, 1)
         self.assertEqual(restored, source)
 
+    def test_unrelated_grid_pause_is_not_replaced(self):
+        source = (ROOT / 'js/gallery/main.js').read_text(encoding='utf-8')
+        source += "\nfunction unrelatedPause(){ $$('#galleryGrid video').forEach(v => v.pause()); }\n"
+        result = release_offscreen_grid_media(source)
+        self.assertIn("function unrelatedPause(){ $$('#galleryGrid video').forEach(v => v.pause()); }", result)
+        self.assertIn("  // Pause grid videos\n  if(state.observer) state.observer.disconnect();\n  $$('#galleryGrid video').forEach(releaseGridVideo);", result)
+
     def test_missing_or_duplicate_marker_fails_closed(self):
         source = (ROOT / 'js/gallery/main.js').read_text(encoding='utf-8')
-        marker = REPLACEMENTS[0][0]
-        with self.assertRaises(ValueError):
-            release_offscreen_grid_media(source.replace(marker, 'function renamedObserver(){'))
-        with self.assertRaises(ValueError):
-            release_offscreen_grid_media(source + '\n' + marker)
+        for marker, _ in REPLACEMENTS:
+            with self.subTest(marker=marker):
+                with self.assertRaises(ValueError):
+                    release_offscreen_grid_media(source.replace(marker, 'missing marker'))
+                with self.assertRaises(ValueError):
+                    release_offscreen_grid_media(source + '\n' + marker)
         with self.assertRaises(ValueError):
             release_offscreen_grid_media(source + '\nfunction releaseGridVideo(v) {}')
 

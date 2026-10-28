@@ -68,12 +68,17 @@ async function measure(browser, kind) {
   storageState.origins[0].origin = new URL(origin).origin;
   const context = await browser.newContext({ ...device, storageState, serviceWorkers: 'block' });
   const evidence = { engine, variant, kind, phases: {}, requests: 0, requestFailures: [], pageErrors: [] };
+  const imageRequests = new Map();
   let page;
   try {
     page = await context.newPage();
     page.on('pageerror', (error) => evidence.pageErrors.push(error.message));
     page.on('request', (request) => {
       if (request.url().includes('/img/gallery/videos/')) evidence.requests++;
+      const path = new URL(request.url()).pathname;
+      if (/^\/img\/gallery\/.*\.(avif|webp)$/.test(path)) {
+        imageRequests.set(path, (imageRequests.get(path) || 0) + 1);
+      }
     });
     page.on('requestfailed', (request) => {
       if (request.url().includes('/img/gallery/videos/')) evidence.requestFailures.push(request.failure()?.errorText || 'unknown');
@@ -152,6 +157,8 @@ async function measure(browser, kind) {
     }
     console.log(`::notice title=Gallery media lifecycle::${escapeAnnotation(JSON.stringify(evidence))}`);
   } catch (error) {
+    evidence.repeatedImages = [...imageRequests.entries()].filter(([, count]) => count > 1)
+      .sort((a, b) => b[1] - a[1]).slice(0, 8);
     if (page && !page.isClosed()) {
       try { evidence.last = await snapshot(page); } catch (snapshotError) { evidence.snapshotError = snapshotError.message; }
     }
