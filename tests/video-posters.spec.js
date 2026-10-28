@@ -298,12 +298,19 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       expect(await info.evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe('none');
       await page.evaluate(() => {
         window.__galleryScrollKeys = [];
+        window.__galleryFocusTrace = [];
         document.addEventListener('keydown', (event) => {
           if (event.key !== 'ArrowDown' && event.key !== 'PageDown') return;
           const key = event.key;
           const target = event.target?.className || event.target?.nodeName;
           // Observe cancellation after every handler has had a chance to run.
           setTimeout(() => window.__galleryScrollKeys.push({ key, target, defaultPrevented: event.defaultPrevented }), 0);
+        }, { capture: true });
+        document.addEventListener('focusin', (event) => {
+          if (!event.target.closest?.('#lbRoot')) return;
+          const region = document.querySelector('.lb-info');
+          window.__galleryFocusTrace.push({ target: event.target.id || event.target.className,
+            scrollTop: region.scrollTop, bounds: event.target.getBoundingClientRect().toJSON() });
         }, { capture: true });
       });
       await page.keyboard.press('ArrowDown');
@@ -335,11 +342,31 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
         await page.keyboard.press('Tab');
       }
       await expect(copy).toBeFocused();
-      await expect.poll(() => copy.evaluate((el) => {
-        const bounds = el.getBoundingClientRect();
-        const container = el.closest('.lb-info').getBoundingClientRect();
-        return bounds.top >= container.top - 1 && bounds.bottom <= container.bottom + 1;
-      })).toBe(true);
+      try {
+        await expect.poll(() => copy.evaluate((el) => {
+          const bounds = el.getBoundingClientRect();
+          const container = el.closest('.lb-info').getBoundingClientRect();
+          return bounds.top >= container.top - 1 && bounds.bottom <= container.bottom + 1;
+        })).toBe(true);
+      } catch (error) {
+        const diagnostic = await page.evaluate(() => {
+          const control = document.querySelector('#lbCopy');
+          const region = document.querySelector('.lb-info');
+          const describe = (element) => {
+            const style = getComputedStyle(element);
+            return { bounds: element.getBoundingClientRect().toJSON(), scrollTop: element.scrollTop,
+              scrollHeight: element.scrollHeight, clientHeight: element.clientHeight,
+              overflowY: style.overflowY, transform: style.transform, fontSize: style.fontSize,
+              lineHeight: style.lineHeight, visibility: style.visibility };
+          };
+          return { viewport: { width: innerWidth, height: innerHeight, dpr: devicePixelRatio,
+            visual: window.visualViewport ? { width: visualViewport.width, height: visualViewport.height,
+              offsetTop: visualViewport.offsetTop, scale: visualViewport.scale } : null },
+          focused: document.activeElement?.id, control: describe(control), region: describe(region),
+          fonts: document.fonts?.status, trace: window.__galleryFocusTrace, keys: window.__galleryScrollKeys };
+        }).catch((reason) => ({ error: reason.message }));
+        throw new Error(`${error.message}\nGallery focus visibility diagnostics: ${JSON.stringify(diagnostic)}`, { cause: error });
+      }
       await expect.poll(() => info.evaluate((el) => el.scrollTop)).toBeGreaterThan(0);
       await page.keyboard.press('Escape');
       await expect(page.locator('#lbRoot')).toHaveCount(0);
