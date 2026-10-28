@@ -1,7 +1,7 @@
-# Temporary PR-only Chrome feature control; delete with its runner after review.
-# Independent replication: identical runner, flags and eight alternating pairs.
-# Exact published release and real fonts; no site edits.
-name: Temporary LCP paint-holding control
+# Temporary PR-only browser mode control; delete with its runner after review.
+# Lighthouse vs direct Chrome with matching CDP trace vs direct untraced.
+# Exact published release, flags and real fonts; no site edits.
+name: Temporary LCP capture-mode control
 
 on:
   pull_request:
@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 jobs:
-  paint-holding:
+  capture-modes:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -43,13 +43,13 @@ jobs:
           test -x "$CHROME_PATH"
           "$CHROME_PATH" --version | grep -F 155.0.8059.39
           echo "CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
-      - name: Pair identical Chrome flags except PaintHolding, keep published page unchanged
+      - name: Compare matched Lighthouse and direct Chrome capture modes
         run: |
-          if node scripts/diagnostics/lcp_paint_holding_temp.mjs > /tmp/milovi-paint-control.log 2>&1; then
-            cat /tmp/milovi-paint-control.log
+          if node scripts/diagnostics/lcp_paint_holding_temp.mjs > /tmp/milovi-mode-control.log 2>&1; then
+            cat /tmp/milovi-mode-control.log
           else
-            cat /tmp/milovi-paint-control.log
-            echo "::error title=Paint-holding control failed::$(tail -n 12 /tmp/milovi-paint-control.log | tr '\n' ' ')"
+            cat /tmp/milovi-mode-control.log
+            echo "::error title=Capture-mode control failed::$(tail -n 12 /tmp/milovi-mode-control.log | tr '\n' ' ')"
             exit 1
           fi
       - name: Verify deployed SHA again after measuring
@@ -59,7 +59,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: temporary-lcp-paint-control-${{ github.run_id }}-${{ github.run_attempt }}
-          path: /tmp/milovi-lcp-paint-holding/
+          name: temporary-lcp-mode-control-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/milovi-lcp-mode-control/
           if-no-files-found: warn
           retention-days: 21
