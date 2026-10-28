@@ -410,4 +410,51 @@ require(
     'homepage Viktoria derivative is not smaller than source',
 )
 
+# Suburb pages share the homepage hero geometry (.hero-photo-bg in shared style.css),
+# so they preload the same preferred AVIF candidates. Preloading WebP while the
+# picture renders AVIF wastes critical-path bandwidth (measured double fetch).
+suburb_template = read('prigorody/_template.html')
+require(
+    '<link rel="preload" as="image" type="image/avif" href="../../img/head_desktop.avif" media="(min-width:769px)" fetchpriority="high" />' in suburb_template,
+    'suburb preferred desktop AVIF hero preload missing',
+)
+require(
+    '<link rel="preload" as="image" type="image/avif" href="../../img/head_mobile-640.avif" media="(max-width:768px)" fetchpriority="high" />' in suburb_template,
+    'suburb preferred mobile AVIF hero preload missing',
+)
+require(
+    '<link rel="preload" as="image" href="../../img/head_desktop.webp"' not in suburb_template
+    and '<link rel="preload" as="image" href="../../img/head_mobile.webp"' not in suburb_template,
+    'suburb duplicate WebP hero preload returned',
+)
+require(
+    '<source type="image/avif" media="(max-width: 768px)" srcset="../../img/head_mobile-640.avif" />' in suburb_template,
+    'suburb preferred mobile AVIF picture source missing',
+)
+require(
+    '<source type="image/webp" media="(max-width: 768px)" srcset="../../img/head_mobile.webp" />' in suburb_template,
+    'suburb mobile WebP picture fallback was removed',
+)
+require(
+    '<link rel="preload" as="image" type="image/avif" href="../../img/head_mobile-640.avif" media="(max-width:768px)" fetchpriority="high" />' in gatchina,
+    'built suburb page lost the preferred mobile AVIF hero preload',
+)
+
+# Meringue hero picture renders AVIF first; the preload must match it instead of
+# fetching the WebP fallback that AVIF-capable browsers never display.
+meringue = read('meringue-roll/index.html')
+require(
+    '<link rel="preload" as="image" type="image/avif" href="../img/meringue_roll.avif" fetchpriority="high" />' in meringue,
+    'meringue preferred AVIF hero preload missing',
+)
+require(
+    '<link rel="preload" as="image" href="../img/meringue_roll.webp"' not in meringue,
+    'meringue duplicate WebP hero preload returned',
+)
+require(
+    '<source type="image/avif" srcset="../img/meringue_roll.avif">' in meringue
+    and '<img src="../img/meringue_roll.webp"' in meringue,
+    'meringue AVIF picture source or WebP fallback drifted',
+)
+
 print('Lighthouse root-cause regression contract OK')
