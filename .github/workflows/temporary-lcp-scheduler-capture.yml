@@ -1,65 +1,107 @@
-# Temporary PR-only read-only browser experiment; delete after reviewing result.
-# Capture scheduler state, CC skip reasons, and exact resource completion times.
-name: Temporary LCP Chrome scheduler capture
+# PR-only read-only Viz trace review; remove after extracting findings.
+# No site visit; verify original Action SHA and digest before processing.
+name: Temporary LCP Viz frame review
 
 on:
   pull_request:
     paths:
       - .github/workflows/temporary-lcp-scheduler-capture.yml
-      - scripts/diagnostics/lcp_scheduler_state_temp.mjs
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
-  scheduler-state:
+  review:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 12
     env:
-      EXPECTED_RELEASE_SHA: e4cc47a5478a2cd1cc29096f51e310633919f3e2
+      GH_TOKEN: ${{ github.token }}
     steps:
-      - name: Checkout exact PR-only diagnostic
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          persist-credentials: false
-      - name: Set up Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: '22.13.0'
-          cache: npm
-      - name: Verify published release and exact PR code before capture
+      - name: Verify and download existing Chrome 155 trace without revisiting the site
+        shell: bash
         run: |
-          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
-          python3 scripts/production_release_smoke.py --retries 2 --delay 5
-      - name: Install isolated Lighthouse tracing categories and pinned Chrome 155
+          set -euo pipefail
+          repo="repos/${{ github.repository }}"
+          test "$(gh api "$repo/actions/runs/40706645674" --jq '.head_sha')" = \
+            'dd30c3d66892ef3a9c4a70701d553b4425673ec3'
+          test "$(gh api "$repo/actions/artifacts/12823643597" --jq '.digest')" = \
+            'sha256:823552533489d247824da34dcd2aea24868b39881ded6804f938aabf3727703f'
+          gh run download 40706645674 --repo "${{ github.repository }}" \
+            -n temporary-lcp-scheduler-state-40706645674-1 -D /tmp/lcp-viz
+      - name: Align Chrome's skipped begin frames, display drawing and resource completion
+        shell: bash
         run: |
-          npm install --prefix /tmp/milovi-lighthouse --no-save --ignore-scripts \
-            lighthouse@12.6.1 @puppeteer/browsers@3.2.6
-          /tmp/milovi-lighthouse/node_modules/.bin/browsers install \
-            chrome@155.0.8059.39 --path /tmp/milovi-browser
-          CHROME_PATH=/tmp/milovi-browser/chrome/linux-155.0.8059.39/chrome-linux64/chrome
-          test -x "$CHROME_PATH"
-          "$CHROME_PATH" --version | grep -F 155.0.8059.39
-          echo "CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
-      - name: Read Chrome scheduler state during natural late first paint
-        run: |
-          if node scripts/diagnostics/lcp_scheduler_state_temp.mjs \
-              > /tmp/milovi-scheduler-capture.log 2>&1; then
-            cat /tmp/milovi-scheduler-capture.log
-          else
-            cat /tmp/milovi-scheduler-capture.log
-            echo "::error title=Scheduler capture failed::$(tail -n 12 /tmp/milovi-scheduler-capture.log | tr '\n' ' ')"
-            exit 1
-          fi
-      - name: Verify same published release after capture
-        if: always()
-        run: python3 scripts/production_release_smoke.py --retries 1
-      - name: Retain anonymous lab trace outside Git
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: temporary-lcp-scheduler-state-${{ github.run_id }}-${{ github.run_attempt }}
-          path: /tmp/milovi-lcp-scheduler-state/
-          if-no-files-found: warn
-          retention-days: 21
+          set -euo pipefail
+          python3 - <<'PY'
+          from collections import Counter
+          from pathlib import Path
+          import gzip,json
+          root=Path('/tmp/lcp-viz')
+          summary=json.loads((root/'summary.json').read_text())
+          assert summary['release']=='e4cc47a5478a2cd1cc29096f51e310633919f3e2'
+          assert summary['browser']=='Chrome 155.0.8059.39'
+          rows=summary['rows']
+          assert len(rows)>=3
+          def emit(name,value):
+            print('::notice title='+name+'::'+json.dumps(value,separators=(',',':')))
+          emit('viz-accepted-visits',{'number':len(rows),'fcp':[r['rawFcp'] for r in rows],
+            'slow':sum(r['rawFcp']>=750 for r in rows),
+            'files':sorted(p.name for p in root.iterdir())})
+          key=('SubmitCompositorFrame','DisplayScheduler::DrawAndSwap',
+            'DirectRenderer::DrawFrame','FramePresented','DrawFrame',
+            'DisplayDamageTracker::SetRootFrameMissing','BeginMainThreadFrame',
+            'RequestMainThreadFrame','Surface::QueueFrame','Surface::Activate')
+          for row in rows:
+            stem=f"{row['number']}-{row['rawFcp']}"
+            file=root/(stem+'.trace.json.gz')
+            if not file.exists(): continue
+            with gzip.open(file,'rt') as f:
+              events=json.load(f)['traceEvents']
+            assert len(events)==row['trace']['eventCount']>1000
+            nav=next(e for e in events if e['name']=='navigationStart' and
+              e.get('args',{}).get('data',{}).get('isOutermostMainFrame') and
+              e['args']['data'].get('documentLoaderURL')==
+                'https://milovicake.ru/prigorody/gatchina/')
+            zero=nav['ts']
+            fcp=next(e for e in events if e['name']=='firstContentfulPaint'
+              and e['ts']>=zero and e.get('args',{}).get('data',{}).get(
+                'navigationId')==nav['args']['data']['navigationId'])
+            assert abs((fcp['ts']-zero)/1000-row['rawFcp'])<150
+            ms=lambda e:round((e['ts']-zero)/1000,1)
+            decisions=sorted((e for e in events if e['name']=='SendBeginFrameDecision'
+              and zero<=e['ts']<=fcp['ts']),key=lambda e:e['ts'])
+            throttled=[e for e in decisions if e.get('args',{}).get('reason')==
+              'ThrottleUndrawnFrames' and e['args'].get('should_send') is False]
+            counts=Counter((e['args'].get('reason'),e['args'].get('should_send'))
+              for e in decisions)
+            assert row['trace']['gapMs']>=700 and len(throttled)>=35
+            lo,hi=throttled[0]['ts'],throttled[-1]['ts']
+            timing=[e for e in events if zero<=e['ts']<=fcp['ts']]
+            def phase(start,end):
+              es=[e for e in timing if start<=e['ts']<end]
+              return {name:sum(e['name']==name for e in es) for name in key
+                if any(e['name']==name for e in es)}
+            adjacent=[e for e in timing if lo-100000<=e['ts']<=lo+15000
+              and any(word in e['name'].lower() for word in
+                ('submitcompositor','drawframe','drawandswap','surfac','begi','schedul'))]
+            event_names=Counter(e['name'] for e in adjacent)
+            counters=Counter(e['name'] for e in timing if lo<=e['ts']<=hi and
+              e['cat'].startswith('viz'))
+            emit('viz-visit-'+str(row['number']),{
+              'fcp':row['rawFcp'],'gap':row['trace']['gapMs'],
+              'firstThrottle':ms(throttled[0]),'lastThrottle':ms(throttled[-1]),
+              'throttleCount':len(throttled),
+              'vizIds':Counter((e['pid'],e['tid']) for e in throttled).most_common(3),
+              'decisions':[[str(k[0])+':'+str(k[1]),v] for k,v in counts.items()],
+              'beforeFirstThrottle':phase(zero,lo),
+              'duringThrottle':phase(lo,hi+1),
+              'otherVizEvents':counters.most_common(12),
+              'beforeNames':event_names.most_common(15),
+              'sampleDecision':[{k:v for k,v in e.items() if k in ('name','cat','pid',
+                'tid','args','id','scope')} for e in throttled[:1]],
+              'lastResource':row['trace']['resourceEnd'][-1]
+                if row['trace']['resourceEnd'] else None,
+              'snapshot':row['trace']['snapshots'][:1],
+              'request':row['trace']['request']})
+          PY
