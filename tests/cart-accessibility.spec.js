@@ -162,10 +162,29 @@ test('cart quantity and remove controls fit at narrow and desktop widths', async
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.evaluate(() => { addToCart(2); openCart(); });
+    const drawer = page.locator('#cartDrawer');
     const card = page.locator('#cartDrawer .cart-item');
     await expect(card).toBeVisible();
+    // The drawer animates in with `transform: translateX(<viewport width>)` and stays
+    // offset for ~100ms after openCart(). Two separate boundingBox() calls can then
+    // straddle that transition and be reported in different coordinate spaces, which
+    // looked like an overflowing control. Wait for the transform to settle and read
+    // both boxes in one frame so the containment check stays atomic.
+    await expect(drawer).toHaveClass(/open/);
+    await drawer.evaluate((element) => new Promise((resolve, reject) => {
+      let frames = 0;
+      const settled = () => {
+        const value = getComputedStyle(element).transform;
+        if (value === 'none') return resolve(true);
+        const matrix = new DOMMatrixReadOnly(value);
+        if (Math.abs(matrix.m41) < 0.5 && Math.abs(matrix.m42) < 0.5) return resolve(true);
+        if ((frames += 1) > 180) return reject(new Error('cart drawer never settled its transform'));
+        return requestAnimationFrame(settled);
+      };
+      settled();
+    }));
     for (const selector of ['.qty-ctrl .qty-btn:last-child', '.cart-item-right .del-btn']) {
-      // Measure both real elements in one frame: the drawer may still be transitioning.
+      // Read both real elements in the same frame after the drawer settles.
       const { control, bounds } = await card.evaluate((element, target) => {
         const rect = (node) => { const { x, width } = node.getBoundingClientRect(); return { x, width }; };
         return { control: rect(element.querySelector(target)), bounds: rect(element) };
