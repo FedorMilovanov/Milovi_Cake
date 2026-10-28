@@ -20,6 +20,20 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         self.assertIn('Record browser shared memory', workflow)
         self.assertRegex(workflow, r'--reporter=[^\n]*github')
 
+    def test_motion_ordering_is_independent_and_uses_exact_source(self):
+        workflow = (ROOT / '.github/workflows/browser-compatibility.yml').read_text(encoding='utf-8')
+        motion = workflow.split('  motion-ordering:', 1)[1].split('  webkit-newer-reference:', 1)[0]
+        version = json.loads((ROOT / 'package.json').read_text(encoding='utf-8'))['devDependencies']['playwright']
+        self.assertIn(f'image: mcr.microsoft.com/playwright:v{version}-noble', motion)
+        self.assertIn('options: --shm-size=1g', motion)
+        self.assertIn('engine: [firefox, webkit]', motion)
+        self.assertIn('ref: ${{ github.event.pull_request.head.sha }}', motion)
+        self.assertIn('--project=${{ matrix.engine }}-desktop --project=${{ matrix.engine }}-mobile', motion)
+        self.assertIn('queued grid observer callbacks respect a newly reduced-motion preference', motion)
+        self.assertIn('--repeat-each=3 --workers=1 --retries=0 --reporter=list,github', motion)
+        self.assertNotIn('needs: compatibility', motion)
+        self.assertNotIn('continue-on-error', motion)
+
     def test_webkit_storage_and_gallery_are_repeated_without_retries(self):
         workflow = (ROOT / '.github/workflows/browser-compatibility.yml').read_text(encoding='utf-8')
         for name in (

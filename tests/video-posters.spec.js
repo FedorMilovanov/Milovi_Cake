@@ -275,34 +275,96 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
     await page.addInitScript(() => {
       const NativeObserver = window.IntersectionObserver;
-      const gate = window.__motionObserverGate = { pending: [], hold: true };
+      const nativeMatchMedia = window.matchMedia.bind(window);
+      const query = '(prefers-reduced-motion: reduce)';
+      const gate = window.__motionObserverGate = { pending: [], hold: true, changes: [], appChanges: [], deliveries: [], observers: 0, disconnects: 0 };
+      gate.motion = nativeMatchMedia(query);
+      gate.motion.addEventListener('change', (event) => gate.changes.push(event.matches));
+      window.matchMedia = (value) => {
+        const list = nativeMatchMedia(value);
+        if (value === query && !gate.appMotion) {
+          gate.appMotion = list;
+          list.addEventListener('change', (event) => gate.appChanges.push(event.matches));
+        }
+        return list;
+      };
       window.IntersectionObserver = class extends NativeObserver {
         constructor(callback, options) {
           super((entries, observer) => {
-            if (gate.hold && entries.some((entry) => entry.isIntersecting && entry.target.closest('#galleryGrid'))) {
-              gate.pending.push(() => callback(entries, observer));
-            } else callback(entries, observer);
+            const ids = entries.filter((entry) => entry.isIntersecting && entry.target.closest('#galleryGrid'))
+              .map((entry) => entry.target.closest('.card')?.dataset.id);
+            if (ids.length) gate.deliveries.push({ held: gate.hold, ids });
+            if (gate.hold && ids.length) gate.pending.push({ ids, deliver: () => callback(entries, observer) });
+            else callback(entries, observer);
           }, options);
+        }
+        observe(target) {
+          if (target.matches('#galleryGrid video') && !this.observesGallery) {
+            this.observesGallery = true;
+            gate.observers++;
+          }
+          return super.observe(target);
+        }
+        disconnect() {
+          if (this.observesGallery) gate.disconnects++;
+          return super.disconnect();
         }
       };
     });
     const errors = [];
     page.on('pageerror', (error) => errors.push(error.message));
-    const response = await page.goto('/gallery/', { waitUntil: 'load' });
-    expect(response.status()).toBe(200);
-    await page.waitForFunction(() => window.__motionObserverGate.pending.length > 0);
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.waitForFunction(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
-    await page.evaluate(() => {
-      const gate = window.__motionObserverGate;
-      gate.hold = false;
-      gate.pending.splice(0).forEach((deliver) => deliver());
-    });
-    const gridVideos = page.locator('#galleryGrid video');
-    expect(await gridVideos.evaluateAll((videos) => videos.filter((video) => video.hasAttribute('src') || !video.paused).length)).toBe(0);
-    await page.emulateMedia({ reducedMotion: 'no-preference' });
-    await expect(page.locator('#galleryGrid [data-id="v01"] video')).toHaveAttribute('src', /video-01-knigi\.webm/);
-    expect(errors).toEqual([]);
+    try {
+      const response = await page.goto('/gallery/', { waitUntil: 'load' });
+      expect(response.status()).toBe(200);
+      const card = page.locator('#galleryGrid [data-id="v01"]');
+      const firstVideo = card.locator('video');
+      // A queued entry for some other card does not prove v01 is on screen.
+      await card.scrollIntoViewIfNeeded();
+      await page.waitForFunction(() => window.__motionObserverGate.pending.some((entry) => entry.ids.includes('v01')));
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      // Wait for the actual list used by the gallery, not a newly-created list
+      // that can temporarily disagree with it under browser emulation.
+      await page.waitForFunction(() => window.__motionObserverGate.appMotion?.matches === true);
+      await page.evaluate(() => {
+        const gate = window.__motionObserverGate;
+        gate.beforeRelease = {
+          fresh: matchMedia('(prefers-reduced-motion: reduce)').matches,
+          app: gate.appMotion?.matches, observed: gate.motion.matches,
+          changes: [...gate.changes], appChanges: [...gate.appChanges],
+        };
+        gate.hold = false;
+        gate.pending.splice(0).forEach((entry) => entry.deliver());
+      });
+      const gridVideos = page.locator('#galleryGrid video');
+      expect(await gridVideos.evaluateAll((videos) => videos.filter((video) => video.hasAttribute('src') || !video.paused).length)).toBe(0);
+      // Do not reverse the preference before the browser has delivered its
+      // change event; engines may coalesce two changes in the same frame.
+      await page.waitForFunction(() => window.__motionObserverGate.appChanges.includes(true));
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
+      await page.waitForFunction(() => window.__motionObserverGate.appChanges.includes(false));
+      await expect(firstVideo).toHaveAttribute('src', /video-01-knigi\.webm/);
+      await expect.poll(() => firstVideo.evaluate((video) => !video.paused)).toBe(true);
+      expect(errors).toEqual([]);
+    } catch (error) {
+      let snapshotTimer;
+      const snapshot = await Promise.race([
+        page.evaluate(() => {
+          const gate = window.__motionObserverGate;
+          const video = document.querySelector('#galleryGrid [data-id="v01"] video');
+          const rect = video?.getBoundingClientRect();
+          return {
+            changes: gate?.changes, appChanges: gate?.appChanges, beforeRelease: gate?.beforeRelease,
+            observers: gate?.observers, disconnects: gate?.disconnects,
+            deliveries: gate?.deliveries.slice(-10), pending: gate?.pending.map((entry) => entry.ids),
+            matches: gate?.motion.matches, appMatches: gate?.appMotion?.matches, viewport: [innerWidth, innerHeight], scrollY,
+            video: video && { src: video.getAttribute('src'), paused: video.paused, top: rect.top, bottom: rect.bottom },
+          };
+        }).catch((failure) => ({ snapshotError: String(failure) })),
+        new Promise((resolve) => { snapshotTimer = setTimeout(() => resolve({ snapshotError: 'page did not respond within 2.5s' }), 2500); }),
+      ]);
+      clearTimeout(snapshotTimer);
+      throw new Error(`${error.message}\nMotion observer diagnostics: ${JSON.stringify({ snapshot, errors })}`, { cause: error });
+    }
   });
 
   test('static gallery photo recovers if AVIF fails before the module loads', async ({ page }) => {
