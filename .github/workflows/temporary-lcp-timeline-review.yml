@@ -1,5 +1,6 @@
 # Temporary PR-only Chrome feature control; delete with its runner after review.
-# Exact published release, real fonts and eight alternating pairs; no site edits.
+# Independent replication: identical runner, flags and eight alternating pairs.
+# Exact published release and real fonts; no site edits.
 name: Temporary LCP paint-holding control
 
 on:
