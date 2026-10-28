@@ -34,6 +34,23 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         self.assertNotIn('needs: compatibility', motion)
         self.assertNotIn('continue-on-error', motion)
 
+    def test_audio_investigation_uses_isolated_source_and_keeps_assertions(self):
+        workflow = (ROOT / '.github/workflows/browser-compatibility.yml').read_text(encoding='utf-8')
+        audio = workflow.split('  webkit-audio-investigation:', 1)[1]
+        self.assertIn('needs: compatibility', audio)
+        self.assertIn("needs.compatibility.result == 'failure'", audio)
+        self.assertIn('variant: [original, video-only]', audio)
+        self.assertIn('git -c safe.directory="$GITHUB_WORKSPACE" ls-files -z | tar --null -T -', audio)
+        self.assertIn("test \"$source_sha\" = '${{ github.event.pull_request.head.sha }}'", audio)
+        self.assertIn('test "$before" = "$after"', audio)
+        self.assertIn('ffprobe -v error -select_streams a', audio)
+        self.assertIn('test "$count" = 16', audio)
+        self.assertIn("Missing original consent fixture", audio)
+        self.assertIn('reuseExistingServer: false', audio)
+        self.assertIn('--project=webkit-desktop --project=webkit-mobile', audio)
+        self.assertIn('--repeat-each=4 --workers=1 --retries=0', audio)
+        self.assertNotIn('continue-on-error', audio)
+
     def test_webkit_storage_and_gallery_are_repeated_without_retries(self):
         workflow = (ROOT / '.github/workflows/browser-compatibility.yml').read_text(encoding='utf-8')
         for name in (
