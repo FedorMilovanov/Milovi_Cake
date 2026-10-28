@@ -113,6 +113,7 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
             'Compare active video in the official 1.64.1 image',
             'Compare real gallery interactions',
             'Measure filter-transition precondition',
+            'Measure grid-media lifecycle',
         ):
             with self.subTest(name=name):
                 section = workflow.split(f'- name: {name}', 1)[1].split('\n      - name:', 1)[0]
@@ -124,7 +125,7 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         comparison = workflow.split('  webkit-filter-reference:', 1)[1]
         self.assertIn('needs: compatibility', comparison)
         self.assertIn("needs.compatibility.result == 'failure'", comparison)
-        self.assertIn('variant: [original, no-filter-interpolation]', comparison)
+        self.assertIn('variant: [original, no-filter-interpolation, release-grid-media]', comparison)
         package = json.loads((ROOT / 'package.json').read_text(encoding='utf-8'))
         version = package['devDependencies']['playwright']
         self.assertIn(f'image: mcr.microsoft.com/playwright:v{version}-noble', comparison)
@@ -141,6 +142,35 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         self.assertIn('if: always()', comparison)
         self.assertIn('sha256sum --check', comparison)
         self.assertIn('git -c safe.directory="$GITHUB_WORKSPACE" diff --exit-code', comparison)
+        self.assertNotIn('continue-on-error', comparison)
+
+    def test_media_comparison_is_failure_only_and_restores_both_assets(self):
+        workflow = (ROOT / '.github/workflows/browser-compatibility.yml').read_text(encoding='utf-8')
+        comparison = workflow.split('  webkit-filter-reference:', 1)[1]
+
+        def step(name):
+            return comparison.split(f'- name: {name}', 1)[1].split('\n      - name:', 1)[0]
+
+        prepare = step('Prepare controlled gallery variant')
+        probe = step('Measure grid-media lifecycle')
+        restore = step('Restore and verify exact gallery assets')
+        artifacts = step('Upload filter-comparison artifacts')
+        self.assertIn('needs: compatibility', comparison)
+        self.assertIn("needs.compatibility.result == 'failure'", comparison)
+        self.assertIn('cp js/gallery/main.js "$RUNNER_TEMP/gallery-original.js"', prepare)
+        self.assertIn('sha256sum css/gallery/gallery-2026.css js/gallery/main.js', prepare)
+        self.assertLess(prepare.index('sha256sum css/gallery/gallery-2026.css js/gallery/main.js'),
+                        prepare.index('scripts/gallery_media_experiment.py'))
+        self.assertIn("matrix.variant != 'no-filter-interpolation'", probe)
+        self.assertIn("steps.filter_tests.outcome != 'skipped'", probe)
+        self.assertIn('MILOVI_MEDIA_SERVER_PID', probe)
+        self.assertIn('scripts/gallery_media_probe.cjs', probe)
+        self.assertIn('kill -0 "$server_pid"', probe)
+        self.assertIn('cp "$RUNNER_TEMP/gallery-original.js" js/gallery/main.js', restore)
+        self.assertIn('sha256sum --check', restore)
+        self.assertIn('git -c safe.directory="$GITHUB_WORKSPACE" diff --exit-code', restore)
+        self.assertIn("steps.media_probe.outcome == 'failure'", artifacts)
+        self.assertIn('webkit-media-probe-${{ matrix.variant }}.log', artifacts)
         self.assertNotIn('continue-on-error', comparison)
 
 

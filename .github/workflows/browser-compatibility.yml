@@ -306,10 +306,10 @@ jobs:
           retention-days: 7
           include-hidden-files: false
 
-  # Diagnostic A/B only. Both variants retain the existing tests and browser
-  # configuration; neither can change the result of the primary matrix.
+  # Diagnostic comparisons only. All variants retain the existing tests and
+  # browser configuration; none can change the primary matrix result.
   webkit-filter-reference:
-    name: WebKit filter-transition comparison (${{ matrix.variant }})
+    name: WebKit gallery comparison (${{ matrix.variant }})
     needs: compatibility
     if: ${{ !cancelled() && needs.compatibility.result == 'failure' }}
     runs-on: ubuntu-24.04
@@ -320,7 +320,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        variant: [original, no-filter-interpolation]
+        variant: [original, no-filter-interpolation, release-grid-media]
     env:
       HOME: /root
       MILOVI_BROWSER_COMPAT: '1'
@@ -348,15 +348,19 @@ jobs:
       - name: Install pinned dependencies
         run: npm ci
 
-      - name: Prepare controlled stylesheet variant
+      - name: Prepare controlled gallery variant
         run: |
           cp css/gallery/gallery-2026.css "$RUNNER_TEMP/gallery-original.css"
-          sha256sum css/gallery/gallery-2026.css > "$RUNNER_TEMP/gallery-original.sha256"
+          cp js/gallery/main.js "$RUNNER_TEMP/gallery-original.js"
+          sha256sum css/gallery/gallery-2026.css js/gallery/main.js > "$RUNNER_TEMP/gallery-original.sha256"
           if [ '${{ matrix.variant }}' = 'no-filter-interpolation' ]; then
             python3 scripts/gallery_filter_experiment.py css/gallery/gallery-2026.css "$RUNNER_TEMP/gallery-experiment.css"
             cp "$RUNNER_TEMP/gallery-experiment.css" css/gallery/gallery-2026.css
+          elif [ '${{ matrix.variant }}' = 'release-grid-media' ]; then
+            python3 scripts/gallery_media_experiment.py js/gallery/main.js "$RUNNER_TEMP/gallery-experiment.js"
+            cp "$RUNNER_TEMP/gallery-experiment.js" js/gallery/main.js
           fi
-          echo '::notice title=WebKit filter comparison::Variant ${{ matrix.variant }}; filter values and assertions remain unchanged'
+          echo '::notice title=WebKit gallery comparison::Variant ${{ matrix.variant }}; browser and assertions remain unchanged'
 
       - name: Compare real gallery interactions
         shell: bash
@@ -371,7 +375,7 @@ jobs:
       - name: Measure filter-transition precondition
         shell: bash
         id: filter_probe
-        if: ${{ !cancelled() && steps.filter_tests.outcome != 'skipped' }}
+        if: ${{ !cancelled() && steps.filter_tests.outcome != 'skipped' && matrix.variant != 'release-grid-media' }}
         run: |
           set -o pipefail
           python3 -m http.server 4173 --bind 127.0.0.1 > "$RUNNER_TEMP/filter-http.log" 2>&1 &
@@ -382,10 +386,25 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/webkit-filter-probe-${{ matrix.variant }}.log"
           kill -0 "$server_pid" # Reject a server that exited during the probe.
 
-      - name: Restore and verify exact stylesheet
+      - name: Measure grid-media lifecycle
+        shell: bash
+        id: media_probe
+        if: ${{ !cancelled() && steps.filter_tests.outcome != 'skipped' && matrix.variant != 'no-filter-interpolation' }}
+        run: |
+          set -o pipefail
+          python3 -m http.server 4173 --bind 127.0.0.1 > "$RUNNER_TEMP/media-http.log" 2>&1 &
+          server_pid=$!
+          cleanup() { if kill -0 "$server_pid" 2>/dev/null; then kill "$server_pid"; fi; }
+          trap cleanup EXIT
+          MILOVI_MEDIA_VARIANT='${{ matrix.variant }}' MILOVI_MEDIA_SERVER_PID="$server_pid" node scripts/gallery_media_probe.cjs \
+            2>&1 | tee "$RUNNER_TEMP/webkit-media-probe-${{ matrix.variant }}.log"
+          kill -0 "$server_pid" # Reject a server that exited during the probe.
+
+      - name: Restore and verify exact gallery assets
         if: always()
         run: |
           cp "$RUNNER_TEMP/gallery-original.css" css/gallery/gallery-2026.css
+          cp "$RUNNER_TEMP/gallery-original.js" js/gallery/main.js
           sha256sum --check "$RUNNER_TEMP/gallery-original.sha256"
           git -c safe.directory="$GITHUB_WORKSPACE" diff --exit-code
 
@@ -397,8 +416,12 @@ jobs:
         if: failure() && steps.filter_probe.outcome == 'failure'
         run: python3 scripts/browser_log_summary.py "$RUNNER_TEMP/webkit-filter-probe-${{ matrix.variant }}.log"
 
+      - name: Summarize media-probe process events
+        if: failure() && steps.media_probe.outcome == 'failure'
+        run: python3 scripts/browser_log_summary.py "$RUNNER_TEMP/webkit-media-probe-${{ matrix.variant }}.log"
+
       - name: Upload filter-comparison artifacts
-        if: failure() && (steps.filter_tests.outcome == 'failure' || steps.filter_probe.outcome == 'failure')
+        if: failure() && (steps.filter_tests.outcome == 'failure' || steps.filter_probe.outcome == 'failure' || steps.media_probe.outcome == 'failure')
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: webkit-filter-${{ matrix.variant }}-${{ github.run_id }}-${{ github.run_attempt }}
@@ -406,6 +429,7 @@ jobs:
             test-results/
             ${{ runner.temp }}/webkit-filter-${{ matrix.variant }}.log
             ${{ runner.temp }}/webkit-filter-probe-${{ matrix.variant }}.log
+            ${{ runner.temp }}/webkit-media-probe-${{ matrix.variant }}.log
           if-no-files-found: ignore
           retention-days: 7
           include-hidden-files: false
