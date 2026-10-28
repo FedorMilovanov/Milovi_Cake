@@ -17,7 +17,6 @@ const EXTRA=['renderer.scheduler','renderer.scheduler.status',
   'disabled-by-default-renderer.scheduler.debug','cc',
   'disabled-by-default-cc.debug.scheduler',
   'disabled-by-default-cc.debug.scheduler.frames','viz','network.scheduler'];
-const CATEGORIES=[...Trace.getDefaultTraceCategories(),...EXTRA];
 const round=x=>Number.isFinite(x)?Math.round(x*10)/10:null;
 const notice=(title,data)=>console.log(`::notice title=${title}::${JSON.stringify(data)}`);
 
@@ -129,7 +128,8 @@ function summariseTrace(events,observed,finished){
       e.timestamp*1e6<=fcp.ts).map(e=>[e.name,round((e.timestamp*1e6-nav.ts)/1000)]).slice(-20),
     skipped:dropReasons,
     sent:sendReasons,schedulerSamples:samples,flags:flagCounts,
-    snapshots:snapshotDetails,nearRequest:aroundRequest,wakeups:possibleWakeups,
+    snapshots:snapshotDetails,schedulerStateCount:states.length,
+    nearRequest:aroundRequest,wakeups:possibleWakeups,
     eventCount:events.length};
 }
 
@@ -161,12 +161,23 @@ async function visit(number){
     });
     await session.send('Network.enable');
     const supported=(await session.send('Tracing.getCategories')).categories;
-    if(EXTRA.some(cat=>!supported.includes(cat)))
-      throw Error('Chrome 155 missing exact scheduler trace category');
+    const enabled=EXTRA.filter(cat=>supported.includes(cat));
+    const missing=EXTRA.filter(cat=>!supported.includes(cat));
+    const alternatives=enabled.includes('disabled-by-default-cc.debug.scheduler')?[]:
+      ['cc.debug','disabled-by-default-cc.debug','scheduler',
+        'disabled-by-default-renderer.scheduler','renderer.scheduler']
+        .filter(cat=>supported.includes(cat)&&!enabled.includes(cat));
+    if(number===1)notice('scheduler-trace-categories',{enabled,missing,
+      alternatives,available:supported.filter(cat=>/schedul|^cc/.test(cat))});
+    if(!enabled.includes('disabled-by-default-cc.debug.scheduler')&&
+      !alternatives.includes('cc.debug')&&
+      !alternatives.includes('disabled-by-default-cc.debug'))
+      throw Error('Chrome 155 has no scheduler state category: '+missing.join(','));
+    const categories=[...Trace.getDefaultTraceCategories(),...enabled,...alternatives];
     const chunks=[];
     session.on('Tracing.dataCollected',event=>chunks.push(...event.value));
     const done=new Promise(resolve=>session.once('Tracing.tracingComplete',resolve));
-    await session.send('Tracing.start',{categories:CATEGORIES.join(','),
+    await session.send('Tracing.start',{categories:categories.join(','),
       options:'sampling-frequency=10000'});
     await page.goto(URL,{waitUntil:'load',timeout:60000});
     // The node-side wait must not request frames or mutate the page.
