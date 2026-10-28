@@ -1,5 +1,6 @@
 # Temporary PR-only browser-feature control; delete with its runner after review.
-# Same unchanged release, 12 balanced triplets; one flag differs within Chrome 158.
+# Independent replication: identical runner, release, 12 triplets and only one
+# feature-flag difference inside the same pinned Chrome 158 binary.
 name: Temporary LCP upstream Viz feature control
 
 on:
