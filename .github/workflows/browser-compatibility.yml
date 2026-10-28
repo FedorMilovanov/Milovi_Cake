@@ -118,6 +118,18 @@ jobs:
             --project=firefox-desktop --grep='cart restoration rejects|review modal keeps Google' \
             --repeat-each=3 --workers=1 --retries=0 --reporter=list,github
 
+      # Keep the primary result unchanged while collecting trusted input targets
+      # for the intermittent photo-filter failure on the exact same source.
+      - name: Diagnose Firefox photo-filter input
+        if: failure() && matrix.engine == 'firefox' && steps.primary_contracts.outcome == 'failure'
+        env:
+          HOME: /root
+        run: >-
+          npx playwright test tests/video-posters.spec.js
+          --project=firefox-mobile --grep='photo-only gallery can repeatedly open and close'
+          --repeat-each=20 --workers=1 --retries=0 --reporter=list,github
+          --output="$RUNNER_TEMP/firefox-photo-input-results"
+
       - name: Upload Firefox diagnostic artifacts
         if: always() && matrix.engine == 'firefox' && steps.firefox_diagnostic.outcome == 'failure'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

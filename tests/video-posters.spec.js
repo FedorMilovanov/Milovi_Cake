@@ -773,8 +773,32 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     await page.locator('#lbClose').click();
   });
 
-  test('photo-only gallery can repeatedly open and close without CDN', async ({ page }) => {
+  test('photo-only gallery can repeatedly open and close without CDN', async ({ page }, testInfo) => {
     const diagnostic = { crashed: false, errors: [] };
+    if (testInfo.project.name.startsWith('firefox-')) {
+      // Record trusted input and focus without changing dispatch or the assertion.
+      // A previous Firefox trace scrolled during the click but did not record
+      // which element received the event.
+      await page.addInitScript(() => {
+        window.__galleryInputTrace = [];
+        for (const type of ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click', 'focusin', 'scroll']) {
+          document.addEventListener(type, (event) => {
+            if (type === 'scroll' && window.__galleryInputTrace.filter((entry) => entry.type === 'scroll').length >= 4) return;
+            const target = event.target instanceof Element ? event.target : null;
+            const chip = target?.closest('.gx-chip');
+            const photo = document.querySelector('.gx-chip[data-filter="photo"]');
+            const rect = photo?.getBoundingClientRect();
+            window.__galleryInputTrace.push({
+              type, target: target?.tagName, filter: chip?.dataset.filter,
+              x: event.clientX, y: event.clientY, trusted: event.isTrusted,
+              scrollY: window.scrollY, photoTop: rect?.top, photoBottom: rect?.bottom,
+              active: document.querySelector('.gx-chip-active')?.dataset.filter,
+            });
+            if (window.__galleryInputTrace.length > 40) window.__galleryInputTrace.shift();
+          }, true);
+        }
+      });
+    }
     page.on('pageerror', (error) => diagnostic.errors.push(error.message));
     page.on('crash', () => { diagnostic.crashed = true; diagnostic.resources = browserCrashResources(); });
     try {
@@ -811,7 +835,14 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       if (blockedMedia) console.log(`::notice title=Blocked-media precondition::${blockedRequests} video requests blocked; no grid video decoded or playing before filtering`);
     } catch (error) {
       diagnostic.resources ||= browserCrashResources();
-      throw new Error(`${error.message}\nPhoto-only gallery diagnostics: ${JSON.stringify(diagnostic)}`, { cause: error });
+      if (testInfo.project.name.startsWith('firefox-') && !page.isClosed()) {
+        // A hung page must not delay the original failure indefinitely.
+        diagnostic.input = await Promise.race([
+          page.evaluate(() => window.__galleryInputTrace).catch(() => null),
+          new Promise((resolve) => setTimeout(() => resolve(null), 1000)),
+        ]);
+      }
+      throw new Error(`Photo-only input events: ${JSON.stringify(diagnostic.input || null)}\n${error.message}\nPhoto-only gallery diagnostics: ${JSON.stringify(diagnostic)}`, { cause: error });
     }
   });
 
