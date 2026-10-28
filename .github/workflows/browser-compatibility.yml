@@ -56,6 +56,7 @@ jobs:
         run: echo "::notice title=Browser shared memory::$(df -h /dev/shm | tail -n 1)"
 
       - name: Exercise desktop and narrow-screen fault contracts
+        shell: bash
         id: primary_contracts
         # The container runs as root; Firefox requires HOME to belong to it.
         env:
@@ -150,6 +151,7 @@ jobs:
           include-hidden-files: false
 
       - name: Diagnose WebKit 1.63 active-video baseline
+        shell: bash
         id: webkit_baseline
         if: failure() && matrix.engine == 'webkit'
         env:
@@ -271,10 +273,15 @@ jobs:
         run: |
           npm ci
           npm install --no-save --package-lock=false @playwright/test@1.64.1 playwright@1.64.1
-          git diff --exit-code
-          echo "::notice title=WebKit reference version::$(npx playwright --version); source $(git rev-parse HEAD)"
+          # Container root and checkout ownership can differ. Trust only this
+          # workspace for these Git commands, not every mounted repository.
+          git -c safe.directory="$GITHUB_WORKSPACE" diff --exit-code
+          source_sha="$(git -c safe.directory="$GITHUB_WORKSPACE" rev-parse HEAD)"
+          test "$source_sha" = '${{ github.event.pull_request.head.sha }}'
+          echo "::notice title=WebKit reference version::$(npx playwright --version); source $source_sha"
 
       - name: Compare active video in the official 1.64.1 image
+        shell: bash
         id: newer_video
         run: |
           set -o pipefail
@@ -352,6 +359,7 @@ jobs:
           echo '::notice title=WebKit filter comparison::Variant ${{ matrix.variant }}; filter values and assertions remain unchanged'
 
       - name: Compare real gallery interactions
+        shell: bash
         id: filter_tests
         run: |
           set -o pipefail
@@ -361,6 +369,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/webkit-filter-${{ matrix.variant }}.log"
 
       - name: Measure filter-transition precondition
+        shell: bash
         id: filter_probe
         if: ${{ !cancelled() && steps.filter_tests.outcome != 'skipped' }}
         run: |
@@ -378,7 +387,7 @@ jobs:
         run: |
           cp "$RUNNER_TEMP/gallery-original.css" css/gallery/gallery-2026.css
           sha256sum --check "$RUNNER_TEMP/gallery-original.sha256"
-          git diff --exit-code
+          git -c safe.directory="$GITHUB_WORKSPACE" diff --exit-code
 
       - name: Summarize filter-comparison process events
         if: failure() && steps.filter_tests.outcome == 'failure'
