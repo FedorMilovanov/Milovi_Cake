@@ -128,3 +128,92 @@ jobs:
                       'deco','commit','layout','timer','holding','activation'))]
               emit('paint-event-names-'+group,sorted(hits,key=lambda x:-x[1])[:42])
           PY
+      - name: Check whether frame requests waited for delivery or raster workers
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          from collections import Counter
+          import gzip, json
+          target = 'https://milovicake.ru/prigorody/gatchina/'
+          inspect = {'consent': {('01','original'),('01','pre-denied'),
+              ('07','pre-denied')}, 'motion': {('01','animation-off')}}
+          def emit(name,obj):
+              print('::notice title='+name+'::'+json.dumps(obj,separators=(',',':')))
+          samples = {}
+          for mode, cases in inspect.items():
+              root = Path('/tmp/lcp-'+mode)
+              summary = json.loads((root/'summary.json').read_text())
+              for block,arm in sorted(cases):
+                  row = next(r for r in summary['rows'] if r['block']==int(block)
+                      and r['arm']==arm)
+                  assert row['rawFcp'] >= 750
+                  with gzip.open(root/(block+'-'+arm+'.trace.json.gz'),'rt') as f:
+                      events = json.load(f)['traceEvents']
+                  nav = next(e for e in events if e['name']=='navigationStart'
+                      and e.get('args',{}).get('data',{}).get('isOutermostMainFrame')
+                      and e['args']['data'].get('documentLoaderURL') == target)
+                  zero = nav['ts']
+                  fcp = next(e for e in events if e['name']=='firstContentfulPaint'
+                      and e['ts']>=zero and e.get('args',{}).get('data',{}).get(
+                          'navigationId')==nav['args']['data']['navigationId'])
+                  assert abs((fcp['ts']-zero)/1000-row['rawFcp'])<150
+                  ms=lambda e:round((e['ts']-zero)/1000,1)
+                  before=[e for e in events if zero<=e['ts']<=fcp['ts']]
+                  pid=nav['pid']; main_tid=nav['tid']
+                  wanted=('RequestMainThreadFrame','BeginMainThreadFrame','DrawFrame',
+                      'NeedsBeginFrameChanged','DroppedFrame','RasterTask','BeginFrame',
+                      'BeginImplFrameToSendBeginMainFrame','AnimationFrame::Presentation',
+                      'TimerFire','FireAnimationFrame')
+                  by={x:sorted((e for e in before if e['name']==x and
+                      (e['pid']==pid or x in ('BeginFrame','AnimationFrame::Presentation'))),
+                      key=lambda e:e['ts']) for x in wanted}
+                  draws=by['DrawFrame'][-3:]
+                  def segment(lo,hi):
+                      if lo>=hi: return {}
+                      contained=[e for e in before if lo<=e['ts']<hi]
+                      count=Counter(e['name'] for e in contained)
+                      def busy(name,tid=None):
+                          return round(sum(max(0,min(hi,e['ts']+e.get('dur',0))-
+                              max(lo,e['ts'])) for e in contained if e['name']==name
+                              and (tid is None or e['tid']==tid))/1000,1)
+                      raster=[e.get('dur',0) for e in contained if e['name']=='RasterTask']
+                      return {'span':[round((lo-zero)/1000,1),round((hi-zero)/1000,1)],
+                          'begin':count['BeginFrame'],
+                          'implToMain':count['BeginImplFrameToSendBeginMainFrame'],
+                          'request':count['RequestMainThreadFrame'],
+                          'mainBegin':count['BeginMainThreadFrame'],
+                          'dropped':count['DroppedFrame'],
+                          'raster':count['RasterTask'],
+                          'rasterBusyMs':busy('RasterTask'),
+                          'rasterMaxMs':round(max(raster,default=0)/1000,1),
+                          'mainBusyMs':busy('RunTask',main_tid),
+                          'timers':count['TimerFire'],'rAF':count['FireAnimationFrame']}
+                  start=max(row['resources'][x] for x in ('css','avif','lastFont'))
+                  gaps=[segment(draws[i-1]['ts'],draws[i]['ts'])
+                      for i in range(1,len(draws))]
+                  def times(name,limit=10):
+                      xs=by[name]
+                      return [ms(e) for e in xs] if len(xs)<=limit else (
+                          [ms(e) for e in xs[:2]]+[None]+
+                          [ms(e) for e in xs[-(limit-2):]])
+                  result={'id':f'{mode}-{block}-{arm}',
+                      'fcp':row['rawFcp'],'ready':start,
+                      'draw':times('DrawFrame',6),
+                      'req':times('RequestMainThreadFrame'),
+                      'mainFrames':times('BeginMainThreadFrame'),
+                      'needs':times('NeedsBeginFrameChanged'),
+                      'gaps':gaps,
+                      'last300':segment(max(zero,fcp['ts']-300000),fcp['ts'])}
+                  emit('scheduler-'+mode+'-'+block+'-'+arm,result)
+                  if mode=='consent' and block=='01' and arm=='pre-denied':
+                      for name in ('RequestMainThreadFrame','BeginMainThreadFrame',
+                          'NeedsBeginFrameChanged','DroppedFrame','RasterTask',
+                          'AnimationFrame::Presentation'):
+                          xs=by.get(name,[])
+                          samples[name]=[{'ms':ms(e),'pid':e['pid'],'tid':e['tid'],
+                              'dur':round(e.get('dur',0)/1000,1),
+                              'args':e.get('args',{})} for e in xs[:1]]
+          emit('scheduler-event-args-sample',samples)
+          PY
