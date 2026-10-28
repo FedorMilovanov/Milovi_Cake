@@ -94,8 +94,9 @@ function makeChromeFlags(arm) {
 }
 
 async function trial(block,arm) {
+  const chromeFlags=makeChromeFlags(arm);
   const chrome=await chromeLauncher.launch({chromePath:process.env.CHROME_PATH,
-    chromeFlags:makeChromeFlags(arm),ignoreDefaultFlags:true,logLevel:'error'});
+    chromeFlags,ignoreDefaultFlags:true,logLevel:'error'});
   let browser;
   try {
     browser=await puppeteer.connect({browserURL:`http://127.0.0.1:${chrome.port}`,
@@ -133,7 +134,7 @@ async function trial(block,arm) {
       frame:traceSummary(result.artifacts.Trace,rawFcp,
         Math.max(resources.css,resources.avif,resources.lastFont)),
       traceEvents:result.artifacts.Trace.traceEvents?.length || 0,
-      disabledFeatures:chrome.flags.filter(x=>x.startsWith('--disable-features='))};
+      disabledFeatures:chromeFlags.filter(x=>x.startsWith('--disable-features='))};
     const settings=lhr.configSettings;
     if(lhr.finalUrl!==URL || lhr.lighthouseVersion!=='12.6.1' ||
       settings.throttlingMethod!=='simulate' || settings.throttling.rttMs!==150 ||
