@@ -106,6 +106,35 @@ jobs:
           configPath: ./.github/lighthouse-artifact-config.json
           uploadArtifacts: true
 
+      - name: Report per-run numbers
+        if: always()
+        run: |
+          set -euo pipefail
+          # Отчёт по каждому прогону, а не только медиана: решение о пороге
+          # принимается по разбросу, и он должен быть виден в аннотациях.
+          results=$(find "$GITHUB_WORKSPACE" /tmp -maxdepth 5 -type d -name '.lighthouseci' 2>/dev/null | head -1)
+          if [ -z "$results" ]; then
+            echo "::notice::каталог .lighthouseci не найден — per-run числа недоступны"
+            exit 0
+          fi
+          python3 scripts/runner_lhr_extract.py "$results" --out /tmp/artifact-runs.json || true
+          python3 - /tmp/artifact-runs.json <<'PY'
+          import json, sys
+          try:
+              data = json.load(open(sys.argv[1]))
+          except Exception as exc:
+              print(f'::notice::не удалось прочитать извлечение: {exc}')
+              raise SystemExit(0)
+          for report in data.get('reports', []):
+              url = (report.get('url') or '?').replace('http://127.0.0.1:4300', '') or '/'
+              metrics = report['metrics']
+              print(
+                  f"::notice::artifact {url} | FCP {metrics['fcp']} | "
+                  f"LCP {metrics['lcp']} | TBT {metrics['tbt']} | "
+                  f"TTI {metrics['tti']} | main-thread {report['main_thread']['total_ms']}"
+              )
+          PY
+
       - name: Stop artifact server
         if: always()
         run: |
