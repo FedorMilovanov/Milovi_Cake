@@ -855,16 +855,24 @@ jobs:
           monitor=$!
           trap 'kill "$monitor" 2>/dev/null; wait "$monitor" 2>/dev/null' EXIT
           echo '::notice title=Native investigation::Debugger attachment changes timing; primary result remains unchanged'
+          # GitHub invokes bash with -e: preserve failures, but first stop the
+          # debugger and publish the evidence instead of exiting mid-pipeline.
+          set +e
           npx playwright test tests/video-posters.spec.js \
             --project=webkit-desktop --project=webkit-mobile \
             --grep='gallery can close an active video|photo-only gallery can repeatedly open and close' \
             --repeat-each=4 --workers=1 --retries=0 --reporter=list,github \
             2>&1 | tee "$RUNNER_TEMP/webkit-native.log"
-          result=${PIPESTATUS[0]}
+          statuses=("${PIPESTATUS[@]}")
+          result=${statuses[0]}
+          if [ "$result" -eq 0 ] && [ "${statuses[1]}" -ne 0 ]; then result=${statuses[1]}; fi
           kill "$monitor"
           wait "$monitor"
+          monitor_result=$?
+          set -e
           trap - EXIT
           python3 scripts/webkit_native_monitor.py summary "$RUNNER_TEMP/native-traces"
+          if [ "$result" -eq 0 ] && [ "$monitor_result" -ne 0 ]; then result=$monitor_result; fi
           exit "$result"
       - name: Upload native investigation artifacts
         if: always() && steps.native_tests.outcome != 'skipped'

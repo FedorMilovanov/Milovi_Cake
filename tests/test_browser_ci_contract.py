@@ -64,6 +64,11 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         self.assertIn('Debugger attachment changes timing', native)
         self.assertIn('--repeat-each=4 --workers=1 --retries=0', native)
         self.assertIn('scripts/webkit_native_monitor.py summary', native)
+        tests_step = native.split('- name: Compare unchanged gallery under native debugger', 1)[1].split('\n      - name:', 1)[0]
+        self.assertIn('set +e', tests_step)
+        self.assertIn('statuses=("${PIPESTATUS[@]}")', tests_step)
+        self.assertIn('exit "$result"', tests_step)
+        self.assertLess(tests_step.index('scripts/webkit_native_monitor.py summary'), tests_step.index('exit "$result"'))
         self.assertNotIn('continue-on-error', native)
 
     def test_audio_investigation_uses_isolated_source_and_keeps_assertions(self):
