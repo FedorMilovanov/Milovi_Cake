@@ -121,19 +121,34 @@ jobs:
           fi
           python3 scripts/runner_lhr_extract.py "$results" --out /tmp/artifact-runs.json || true
           python3 - /tmp/artifact-runs.json <<'PY'
-          import json, sys
+          import json, statistics as st, sys
           try:
               data = json.load(open(sys.argv[1]))
           except Exception as exc:
               print(f'::notice::не удалось прочитать извлечение: {exc}')
               raise SystemExit(0)
+
+          pages = {}
           for report in data.get('reports', []):
               url = (report.get('url') or '?').replace('http://127.0.0.1:4300', '') or '/'
-              metrics = report['metrics']
+              pages.setdefault(url, []).append(report)
+
+          def stat(values):
+              clean = [v for v in values if isinstance(v, (int, float))]
+              if not clean:
+                  return '?'
+              return f'{st.median(clean):.0f}/{max(clean):.0f}'
+
+          for url, reports in pages.items():
+              metrics = [r['metrics'] for r in reports]
               print(
-                  f"::notice::artifact {url} | FCP {metrics['fcp']} | "
-                  f"LCP {metrics['lcp']} | TBT {metrics['tbt']} | "
-                  f"TTI {metrics['tti']} | main-thread {report['main_thread']['total_ms']}"
+                  f"::notice::artifact {url} | n={len(reports)} "
+                  f"| FCP {stat([m['fcp'] for m in metrics])} "
+                  f"| LCP {stat([m['lcp'] for m in metrics])} "
+                  f"| TBT {stat([m['tbt'] for m in metrics])} "
+                  f"| work {stat([r['main_thread']['total_ms'] for r in reports])} "
+                  f"| bytes {stat([r['bytes']['total'] for r in reports])} "
+                  f"(медиана/максимум)"
               )
           PY
 
