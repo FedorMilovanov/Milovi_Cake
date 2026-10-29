@@ -4,6 +4,16 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      native_run_id:
+        description: 'Optional run ID containing a WebKit native investigation artifact'
+        required: false
+        type: string
+      native_run_attempt:
+        description: 'Artifact run attempt (default 1)'
+        required: false
+        default: '1'
+        type: string
 
 permissions:
   contents: read
@@ -14,6 +24,8 @@ concurrency:
 
 jobs:
   qa:
+    # A manual artifact inspection is separate from the mandatory PR QA.
+    if: github.event_name != 'workflow_dispatch' || inputs.native_run_id == ''
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
@@ -57,3 +69,30 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
           include-hidden-files: false
+
+  inspect-native-artifact:
+    name: Inspect an existing native investigation artifact
+    if: github.event_name == 'workflow_dispatch' && inputs.native_run_id != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - name: Checkout exact inspection code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Read selected thread stacks from the existing artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_ID: ${{ inputs.native_run_id }}
+          RUN_ATTEMPT: ${{ inputs.native_run_attempt }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$RUN_ID" =~ ^[0-9]+$ && "$RUN_ATTEMPT" =~ ^[0-9]+$ ]]
+          gh run download "$RUN_ID" --name "webkit-native-$RUN_ID-$RUN_ATTEMPT" --dir "$RUNNER_TEMP/native-artifact"
+          python3 scripts/webkit_trace_excerpt.py "$RUNNER_TEMP/native-artifact"
