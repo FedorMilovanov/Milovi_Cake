@@ -61,6 +61,27 @@ async function waitForServer() {
       peerTransitions: getComputedStyle(document.querySelector('#galleryGrid [data-id="v01"]')).transitionProperty,
     }));
     await card.click();
+    // Record the intervention immediately after opening the lightbox: if WebKit crashes
+    // during the interaction, an earlier verified precondition is still useful.
+    const readBackdrop = () => page.locator('#lbBackdropBg').evaluate((node) => getComputedStyle(node).filter);
+    const expectedDesktop = variant === 'no-backdrop-blur' ? 0 : 76;
+    const expectedMobile = variant === 'no-backdrop-blur' ? 0 : 56;
+    const waitBackdrop = (radius, targetBrightness) => page.waitForFunction(({ radius, targetBrightness }) => {
+      const filter = getComputedStyle(document.querySelector('#lbBackdropBg')).filter;
+      const blur = /blur\(([\d.]+)px\)/.exec(filter);
+      const brightness = /brightness\(([\d.]+)\)/.exec(filter);
+      return blur && brightness && Math.abs(Number(blur[1]) - radius) < 0.1 &&
+        Math.abs(Number(brightness[1]) - targetBrightness) < 0.001;
+    }, { radius, targetBrightness }, { timeout: 10000 });
+    await waitBackdrop(expectedDesktop, 0.15);
+    const earlyDesktop = await readBackdrop();
+    console.log(`::notice title=Desktop backdrop CSS precondition::${annotationValue(JSON.stringify({ engine, variant, earlyDesktop }))}`);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await waitBackdrop(expectedMobile, 0.13);
+    const earlyMobile = await readBackdrop();
+    console.log(`::notice title=Mobile backdrop CSS precondition::${annotationValue(JSON.stringify({ engine, variant, earlyMobile }))}`);
+    await page.setViewportSize({ width: 1440, height: 1100 });
+    await waitBackdrop(expectedDesktop, 0.15);
     await page.locator('#lbNext').click();
     await page.waitForTimeout(1400);
     const lightbox = await page.evaluate(() => ({
