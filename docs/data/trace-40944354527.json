@@ -1,0 +1,314 @@
+{
+ "reports": [
+  {
+   "by_event_ms": [
+    {
+     "event": "UpdateLayoutTree",
+     "ms": 2.5
+    },
+    {
+     "event": "RunTask",
+     "ms": 0.3
+    },
+    {
+     "event": "v8.compile",
+     "ms": 0.2
+    },
+    {
+     "event": "v8.run",
+     "ms": 0.1
+    },
+    {
+     "event": "ParseHTML",
+     "ms": 0.1
+    },
+    {
+     "event": "EvaluateScript",
+     "ms": 0.0
+    },
+    {
+     "event": "EventDispatch",
+     "ms": 0.0
+    },
+    {
+     "event": "ScriptCompiled",
+     "ms": 0.0
+    },
+    {
+     "event": "v8.newInstance",
+     "ms": 0.0
+    },
+    {
+     "event": "ScriptCatchup",
+     "ms": 0.0
+    }
+   ],
+   "by_group_ms": {
+    "EventDispatch": 0.0,
+    "\u0432\u044b\u043f\u043e\u043b\u043d\u0435\u043d\u0438\u0435 \u0441\u043a\u0440\u0438\u043f\u0442\u043e\u0432": 0.2,
+    "\u043a\u043e\u043c\u043f\u0438\u043b\u044f\u0446\u0438\u044f JS": 0.2,
+    "\u043f\u0430\u0440\u0441\u0438\u043d\u0433 HTML": 0.1,
+    "\u043f\u0435\u0440\u0435\u0441\u0447\u0451\u0442 \u0441\u0442\u0438\u043b\u0435\u0439": 2.5,
+    "\u0441\u043b\u0443\u0436\u0435\u0431\u043d\u043e\u0435": 0.3
+   },
+   "long_tasks": [],
+   "main_thread_work_ms": 3.3,
+   "network": {
+    "finished_before_paint": 50,
+    "in_flight_at_paint": [
+     {
+      "end_ms": 959.7,
+      "start_ms": 567.4,
+      "still_pending": false,
+      "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+     },
+     {
+      "end_ms": 959.5,
+      "start_ms": 567.5,
+      "still_pending": false,
+      "url": "https://milovicake.ru/js/mc-2026.js?v=20260916r02"
+     },
+     {
+      "end_ms": 959.2,
+      "start_ms": 567.6,
+      "still_pending": false,
+      "url": "https://milovicake.ru/js/v20-faq-fix.js?v=20260728r27"
+     },
+     {
+      "end_ms": 974.3,
+      "start_ms": 616.5,
+      "still_pending": false,
+      "url": "https://milovicake.ru/manifest.json"
+     },
+     {
+      "end_ms": 1060.7,
+      "start_ms": 758.5,
+      "still_pending": false,
+      "url": "https://fonts.gstatic.com/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+     },
+     {
+      "end_ms": 1060.3,
+      "start_ms": 758.7,
+      "still_pending": false,
+      "url": "https://fonts.gstatic.com/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+     },
+     {
+      "end_ms": 1061.7,
+      "start_ms": 759.0,
+      "still_pending": false,
+      "url": "https://fonts.gstatic.com/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+     },
+     {
+      "end_ms": 1061.4,
+      "start_ms": 764.2,
+      "still_pending": false,
+      "url": "https://fonts.gstatic.com/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+     },
+     {
+      "end_ms": 1061.0,
+      "start_ms": 815.2,
+      "still_pending": false,
+      "url": "https://fonts.gstatic.com/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+     },
+     {
+      "end_ms": 1062.5,
+      "start_ms": 842.3,
+      "still_pending": false,
+      "url": "https://fonts.gstatic.com/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYp3tKky2F7i6C.woff2"
+     },
+     {
+      "end_ms": 1063.0,
+      "start_ms": 932.0,
+      "still_pending": false,
+      "url": "https://milovicake.ru/img/viktoria-480.avif"
+     }
+    ],
+    "requests_total": 49
+   },
+   "threads": [
+    {
+     "busy_ms": 3.3,
+     "thread": "CrRendererMain"
+    },
+    {
+     "busy_ms": 3.3,
+     "thread": "VizCompositorThread"
+    },
+    {
+     "busy_ms": 1.1,
+     "thread": "CrBrowserMain"
+    },
+    {
+     "busy_ms": 0.3,
+     "thread": "Chrome_DevToolsHandlerThread"
+    },
+    {
+     "busy_ms": 0.1,
+     "thread": "Chrome_ChildIOThread"
+    },
+    {
+     "busy_ms": 0.0,
+     "thread": "Chrome_IOThread"
+    }
+   ],
+   "timeline": [],
+   "trace_file": "/tmp/trace-1/report-0.trace.json",
+   "window": {
+    "end_ms": 956.8,
+    "first_paint_ms": 956.8,
+    "gap_ms": 3.3,
+    "last_resource": "https://milovicake.ru/img/head_mobile-640.avif",
+    "start_ms": 953.5
+   }
+  },
+  {
+   "by_event_ms": [
+    {
+     "event": "EventDispatch",
+     "ms": 0.2
+    },
+    {
+     "event": "ParseAuthorStyleSheet",
+     "ms": 0.2
+    },
+    {
+     "event": "RunTask",
+     "ms": 0.1
+    },
+    {
+     "event": "FunctionCall",
+     "ms": 0.1
+    },
+    {
+     "event": "v8.callFunction",
+     "ms": 0.0
+    },
+    {
+     "event": "v8.newInstance",
+     "ms": 0.0
+    },
+    {
+     "event": "ScriptCatchup",
+     "ms": 0.0
+    }
+   ],
+   "by_group_ms": {
+    "EventDispatch": 0.2,
+    "\u0432\u044b\u043f\u043e\u043b\u043d\u0435\u043d\u0438\u0435 \u0441\u043a\u0440\u0438\u043f\u0442\u043e\u0432": 0.1,
+    "\u043f\u0430\u0440\u0441\u0438\u043d\u0433 CSS": 0.2,
+    "\u0441\u043b\u0443\u0436\u0435\u0431\u043d\u043e\u0435": 0.1
+   },
+   "long_tasks": [],
+   "main_thread_work_ms": 0.7,
+   "network": {
+    "finished_before_paint": 46,
+    "in_flight_at_paint": [
+     {
+      "end_ms": 226.0,
+      "start_ms": 127.6,
+      "still_pending": false,
+      "url": "https://milovicake.ru/img/bento_1-mobile-640.avif"
+     },
+     {
+      "end_ms": 225.5,
+      "start_ms": 128.0,
+      "still_pending": false,
+      "url": "https://milovicake.ru/css/style.css?v=20261023r02"
+     },
+     {
+      "end_ms": 240.7,
+      "start_ms": 128.0,
+      "still_pending": false,
+      "url": "https://milovicake.ru/js/consent-analytics.js"
+     },
+     {
+      "end_ms": 240.4,
+      "start_ms": 159.6,
+      "still_pending": false,
+      "url": "https://milovicake.ru/img/gallery/video-07-bento-bday-poster.webp"
+     },
+     {
+      "end_ms": 258.2,
+      "start_ms": 159.7,
+      "still_pending": false,
+      "url": "https://milovicake.ru/img/gallery/gallery-27-preview.avif"
+     },
+     {
+      "end_ms": 285.5,
+      "start_ms": 180.9,
+      "still_pending": false,
+      "url": "https://milovicake.ru/img/gallery/video-06-bento-love-poster.webp"
+     },
+     {
+      "end_ms": 289.7,
+      "start_ms": 185.5,
+      "still_pending": false,
+      "url": "https://milovicake.ru/img/gallery/gallery-30-preview.avif"
+     },
+     {
+      "end_ms": 288.6,
+      "start_ms": 185.6,
+      "still_pending": false,
+      "url": "https://milovicake.ru/img/bento_1-card.avif"
+     },
+     {
+      "end_ms": 289.1,
+      "start_ms": 185.6,
+      "still_pending": false,
+      "url": "https://milovicake.ru/img/gallery/gallery-27-card.avif"
+     },
+     {
+      "end_ms": 359.5,
+      "start_ms": 185.7,
+      "still_pending": false,
+      "url": "https://milovicake.ru/img/bento_maxi.avif"
+     },
+     {
+      "end_ms": 360.2,
+      "start_ms": 185.9,
+      "still_pending": false,
+      "url": "https://milovicake.ru/manifest.json"
+     }
+    ],
+    "requests_total": 45
+   },
+   "threads": [
+    {
+     "busy_ms": 4.4,
+     "thread": "VizCompositorThread"
+    },
+    {
+     "busy_ms": 1.6,
+     "thread": "CrBrowserMain"
+    },
+    {
+     "busy_ms": 0.7,
+     "thread": "CrRendererMain"
+    },
+    {
+     "busy_ms": 0.5,
+     "thread": "Chrome_DevToolsHandlerThread"
+    },
+    {
+     "busy_ms": 0.1,
+     "thread": "Chrome_ChildIOThread"
+    },
+    {
+     "busy_ms": 0.1,
+     "thread": "Chrome_IOThread"
+    }
+   ],
+   "timeline": [],
+   "trace_file": "/tmp/trace-2/report-0.trace.json",
+   "window": {
+    "end_ms": 194.4,
+    "first_paint_ms": 194.4,
+    "gap_ms": 4.5,
+    "last_resource": "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600",
+    "start_ms": 190.0
+   }
+  }
+ ],
+ "run_id": "40944354527",
+ "sha": "ecc437c0bef455b564c551432daffb0fa6244d03"
+}
