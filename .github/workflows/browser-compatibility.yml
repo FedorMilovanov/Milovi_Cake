@@ -398,7 +398,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        variant: [original, no-filter-interpolation, release-grid-media]
+        variant: [original, no-filter-interpolation, release-grid-media, no-backdrop-blur]
     env:
       HOME: /root
       MILOVI_BROWSER_COMPAT: '1'
@@ -437,6 +437,9 @@ jobs:
           elif [ '${{ matrix.variant }}' = 'release-grid-media' ]; then
             python3 scripts/gallery_media_experiment.py js/gallery/main.js "$RUNNER_TEMP/gallery-experiment.js"
             cp "$RUNNER_TEMP/gallery-experiment.js" js/gallery/main.js
+          elif [ '${{ matrix.variant }}' = 'no-backdrop-blur' ]; then
+            python3 scripts/gallery_filter_experiment.py --no-backdrop-blur css/gallery/gallery-2026.css "$RUNNER_TEMP/gallery-experiment.css"
+            cp "$RUNNER_TEMP/gallery-experiment.css" css/gallery/gallery-2026.css
           fi
           echo '::notice title=WebKit gallery comparison::Variant ${{ matrix.variant }}; browser and assertions remain unchanged'
 
@@ -467,7 +470,7 @@ jobs:
       - name: Measure grid-media lifecycle
         shell: bash
         id: media_probe
-        if: ${{ !cancelled() && steps.filter_tests.outcome != 'skipped' && matrix.variant != 'no-filter-interpolation' }}
+        if: ${{ !cancelled() && steps.filter_tests.outcome != 'skipped' && matrix.variant != 'no-filter-interpolation' && matrix.variant != 'no-backdrop-blur' }}
         run: |
           set -o pipefail
           python3 -m http.server 4173 --bind 127.0.0.1 > "$RUNNER_TEMP/media-http.log" 2>&1 &

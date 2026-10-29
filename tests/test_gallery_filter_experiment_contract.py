@@ -5,7 +5,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from gallery_filter_experiment import remove_explicit_filter_transitions
+from gallery_filter_experiment import remove_backdrop_blur, remove_explicit_filter_transitions
 
 
 class GalleryFilterExperimentContractTest(unittest.TestCase):
@@ -21,6 +21,20 @@ class GalleryFilterExperimentContractTest(unittest.TestCase):
         self.assertNotIn('filter .45s ease', result)
         self.assertIn('filter: blur(8px) brightness(0.7)', result)
         self.assertIn('filter:saturate(1.05) brightness(1.02) contrast(1.02)', result)
+
+    def test_backdrop_ablation_changes_only_two_radius_values(self):
+        source = (ROOT / 'css/gallery/gallery-2026.css').read_text(encoding='utf-8')
+        result = remove_backdrop_blur(source)
+        self.assertEqual(result, source.replace('filter:blur(76px) brightness(.15) saturate(1.5);',
+                                                'filter:blur(0px) brightness(.15) saturate(1.5);')
+                                 .replace('filter:blur(56px) brightness(.13) saturate(1.35);',
+                                          'filter:blur(0px) brightness(.13) saturate(1.35);'))
+        for marker in ('filter:blur(76px) brightness(.15) saturate(1.5);',
+                       'filter:blur(56px) brightness(.13) saturate(1.35);'):
+            with self.assertRaises(ValueError):
+                remove_backdrop_blur(source.replace(marker, ''))
+            with self.assertRaises(ValueError):
+                remove_backdrop_blur(source + marker)
 
     def test_missing_or_duplicate_marker_rejects_the_experiment(self):
         source = (ROOT / 'css/gallery/gallery-2026.css').read_text(encoding='utf-8')

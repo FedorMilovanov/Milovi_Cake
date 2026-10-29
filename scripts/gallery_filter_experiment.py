@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """Create a temporary gallery CSS variant for a controlled WebKit comparison.
 
-The original source is never modified by this script. Filter effects, other
-transitions, tests, and browser configuration remain in place; only the six
-explicit filter transition entries are removed in the output file.
+The original source is never modified. Select either the interpolation-only
+variant or a separate backdrop-blur-only variant; browser tests are unchanged.
 """
 from __future__ import annotations
 
@@ -32,14 +31,31 @@ def remove_explicit_filter_transitions(source: str) -> str:
     return result
 
 
+def remove_backdrop_blur(source: str) -> str:
+    # Only change the two lightbox backdrop blur radii. Leave brightness,
+    # saturation, transform, animation and every other filter untouched.
+    markers = (
+        'filter:blur(76px) brightness(.15) saturate(1.5);',
+        'filter:blur(56px) brightness(.13) saturate(1.35);',
+    )
+    for marker in markers:
+        if source.count(marker) != 1:
+            raise ValueError(f'Expected one occurrence of CSS marker: {marker!r}')
+        source = source.replace(marker, marker.replace('blur(76px)', 'blur(0px)').replace('blur(56px)', 'blur(0px)'), 1)
+    return source
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--no-backdrop-blur', action='store_true', help='remove only the two backdrop blur radii')
     parser.add_argument('source', type=Path)
     parser.add_argument('output', type=Path)
     args = parser.parse_args()
     if args.source.resolve() == args.output.resolve():
         parser.error('source and output must be different files')
-    args.output.write_text(remove_explicit_filter_transitions(args.source.read_text(encoding='utf-8')), encoding='utf-8')
+    source = args.source.read_text(encoding='utf-8')
+    variant = remove_backdrop_blur(source) if args.no_backdrop_blur else remove_explicit_filter_transitions(source)
+    args.output.write_text(variant, encoding='utf-8')
 
 
 if __name__ == '__main__':

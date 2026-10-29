@@ -245,11 +245,13 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         comparison = workflow.split('  webkit-filter-reference:', 1)[1]
         self.assertIn('needs: compatibility', comparison)
         self.assertIn("needs.compatibility.result == 'failure'", comparison)
-        self.assertIn('variant: [original, no-filter-interpolation, release-grid-media]', comparison)
+        self.assertIn('variant: [original, no-filter-interpolation, release-grid-media, no-backdrop-blur]', comparison)
         package = json.loads((ROOT / 'package.json').read_text(encoding='utf-8'))
         version = package['devDependencies']['playwright']
         self.assertIn(f'image: mcr.microsoft.com/playwright:v{version}-noble', comparison)
         self.assertIn('scripts/gallery_filter_experiment.py', comparison)
+        self.assertIn('scripts/gallery_filter_experiment.py --no-backdrop-blur', comparison)
+        self.assertIn("matrix.variant != 'no-backdrop-blur'", comparison)
         self.assertIn('scripts/gallery_filter_probe.cjs', comparison)
         self.assertIn('MILOVI_FILTER_SERVER_PID', comparison)
         self.assertIn('kill -0 "$server_pid"', comparison)

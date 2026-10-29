@@ -26,7 +26,7 @@ async function waitForServer() {
 
 (async () => {
   if (!['chromium', 'webkit'].includes(engine)) throw new Error(`Unknown engine: ${engine}`);
-  if (!['original', 'no-filter-interpolation'].includes(variant)) throw new Error(`Unknown variant: ${variant}`);
+  if (!['original', 'no-filter-interpolation', 'no-backdrop-blur'].includes(variant)) throw new Error(`Unknown variant: ${variant}`);
   await waitForServer();
   if (process.env.MILOVI_FILTER_SERVER_PID) {
     // A port collision must not silently turn a comparison into a probe of an
@@ -68,11 +68,27 @@ async function waitForServer() {
       mediaFilter: getComputedStyle(document.querySelector('#lbWrapper .swiper-slide-active .lb-media')).filter,
       mediaTransitions: getComputedStyle(document.querySelector('#lbWrapper .swiper-slide-active .lb-media')).transitionProperty,
       counter: document.querySelector('#lbCounter').textContent,
+      backdropFilter: getComputedStyle(document.querySelector('#lbBackdropBg')).filter,
+      backdropImage: getComputedStyle(document.querySelector('#lbBackdropBg')).backgroundImage,
     }));
-    const evidence = { engine, variant, hover, lightbox, errors };
+    await page.setViewportSize({ width: 390, height: 844 });
+    const expectedMobileBlur = variant === 'no-backdrop-blur' ? 0 : 56;
+    await page.waitForFunction((radius) => {
+      const filter = getComputedStyle(document.querySelector('#lbBackdropBg')).filter;
+      const match = /blur\(([\d.]+)px\)/.exec(filter);
+      const brightness = /brightness\(([\d.]+)\)/.exec(filter);
+      return match && brightness && Math.abs(Number(match[1]) - radius) < 0.1 &&
+        Math.abs(Number(brightness[1]) - 0.13) < 0.001;
+    }, expectedMobileBlur, { timeout: 10000 });
+    const mobileBackdropFilter = await page.locator('#lbBackdropBg').evaluate((element) => getComputedStyle(element).filter);
+    const evidence = { engine, variant, hover, lightbox, mobileBackdropFilter, errors };
     console.log(`::notice title=Gallery filter precondition::${annotationValue(JSON.stringify(evidence))}`);
     if (!hover.supportsHover || !hover.peerFilter.includes('blur(')) throw new Error('Real hover effect was not observed');
     if (lightbox.counter !== '02 / 46' || errors.length) throw new Error('Gallery interaction or page errors invalidated the probe');
+    if (!lightbox.backdropImage.startsWith('url(')) throw new Error('Backdrop image was not applied');
+    const blurRadius = (filter) => Number(/blur\(([\d.]+)px\)/.exec(filter)?.[1] ?? Infinity);
+    if (variant === 'no-backdrop-blur' && (blurRadius(lightbox.backdropFilter) !== 0 || blurRadius(mobileBackdropFilter) !== 0)) throw new Error('Backdrop blur intervention did not apply');
+    if (variant === 'original' && (Math.abs(blurRadius(lightbox.backdropFilter) - 76) >= 0.1 || Math.abs(blurRadius(mobileBackdropFilter) - 56) >= 0.1)) throw new Error('Original responsive backdrop blur was not observed');
     if (variant === 'original' && lightbox.eventCount === 0) throw new Error('No filter transition observed in the original variant');
     if (variant === 'no-filter-interpolation' && lightbox.eventCount !== 0) throw new Error('The experimental variant still emitted filter transitions');
     await context.close();
