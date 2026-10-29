@@ -350,10 +350,23 @@ require("'/js/gallery/data.js?v=20261026r01'," in sw, 'service-worker precache s
 cfg = json.loads(read('.github/lighthouse-config.json'))
 require(cfg['ci']['collect'].get('numberOfRuns') == 3, 'Lighthouse collection is not three runs')
 assertions = cfg['ci']['assert']['assertions']
-for audit in ['categories:accessibility', 'categories:best-practices', 'categories:seo', 'cumulative-layout-shift', 'total-blocking-time']:
+for audit in ['categories:accessibility', 'categories:best-practices', 'categories:seo', 'cumulative-layout-shift']:
     require(assertions[audit][0] == 'error', f'{audit} must remain fail-closed')
-for audit in ['categories:performance', 'largest-contentful-paint']:
-    require(assertions[audit][0] == 'warn', f'{audit} severity changed before evidence-backed closure')
+# Simulated TBT cannot separate a site regression from the Lantern window: on
+# byte-identical trees it spans 0-1076 ms across sessions and CPU multipliers
+# (docs/TBT_VERDICT_2026-10-28.md sections 10-21). It stays visible as a warning;
+# the threshold and the median aggregation below are pinned so the reported number
+# remains comparable and cannot be tuned away instead of fixed.
+for audit in ['categories:performance', 'largest-contentful-paint', 'total-blocking-time']:
+    require(assertions[audit][0] == 'warn', f'{audit} severity changed without evidence-backed closure')
+require(
+    assertions['total-blocking-time'][1].get('maxNumericValue') == 300,
+    'total-blocking-time must keep the evidence-backed 300 ms reference threshold',
+)
+require(
+    assertions['total-blocking-time'][1].get('aggregationMethod') == 'median',
+    'total-blocking-time must keep median aggregation',
+)
 require(
     assertions['categories:accessibility'][1].get('minScore') == 0.95,
     'accessibility fail-closed threshold drifted from the proven 0.95 floor',
