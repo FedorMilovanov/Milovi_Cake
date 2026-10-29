@@ -10,7 +10,8 @@
   --gap: 3px;
 }
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; background: var(--cream); }
+/* Implicit focus and scroll-into-view requests must not keep moving under a pointer. */
+html { background: var(--cream); }
 body {
   background:
     radial-gradient(circle at 20% 10%, rgba(212,168,92,0.08), transparent 26%),

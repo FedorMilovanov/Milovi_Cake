@@ -517,6 +517,24 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     });
   });
 
+  for (const motion of ['no-preference', 'reduce']) {
+    test(`gallery automatic focus scrolling remains immediate (${motion})`, async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: motion });
+      await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+      const response = await page.goto('/gallery/', { waitUntil: 'load' });
+      expect(response.status()).toBe(200);
+      // The browser also uses the root scroll behavior for implicit focus and
+      // scroll-into-view requests, not only for deliberate anchor navigation.
+      expect(await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior)).toBe('auto');
+      const filter = page.locator('#gxFilters [data-filter="pavlova"]');
+      await filter.evaluate((element) => element.scrollIntoView({ behavior: 'auto', block: 'center' }));
+      await filter.click();
+      await expect(filter).toHaveAttribute('aria-pressed', 'true');
+      await expect(page.locator('#galleryGrid')).not.toHaveAttribute('data-hydrating', 'true');
+      await expect(page.locator('#galleryGrid .card')).toHaveCount(2);
+    });
+  }
+
   test('gallery empty state can be reset after a category has no works', async ({ page }, testInfo) => {
     if (testInfo.project.name.startsWith('firefox-')) {
       await page.addInitScript(() => {
