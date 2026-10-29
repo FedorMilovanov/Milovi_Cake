@@ -3,6 +3,25 @@
  "reports": [
   {
    "benchmark_index": 2084,
+   "blocking": {
+    "bootup_js_ms": 618.9,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 1609
+    },
+    "non_composited_animations": 13,
+    "render_blocking": {
+     "items": 6,
+     "overall": 0.0,
+     "sum": 1215.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 290.0,
+     "sum": 24190.0
+    }
+   },
    "bytes": {
     "requests": 26,
     "total": 401460.0
@@ -93,10 +112,13 @@
     "tti": 4380.7
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 3472.2,
-    "lcp": 4271.7,
-    "load": null,
+    "dom_content_loaded": 867.0,
+    "fcp": 2447.0,
+    "first_meaningful_paint": null,
+    "first_paint": 2447.0,
+    "lcp": 2447.0,
+    "load": 891.0,
+    "si": 2602.0,
     "tbt": null
    },
    "run_warnings": [],
@@ -111,6 +133,25 @@
   },
   {
    "benchmark_index": 2607.5,
+   "blocking": {
+    "bootup_js_ms": 101.4,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 1609
+    },
+    "non_composited_animations": 14,
+    "render_blocking": {
+     "items": 4,
+     "overall": 0.0,
+     "sum": 911.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 150.0,
+     "sum": 24226.0
+    }
+   },
    "bytes": {
     "requests": 26,
     "total": 401553.0
@@ -181,10 +222,13 @@
     "tti": 3900.5
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 1822.1,
-    "lcp": 2125.5,
-    "load": null,
+    "dom_content_loaded": 307.0,
+    "fcp": 169.0,
+    "first_meaningful_paint": null,
+    "first_paint": 169.0,
+    "lcp": 169.0,
+    "load": 330.0,
+    "si": 420.0,
     "tbt": null
    },
    "run_warnings": [],
@@ -199,6 +243,25 @@
   },
   {
    "benchmark_index": 2541,
+   "blocking": {
+    "bootup_js_ms": 134.3,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 1609
+    },
+    "non_composited_animations": 13,
+    "render_blocking": {
+     "items": 4,
+     "overall": 114.0,
+     "sum": 949.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 24190.0
+    }
+   },
    "bytes": {
     "requests": 26,
     "total": 401436.0
@@ -269,10 +332,13 @@
     "tti": 4274.0
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 3764.5,
-    "lcp": 4266.1,
-    "load": null,
+    "dom_content_loaded": 1168.0,
+    "fcp": 2327.0,
+    "first_meaningful_paint": null,
+    "first_paint": 2327.0,
+    "lcp": 2327.0,
+    "load": 1195.0,
+    "si": 2478.0,
     "tbt": null
    },
    "run_warnings": [],
@@ -287,6 +353,25 @@
   },
   {
    "benchmark_index": 2504,
+   "blocking": {
+    "bootup_js_ms": 317.9,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 457
+    },
+    "non_composited_animations": 28,
+    "render_blocking": {
+     "items": 1,
+     "overall": 156.0,
+     "sum": 156.0
+    },
+    "unused_css": {
+     "items": 0,
+     "overall": 0.0,
+     "sum": 0.0
+    }
+   },
    "bytes": {
     "requests": 48,
     "total": 4876702.0
@@ -377,10 +462,13 @@
     "tti": 2503.3
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 1155.5,
-    "lcp": 2500.7,
-    "load": null,
+    "dom_content_loaded": 188.0,
+    "fcp": 161.0,
+    "first_meaningful_paint": null,
+    "first_paint": 161.0,
+    "lcp": 320.0,
+    "load": 607.0,
+    "si": 513.0,
     "tbt": null
    },
    "run_warnings": [],
@@ -395,6 +483,25 @@
   },
   {
    "benchmark_index": 2522.5,
+   "blocking": {
+    "bootup_js_ms": 231.2,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 457
+    },
+    "non_composited_animations": 27,
+    "render_blocking": {
+     "items": 1,
+     "overall": 150.0,
+     "sum": 150.0
+    },
+    "unused_css": {
+     "items": 0,
+     "overall": 0.0,
+     "sum": 0.0
+    }
+   },
    "bytes": {
     "requests": 48,
     "total": 5406842.0
@@ -440,10 +547,13 @@
     "tti": 1953.2
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 1203.2,
-    "lcp": 1953.2,
-    "load": null,
+    "dom_content_loaded": 5401.0,
+    "fcp": 5368.0,
+    "first_meaningful_paint": null,
+    "first_paint": 5368.0,
+    "lcp": 5400.0,
+    "load": 5804.0,
+    "si": 5696.0,
     "tbt": null
    },
    "run_warnings": [],
@@ -458,6 +568,25 @@
   },
   {
    "benchmark_index": 2588.5,
+   "blocking": {
+    "bootup_js_ms": 185.4,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 457
+    },
+    "non_composited_animations": 28,
+    "render_blocking": {
+     "items": 1,
+     "overall": 156.0,
+     "sum": 156.0
+    },
+    "unused_css": {
+     "items": 0,
+     "overall": 0.0,
+     "sum": 0.0
+    }
+   },
    "bytes": {
     "requests": 48,
     "total": 5407564.0
@@ -513,10 +642,13 @@
     "tti": 1934.2
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 1155.9,
-    "lcp": 1934.2,
-    "load": null,
+    "dom_content_loaded": 331.0,
+    "fcp": 295.0,
+    "first_meaningful_paint": null,
+    "first_paint": 295.0,
+    "lcp": 295.0,
+    "load": 811.0,
+    "si": 639.0,
     "tbt": null
    },
    "run_warnings": [],
@@ -531,6 +663,25 @@
   },
   {
    "benchmark_index": 2546.5,
+   "blocking": {
+    "bootup_js_ms": 95.0,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 330
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 456.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 35841.0
+    }
+   },
    "bytes": {
     "requests": 23,
     "total": 345399.0
@@ -596,10 +747,13 @@
     "tti": 3544.7
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 1628.5,
-    "lcp": 3522.2,
-    "load": null,
+    "dom_content_loaded": 207.0,
+    "fcp": 196.0,
+    "first_meaningful_paint": null,
+    "first_paint": 196.0,
+    "lcp": 384.0,
+    "load": 413.0,
+    "si": 435.0,
     "tbt": null
    },
    "run_warnings": [],
@@ -614,6 +768,25 @@
   },
   {
    "benchmark_index": 2556,
+   "blocking": {
+    "bootup_js_ms": 76.5,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 330
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 475.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 35841.0
+    }
+   },
    "bytes": {
     "requests": 23,
     "total": 345196.0
@@ -674,10 +847,13 @@
     "tti": 3560.9
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 1641.4,
-    "lcp": 3538.4,
-    "load": null,
+    "dom_content_loaded": 247.0,
+    "fcp": 245.0,
+    "first_meaningful_paint": null,
+    "first_paint": 245.0,
+    "lcp": 438.0,
+    "load": 422.0,
+    "si": 459.0,
     "tbt": null
    },
    "run_warnings": [],
@@ -692,6 +868,25 @@
   },
   {
    "benchmark_index": 2592.5,
+   "blocking": {
+    "bootup_js_ms": 70.1,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 330
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 476.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 300.0,
+     "sum": 35841.0
+    }
+   },
    "bytes": {
     "requests": 22,
     "total": 345357.0
@@ -737,10 +932,13 @@
     "tti": 3745.6
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 3363.1,
-    "lcp": 3738.1,
-    "load": null,
+    "dom_content_loaded": 343.0,
+    "fcp": 2343.0,
+    "first_meaningful_paint": null,
+    "first_paint": 2343.0,
+    "lcp": 2343.0,
+    "load": 445.0,
+    "si": 2371.0,
     "tbt": null
    },
    "run_warnings": [],
@@ -755,6 +953,25 @@
   },
   {
    "benchmark_index": 2585,
+   "blocking": {
+    "bootup_js_ms": 35.4,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 200
+    },
+    "non_composited_animations": 17,
+    "render_blocking": {
+     "items": 0,
+     "overall": 0.0,
+     "sum": 0.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 38606.0
+    }
+   },
    "bytes": {
     "requests": 21,
     "total": 491432.0
@@ -810,10 +1027,13 @@
     "tti": 3580.6
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 1129.9,
-    "lcp": 3573.1,
-    "load": null,
+    "dom_content_loaded": 619.0,
+    "fcp": 385.0,
+    "first_meaningful_paint": null,
+    "first_paint": 385.0,
+    "lcp": 819.0,
+    "load": 773.0,
+    "si": 918.0,
     "tbt": null
    },
    "run_warnings": [],
@@ -828,6 +1048,25 @@
   },
   {
    "benchmark_index": 2586.5,
+   "blocking": {
+    "bootup_js_ms": 32.3,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 200
+    },
+    "non_composited_animations": 17,
+    "render_blocking": {
+     "items": 0,
+     "overall": 0.0,
+     "sum": 0.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 38606.0
+    }
+   },
    "bytes": {
     "requests": 21,
     "total": 491352.0
@@ -903,10 +1142,13 @@
     "tti": 3556.7
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 1803.0,
-    "lcp": 3549.2,
-    "load": null,
+    "dom_content_loaded": 323.0,
+    "fcp": 340.0,
+    "first_meaningful_paint": null,
+    "first_paint": 340.0,
+    "lcp": 920.0,
+    "load": 588.0,
+    "si": 581.0,
     "tbt": null
    },
    "run_warnings": [],
@@ -921,6 +1163,25 @@
   },
   {
    "benchmark_index": 2569.5,
+   "blocking": {
+    "bootup_js_ms": 57.9,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 200
+    },
+    "non_composited_animations": 17,
+    "render_blocking": {
+     "items": 0,
+     "overall": 0.0,
+     "sum": 0.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 38606.0
+    }
+   },
    "bytes": {
     "requests": 21,
     "total": 491363.0
@@ -991,10 +1252,13 @@
     "tti": 2116.8
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 1556.2,
-    "lcp": 1556.2,
-    "load": null,
+    "dom_content_loaded": 74.0,
+    "fcp": 99.0,
+    "first_meaningful_paint": null,
+    "first_paint": 99.0,
+    "lcp": 99.0,
+    "load": 320.0,
+    "si": 355.0,
     "tbt": null
    },
    "run_warnings": [],
@@ -1009,6 +1273,25 @@
   },
   {
    "benchmark_index": 2603,
+   "blocking": {
+    "bootup_js_ms": 64.4,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 200
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 476.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 150.0,
+     "sum": 38606.0
+    }
+   },
    "bytes": {
     "requests": 18,
     "total": 471106.0
@@ -1059,10 +1342,13 @@
     "tti": 3318.2
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 3168.2,
-    "lcp": 3318.2,
-    "load": null,
+    "dom_content_loaded": 326.0,
+    "fcp": 1321.0,
+    "first_meaningful_paint": null,
+    "first_paint": 1321.0,
+    "lcp": 1321.0,
+    "load": 395.0,
+    "si": 1514.0,
     "tbt": null
    },
    "run_warnings": [],
@@ -1077,6 +1363,25 @@
   },
   {
    "benchmark_index": 2589.5,
+   "blocking": {
+    "bootup_js_ms": 59.4,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 200
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 476.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 38606.0
+    }
+   },
    "bytes": {
     "requests": 18,
     "total": 444327.0
@@ -1132,10 +1437,13 @@
     "tti": 3179.6
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 3097.1,
-    "lcp": 3172.1,
-    "load": null,
+    "dom_content_loaded": 252.0,
+    "fcp": 1338.0,
+    "first_meaningful_paint": null,
+    "first_paint": 1338.0,
+    "lcp": 1338.0,
+    "load": 413.0,
+    "si": 1588.0,
     "tbt": null
    },
    "run_warnings": [],
@@ -1150,6 +1458,25 @@
   },
   {
    "benchmark_index": 2565,
+   "blocking": {
+    "bootup_js_ms": 30.4,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 200
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 477.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 160.0,
+     "sum": 38606.0
+    }
+   },
    "bytes": {
     "requests": 19,
     "total": 470988.0
@@ -1215,10 +1542,13 @@
     "tti": 2573.7
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 1576.5,
-    "lcp": 1733.4,
-    "load": null,
+    "dom_content_loaded": 220.0,
+    "fcp": 220.0,
+    "first_meaningful_paint": null,
+    "first_paint": 220.0,
+    "lcp": 220.0,
+    "load": 375.0,
+    "si": 439.0,
     "tbt": null
    },
    "run_warnings": [],
@@ -1233,6 +1563,25 @@
   },
   {
    "benchmark_index": 2581,
+   "blocking": {
+    "bootup_js_ms": 21.3,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 146
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 456.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 150.0,
+     "sum": 39107.0
+    }
+   },
    "bytes": {
     "requests": 13,
     "total": 234046.0
@@ -1272,10 +1621,13 @@
     "tti": 3220.2
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 1550.7,
-    "lcp": 3220.2,
-    "load": null,
+    "dom_content_loaded": 169.0,
+    "fcp": 200.0,
+    "first_meaningful_paint": null,
+    "first_paint": 200.0,
+    "lcp": 303.0,
+    "load": 266.0,
+    "si": 370.0,
     "tbt": null
    },
    "run_warnings": [],
@@ -1290,6 +1642,25 @@
   },
   {
    "benchmark_index": 2563.5,
+   "blocking": {
+    "bootup_js_ms": 19.5,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 146
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 475.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 150.0,
+     "sum": 39107.0
+    }
+   },
    "bytes": {
     "requests": 13,
     "total": 233883.0
@@ -1329,10 +1700,13 @@
     "tti": 3238.9
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 1570.1,
-    "lcp": 3238.9,
-    "load": null,
+    "dom_content_loaded": 186.0,
+    "fcp": 202.0,
+    "first_meaningful_paint": null,
+    "first_paint": 202.0,
+    "lcp": 346.0,
+    "load": 265.0,
+    "si": 396.0,
     "tbt": null
    },
    "run_warnings": [],
@@ -1347,6 +1721,25 @@
   },
   {
    "benchmark_index": 2553.5,
+   "blocking": {
+    "bootup_js_ms": 27.6,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 146
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 475.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 160.0,
+     "sum": 39107.0
+    }
+   },
    "bytes": {
     "requests": 19,
     "total": 233832.0
@@ -1392,10 +1785,13 @@
     "tti": 2460.9
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 1571.1,
-    "lcp": 1760.7,
-    "load": null,
+    "dom_content_loaded": 97.0,
+    "fcp": 121.0,
+    "first_meaningful_paint": null,
+    "first_paint": 121.0,
+    "lcp": 121.0,
+    "load": 99.0,
+    "si": 320.0,
     "tbt": null
    },
    "run_warnings": [],
@@ -1410,6 +1806,25 @@
   },
   {
    "benchmark_index": 2592,
+   "blocking": {
+    "bootup_js_ms": 177.0,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 1324
+    },
+    "non_composited_animations": 8,
+    "render_blocking": {
+     "items": 4,
+     "overall": 0.0,
+     "sum": 949.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 160.0,
+     "sum": 25345.0
+    }
+   },
    "bytes": {
     "requests": 46,
     "total": 1690508.0
@@ -1475,10 +1890,13 @@
     "tti": 4616.8
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 1958.2,
-    "lcp": 2195.6,
-    "load": null,
+    "dom_content_loaded": 395.0,
+    "fcp": 286.0,
+    "first_meaningful_paint": null,
+    "first_paint": 286.0,
+    "lcp": 286.0,
+    "load": 539.0,
+    "si": 632.0,
     "tbt": null
    },
    "run_warnings": [],
@@ -1493,6 +1911,25 @@
   },
   {
    "benchmark_index": 2574,
+   "blocking": {
+    "bootup_js_ms": 229.2,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 1324
+    },
+    "non_composited_animations": 2,
+    "render_blocking": {
+     "items": 4,
+     "overall": 0.0,
+     "sum": 949.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 160.0,
+     "sum": 25345.0
+    }
+   },
    "bytes": {
     "requests": 46,
     "total": 1690524.0
@@ -1563,10 +2000,13 @@
     "tti": 4531.4
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 1887.8,
-    "lcp": 2125.3,
-    "load": null,
+    "dom_content_loaded": 359.0,
+    "fcp": 192.0,
+    "first_meaningful_paint": null,
+    "first_paint": 192.0,
+    "lcp": 192.0,
+    "load": 405.0,
+    "si": 503.0,
     "tbt": null
    },
    "run_warnings": [],
@@ -1581,6 +2021,25 @@
   },
   {
    "benchmark_index": 2586,
+   "blocking": {
+    "bootup_js_ms": 137.7,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 1324
+    },
+    "non_composited_animations": 2,
+    "render_blocking": {
+     "items": 4,
+     "overall": 0.0,
+     "sum": 949.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 160.0,
+     "sum": 25345.0
+    }
+   },
    "bytes": {
     "requests": 46,
     "total": 1690424.0
@@ -1651,10 +2110,13 @@
     "tti": 4365.1
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 1888.6,
-    "lcp": 2126.3,
-    "load": null,
+    "dom_content_loaded": 402.0,
+    "fcp": 256.0,
+    "first_meaningful_paint": null,
+    "first_paint": 256.0,
+    "lcp": 256.0,
+    "load": 529.0,
+    "si": 630.0,
     "tbt": null
    },
    "run_warnings": [],
@@ -1669,6 +2131,25 @@
   },
   {
    "benchmark_index": 2592.5,
+   "blocking": {
+    "bootup_js_ms": 14.0,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 55
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 276.0,
+     "sum": 300.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 280.0,
+     "sum": 39965.0
+    }
+   },
    "bytes": {
     "requests": 4,
     "total": 53912.0
@@ -1708,10 +2189,13 @@
     "tti": 1051.5
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 1051.5,
-    "lcp": 1051.5,
-    "load": null,
+    "dom_content_loaded": 258.0,
+    "fcp": 269.0,
+    "first_meaningful_paint": null,
+    "first_paint": 269.0,
+    "lcp": 269.0,
+    "load": 267.0,
+    "si": 456.0,
     "tbt": null
    },
    "run_warnings": [],
@@ -1726,6 +2210,25 @@
   },
   {
    "benchmark_index": 2602.5,
+   "blocking": {
+    "bootup_js_ms": 14.1,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 55
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 275.0,
+     "sum": 300.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 280.0,
+     "sum": 39965.0
+    }
+   },
    "bytes": {
     "requests": 4,
     "total": 53922.0
@@ -1765,10 +2268,13 @@
     "tti": 1051.4
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 1051.4,
-    "lcp": 1051.4,
-    "load": null,
+    "dom_content_loaded": 136.0,
+    "fcp": 145.0,
+    "first_meaningful_paint": null,
+    "first_paint": 145.0,
+    "lcp": 145.0,
+    "load": 144.0,
+    "si": 332.0,
     "tbt": null
    },
    "run_warnings": [],
@@ -1783,6 +2289,25 @@
   },
   {
    "benchmark_index": 2584,
+   "blocking": {
+    "bootup_js_ms": 13.9,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 55
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 274.0,
+     "sum": 300.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 270.0,
+     "sum": 39965.0
+    }
+   },
    "bytes": {
     "requests": 4,
     "total": 53889.0
@@ -1822,10 +2347,13 @@
     "tti": 1071.2
    },
    "observed": {
-    "dom_content_loaded": null,
-    "fcp": 1071.2,
-    "lcp": 1071.2,
-    "load": null,
+    "dom_content_loaded": 309.0,
+    "fcp": 342.0,
+    "first_meaningful_paint": null,
+    "first_paint": 342.0,
+    "lcp": 342.0,
+    "load": 311.0,
+    "si": 526.0,
     "tbt": null
    },
    "run_warnings": [],
