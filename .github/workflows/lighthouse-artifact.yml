@@ -1,0 +1,162 @@
+name: Lighthouse artifact
+
+# Аудит артефакта, а не живого URL.
+#
+# Живой аудит (lighthouse.yml) измеряет путь от раннера до CDN: те же байты
+# локально дают LCP около 2,0-2,4 с, через прод — 4,3 с (docs/TBT_VERDICT §29.4).
+# Поэтому LCP и TBT там вынужденно остаются warning-уровнем: гейтить ими
+# живой прогон — значит гейтить сеть раннера.
+#
+# Здесь измеряется сама страница: собранный `_site` отдаётся локально с gzip,
+# трафик до CDN отсутствует. Эти числа воспроизводимы, и по ним LCP/TBT можно
+# держать в error.
+
+on:
+  workflow_run:
+    workflows: ["Deploy to GitHub Pages"]
+    types: [completed]
+  workflow_dispatch:
+  push:
+    branches: ['arena/**']
+    paths:
+      - '.github/lighthouse-artifact-config.json'
+      - '.github/workflows/lighthouse-artifact.yml'
+      - 'scripts/serve_pages_artifact.py'
+      - 'css/**'
+      - 'js/**'
+      - 'img/**'
+      - '*.html'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lighthouse-artifact-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  artifact:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      AUDIT_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.AUDIT_SHA }}
+          persist-credentials: false
+
+      - name: Setup pinned Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+
+      - name: Build exact Pages artifact
+        run: |
+          set -euo pipefail
+          npm run build:pages
+          npm run audit:pages
+
+      - name: Serve artifact locally
+        run: |
+          set -euo pipefail
+          python3 scripts/serve_pages_artifact.py --port 4300 --root _site &
+          echo $! > /tmp/artifact-server.pid
+          for _ in $(seq 1 30); do
+            if python3 -c "import socket;socket.create_connection(('127.0.0.1',4300),1)" 2>/dev/null; then
+              echo "artifact server ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "artifact server did not start" >&2
+          exit 1
+
+      - name: Verify served bytes are the artifact
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import gzip, urllib.request
+          request = urllib.request.Request(
+              'http://127.0.0.1:4300/', headers={'Accept-Encoding': 'gzip'})
+          with urllib.request.urlopen(request, timeout=10) as response:
+              encoding = response.headers.get('Content-Encoding')
+              body = gzip.decompress(response.read()) if encoding == 'gzip' else response.read()
+          if encoding != 'gzip':
+              raise SystemExit(f'Pages отдаёт текст сжатым, а сервер — нет ({encoding})')
+          if b'<html' not in body.lower():
+              raise SystemExit('сервер отдал не HTML')
+          print(f'ok: gzip, {len(body)} байт HTML')
+          PY
+
+      - name: Audit artifact with Lighthouse
+        uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12
+        with:
+          urls: |
+            http://127.0.0.1:4300/
+            http://127.0.0.1:4300/gallery/
+            http://127.0.0.1:4300/svadebnye-torty/
+            http://127.0.0.1:4300/bento-torty/
+            http://127.0.0.1:4300/zakazat-tort-spb/
+            http://127.0.0.1:4300/o-konditere/
+            http://127.0.0.1:4300/prigorody/gatchina/
+            http://127.0.0.1:4300/privacy/
+          configPath: ./.github/lighthouse-artifact-config.json
+          uploadArtifacts: true
+
+      - name: Report per-run numbers
+        if: always()
+        run: |
+          set -euo pipefail
+          # Отчёт по каждому прогону, а не только медиана: решение о пороге
+          # принимается по разбросу, и он должен быть виден в аннотациях.
+          # find -print -quit вместо `find | head -1`: под pipefail head
+          # закрывает канал раньше, find получает SIGPIPE и шаг падает.
+          results=$(find "$GITHUB_WORKSPACE" /tmp -maxdepth 6 -type d -name '.lighthouseci' -print -quit 2>/dev/null || true)
+          if [ -z "$results" ]; then
+            echo "::notice::каталог .lighthouseci не найден — per-run числа недоступны"
+            exit 0
+          fi
+          python3 scripts/runner_lhr_extract.py "$results" --out /tmp/artifact-runs.json || true
+          python3 - /tmp/artifact-runs.json <<'PY'
+          import json, statistics as st, sys
+          try:
+              data = json.load(open(sys.argv[1]))
+          except Exception as exc:
+              print(f'::notice::не удалось прочитать извлечение: {exc}')
+              raise SystemExit(0)
+
+          pages = {}
+          for report in data.get('reports', []):
+              url = (report.get('url') or '?').replace('http://127.0.0.1:4300', '') or '/'
+              pages.setdefault(url, []).append(report)
+
+          def stat(values):
+              clean = [v for v in values if isinstance(v, (int, float))]
+              if not clean:
+                  return '?'
+              return f'{st.median(clean):.0f}/{max(clean):.0f}'
+
+          for url, reports in pages.items():
+              metrics = [r['metrics'] for r in reports]
+              print(
+                  f"::notice::artifact {url} | n={len(reports)} "
+                  f"| FCP {stat([m['fcp'] for m in metrics])} "
+                  f"| LCP {stat([m['lcp'] for m in metrics])} "
+                  f"| TBT {stat([m['tbt'] for m in metrics])} "
+                  f"| work {stat([r['main_thread']['total_ms'] for r in reports])} "
+                  f"| bytes {stat([r['bytes']['total'] for r in reports])} "
+                  f"(медиана/максимум)"
+              )
+          PY
+
+      - name: Stop artifact server
+        if: always()
+        run: |
+          # kill по сохранённому PID: pkill -f убил бы собственный shell шага,
+          # потому что шаблон есть в его командной строке.
+          if [ -f /tmp/artifact-server.pid ]; then
+            kill "$(cat /tmp/artifact-server.pid)" 2>/dev/null || true
+          fi

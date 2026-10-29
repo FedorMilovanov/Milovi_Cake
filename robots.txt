@@ -1,18 +1,28 @@
+# Public pages are open to crawlers, including AI search bots, under the default group.
+# Training-related bots inherit the same default; no separate training policy is set here.
 User-agent: *
-# /call/ is noindex in its HTML; crawlers must reach that directive.
+Disallow: /audit/
+Disallow: /node_modules/
+Disallow: /scripts/
+Disallow: /tests/
 Disallow: /prigorody/build.py
 Disallow: /prigorody/_template.html
 Disallow: /prigorody/_cities.csv
 Allow: /
 
-# Яндекс
+# Yandex has its own group, so it repeats the same path restrictions.
 User-agent: Yandex
+Disallow: /audit/
+Disallow: /node_modules/
+Disallow: /scripts/
+Disallow: /tests/
+Disallow: /prigorody/build.py
+Disallow: /prigorody/_template.html
+Disallow: /prigorody/_cities.csv
 Allow: /
+Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term&yclid&gclid&fbclid&_openstat&etext&from /
 Host: milovicake.ru
-Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term&yclid&gclid
 
-# Sitemaps
+# /call/ is crawlable so its noindex directive can be read.
 Sitemap: https://milovicake.ru/sitemap.xml
-# Google video sitemap for the 16 self-hosted gallery WebM videos.
-# Yandex uses the regular sitemap plus structured video markup on the page.
 Sitemap: https://milovicake.ru/sitemap-videos.xml

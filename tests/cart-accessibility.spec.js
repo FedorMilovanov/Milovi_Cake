@@ -53,6 +53,27 @@ test('suburb calculator and contact labels retain AA contrast', async ({ page })
   }
 });
 
+test('cart opening does not steal focus from a quick interaction', async ({ page }) => {
+  for (const route of ['/', '/prigorody/pushkin/']) {
+    for (const confirm of [false, true]) {
+      await page.goto(route, { waitUntil: 'domcontentloaded' });
+      const focus = await page.evaluate(async (showConfirm) => {
+        addToCart(2);
+        openCart();
+        const clear = document.getElementById('cartClearBtn');
+        clear.focus({ preventScroll: true });
+        if (showConfirm) clear.click();
+        const before = document.activeElement.id;
+        // The drawer's initial focus task is scheduled for 100 ms; let it run.
+        await new Promise((resolve) => setTimeout(resolve, 200));
+        return { before, after: document.activeElement.id };
+      }, confirm);
+      const expected = confirm ? 'cartClearNo' : 'cartClearBtn';
+      expect(focus, `${route}, confirmation=${confirm}`).toEqual({ before: expected, after: expected });
+    }
+  }
+});
+
 test('clear-cart confirmation is themed, labelled and keyboard-contained', async ({ page }, testInfo) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   for (const theme of ['light', 'dark']) {
@@ -92,13 +113,40 @@ test('cart quantity and remove controls fit at narrow and desktop widths', async
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.evaluate(() => { addToCart(2); openCart(); });
+    const drawer = page.locator('#cartDrawer');
     const card = page.locator('#cartDrawer .cart-item');
     await expect(card).toBeVisible();
+    // The drawer animates in with `transform: translateX(<viewport width>)` and stays
+    // offset for ~100ms after openCart(). Two separate boundingBox() calls can then
+    // straddle that transition and be reported in different coordinate spaces, which
+    // looked like an overflowing control. Wait for the transform to settle and read
+    // both boxes in one frame so the containment check stays atomic.
+    await expect(drawer).toHaveClass(/open/);
+    await drawer.evaluate((element) => new Promise((resolve, reject) => {
+      let frames = 0;
+      const settled = () => {
+        const value = getComputedStyle(element).transform;
+        if (value === 'none') return resolve(true);
+        const matrix = new DOMMatrixReadOnly(value);
+        if (Math.abs(matrix.m41) < 0.5 && Math.abs(matrix.m42) < 0.5) return resolve(true);
+        if ((frames += 1) > 180) return reject(new Error('cart drawer never settled its transform'));
+        return requestAnimationFrame(settled);
+      };
+      settled();
+    }));
     for (const selector of ['.qty-ctrl .qty-btn:last-child', '.cart-item-right .del-btn']) {
-      const control = await card.locator(selector).boundingBox();
-      const bounds = await card.boundingBox();
-      expect(control.x, `${width}px ${selector} left`).toBeGreaterThanOrEqual(bounds.x - 1);
-      expect(control.x + control.width, `${width}px ${selector} right`).toBeLessThanOrEqual(bounds.x + bounds.width + 1);
+      const boxes = await card.evaluate((element, target) => {
+        const bounds = element.getBoundingClientRect();
+        const control = element.querySelector(target).getBoundingClientRect();
+        return {
+          controlLeft: control.left,
+          controlRight: control.right,
+          cardLeft: bounds.left,
+          cardRight: bounds.right,
+        };
+      }, selector);
+      expect(boxes.controlLeft, `${width}px ${selector} left`).toBeGreaterThanOrEqual(boxes.cardLeft - 1);
+      expect(boxes.controlRight, `${width}px ${selector} right`).toBeLessThanOrEqual(boxes.cardRight + 1);
     }
     await card.locator('.qty-ctrl .qty-btn:last-child').click();
     await expect(card.locator('.qty-val')).toHaveText('2 шт.');

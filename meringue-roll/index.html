@@ -12,7 +12,7 @@
     body.ready{opacity:1;transition:opacity .28s ease-out}
     @media (prefers-reduced-motion:reduce){body{opacity:1!important;transition:none!important}}
   </style>
-  <noscript><style>body:not(.ready){opacity:1!important}</style></noscript>
+  <noscript><style>body:not(.ready){opacity:1!important}html body #loader{display:none}html body .reveal{opacity:1;transform:none}</style></noscript>
   <script>
     (function(){
       try{var t=localStorage.getItem('mc_theme');
@@ -36,25 +36,25 @@
   <meta name="theme-color" content="#0e0806" media="(prefers-color-scheme: dark)" />
   <meta name="theme-color" content="#f5ede0" media="(prefers-color-scheme: light)" />
 
-  <title>Меренговый рулет на заказ в СПб — Milovi Cake | Доставка по СПб и ЛО</title>
-  <meta name="description" content="Меренговый рулет на заказ в СПб — воздушная меренга, нежный крем чиз, свежая малина. 1100 г — 2500 ₽. Безглютеновый рецепт. Доставка по СПб и ЛО." />
+  <title>Меренговый рулет на заказ в СПб — 2 500 ₽ | Milovi Cake</title>
+  <meta name="description" content="Меренговый рулет на заказ в СПб — воздушная меренга, нежный крем-чиз и свежая малина. Вес 1 100 г — 2 500 ₽. Доставка по СПб и ЛО." />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@milovicake" />
-  <meta name="twitter:title" content="Меренговый рулет на заказ — Milovi Cake, СПб" />
-  <meta name="twitter:description" content="Воздушная меренга, малина, крем чиз. 1100 г — 2500 ₽. Безглютеновый рецепт. Доставка по СПб и ЛО." />
+  <meta name="twitter:title" content="Меренговый рулет на заказ в СПб — 2 500 ₽ | Milovi Cake" />
+  <meta name="twitter:description" content="Воздушная меренга, малина, крем-чиз. 1 100 г — 2 500 ₽. Доставка по СПб и ЛО." />
   <meta name="twitter:image" content="https://milovicake.ru/img/meringue_roll.webp" />
-  <meta name="keywords" content="меренговый рулет на заказ, меренговый рулет СПб, меренговый рулет с малиной, безглютеновый рулет, воздушная меренга, рулет с кремом чиз, заказать меренговый рулет, рулет на заказ Санкт-Петербург" />
+  <meta name="keywords" content="меренговый рулет на заказ, меренговый рулет СПб, меренговый рулет купить СПб, меренговый рулет с малиной, заказать меренговый рулет Санкт-Петербург" />
   <meta name="yandex-verification" content="9bde19424208d6ce" />
   <meta property="vk:image" content="https://milovicake.ru/img/meringue_roll.webp" />
   <meta name="robots" content="index, follow" />
 
   <meta property="og:title" content="Меренговый рулет на заказ — Milovi Cake, СПб" />
-  <meta property="og:description" content="Воздушная меренга, малина, нежный крем чиз. 1100 г — 2500 ₽. Безглютеновый рецепт. Доставка по СПб и ЛО." />
+  <meta property="og:description" content="Воздушная меренга, малина, нежный крем чиз. 1 100 г — 2 500 ₽. Доставка по СПб и ЛО." />
   <meta property="og:image" content="https://milovicake.ru/img/meringue_roll.webp" />
   <meta property="og:image:type" content="image/webp" />
-  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:width" content="1024" />
   <meta property="og:image:alt" content="Меренговый рулет на заказ в Санкт-Петербурге — Milovi Cake" />
-  <meta property="og:image:height" content="630" />
+  <meta property="og:image:height" content="1536" />
   <meta property="og:url" content="https://milovicake.ru/meringue-roll/" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="ru_RU" />
@@ -73,15 +73,13 @@
     "@context": "https://schema.org",
     "@type": "Product",
     "name": "Меренговый рулет",
-    "description": "Меренговый рулет с малиной и нежным сливочным кремом чиз. Воздушная меренга, безглютеновый рецепт, свежие ягоды.",
+    "description": "Меренговый рулет с малиной и нежным сливочным кремом чиз. Воздушная меренга и свежие ягоды.",
     "url": "https://milovicake.ru/meringue-roll/",
     "brand": { "@type": "Brand", "name": "Milovi Cake" },
     "offers": {
       "@type": "Offer",
       "price": "2500",
       "priceCurrency": "RUB",
-      "availability": "https://schema.org/InStock",
-      "priceValidUntil": "2026-12-31",
       "url": "https://milovicake.ru/meringue-roll/",
       "seller": { "@id": "https://milovicake.ru/#business" }
     },
@@ -108,16 +106,19 @@
     "image": "https://milovicake.ru/img/og-cover.jpg",
     "url": "https://milovicake.ru/",
     "telephone": "+79119038886",
+    "hasMap": "https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Пулковская ул., 19",
       "addressLocality": "Санкт-Петербург",
+      "addressRegion": "Санкт-Петербург",
+      "postalCode": "196158",
       "addressCountry": "RU"
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": 59.8380,
-      "longitude": 30.3230
+      "latitude": 59.83494,
+      "longitude": 30.350265
     },
     "openingHours": "Mo-Sa 10:00-20:00",
     "priceRange": "₽₽",
@@ -129,11 +130,23 @@
     ]
   }
   </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://milovicake.ru/meringue-roll/#webpage",
+    "url": "https://milovicake.ru/meringue-roll/",
+    "name": "Меренговый рулет на заказ в СПб — 2 500 ₽ | Milovi Cake",
+    "inLanguage": "ru-RU",
+    "isPartOf": { "@id": "https://milovicake.ru/#website" },
+    "about": { "@id": "https://milovicake.ru/#business" }
+  }
+  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="dns-prefetch" href="https://wa.me" />
-<link rel="preload" as="image" href="../img/meringue_roll.webp" fetchpriority="high" />
+<link rel="preload" as="image" type="image/avif" href="../img/meringue_roll.avif" fetchpriority="high" />
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Jost:wght@300;400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/></noscript>
 
@@ -149,6 +162,7 @@
          --gold is identical to main. --gold2/--gold3 are meringue-specific accent
          tints; added to main :root as aliases to prevent future divergence. */
       --cream:   #f5ede0;
+      --mr-cream: #f5ede0; /* page foreground; shared dark theme reuses --cream for backgrounds */
       --warm:    #e8d5b8;
       --gold:    #c9934a;   /* identical to main --gold */
       --gold2:   #e8b87a;   /* meringue accent — matches main --gold-light (#d4a76a) tone */
@@ -277,9 +291,13 @@
 
     /* ─── BREADCRUMB ─── */
     .breadcrumb {
-      position: absolute; z-index: 10;
-      top: 84px; left: 56px;
-      display: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
     }
     .breadcrumb a { color: var(--muted); text-decoration: none; transition: color 0.3s, letter-spacing 0.3s; }
     .breadcrumb a:hover { color: var(--gold2); letter-spacing: 0.16em; }
@@ -806,7 +824,7 @@
     }
     .ingredient-name {
       font-family: var(--serif); font-size: 18px; font-weight: 400;
-      color: var(--cream); flex: 1;
+      color: var(--mr-cream); flex: 1;
       transition: color 0.35s ease, text-shadow 0.35s ease;
     }
     .ingredient:hover .ingredient-name {
@@ -816,7 +834,7 @@
     .ingredient-desc {
       font-size: 11px; letter-spacing: 0.08em; color: var(--gold); text-align: right;
       transition: color 0.35s ease, opacity 0.35s ease;
-      opacity: 0.6;
+      opacity: 0.85;
     }
     .ingredient:hover .ingredient-desc {
       color: var(--gold2);
@@ -894,7 +912,7 @@
     .feature-title,
     h3.feature-title {
       font-family: var(--serif); font-size: 19px; font-weight: 400;
-      margin: 0 0 12px 0; padding: 0; color: var(--cream);
+      margin: 0 0 12px 0; padding: 0; color: var(--mr-cream);
       transition: color 0.3s, text-shadow 0.3s; cursor: default;
       line-height: inherit;
     }
@@ -1267,7 +1285,7 @@
     }
     .review-card:hover .review-avatar { transform: scale(1.08); box-shadow: 0 0 12px rgba(201,147,74,0.2); }
     .review-name {
-      font-family: var(--serif); font-size: 16px; font-weight: 400; color: var(--cream);
+      font-family: var(--serif); font-size: 16px; font-weight: 400; color: var(--mr-cream);
       transition: color 0.3s, text-shadow 0.3s; cursor: default;
     }
     .review-card:hover .review-name { color: rgba(245,237,224,0.97); text-shadow: 0 0 16px rgba(245,237,224,0.1); }
@@ -1332,7 +1350,7 @@
       margin-bottom: 20px;
     }
     .dc-title {
-      font-family: var(--serif); font-size: 21px; margin-bottom: 10px; color: var(--cream);
+      font-family: var(--serif); font-size: 21px; margin-bottom: 10px; color: var(--mr-cream);
       transition: color 0.3s, text-shadow 0.3s; cursor: default;
     }
     .dc:hover .dc-title { color: rgba(245,237,224,0.97); text-shadow: 0 0 20px rgba(245,237,224,0.08); }
@@ -1368,7 +1386,7 @@
     }
     .city-item:hover { background: rgba(201,147,74,0.05); border-color: rgba(201,147,74,0.18); }
     .city-name {
-      font-family: var(--serif); font-size: 16px; margin-bottom: 4px; color: var(--cream);
+      font-family: var(--serif); font-size: 16px; margin-bottom: 4px; color: var(--mr-cream);
       transition: color 0.3s ease, letter-spacing 0.3s ease;
     }
     .city-item:hover .city-name {
@@ -1428,7 +1446,7 @@
     }
     .footer-social:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,147,74,0.08); }
     .footer-col-title {
-      font-family: var(--serif); font-size: 15px; letter-spacing: 0.06em; color: var(--cream);
+      font-family: var(--serif); font-size: 15px; letter-spacing: 0.06em; color: var(--mr-cream);
       margin-bottom: 18px; cursor: default; display: inline-block;
       transition: color 0.35s, letter-spacing 0.35s, text-shadow 0.35s;
     }
@@ -1755,7 +1773,7 @@
         "name": "Из чего сделан меренговый рулет Milovi Cake?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Состав: воздушная меренга (взбитые белки, сахарная пудра), нежный крем чиз (сливочный сыр, сливки), свежая малина, декор из фисташек и шоколадных жемчужин. Рецепт безглютеновый."
+          "text": "Состав: воздушная меренга (взбитые белки, сахарная пудра), нежный крем чиз (сливочный сыр, сливки), свежая малина, декор из фисташек и шоколадных жемчужин. При аллергии или ограничениях в питании уточняйте состав и риск следов аллергенов при заказе."
         }
       },
       {
@@ -1763,7 +1781,7 @@
         "name": "Как заказать меренговый рулет с доставкой по СПб?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Заказать можно через WhatsApp, Telegram или по телефону +7 911 903 88 86. Принимаем заказы за 1–2 дня. Доставляем по всему Санкт-Петербургу и Ленинградской области."
+          "text": "Заказать можно через WhatsApp, Telegram или по телефону +7 911 903 88 86. Дату изготовления и возможность доставки по Санкт-Петербургу и пригородам согласуем при заказе. Стоимость зависит от адреса."
         }
       },
       {
@@ -1771,7 +1789,7 @@
         "name": "Сколько хранится меренговый рулет?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Срок хранения — 48 часов в холодильнике. Рулет готовится в день доставки, поэтому всегда свежий."
+          "text": "Храните рулет в холодильнике при температуре +2…+6 °C не более 48 часов с момента изготовления."
         }
       },
       {
@@ -1779,7 +1797,7 @@
         "name": "Есть ли доставка меренгового рулета в пригороды Петербурга?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Да, доставляем в пригороды Санкт-Петербурга: Пушкин, Петергоф, Гатчину, Всеволожск, Мурино, Кудрово, Колпино, Сестрорецк и другие населённые пункты Ленобласти. Уточняйте стоимость и время при заказе."
+          "text": "Возможность доставки в Пушкин, Петергоф, Гатчину, Всеволожск, Мурино, Кудрово, Колпино, Сестрорецк и другие пригороды согласуем при заказе. Стоимость и время зависят от адреса."
         }
       }
     ]
@@ -1799,6 +1817,17 @@ html:not([data-theme="dark"]) .lp-theme-toggle .lp-ti-moon{display:block}
 html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 @media(max-width:768px){.lp-theme-toggle{margin-left:12px;width:40px;height:40px;min-width:40px}}
 .hdr-right .lp-theme-toggle{margin-left:0}
+.mr-faq{background:var(--dark);padding:88px 72px;border-top:1px solid rgba(201,147,74,.14)}
+.mr-faq__inner{max-width:860px;margin:0 auto}
+.mr-faq__list{display:grid;gap:14px;margin-top:36px}
+.mr-faq-item{background:rgba(255,255,255,.025);border:1px solid rgba(201,147,74,.2);border-radius:14px;padding:18px 24px;transition:border-color .3s}
+.mr-faq-item[open]{border-color:rgba(201,147,74,.45)}
+.mr-faq-item summary{cursor:pointer;font-family:var(--serif);font-size:21px;font-weight:500;color:var(--mr-cream);list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.mr-faq-item summary::-webkit-details-marker{display:none}
+.mr-faq-item summary::after{content:'+';color:var(--gold);font-family:var(--sans);font-size:20px;line-height:1;flex-shrink:0}
+.mr-faq-item[open] summary::after{content:'−'}
+.mr-faq-item p{margin-top:12px;font-size:14px;line-height:1.75;color:var(--warm)}
+@media(max-width:768px){.mr-faq{padding:56px 20px}.mr-faq-item{padding:16px 18px}.mr-faq-item summary{font-size:18px}}
 </style>
 </head>
 <body>
@@ -1834,13 +1863,6 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 
 <!-- HERO -->
 <section class="hero" id="home">
-  <!-- Breadcrumb inside hero -->
-  <nav class="breadcrumb" aria-label="Breadcrumb">
-    <a href="https://milovicake.ru/">Главная</a>
-    <span>›</span>
-    <span class="breadcrumb-current">Меренговый рулет</span>
-  </nav>
-
   <!-- Photo side -->
   <div class="hero-photo">
     <picture><source type="image/avif" srcset="../img/meringue_roll.avif"><img src="../img/meringue_roll.webp"
@@ -1851,6 +1873,11 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 
   <!-- Content side -->
   <div class="hero-content">
+    <nav class="breadcrumb" aria-label="Хлебные крошки">
+      <a href="https://milovicake.ru/">Главная</a>
+      <span aria-hidden="true">›</span>
+      <span class="breadcrumb-current">Меренговый рулет</span>
+    </nav>
     <div class="hero-eyebrow"><span class="ht-word" style="transition:color 0.4s,letter-spacing 0.4s,text-shadow 0.4s;cursor:default;" onmouseenter="this.style.color='#e8b87a';this.style.letterSpacing='0.38em';this.style.textShadow='0 0 14px rgba(201,147,74,0.2)'" onmouseleave="this.style.color='';this.style.letterSpacing='';this.style.textShadow=''">Milovi Cake</span> · <span class="ht-word" style="transition:color 0.4s,letter-spacing 0.4s,text-shadow 0.4s;cursor:default;" onmouseenter="this.style.color='#e8b87a';this.style.letterSpacing='0.38em';this.style.textShadow='0 0 14px rgba(201,147,74,0.2)'" onmouseleave="this.style.color='';this.style.letterSpacing='';this.style.textShadow=''">Санкт-Петербург</span></div>
     <h1 class="hero-title">
       <span class="ht-word">Меренговый</span><br>
@@ -1859,7 +1886,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     </h1>
     <div class="hero-divider"></div>
     <p class="hero-desc wave-text" id="heroDesc">
-      Воздушная меренга, нежный крем чиз и свежая малина — тает во рту, как облако. Ручная работа, безглютеновый рецепт, доставка по всему СПб и Ленобласти.
+      Воздушная меренга, нежный крем чиз и свежая малина — тает во рту, как облако. Ручная работа и доставка по СПб и Ленобласти.
     </p>
 
     <div class="hero-price-block">
@@ -1871,10 +1898,10 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     </div>
 
     <div class="hero-tags">
-      <span class="hero-tag">Безглютеновый</span>
+      <span class="hero-tag">Десерт на заказ</span>
       <span class="hero-tag">Ручная работа</span>
       <span class="hero-tag">Свежие ягоды</span>
-      <span class="hero-tag">Заказ за 1–2 дня</span>
+      <span class="hero-tag">Дату согласуем</span>
     </div>
 
     <div class="hero-cta-group">
@@ -1908,7 +1935,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     <div class="gallery-item-overlay"></div>
   </div>
   <div class="gallery-item" data-src="../img/meringue_roll_5.webp">
-    <picture><source type="image/avif" srcset="../img/meringue_roll_5.avif"><img src="../img/meringue_roll_5.webp" alt="Меренговый рулет с фисташками и малиной — крупный план, безглютеновый" loading="lazy" width="800" height="600" /></picture>
+    <picture><source type="image/avif" srcset="../img/meringue_roll_5.avif"><img src="../img/meringue_roll_5.webp" alt="Меренговый рулет с фисташками и малиной — крупный план" loading="lazy" width="800" height="600" /></picture>
     <div class="gallery-item-overlay"></div>
   </div>
   <div class="gallery-item" data-src="../img/meringue_roll_4.webp">
@@ -2009,13 +2036,13 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
       </div>
       <div class="ingredient">
         <div class="ingredient-num">⏱</div>
-        <div class="ingredient-name">Срок хранения</div>
-        <div class="ingredient-desc">48 часов · холодильник</div>
+        <div class="ingredient-name">Хранение</div>
+        <div class="ingredient-desc">48 ч · +2…+6 °C</div>
       </div>
       <div class="ingredient">
         <div class="ingredient-num">📅</div>
         <div class="ingredient-name">Принимаем заказы</div>
-        <div class="ingredient-desc">за 1–2 дня</div>
+        <div class="ingredient-desc">Дату согласуем</div>
       </div>
     </div>
     <!-- Коробка — только мобиль, под списком -->
@@ -2076,7 +2103,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
         </svg>
       </div>
       <h3 class="feature-title"><span class="ht-word">Свежесть</span></h3>
-      <div class="feature-text wave-text">Готовим в день доставки — всегда свежий десерт прямо к вашему столу</div>
+      <div class="feature-text wave-text">Изготавливаем рулет на заказ и согласуем дату получения</div>
     </div>
   </div></div>
 </section>
@@ -2133,9 +2160,9 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
       <div class="price-card-num"><span class="price-card-rub">₽</span>2 500</div>
       <div class="price-card-note"><span class="pc-ingredient">Малина</span> · <span class="pc-ingredient">Крем чиз</span> · <span class="pc-ingredient">Фисташки</span></div>
       <div class="price-card-tags">
-        <span class="pct">Безглютеновый</span>
+        <span class="pct">На заказ</span>
         <span class="pct">6–8 порций</span>
-        <span class="pct">48 ч хранения</span>
+        <span class="pct">В холодильнике</span>
       </div>
     </div>
 
@@ -2159,7 +2186,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
       </a>
     </div>
     <p style="margin-top:20px;font-size:12px;color:var(--muted);text-align:center;" class="wave-text reveal">
-      Принимаем заказы за 1–2 дня · Пн–Сб, 10:00–20:00
+      Срок заказа согласуем · Пн–Сб, 10:00–20:00
     </p>
   </div>
 </section>
@@ -2201,21 +2228,51 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
   </div>
 </section>
 
+<!-- FAQ — Visible questions matching FAQPage JSON-LD 1:1 -->
+<section class="mr-faq" id="faq" aria-labelledby="mrFaqTitle">
+  <div class="mr-faq__inner">
+    <span class="sec-label reveal" style="display:block;text-align:center;">Частые вопросы</span>
+    <h2 id="mrFaqTitle" class="sec-title reveal rd1" style="text-align:center;"><span class="ht-word">Вопросы</span> о <em class="ht-em">меренговом рулете</em></h2>
+    <div class="mr-faq__list">
+      <details class="mr-faq-item">
+        <summary>Сколько стоит меренговый рулет на заказ в Санкт-Петербурге?</summary>
+        <div class="mr-faq-answer"><p>Меренговый рулет с малиной и крем чизом стоит 2 500 ₽. В стоимость входит фирменная коробка с окошком. Вес одного рулета — 1 100 г, рассчитан на 6–8 порций.</p></div>
+      </details>
+      <details class="mr-faq-item">
+        <summary>Из чего сделан меренговый рулет Milovi Cake?</summary>
+        <div class="mr-faq-answer"><p>Состав: воздушная меренга (взбитые белки, сахарная пудра), нежный крем чиз (сливочный сыр, сливки), свежая малина, декор из фисташек и шоколадных жемчужин. При аллергии или ограничениях в питании уточняйте состав и риск следов аллергенов при заказе.</p></div>
+      </details>
+      <details class="mr-faq-item">
+        <summary>Как заказать меренговый рулет с доставкой по СПб?</summary>
+        <div class="mr-faq-answer"><p>Заказать можно через WhatsApp, Telegram или по телефону +7 911 903 88 86. Дату изготовления и возможность доставки по Санкт-Петербургу и пригородам согласуем при заказе. Стоимость зависит от адреса.</p></div>
+      </details>
+      <details class="mr-faq-item">
+        <summary>Сколько хранится меренговый рулет?</summary>
+        <div class="mr-faq-answer"><p>Храните рулет в холодильнике при температуре +2…+6 °C не более 48 часов с момента изготовления.</p></div>
+      </details>
+      <details class="mr-faq-item">
+        <summary>Есть ли доставка меренгового рулета в пригороды Петербурга?</summary>
+        <div class="mr-faq-answer"><p>Возможность доставки в Пушкин, Петергоф, Гатчину, Всеволожск, Мурино, Кудрово, Колпино, Сестрорецк и другие пригороды согласуем при заказе. Стоимость и время зависят от адреса.</p></div>
+      </details>
+    </div>
+  </div>
+</section>
+
 <!-- CITIES — Premium v2 (clickable links to /prigorody/) -->
 <section class="mr-cities" id="cities" aria-labelledby="mrCitiesTitle">
   <div class="mr-cities__inner">
     <span class="mr-cities__eyebrow reveal">Доставка по СПб и пригородам</span>
-    <h2 id="mrCitiesTitle" class="mr-cities__title reveal">Меренговый рулет — в любую точку <em style="font-style:italic;color:var(--gold,#c9934a)">Петербурга</em> и Ленобласти</h2>
-    <p class="mr-cities__sub reveal">Привезём сами или организуем доставку — обсудим удобный способ при оформлении заказа. Ниже — стоимость доставки в основные пригороды.</p>
+    <h2 id="mrCitiesTitle" class="mr-cities__title reveal">Меренговый рулет — доставка по <em style="font-style:italic;color:var(--gold,#c9934a)">Петербургу</em> и в пригороды</h2>
+    <p class="mr-cities__sub reveal">Возможность и способ доставки обсудим при оформлении заказа. Ниже — ориентиры стоимости доставки в основные пригороды; итоговую стоимость уточняем по адресу.</p>
 
     <div class="mr-cities__grid reveal">
-    <span class="mr-city-tag" aria-label="Меренговый рулет на заказ в Санкт-Петербурге"><span class="mr-city-tag__name">Санкт-Петербург</span><span class="mr-city-tag__price">весь город</span></span>
+    <span class="mr-city-tag" aria-label="Меренговый рулет на заказ в Санкт-Петербурге"><span class="mr-city-tag__name">Санкт-Петербург</span><span class="mr-city-tag__price">по согласованию</span></span>
     <a href="/prigorody/pushkin/" class="mr-city-tag" data-slug="pushkin" aria-label="Меренговый рулет с доставкой в Пушкин"><span class="mr-city-tag__name">Пушкин</span><span class="mr-city-tag__price">от 1 000 ₽</span></a>
     <a href="/prigorody/peterhof/" class="mr-city-tag" data-slug="peterhof" aria-label="Меренговый рулет с доставкой в Петергоф"><span class="mr-city-tag__name">Петергоф</span><span class="mr-city-tag__price">от 1 500 ₽</span></a>
-    <a href="/prigorody/gatchina/" class="mr-city-tag" data-slug="gatchina" aria-label="Меренговый рулет с доставкой в Гатчина"><span class="mr-city-tag__name">Гатчина</span><span class="mr-city-tag__price">от 1 500 ₽</span></a>
+    <a href="/prigorody/gatchina/" class="mr-city-tag" data-slug="gatchina" aria-label="Меренговый рулет с доставкой в Гатчину"><span class="mr-city-tag__name">Гатчина</span><span class="mr-city-tag__price">от 1 500 ₽</span></a>
     <a href="/prigorody/murino/" class="mr-city-tag" data-slug="murino" aria-label="Меренговый рулет с доставкой в Мурино"><span class="mr-city-tag__name">Мурино</span><span class="mr-city-tag__price">от 1 200 ₽</span></a>
     <a href="/prigorody/kudrovo/" class="mr-city-tag" data-slug="kudrovo" aria-label="Меренговый рулет с доставкой в Кудрово"><span class="mr-city-tag__name">Кудрово</span><span class="mr-city-tag__price">от 900 ₽</span></a>
-    <a href="/prigorody/vsevolozhsk/" class="mr-city-tag" data-slug="vsevolozhsk" aria-label="Меренговый рулет с доставкой в Всеволожск"><span class="mr-city-tag__name">Всеволожск</span><span class="mr-city-tag__price">от 1 500 ₽</span></a>
+    <a href="/prigorody/vsevolozhsk/" class="mr-city-tag" data-slug="vsevolozhsk" aria-label="Меренговый рулет с доставкой во Всеволожск"><span class="mr-city-tag__name">Всеволожск</span><span class="mr-city-tag__price">от 1 500 ₽</span></a>
     <a href="/prigorody/pavlovsk/" class="mr-city-tag" data-slug="pavlovsk" aria-label="Меренговый рулет с доставкой в Павловск"><span class="mr-city-tag__name">Павловск</span><span class="mr-city-tag__price">от 1 000 ₽</span></a>
     <a href="/prigorody/kolpino/" class="mr-city-tag" data-slug="kolpino" aria-label="Меренговый рулет с доставкой в Колпино"><span class="mr-city-tag__name">Колпино</span><span class="mr-city-tag__price">от 1 000 ₽</span></a>
     <a href="/prigorody/kronshtadt/" class="mr-city-tag" data-slug="kronshtadt" aria-label="Меренговый рулет с доставкой в Кронштадт"><span class="mr-city-tag__name">Кронштадт</span><span class="mr-city-tag__price">от 1 500 ₽</span></a>
@@ -2279,10 +2336,12 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     <div class="footer-col">
       <div class="footer-col-title">Навигация</div>
       <a href="https://milovicake.ru/">Главная</a>
-      <a href="https://milovicake.ru/#catalog">Каталог тортов</a>
-      <a href="https://milovicake.ru/#fillings">Начинки и цены</a>
-      <a href="https://milovicake.ru/#reviews">Отзывы</a>
-      <a href="https://milovicake.ru/#contacts">Контакты</a>
+      <a href="https://milovicake.ru/zakazat-tort-spb/">Заказать торт в СПб</a>
+      <a href="https://milovicake.ru/bento-torty/">Бенто-торты</a>
+      <a href="https://milovicake.ru/detskie-torty/">Детские торты</a>
+      <a href="https://milovicake.ru/svadebnye-torty/">Свадебные торты</a>
+      <a href="https://milovicake.ru/gallery/">Галерея работ</a>
+      <a href="https://milovicake.ru/o-konditere/">О кондитере</a>
     </div>
     <div class="footer-col">
       <div class="footer-col-title">Доставка в пригороды</div>

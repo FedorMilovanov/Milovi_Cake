@@ -769,9 +769,8 @@ function openCart() {
   setCartStep(1);
   updateCartUI();
   setTimeout(function() {
-    if (_cartState !== 'open' || drawer.inert) return;
-    var closeBtn = drawer.querySelector('.cart-close, [aria-label="Закрыть"], [onclick="closeCart()"]');
-    if (closeBtn) closeBtn.focus({ preventScroll: true });
+    if (_cartState !== 'open' || drawer.inert || drawer.contains(document.activeElement)) return;
+    drawer.querySelector('.cart-close, [aria-label="Закрыть"], [onclick="closeCart()"]')?.focus({ preventScroll: true });
   }, 100);
   /* r32: bug #38 — focus trap for cart */
   if (window._trapFocus) { window._cartTrapRelease = window._trapFocus(drawer); }
