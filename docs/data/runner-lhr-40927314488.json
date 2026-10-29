@@ -1,0 +1,5616 @@
+{
+ "failures": [],
+ "reports": [
+  {
+   "benchmark_index": 2417,
+   "blocking": {
+    "bootup_js_ms": 217.1,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 1609
+    },
+    "non_composited_animations": 13,
+    "render_blocking": {
+     "items": 4,
+     "overall": 0.0,
+     "sum": 911.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 230.0,
+     "sum": 24190.0
+    }
+   },
+   "bytes": {
+    "requests": 26,
+    "total": 401585.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:04:35.472Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 0.0,
+     "Render Delay": 3495.8,
+     "TTFB": 644.2
+    },
+    "snippet": "<img class=\"hero-img\" src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"\u0410\u0432\u0442\u043e\u0440\u0441\u043a\u0438\u0439 \u0442\u043e\u0440\u0442 \u0440\u0443\u0447\u043d\u043e\u0439 \u0440\u0430\u0431\u043e\u0442\u044b \u2014 Milovi Cake, \u0421\u0430\u043d\u043a\u0442-\u041f\u0435\u0442\u0435\u0440\u0431\u0443\u0440\u0433\" fetchpriority=\"high\" decoding=\"async\" width=\"1440\" height=\"960\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 249.0,
+     "start": 1629.2,
+     "url": "https://milovicake.ru/"
+    },
+    {
+     "duration": 215.0,
+     "start": 951.2,
+     "url": "Unattributable"
+    },
+    {
+     "duration": 163.0,
+     "start": 1264.2,
+     "url": "https://milovicake.ru/"
+    },
+    {
+     "duration": 140.0,
+     "start": 1878.2,
+     "url": "https://milovicake.ru/"
+    },
+    {
+     "duration": 140.0,
+     "start": 4187.5,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    },
+    {
+     "duration": 108.0,
+     "start": 1521.2,
+     "url": "https://milovicake.ru/"
+    },
+    {
+     "duration": 98.0,
+     "start": 1166.2,
+     "url": "https://milovicake.ru/"
+    },
+    {
+     "duration": 95.0,
+     "start": 3986.5,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    },
+    {
+     "duration": 94.0,
+     "start": 1427.2,
+     "url": "Unattributable"
+    },
+    {
+     "duration": 82.0,
+     "start": 2018.2,
+     "url": "https://milovicake.ru/"
+    },
+    {
+     "duration": 77.0,
+     "start": 4081.5,
+     "url": "https://milovicake.ru/js/nav.js?v=20260728r27"
+    },
+    {
+     "duration": 62.0,
+     "start": 4327.5,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 1260.8,
+     "Parse HTML & CSS": 423.3,
+     "Rendering": 264.9,
+     "Script Evaluation": 219.8,
+     "Script Parsing & Compilation": 35.1,
+     "Style & Layout": 1276.3
+    },
+    "total_ms": 3480.1
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 3400.8,
+    "lcp": 4140.0,
+    "max_potential_fid": 140.0,
+    "si": 3586.5,
+    "tbt": 117.1,
+    "tti": 4280.2
+   },
+   "network": [
+    {
+     "bytes": 25992,
+     "end": 625.2,
+     "priority": "High",
+     "start": 575.0,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 780,
+     "end": 624.7,
+     "priority": "High",
+     "start": 573.9,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 33772,
+     "end": 464.7,
+     "priority": "VeryHigh",
+     "start": 452.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYp3tKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 464.2,
+     "priority": "VeryHigh",
+     "start": 452.0,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 17233,
+     "end": 463.6,
+     "priority": "VeryHigh",
+     "start": 452.3,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 21161,
+     "end": 461.7,
+     "priority": "VeryHigh",
+     "start": 452.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 460.7,
+     "priority": "VeryHigh",
+     "start": 451.5,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 37808,
+     "end": 457.7,
+     "priority": "VeryHigh",
+     "start": 451.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 1145,
+     "end": 447.8,
+     "priority": "Medium",
+     "start": 380.5,
+     "status": 200,
+     "type": "Manifest",
+     "url": "/manifest.json"
+    },
+    {
+     "bytes": 20174,
+     "end": 396.5,
+     "priority": "Low",
+     "start": 374.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/viktoria-480.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 305.8,
+     "priority": "Low",
+     "start": 305.7,
+     "status": 200,
+     "type": "Image",
+     "url": "data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfi"
+    },
+    {
+     "bytes": 8097,
+     "end": 203.6,
+     "priority": "Low",
+     "start": 141.9,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/consent-analytics.js?v=20261026r02"
+    },
+    {
+     "bytes": 40788,
+     "end": 190.6,
+     "priority": "Low",
+     "start": 140.9,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/main.js?v=20261027r01"
+    },
+    {
+     "bytes": 7179,
+     "end": 190.3,
+     "priority": "Low",
+     "start": 141.5,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/mc-2026.js?v=20260916r02"
+    },
+    {
+     "bytes": 40902,
+     "end": 189.8,
+     "priority": "VeryHigh",
+     "start": 120.7,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css/style.css?v=20261023r02"
+    },
+    {
+     "bytes": 9663,
+     "end": 189.2,
+     "priority": "Low",
+     "start": 141.2,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/nav.js?v=20260728r27"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 554.0,
+    "fcp": 1275.0,
+    "first_meaningful_paint": null,
+    "first_paint": 1275.0,
+    "lcp": 1275.0,
+    "load": 567.0,
+    "si": 1476.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 4280.2,
+    "recomputed": 114.7,
+    "reported": 117.1,
+    "start": 3400.8
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/"
+  },
+  {
+   "benchmark_index": 2357.5,
+   "blocking": {
+    "bootup_js_ms": 158.0,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 1609
+    },
+    "non_composited_animations": 14,
+    "render_blocking": {
+     "items": 4,
+     "overall": 0.0,
+     "sum": 911.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 24226.0
+    }
+   },
+   "bytes": {
+    "requests": 26,
+    "total": 401472.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:04:53.180Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 26.7,
+     "Load Time": 224.6,
+     "Render Delay": 1194.1,
+     "TTFB": 606.3
+    },
+    "snippet": "<img class=\"hero-img\" src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"\u0410\u0432\u0442\u043e\u0440\u0441\u043a\u0438\u0439 \u0442\u043e\u0440\u0442 \u0440\u0443\u0447\u043d\u043e\u0439 \u0440\u0430\u0431\u043e\u0442\u044b \u2014 Milovi Cake, \u0421\u0430\u043d\u043a\u0442-\u041f\u0435\u0442\u0435\u0440\u0431\u0443\u0440\u0433\" fetchpriority=\"high\" decoding=\"async\" width=\"1440\" height=\"960\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 215.0,
+     "start": 1282.4,
+     "url": "https://milovicake.ru/"
+    },
+    {
+     "duration": 182.0,
+     "start": 1007.4,
+     "url": "https://milovicake.ru/"
+    },
+    {
+     "duration": 95.0,
+     "start": 1497.4,
+     "url": "https://milovicake.ru/"
+    },
+    {
+     "duration": 93.0,
+     "start": 1189.4,
+     "url": "https://milovicake.ru/"
+    },
+    {
+     "duration": 91.0,
+     "start": 3797.1,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    },
+    {
+     "duration": 57.0,
+     "start": 4001.9,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    },
+    {
+     "duration": 52.0,
+     "start": 913.4,
+     "url": "Unattributable"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 1128.6,
+     "Parse HTML & CSS": 84.4,
+     "Rendering": 292.0,
+     "Script Evaluation": 152.3,
+     "Script Parsing & Compilation": 46.3,
+     "Style & Layout": 1048.1
+    },
+    "total_ms": 2751.6
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1824.0,
+    "lcp": 2051.7,
+    "max_potential_fid": 91.0,
+    "si": 1904.7,
+    "tbt": 44.5,
+    "tti": 3982.0
+   },
+   "network": [
+    {
+     "bytes": 26018,
+     "end": 477.4,
+     "priority": "High",
+     "start": 468.6,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 628,
+     "end": 467.8,
+     "priority": "High",
+     "start": 458.7,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 17233,
+     "end": 301.1,
+     "priority": "VeryHigh",
+     "start": 276.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 33772,
+     "end": 300.8,
+     "priority": "VeryHigh",
+     "start": 276.9,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYp3tKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 300.4,
+     "priority": "VeryHigh",
+     "start": 276.3,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 21161,
+     "end": 299.4,
+     "priority": "VeryHigh",
+     "start": 276.5,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 37808,
+     "end": 290.6,
+     "priority": "VeryHigh",
+     "start": 275.7,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 286.3,
+     "priority": "VeryHigh",
+     "start": 276.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 20220,
+     "end": 226.9,
+     "priority": "Low",
+     "start": 216.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/viktoria-480.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 135.8,
+     "priority": "Low",
+     "start": 135.7,
+     "status": 200,
+     "type": "Image",
+     "url": "data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfi"
+    },
+    {
+     "bytes": 1179,
+     "end": 133.5,
+     "priority": "VeryHigh",
+     "start": 76.9,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css2?family=Cormorant+Garamond:wght@400;500&family=Jost:wght@400;500&display=optional"
+    },
+    {
+     "bytes": 1145,
+     "end": 125.0,
+     "priority": "Medium",
+     "start": 106.2,
+     "status": 200,
+     "type": "Manifest",
+     "url": "/manifest.json"
+    },
+    {
+     "bytes": 40683,
+     "end": 118.5,
+     "priority": "Low",
+     "start": 92.1,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/main.js?v=20261027r01"
+    },
+    {
+     "bytes": 7976,
+     "end": 115.1,
+     "priority": "Low",
+     "start": 93.1,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/consent-analytics.js?v=20261026r02"
+    },
+    {
+     "bytes": 7179,
+     "end": 114.4,
+     "priority": "Low",
+     "start": 92.6,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/mc-2026.js?v=20260916r02"
+    },
+    {
+     "bytes": 9682,
+     "end": 113.8,
+     "priority": "Low",
+     "start": 92.4,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/nav.js?v=20260728r27"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 411.0,
+    "fcp": 251.0,
+    "first_meaningful_paint": null,
+    "first_paint": 251.0,
+    "lcp": 251.0,
+    "load": 437.0,
+    "si": 517.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 3982.0,
+    "recomputed": 41.0,
+    "reported": 44.5,
+    "start": 1824.0
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/"
+  },
+  {
+   "benchmark_index": 2412,
+   "blocking": {
+    "bootup_js_ms": 186.1,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 1609
+    },
+    "non_composited_animations": 13,
+    "render_blocking": {
+     "items": 4,
+     "overall": 0.0,
+     "sum": 911.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 24226.0
+    }
+   },
+   "bytes": {
+    "requests": 26,
+    "total": 401716.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:05:08.985Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 282.3,
+     "Load Time": 172.7,
+     "Render Delay": 2714.2,
+     "TTFB": 625.4
+    },
+    "snippet": "<img class=\"hero-img\" src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"\u0410\u0432\u0442\u043e\u0440\u0441\u043a\u0438\u0439 \u0442\u043e\u0440\u0442 \u0440\u0443\u0447\u043d\u043e\u0439 \u0440\u0430\u0431\u043e\u0442\u044b \u2014 Milovi Cake, \u0421\u0430\u043d\u043a\u0442-\u041f\u0435\u0442\u0435\u0440\u0431\u0443\u0440\u0433\" fetchpriority=\"high\" decoding=\"async\" width=\"1440\" height=\"960\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 210.0,
+     "start": 1021.3,
+     "url": "https://milovicake.ru/"
+    },
+    {
+     "duration": 141.0,
+     "start": 4102.9,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    },
+    {
+     "duration": 111.0,
+     "start": 3814.9,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    },
+    {
+     "duration": 105.0,
+     "start": 3925.9,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    },
+    {
+     "duration": 96.0,
+     "start": 1231.3,
+     "url": "https://milovicake.ru/"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 1038.2,
+     "Parse HTML & CSS": 80.9,
+     "Rendering": 259.7,
+     "Script Evaluation": 151.8,
+     "Script Parsing & Compilation": 75.8,
+     "Style & Layout": 954.7
+    },
+    "total_ms": 2561.3
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 3375.0,
+    "lcp": 3794.5,
+    "max_potential_fid": 141.0,
+    "si": 3375.0,
+    "tbt": 161.5,
+    "tti": 4182.6
+   },
+   "network": [
+    {
+     "bytes": 26113,
+     "end": 595.0,
+     "priority": "High",
+     "start": 460.6,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 816,
+     "end": 487.8,
+     "priority": "High",
+     "start": 455.0,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 20173,
+     "end": 313.2,
+     "priority": "Low",
+     "start": 278.6,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/viktoria-480.avif"
+    },
+    {
+     "bytes": 26617,
+     "end": 297.0,
+     "priority": "VeryHigh",
+     "start": 279.2,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 33772,
+     "end": 296.7,
+     "priority": "VeryHigh",
+     "start": 280.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYp3tKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 17233,
+     "end": 295.2,
+     "priority": "VeryHigh",
+     "start": 279.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 21161,
+     "end": 294.1,
+     "priority": "VeryHigh",
+     "start": 279.4,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 37808,
+     "end": 290.2,
+     "priority": "VeryHigh",
+     "start": 279.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 287.2,
+     "priority": "VeryHigh",
+     "start": 278.9,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 0,
+     "end": 182.4,
+     "priority": "Low",
+     "start": 182.3,
+     "status": 200,
+     "type": "Image",
+     "url": "data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfi"
+    },
+    {
+     "bytes": 8628,
+     "end": 168.5,
+     "priority": "VeryHigh",
+     "start": 79.1,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css/v20-dark-and-fixes.css?v=20260728r27"
+    },
+    {
+     "bytes": 7876,
+     "end": 166.8,
+     "priority": "Low",
+     "start": 86.9,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/consent-analytics.js?v=20261026r02"
+    },
+    {
+     "bytes": 1144,
+     "end": 141.7,
+     "priority": "Medium",
+     "start": 99.6,
+     "status": 200,
+     "type": "Manifest",
+     "url": "/manifest.json"
+    },
+    {
+     "bytes": 40595,
+     "end": 131.7,
+     "priority": "Low",
+     "start": 86.0,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/main.js?v=20261027r01"
+    },
+    {
+     "bytes": 1179,
+     "end": 122.6,
+     "priority": "VeryHigh",
+     "start": 76.9,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css2?family=Cormorant+Garamond:wght@400;500&family=Jost:wght@400;500&display=optional"
+    },
+    {
+     "bytes": 6533,
+     "end": 122.0,
+     "priority": "VeryHigh",
+     "start": 79.4,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css/v20-fixes.css?v=20260728r27"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 373.0,
+    "fcp": 324.0,
+    "first_meaningful_paint": null,
+    "first_paint": 324.0,
+    "lcp": 324.0,
+    "load": 420.0,
+    "si": 553.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 4182.6,
+    "recomputed": 145.7,
+    "reported": 161.5,
+    "start": 3375.0
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/"
+  },
+  {
+   "benchmark_index": 2458,
+   "blocking": {
+    "bootup_js_ms": 261.6,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 457
+    },
+    "non_composited_animations": 28,
+    "render_blocking": {
+     "items": 1,
+     "overall": 150.0,
+     "sum": 150.0
+    },
+    "unused_css": {
+     "items": 0,
+     "overall": 0.0,
+     "sum": 0.0
+    }
+   },
+   "bytes": {
+    "requests": 48,
+    "total": 4876136.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:05:24.831Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 0.0,
+     "Render Delay": 1331.5,
+     "TTFB": 618.7
+    },
+    "snippet": "<img class=\"card-media\" alt=\"\" loading=\"eager\" decoding=\"async\" fetchpriority=\"high\" src=\"https://milovicake.ru/img/gallery/gallery-01.avif\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 105.0,
+     "start": 1872.7,
+     "url": "https://milovicake.ru/js/consent-analytics.js"
+    },
+    {
+     "duration": 54.0,
+     "start": 1818.7,
+     "url": "https://milovicake.ru/js/gallery/main.js?v=20261026r01"
+    },
+    {
+     "duration": 53.0,
+     "start": 788.7,
+     "url": "https://milovicake.ru/gallery/"
+    },
+    {
+     "duration": 53.0,
+     "start": 1977.7,
+     "url": "https://milovicake.ru/js/gallery/main.js?v=20261026r01"
+    },
+    {
+     "duration": 51.0,
+     "start": 933.7,
+     "url": "Unattributable"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 1366.2,
+     "Parse HTML & CSS": 47.7,
+     "Rendering": 432.6,
+     "Script Evaluation": 281.8,
+     "Script Parsing & Compilation": 8.1,
+     "Style & Layout": 751.8
+    },
+    "total_ms": 2888.1
+   },
+   "metrics": {
+    "cls": 0.1,
+    "fcp": 1068.7,
+    "lcp": 1950.2,
+    "max_potential_fid": 105.0,
+    "si": 1366.7,
+    "tbt": 33.5,
+    "tti": 1982.6
+   },
+   "network": [
+    {
+     "bytes": 2589563,
+     "end": 498.9,
+     "priority": "Low",
+     "start": 401.2,
+     "status": 206,
+     "type": "Media",
+     "url": "/img/gallery/videos/video-01-knigi.webm"
+    },
+    {
+     "bytes": 1599755,
+     "end": 469.8,
+     "priority": "Low",
+     "start": 402.3,
+     "status": 206,
+     "type": "Media",
+     "url": "/img/gallery/videos/video-02-spb-cakes.webm"
+    },
+    {
+     "bytes": 0,
+     "end": 401.4,
+     "priority": "Low",
+     "start": 370.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-16-moon-stars-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 389.8,
+     "priority": "Low",
+     "start": 370.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-15-basketball-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 359.6,
+     "priority": "Low",
+     "start": 335.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-14-blue-balloons-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 358.4,
+     "priority": "Low",
+     "start": 335.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-13-bunny-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 356.0,
+     "priority": "Low",
+     "start": 313.9,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-12-wedding-heart-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 338.5,
+     "priority": "Low",
+     "start": 311.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-11-bears-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 332.5,
+     "priority": "Low",
+     "start": 300.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-18-card.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 325.6,
+     "priority": "Low",
+     "start": 301.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-20.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 325.4,
+     "priority": "Low",
+     "start": 301.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-22.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 324.1,
+     "priority": "Low",
+     "start": 300.9,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-19.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 304.6,
+     "priority": "Low",
+     "start": 257.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-15.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 295.3,
+     "priority": "Low",
+     "start": 258.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-16.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 295.2,
+     "priority": "Low",
+     "start": 258.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-17.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 283.1,
+     "priority": "Low",
+     "start": 256.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-14.avif"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 118.0,
+    "fcp": 186.0,
+    "first_meaningful_paint": null,
+    "first_paint": 186.0,
+    "lcp": 186.0,
+    "load": 172.0,
+    "si": 462.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 1982.6,
+    "recomputed": 59.0,
+    "reported": 33.5,
+    "start": 1068.7
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/gallery/"
+  },
+  {
+   "benchmark_index": 2436.5,
+   "blocking": {
+    "bootup_js_ms": 253.0,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 457
+    },
+    "non_composited_animations": 28,
+    "render_blocking": {
+     "items": 1,
+     "overall": 150.0,
+     "sum": 150.0
+    },
+    "unused_css": {
+     "items": 0,
+     "overall": 0.0,
+     "sum": 0.0
+    }
+   },
+   "bytes": {
+    "requests": 48,
+    "total": 4437575.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:05:38.844Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 0.0,
+     "Render Delay": 1200.0,
+     "TTFB": 610.2
+    },
+    "snippet": "<img class=\"card-media\" alt=\"\" loading=\"eager\" decoding=\"async\" fetchpriority=\"high\" src=\"https://milovicake.ru/img/gallery/gallery-01.avif\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 106.0,
+     "start": 844.2,
+     "url": "https://milovicake.ru/gallery/"
+    },
+    {
+     "duration": 82.0,
+     "start": 1810.2,
+     "url": "https://milovicake.ru/js/gallery/main.js?v=20261026r01"
+    },
+    {
+     "duration": 80.0,
+     "start": 1892.2,
+     "url": "https://milovicake.ru/js/consent-analytics.js"
+    },
+    {
+     "duration": 69.0,
+     "start": 1070.2,
+     "url": "Unattributable"
+    },
+    {
+     "duration": 58.0,
+     "start": 971.2,
+     "url": "https://milovicake.ru/gallery/"
+    },
+    {
+     "duration": 57.0,
+     "start": 787.2,
+     "url": "https://milovicake.ru/gallery/"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 1556.1,
+     "Parse HTML & CSS": 92.2,
+     "Rendering": 404.7,
+     "Script Evaluation": 270.7,
+     "Script Parsing & Compilation": 18.9,
+     "Style & Layout": 737.3
+    },
+    "total_ms": 3080.0
+   },
+   "metrics": {
+    "cls": 0.1,
+    "fcp": 1060.2,
+    "lcp": 1810.2,
+    "max_potential_fid": 82.0,
+    "si": 1326.8,
+    "tbt": 50.0,
+    "tti": 1899.3
+   },
+   "network": [
+    {
+     "bytes": 2589596,
+     "end": 524.3,
+     "priority": "Low",
+     "start": 440.7,
+     "status": 206,
+     "type": "Media",
+     "url": "/img/gallery/videos/video-01-knigi.webm"
+    },
+    {
+     "bytes": 1599771,
+     "end": 463.5,
+     "priority": "Low",
+     "start": 442.0,
+     "status": 206,
+     "type": "Media",
+     "url": "/img/gallery/videos/video-02-spb-cakes.webm"
+    },
+    {
+     "bytes": 0,
+     "end": 426.0,
+     "priority": "Low",
+     "start": 406.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-16-moon-stars-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 424.4,
+     "priority": "Low",
+     "start": 406.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-15-basketball-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 382.3,
+     "priority": "Low",
+     "start": 359.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-14-blue-balloons-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 369.2,
+     "priority": "Low",
+     "start": 359.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-13-bunny-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 360.7,
+     "priority": "Low",
+     "start": 336.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-12-wedding-heart-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 357.2,
+     "priority": "Low",
+     "start": 336.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-11-bears-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 351.3,
+     "priority": "Low",
+     "start": 325.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-19.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 351.3,
+     "priority": "Low",
+     "start": 325.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-20.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 346.2,
+     "priority": "Low",
+     "start": 325.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-18-card.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 346.2,
+     "priority": "Low",
+     "start": 325.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-22.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 325.8,
+     "priority": "Low",
+     "start": 305.3,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-15.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 325.5,
+     "priority": "Low",
+     "start": 308.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-17.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 325.4,
+     "priority": "Low",
+     "start": 311.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-09-cupcakes-berry-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 325.4,
+     "priority": "Low",
+     "start": 311.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-10-cupcakes-poster.webp"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 172.0,
+    "fcp": 163.0,
+    "first_meaningful_paint": null,
+    "first_paint": 163.0,
+    "lcp": 163.0,
+    "load": 205.0,
+    "si": 454.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 1899.3,
+    "recomputed": 51.0,
+    "reported": 50.0,
+    "start": 1060.2
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/gallery/"
+  },
+  {
+   "benchmark_index": 2451.5,
+   "blocking": {
+    "bootup_js_ms": 270.4,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 457
+    },
+    "non_composited_animations": 28,
+    "render_blocking": {
+     "items": 1,
+     "overall": 150.0,
+     "sum": 150.0
+    },
+    "unused_css": {
+     "items": 0,
+     "overall": 0.0,
+     "sum": 0.0
+    }
+   },
+   "bytes": {
+    "requests": 48,
+    "total": 4480906.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:05:52.948Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 0.0,
+     "Render Delay": 1200.7,
+     "TTFB": 612.1
+    },
+    "snippet": "<img class=\"card-media\" alt=\"\" loading=\"eager\" decoding=\"async\" fetchpriority=\"high\" src=\"https://milovicake.ru/img/gallery/gallery-01.avif\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 96.0,
+     "start": 834.3,
+     "url": "https://milovicake.ru/gallery/"
+    },
+    {
+     "duration": 73.0,
+     "start": 2263.0,
+     "url": "https://milovicake.ru/js/consent-analytics.js"
+    },
+    {
+     "duration": 71.0,
+     "start": 1812.8,
+     "url": "https://milovicake.ru/js/gallery/main.js?v=20261026r01"
+    },
+    {
+     "duration": 53.0,
+     "start": 1970.8,
+     "url": "https://milovicake.ru/js/gallery/main.js?v=20261026r01"
+    },
+    {
+     "duration": 52.0,
+     "start": 782.3,
+     "url": "https://milovicake.ru/gallery/"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 1568.6,
+     "Parse HTML & CSS": 41.3,
+     "Rendering": 422.1,
+     "Script Evaluation": 302.8,
+     "Script Parsing & Compilation": 8.6,
+     "Style & Layout": 790.4
+    },
+    "total_ms": 3133.8
+   },
+   "metrics": {
+    "cls": 0.1,
+    "fcp": 1062.4,
+    "lcp": 1812.8,
+    "max_potential_fid": 73.0,
+    "si": 1309.3,
+    "tbt": 23.5,
+    "tti": 2100.5
+   },
+   "network": [
+    {
+     "bytes": 2589542,
+     "end": 571.9,
+     "priority": "Low",
+     "start": 444.9,
+     "status": 206,
+     "type": "Media",
+     "url": "/img/gallery/videos/video-01-knigi.webm"
+    },
+    {
+     "bytes": 1599820,
+     "end": 478.1,
+     "priority": "Low",
+     "start": 445.1,
+     "status": 206,
+     "type": "Media",
+     "url": "/img/gallery/videos/video-02-spb-cakes.webm"
+    },
+    {
+     "bytes": 0,
+     "end": 442.7,
+     "priority": "Low",
+     "start": 405.3,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-15-basketball-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 418.1,
+     "priority": "Low",
+     "start": 408.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-16-moon-stars-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 380.3,
+     "priority": "Low",
+     "start": 369.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-14-blue-balloons-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 378.9,
+     "priority": "Low",
+     "start": 368.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-13-bunny-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 370.5,
+     "priority": "Low",
+     "start": 346.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-12-wedding-heart-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 358.4,
+     "priority": "Low",
+     "start": 343.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-11-bears-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 352.1,
+     "priority": "Low",
+     "start": 330.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-18-card.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 351.7,
+     "priority": "Low",
+     "start": 330.9,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-20.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 351.4,
+     "priority": "Low",
+     "start": 330.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-19.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 347.4,
+     "priority": "Low",
+     "start": 331.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-22.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 335.2,
+     "priority": "Low",
+     "start": 296.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-15.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 327.2,
+     "priority": "Low",
+     "start": 307.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-10-cupcakes-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 326.6,
+     "priority": "Low",
+     "start": 306.9,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-09-cupcakes-berry-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 324.6,
+     "priority": "Low",
+     "start": 296.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-17.avif"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 181.0,
+    "fcp": 171.0,
+    "first_meaningful_paint": null,
+    "first_paint": 171.0,
+    "lcp": 171.0,
+    "load": 382.0,
+    "si": 457.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 2100.5,
+    "recomputed": 24.0,
+    "reported": 23.5,
+    "start": 1062.4
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/gallery/"
+  },
+  {
+   "benchmark_index": 2473.5,
+   "blocking": {
+    "bootup_js_ms": 97.6,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 330
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 456.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 60.0,
+     "sum": 35841.0
+    }
+   },
+   "bytes": {
+    "requests": 23,
+    "total": 345124.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:06:07.150Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 390.8,
+     "Render Delay": 673.5,
+     "TTFB": 624.8
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/wedding-hero-mobile.avif\" alt=\"\" width=\"1376\" height=\"768\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 316.0,
+     "start": 1180.5,
+     "url": "https://milovicake.ru/svadebnye-torty/"
+    },
+    {
+     "duration": 220.0,
+     "start": 937.5,
+     "url": "https://milovicake.ru/svadebnye-torty/"
+    },
+    {
+     "duration": 89.0,
+     "start": 804.5,
+     "url": "https://milovicake.ru/svadebnye-torty/"
+    },
+    {
+     "duration": 73.0,
+     "start": 3363.0,
+     "url": "https://milovicake.ru/js/consent-analytics.js"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 966.9,
+     "Parse HTML & CSS": 30.5,
+     "Rendering": 54.4,
+     "Script Evaluation": 89.6,
+     "Script Parsing & Compilation": 9.9,
+     "Style & Layout": 366.9
+    },
+    "total_ms": 1518.2
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1555.6,
+    "lcp": 1689.0,
+    "max_potential_fid": 73.0,
+    "si": 1555.6,
+    "tbt": 11.5,
+    "tti": 2684.1
+   },
+   "network": [
+    {
+     "bytes": 25948,
+     "end": 350.8,
+     "priority": "High",
+     "start": 337.7,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 604,
+     "end": 343.9,
+     "priority": "High",
+     "start": 337.2,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 23661,
+     "end": 200.5,
+     "priority": "VeryHigh",
+     "start": 185.0,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3smX5slCNuHLi8bLeY9MK7whWMhyjYrGFEsdtdc62E6zd58jD-iNM8A_ipUA.wo"
+    },
+    {
+     "bytes": 37808,
+     "end": 199.6,
+     "priority": "VeryHigh",
+     "start": 184.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 12755,
+     "end": 199.3,
+     "priority": "VeryHigh",
+     "start": 185.3,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3smX5slCNuHLi8bLeY9MK7whWMhyjYrGFEsdtdc62E6zd58jD-jNM8A_ipUIT9."
+    },
+    {
+     "bytes": 21161,
+     "end": 198.6,
+     "priority": "VeryHigh",
+     "start": 184.4,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 17233,
+     "end": 197.3,
+     "priority": "VeryHigh",
+     "start": 184.8,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 195.4,
+     "priority": "VeryHigh",
+     "start": 184.3,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 189.8,
+     "priority": "VeryHigh",
+     "start": 182.5,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 10857,
+     "end": 172.8,
+     "priority": "Low",
+     "start": 126.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-pure-ivory-sm.avif"
+    },
+    {
+     "bytes": 15351,
+     "end": 170.9,
+     "priority": "Low",
+     "start": 127.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-botanical-romance-sm.avif"
+    },
+    {
+     "bytes": 9701,
+     "end": 170.0,
+     "priority": "Low",
+     "start": 128.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-golden-atelier-sm.avif"
+    },
+    {
+     "bytes": 16694,
+     "end": 163.8,
+     "priority": "Low",
+     "start": 126.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-11-mobile.avif"
+    },
+    {
+     "bytes": 12008,
+     "end": 157.1,
+     "priority": "Low",
+     "start": 127.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-modern-sculptural-sm.avif"
+    },
+    {
+     "bytes": 20185,
+     "end": 140.9,
+     "priority": "Low",
+     "start": 122.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-12-wedding-heart-poster.webp"
+    },
+    {
+     "bytes": 1305,
+     "end": 101.2,
+     "priority": "VeryHigh",
+     "start": 58.4,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;6"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 150.0,
+    "fcp": 144.0,
+    "first_meaningful_paint": null,
+    "first_paint": 144.0,
+    "lcp": 159.0,
+    "load": 318.0,
+    "si": 383.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 2684.1,
+    "recomputed": 0.0,
+    "reported": 11.5,
+    "start": 1555.6
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/svadebnye-torty/"
+  },
+  {
+   "benchmark_index": 2480,
+   "blocking": {
+    "bootup_js_ms": 56.8,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 330
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 455.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 35841.0
+    }
+   },
+   "bytes": {
+    "requests": 28,
+    "total": 345150.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:06:19.975Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 105.4,
+     "Render Delay": 970.3,
+     "TTFB": 606.0
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/wedding-hero-mobile.avif\" alt=\"\" width=\"1376\" height=\"768\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 419.0,
+     "start": 984.8,
+     "url": "Unattributable"
+    },
+    {
+     "duration": 83.0,
+     "start": 799.8,
+     "url": "https://milovicake.ru/svadebnye-torty/"
+    },
+    {
+     "duration": 67.0,
+     "start": 1403.8,
+     "url": "https://milovicake.ru/svadebnye-torty/"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 718.1,
+     "Parse HTML & CSS": 44.6,
+     "Rendering": 50.0,
+     "Script Evaluation": 63.3,
+     "Script Parsing & Compilation": 11.1,
+     "Style & Layout": 397.4
+    },
+    "total_ms": 1284.6
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1541.2,
+    "lcp": 1681.7,
+    "max_potential_fid": 37.0,
+    "si": 1541.2,
+    "tbt": 0.0,
+    "tti": 1695.7
+   },
+   "network": [
+    {
+     "bytes": 25930,
+     "end": 335.6,
+     "priority": "High",
+     "start": 328.6,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 627,
+     "end": 333.6,
+     "priority": "High",
+     "start": 328.4,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 21161,
+     "end": 180.1,
+     "priority": "VeryHigh",
+     "start": 163.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 23661,
+     "end": 179.5,
+     "priority": "VeryHigh",
+     "start": 163.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3smX5slCNuHLi8bLeY9MK7whWMhyjYrGFEsdtdc62E6zd58jD-iNM8A_ipUA.wo"
+    },
+    {
+     "bytes": 10167,
+     "end": 179.1,
+     "priority": "VeryHigh",
+     "start": 162.9,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 17233,
+     "end": 177.9,
+     "priority": "VeryHigh",
+     "start": 163.2,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 12755,
+     "end": 177.4,
+     "priority": "VeryHigh",
+     "start": 163.9,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3smX5slCNuHLi8bLeY9MK7whWMhyjYrGFEsdtdc62E6zd58jD-jNM8A_ipUIT9."
+    },
+    {
+     "bytes": 37808,
+     "end": 174.2,
+     "priority": "VeryHigh",
+     "start": 162.7,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 172.1,
+     "priority": "VeryHigh",
+     "start": 162.4,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 10887,
+     "end": 125.5,
+     "priority": "Low",
+     "start": 104.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-pure-ivory-sm.avif"
+    },
+    {
+     "bytes": 9694,
+     "end": 116.7,
+     "priority": "Low",
+     "start": 107.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-golden-atelier-sm.avif"
+    },
+    {
+     "bytes": 12143,
+     "end": 114.4,
+     "priority": "Low",
+     "start": 104.6,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-modern-sculptural-sm.avif"
+    },
+    {
+     "bytes": 16541,
+     "end": 114.0,
+     "priority": "Low",
+     "start": 104.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-11-mobile.avif"
+    },
+    {
+     "bytes": 15365,
+     "end": 112.7,
+     "priority": "Low",
+     "start": 104.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-botanical-romance-sm.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 112.4,
+     "priority": "Low",
+     "start": 112.3,
+     "status": 200,
+     "type": "Image",
+     "url": "data:image/svg+xml;base64,PHN2ZyBmaWxsPSJXaW5kb3ciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAy"
+    },
+    {
+     "bytes": 20173,
+     "end": 112.3,
+     "priority": "Low",
+     "start": 102.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-12-wedding-heart-poster.webp"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 165.0,
+    "fcp": 130.0,
+    "first_meaningful_paint": null,
+    "first_paint": 130.0,
+    "lcp": 130.0,
+    "load": 202.0,
+    "si": 329.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 1695.7,
+    "recomputed": 0.0,
+    "reported": 0.0,
+    "start": 1541.2
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/svadebnye-torty/"
+  },
+  {
+   "benchmark_index": 2449.5,
+   "blocking": {
+    "bootup_js_ms": 64.1,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 330
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 455.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 35841.0
+    }
+   },
+   "bytes": {
+    "requests": 23,
+    "total": 319122.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:06:32.861Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 0.0,
+     "Render Delay": 931.2,
+     "TTFB": 604.4
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/wedding-hero-mobile.avif\" alt=\"\" width=\"1376\" height=\"768\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 371.0,
+     "start": 1189.7,
+     "url": "https://milovicake.ru/svadebnye-torty/"
+    },
+    {
+     "duration": 318.0,
+     "start": 1560.7,
+     "url": "Unattributable"
+    },
+    {
+     "duration": 285.0,
+     "start": 904.7,
+     "url": "https://milovicake.ru/svadebnye-torty/"
+    },
+    {
+     "duration": 89.0,
+     "start": 785.7,
+     "url": "https://milovicake.ru/svadebnye-torty/"
+    },
+    {
+     "duration": 57.0,
+     "start": 1878.7,
+     "url": "https://milovicake.ru/js/consent-analytics.js"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 933.0,
+     "Parse HTML & CSS": 29.5,
+     "Rendering": 75.3,
+     "Script Evaluation": 71.7,
+     "Script Parsing & Compilation": 8.1,
+     "Style & Layout": 874.2
+    },
+    "total_ms": 1991.7
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1535.6,
+    "lcp": 1535.6,
+    "max_potential_fid": 371.0,
+    "si": 1535.6,
+    "tbt": 271.5,
+    "tti": 1910.5
+   },
+   "network": [
+    {
+     "bytes": 0,
+     "end": 454.1,
+     "priority": "High",
+     "start": 433.3,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 550,
+     "end": 437.4,
+     "priority": "High",
+     "start": 431.3,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 17233,
+     "end": 175.8,
+     "priority": "VeryHigh",
+     "start": 155.8,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 37808,
+     "end": 175.3,
+     "priority": "VeryHigh",
+     "start": 155.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 12755,
+     "end": 170.6,
+     "priority": "VeryHigh",
+     "start": 156.4,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3smX5slCNuHLi8bLeY9MK7whWMhyjYrGFEsdtdc62E6zd58jD-jNM8A_ipUIT9."
+    },
+    {
+     "bytes": 23661,
+     "end": 169.1,
+     "priority": "VeryHigh",
+     "start": 156.0,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3smX5slCNuHLi8bLeY9MK7whWMhyjYrGFEsdtdc62E6zd58jD-iNM8A_ipUA.wo"
+    },
+    {
+     "bytes": 21161,
+     "end": 163.9,
+     "priority": "VeryHigh",
+     "start": 155.3,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 162.7,
+     "priority": "VeryHigh",
+     "start": 153.9,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 159.3,
+     "priority": "VeryHigh",
+     "start": 153.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 9699,
+     "end": 107.0,
+     "priority": "Low",
+     "start": 98.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-golden-atelier-sm.avif"
+    },
+    {
+     "bytes": 12119,
+     "end": 103.2,
+     "priority": "Low",
+     "start": 97.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-modern-sculptural-sm.avif"
+    },
+    {
+     "bytes": 15440,
+     "end": 102.8,
+     "priority": "Low",
+     "start": 96.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-botanical-romance-sm.avif"
+    },
+    {
+     "bytes": 20171,
+     "end": 102.4,
+     "priority": "Low",
+     "start": 95.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-12-wedding-heart-poster.webp"
+    },
+    {
+     "bytes": 16494,
+     "end": 102.2,
+     "priority": "Low",
+     "start": 95.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-11-mobile.avif"
+    },
+    {
+     "bytes": 10968,
+     "end": 101.4,
+     "priority": "Low",
+     "start": 95.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-pure-ivory-sm.avif"
+    },
+    {
+     "bytes": 1305,
+     "end": 75.6,
+     "priority": "VeryHigh",
+     "start": 31.5,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;6"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 128.0,
+    "fcp": 125.0,
+    "first_meaningful_paint": null,
+    "first_paint": 125.0,
+    "lcp": 125.0,
+    "load": 188.0,
+    "si": 400.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 1910.5,
+    "recomputed": 268.0,
+    "reported": 271.5,
+    "start": 1535.6
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/svadebnye-torty/"
+  },
+  {
+   "benchmark_index": 2494.5,
+   "blocking": {
+    "bootup_js_ms": 28.9,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 200
+    },
+    "non_composited_animations": 17,
+    "render_blocking": {
+     "items": 0,
+     "overall": 0.0,
+     "sum": 0.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 38606.0
+    }
+   },
+   "bytes": {
+    "requests": 21,
+    "total": 491210.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:06:45.861Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 399.3,
+     "Render Delay": 2283.7,
+     "TTFB": 617.8
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/bento_1-mobile-640.avif\" alt=\"\u0411\u0435\u043d\u0442\u043e-\u0442\u043e\u0440\u0442\u044b \u043d\u0430 \u0437\u0430\u043a\u0430\u0437 \u0432 \u0421\u041f\u0431 \u2014 Milovi Cake\" width=\"1280\" height=\"1280\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 271.0,
+     "start": 1740.5,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 251.0,
+     "start": 1060.5,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 244.0,
+     "start": 1496.5,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 159.0,
+     "start": 1337.5,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 143.0,
+     "start": 917.5,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 62.0,
+     "start": 773.5,
+     "url": "Unattributable"
+    },
+    {
+     "duration": 54.0,
+     "start": 863.5,
+     "url": "https://milovicake.ru/bento-torty/"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 1441.5,
+     "Parse HTML & CSS": 32.8,
+     "Rendering": 66.7,
+     "Script Evaluation": 46.1,
+     "Script Parsing & Compilation": 6.4,
+     "Style & Layout": 474.5
+    },
+    "total_ms": 2068.0
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1558.8,
+    "lcp": 3300.9,
+    "max_potential_fid": 271.0,
+    "si": 1558.8,
+    "tbt": 352.7,
+    "tti": 3308.4
+   },
+   "network": [
+    {
+     "bytes": 25929,
+     "end": 399.7,
+     "priority": "High",
+     "start": 389.4,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 671,
+     "end": 398.9,
+     "priority": "High",
+     "start": 385.5,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 110954,
+     "end": 252.1,
+     "priority": "Low",
+     "start": 109.6,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_maxi.avif"
+    },
+    {
+     "bytes": 33772,
+     "end": 249.8,
+     "priority": "VeryHigh",
+     "start": 220.2,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYp3tKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 249.4,
+     "priority": "VeryHigh",
+     "start": 216.8,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 21161,
+     "end": 249.1,
+     "priority": "VeryHigh",
+     "start": 217.0,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 37808,
+     "end": 241.0,
+     "priority": "VeryHigh",
+     "start": 216.5,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 234.9,
+     "priority": "VeryHigh",
+     "start": 216.9,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 17233,
+     "end": 226.2,
+     "priority": "VeryHigh",
+     "start": 217.2,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 10884,
+     "end": 184.3,
+     "priority": "Low",
+     "start": 109.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_1-card.avif"
+    },
+    {
+     "bytes": 38195,
+     "end": 183.8,
+     "priority": "Low",
+     "start": 107.3,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-27-preview.avif"
+    },
+    {
+     "bytes": 1145,
+     "end": 161.5,
+     "priority": "Medium",
+     "start": 142.9,
+     "status": 200,
+     "type": "Manifest",
+     "url": "/manifest.json"
+    },
+    {
+     "bytes": 10875,
+     "end": 157.7,
+     "priority": "Low",
+     "start": 109.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-30-preview.avif"
+    },
+    {
+     "bytes": 27658,
+     "end": 136.6,
+     "priority": "Low",
+     "start": 109.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-27-card.avif"
+    },
+    {
+     "bytes": 14434,
+     "end": 131.4,
+     "priority": "Low",
+     "start": 107.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-06-bento-love-poster.webp"
+    },
+    {
+     "bytes": 26513,
+     "end": 129.3,
+     "priority": "Low",
+     "start": 106.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-07-bento-bday-poster.webp"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 115.0,
+    "fcp": 134.0,
+    "first_meaningful_paint": null,
+    "first_paint": 134.0,
+    "lcp": 395.0,
+    "load": 370.0,
+    "si": 383.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 3308.4,
+    "recomputed": 352.7,
+    "reported": 352.7,
+    "start": 1558.8
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/bento-torty/"
+  },
+  {
+   "benchmark_index": 2480,
+   "blocking": {
+    "bootup_js_ms": 30.6,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 200
+    },
+    "non_composited_animations": 17,
+    "render_blocking": {
+     "items": 0,
+     "overall": 0.0,
+     "sum": 0.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 38606.0
+    }
+   },
+   "bytes": {
+    "requests": 21,
+    "total": 490885.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:06:58.240Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 472.3,
+     "Render Delay": 2195.8,
+     "TTFB": 624.3
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/bento_1-mobile-640.avif\" alt=\"\u0411\u0435\u043d\u0442\u043e-\u0442\u043e\u0440\u0442\u044b \u043d\u0430 \u0437\u0430\u043a\u0430\u0437 \u0432 \u0421\u041f\u0431 \u2014 Milovi Cake\" width=\"1280\" height=\"1280\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 528.0,
+     "start": 1558.6,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 235.0,
+     "start": 867.6,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 230.0,
+     "start": 1328.6,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 197.0,
+     "start": 1131.6,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 62.0,
+     "start": 2499.1,
+     "url": "https://milovicake.ru/js/consent-analytics.js"
+    },
+    {
+     "duration": 56.0,
+     "start": 811.6,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 50.0,
+     "start": 2449.1,
+     "url": "https://milovicake.ru/js/consent-analytics.js"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 1610.3,
+     "Parse HTML & CSS": 37.5,
+     "Rendering": 51.2,
+     "Script Evaluation": 44.8,
+     "Script Parsing & Compilation": 7.7,
+     "Style & Layout": 301.1
+    },
+    "total_ms": 2052.6
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1557.6,
+    "lcp": 3292.5,
+    "max_potential_fid": 528.0,
+    "si": 1557.6,
+    "tbt": 490.0,
+    "tti": 3300.0
+   },
+   "network": [
+    {
+     "bytes": 630,
+     "end": 446.9,
+     "priority": "High",
+     "start": 404.1,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 25942,
+     "end": 442.5,
+     "priority": "High",
+     "start": 404.8,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 33772,
+     "end": 164.7,
+     "priority": "VeryHigh",
+     "start": 142.5,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYp3tKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 37807,
+     "end": 161.1,
+     "priority": "VeryHigh",
+     "start": 141.3,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 160.3,
+     "priority": "VeryHigh",
+     "start": 139.9,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 17233,
+     "end": 152.1,
+     "priority": "VeryHigh",
+     "start": 141.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 21161,
+     "end": 150.7,
+     "priority": "VeryHigh",
+     "start": 139.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 149.0,
+     "priority": "VeryHigh",
+     "start": 139.3,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 10883,
+     "end": 128.8,
+     "priority": "Low",
+     "start": 85.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_1-card.avif"
+    },
+    {
+     "bytes": 27465,
+     "end": 127.3,
+     "priority": "Low",
+     "start": 85.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-27-card.avif"
+    },
+    {
+     "bytes": 38342,
+     "end": 122.6,
+     "priority": "Low",
+     "start": 85.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-27-preview.avif"
+    },
+    {
+     "bytes": 1127,
+     "end": 121.9,
+     "priority": "Medium",
+     "start": 89.0,
+     "status": 200,
+     "type": "Manifest",
+     "url": "/manifest.json"
+    },
+    {
+     "bytes": 110735,
+     "end": 120.8,
+     "priority": "Low",
+     "start": 88.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_maxi.avif"
+    },
+    {
+     "bytes": 14514,
+     "end": 119.9,
+     "priority": "Low",
+     "start": 84.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-06-bento-love-poster.webp"
+    },
+    {
+     "bytes": 10872,
+     "end": 112.1,
+     "priority": "Low",
+     "start": 85.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-30-preview.avif"
+    },
+    {
+     "bytes": 26587,
+     "end": 103.0,
+     "priority": "Low",
+     "start": 82.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-07-bento-bday-poster.webp"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 98.0,
+    "fcp": 113.0,
+    "first_meaningful_paint": null,
+    "first_paint": 113.0,
+    "lcp": 275.0,
+    "load": 278.0,
+    "si": 521.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 3300.0,
+    "recomputed": 490.0,
+    "reported": 490.0,
+    "start": 1557.6
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/bento-torty/"
+  },
+  {
+   "benchmark_index": 2474.5,
+   "blocking": {
+    "bootup_js_ms": 40.5,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 200
+    },
+    "non_composited_animations": 17,
+    "render_blocking": {
+     "items": 0,
+     "overall": 0.0,
+     "sum": 0.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 38606.0
+    }
+   },
+   "bytes": {
+    "requests": 21,
+    "total": 491094.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:07:10.718Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 114.0,
+     "Render Delay": 2573.3,
+     "TTFB": 606.1
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/bento_1-mobile-640.avif\" alt=\"\u0411\u0435\u043d\u0442\u043e-\u0442\u043e\u0440\u0442\u044b \u043d\u0430 \u0437\u0430\u043a\u0430\u0437 \u0432 \u0421\u041f\u0431 \u2014 Milovi Cake\" width=\"1280\" height=\"1280\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 531.0,
+     "start": 1587.6,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 266.0,
+     "start": 1174.6,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 204.0,
+     "start": 970.6,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 147.0,
+     "start": 1440.6,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 118.0,
+     "start": 852.6,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 56.0,
+     "start": 796.6,
+     "url": "https://milovicake.ru/bento-torty/"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 1570.7,
+     "Parse HTML & CSS": 32.1,
+     "Rendering": 57.3,
+     "Script Evaluation": 51.9,
+     "Script Parsing & Compilation": 6.0,
+     "Style & Layout": 392.0
+    },
+    "total_ms": 2110.0
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 3218.3,
+    "lcp": 3293.3,
+    "max_potential_fid": 16.0,
+    "si": 3218.3,
+    "tbt": 0.0,
+    "tti": 3300.8
+   },
+   "network": [
+    {
+     "bytes": 25944,
+     "end": 318.5,
+     "priority": "High",
+     "start": 308.7,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 825,
+     "end": 316.8,
+     "priority": "High",
+     "start": 308.3,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 33772,
+     "end": 188.7,
+     "priority": "VeryHigh",
+     "start": 165.8,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYp3tKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 37808,
+     "end": 185.3,
+     "priority": "VeryHigh",
+     "start": 162.7,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 184.7,
+     "priority": "VeryHigh",
+     "start": 163.8,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 21161,
+     "end": 183.6,
+     "priority": "VeryHigh",
+     "start": 165.0,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 17233,
+     "end": 182.1,
+     "priority": "VeryHigh",
+     "start": 165.2,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 178.1,
+     "priority": "VeryHigh",
+     "start": 163.5,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 1127,
+     "end": 125.7,
+     "priority": "Medium",
+     "start": 105.2,
+     "status": 200,
+     "type": "Manifest",
+     "url": "/manifest.json"
+    },
+    {
+     "bytes": 110743,
+     "end": 85.7,
+     "priority": "Low",
+     "start": 71.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_maxi.avif"
+    },
+    {
+     "bytes": 10864,
+     "end": 84.7,
+     "priority": "Low",
+     "start": 71.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-30-preview.avif"
+    },
+    {
+     "bytes": 38195,
+     "end": 83.6,
+     "priority": "Low",
+     "start": 71.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-27-preview.avif"
+    },
+    {
+     "bytes": 27464,
+     "end": 82.7,
+     "priority": "Low",
+     "start": 71.6,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-27-card.avif"
+    },
+    {
+     "bytes": 11100,
+     "end": 82.2,
+     "priority": "Low",
+     "start": 71.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_1-card.avif"
+    },
+    {
+     "bytes": 1305,
+     "end": 78.6,
+     "priority": "VeryHigh",
+     "start": 30.9,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;6"
+    },
+    {
+     "bytes": 26439,
+     "end": 77.4,
+     "priority": "Low",
+     "start": 67.3,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-07-bento-bday-poster.webp"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 77.0,
+    "fcp": 203.0,
+    "first_meaningful_paint": null,
+    "first_paint": 203.0,
+    "lcp": 203.0,
+    "load": 295.0,
+    "si": 344.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 3300.8,
+    "recomputed": 0.0,
+    "reported": 0.0,
+    "start": 3218.3
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/bento-torty/"
+  },
+  {
+   "benchmark_index": 2422,
+   "blocking": {
+    "bootup_js_ms": 31.0,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 200
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 456.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 460.0,
+     "sum": 38606.0
+    }
+   },
+   "bytes": {
+    "requests": 18,
+    "total": 470858.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:07:22.991Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 91.7,
+     "Render Delay": 1384.6,
+     "TTFB": 613.6
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile.avif\" alt=\"\u0417\u0430\u043a\u0430\u0437\u0430\u0442\u044c \u0442\u043e\u0440\u0442 \u0432 \u0421\u041f\u0431 \u2014 Milovi Cake\" width=\"900\" height=\"1200\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 504.0,
+     "start": 1062.2,
+     "url": "https://milovicake.ru/zakazat-tort-spb/"
+    },
+    {
+     "duration": 378.0,
+     "start": 2743.4,
+     "url": "https://milovicake.ru/js/consent-analytics.js"
+    },
+    {
+     "duration": 213.0,
+     "start": 849.2,
+     "url": "https://milovicake.ru/zakazat-tort-spb/"
+    },
+    {
+     "duration": 63.0,
+     "start": 3121.4,
+     "url": "https://milovicake.ru/js/consent-analytics.js"
+    },
+    {
+     "duration": 55.0,
+     "start": 794.2,
+     "url": "https://milovicake.ru/zakazat-tort-spb/"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 1142.7,
+     "Parse HTML & CSS": 34.5,
+     "Rendering": 41.0,
+     "Script Evaluation": 53.7,
+     "Script Parsing & Compilation": 7.4,
+     "Style & Layout": 599.8
+    },
+    "total_ms": 1879.2
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1547.1,
+    "lcp": 2089.9,
+    "max_potential_fid": 504.0,
+    "si": 1547.1,
+    "tbt": 170.5,
+    "tti": 2706.0
+   },
+   "network": [
+    {
+     "bytes": 25928,
+     "end": 554.8,
+     "priority": "High",
+     "start": 547.4,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 657,
+     "end": 421.0,
+     "priority": "High",
+     "start": 413.1,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 37808,
+     "end": 283.2,
+     "priority": "VeryHigh",
+     "start": 267.3,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 17233,
+     "end": 280.4,
+     "priority": "VeryHigh",
+     "start": 267.5,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 277.1,
+     "priority": "VeryHigh",
+     "start": 267.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 21161,
+     "end": 274.3,
+     "priority": "VeryHigh",
+     "start": 266.9,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 269.7,
+     "priority": "VeryHigh",
+     "start": 264.0,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 41128,
+     "end": 167.3,
+     "priority": "Low",
+     "start": 130.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-14.avif"
+    },
+    {
+     "bytes": 57940,
+     "end": 162.6,
+     "priority": "Low",
+     "start": 129.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_0.avif"
+    },
+    {
+     "bytes": 54810,
+     "end": 160.0,
+     "priority": "Low",
+     "start": 129.9,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_3d.avif"
+    },
+    {
+     "bytes": 23250,
+     "end": 153.5,
+     "priority": "Low",
+     "start": 129.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-02-spb-cakes-poster.webp"
+    },
+    {
+     "bytes": 60605,
+     "end": 138.7,
+     "priority": "Low",
+     "start": 129.6,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_1.avif"
+    },
+    {
+     "bytes": 1305,
+     "end": 111.5,
+     "priority": "VeryHigh",
+     "start": 68.5,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;6"
+    },
+    {
+     "bytes": 41093,
+     "end": 95.1,
+     "priority": "VeryHigh",
+     "start": 68.8,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css/style.css?v=20261023r02"
+    },
+    {
+     "bytes": 1127,
+     "end": 90.5,
+     "priority": "Medium",
+     "start": 77.9,
+     "status": 200,
+     "type": "Manifest",
+     "url": "/manifest.json"
+    },
+    {
+     "bytes": 7907,
+     "end": 84.5,
+     "priority": "Low",
+     "start": 77.4,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/consent-analytics.js"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 140.0,
+    "fcp": 237.0,
+    "first_meaningful_paint": null,
+    "first_paint": 237.0,
+    "lcp": 237.0,
+    "load": 397.0,
+    "si": 412.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 2706.0,
+    "recomputed": 0.0,
+    "reported": 170.5,
+    "start": 1547.1
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/zakazat-tort-spb/"
+  },
+  {
+   "benchmark_index": 2478.5,
+   "blocking": {
+    "bootup_js_ms": 23.6,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 200
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 455.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 38606.0
+    }
+   },
+   "bytes": {
+    "requests": 18,
+    "total": 470719.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:07:35.335Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 217.6,
+     "Render Delay": 2292.8,
+     "TTFB": 618.8
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile.avif\" alt=\"\u0417\u0430\u043a\u0430\u0437\u0430\u0442\u044c \u0442\u043e\u0440\u0442 \u0432 \u0421\u041f\u0431 \u2014 Milovi Cake\" width=\"900\" height=\"1200\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 505.0,
+     "start": 1683.1,
+     "url": "Unattributable"
+    },
+    {
+     "duration": 484.0,
+     "start": 1199.1,
+     "url": "https://milovicake.ru/zakazat-tort-spb/"
+    },
+    {
+     "duration": 223.0,
+     "start": 976.1,
+     "url": "https://milovicake.ru/zakazat-tort-spb/"
+    },
+    {
+     "duration": 128.0,
+     "start": 848.1,
+     "url": "https://milovicake.ru/zakazat-tort-spb/"
+    },
+    {
+     "duration": 107.0,
+     "start": 2943.7,
+     "url": "https://milovicake.ru/js/consent-analytics.js"
+    },
+    {
+     "duration": 56.0,
+     "start": 792.1,
+     "url": "https://milovicake.ru/zakazat-tort-spb/"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 1427.0,
+     "Parse HTML & CSS": 22.6,
+     "Rendering": 55.7,
+     "Script Evaluation": 34.4,
+     "Script Parsing & Compilation": 6.7,
+     "Style & Layout": 783.8
+    },
+    "total_ms": 2330.1
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 2604.3,
+    "lcp": 3129.3,
+    "max_potential_fid": 107.0,
+    "si": 2604.3,
+    "tbt": 57.0,
+    "tti": 3136.8
+   },
+   "network": [
+    {
+     "bytes": 25930,
+     "end": 526.5,
+     "priority": "High",
+     "start": 483.0,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 552,
+     "end": 504.7,
+     "priority": "High",
+     "start": 479.9,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 17233,
+     "end": 176.7,
+     "priority": "VeryHigh",
+     "start": 170.2,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 37808,
+     "end": 175.8,
+     "priority": "VeryHigh",
+     "start": 167.9,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 126.1,
+     "priority": "VeryHigh",
+     "start": 111.5,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 21161,
+     "end": 123.1,
+     "priority": "VeryHigh",
+     "start": 111.3,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 60561,
+     "end": 122.3,
+     "priority": "Low",
+     "start": 89.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_1.avif"
+    },
+    {
+     "bytes": 10167,
+     "end": 119.3,
+     "priority": "VeryHigh",
+     "start": 111.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 23400,
+     "end": 104.0,
+     "priority": "Low",
+     "start": 94.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-02-spb-cakes-poster.webp"
+    },
+    {
+     "bytes": 41128,
+     "end": 100.6,
+     "priority": "Low",
+     "start": 90.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-14.avif"
+    },
+    {
+     "bytes": 54666,
+     "end": 100.1,
+     "priority": "Low",
+     "start": 89.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_3d.avif"
+    },
+    {
+     "bytes": 57940,
+     "end": 97.1,
+     "priority": "Low",
+     "start": 88.3,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_0.avif"
+    },
+    {
+     "bytes": 8099,
+     "end": 80.8,
+     "priority": "Low",
+     "start": 41.8,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/consent-analytics.js"
+    },
+    {
+     "bytes": 1126,
+     "end": 72.6,
+     "priority": "Medium",
+     "start": 42.4,
+     "status": 200,
+     "type": "Manifest",
+     "url": "/manifest.json"
+    },
+    {
+     "bytes": 1305,
+     "end": 70.5,
+     "priority": "VeryHigh",
+     "start": 31.1,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;6"
+    },
+    {
+     "bytes": 33634,
+     "end": 64.9,
+     "priority": "High",
+     "start": 30.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/head_mobile.avif"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 100.0,
+    "fcp": 137.0,
+    "first_meaningful_paint": null,
+    "first_paint": 137.0,
+    "lcp": 246.0,
+    "load": 242.0,
+    "si": 479.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 3136.8,
+    "recomputed": 57.0,
+    "reported": 57.0,
+    "start": 2604.3
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/zakazat-tort-spb/"
+  },
+  {
+   "benchmark_index": 2479.5,
+   "blocking": {
+    "bootup_js_ms": 53.9,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 200
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 456.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 70.0,
+     "sum": 38606.0
+    }
+   },
+   "bytes": {
+    "requests": 25,
+    "total": 444264.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:07:47.754Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 0.0,
+     "Render Delay": 1168.0,
+     "TTFB": 607.6
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile.avif\" alt=\"\u0417\u0430\u043a\u0430\u0437\u0430\u0442\u044c \u0442\u043e\u0440\u0442 \u0432 \u0421\u041f\u0431 \u2014 Milovi Cake\" width=\"900\" height=\"1200\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 314.0,
+     "start": 874.3,
+     "url": "https://milovicake.ru/zakazat-tort-spb/"
+    },
+    {
+     "duration": 202.0,
+     "start": 2360.4,
+     "url": "https://milovicake.ru/js/consent-analytics.js"
+    },
+    {
+     "duration": 145.0,
+     "start": 1253.3,
+     "url": "Unattributable"
+    },
+    {
+     "duration": 53.0,
+     "start": 821.3,
+     "url": "https://milovicake.ru/zakazat-tort-spb/"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 837.8,
+     "Parse HTML & CSS": 25.9,
+     "Rendering": 79.7,
+     "Script Evaluation": 49.5,
+     "Script Parsing & Compilation": 6.6,
+     "Style & Layout": 818.8
+    },
+    "total_ms": 1818.4
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1601.7,
+    "lcp": 1775.6,
+    "max_potential_fid": 202.0,
+    "si": 1601.7,
+    "tbt": 76.0,
+    "tti": 2162.9
+   },
+   "network": [
+    {
+     "bytes": 0,
+     "end": 435.6,
+     "priority": "High",
+     "start": 416.7,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 0,
+     "end": 430.0,
+     "priority": "High",
+     "start": 414.9,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 0,
+     "end": 394.4,
+     "priority": "VeryHigh",
+     "start": 372.5,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 0,
+     "end": 394.2,
+     "priority": "VeryHigh",
+     "start": 372.9,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 17233,
+     "end": 393.8,
+     "priority": "VeryHigh",
+     "start": 372.3,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 0,
+     "end": 390.9,
+     "priority": "VeryHigh",
+     "start": 374.2,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 0,
+     "end": 390.5,
+     "priority": "VeryHigh",
+     "start": 374.0,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 0,
+     "end": 388.0,
+     "priority": "VeryHigh",
+     "start": 372.0,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 0,
+     "end": 386.2,
+     "priority": "VeryHigh",
+     "start": 372.8,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 21161,
+     "end": 381.5,
+     "priority": "VeryHigh",
+     "start": 371.7,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 37808,
+     "end": 380.9,
+     "priority": "VeryHigh",
+     "start": 371.5,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 0,
+     "end": 377.3,
+     "priority": "VeryHigh",
+     "start": 371.8,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 377.0,
+     "priority": "VeryHigh",
+     "start": 371.3,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 375.2,
+     "priority": "VeryHigh",
+     "start": 369.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 1305,
+     "end": 127.6,
+     "priority": "VeryHigh",
+     "start": 29.7,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;6"
+    },
+    {
+     "bytes": 57958,
+     "end": 93.0,
+     "priority": "Low",
+     "start": 78.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_0.avif"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 87.0,
+    "fcp": 192.0,
+    "first_meaningful_paint": null,
+    "first_paint": 192.0,
+    "lcp": 192.0,
+    "load": 208.0,
+    "si": 360.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 2162.9,
+    "recomputed": 0.0,
+    "reported": 76.0,
+    "start": 1601.7
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/zakazat-tort-spb/"
+  },
+  {
+   "benchmark_index": 2477,
+   "blocking": {
+    "bootup_js_ms": 19.4,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 146
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 455.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 320.0,
+     "sum": 39107.0
+    }
+   },
+   "bytes": {
+    "requests": 13,
+    "total": 234038.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:07:59.928Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 110.4,
+     "Load Time": 378.2,
+     "Render Delay": 803.6,
+     "TTFB": 608.5
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/viktoria.avif\" alt=\"\u0427\u0430\u0441\u0442\u043d\u044b\u0439 \u043a\u043e\u043d\u0434\u0438\u0442\u0435\u0440 \u0412\u0438\u043a\u0442\u043e\u0440\u0438\u044f \u041c\u0438\u043b\u043e\u0432\u0430\u043d\u043e\u0432\u0430 \u2014 Milovi Cake\" width=\"600\" height=\"900\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 68.0,
+     "start": 778.0,
+     "url": "https://milovicake.ru/o-konditere/"
+    },
+    {
+     "duration": 60.0,
+     "start": 2781.7,
+     "url": "https://milovicake.ru/js/consent-analytics.js"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 173.4,
+     "Parse HTML & CSS": 21.2,
+     "Rendering": 39.0,
+     "Script Evaluation": 30.1,
+     "Script Parsing & Compilation": 5.6,
+     "Style & Layout": 296.6
+    },
+    "total_ms": 565.9
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1549.5,
+    "lcp": 1900.7,
+    "max_potential_fid": 60.0,
+    "si": 1549.5,
+    "tbt": 5.0,
+    "tti": 2404.8
+   },
+   "network": [
+    {
+     "bytes": 26097,
+     "end": 208.8,
+     "priority": "High",
+     "start": 202.9,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 662,
+     "end": 202.6,
+     "priority": "High",
+     "start": 196.8,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 17233,
+     "end": 173.2,
+     "priority": "VeryHigh",
+     "start": 160.4,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 37808,
+     "end": 173.0,
+     "priority": "VeryHigh",
+     "start": 160.2,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 172.3,
+     "priority": "VeryHigh",
+     "start": 160.0,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 21161,
+     "end": 171.7,
+     "priority": "VeryHigh",
+     "start": 159.8,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 166.0,
+     "priority": "VeryHigh",
+     "start": 159.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 1305,
+     "end": 100.5,
+     "priority": "VeryHigh",
+     "start": 54.8,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;6"
+    },
+    {
+     "bytes": 1127,
+     "end": 88.1,
+     "priority": "Medium",
+     "start": 63.4,
+     "status": 200,
+     "type": "Manifest",
+     "url": "/manifest.json"
+    },
+    {
+     "bytes": 35620,
+     "end": 82.4,
+     "priority": "High",
+     "start": 53.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/viktoria.avif"
+    },
+    {
+     "bytes": 7903,
+     "end": 72.8,
+     "priority": "Low",
+     "start": 63.1,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/consent-analytics.js"
+    },
+    {
+     "bytes": 40973,
+     "end": 70.5,
+     "priority": "VeryHigh",
+     "start": 55.5,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css/style.css?v=20261023r02"
+    },
+    {
+     "bytes": 7365,
+     "end": 42.8,
+     "priority": "VeryHigh",
+     "start": 0.9,
+     "status": 200,
+     "type": "Document",
+     "url": "/o-konditere/"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 119.0,
+    "fcp": 137.0,
+    "first_meaningful_paint": null,
+    "first_paint": 137.0,
+    "lcp": 144.0,
+    "load": 187.0,
+    "si": 339.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 2404.8,
+    "recomputed": 0.0,
+    "reported": 5.0,
+    "start": 1549.5
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/o-konditere/"
+  },
+  {
+   "benchmark_index": 2501,
+   "blocking": {
+    "bootup_js_ms": 30.0,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 146
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 0.0,
+     "sum": 455.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 130.0,
+     "sum": 39107.0
+    }
+   },
+   "bytes": {
+    "requests": 19,
+    "total": 233926.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:08:11.677Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 114.7,
+     "Render Delay": 960.3,
+     "TTFB": 605.4
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/viktoria.avif\" alt=\"\u0427\u0430\u0441\u0442\u043d\u044b\u0439 \u043a\u043e\u043d\u0434\u0438\u0442\u0435\u0440 \u0412\u0438\u043a\u0442\u043e\u0440\u0438\u044f \u041c\u0438\u043b\u043e\u0432\u0430\u043d\u043e\u0432\u0430 \u2014 Milovi Cake\" width=\"600\" height=\"900\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 68.0,
+     "start": 868.2,
+     "url": "https://milovicake.ru/o-konditere/"
+    },
+    {
+     "duration": 51.0,
+     "start": 817.2,
+     "url": "https://milovicake.ru/o-konditere/"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 272.6,
+     "Parse HTML & CSS": 22.4,
+     "Rendering": 29.4,
+     "Script Evaluation": 39.7,
+     "Script Parsing & Compilation": 5.9,
+     "Style & Layout": 224.3
+    },
+    "total_ms": 594.4
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1537.8,
+    "lcp": 1680.4,
+    "max_potential_fid": 21.0,
+    "si": 1537.8,
+    "tbt": 0.0,
+    "tti": 1681.4
+   },
+   "network": [
+    {
+     "bytes": 26072,
+     "end": 184.3,
+     "priority": "High",
+     "start": 173.9,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 0,
+     "end": 139.7,
+     "priority": "VeryHigh",
+     "start": 117.0,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 0,
+     "end": 139.5,
+     "priority": "VeryHigh",
+     "start": 116.8,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 603,
+     "end": 138.5,
+     "priority": "High",
+     "start": 124.7,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 0,
+     "end": 137.2,
+     "priority": "VeryHigh",
+     "start": 116.7,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 1127,
+     "end": 135.6,
+     "priority": "Medium",
+     "start": 37.1,
+     "status": 200,
+     "type": "Manifest",
+     "url": "/manifest.json"
+    },
+    {
+     "bytes": 0,
+     "end": 134.1,
+     "priority": "VeryHigh",
+     "start": 117.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 37808,
+     "end": 133.8,
+     "priority": "VeryHigh",
+     "start": 115.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 0,
+     "end": 133.4,
+     "priority": "VeryHigh",
+     "start": 116.4,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 0,
+     "end": 132.5,
+     "priority": "VeryHigh",
+     "start": 116.0,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 21161,
+     "end": 129.7,
+     "priority": "VeryHigh",
+     "start": 115.9,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 17233,
+     "end": 127.3,
+     "priority": "VeryHigh",
+     "start": 116.5,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 125.9,
+     "priority": "VeryHigh",
+     "start": 115.4,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 122.3,
+     "priority": "VeryHigh",
+     "start": 115.2,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 1305,
+     "end": 72.4,
+     "priority": "VeryHigh",
+     "start": 28.1,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;6"
+    },
+    {
+     "bytes": 8098,
+     "end": 45.9,
+     "priority": "Low",
+     "start": 36.8,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/consent-analytics.js"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 72.0,
+    "fcp": 92.0,
+    "first_meaningful_paint": null,
+    "first_paint": 92.0,
+    "lcp": 92.0,
+    "load": 88.0,
+    "si": 269.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 1681.4,
+    "recomputed": 0.0,
+    "reported": 0.0,
+    "start": 1537.8
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/o-konditere/"
+  },
+  {
+   "benchmark_index": 2492,
+   "blocking": {
+    "bootup_js_ms": 24.4,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 146
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 240.0,
+     "sum": 304.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 150.0,
+     "sum": 39107.0
+    }
+   },
+   "bytes": {
+    "requests": 19,
+    "total": 233824.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:08:23.414Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 0.0,
+     "Render Delay": 611.0,
+     "TTFB": 607.4
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/viktoria.avif\" alt=\"\u0427\u0430\u0441\u0442\u043d\u044b\u0439 \u043a\u043e\u043d\u0434\u0438\u0442\u0435\u0440 \u0412\u0438\u043a\u0442\u043e\u0440\u0438\u044f \u041c\u0438\u043b\u043e\u0432\u0430\u043d\u043e\u0432\u0430 \u2014 Milovi Cake\" width=\"600\" height=\"900\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 69.0,
+     "start": 849.9,
+     "url": "https://milovicake.ru/o-konditere/"
+    },
+    {
+     "duration": 54.0,
+     "start": 918.9,
+     "url": "https://milovicake.ru/o-konditere/"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 303.9,
+     "Parse HTML & CSS": 22.2,
+     "Rendering": 32.9,
+     "Script Evaluation": 36.2,
+     "Script Parsing & Compilation": 6.2,
+     "Style & Layout": 270.1
+    },
+    "total_ms": 671.4
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1066.5,
+    "lcp": 1218.4,
+    "max_potential_fid": 16.0,
+    "si": 1066.5,
+    "tbt": 0.0,
+    "tti": 1218.4
+   },
+   "network": [
+    {
+     "bytes": 0,
+     "end": 177.1,
+     "priority": "VeryHigh",
+     "start": 160.8,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 0,
+     "end": 177.0,
+     "priority": "VeryHigh",
+     "start": 160.9,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 0,
+     "end": 176.8,
+     "priority": "VeryHigh",
+     "start": 158.3,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 17233,
+     "end": 176.5,
+     "priority": "VeryHigh",
+     "start": 160.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 0,
+     "end": 176.3,
+     "priority": "VeryHigh",
+     "start": 160.4,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 0,
+     "end": 172.9,
+     "priority": "VeryHigh",
+     "start": 158.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 0,
+     "end": 172.6,
+     "priority": "VeryHigh",
+     "start": 157.4,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 37808,
+     "end": 172.1,
+     "priority": "VeryHigh",
+     "start": 158.5,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 165.8,
+     "priority": "VeryHigh",
+     "start": 157.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 164.1,
+     "priority": "VeryHigh",
+     "start": 156.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 21161,
+     "end": 163.4,
+     "priority": "VeryHigh",
+     "start": 157.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 25970,
+     "end": 114.3,
+     "priority": "High",
+     "start": 102.5,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 603,
+     "end": 103.1,
+     "priority": "High",
+     "start": 97.6,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 1305,
+     "end": 102.2,
+     "priority": "VeryHigh",
+     "start": 34.4,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;6"
+    },
+    {
+     "bytes": 8098,
+     "end": 58.8,
+     "priority": "Low",
+     "start": 44.7,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/consent-analytics.js"
+    },
+    {
+     "bytes": 1127,
+     "end": 56.9,
+     "priority": "Medium",
+     "start": 45.0,
+     "status": 200,
+     "type": "Manifest",
+     "url": "/manifest.json"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 81.0,
+    "fcp": 100.0,
+    "first_meaningful_paint": null,
+    "first_paint": 100.0,
+    "lcp": 100.0,
+    "load": 82.0,
+    "si": 295.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 1218.4,
+    "recomputed": 0.0,
+    "reported": 0.0,
+    "start": 1066.5
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/o-konditere/"
+  },
+  {
+   "benchmark_index": 2483.5,
+   "blocking": {
+    "bootup_js_ms": 145.8,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 1324
+    },
+    "non_composited_animations": 2,
+    "render_blocking": {
+     "items": 4,
+     "overall": 0.0,
+     "sum": 911.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 150.0,
+     "sum": 25345.0
+    }
+   },
+   "bytes": {
+    "requests": 46,
+    "total": 1690461.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:08:35.147Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 877.3,
+     "Render Delay": 566.3,
+     "TTFB": 628.4
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"\u0410\u0432\u0442\u043e\u0440\u0441\u043a\u0438\u0439 \u0442\u043e\u0440\u0442 Milovi Cake \u2014 \u0440\u0443\u0447\u043d\u0430\u044f \u0440\u0430\u0431\u043e\u0442\u0430, \u0421\u0430\u043d\u043a\u0442-\u041f\u0435\u0442\u0435\u0440\u0431\u0443\u0440\u0433\" fetchpriority=\"high\" decoding=\"async\" width=\"1200\" height=\"800\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 153.0,
+     "start": 1242.9,
+     "url": "https://milovicake.ru/prigorody/gatchina/"
+    },
+    {
+     "duration": 126.0,
+     "start": 1014.9,
+     "url": "https://milovicake.ru/prigorody/gatchina/"
+    },
+    {
+     "duration": 106.0,
+     "start": 4270.5,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    },
+    {
+     "duration": 102.0,
+     "start": 1140.9,
+     "url": "https://milovicake.ru/prigorody/gatchina/"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 785.1,
+     "Parse HTML & CSS": 70.2,
+     "Rendering": 149.4,
+     "Script Evaluation": 148.7,
+     "Script Parsing & Compilation": 36.3,
+     "Style & Layout": 706.3
+    },
+    "total_ms": 1896.0
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1844.6,
+    "lcp": 2072.1,
+    "max_potential_fid": 106.0,
+    "si": 2241.4,
+    "tbt": 28.0,
+    "tti": 4308.3
+   },
+   "network": [
+    {
+     "bytes": 776,
+     "end": 467.5,
+     "priority": "High",
+     "start": 428.7,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg"
+    },
+    {
+     "bytes": 25929,
+     "end": 467.0,
+     "priority": "High",
+     "start": 429.0,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 147903,
+     "end": 466.3,
+     "priority": "Low",
+     "start": 366.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_2.webp"
+    },
+    {
+     "bytes": 111607,
+     "end": 425.7,
+     "priority": "Low",
+     "start": 366.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_3.webp"
+    },
+    {
+     "bytes": 38586,
+     "end": 424.6,
+     "priority": "Low",
+     "start": 368.6,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_3d_2.webp"
+    },
+    {
+     "bytes": 69636,
+     "end": 421.0,
+     "priority": "Low",
+     "start": 367.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_1.webp"
+    },
+    {
+     "bytes": 70226,
+     "end": 420.2,
+     "priority": "Low",
+     "start": 366.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_4.webp"
+    },
+    {
+     "bytes": 93009,
+     "end": 414.5,
+     "priority": "Low",
+     "start": 365.6,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_1.webp"
+    },
+    {
+     "bytes": 60998,
+     "end": 413.6,
+     "priority": "Low",
+     "start": 368.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_4.webp"
+    },
+    {
+     "bytes": 70576,
+     "end": 407.5,
+     "priority": "Low",
+     "start": 365.3,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_0.webp"
+    },
+    {
+     "bytes": 43073,
+     "end": 407.4,
+     "priority": "Low",
+     "start": 367.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_2.webp"
+    },
+    {
+     "bytes": 84695,
+     "end": 406.4,
+     "priority": "Low",
+     "start": 367.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_5.webp"
+    },
+    {
+     "bytes": 49835,
+     "end": 399.2,
+     "priority": "Low",
+     "start": 311.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/review_7.webp"
+    },
+    {
+     "bytes": 58490,
+     "end": 397.1,
+     "priority": "Low",
+     "start": 368.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_3d.webp"
+    },
+    {
+     "bytes": 56011,
+     "end": 361.6,
+     "priority": "Low",
+     "start": 309.3,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/review_3.webp"
+    },
+    {
+     "bytes": 59943,
+     "end": 357.6,
+     "priority": "Low",
+     "start": 310.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/review_5.webp"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 339.0,
+    "fcp": 183.0,
+    "first_meaningful_paint": null,
+    "first_paint": 183.0,
+    "lcp": 190.0,
+    "load": 423.0,
+    "si": 555.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 4308.3,
+    "recomputed": 0.0,
+    "reported": 28.0,
+    "start": 1844.6
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/prigorody/gatchina/"
+  },
+  {
+   "benchmark_index": 2484,
+   "blocking": {
+    "bootup_js_ms": 154.7,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 1324
+    },
+    "non_composited_animations": 2,
+    "render_blocking": {
+     "items": 4,
+     "overall": 0.0,
+     "sum": 913.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 150.0,
+     "sum": 25345.0
+    }
+   },
+   "bytes": {
+    "requests": 46,
+    "total": 1690347.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:08:51.519Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 56.8,
+     "Render Delay": 1394.8,
+     "TTFB": 608.6
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"\u0410\u0432\u0442\u043e\u0440\u0441\u043a\u0438\u0439 \u0442\u043e\u0440\u0442 Milovi Cake \u2014 \u0440\u0443\u0447\u043d\u0430\u044f \u0440\u0430\u0431\u043e\u0442\u0430, \u0421\u0430\u043d\u043a\u0442-\u041f\u0435\u0442\u0435\u0440\u0431\u0443\u0440\u0433\" fetchpriority=\"high\" decoding=\"async\" width=\"1200\" height=\"800\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 175.0,
+     "start": 1248.9,
+     "url": "https://milovicake.ru/prigorody/gatchina/"
+    },
+    {
+     "duration": 123.0,
+     "start": 1012.9,
+     "url": "https://milovicake.ru/prigorody/gatchina/"
+    },
+    {
+     "duration": 113.0,
+     "start": 1135.9,
+     "url": "https://milovicake.ru/prigorody/gatchina/"
+    },
+    {
+     "duration": 110.0,
+     "start": 4268.8,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    },
+    {
+     "duration": 58.0,
+     "start": 4597.4,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    },
+    {
+     "duration": 56.0,
+     "start": 4410.8,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    },
+    {
+     "duration": 51.0,
+     "start": 917.9,
+     "url": "Unattributable"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 806.9,
+     "Parse HTML & CSS": 89.1,
+     "Rendering": 147.9,
+     "Script Evaluation": 163.0,
+     "Script Parsing & Compilation": 34.1,
+     "Style & Layout": 747.8
+    },
+    "total_ms": 1988.8
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1831.8,
+    "lcp": 2060.2,
+    "max_potential_fid": 110.0,
+    "si": 2016.0,
+    "tbt": 37.0,
+    "tti": 4462.4
+   },
+   "network": [
+    {
+     "bytes": 25967,
+     "end": 422.2,
+     "priority": "High",
+     "start": 416.1,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 697,
+     "end": 403.6,
+     "priority": "High",
+     "start": 396.4,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg"
+    },
+    {
+     "bytes": 147882,
+     "end": 379.3,
+     "priority": "Low",
+     "start": 355.6,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_2.webp"
+    },
+    {
+     "bytes": 92983,
+     "end": 378.1,
+     "priority": "Low",
+     "start": 355.3,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_1.webp"
+    },
+    {
+     "bytes": 38576,
+     "end": 377.3,
+     "priority": "Low",
+     "start": 357.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_3d_2.webp"
+    },
+    {
+     "bytes": 111725,
+     "end": 376.9,
+     "priority": "Low",
+     "start": 355.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_3.webp"
+    },
+    {
+     "bytes": 70094,
+     "end": 376.0,
+     "priority": "Low",
+     "start": 355.9,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_4.webp"
+    },
+    {
+     "bytes": 58476,
+     "end": 375.7,
+     "priority": "Low",
+     "start": 356.9,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_3d.webp"
+    },
+    {
+     "bytes": 61023,
+     "end": 373.3,
+     "priority": "Low",
+     "start": 356.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_4.webp"
+    },
+    {
+     "bytes": 84686,
+     "end": 372.7,
+     "priority": "Low",
+     "start": 356.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_5.webp"
+    },
+    {
+     "bytes": 69703,
+     "end": 372.5,
+     "priority": "Low",
+     "start": 356.3,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_1.webp"
+    },
+    {
+     "bytes": 43109,
+     "end": 368.1,
+     "priority": "Low",
+     "start": 356.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_2.webp"
+    },
+    {
+     "bytes": 70477,
+     "end": 361.9,
+     "priority": "Low",
+     "start": 352.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_0.webp"
+    },
+    {
+     "bytes": 45086,
+     "end": 314.6,
+     "priority": "Low",
+     "start": 295.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/review_8.webp"
+    },
+    {
+     "bytes": 60061,
+     "end": 313.6,
+     "priority": "Low",
+     "start": 294.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/review_5.webp"
+    },
+    {
+     "bytes": 53031,
+     "end": 313.0,
+     "priority": "Low",
+     "start": 294.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/review_4.webp"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 330.0,
+    "fcp": 162.0,
+    "first_meaningful_paint": null,
+    "first_paint": 162.0,
+    "lcp": 162.0,
+    "load": 356.0,
+    "si": 460.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 4462.4,
+    "recomputed": 61.6,
+    "reported": 37.0,
+    "start": 1831.8
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/prigorody/gatchina/"
+  },
+  {
+   "benchmark_index": 2483.5,
+   "blocking": {
+    "bootup_js_ms": 153.8,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 1324
+    },
+    "non_composited_animations": 2,
+    "render_blocking": {
+     "items": 4,
+     "overall": 0.0,
+     "sum": 911.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 150.0,
+     "sum": 25345.0
+    }
+   },
+   "bytes": {
+    "requests": 46,
+    "total": 1690403.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:09:07.891Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 368.5,
+     "Render Delay": 1074.3,
+     "TTFB": 613.7
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"\u0410\u0432\u0442\u043e\u0440\u0441\u043a\u0438\u0439 \u0442\u043e\u0440\u0442 Milovi Cake \u2014 \u0440\u0443\u0447\u043d\u0430\u044f \u0440\u0430\u0431\u043e\u0442\u0430, \u0421\u0430\u043d\u043a\u0442-\u041f\u0435\u0442\u0435\u0440\u0431\u0443\u0440\u0433\" fetchpriority=\"high\" decoding=\"async\" width=\"1200\" height=\"800\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 152.0,
+     "start": 1224.9,
+     "url": "https://milovicake.ru/prigorody/gatchina/"
+    },
+    {
+     "duration": 126.0,
+     "start": 1004.9,
+     "url": "https://milovicake.ru/prigorody/gatchina/"
+    },
+    {
+     "duration": 103.0,
+     "start": 4253.9,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    },
+    {
+     "duration": 94.0,
+     "start": 1130.9,
+     "url": "https://milovicake.ru/prigorody/gatchina/"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 791.0,
+     "Parse HTML & CSS": 68.9,
+     "Rendering": 154.9,
+     "Script Evaluation": 158.1,
+     "Script Parsing & Compilation": 35.8,
+     "Style & Layout": 711.5
+    },
+    "total_ms": 1920.2
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1829.1,
+    "lcp": 2056.5,
+    "max_potential_fid": 103.0,
+    "si": 2097.9,
+    "tbt": 26.5,
+    "tti": 4288.7
+   },
+   "network": [
+    {
+     "bytes": 26049,
+     "end": 430.2,
+     "priority": "High",
+     "start": 424.2,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 633,
+     "end": 429.0,
+     "priority": "High",
+     "start": 422.8,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg"
+    },
+    {
+     "bytes": 111607,
+     "end": 415.3,
+     "priority": "Low",
+     "start": 361.9,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_3.webp"
+    },
+    {
+     "bytes": 38673,
+     "end": 414.6,
+     "priority": "Low",
+     "start": 363.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_3d_2.webp"
+    },
+    {
+     "bytes": 84719,
+     "end": 403.9,
+     "priority": "Low",
+     "start": 362.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_5.webp"
+    },
+    {
+     "bytes": 92957,
+     "end": 400.6,
+     "priority": "Low",
+     "start": 361.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_1.webp"
+    },
+    {
+     "bytes": 69688,
+     "end": 400.3,
+     "priority": "Low",
+     "start": 362.9,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_1.webp"
+    },
+    {
+     "bytes": 61078,
+     "end": 399.7,
+     "priority": "Low",
+     "start": 363.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_4.webp"
+    },
+    {
+     "bytes": 147787,
+     "end": 388.9,
+     "priority": "Low",
+     "start": 361.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_2.webp"
+    },
+    {
+     "bytes": 70168,
+     "end": 388.2,
+     "priority": "Low",
+     "start": 362.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_4.webp"
+    },
+    {
+     "bytes": 58511,
+     "end": 382.2,
+     "priority": "Low",
+     "start": 363.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_3d.webp"
+    },
+    {
+     "bytes": 70461,
+     "end": 381.3,
+     "priority": "Low",
+     "start": 360.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_0.webp"
+    },
+    {
+     "bytes": 43072,
+     "end": 379.5,
+     "priority": "Low",
+     "start": 363.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_2.webp"
+    },
+    {
+     "bytes": 49914,
+     "end": 350.1,
+     "priority": "Low",
+     "start": 305.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/review_7.webp"
+    },
+    {
+     "bytes": 54590,
+     "end": 340.3,
+     "priority": "Low",
+     "start": 302.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/review_1.webp"
+    },
+    {
+     "bytes": 43803,
+     "end": 339.5,
+     "priority": "Low",
+     "start": 304.9,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/review_6.webp"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 332.0,
+    "fcp": 182.0,
+    "first_meaningful_paint": null,
+    "first_paint": 182.0,
+    "lcp": 194.0,
+    "load": 394.0,
+    "si": 534.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 4288.7,
+    "recomputed": 0.0,
+    "reported": 26.5,
+    "start": 1829.1
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/prigorody/gatchina/"
+  },
+  {
+   "benchmark_index": 2463.5,
+   "blocking": {
+    "bootup_js_ms": 12.2,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 55
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 276.0,
+     "sum": 300.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 280.0,
+     "sum": 39965.0
+    }
+   },
+   "bytes": {
+    "requests": 4,
+    "total": 53895.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:09:24.357Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 0.0,
+     "Render Delay": 450.0,
+     "TTFB": 604.1
+    },
+    "snippet": "<p class=\"privacy-page__lead\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 115.4,
+     "Parse HTML & CSS": 14.7,
+     "Rendering": 12.8,
+     "Script Evaluation": 21.7,
+     "Script Parsing & Compilation": 5.2,
+     "Style & Layout": 66.9
+    },
+    "total_ms": 236.7
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1054.1,
+    "lcp": 1054.1,
+    "max_potential_fid": 16.0,
+    "si": 1054.1,
+    "tbt": 0.0,
+    "tti": 1054.1
+   },
+   "network": [
+    {
+     "bytes": 777,
+     "end": 122.8,
+     "priority": "High",
+     "start": 117.6,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg"
+    },
+    {
+     "bytes": 7903,
+     "end": 79.9,
+     "priority": "Low",
+     "start": 74.1,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/consent-analytics.js"
+    },
+    {
+     "bytes": 40973,
+     "end": 77.0,
+     "priority": "VeryHigh",
+     "start": 66.6,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css/style.css?v=20261023r02"
+    },
+    {
+     "bytes": 4242,
+     "end": 57.4,
+     "priority": "VeryHigh",
+     "start": 0.8,
+     "status": 200,
+     "type": "Document",
+     "url": "/privacy/"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 99.0,
+    "fcp": 109.0,
+    "first_meaningful_paint": null,
+    "first_paint": 109.0,
+    "lcp": 109.0,
+    "load": 107.0,
+    "si": 302.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 1054.1,
+    "recomputed": 0.0,
+    "reported": 0.0,
+    "start": 1054.1
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/privacy/"
+  },
+  {
+   "benchmark_index": 2458.5,
+   "blocking": {
+    "bootup_js_ms": 12.7,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 55
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 274.0,
+     "sum": 300.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 270.0,
+     "sum": 39965.0
+    }
+   },
+   "bytes": {
+    "requests": 4,
+    "total": 53902.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:09:35.696Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 0.0,
+     "Render Delay": 450.0,
+     "TTFB": 603.5
+    },
+    "snippet": "<p class=\"privacy-page__lead\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 113.2,
+     "Parse HTML & CSS": 11.8,
+     "Rendering": 13.3,
+     "Script Evaluation": 23.9,
+     "Script Parsing & Compilation": 5.4,
+     "Style & Layout": 79.0
+    },
+    "total_ms": 246.6
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1053.5,
+    "lcp": 1053.5,
+    "max_potential_fid": 16.0,
+    "si": 1053.5,
+    "tbt": 0.0,
+    "tti": 1053.5
+   },
+   "network": [
+    {
+     "bytes": 798,
+     "end": 90.4,
+     "priority": "High",
+     "start": 83.3,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg"
+    },
+    {
+     "bytes": 40918,
+     "end": 43.7,
+     "priority": "VeryHigh",
+     "start": 31.1,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css/style.css?v=20261023r02"
+    },
+    {
+     "bytes": 7944,
+     "end": 41.5,
+     "priority": "Low",
+     "start": 36.2,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/consent-analytics.js"
+    },
+    {
+     "bytes": 4242,
+     "end": 19.4,
+     "priority": "VeryHigh",
+     "start": 1.1,
+     "status": 200,
+     "type": "Document",
+     "url": "/privacy/"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 65.0,
+    "fcp": 76.0,
+    "first_meaningful_paint": null,
+    "first_paint": 76.0,
+    "lcp": 76.0,
+    "load": 75.0,
+    "si": 260.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 1053.5,
+    "recomputed": 0.0,
+    "reported": 0.0,
+    "start": 1053.5
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/privacy/"
+  },
+  {
+   "benchmark_index": 2484.5,
+   "blocking": {
+    "bootup_js_ms": 14.7,
+    "dom_elements": {
+     "granularity": 1,
+     "type": "numeric",
+     "value": 55
+    },
+    "non_composited_animations": 1,
+    "render_blocking": {
+     "items": 1,
+     "overall": 276.0,
+     "sum": 300.0
+    },
+    "unused_css": {
+     "items": 1,
+     "overall": 280.0,
+     "sum": 39965.0
+    }
+   },
+   "bytes": {
+    "requests": 4,
+    "total": 53900.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T18:09:47.022Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 0.0,
+     "Render Delay": 450.0,
+     "TTFB": 604.2
+    },
+    "snippet": "<p class=\"privacy-page__lead\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 116.7,
+     "Parse HTML & CSS": 13.5,
+     "Rendering": 11.9,
+     "Script Evaluation": 24.1,
+     "Script Parsing & Compilation": 5.6,
+     "Style & Layout": 73.9
+    },
+    "total_ms": 245.7
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1054.2,
+    "lcp": 1054.2,
+    "max_potential_fid": 16.0,
+    "si": 1054.2,
+    "tbt": 0.0,
+    "tti": 1054.2
+   },
+   "network": [
+    {
+     "bytes": 789,
+     "end": 92.6,
+     "priority": "High",
+     "start": 87.8,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg"
+    },
+    {
+     "bytes": 7907,
+     "end": 51.5,
+     "priority": "Low",
+     "start": 45.3,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/consent-analytics.js"
+    },
+    {
+     "bytes": 40963,
+     "end": 47.9,
+     "priority": "VeryHigh",
+     "start": 37.7,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css/style.css?v=20261023r02"
+    },
+    {
+     "bytes": 4241,
+     "end": 27.1,
+     "priority": "VeryHigh",
+     "start": 1.0,
+     "status": 200,
+     "type": "Document",
+     "url": "/privacy/"
+    }
+   ],
+   "observed": {
+    "dom_content_loaded": 69.0,
+    "fcp": 80.0,
+    "first_meaningful_paint": null,
+    "first_paint": 80.0,
+    "lcp": 80.0,
+    "load": 80.0,
+    "si": 269.0,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 1054.2,
+    "recomputed": 0.0,
+    "reported": 0.0,
+    "start": 1054.2
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/privacy/"
+  }
+ ],
+ "source_dir": "/tmp/lh"
+}
