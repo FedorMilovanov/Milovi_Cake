@@ -58,6 +58,8 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         self.assertIn('ref: ${{ github.event.pull_request.head.sha }}', native)
         self.assertIn('--cap-add=SYS_PTRACE', native)
         self.assertIn('Verify debugger on a controlled native signal', native)
+        self.assertIn('python3 scripts/webkit_native_probe.py', native)
+        self.assertNotIn('gcc', native)
         self.assertIn('received signal SIGABRT', native)
         self.assertIn('Debugger attachment changes timing', native)
         self.assertIn('--repeat-each=4 --workers=1 --retries=0', native)

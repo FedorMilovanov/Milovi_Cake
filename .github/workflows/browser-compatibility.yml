@@ -817,22 +817,15 @@ jobs:
         run: |
           npm ci
           apt-get update -qq
-          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends gdb gcc
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends gdb
       - name: Verify debugger on a controlled native signal
         shell: bash
         run: |
           set -euo pipefail
           ulimit -c 0
-          cat > "$RUNNER_TEMP/native-probe.c" <<'C'
-          #include <sys/prctl.h>
-          #include <signal.h>
-          #include <unistd.h>
-          int main(void) { prctl(PR_SET_NAME, "WPEWebProcess", 0, 0, 0); sleep(5); raise(SIGABRT); return 0; }
-          C
-          gcc -g "$RUNNER_TEMP/native-probe.c" -o "$RUNNER_TEMP/native-probe"
           python3 scripts/webkit_native_monitor.py monitor "$RUNNER_TEMP/native-preflight" &
           monitor=$!
-          "$RUNNER_TEMP/native-probe" &
+          python3 scripts/webkit_native_probe.py &
           probe=$!
           set +e
           wait "$probe"

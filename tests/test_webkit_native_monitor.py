@@ -1,5 +1,11 @@
+import signal
+import subprocess
 import sys
+
+if sys.platform == 'linux':
+    import resource
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -9,6 +15,27 @@ from webkit_native_monitor import candidates, debugger_command, summary
 
 
 class WebKitNativeMonitorTest(unittest.TestCase):
+    @unittest.skipUnless(sys.platform == 'linux', 'Linux prctl is required')
+    def test_controlled_probe_names_process_and_exits_with_sigabrt(self):
+        def disable_core():
+            resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
+
+        probe = subprocess.Popen([sys.executable, str(ROOT / 'scripts/webkit_native_probe.py'), '1'],
+                                 preexec_fn=disable_core)
+        try:
+            deadline = time.monotonic() + 0.8
+            while time.monotonic() < deadline:
+                if (Path('/proc') / str(probe.pid) / 'comm').read_text().strip() == 'WPEWebProcess':
+                    break
+                time.sleep(.01)
+            else:
+                self.fail('probe did not set its Linux process name')
+            self.assertEqual(probe.wait(timeout=3), -signal.SIGABRT)
+        finally:
+            if probe.poll() is None:
+                probe.kill()
+                probe.wait()
+
     def test_finds_only_wpe_web_processes(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
