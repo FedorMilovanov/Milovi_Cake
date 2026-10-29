@@ -51,6 +51,22 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         self.assertIn('expect(blocked()', source)
         self.assertNotIn('continue-on-error', comparison)
 
+    def test_renderer_comparison_is_isolated_and_verifies_softpipe(self):
+        workflow = (ROOT / '.github/workflows/browser-compatibility.yml').read_text(encoding='utf-8')
+        comparison = workflow.split('  webkit-renderer-investigation:', 1)[1].split('  webkit-native-investigation:', 1)[0]
+        probe = (ROOT / 'scripts/webkit_renderer_probe.cjs').read_text(encoding='utf-8')
+        self.assertIn("needs.compatibility.result == 'failure'", comparison)
+        self.assertIn('renderer: [default, softpipe]', comparison)
+        self.assertIn("LIBGL_ALWAYS_SOFTWARE: '1'", comparison)
+        self.assertIn('export GALLIUM_DRIVER=softpipe', comparison)
+        self.assertIn('unset GALLIUM_DRIVER', comparison)
+        self.assertIn('scripts/webkit_renderer_probe.cjs', comparison)
+        self.assertIn('ref: ${{ github.event.pull_request.head.sha }}', comparison)
+        self.assertIn('--repeat-each=4 --workers=1 --retries=0', comparison)
+        self.assertIn('/softpipe/i.test(info.renderer)', probe)
+        self.assertIn('not necessarily compositor', probe)
+        self.assertNotIn('continue-on-error', comparison)
+
     def test_native_debugging_is_an_isolated_failure_only_investigation(self):
         workflow = (ROOT / '.github/workflows/browser-compatibility.yml').read_text(encoding='utf-8')
         native = workflow.split('  webkit-native-investigation:', 1)[1]

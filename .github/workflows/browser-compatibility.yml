@@ -781,6 +781,76 @@ jobs:
           retention-days: 7
           include-hidden-files: false
 
+  # Failure-only software renderer comparison. It changes no primary checks;
+  # page WebGL identifies its own renderer, not necessarily the compositor's.
+  webkit-renderer-investigation:
+    name: WebKit software renderer comparison (${{ matrix.renderer }})
+    needs: compatibility
+    if: ${{ !cancelled() && needs.compatibility.result == 'failure' }}
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --shm-size=1g
+    timeout-minutes: 20
+    env:
+      HOME: /root
+      MILOVI_BROWSER_COMPAT: '1'
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+      LIBGL_ALWAYS_SOFTWARE: '1'
+      DEBUG: pw:browser
+      DEBUG_COLORS: '0'
+    strategy:
+      fail-fast: false
+      matrix:
+        renderer: [default, softpipe]
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Setup pinned Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          cache: npm
+      - name: Setup Python for the local test server
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        with:
+          python-version: '3.12'
+      - name: Install project dependencies
+        run: npm ci
+      - name: Verify exposed renderer and compare unchanged gallery tests
+        id: renderer_tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ '${{ matrix.renderer }}' = softpipe ]; then export GALLIUM_DRIVER=softpipe; else unset GALLIUM_DRIVER; fi
+          echo '::notice title=Renderer comparison::Diagnostic only; software rendering in both cases. WebGL and compositor contexts may differ.'
+          timeout 30 node scripts/webkit_renderer_probe.cjs
+          npx playwright test tests/video-posters.spec.js \
+            --project=webkit-desktop --project=webkit-mobile \
+            --grep='photo-only gallery can repeatedly open and close|gallery can close an active video' \
+            --repeat-each=4 --workers=1 --retries=0 --reporter=list,github \
+            2>&1 | tee "$RUNNER_TEMP/webkit-renderer-${{ matrix.renderer }}.log"
+      - name: Summarize renderer comparison process events
+        if: failure() && steps.renderer_tests.outcome == 'failure'
+        run: |
+          if [ -f "$RUNNER_TEMP/webkit-renderer-${{ matrix.renderer }}.log" ]; then
+            python3 scripts/browser_log_summary.py "$RUNNER_TEMP/webkit-renderer-${{ matrix.renderer }}.log"
+          fi
+      - name: Upload renderer comparison artifacts
+        if: failure() && steps.renderer_tests.outcome == 'failure'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: webkit-renderer-${{ matrix.renderer }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            test-results/
+            ${{ runner.temp }}/webkit-renderer-${{ matrix.renderer }}.log
+          if-no-files-found: ignore
+          retention-days: 7
+          include-hidden-files: false
+
   # Diagnostic only: process tracing changes timing and is isolated from the
   # unchanged primary job. A debugger stop is not automatically a crash.
   webkit-native-investigation:

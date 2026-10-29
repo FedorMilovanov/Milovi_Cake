@@ -32,9 +32,27 @@ class WebKitTraceExcerptTest(unittest.TestCase):
             output = io.StringIO()
             with contextlib.redirect_stdout(output):
                 main(directory)
-            self.assertEqual(output.getvalue().count('::notice title='), 4)
+            self.assertEqual(output.getvalue().count('::notice title='), 1)
             for number in range(16):
                 self.assertIn(f'wpe-{number:02d}.log', output.getvalue())
+
+    def test_signal_records_prioritize_termination_and_fit_annotation_limit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for number in range(12):
+                suffix = 'Program terminated with signal SIGSEGV.\n' if number == 11 else ''
+                (root / f'wpe-{number:02d}.log').write_text(
+                    'Thread 11 "compositor" received signal SIGSEGV.\n\n'
+                    'Thread 11 (compositor):\n#0 ' + 'x' * 5000 + '\n\n' + suffix)
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                main(directory)
+            text = output.getvalue()
+            self.assertIn('wpe-11.log', text.splitlines()[0])
+            self.assertIn('Program terminated', text.splitlines()[0])
+            self.assertIn('excerpts omitted', text)
+            for line in text.splitlines():
+                self.assertLess(len(line.encode()), 4096)
 
     def test_handles_multiple_signals_and_missing_stacks(self):
         with tempfile.TemporaryDirectory() as directory:
