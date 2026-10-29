@@ -263,6 +263,92 @@ def group(name: str) -> str:
     return name
 
 
+def resource_timeline(events: list[dict], nav_us: float,
+                      fcp_us: float) -> dict:
+    """Что происходило с сетью в окне и что ещё не доехало к кадру.
+
+    Если главный поток простаивает, а кадр не наступает, ответ почти всегда
+    здесь: браузер ждёт ресурс, который запрошен до кадра, а закончился после.
+    """
+    sends: dict[str, tuple[float, str]] = {}
+    finishes: dict[str, float] = {}
+    for event in events:
+        data = (event.get('args') or {}).get('data') or {}
+        request_id = data.get('requestId')
+        timestamp = event.get('ts')
+        if not isinstance(request_id, str) or not isinstance(timestamp, (int, float)):
+            continue
+        if event.get('name') == 'ResourceSendRequest':
+            sends[request_id] = (float(timestamp), str(data.get('url') or '')[:110])
+        elif event.get('name') == 'ResourceFinish':
+            finishes[request_id] = float(timestamp)
+
+    in_flight = []
+    for request_id, (start, url) in sends.items():
+        end = finishes.get(request_id)
+        if start >= fcp_us:
+            continue
+        if end is not None and end <= fcp_us:
+            continue
+        in_flight.append({
+            'url': url,
+            'start_ms': round((start - nav_us) / 1000.0, 1),
+            'end_ms': round((end - nav_us) / 1000.0, 1) if end else None,
+            'still_pending': end is None,
+        })
+    in_flight.sort(key=lambda row: row['start_ms'])
+
+    return {
+        'in_flight_at_paint': in_flight,
+        'requests_total': len(sends),
+        'finished_before_paint': len(finishes),
+    }
+
+
+def thread_busy(events: list[dict], window: tuple[float, float]) -> list[dict]:
+    """Сколько каждый поток реально работал внутри окна.
+
+    Нужно, чтобы отделить «поток занят работой» от «поток ждёт»: если сумма
+    по всем потокам меньше окна, остаток — ожидание, а не вычисления.
+    """
+    names: dict[tuple[int, int], str] = {}
+    tasks: dict[tuple[int, int], list[dict]] = {}
+    for event in events:
+        key = (event.get('pid'), event.get('tid'))
+        if event.get('ph') == 'M' and event.get('name') == 'thread_name':
+            names[key] = str((event.get('args') or {}).get('name') or '?')
+            continue
+        if event.get('name') not in ('RunTask', 'ThreadControllerImpl::RunTask'):
+            continue
+        timestamp = event.get('ts')
+        duration = event.get('dur')
+        if not isinstance(timestamp, (int, float)) or not isinstance(duration, (int, float)):
+            continue
+        left = max(float(timestamp), window[0])
+        right = min(float(timestamp) + float(duration), window[1])
+        if right - left <= 0:
+            continue
+        tasks.setdefault(key, []).append({'ts': left, 'end': right})
+
+    rows = []
+    for key, spans in tasks.items():
+        # Объединение интервалов: задачи не должны считаться дважды.
+        spans.sort(key=lambda span: span['ts'])
+        busy = 0.0
+        cursor = spans[0]['ts']
+        for span in spans:
+            if span['ts'] > cursor:
+                busy += span['end'] - span['ts']
+                cursor = span['end']
+            elif span['end'] > cursor:
+                busy += span['end'] - cursor
+                cursor = span['end']
+        rows.append({'thread': names.get(key, f'{key[0]}:{key[1]}'),
+                     'busy_ms': round(busy / 1000.0, 1)})
+    rows.sort(key=lambda row: row['busy_ms'], reverse=True)
+    return rows[:6]
+
+
 def analyze(trace_events: list[dict], fcp_ms: float | None = None,
             expected_last_ms: float | None = None) -> dict:
     """Полный разбор: окно, длинные задачи, self-time по категориям.
@@ -330,6 +416,8 @@ def analyze(trace_events: list[dict], fcp_ms: float | None = None,
         'by_event_ms': [{'event': name, 'ms': round(value / 1000.0, 1)}
                         for name, value in per_event[:15]],
         'long_tasks': long_tasks[:8],
+        'threads': thread_busy(trace_events, window),
+        'network': resource_timeline(trace_events, nav_us, fcp_us),
     }
 
 
