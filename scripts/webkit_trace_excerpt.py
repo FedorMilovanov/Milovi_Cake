@@ -29,6 +29,16 @@ def excerpt(path: Path) -> str:
     return '\n'.join(output)
 
 
+def first_main_thread(text: str) -> str:
+    # Compare the faulting thread with the main thread at the same first stop:
+    # e.g. ordinary event loop versus exit/destructor activity. This is evidence,
+    # not a diagnosis; stripped symbols and debugger timing still limit inference.
+    match = re.search(r'^Thread 1 \(.*?(?=\n\n|\Z)', text, re.M | re.S)
+    if not match:
+        return 'Main thread stack not found.'
+    return '\n'.join(match.group(0).splitlines()[:9])
+
+
 def main(directory: str) -> None:
     files = sorted(Path(directory).rglob('wpe-*.log'))
     if not files:
@@ -46,7 +56,8 @@ def main(directory: str) -> None:
         termination = re.findall(r'^Program (?:terminated|exited).*$', text, re.M)
         record = excerpt(path)
         records.append((bool(termination), path.name,
-                        path.name + '\n' + '\n'.join(termination) + '\n' + record[:2000]))
+                        path.name + '\n' + '\n'.join(termination) + '\nMain thread at first stop:\n' +
+                        first_main_thread(text) + '\nFaulting thread:\n' + record[:1700]))
     records.sort(key=lambda record: (not record[0], record[1]))
     messages = [item[2] for item in records]
     messages.extend('No matching signal: ' + ', '.join(quiet[offset:offset + 20])

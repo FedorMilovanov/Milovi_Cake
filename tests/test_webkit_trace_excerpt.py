@@ -7,7 +7,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from webkit_trace_excerpt import excerpt, main
+from webkit_trace_excerpt import excerpt, first_main_thread, main
 
 
 class WebKitTraceExcerptTest(unittest.TestCase):
@@ -53,6 +53,16 @@ class WebKitTraceExcerptTest(unittest.TestCase):
             self.assertIn('excerpts omitted', text)
             for line in text.splitlines():
                 self.assertLess(len(line.encode()), 4096)
+
+    def test_extracts_main_thread_at_first_stop(self):
+        text = ('Thread 11 "compositor" received signal SIGSEGV.\n\n'
+                'Thread 11 (compositor):\n#0 fault\n\n'
+                'Thread 1 (main):\n#0 event_loop\n#1 frame\n\n'
+                'Thread 11 "compositor" received signal SIGSEGV.\n\n'
+                'Thread 1 (main):\n#0 later\n')
+        self.assertIn('#0 event_loop', first_main_thread(text))
+        self.assertNotIn('#0 later', first_main_thread(text))
+        self.assertIn('not found', first_main_thread('no thread'))
 
     def test_handles_multiple_signals_and_missing_stacks(self):
         with tempfile.TemporaryDirectory() as directory:
