@@ -112,7 +112,9 @@ jobs:
           set -euo pipefail
           # Отчёт по каждому прогону, а не только медиана: решение о пороге
           # принимается по разбросу, и он должен быть виден в аннотациях.
-          results=$(find "$GITHUB_WORKSPACE" /tmp -maxdepth 5 -type d -name '.lighthouseci' 2>/dev/null | head -1)
+          # find -print -quit вместо `find | head -1`: под pipefail head
+          # закрывает канал раньше, find получает SIGPIPE и шаг падает.
+          results=$(find "$GITHUB_WORKSPACE" /tmp -maxdepth 6 -type d -name '.lighthouseci' -print -quit 2>/dev/null || true)
           if [ -z "$results" ]; then
             echo "::notice::каталог .lighthouseci не найден — per-run числа недоступны"
             exit 0
