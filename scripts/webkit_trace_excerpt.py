@@ -33,9 +33,13 @@ def main(directory: str) -> None:
     files = sorted(Path(directory).rglob('wpe-*.log'))
     if not files:
         raise SystemExit('No native debugger logs in artifact')
-    for path in files:
-        message = excerpt(path)[:12000].replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
-        print(f'::notice title=Native trace {path.name}::{message}')
+    # GitHub Actions limits a step to ten notices, so group traces instead of
+    # silently dropping later PIDs. Keep each annotation below its size limit.
+    for offset in range(0, len(files), 5):
+        group = files[offset:offset + 5]
+        message = '\n\n'.join(excerpt(path)[:5000] for path in group)
+        escaped = message.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+        print(f'::notice title=Native traces {offset + 1}-{offset + len(group)} of {len(files)}::{escaped}')
 
 
 if __name__ == '__main__':

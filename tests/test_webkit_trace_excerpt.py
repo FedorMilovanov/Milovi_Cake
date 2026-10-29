@@ -1,3 +1,5 @@
+import contextlib
+import io
 import tempfile
 import unittest
 from pathlib import Path
@@ -5,7 +7,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from webkit_trace_excerpt import excerpt
+from webkit_trace_excerpt import excerpt, main
 
 
 class WebKitTraceExcerptTest(unittest.TestCase):
@@ -21,6 +23,18 @@ class WebKitTraceExcerptTest(unittest.TestCase):
             self.assertNotIn('#0 wrong', result)
             self.assertIn('Program terminated', result)
             self.assertIn('may be recoverable', result)
+
+    def test_groups_all_traces_to_fit_github_notice_limit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for number in range(16):
+                (root / f'wpe-{number:02d}.log').write_text('No signal')
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                main(directory)
+            self.assertEqual(output.getvalue().count('::notice title='), 4)
+            for number in range(16):
+                self.assertIn(f'wpe-{number:02d}.log', output.getvalue())
 
     def test_handles_multiple_signals_and_missing_stacks(self):
         with tempfile.TemporaryDirectory() as directory:
