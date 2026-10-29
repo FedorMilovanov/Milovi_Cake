@@ -130,8 +130,8 @@ jobs:
           --repeat-each=20 --workers=1 --retries=0 --reporter=list,github
           --output="$RUNNER_TEMP/firefox-photo-input-results"
 
-      - name: Diagnose Firefox empty-filter input
-        if: failure() && matrix.engine == 'firefox' && steps.primary_contracts.outcome == 'failure'
+      - name: Repeat Firefox empty-filter input
+        if: ${{ !cancelled() && matrix.engine == 'firefox' && steps.primary_contracts.outcome != 'skipped' }}
         env:
           HOME: /root
         run: >-
@@ -843,15 +843,7 @@ jobs:
           # EGL is an independent process, not proof of the compositor's context.
           # WebKit masks WebGL vendor/renderer, so verify the available software
           # driver through a surfaceless Mesa context under the same environment.
-          timeout 30 eglinfo -B > "$RUNNER_TEMP/eglinfo.txt" 2>&1 || {
-            echo '::error title=EGL probe::eglinfo failed or timed out'; exit 1;
-          }
-          renderer=$(grep -i 'profile renderer:' "$RUNNER_TEMP/eglinfo.txt" | head -1 || :)
-          echo "::notice title=Independent EGL renderer::$renderer"
-          if [ -z "$renderer" ]; then echo '::error title=EGL probe::No renderer reported'; exit 1; fi
-          if [ '${{ matrix.renderer }}' = softpipe ] && ! grep -iq 'profile renderer:.*softpipe' "$RUNNER_TEMP/eglinfo.txt"; then
-            echo '::error title=EGL probe::softpipe not observed in independent EGL probe'; exit 1
-          fi
+          python3 scripts/egl_renderer_probe.py '${{ matrix.renderer }}'
           timeout 30 node scripts/webkit_renderer_probe.cjs || {
             echo '::error title=WebGL probe::Browser probe failed or timed out'; exit 1;
           }
@@ -874,7 +866,6 @@ jobs:
           path: |
             test-results/
             ${{ runner.temp }}/webkit-renderer-${{ matrix.renderer }}.log
-            ${{ runner.temp }}/eglinfo.txt
           if-no-files-found: ignore
           retention-days: 7
           include-hidden-files: false

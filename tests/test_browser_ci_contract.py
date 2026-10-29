@@ -53,10 +53,10 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
 
     def test_firefox_empty_filter_diagnostics_preserve_the_assertion(self):
         workflow = (ROOT / '.github/workflows/browser-compatibility.yml').read_text(encoding='utf-8')
-        section = workflow.split('- name: Diagnose Firefox empty-filter input', 1)[1].split('\n      - name:', 1)[0]
+        section = workflow.split('- name: Repeat Firefox empty-filter input', 1)[1].split('\n      - name:', 1)[0]
         source = (ROOT / 'tests/video-posters.spec.js').read_text(encoding='utf-8')
         test = source.split("test('gallery empty state can be reset", 1)[1].split("test('gallery video warmup", 1)[0]
-        self.assertIn("steps.primary_contracts.outcome == 'failure'", section)
+        self.assertIn("steps.primary_contracts.outcome != 'skipped'", section)
         self.assertIn('--project=firefox-mobile', section)
         self.assertIn('--repeat-each=12 --workers=1 --retries=0', section)
         self.assertIn("toBeVisible()", test)
@@ -77,7 +77,7 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         self.assertIn('scripts/webkit_renderer_probe.cjs', comparison)
         self.assertIn('ref: ${{ github.event.pull_request.head.sha }}', comparison)
         self.assertIn('--repeat-each=4 --workers=1 --retries=0', comparison)
-        self.assertIn('profile renderer:.*softpipe', comparison)
+        self.assertIn('scripts/egl_renderer_probe.py', comparison)
         self.assertIn('not proof of the compositor', comparison)
         self.assertIn('not necessarily compositor', probe)
         self.assertNotIn('continue-on-error', comparison)
