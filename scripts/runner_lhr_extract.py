@@ -295,7 +295,11 @@ def main(argv: list[str]) -> int:
 
     payload = extract_dir(root)
     payload["source_dir"] = str(root)
-    text = json.dumps(payload, ensure_ascii=False, indent=1, sort_keys=True)
+    # ensure_ascii: сам LHR иногда содержит U+FFFD — Chrome обрезает snippet
+    # посередине многобайтового символа. Экранирование сохраняет значение
+    # байт-в-байт (JSON escape — тот же кодпоинт), но не кладёт в файл
+    # литеральный U+FFFD, который запрещён scripts/audit.py.
+    text = json.dumps(payload, ensure_ascii=True, indent=1, sort_keys=True)
 
     if args.out:
         out = Path(args.out)

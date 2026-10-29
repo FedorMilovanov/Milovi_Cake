@@ -36,7 +36,7 @@
      "Render Delay": 3566.6,
      "TTFB": 700.5
     },
-    "snippet": "<img class=\"hero-img\" src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"Авторский торт ручной работы — Milovi Cake, Санкт-Петербург\" fetchpriority=\"high\" decoding=\"async\" width=\"1440\" height=\"960\">"
+    "snippet": "<img class=\"hero-img\" src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"\u0410\u0432\u0442\u043e\u0440\u0441\u043a\u0438\u0439 \u0442\u043e\u0440\u0442 \u0440\u0443\u0447\u043d\u043e\u0439 \u0440\u0430\u0431\u043e\u0442\u044b \u2014 Milovi Cake, \u0421\u0430\u043d\u043a\u0442-\u041f\u0435\u0442\u0435\u0440\u0431\u0443\u0440\u0433\" fetchpriority=\"high\" decoding=\"async\" width=\"1440\" height=\"960\">"
    },
    "lighthouse_version": "12.6.1",
    "long_tasks": [
@@ -166,7 +166,7 @@
      "Render Delay": 1374.8,
      "TTFB": 605.4
     },
-    "snippet": "<img class=\"hero-img\" src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"Авторский торт ручной работы — Milovi Cake, Санкт-Петербург\" fetchpriority=\"high\" decoding=\"async\" width=\"1440\" height=\"960\">"
+    "snippet": "<img class=\"hero-img\" src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"\u0410\u0432\u0442\u043e\u0440\u0441\u043a\u0438\u0439 \u0442\u043e\u0440\u0442 \u0440\u0443\u0447\u043d\u043e\u0439 \u0440\u0430\u0431\u043e\u0442\u044b \u2014 Milovi Cake, \u0421\u0430\u043d\u043a\u0442-\u041f\u0435\u0442\u0435\u0440\u0431\u0443\u0440\u0433\" fetchpriority=\"high\" decoding=\"async\" width=\"1440\" height=\"960\">"
    },
    "lighthouse_version": "12.6.1",
    "long_tasks": [
@@ -276,7 +276,7 @@
      "Render Delay": 3575.1,
      "TTFB": 691.0
     },
-    "snippet": "<img class=\"hero-img\" src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"Авторский торт ручной работы — Milovi Cake, Санкт-Петербург\" fetchpriority=\"high\" decoding=\"async\" width=\"1440\" height=\"960\">"
+    "snippet": "<img class=\"hero-img\" src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"\u0410\u0432\u0442\u043e\u0440\u0441\u043a\u0438\u0439 \u0442\u043e\u0440\u0442 \u0440\u0443\u0447\u043d\u043e\u0439 \u0440\u0430\u0431\u043e\u0442\u044b \u2014 Milovi Cake, \u0421\u0430\u043d\u043a\u0442-\u041f\u0435\u0442\u0435\u0440\u0431\u0443\u0440\u0433\" fetchpriority=\"high\" decoding=\"async\" width=\"1440\" height=\"960\">"
    },
    "lighthouse_version": "12.6.1",
    "long_tasks": [
@@ -986,7 +986,7 @@
      "Render Delay": 614.8,
      "TTFB": 881.6
     },
-    "snippet": "<img src=\"https://milovicake.ru/img/bento_1-mobile-640.avif\" alt=\"Бенто-торты на заказ в СПб — Milovi Cake\" width=\"1280\" height=\"1280\" fetchpriority=\"high\" decoding=\"async\">"
+    "snippet": "<img src=\"https://milovicake.ru/img/bento_1-mobile-640.avif\" alt=\"\u0411\u0435\u043d\u0442\u043e-\u0442\u043e\u0440\u0442\u044b \u043d\u0430 \u0437\u0430\u043a\u0430\u0437 \u0432 \u0421\u041f\u0431 \u2014 Milovi Cake\" width=\"1280\" height=\"1280\" fetchpriority=\"high\" decoding=\"async\">"
    },
    "lighthouse_version": "12.6.1",
    "long_tasks": [
@@ -1081,7 +1081,7 @@
      "Render Delay": 1327.9,
      "TTFB": 824.1
     },
-    "snippet": "<img src=\"https://milovicake.ru/img/bento_1-mobile-640.avif\" alt=\"Бенто-торты на заказ в СПб — Milovi Cake\" width=\"1280\" height=\"1280\" fetchpriority=\"high\" decoding=\"async\">"
+    "snippet": "<img src=\"https://milovicake.ru/img/bento_1-mobile-640.avif\" alt=\"\u0411\u0435\u043d\u0442\u043e-\u0442\u043e\u0440\u0442\u044b \u043d\u0430 \u0437\u0430\u043a\u0430\u0437 \u0432 \u0421\u041f\u0431 \u2014 Milovi Cake\" width=\"1280\" height=\"1280\" fetchpriority=\"high\" decoding=\"async\">"
    },
    "lighthouse_version": "12.6.1",
    "long_tasks": [
@@ -1196,7 +1196,7 @@
      "Render Delay": 953.3,
      "TTFB": 602.9
     },
-    "snippet": "<img src=\"https://milovicake.ru/img/bento_1-mobile-640.avif\" alt=\"Бенто-то��ты на заказ в СПб — Milovi Cake\" width=\"1280\" height=\"1280\" fetchpriority=\"high\" decoding=\"async\">"
+    "snippet": "<img src=\"https://milovicake.ru/img/bento_1-mobile-640.avif\" alt=\"\u0411\u0435\u043d\u0442\u043e-\u0442\u043e\ufffd\ufffd\u0442\u044b \u043d\u0430 \u0437\u0430\u043a\u0430\u0437 \u0432 \u0421\u041f\u0431 \u2014 Milovi Cake\" width=\"1280\" height=\"1280\" fetchpriority=\"high\" decoding=\"async\">"
    },
    "lighthouse_version": "12.6.1",
    "long_tasks": [
@@ -1306,7 +1306,7 @@
      "Render Delay": 2641.9,
      "TTFB": 676.3
     },
-    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile.avif\" alt=\"Заказать торт в СПб — Milovi Cake\" width=\"900\" height=\"1200\" fetchpriority=\"high\" decoding=\"async\">"
+    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile.avif\" alt=\"\u0417\u0430\u043a\u0430\u0437\u0430\u0442\u044c \u0442\u043e\u0440\u0442 \u0432 \u0421\u041f\u0431 \u2014 Milovi Cake\" width=\"900\" height=\"1200\" fetchpriority=\"high\" decoding=\"async\">"
    },
    "lighthouse_version": "12.6.1",
    "long_tasks": [
@@ -1396,7 +1396,7 @@
      "Render Delay": 2567.4,
      "TTFB": 604.7
     },
-    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile.avif\" alt=\"Заказать торт в СПб — Milovi Cake\" width=\"900\" height=\"1200\" fetchpriority=\"high\" decoding=\"async\">"
+    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile.avif\" alt=\"\u0417\u0430\u043a\u0430\u0437\u0430\u0442\u044c \u0442\u043e\u0440\u0442 \u0432 \u0421\u041f\u0431 \u2014 Milovi Cake\" width=\"900\" height=\"1200\" fetchpriority=\"high\" decoding=\"async\">"
    },
    "lighthouse_version": "12.6.1",
    "long_tasks": [
@@ -1491,7 +1491,7 @@
      "Render Delay": 1131.1,
      "TTFB": 602.2
     },
-    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile.avif\" alt=\"Заказать торт в СПб — Milovi Cake\" width=\"900\" height=\"1200\" fetchpriority=\"high\" decoding=\"async\">"
+    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile.avif\" alt=\"\u0417\u0430\u043a\u0430\u0437\u0430\u0442\u044c \u0442\u043e\u0440\u0442 \u0432 \u0421\u041f\u0431 \u2014 Milovi Cake\" width=\"900\" height=\"1200\" fetchpriority=\"high\" decoding=\"async\">"
    },
    "lighthouse_version": "12.6.1",
    "long_tasks": [
@@ -1596,7 +1596,7 @@
      "Render Delay": 851.7,
      "TTFB": 601.3
     },
-    "snippet": "<img src=\"https://milovicake.ru/img/viktoria.avif\" alt=\"Частный кондитер Виктория Милованова — Milovi Cake\" width=\"600\" height=\"900\" fetchpriority=\"high\" decoding=\"async\">"
+    "snippet": "<img src=\"https://milovicake.ru/img/viktoria.avif\" alt=\"\u0427\u0430\u0441\u0442\u043d\u044b\u0439 \u043a\u043e\u043d\u0434\u0438\u0442\u0435\u0440 \u0412\u0438\u043a\u0442\u043e\u0440\u0438\u044f \u041c\u0438\u043b\u043e\u0432\u0430\u043d\u043e\u0432\u0430 \u2014 Milovi Cake\" width=\"600\" height=\"900\" fetchpriority=\"high\" decoding=\"async\">"
    },
    "lighthouse_version": "12.6.1",
    "long_tasks": [],
@@ -1675,7 +1675,7 @@
      "Render Delay": 1066.8,
      "TTFB": 601.3
     },
-    "snippet": "<img src=\"https://milovicake.ru/img/viktoria.avif\" alt=\"Частный кондитер Виктория Милованова — Milovi Cake\" width=\"600\" height=\"900\" fetchpriority=\"high\" decoding=\"async\">"
+    "snippet": "<img src=\"https://milovicake.ru/img/viktoria.avif\" alt=\"\u0427\u0430\u0441\u0442\u043d\u044b\u0439 \u043a\u043e\u043d\u0434\u0438\u0442\u0435\u0440 \u0412\u0438\u043a\u0442\u043e\u0440\u0438\u044f \u041c\u0438\u043b\u043e\u0432\u0430\u043d\u043e\u0432\u0430 \u2014 Milovi Cake\" width=\"600\" height=\"900\" fetchpriority=\"high\" decoding=\"async\">"
    },
    "lighthouse_version": "12.6.1",
    "long_tasks": [],
@@ -1754,7 +1754,7 @@
      "Render Delay": 760.6,
      "TTFB": 602.3
     },
-    "snippet": "<img src=\"https://milovicake.ru/img/viktoria.avif\" alt=\"Частный кондитер Виктория Милованова — Milovi Cake\" width=\"600\" height=\"900\" fetchpriority=\"high\" decoding=\"async\">"
+    "snippet": "<img src=\"https://milovicake.ru/img/viktoria.avif\" alt=\"\u0427\u0430\u0441\u0442\u043d\u044b\u0439 \u043a\u043e\u043d\u0434\u0438\u0442\u0435\u0440 \u0412\u0438\u043a\u0442\u043e\u0440\u0438\u044f \u041c\u0438\u043b\u043e\u0432\u0430\u043d\u043e\u0432\u0430 \u2014 Milovi Cake\" width=\"600\" height=\"900\" fetchpriority=\"high\" decoding=\"async\">"
    },
    "lighthouse_version": "12.6.1",
    "long_tasks": [
@@ -1839,7 +1839,7 @@
      "Render Delay": 391.4,
      "TTFB": 676.2
     },
-    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"Авторский торт Milovi Cake — ручная работа, Санкт-Петербург\" fetchpriority=\"high\" decoding=\"async\" width=\"1200\" height=\"800\">"
+    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"\u0410\u0432\u0442\u043e\u0440\u0441\u043a\u0438\u0439 \u0442\u043e\u0440\u0442 Milovi Cake \u2014 \u0440\u0443\u0447\u043d\u0430\u044f \u0440\u0430\u0431\u043e\u0442\u0430, \u0421\u0430\u043d\u043a\u0442-\u041f\u0435\u0442\u0435\u0440\u0431\u0443\u0440\u0433\" fetchpriority=\"high\" decoding=\"async\" width=\"1200\" height=\"800\">"
    },
    "lighthouse_version": "12.6.1",
    "long_tasks": [
@@ -1944,7 +1944,7 @@
      "Render Delay": 1400.0,
      "TTFB": 604.3
     },
-    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"Авторский торт Milovi Cake — ручная работа, Санкт-Петербург\" fetchpriority=\"high\" decoding=\"async\" width=\"1200\" height=\"800\">"
+    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"\u0410\u0432\u0442\u043e\u0440\u0441\u043a\u0438\u0439 \u0442\u043e\u0440\u0442 Milovi Cake \u2014 \u0440\u0443\u0447\u043d\u0430\u044f \u0440\u0430\u0431\u043e\u0442\u0430, \u0421\u0430\u043d\u043a\u0442-\u041f\u0435\u0442\u0435\u0440\u0431\u0443\u0440\u0433\" fetchpriority=\"high\" decoding=\"async\" width=\"1200\" height=\"800\">"
    },
    "lighthouse_version": "12.6.1",
    "long_tasks": [
@@ -2054,7 +2054,7 @@
      "Render Delay": 800.5,
      "TTFB": 604.4
     },
-    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"Авторский торт Milovi Cake — ручная работа, Санкт-Петербург\" fetchpriority=\"high\" decoding=\"async\" width=\"1200\" height=\"800\">"
+    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"\u0410\u0432\u0442\u043e\u0440\u0441\u043a\u0438\u0439 \u0442\u043e\u0440\u0442 Milovi Cake \u2014 \u0440\u0443\u0447\u043d\u0430\u044f \u0440\u0430\u0431\u043e\u0442\u0430, \u0421\u0430\u043d\u043a\u0442-\u041f\u0435\u0442\u0435\u0440\u0431\u0443\u0440\u0433\" fetchpriority=\"high\" decoding=\"async\" width=\"1200\" height=\"800\">"
    },
    "lighthouse_version": "12.6.1",
    "long_tasks": [
