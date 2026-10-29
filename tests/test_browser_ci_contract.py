@@ -143,6 +143,12 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
                         workflow.index('Compare without the additional video load call'))
         self.assertLess(experiment.index('sha256sum js/gallery/main.js'), experiment.index('p.write_text'))
         self.assertIn('sha256sum --check', restore)
+        single_thread = step('Compare llvmpipe without worker threads')
+        self.assertIn("steps.webkit_restore.outcome == 'success'", single_thread)
+        self.assertIn("LP_NUM_THREADS: '0'", single_thread)
+        self.assertIn('active renderer not independently verified', single_thread)
+        self.assertIn('--repeat-each=4 --workers=1 --retries=0', single_thread)
+        self.assertNotIn('continue-on-error', single_thread)
 
     def test_browser_container_pipelines_explicitly_use_bash(self):
         workflow = (ROOT / '.github/workflows/browser-compatibility.yml').read_text(encoding='utf-8')
