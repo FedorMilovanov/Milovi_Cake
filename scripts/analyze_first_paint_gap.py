@@ -349,6 +349,49 @@ def thread_busy(events: list[dict], window: tuple[float, float]) -> list[dict]:
     return rows[:6]
 
 
+def thread_names(events: list[dict]) -> dict[tuple[int, int], str]:
+    names: dict[tuple[int, int], str] = {}
+    for event in events:
+        if event.get('ph') == 'M' and event.get('name') == 'thread_name':
+            key = (event.get('pid'), event.get('tid'))
+            names[key] = str((event.get('args') or {}).get('name') or '?')
+    return names
+
+
+def window_timeline(events: list[dict], window: tuple[float, float],
+                    names: dict[tuple[int, int], str] | None = None,
+                    min_us: float = 1000.0, limit: int = 60) -> list[dict]:
+    """Хронометраж окна по ВСЕМ потокам.
+
+    Если главный поток простаивает, а кадр не наступает, нужно видеть, что
+    вообще происходило: события других потоков объясняют ожидание.
+    """
+    names = names or thread_names(events)
+    rows = []
+    for event in events:
+        if event.get('ph') != 'X':
+            continue
+        timestamp = event.get('ts')
+        duration = event.get('dur')
+        if not isinstance(timestamp, (int, float)) or not isinstance(duration, (int, float)):
+            continue
+        if duration < min_us:
+            continue
+        left = float(timestamp)
+        right = left + float(duration)
+        if right < window[0] or left > window[1]:
+            continue
+        key = (event.get('pid'), event.get('tid'))
+        rows.append({
+            'at_ms': round((left - window[0]) / 1000.0, 1),
+            'thread': names.get(key, f'{key[0]}:{key[1]}'),
+            'event': str(event.get('name') or '?')[:60],
+            'ms': round((min(right, window[1]) - max(left, window[0])) / 1000.0, 1),
+        })
+    rows.sort(key=lambda row: (row['at_ms'], -row['ms']))
+    return rows[:limit]
+
+
 def analyze(trace_events: list[dict], fcp_ms: float | None = None,
             expected_last_ms: float | None = None) -> dict:
     """Полный разбор: окно, длинные задачи, self-time по категориям.
@@ -418,6 +461,9 @@ def analyze(trace_events: list[dict], fcp_ms: float | None = None,
         'long_tasks': long_tasks[:8],
         'threads': thread_busy(trace_events, window),
         'network': resource_timeline(trace_events, nav_us, fcp_us),
+        # Только при заметном окне: для 10-мс разрыва простыня не нужна.
+        'timeline': (window_timeline(trace_events, window)
+                     if (fcp_us - window[0]) > 50_000 else []),
     }
 
 
