@@ -98,6 +98,52 @@ def main_thread(lhr: dict) -> dict:
     return {"total_ms": round(total, 1), "by_group_ms": groups}
 
 
+def observed_metrics(lhr: dict) -> dict:
+    """Наблюдённые значения из trace — до всякой симуляции.
+
+    В LHR они лежат не отдельными аудитами, а внутри audits.metrics,
+    поэтому их нельзя читать через numeric(): numericValue там — это уже
+    симулированное значение, и подмена одного другим искажает вывод.
+    """
+    items = audit_items(lhr, "metrics")
+    if not items:
+        return {}
+    row = items[0]
+    mapping = {
+        "fcp": "observedFirstContentfulPaint",
+        "lcp": "observedLargestContentfulPaint",
+        "tbt": "observedTotalBlockingTime",
+        "load": "observedLoad",
+        "dom_content_loaded": "observedDomContentLoaded",
+        "si": "observedSpeedIndex",
+        "first_paint": "observedFirstPaint",
+        "first_meaningful_paint": "observedFirstMeaningfulPaint",
+    }
+    result = {}
+    for key, field in mapping.items():
+        value = row.get(field)
+        result[key] = round(float(value), 1) if isinstance(value, (int, float)) else None
+    return result
+
+
+def savings(lhr: dict, audit_id: str, key: str = "wastedMs") -> dict:
+    """Сколько аудит обещает сэкономить — с числом затронутых ресурсов."""
+    audit = (lhr.get("audits") or {}).get(audit_id) or {}
+    items = audit_items(lhr, audit_id)
+    total = 0.0
+    for item in items:
+        value = item.get(key)
+        if isinstance(value, (int, float)):
+            total += float(value)
+    details = audit.get("details") or {}
+    extra = details.get("overallSavingsMs", details.get("overallSavingsBytes"))
+    return {
+        "items": len(items),
+        "sum": round(total, 1),
+        "overall": round(float(extra), 1) if isinstance(extra, (int, float)) else None,
+    }
+
+
 def extract(lhr: dict) -> dict:
     tasks = [
         {
@@ -134,13 +180,7 @@ def extract(lhr: dict) -> dict:
             "cls": numeric(lhr, "cumulative-layout-shift"),
             "max_potential_fid": numeric(lhr, "max-potential-fid"),
         },
-        "observed": {
-            "fcp": numeric(lhr, "observed-first-contentful-paint") or numeric(lhr, "first-contentful-paint"),
-            "lcp": numeric(lhr, "observed-largest-contentful-paint") or numeric(lhr, "largest-contentful-paint"),
-            "tbt": numeric(lhr, "observed-total-blocking-time"),
-            "load": numeric(lhr, "observed-load"),
-            "dom_content_loaded": numeric(lhr, "observed-dom-content-loaded"),
-        },
+        "observed": observed_metrics(lhr),
         "tbt_window": {
             "start": sim_fcp,
             "end": sim_tti,
@@ -153,6 +193,14 @@ def extract(lhr: dict) -> dict:
         "bytes": {
             "total": numeric(lhr, "total-byte-weight"),
             "requests": len(audit_items(lhr, "network-requests")),
+        },
+        "blocking": {
+            "render_blocking": savings(lhr, "render-blocking-resources", "wastedMs"),
+            "unused_css": savings(lhr, "unused-css-rules", "wastedBytes"),
+            "bootup_js_ms": numeric(lhr, "bootup-time"),
+            "non_composited_animations": len(audit_items(lhr, "non-composited-animations")),
+            "dom_elements": (audit_items(lhr, "dom-size") or [{}])[0].get("value")
+            if audit_items(lhr, "dom-size") else None,
         },
     }
 
