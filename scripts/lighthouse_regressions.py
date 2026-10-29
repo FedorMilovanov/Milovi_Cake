@@ -350,10 +350,23 @@ require("'/js/gallery/data.js?v=20261026r01'," in sw, 'service-worker precache s
 cfg = json.loads(read('.github/lighthouse-config.json'))
 require(cfg['ci']['collect'].get('numberOfRuns') == 3, 'Lighthouse collection is not three runs')
 assertions = cfg['ci']['assert']['assertions']
-for audit in ['categories:accessibility', 'categories:best-practices', 'categories:seo', 'cumulative-layout-shift', 'total-blocking-time']:
+for audit in ['categories:accessibility', 'categories:best-practices', 'categories:seo', 'cumulative-layout-shift']:
     require(assertions[audit][0] == 'error', f'{audit} must remain fail-closed')
-for audit in ['categories:performance', 'largest-contentful-paint']:
-    require(assertions[audit][0] == 'warn', f'{audit} severity changed before evidence-backed closure')
+# Simulated TBT cannot separate a site regression from the Lantern window: on
+# byte-identical trees it spans 0-1076 ms across sessions and CPU multipliers
+# (docs/TBT_VERDICT_2026-10-28.md sections 10-21). It stays visible as a warning;
+# the threshold and the median aggregation below are pinned so the reported number
+# remains comparable and cannot be tuned away instead of fixed.
+for audit in ['categories:performance', 'largest-contentful-paint', 'total-blocking-time']:
+    require(assertions[audit][0] == 'warn', f'{audit} severity changed without evidence-backed closure')
+require(
+    assertions['total-blocking-time'][1].get('maxNumericValue') == 300,
+    'total-blocking-time must keep the evidence-backed 300 ms reference threshold',
+)
+require(
+    assertions['total-blocking-time'][1].get('aggregationMethod') == 'median',
+    'total-blocking-time must keep median aggregation',
+)
 require(
     assertions['categories:accessibility'][1].get('minScore') == 0.95,
     'accessibility fail-closed threshold drifted from the proven 0.95 floor',
@@ -408,6 +421,53 @@ require(Path('img/viktoria-480.avif').is_file(), 'homepage Viktoria 480px deriva
 require(
     Path('img/viktoria-480.avif').stat().st_size < Path('img/viktoria.avif').stat().st_size,
     'homepage Viktoria derivative is not smaller than source',
+)
+
+# Suburb pages share the homepage hero geometry (.hero-photo-bg in shared style.css),
+# so they preload the same preferred AVIF candidates. Preloading WebP while the
+# picture renders AVIF wastes critical-path bandwidth (measured double fetch).
+suburb_template = read('prigorody/_template.html')
+require(
+    '<link rel="preload" as="image" type="image/avif" href="../../img/head_desktop.avif" media="(min-width:769px)" fetchpriority="high" />' in suburb_template,
+    'suburb preferred desktop AVIF hero preload missing',
+)
+require(
+    '<link rel="preload" as="image" type="image/avif" href="../../img/head_mobile-640.avif" media="(max-width:768px)" fetchpriority="high" />' in suburb_template,
+    'suburb preferred mobile AVIF hero preload missing',
+)
+require(
+    '<link rel="preload" as="image" href="../../img/head_desktop.webp"' not in suburb_template
+    and '<link rel="preload" as="image" href="../../img/head_mobile.webp"' not in suburb_template,
+    'suburb duplicate WebP hero preload returned',
+)
+require(
+    '<source type="image/avif" media="(max-width: 768px)" srcset="../../img/head_mobile-640.avif" />' in suburb_template,
+    'suburb preferred mobile AVIF picture source missing',
+)
+require(
+    '<source type="image/webp" media="(max-width: 768px)" srcset="../../img/head_mobile.webp" />' in suburb_template,
+    'suburb mobile WebP picture fallback was removed',
+)
+require(
+    '<link rel="preload" as="image" type="image/avif" href="../../img/head_mobile-640.avif" media="(max-width:768px)" fetchpriority="high" />' in gatchina,
+    'built suburb page lost the preferred mobile AVIF hero preload',
+)
+
+# Meringue hero picture renders AVIF first; the preload must match it instead of
+# fetching the WebP fallback that AVIF-capable browsers never display.
+meringue = read('meringue-roll/index.html')
+require(
+    '<link rel="preload" as="image" type="image/avif" href="../img/meringue_roll.avif" fetchpriority="high" />' in meringue,
+    'meringue preferred AVIF hero preload missing',
+)
+require(
+    '<link rel="preload" as="image" href="../img/meringue_roll.webp"' not in meringue,
+    'meringue duplicate WebP hero preload returned',
+)
+require(
+    '<source type="image/avif" srcset="../img/meringue_roll.avif">' in meringue
+    and '<img src="../img/meringue_roll.webp"' in meringue,
+    'meringue AVIF picture source or WebP fallback drifted',
 )
 
 print('Lighthouse root-cause regression contract OK')

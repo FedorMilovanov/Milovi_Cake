@@ -1,0 +1,154 @@
+name: Lighthouse trace
+
+# Снимает трассу Chrome на раннере и раскладывает разрыв «последний байт →
+# первый кадр». LHR на этот вопрос не отвечает: в нём только итоговые метрики.
+#
+# Зачем на раннере, а не локально: разрыв воспроизводится ТОЛЬКО на нём.
+# Локально окно занимает ~41 мс и целиком объясняется работой потока
+# (см. docs/TBT_VERDICT_2026-10-28.md §29.7), на раннере — 867 мс.
+#
+# Сама трасса (5 МБ на прогон) остаётся в артефакте Actions и в репозиторий
+# не попадает; в ветку коммитится только разбор.
+
+on:
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: 'URL через пробел (пусто = главная)'
+        required: false
+      repeats:
+        description: 'Сколько раз повторить каждый URL (по умолчанию 5)'
+        required: false
+  push:
+    branches: ['arena/**']
+    paths:
+      - 'scripts/analyze_first_paint_gap.py'
+      - '.github/workflows/lighthouse-trace.yml'
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: lighthouse-trace-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  trace:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup pinned Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+
+      - name: Build Lighthouse CLI config from CI config
+        # Один источник истины: настройки берутся из .github/lighthouse-config.json,
+        # чтобы трасса снималась в тех же условиях, что и обычный аудит.
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          source = json.load(open('.github/lighthouse-config.json'))
+          settings = source['ci']['collect']['settings']
+          json.dump({'extends': 'lighthouse:default', 'settings': settings},
+                    open('/tmp/lh-cli.json', 'w'), indent=1)
+          print('settings:', json.dumps(settings, ensure_ascii=False))
+          PY
+
+      - name: Capture traces
+        env:
+          INPUT_URLS: ${{ github.event.inputs.urls }}
+          INPUT_REPEATS: ${{ github.event.inputs.repeats }}
+        run: |
+          set -euo pipefail
+          # По умолчанию одна страница и несколько повторов: вопрос не «сколько
+          # на разных страницах», а «насколько устойчиво число на одной».
+          urls="${INPUT_URLS:-https://milovicake.ru/}"
+          repeats="${INPUT_REPEATS:-5}"
+          index=0
+          for url in $urls; do
+            for repeat in $(seq 1 "$repeats"); do
+              index=$((index + 1))
+              echo "::group::трасса $index: $url (повтор $repeat из $repeats)"
+              mkdir -p "/tmp/trace-$index"
+              npx --yes lighthouse@12.6.1 "$url" \
+                --config-path=/tmp/lh-cli.json \
+                --save-assets \
+                --output=json \
+                --output-path="/tmp/trace-$index/report.json" \
+                --quiet \
+                --chrome-flags="--headless=new --no-sandbox --disable-dev-shm-usage"
+              ls -la "/tmp/trace-$index"
+              echo "::endgroup::"
+            done
+          done
+
+      - name: Analyze first-paint gap
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/analysis
+          index=0
+          for dir in /tmp/trace-*; do
+            index=$((index + 1))
+            python3 scripts/analyze_first_paint_gap.py "$dir" \
+              --out "/tmp/analysis/gap-$index.json" >/dev/null
+            echo "::group::разбор $dir"
+            cat "/tmp/analysis/gap-$index.json"
+            echo "::endgroup::"
+          done
+          python3 - <<'PY'
+          import glob, json, os
+          payload = {'run_id': os.environ['GITHUB_RUN_ID'],
+                     'sha': os.environ['GITHUB_SHA'],
+                     'reports': [json.load(open(path))
+                                 for path in sorted(glob.glob('/tmp/analysis/gap-*.json'))]}
+          out = f"docs/data/trace-{os.environ['GITHUB_RUN_ID']}.json"
+          os.makedirs('docs/data', exist_ok=True)
+          with open(out, 'w', encoding='utf-8') as handle:
+              json.dump(payload, handle, ensure_ascii=True, indent=1, sort_keys=True)
+              handle.write('\n')
+          print(f'записано {out}')
+          PY
+
+      - name: Annotate findings
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import glob, json
+          for path in sorted(glob.glob('/tmp/analysis/gap-*.json')):
+              data = json.load(open(path))
+              window = data['window']
+              groups = list(data['by_group_ms'].items())[:4]
+              detail = ', '.join(f'{name} {ms}' for name, ms in groups)
+              print(
+                  f"::notice::разрыв {window['gap_ms']} мс "
+                  f"({window['start_ms']}→{window['end_ms']}, кадр {window['first_paint_ms']}) "
+                  f"| работа потока {data['main_thread_work_ms']} мс | {detail}"
+              )
+          PY
+
+      - name: Commit analysis to branch
+        run: |
+          set -euo pipefail
+          if [ "${GITHUB_REF_NAME}" = "main" ]; then
+            echo "на main не коммитим — это инструмент расследования"
+            exit 0
+          fi
+          git config user.name 'arena-agent'
+          git config user.email 'arena-agent@users.noreply.github.com'
+          git checkout -B "$GITHUB_REF_NAME"
+          git add docs/data
+          if git diff --cached --quiet; then
+            echo "данные не изменились"
+            exit 0
+          fi
+          git commit \
+            -m "chore(perf): разбор разрыва «байты → кадр» из трассы раннера" \
+            -m "Снято scripts/analyze_first_paint_gap.py; трасса остаётся в артефакте." \
+            -m "Co-authored-by: arena-agent"
+          git push origin "HEAD:$GITHUB_REF_NAME"

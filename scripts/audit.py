@@ -98,6 +98,8 @@ DEV_TOOLING_JS = {
     "tests/lead-handoff.spec.js",
     "tests/lcp-consent.spec.js",
     "tests/video-posters.spec.js",
+    "tests/contrast-regressions.spec.js",
+    "scripts/lighthouse_tbt_window.js",
 }
 
 # Current !important debt is intentionally budgeted instead of blindly removed:
