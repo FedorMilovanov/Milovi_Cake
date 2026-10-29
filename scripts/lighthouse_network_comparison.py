@@ -38,6 +38,7 @@ def worst_reports(root: Path) -> dict:
         page = parsed.path
         if page not in worst or total > worst[page]['total']:
             resources = {}
+            font_statuses = {}
             for item in requests:
                 if not isinstance(item, dict):
                     continue
@@ -49,7 +50,14 @@ def worst_reports(root: Path) -> dict:
                 size = item.get('transferSize')
                 if isinstance(size, (float, int)) and math.isfinite(size) and size >= 0:
                     resources[key] = resources.get(key, 0) + size
-            worst[page] = {'total': total, 'resources': resources}
+                    if parsed_resource.hostname == 'fonts.gstatic.com':
+                        status = str(item.get('statusCode', 'unknown'))
+                        font_statuses[status] = font_statuses.get(status, 0) + 1
+            environment = report.get('environment') or {}
+            worst[page] = {'total': total, 'resources': resources,
+                           'browser': environment.get('hostUserAgent', 'unknown'),
+                           'lighthouse': report.get('lighthouseVersion'),
+                           'font_statuses': font_statuses}
     return worst
 
 
@@ -67,7 +75,9 @@ def comparison(base: dict, candidate: dict) -> list[str]:
             if right != left:
                 changes.append((abs(right - left), key, left, right))
         changes.sort(key=lambda row: (-row[0], row[1]))
-        lines = [f"{page}: total-byte-weight {before['total']:.0f} -> {after['total']:.0f}; largest request transfer differences (bytes):"]
+        lines = [f"{page}: total-byte-weight {before['total']:.0f} -> {after['total']:.0f}; largest request transfer differences (bytes):",
+                 f"browser {before.get('browser')} -> {after.get('browser')}; Lighthouse {before.get('lighthouse')} -> {after.get('lighthouse')}",
+                 f"fonts.gstatic.com response status counts: {before.get('font_statuses')} -> {after.get('font_statuses')}"]
         lines.extend(f'{key[:140]} {left:.0f} -> {right:.0f} ({right-left:+.0f})'
                      for _, key, left, right in changes[:12])
         messages.append('\n'.join(lines))

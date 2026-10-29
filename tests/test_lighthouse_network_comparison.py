@@ -36,6 +36,8 @@ class LighthouseNetworkComparisonTest(unittest.TestCase):
             self.assertIn('fonts.example/font.woff2 20 -> 70 (+50)', lines[0])
             self.assertIn('127.0.0.1/new.js 0 -> 10 (+10)', lines[0])
             self.assertNotIn('secret', lines[0])
+            self.assertIn('response status counts', lines[0])
+            self.assertIn('Lighthouse 12 -> 12', lines[0])
 
     def test_missing_or_unrelated_report_fails_instead_of_fabricating_evidence(self):
         with self.assertRaisesRegex(ValueError, 'Missing comparable'):
