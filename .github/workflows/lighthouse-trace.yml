@@ -14,7 +14,10 @@ on:
   workflow_dispatch:
     inputs:
       urls:
-        description: 'URL через пробел (пусто = главная и бенто)'
+        description: 'URL через пробел (пусто = главная)'
+        required: false
+      repeats:
+        description: 'Сколько раз повторить каждый URL (по умолчанию 5)'
         required: false
   push:
     branches: ['arena/**']
@@ -60,23 +63,29 @@ jobs:
       - name: Capture traces
         env:
           INPUT_URLS: ${{ github.event.inputs.urls }}
+          INPUT_REPEATS: ${{ github.event.inputs.repeats }}
         run: |
           set -euo pipefail
-          urls="${INPUT_URLS:-https://milovicake.ru/ https://milovicake.ru/bento-torty/}"
+          # По умолчанию одна страница и несколько повторов: вопрос не «сколько
+          # на разных страницах», а «насколько устойчиво число на одной».
+          urls="${INPUT_URLS:-https://milovicake.ru/}"
+          repeats="${INPUT_REPEATS:-5}"
           index=0
           for url in $urls; do
-            index=$((index + 1))
-            echo "::group::трасса $index: $url"
-            mkdir -p "/tmp/trace-$index"
-            npx --yes lighthouse@12.6.1 "$url" \
-              --config-path=/tmp/lh-cli.json \
-              --save-assets \
-              --output=json \
-              --output-path="/tmp/trace-$index/report.json" \
-              --quiet \
-              --chrome-flags="--headless=new --no-sandbox --disable-dev-shm-usage"
-            ls -la "/tmp/trace-$index"
-            echo "::endgroup::"
+            for repeat in $(seq 1 "$repeats"); do
+              index=$((index + 1))
+              echo "::group::трасса $index: $url (повтор $repeat из $repeats)"
+              mkdir -p "/tmp/trace-$index"
+              npx --yes lighthouse@12.6.1 "$url" \
+                --config-path=/tmp/lh-cli.json \
+                --save-assets \
+                --output=json \
+                --output-path="/tmp/trace-$index/report.json" \
+                --quiet \
+                --chrome-flags="--headless=new --no-sandbox --disable-dev-shm-usage"
+              ls -la "/tmp/trace-$index"
+              echo "::endgroup::"
+            done
           done
 
       - name: Analyze first-paint gap

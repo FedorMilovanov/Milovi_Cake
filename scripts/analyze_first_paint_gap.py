@@ -392,6 +392,34 @@ def window_timeline(events: list[dict], window: tuple[float, float],
     return rows[:limit]
 
 
+def lhr_observed(target: Path) -> dict:
+    """Наблюдённые метрики из отчёта рядом с трассой — для сверки.
+
+    Метка в трассе и отчёт Lighthouse обязаны совпадать: если они расходятся,
+    значит выбрана не та навигация, и разбору верить нельзя.
+    """
+    candidates = sorted(target.rglob('*.json')) if target.is_dir() else []
+    for path in candidates:
+        if path.name.endswith('.trace.json') or path.name.endswith('.devtoolslog.json'):
+            continue
+        try:
+            payload = json.loads(path.read_text('utf-8'))
+        except (OSError, ValueError):
+            continue
+        if not isinstance(payload, dict) or 'audits' not in payload:
+            continue
+        items = ((payload['audits'].get('metrics') or {}).get('details') or {}).get('items') or []
+        if not items:
+            continue
+        row = items[0]
+        return {
+            'observed_fcp_ms': round(float(row.get('observedFirstContentfulPaint') or 0.0), 1),
+            'observed_lcp_ms': round(float(row.get('observedLargestContentfulPaint') or 0.0), 1),
+            'observed_load_ms': round(float(row.get('observedLoad') or 0.0), 1),
+        }
+    return {}
+
+
 def analyze(trace_events: list[dict], fcp_ms: float | None = None,
             expected_last_ms: float | None = None) -> dict:
     """Полный разбор: окно, длинные задачи, self-time по категориям.
@@ -521,6 +549,16 @@ def main(argv: list[str]) -> int:
 
     result = analyze(events, fcp_ms=args.fcp_ms, expected_last_ms=args.last_resource_ms)
     result['trace_file'] = str(trace_file)
+    recorded = lhr_observed(Path(args.target))
+    if recorded:
+        result['lhr'] = recorded
+        marker = result['window']['first_paint_ms']
+        drift = abs(marker - recorded['observed_fcp_ms'])
+        result['marker_vs_lhr_ms'] = round(drift, 1)
+        if drift > 50:
+            print(f'ВНИМАНИЕ: метка {marker} мс против отчёта '
+                  f"{recorded['observed_fcp_ms']} мс — вероятно, выбрана не та навигация",
+                  file=sys.stderr)
     # ensure_ascii: в артефакт не должен попадать литеральный U+FFFD,
     # его запрещает scripts/audit.py (см. §29 ошибку с обрезанным snippet).
     text = json.dumps(result, ensure_ascii=True, indent=1)
