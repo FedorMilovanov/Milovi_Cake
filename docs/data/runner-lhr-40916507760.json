@@ -111,6 +111,152 @@
     "tbt": 181.1,
     "tti": 4380.7
    },
+   "network": [
+    {
+     "bytes": 20223,
+     "end": 1580.4,
+     "priority": "Low",
+     "start": 1441.9,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/viktoria-480.avif"
+    },
+    {
+     "bytes": 25975,
+     "end": 1047.7,
+     "priority": "High",
+     "start": 930.9,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 631,
+     "end": 1017.2,
+     "priority": "High",
+     "start": 930.6,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 33772,
+     "end": 730.8,
+     "priority": "VeryHigh",
+     "start": 697.4,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYp3tKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 21161,
+     "end": 729.5,
+     "priority": "VeryHigh",
+     "start": 696.9,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 37808,
+     "end": 729.0,
+     "priority": "VeryHigh",
+     "start": 696.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 728.6,
+     "priority": "VeryHigh",
+     "start": 696.3,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 17233,
+     "end": 728.3,
+     "priority": "VeryHigh",
+     "start": 697.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 710.3,
+     "priority": "VeryHigh",
+     "start": 695.9,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 40805,
+     "end": 538.8,
+     "priority": "Low",
+     "start": 320.0,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/main.js?v=20261027r01"
+    },
+    {
+     "bytes": 0,
+     "end": 536.7,
+     "priority": "Low",
+     "start": 536.6,
+     "status": 200,
+     "type": "Image",
+     "url": "data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfi"
+    },
+    {
+     "bytes": 40920,
+     "end": 495.9,
+     "priority": "VeryHigh",
+     "start": 298.4,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css/style.css?v=20261023r02"
+    },
+    {
+     "bytes": 1138,
+     "end": 438.3,
+     "priority": "Medium",
+     "start": 347.4,
+     "status": 200,
+     "type": "Manifest",
+     "url": "/manifest.json"
+    },
+    {
+     "bytes": 7198,
+     "end": 432.0,
+     "priority": "Low",
+     "start": 320.4,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/mc-2026.js?v=20260916r02"
+    },
+    {
+     "bytes": 9641,
+     "end": 424.1,
+     "priority": "Low",
+     "start": 320.3,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/nav.js?v=20260728r27"
+    },
+    {
+     "bytes": 8089,
+     "end": 416.7,
+     "priority": "Low",
+     "start": 320.7,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/consent-analytics.js?v=20261026r02"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 867.0,
     "fcp": 2447.0,
@@ -221,6 +367,152 @@
     "tbt": 17.0,
     "tti": 3900.5
    },
+   "network": [
+    {
+     "bytes": 26118,
+     "end": 351.3,
+     "priority": "High",
+     "start": 345.3,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 606,
+     "end": 346.7,
+     "priority": "High",
+     "start": 342.5,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 33772,
+     "end": 235.3,
+     "priority": "VeryHigh",
+     "start": 195.8,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYp3tKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 232.9,
+     "priority": "VeryHigh",
+     "start": 195.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 37808,
+     "end": 232.7,
+     "priority": "VeryHigh",
+     "start": 194.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 21161,
+     "end": 232.0,
+     "priority": "VeryHigh",
+     "start": 195.5,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 17233,
+     "end": 230.4,
+     "priority": "VeryHigh",
+     "start": 195.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 218.0,
+     "priority": "VeryHigh",
+     "start": 195.3,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 20208,
+     "end": 143.2,
+     "priority": "Low",
+     "start": 138.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/viktoria-480.avif"
+    },
+    {
+     "bytes": 1179,
+     "end": 99.9,
+     "priority": "VeryHigh",
+     "start": 32.8,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css2?family=Cormorant+Garamond:wght@400;500&family=Jost:wght@400;500&display=optional"
+    },
+    {
+     "bytes": 0,
+     "end": 74.8,
+     "priority": "Low",
+     "start": 74.7,
+     "status": 200,
+     "type": "Image",
+     "url": "data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfi"
+    },
+    {
+     "bytes": 1137,
+     "end": 70.8,
+     "priority": "Medium",
+     "start": 57.8,
+     "status": 200,
+     "type": "Manifest",
+     "url": "/manifest.json"
+    },
+    {
+     "bytes": 40579,
+     "end": 61.0,
+     "priority": "Low",
+     "start": 38.1,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/main.js?v=20261027r01"
+    },
+    {
+     "bytes": 18531,
+     "end": 59.1,
+     "priority": "High",
+     "start": 32.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/head_mobile-640.avif"
+    },
+    {
+     "bytes": 40901,
+     "end": 58.6,
+     "priority": "VeryHigh",
+     "start": 33.3,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css/style.css?v=20261023r02"
+    },
+    {
+     "bytes": 7875,
+     "end": 57.0,
+     "priority": "Low",
+     "start": 39.9,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/consent-analytics.js?v=20261026r02"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 307.0,
     "fcp": 169.0,
@@ -331,6 +623,152 @@
     "tbt": 40.0,
     "tti": 4274.0
    },
+   "network": [
+    {
+     "bytes": 20206,
+     "end": 1424.0,
+     "priority": "Low",
+     "start": 1317.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/viktoria-480.avif"
+    },
+    {
+     "bytes": 633,
+     "end": 1297.8,
+     "priority": "High",
+     "start": 1197.6,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 25928,
+     "end": 1279.1,
+     "priority": "High",
+     "start": 1198.4,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 26617,
+     "end": 1125.4,
+     "priority": "VeryHigh",
+     "start": 1090.4,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 33772,
+     "end": 1124.6,
+     "priority": "VeryHigh",
+     "start": 1091.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYp3tKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 37808,
+     "end": 1124.3,
+     "priority": "VeryHigh",
+     "start": 1090.2,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 21161,
+     "end": 1123.0,
+     "priority": "VeryHigh",
+     "start": 1090.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 17233,
+     "end": 1121.6,
+     "priority": "VeryHigh",
+     "start": 1090.7,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 1102.0,
+     "priority": "VeryHigh",
+     "start": 1089.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 0,
+     "end": 1013.1,
+     "priority": "Low",
+     "start": 1013.0,
+     "status": 200,
+     "type": "Image",
+     "url": "data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfi"
+    },
+    {
+     "bytes": 15343,
+     "end": 1002.4,
+     "priority": "VeryHigh",
+     "start": 136.4,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css/premium-overrides.css?v=20260728r27"
+    },
+    {
+     "bytes": 7215,
+     "end": 964.6,
+     "priority": "Low",
+     "start": 142.3,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/mc-2026.js?v=20260916r02"
+    },
+    {
+     "bytes": 5967,
+     "end": 548.3,
+     "priority": "VeryHigh",
+     "start": 137.4,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css/final-fixes.css?v=20261023r01"
+    },
+    {
+     "bytes": 40593,
+     "end": 398.5,
+     "priority": "Low",
+     "start": 141.8,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/main.js?v=20261027r01"
+    },
+    {
+     "bytes": 41134,
+     "end": 263.4,
+     "priority": "VeryHigh",
+     "start": 135.7,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css/style.css?v=20261023r02"
+    },
+    {
+     "bytes": 4283,
+     "end": 259.8,
+     "priority": "Low",
+     "start": 142.6,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/v20-faq-fix.js?v=20260728r27"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 1168.0,
     "fcp": 2327.0,
@@ -461,6 +899,152 @@
     "tbt": 268.0,
     "tti": 2503.3
    },
+   "network": [
+    {
+     "bytes": 1599714,
+     "end": 1112.8,
+     "priority": "Low",
+     "start": 680.6,
+     "status": 206,
+     "type": "Media",
+     "url": "/img/gallery/videos/video-02-spb-cakes.webm"
+    },
+    {
+     "bytes": 2589550,
+     "end": 847.9,
+     "priority": "Low",
+     "start": 677.4,
+     "status": 206,
+     "type": "Media",
+     "url": "/img/gallery/videos/video-01-knigi.webm"
+    },
+    {
+     "bytes": 0,
+     "end": 599.7,
+     "priority": "Low",
+     "start": 495.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-16-moon-stars-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 596.2,
+     "priority": "Low",
+     "start": 386.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-19.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 586.3,
+     "priority": "Low",
+     "start": 397.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-11-bears-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 577.1,
+     "priority": "Low",
+     "start": 494.9,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-15-basketball-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 530.9,
+     "priority": "Low",
+     "start": 443.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-14-blue-balloons-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 525.0,
+     "priority": "Low",
+     "start": 442.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-13-bunny-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 486.0,
+     "priority": "Low",
+     "start": 401.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-12-wedding-heart-poster.webp"
+    },
+    {
+     "bytes": 0,
+     "end": 485.9,
+     "priority": "Low",
+     "start": 386.6,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-18-card.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 485.9,
+     "priority": "Low",
+     "start": 386.9,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-20.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 480.8,
+     "priority": "Low",
+     "start": 390.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-22.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 458.4,
+     "priority": "Low",
+     "start": 353.6,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-15.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 450.8,
+     "priority": "Low",
+     "start": 353.6,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-16.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 446.7,
+     "priority": "Low",
+     "start": 353.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-14.avif"
+    },
+    {
+     "bytes": 0,
+     "end": 440.1,
+     "priority": "Low",
+     "start": 353.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-17.avif"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 188.0,
     "fcp": 161.0,
@@ -546,6 +1130,152 @@
     "tbt": 0.0,
     "tti": 1953.2
    },
+   "network": [
+    {
+     "bytes": 1599996,
+     "end": 6304.5,
+     "priority": "Low",
+     "start": 5825.3,
+     "status": 206,
+     "type": "Media",
+     "url": "/img/gallery/videos/video-02-spb-cakes.webm"
+    },
+    {
+     "bytes": 2589573,
+     "end": 6184.2,
+     "priority": "Low",
+     "start": 5825.1,
+     "status": 206,
+     "type": "Media",
+     "url": "/img/gallery/videos/video-01-knigi.webm"
+    },
+    {
+     "bytes": 80268,
+     "end": 5812.0,
+     "priority": "Low",
+     "start": 5479.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-15.avif"
+    },
+    {
+     "bytes": 52813,
+     "end": 5805.0,
+     "priority": "Low",
+     "start": 5480.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-17.avif"
+    },
+    {
+     "bytes": 20340,
+     "end": 5800.7,
+     "priority": "Low",
+     "start": 5518.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-12-wedding-heart-poster.webp"
+    },
+    {
+     "bytes": 14064,
+     "end": 5774.0,
+     "priority": "Low",
+     "start": 5570.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-14-blue-balloons-poster.webp"
+    },
+    {
+     "bytes": 7623,
+     "end": 5763.3,
+     "priority": "Low",
+     "start": 5434.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-06-card.avif"
+    },
+    {
+     "bytes": 55490,
+     "end": 5751.0,
+     "priority": "Low",
+     "start": 5480.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-16.avif"
+    },
+    {
+     "bytes": 23437,
+     "end": 5741.3,
+     "priority": "Low",
+     "start": 5588.6,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-15-basketball-poster.webp"
+    },
+    {
+     "bytes": 10947,
+     "end": 5731.1,
+     "priority": "Low",
+     "start": 5456.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-12-card.avif"
+    },
+    {
+     "bytes": 8339,
+     "end": 5730.1,
+     "priority": "Low",
+     "start": 5419.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-05-card.avif"
+    },
+    {
+     "bytes": 26656,
+     "end": 5729.2,
+     "priority": "Low",
+     "start": 5459.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-07-bento-bday-poster.webp"
+    },
+    {
+     "bytes": 25093,
+     "end": 5696.1,
+     "priority": "Low",
+     "start": 5424.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-04-eclair-poster.webp"
+    },
+    {
+     "bytes": 37042,
+     "end": 5695.5,
+     "priority": "Low",
+     "start": 5514.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-22.avif"
+    },
+    {
+     "bytes": 27208,
+     "end": 5695.1,
+     "priority": "High",
+     "start": 5396.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-01-knigi-poster.webp"
+    },
+    {
+     "bytes": 47517,
+     "end": 5676.5,
+     "priority": "Low",
+     "start": 5513.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-19.avif"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 5401.0,
     "fcp": 5368.0,
@@ -641,6 +1371,152 @@
     "tbt": 20.0,
     "tti": 1934.2
    },
+   "network": [
+    {
+     "bytes": 2589531,
+     "end": 971.7,
+     "priority": "Low",
+     "start": 841.3,
+     "status": 206,
+     "type": "Media",
+     "url": "/img/gallery/videos/video-01-knigi.webm"
+    },
+    {
+     "bytes": 1599914,
+     "end": 876.6,
+     "priority": "Low",
+     "start": 843.0,
+     "status": 206,
+     "type": "Media",
+     "url": "/img/gallery/videos/video-02-spb-cakes.webm"
+    },
+    {
+     "bytes": 47514,
+     "end": 804.8,
+     "priority": "Low",
+     "start": 416.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-19.avif"
+    },
+    {
+     "bytes": 20186,
+     "end": 804.2,
+     "priority": "Low",
+     "start": 424.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-12-wedding-heart-poster.webp"
+    },
+    {
+     "bytes": 23639,
+     "end": 606.9,
+     "priority": "Low",
+     "start": 524.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-15-basketball-poster.webp"
+    },
+    {
+     "bytes": 16722,
+     "end": 602.5,
+     "priority": "Low",
+     "start": 525.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-16-moon-stars-poster.webp"
+    },
+    {
+     "bytes": 14202,
+     "end": 566.5,
+     "priority": "Low",
+     "start": 457.3,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-14-blue-balloons-poster.webp"
+    },
+    {
+     "bytes": 13941,
+     "end": 547.3,
+     "priority": "Low",
+     "start": 456.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-13-bunny-poster.webp"
+    },
+    {
+     "bytes": 37259,
+     "end": 503.7,
+     "priority": "Low",
+     "start": 419.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-22.avif"
+    },
+    {
+     "bytes": 46208,
+     "end": 503.0,
+     "priority": "Low",
+     "start": 416.6,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-20.avif"
+    },
+    {
+     "bytes": 18643,
+     "end": 502.3,
+     "priority": "Low",
+     "start": 424.3,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-11-bears-poster.webp"
+    },
+    {
+     "bytes": 26495,
+     "end": 498.2,
+     "priority": "Low",
+     "start": 383.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-07-bento-bday-poster.webp"
+    },
+    {
+     "bytes": 10309,
+     "end": 496.0,
+     "priority": "Low",
+     "start": 415.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-18-card.avif"
+    },
+    {
+     "bytes": 58753,
+     "end": 493.7,
+     "priority": "Low",
+     "start": 378.6,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-10.avif"
+    },
+    {
+     "bytes": 26753,
+     "end": 492.1,
+     "priority": "Low",
+     "start": 395.3,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-09-cupcakes-berry-poster.webp"
+    },
+    {
+     "bytes": 80272,
+     "end": 486.6,
+     "priority": "Low",
+     "start": 391.6,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-15.avif"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 331.0,
     "fcp": 295.0,
@@ -746,6 +1622,152 @@
     "tbt": 317.0,
     "tti": 3544.7
    },
+   "network": [
+    {
+     "bytes": 25984,
+     "end": 508.8,
+     "priority": "High",
+     "start": 420.3,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 12199,
+     "end": 471.8,
+     "priority": "Low",
+     "start": 182.3,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-modern-sculptural-sm.avif"
+    },
+    {
+     "bytes": 671,
+     "end": 424.8,
+     "priority": "High",
+     "start": 419.9,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 16558,
+     "end": 276.5,
+     "priority": "Low",
+     "start": 181.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-11-mobile.avif"
+    },
+    {
+     "bytes": 15501,
+     "end": 270.3,
+     "priority": "Low",
+     "start": 182.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-botanical-romance-sm.avif"
+    },
+    {
+     "bytes": 21161,
+     "end": 267.8,
+     "priority": "VeryHigh",
+     "start": 235.9,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 37808,
+     "end": 267.5,
+     "priority": "VeryHigh",
+     "start": 236.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 23661,
+     "end": 266.7,
+     "priority": "VeryHigh",
+     "start": 236.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3smX5slCNuHLi8bLeY9MK7whWMhyjYrGFEsdtdc62E6zd58jD-iNM8A_ipUA.wo"
+    },
+    {
+     "bytes": 10857,
+     "end": 263.1,
+     "priority": "Low",
+     "start": 181.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-pure-ivory-sm.avif"
+    },
+    {
+     "bytes": 17233,
+     "end": 261.2,
+     "priority": "VeryHigh",
+     "start": 236.3,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 9693,
+     "end": 260.4,
+     "priority": "Low",
+     "start": 182.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-golden-atelier-sm.avif"
+    },
+    {
+     "bytes": 12755,
+     "end": 256.0,
+     "priority": "VeryHigh",
+     "start": 237.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3smX5slCNuHLi8bLeY9MK7whWMhyjYrGFEsdtdc62E6zd58jD-jNM8A_ipUIT9."
+    },
+    {
+     "bytes": 10167,
+     "end": 252.1,
+     "priority": "VeryHigh",
+     "start": 235.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 249.8,
+     "priority": "VeryHigh",
+     "start": 234.3,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 20164,
+     "end": 209.0,
+     "priority": "High",
+     "start": 117.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-hero-mobile.avif"
+    },
+    {
+     "bytes": 20299,
+     "end": 184.0,
+     "priority": "Low",
+     "start": 178.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-12-wedding-heart-poster.webp"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 207.0,
     "fcp": 196.0,
@@ -846,6 +1868,152 @@
     "tbt": 130.5,
     "tti": 3560.9
    },
+   "network": [
+    {
+     "bytes": 25955,
+     "end": 542.1,
+     "priority": "High",
+     "start": 438.8,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 652,
+     "end": 446.5,
+     "priority": "High",
+     "start": 434.6,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 37808,
+     "end": 324.7,
+     "priority": "VeryHigh",
+     "start": 284.8,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 23661,
+     "end": 323.7,
+     "priority": "VeryHigh",
+     "start": 285.7,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3smX5slCNuHLi8bLeY9MK7whWMhyjYrGFEsdtdc62E6zd58jD-iNM8A_ipUA.wo"
+    },
+    {
+     "bytes": 21161,
+     "end": 323.3,
+     "priority": "VeryHigh",
+     "start": 284.5,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 17233,
+     "end": 322.9,
+     "priority": "VeryHigh",
+     "start": 285.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 9708,
+     "end": 321.6,
+     "priority": "Low",
+     "start": 226.9,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-golden-atelier-sm.avif"
+    },
+    {
+     "bytes": 26617,
+     "end": 320.5,
+     "priority": "VeryHigh",
+     "start": 284.0,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 10910,
+     "end": 317.5,
+     "priority": "Low",
+     "start": 225.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-pure-ivory-sm.avif"
+    },
+    {
+     "bytes": 15497,
+     "end": 314.7,
+     "priority": "Low",
+     "start": 225.9,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-botanical-romance-sm.avif"
+    },
+    {
+     "bytes": 12755,
+     "end": 312.4,
+     "priority": "VeryHigh",
+     "start": 285.9,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3smX5slCNuHLi8bLeY9MK7whWMhyjYrGFEsdtdc62E6zd58jD-jNM8A_ipUIT9."
+    },
+    {
+     "bytes": 10167,
+     "end": 307.4,
+     "priority": "VeryHigh",
+     "start": 284.3,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 12016,
+     "end": 305.4,
+     "priority": "Low",
+     "start": 226.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-modern-sculptural-sm.avif"
+    },
+    {
+     "bytes": 16485,
+     "end": 303.4,
+     "priority": "Low",
+     "start": 224.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-11-mobile.avif"
+    },
+    {
+     "bytes": 20171,
+     "end": 235.9,
+     "priority": "High",
+     "start": 158.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-hero-mobile.avif"
+    },
+    {
+     "bytes": 20331,
+     "end": 233.4,
+     "priority": "Low",
+     "start": 221.3,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-12-wedding-heart-poster.webp"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 247.0,
     "fcp": 245.0,
@@ -931,6 +2099,152 @@
     "tbt": 0.0,
     "tti": 3745.6
    },
+   "network": [
+    {
+     "bytes": 9915,
+     "end": 1479.4,
+     "priority": "Low",
+     "start": 1331.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-golden-atelier-sm.avif"
+    },
+    {
+     "bytes": 16486,
+     "end": 1471.7,
+     "priority": "Low",
+     "start": 1328.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-11-mobile.avif"
+    },
+    {
+     "bytes": 20133,
+     "end": 1468.3,
+     "priority": "Low",
+     "start": 1327.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-12-wedding-heart-poster.webp"
+    },
+    {
+     "bytes": 10868,
+     "end": 1460.5,
+     "priority": "Low",
+     "start": 1328.3,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-pure-ivory-sm.avif"
+    },
+    {
+     "bytes": 12230,
+     "end": 1445.3,
+     "priority": "Low",
+     "start": 1330.9,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-modern-sculptural-sm.avif"
+    },
+    {
+     "bytes": 15342,
+     "end": 1441.1,
+     "priority": "Low",
+     "start": 1328.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/wedding-style-botanical-romance-sm.avif"
+    },
+    {
+     "bytes": 26006,
+     "end": 598.6,
+     "priority": "High",
+     "start": 468.7,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 632,
+     "end": 584.5,
+     "priority": "High",
+     "start": 468.4,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 37808,
+     "end": 441.2,
+     "priority": "VeryHigh",
+     "start": 402.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 23661,
+     "end": 439.7,
+     "priority": "VeryHigh",
+     "start": 403.3,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3smX5slCNuHLi8bLeY9MK7whWMhyjYrGFEsdtdc62E6zd58jD-iNM8A_ipUA.wo"
+    },
+    {
+     "bytes": 26617,
+     "end": 439.5,
+     "priority": "VeryHigh",
+     "start": 401.9,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 21161,
+     "end": 437.1,
+     "priority": "VeryHigh",
+     "start": 402.5,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 17233,
+     "end": 434.5,
+     "priority": "VeryHigh",
+     "start": 403.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 12755,
+     "end": 431.4,
+     "priority": "VeryHigh",
+     "start": 402.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3smX5slCNuHLi8bLeY9MK7whWMhyjYrGFEsdtdc62E6zd58jD-jNM8A_ipUIT9."
+    },
+    {
+     "bytes": 10167,
+     "end": 428.4,
+     "priority": "VeryHigh",
+     "start": 402.3,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 0,
+     "end": 348.6,
+     "priority": "Low",
+     "start": 348.6,
+     "status": 200,
+     "type": "Image",
+     "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIx"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 343.0,
     "fcp": 2343.0,
@@ -1026,6 +2340,152 @@
     "tbt": 200.0,
     "tti": 3580.6
    },
+   "network": [
+    {
+     "bytes": 26112,
+     "end": 1055.9,
+     "priority": "High",
+     "start": 776.1,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 661,
+     "end": 859.4,
+     "priority": "High",
+     "start": 775.5,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 27452,
+     "end": 727.5,
+     "priority": "Low",
+     "start": 363.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-27-card.avif"
+    },
+    {
+     "bytes": 110737,
+     "end": 707.0,
+     "priority": "Low",
+     "start": 364.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_maxi.avif"
+    },
+    {
+     "bytes": 38421,
+     "end": 705.5,
+     "priority": "Low",
+     "start": 363.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-27-preview.avif"
+    },
+    {
+     "bytes": 26498,
+     "end": 682.7,
+     "priority": "Low",
+     "start": 362.6,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-07-bento-bday-poster.webp"
+    },
+    {
+     "bytes": 16727,
+     "end": 677.2,
+     "priority": "High",
+     "start": 325.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_1-mobile-640.avif"
+    },
+    {
+     "bytes": 33772,
+     "end": 653.3,
+     "priority": "VeryHigh",
+     "start": 639.0,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYp3tKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 1141,
+     "end": 644.8,
+     "priority": "Medium",
+     "start": 365.3,
+     "status": 200,
+     "type": "Manifest",
+     "url": "/manifest.json"
+    },
+    {
+     "bytes": 40923,
+     "end": 616.1,
+     "priority": "VeryHigh",
+     "start": 325.9,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css/style.css?v=20261023r02"
+    },
+    {
+     "bytes": 7958,
+     "end": 613.1,
+     "priority": "Low",
+     "start": 338.1,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/consent-analytics.js"
+    },
+    {
+     "bytes": 11076,
+     "end": 579.0,
+     "priority": "Low",
+     "start": 363.6,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_1-card.avif"
+    },
+    {
+     "bytes": 10888,
+     "end": 518.5,
+     "priority": "Low",
+     "start": 363.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-30-preview.avif"
+    },
+    {
+     "bytes": 14493,
+     "end": 461.6,
+     "priority": "Low",
+     "start": 362.9,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-06-bento-love-poster.webp"
+    },
+    {
+     "bytes": 37808,
+     "end": 448.4,
+     "priority": "VeryHigh",
+     "start": 410.2,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 447.9,
+     "priority": "VeryHigh",
+     "start": 409.8,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 619.0,
     "fcp": 385.0,
@@ -1141,6 +2601,152 @@
     "tbt": 337.6,
     "tti": 3556.7
    },
+   "network": [
+    {
+     "bytes": 27519,
+     "end": 809.6,
+     "priority": "Low",
+     "start": 316.9,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-27-card.avif"
+    },
+    {
+     "bytes": 38385,
+     "end": 699.6,
+     "priority": "Low",
+     "start": 315.9,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-27-preview.avif"
+    },
+    {
+     "bytes": 769,
+     "end": 609.5,
+     "priority": "High",
+     "start": 593.1,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 25969,
+     "end": 608.8,
+     "priority": "High",
+     "start": 593.9,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 110759,
+     "end": 585.4,
+     "priority": "Low",
+     "start": 317.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_maxi.avif"
+    },
+    {
+     "bytes": 16708,
+     "end": 575.1,
+     "priority": "High",
+     "start": 278.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_1-mobile-640.avif"
+    },
+    {
+     "bytes": 10887,
+     "end": 558.5,
+     "priority": "Low",
+     "start": 316.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-30-preview.avif"
+    },
+    {
+     "bytes": 14434,
+     "end": 551.9,
+     "priority": "Low",
+     "start": 314.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-06-bento-love-poster.webp"
+    },
+    {
+     "bytes": 10923,
+     "end": 550.5,
+     "priority": "Low",
+     "start": 316.6,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_1-card.avif"
+    },
+    {
+     "bytes": 26660,
+     "end": 544.0,
+     "priority": "Low",
+     "start": 314.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-07-bento-bday-poster.webp"
+    },
+    {
+     "bytes": 33772,
+     "end": 441.7,
+     "priority": "VeryHigh",
+     "start": 406.2,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYp3tKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 21161,
+     "end": 441.4,
+     "priority": "VeryHigh",
+     "start": 403.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 437.0,
+     "priority": "VeryHigh",
+     "start": 400.7,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 17233,
+     "end": 431.8,
+     "priority": "VeryHigh",
+     "start": 403.4,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 429.9,
+     "priority": "VeryHigh",
+     "start": 402.5,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 37808,
+     "end": 419.0,
+     "priority": "VeryHigh",
+     "start": 400.3,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 323.0,
     "fcp": 340.0,
@@ -1251,6 +2857,152 @@
     "tbt": 457.6,
     "tti": 2116.8
    },
+   "network": [
+    {
+     "bytes": 26119,
+     "end": 353.8,
+     "priority": "High",
+     "start": 343.2,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 654,
+     "end": 344.5,
+     "priority": "High",
+     "start": 338.6,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 17233,
+     "end": 261.0,
+     "priority": "VeryHigh",
+     "start": 220.4,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 33772,
+     "end": 260.6,
+     "priority": "VeryHigh",
+     "start": 221.0,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYp3tKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 260.3,
+     "priority": "VeryHigh",
+     "start": 219.0,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 37808,
+     "end": 257.1,
+     "priority": "VeryHigh",
+     "start": 219.7,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 21161,
+     "end": 250.2,
+     "priority": "VeryHigh",
+     "start": 220.0,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 239.8,
+     "priority": "VeryHigh",
+     "start": 219.3,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 1141,
+     "end": 117.0,
+     "priority": "Medium",
+     "start": 106.4,
+     "status": 200,
+     "type": "Manifest",
+     "url": "/manifest.json"
+    },
+    {
+     "bytes": 1305,
+     "end": 91.1,
+     "priority": "VeryHigh",
+     "start": 25.6,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;6"
+    },
+    {
+     "bytes": 110957,
+     "end": 78.7,
+     "priority": "Low",
+     "start": 66.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_maxi.avif"
+    },
+    {
+     "bytes": 27450,
+     "end": 77.5,
+     "priority": "Low",
+     "start": 66.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-27-card.avif"
+    },
+    {
+     "bytes": 10883,
+     "end": 77.0,
+     "priority": "Low",
+     "start": 66.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_1-card.avif"
+    },
+    {
+     "bytes": 38418,
+     "end": 76.7,
+     "priority": "Low",
+     "start": 65.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-27-preview.avif"
+    },
+    {
+     "bytes": 10871,
+     "end": 75.8,
+     "priority": "Low",
+     "start": 65.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-30-preview.avif"
+    },
+    {
+     "bytes": 14458,
+     "end": 68.9,
+     "priority": "Low",
+     "start": 63.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-06-bento-love-poster.webp"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 74.0,
     "fcp": 99.0,
@@ -1341,6 +3093,152 @@
     "tbt": 0.0,
     "tti": 3318.2
    },
+   "network": [
+    {
+     "bytes": 58023,
+     "end": 587.6,
+     "priority": "Low",
+     "start": 316.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_0.avif"
+    },
+    {
+     "bytes": 26071,
+     "end": 496.0,
+     "priority": "High",
+     "start": 405.1,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 652,
+     "end": 483.3,
+     "priority": "High",
+     "start": 402.0,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 54668,
+     "end": 431.6,
+     "priority": "Low",
+     "start": 316.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_3d.avif"
+    },
+    {
+     "bytes": 41170,
+     "end": 405.8,
+     "priority": "Low",
+     "start": 316.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-14.avif"
+    },
+    {
+     "bytes": 23325,
+     "end": 392.0,
+     "priority": "Low",
+     "start": 314.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-02-spb-cakes-poster.webp"
+    },
+    {
+     "bytes": 21161,
+     "end": 351.6,
+     "priority": "VeryHigh",
+     "start": 317.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 351.3,
+     "priority": "VeryHigh",
+     "start": 317.2,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 37808,
+     "end": 351.0,
+     "priority": "VeryHigh",
+     "start": 317.0,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 17233,
+     "end": 348.2,
+     "priority": "VeryHigh",
+     "start": 318.2,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 340.7,
+     "priority": "VeryHigh",
+     "start": 317.4,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 60650,
+     "end": 332.3,
+     "priority": "Low",
+     "start": 316.3,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_1.avif"
+    },
+    {
+     "bytes": 1127,
+     "end": 283.3,
+     "priority": "Medium",
+     "start": 180.7,
+     "status": 200,
+     "type": "Manifest",
+     "url": "/manifest.json"
+    },
+    {
+     "bytes": 7961,
+     "end": 275.2,
+     "priority": "Low",
+     "start": 179.7,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/consent-analytics.js"
+    },
+    {
+     "bytes": 41017,
+     "end": 262.8,
+     "priority": "VeryHigh",
+     "start": 171.2,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css/style.css?v=20261023r02"
+    },
+    {
+     "bytes": 33711,
+     "end": 255.4,
+     "priority": "High",
+     "start": 168.3,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/head_mobile.avif"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 326.0,
     "fcp": 1321.0,
@@ -1436,6 +3334,152 @@
     "tbt": 0.0,
     "tti": 3179.6
    },
+   "network": [
+    {
+     "bytes": 0,
+     "end": 1359.8,
+     "priority": "High",
+     "start": 1344.5,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 0,
+     "end": 1356.6,
+     "priority": "High",
+     "start": 1343.0,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 37808,
+     "end": 409.2,
+     "priority": "VeryHigh",
+     "start": 378.0,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 407.8,
+     "priority": "VeryHigh",
+     "start": 377.8,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 17233,
+     "end": 402.8,
+     "priority": "VeryHigh",
+     "start": 378.2,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 21161,
+     "end": 395.2,
+     "priority": "VeryHigh",
+     "start": 377.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 390.7,
+     "priority": "VeryHigh",
+     "start": 377.0,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 60534,
+     "end": 364.9,
+     "priority": "Low",
+     "start": 244.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_1.avif"
+    },
+    {
+     "bytes": 57954,
+     "end": 342.0,
+     "priority": "Low",
+     "start": 243.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_0.avif"
+    },
+    {
+     "bytes": 54827,
+     "end": 336.0,
+     "priority": "Low",
+     "start": 244.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_3d.avif"
+    },
+    {
+     "bytes": 41141,
+     "end": 256.4,
+     "priority": "Low",
+     "start": 245.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-14.avif"
+    },
+    {
+     "bytes": 23285,
+     "end": 255.5,
+     "priority": "Low",
+     "start": 243.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-02-spb-cakes-poster.webp"
+    },
+    {
+     "bytes": 1305,
+     "end": 254.4,
+     "priority": "VeryHigh",
+     "start": 190.0,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;6"
+    },
+    {
+     "bytes": 1146,
+     "end": 232.8,
+     "priority": "Medium",
+     "start": 201.2,
+     "status": 200,
+     "type": "Manifest",
+     "url": "/manifest.json"
+    },
+    {
+     "bytes": 8081,
+     "end": 214.6,
+     "priority": "Low",
+     "start": 200.9,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/consent-analytics.js"
+    },
+    {
+     "bytes": 40942,
+     "end": 211.2,
+     "priority": "VeryHigh",
+     "start": 190.5,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css/style.css?v=20261023r02"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 252.0,
     "fcp": 1338.0,
@@ -1541,6 +3585,152 @@
     "tbt": 275.3,
     "tti": 2573.7
    },
+   "network": [
+    {
+     "bytes": 25932,
+     "end": 408.0,
+     "priority": "High",
+     "start": 394.9,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 760,
+     "end": 407.0,
+     "priority": "High",
+     "start": 392.9,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 37808,
+     "end": 285.4,
+     "priority": "VeryHigh",
+     "start": 251.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 17233,
+     "end": 281.9,
+     "priority": "VeryHigh",
+     "start": 251.8,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 281.5,
+     "priority": "VeryHigh",
+     "start": 251.4,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 21161,
+     "end": 272.0,
+     "priority": "VeryHigh",
+     "start": 251.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 261.6,
+     "priority": "VeryHigh",
+     "start": 248.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 60533,
+     "end": 123.9,
+     "priority": "Low",
+     "start": 102.6,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_1.avif"
+    },
+    {
+     "bytes": 54849,
+     "end": 119.9,
+     "priority": "Low",
+     "start": 103.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_3d.avif"
+    },
+    {
+     "bytes": 57930,
+     "end": 119.1,
+     "priority": "Low",
+     "start": 102.3,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_0.avif"
+    },
+    {
+     "bytes": 41141,
+     "end": 115.5,
+     "priority": "Low",
+     "start": 103.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/gallery-14.avif"
+    },
+    {
+     "bytes": 23260,
+     "end": 112.7,
+     "priority": "Low",
+     "start": 100.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/gallery/video-02-spb-cakes-poster.webp"
+    },
+    {
+     "bytes": 1305,
+     "end": 112.0,
+     "priority": "VeryHigh",
+     "start": 47.0,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;6"
+    },
+    {
+     "bytes": 1146,
+     "end": 88.1,
+     "priority": "Medium",
+     "start": 57.4,
+     "status": 200,
+     "type": "Manifest",
+     "url": "/manifest.json"
+    },
+    {
+     "bytes": 0,
+     "end": 77.9,
+     "priority": "Low",
+     "start": 77.8,
+     "status": 200,
+     "type": "Image",
+     "url": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2ZXJz"
+    },
+    {
+     "bytes": 8088,
+     "end": 70.2,
+     "priority": "Low",
+     "start": 57.0,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/consent-analytics.js"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 220.0,
     "fcp": 220.0,
@@ -1620,6 +3810,125 @@
     "tbt": 0.0,
     "tti": 3220.2
    },
+   "network": [
+    {
+     "bytes": 798,
+     "end": 286.1,
+     "priority": "High",
+     "start": 280.0,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 25955,
+     "end": 281.3,
+     "priority": "High",
+     "start": 277.1,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 21161,
+     "end": 261.4,
+     "priority": "VeryHigh",
+     "start": 227.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 37808,
+     "end": 261.1,
+     "priority": "VeryHigh",
+     "start": 227.3,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 258.3,
+     "priority": "VeryHigh",
+     "start": 226.8,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 17233,
+     "end": 252.6,
+     "priority": "VeryHigh",
+     "start": 227.8,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 247.6,
+     "priority": "VeryHigh",
+     "start": 227.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 35617,
+     "end": 222.2,
+     "priority": "High",
+     "start": 122.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/viktoria.avif"
+    },
+    {
+     "bytes": 1305,
+     "end": 184.7,
+     "priority": "VeryHigh",
+     "start": 123.1,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;6"
+    },
+    {
+     "bytes": 1140,
+     "end": 144.7,
+     "priority": "Medium",
+     "start": 134.8,
+     "status": 200,
+     "type": "Manifest",
+     "url": "/manifest.json"
+    },
+    {
+     "bytes": 7911,
+     "end": 141.3,
+     "priority": "Low",
+     "start": 133.3,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/consent-analytics.js"
+    },
+    {
+     "bytes": 40973,
+     "end": 137.8,
+     "priority": "VeryHigh",
+     "start": 123.7,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css/style.css?v=20261023r02"
+    },
+    {
+     "bytes": 7361,
+     "end": 112.1,
+     "priority": "VeryHigh",
+     "start": 0.9,
+     "status": 200,
+     "type": "Document",
+     "url": "/o-konditere/"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 169.0,
     "fcp": 200.0,
@@ -1699,6 +4008,125 @@
     "tbt": 0.0,
     "tti": 3238.9
    },
+   "network": [
+    {
+     "bytes": 25932,
+     "end": 288.5,
+     "priority": "High",
+     "start": 277.2,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 643,
+     "end": 287.3,
+     "priority": "High",
+     "start": 276.9,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 37808,
+     "end": 259.0,
+     "priority": "VeryHigh",
+     "start": 225.7,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 21161,
+     "end": 256.2,
+     "priority": "VeryHigh",
+     "start": 225.0,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 256.0,
+     "priority": "VeryHigh",
+     "start": 225.2,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 17233,
+     "end": 251.6,
+     "priority": "VeryHigh",
+     "start": 226.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 237.5,
+     "priority": "VeryHigh",
+     "start": 224.5,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 35624,
+     "end": 231.5,
+     "priority": "High",
+     "start": 134.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/viktoria.avif"
+    },
+    {
+     "bytes": 1305,
+     "end": 195.0,
+     "priority": "VeryHigh",
+     "start": 135.8,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;6"
+    },
+    {
+     "bytes": 1147,
+     "end": 173.7,
+     "priority": "Medium",
+     "start": 144.7,
+     "status": 200,
+     "type": "Manifest",
+     "url": "/manifest.json"
+    },
+    {
+     "bytes": 7904,
+     "end": 155.4,
+     "priority": "Low",
+     "start": 144.4,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/consent-analytics.js"
+    },
+    {
+     "bytes": 40974,
+     "end": 154.0,
+     "priority": "VeryHigh",
+     "start": 136.5,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css/style.css?v=20261023r02"
+    },
+    {
+     "bytes": 7368,
+     "end": 124.7,
+     "priority": "VeryHigh",
+     "start": 0.9,
+     "status": 200,
+     "type": "Document",
+     "url": "/o-konditere/"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 186.0,
     "fcp": 202.0,
@@ -1784,6 +4212,152 @@
     "tbt": 8.0,
     "tti": 2460.9
    },
+   "network": [
+    {
+     "bytes": 0,
+     "end": 180.6,
+     "priority": "VeryHigh",
+     "start": 146.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 37808,
+     "end": 180.4,
+     "priority": "VeryHigh",
+     "start": 145.9,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2"
+    },
+    {
+     "bytes": 17233,
+     "end": 180.1,
+     "priority": "VeryHigh",
+     "start": 146.3,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73ord4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 0,
+     "end": 175.2,
+     "priority": "VeryHigh",
+     "start": 145.6,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 0,
+     "end": 175.0,
+     "priority": "VeryHigh",
+     "start": 147.4,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 0,
+     "end": 174.6,
+     "priority": "VeryHigh",
+     "start": 144.9,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 0,
+     "end": 173.7,
+     "priority": "VeryHigh",
+     "start": 145.4,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 0,
+     "end": 173.5,
+     "priority": "VeryHigh",
+     "start": 146.1,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 10167,
+     "end": 171.2,
+     "priority": "VeryHigh",
+     "start": 144.2,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oDd4jQmfxIC7w.woff2"
+    },
+    {
+     "bytes": 26617,
+     "end": 170.1,
+     "priority": "VeryHigh",
+     "start": 145.0,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/jost/v20/92zatBhPNqw73oTd4jQmfxI.woff2"
+    },
+    {
+     "bytes": 21161,
+     "end": 168.3,
+     "priority": "VeryHigh",
+     "start": 144.5,
+     "status": 200,
+     "type": "Font",
+     "url": "/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2"
+    },
+    {
+     "bytes": 25929,
+     "end": 167.3,
+     "priority": "High",
+     "start": 150.8,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 624,
+     "end": 163.3,
+     "priority": "High",
+     "start": 149.9,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg?v=20260728r27"
+    },
+    {
+     "bytes": 1305,
+     "end": 103.4,
+     "priority": "VeryHigh",
+     "start": 45.4,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;6"
+    },
+    {
+     "bytes": 1147,
+     "end": 88.1,
+     "priority": "Medium",
+     "start": 55.2,
+     "status": 200,
+     "type": "Manifest",
+     "url": "/manifest.json"
+    },
+    {
+     "bytes": 8099,
+     "end": 68.8,
+     "priority": "Low",
+     "start": 54.8,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/consent-analytics.js"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 97.0,
     "fcp": 121.0,
@@ -1889,6 +4463,152 @@
     "tbt": 129.0,
     "tti": 4616.8
    },
+   "network": [
+    {
+     "bytes": 25957,
+     "end": 557.9,
+     "priority": "High",
+     "start": 546.0,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 665,
+     "end": 555.7,
+     "priority": "High",
+     "start": 544.1,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg"
+    },
+    {
+     "bytes": 93045,
+     "end": 551.9,
+     "priority": "Low",
+     "start": 437.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_1.webp"
+    },
+    {
+     "bytes": 58469,
+     "end": 544.5,
+     "priority": "Low",
+     "start": 439.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_3d.webp"
+    },
+    {
+     "bytes": 69635,
+     "end": 540.2,
+     "priority": "Low",
+     "start": 438.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_1.webp"
+    },
+    {
+     "bytes": 38593,
+     "end": 540.0,
+     "priority": "Low",
+     "start": 441.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_3d_2.webp"
+    },
+    {
+     "bytes": 84782,
+     "end": 536.4,
+     "priority": "Low",
+     "start": 438.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_5.webp"
+    },
+    {
+     "bytes": 61046,
+     "end": 533.7,
+     "priority": "Low",
+     "start": 439.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_4.webp"
+    },
+    {
+     "bytes": 147855,
+     "end": 533.3,
+     "priority": "Low",
+     "start": 437.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_2.webp"
+    },
+    {
+     "bytes": 111657,
+     "end": 531.5,
+     "priority": "Low",
+     "start": 438.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_3.webp"
+    },
+    {
+     "bytes": 53098,
+     "end": 531.1,
+     "priority": "Low",
+     "start": 353.3,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/review_4.webp"
+    },
+    {
+     "bytes": 43101,
+     "end": 525.4,
+     "priority": "Low",
+     "start": 439.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_2.webp"
+    },
+    {
+     "bytes": 70110,
+     "end": 516.0,
+     "priority": "Low",
+     "start": 438.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_4.webp"
+    },
+    {
+     "bytes": 70486,
+     "end": 510.9,
+     "priority": "Low",
+     "start": 434.6,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_0.webp"
+    },
+    {
+     "bytes": 45107,
+     "end": 480.1,
+     "priority": "Low",
+     "start": 354.3,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/review_8.webp"
+    },
+    {
+     "bytes": 67436,
+     "end": 471.6,
+     "priority": "Low",
+     "start": 350.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/review_2.webp"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 395.0,
     "fcp": 286.0,
@@ -1999,6 +4719,152 @@
     "tbt": 91.8,
     "tti": 4531.4
    },
+   "network": [
+    {
+     "bytes": 26093,
+     "end": 441.3,
+     "priority": "High",
+     "start": 430.5,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 634,
+     "end": 436.6,
+     "priority": "High",
+     "start": 425.7,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg"
+    },
+    {
+     "bytes": 84745,
+     "end": 384.6,
+     "priority": "Low",
+     "start": 348.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_5.webp"
+    },
+    {
+     "bytes": 58482,
+     "end": 383.0,
+     "priority": "Low",
+     "start": 349.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_3d.webp"
+    },
+    {
+     "bytes": 147771,
+     "end": 381.7,
+     "priority": "Low",
+     "start": 346.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_2.webp"
+    },
+    {
+     "bytes": 61088,
+     "end": 381.2,
+     "priority": "Low",
+     "start": 349.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_4.webp"
+    },
+    {
+     "bytes": 70138,
+     "end": 377.6,
+     "priority": "Low",
+     "start": 348.3,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_4.webp"
+    },
+    {
+     "bytes": 111667,
+     "end": 375.0,
+     "priority": "Low",
+     "start": 346.9,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_3.webp"
+    },
+    {
+     "bytes": 43143,
+     "end": 370.8,
+     "priority": "Low",
+     "start": 348.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_2.webp"
+    },
+    {
+     "bytes": 69574,
+     "end": 369.3,
+     "priority": "Low",
+     "start": 348.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_1.webp"
+    },
+    {
+     "bytes": 70525,
+     "end": 368.6,
+     "priority": "Low",
+     "start": 346.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_0.webp"
+    },
+    {
+     "bytes": 93032,
+     "end": 367.5,
+     "priority": "Low",
+     "start": 346.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_1.webp"
+    },
+    {
+     "bytes": 38621,
+     "end": 367.0,
+     "priority": "Low",
+     "start": 349.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_3d_2.webp"
+    },
+    {
+     "bytes": 49824,
+     "end": 281.3,
+     "priority": "Low",
+     "start": 259.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/review_7.webp"
+    },
+    {
+     "bytes": 55923,
+     "end": 280.0,
+     "priority": "Low",
+     "start": 258.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/review_3.webp"
+    },
+    {
+     "bytes": 45121,
+     "end": 279.1,
+     "priority": "Low",
+     "start": 260.0,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/review_8.webp"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 359.0,
     "fcp": 192.0,
@@ -2109,6 +4975,152 @@
     "tbt": 24.5,
     "tti": 4365.1
    },
+   "network": [
+    {
+     "bytes": 25957,
+     "end": 546.5,
+     "priority": "High",
+     "start": 536.7,
+     "status": 200,
+     "type": "Other",
+     "url": "/icon-192.png"
+    },
+    {
+     "bytes": 635,
+     "end": 545.2,
+     "priority": "High",
+     "start": 534.5,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg"
+    },
+    {
+     "bytes": 54494,
+     "end": 526.6,
+     "priority": "Low",
+     "start": 374.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/review_1.webp"
+    },
+    {
+     "bytes": 53192,
+     "end": 480.9,
+     "priority": "Low",
+     "start": 375.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/review_4.webp"
+    },
+    {
+     "bytes": 59978,
+     "end": 475.2,
+     "priority": "Low",
+     "start": 375.9,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/review_5.webp"
+    },
+    {
+     "bytes": 67379,
+     "end": 471.1,
+     "priority": "Low",
+     "start": 374.8,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/review_2.webp"
+    },
+    {
+     "bytes": 55887,
+     "end": 470.9,
+     "priority": "Low",
+     "start": 375.2,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/review_3.webp"
+    },
+    {
+     "bytes": 49985,
+     "end": 468.9,
+     "priority": "Low",
+     "start": 376.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/review_7.webp"
+    },
+    {
+     "bytes": 45068,
+     "end": 467.2,
+     "priority": "Low",
+     "start": 376.9,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/review_8.webp"
+    },
+    {
+     "bytes": 38719,
+     "end": 465.1,
+     "priority": "Low",
+     "start": 429.4,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_3d_2.webp"
+    },
+    {
+     "bytes": 43804,
+     "end": 464.0,
+     "priority": "Low",
+     "start": 376.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/review_6.webp"
+    },
+    {
+     "bytes": 58581,
+     "end": 462.7,
+     "priority": "Low",
+     "start": 429.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_3d.webp"
+    },
+    {
+     "bytes": 84683,
+     "end": 462.0,
+     "priority": "Low",
+     "start": 426.1,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_5.webp"
+    },
+    {
+     "bytes": 61073,
+     "end": 461.8,
+     "priority": "Low",
+     "start": 426.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_4.webp"
+    },
+    {
+     "bytes": 43044,
+     "end": 461.1,
+     "priority": "Low",
+     "start": 426.5,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/bento_2.webp"
+    },
+    {
+     "bytes": 111606,
+     "end": 460.0,
+     "priority": "Low",
+     "start": 425.7,
+     "status": 200,
+     "type": "Image",
+     "url": "/img/cake_biscuit_3.webp"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 402.0,
     "fcp": 256.0,
@@ -2188,6 +5200,44 @@
     "tbt": 0.0,
     "tti": 1051.5
    },
+   "network": [
+    {
+     "bytes": 738,
+     "end": 286.2,
+     "priority": "High",
+     "start": 274.5,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg"
+    },
+    {
+     "bytes": 7950,
+     "end": 237.7,
+     "priority": "Low",
+     "start": 218.4,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/consent-analytics.js"
+    },
+    {
+     "bytes": 40981,
+     "end": 237.2,
+     "priority": "VeryHigh",
+     "start": 212.0,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css/style.css?v=20261023r02"
+    },
+    {
+     "bytes": 4243,
+     "end": 201.0,
+     "priority": "VeryHigh",
+     "start": 0.9,
+     "status": 200,
+     "type": "Document",
+     "url": "/privacy/"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 258.0,
     "fcp": 269.0,
@@ -2267,6 +5317,44 @@
     "tbt": 0.0,
     "tti": 1051.4
    },
+   "network": [
+    {
+     "bytes": 798,
+     "end": 154.9,
+     "priority": "High",
+     "start": 151.7,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg"
+    },
+    {
+     "bytes": 7910,
+     "end": 115.2,
+     "priority": "Low",
+     "start": 109.0,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/consent-analytics.js"
+    },
+    {
+     "bytes": 40975,
+     "end": 114.6,
+     "priority": "VeryHigh",
+     "start": 102.7,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css/style.css?v=20261023r02"
+    },
+    {
+     "bytes": 4239,
+     "end": 93.3,
+     "priority": "VeryHigh",
+     "start": 0.9,
+     "status": 200,
+     "type": "Document",
+     "url": "/privacy/"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 136.0,
     "fcp": 145.0,
@@ -2346,6 +5434,44 @@
     "tbt": 0.0,
     "tti": 1071.2
    },
+   "network": [
+    {
+     "bytes": 779,
+     "end": 339.2,
+     "priority": "High",
+     "start": 329.5,
+     "status": 200,
+     "type": "Other",
+     "url": "/favicon.svg"
+    },
+    {
+     "bytes": 7905,
+     "end": 301.0,
+     "priority": "Low",
+     "start": 282.4,
+     "status": 200,
+     "type": "Script",
+     "url": "/js/consent-analytics.js"
+    },
+    {
+     "bytes": 40961,
+     "end": 300.1,
+     "priority": "VeryHigh",
+     "start": 274.3,
+     "status": 200,
+     "type": "Stylesheet",
+     "url": "/css/style.css?v=20261023r02"
+    },
+    {
+     "bytes": 4244,
+     "end": 263.9,
+     "priority": "VeryHigh",
+     "start": 0.9,
+     "status": 200,
+     "type": "Document",
+     "url": "/privacy/"
+    }
+   ],
    "observed": {
     "dom_content_loaded": 309.0,
     "fcp": 342.0,
