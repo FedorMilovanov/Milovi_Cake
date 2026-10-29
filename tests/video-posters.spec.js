@@ -517,23 +517,55 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     });
   });
 
-  test('gallery empty state can be reset after a category has no works', async ({ page }) => {
-    await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
-    await page.route(/\/js\/gallery\/data\.js(?:\?|$)/, async (route) => {
-      const response = await route.fetch();
-      const source = await response.text();
-      const marker = "tags: ['pavlova']";
-      expect(source.split(marker)).toHaveLength(3);
-      await route.fulfill({ response, body: source.replaceAll(marker, 'tags: []') });
-    });
-    const response = await page.goto('/gallery/', { waitUntil: 'load' });
-    expect(response.status()).toBe(200);
-    await page.locator('#gxFilters [data-filter="pavlova"]').click();
-    await expect(page.locator('#gxEmpty')).toBeVisible();
-    await expect(page.locator('#galleryGrid .card')).toHaveCount(0);
-    await page.locator('#resetFilter').click();
-    await expect(page.locator('#gxEmpty')).toBeHidden();
-    await expect(page.locator('#galleryGrid .card')).toHaveCount(46);
+  test('gallery empty state can be reset after a category has no works', async ({ page }, testInfo) => {
+    if (testInfo.project.name.startsWith('firefox-')) {
+      await page.addInitScript(() => {
+        window.__emptyFilterTrace = [];
+        for (const type of ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click', 'focusin', 'scroll']) {
+          document.addEventListener(type, (event) => {
+            const target = event.target instanceof Element ? event.target : null;
+            const filter = document.querySelector('.gx-chip[data-filter="pavlova"]');
+            const rect = filter?.getBoundingClientRect();
+            window.__emptyFilterTrace.push({ type, target: target?.tagName,
+              filter: target?.closest('.gx-chip')?.dataset.filter, trusted: event.isTrusted,
+              x: event.clientX, y: event.clientY, scrollY: window.scrollY,
+              top: rect?.top, bottom: rect?.bottom,
+              active: document.querySelector('.gx-chip-active')?.dataset.filter });
+            if (window.__emptyFilterTrace.length > 40) window.__emptyFilterTrace.shift();
+          }, true);
+        }
+      });
+    }
+    try {
+      await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
+      await page.route(/\/js\/gallery\/data\.js(?:\?|$)/, async (route) => {
+        const response = await route.fetch();
+        const source = await response.text();
+        const marker = "tags: ['pavlova']";
+        expect(source.split(marker)).toHaveLength(3);
+        await route.fulfill({ response, body: source.replaceAll(marker, 'tags: []') });
+      });
+      const response = await page.goto('/gallery/', { waitUntil: 'load' });
+      expect(response.status()).toBe(200);
+      await page.locator('#gxFilters [data-filter="pavlova"]').click();
+      await expect(page.locator('#gxEmpty')).toBeVisible();
+      await expect(page.locator('#galleryGrid .card')).toHaveCount(0);
+      await page.locator('#resetFilter').click();
+      await expect(page.locator('#gxEmpty')).toBeHidden();
+      await expect(page.locator('#galleryGrid .card')).toHaveCount(46);
+    } catch (error) {
+      let input = null;
+      if (testInfo.project.name.startsWith('firefox-') && !page.isClosed()) {
+        input = await Promise.race([
+          page.evaluate(() => ({ events: window.__emptyFilterTrace,
+            active: document.querySelector('.gx-chip-active')?.dataset.filter,
+            emptyHidden: document.querySelector('#gxEmpty')?.hidden,
+            cards: document.querySelectorAll('#galleryGrid .card').length })).catch(() => null),
+          new Promise((resolve) => setTimeout(() => resolve(null), 1000)),
+        ]);
+      }
+      throw new Error(`${error.message}\nEmpty-filter input diagnostics: ${JSON.stringify(input)}`, { cause: error });
+    }
   });
 
   test('gallery video warmup uses valid preload values when switching works', async ({ page }) => {
@@ -596,6 +628,9 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
           gridWithSource: grid.filter((v) => v.getAttribute('src')).map(describe),
           lightboxWithSource: lightbox.filter((v) => v.getAttribute('src')).map(describe) };
       });
+      if (process.env.MILOVI_NATIVE_DIAGNOSTICS === '1') {
+        diagnostic.beforeCloseProcesses = browserCrashResources().processes;
+      }
       await page.locator('#lbClose').click();
       await expect(page.locator('#lbRoot')).toHaveCount(0);
       await card.click();
@@ -906,6 +941,9 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       await expect(video).toHaveAttribute('src', /video-01-knigi\.webm/);
       await expect.poll(() => video.evaluate((v) => !!v.error)).toBe(true);
       expect(diagnostic.blocked).toBeGreaterThan(0);
+      if (process.env.MILOVI_NATIVE_DIAGNOSTICS === '1') {
+        diagnostic.beforeCloseProcesses = browserCrashResources().processes;
+      }
       await page.locator('#lbClose').click();
       await expect(page.locator('#lbRoot')).toHaveCount(0);
       await card.click();

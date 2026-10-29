@@ -130,6 +130,16 @@ jobs:
           --repeat-each=20 --workers=1 --retries=0 --reporter=list,github
           --output="$RUNNER_TEMP/firefox-photo-input-results"
 
+      - name: Diagnose Firefox empty-filter input
+        if: failure() && matrix.engine == 'firefox' && steps.primary_contracts.outcome == 'failure'
+        env:
+          HOME: /root
+        run: >-
+          npx playwright test tests/video-posters.spec.js
+          --project=firefox-mobile --grep='gallery empty state can be reset'
+          --repeat-each=12 --workers=1 --retries=0 --reporter=list,github
+          --output="$RUNNER_TEMP/firefox-empty-filter-results"
+
       - name: Upload Firefox diagnostic artifacts
         if: always() && matrix.engine == 'firefox' && steps.firefox_diagnostic.outcome == 'failure'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -818,8 +828,11 @@ jobs:
         uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
         with:
           python-version: '3.12'
-      - name: Install project dependencies
-        run: npm ci
+      - name: Install project and independent EGL probe dependencies
+        run: |
+          npm ci
+          apt-get update -qq
+          apt-get install -y --no-install-recommends mesa-utils
       - name: Verify exposed renderer and compare unchanged gallery tests
         id: renderer_tests
         shell: bash
@@ -827,7 +840,21 @@ jobs:
           set -euo pipefail
           if [ '${{ matrix.renderer }}' = softpipe ]; then export GALLIUM_DRIVER=softpipe; else unset GALLIUM_DRIVER; fi
           echo '::notice title=Renderer comparison::Diagnostic only; software rendering in both cases. WebGL and compositor contexts may differ.'
-          timeout 30 node scripts/webkit_renderer_probe.cjs
+          # EGL is an independent process, not proof of the compositor's context.
+          # WebKit masks WebGL vendor/renderer, so verify the available software
+          # driver through a surfaceless Mesa context under the same environment.
+          timeout 30 eglinfo -B > "$RUNNER_TEMP/eglinfo.txt" 2>&1 || {
+            echo '::error title=EGL probe::eglinfo failed or timed out'; exit 1;
+          }
+          renderer=$(grep -i 'profile renderer:' "$RUNNER_TEMP/eglinfo.txt" | head -1 || :)
+          echo "::notice title=Independent EGL renderer::$renderer"
+          if [ -z "$renderer" ]; then echo '::error title=EGL probe::No renderer reported'; exit 1; fi
+          if [ '${{ matrix.renderer }}' = softpipe ] && ! grep -iq 'profile renderer:.*softpipe' "$RUNNER_TEMP/eglinfo.txt"; then
+            echo '::error title=EGL probe::softpipe not observed in independent EGL probe'; exit 1
+          fi
+          timeout 30 node scripts/webkit_renderer_probe.cjs || {
+            echo '::error title=WebGL probe::Browser probe failed or timed out'; exit 1;
+          }
           npx playwright test tests/video-posters.spec.js \
             --project=webkit-desktop --project=webkit-mobile \
             --grep='photo-only gallery can repeatedly open and close|gallery can close an active video' \
@@ -847,6 +874,7 @@ jobs:
           path: |
             test-results/
             ${{ runner.temp }}/webkit-renderer-${{ matrix.renderer }}.log
+            ${{ runner.temp }}/eglinfo.txt
           if-no-files-found: ignore
           retention-days: 7
           include-hidden-files: false
@@ -865,6 +893,7 @@ jobs:
     env:
       HOME: /root
       MILOVI_BROWSER_COMPAT: '1'
+      MILOVI_NATIVE_DIAGNOSTICS: '1'
       PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
       DEBUG: pw:browser
       DEBUG_COLORS: '0'

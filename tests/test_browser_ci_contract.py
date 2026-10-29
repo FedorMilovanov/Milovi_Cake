@@ -51,6 +51,20 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         self.assertIn('expect(blocked()', source)
         self.assertNotIn('continue-on-error', comparison)
 
+    def test_firefox_empty_filter_diagnostics_preserve_the_assertion(self):
+        workflow = (ROOT / '.github/workflows/browser-compatibility.yml').read_text(encoding='utf-8')
+        section = workflow.split('- name: Diagnose Firefox empty-filter input', 1)[1].split('\n      - name:', 1)[0]
+        source = (ROOT / 'tests/video-posters.spec.js').read_text(encoding='utf-8')
+        test = source.split("test('gallery empty state can be reset", 1)[1].split("test('gallery video warmup", 1)[0]
+        self.assertIn("steps.primary_contracts.outcome == 'failure'", section)
+        self.assertIn('--project=firefox-mobile', section)
+        self.assertIn('--repeat-each=12 --workers=1 --retries=0', section)
+        self.assertIn("toBeVisible()", test)
+        self.assertIn("toHaveCount(0)", test)
+        self.assertIn('Empty-filter input diagnostics:', test)
+        self.assertIn("event.isTrusted", test)
+        self.assertNotIn('continue-on-error', section)
+
     def test_renderer_comparison_is_isolated_and_verifies_softpipe(self):
         workflow = (ROOT / '.github/workflows/browser-compatibility.yml').read_text(encoding='utf-8')
         comparison = workflow.split('  webkit-renderer-investigation:', 1)[1].split('  webkit-native-investigation:', 1)[0]
@@ -63,7 +77,8 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         self.assertIn('scripts/webkit_renderer_probe.cjs', comparison)
         self.assertIn('ref: ${{ github.event.pull_request.head.sha }}', comparison)
         self.assertIn('--repeat-each=4 --workers=1 --retries=0', comparison)
-        self.assertIn('/softpipe/i.test(info.renderer)', probe)
+        self.assertIn('profile renderer:.*softpipe', comparison)
+        self.assertIn('not proof of the compositor', comparison)
         self.assertIn('not necessarily compositor', probe)
         self.assertNotIn('continue-on-error', comparison)
 
@@ -73,6 +88,7 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         self.assertIn("needs.compatibility.result == 'failure'", native)
         self.assertIn('ref: ${{ github.event.pull_request.head.sha }}', native)
         self.assertIn('--cap-add=SYS_PTRACE', native)
+        self.assertIn("MILOVI_NATIVE_DIAGNOSTICS: '1'", native)
         self.assertIn('Verify debugger on a controlled native signal', native)
         self.assertIn('python3 scripts/webkit_native_probe.py', native)
         self.assertNotIn('gcc', native)
