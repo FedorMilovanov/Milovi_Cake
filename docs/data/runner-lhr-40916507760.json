@@ -1,0 +1,1843 @@
+{
+ "failures": [],
+ "reports": [
+  {
+   "benchmark_index": 2084,
+   "bytes": {
+    "requests": 26,
+    "total": 401460.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T16:58:26.280Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 4.6,
+     "Render Delay": 3566.6,
+     "TTFB": 700.5
+    },
+    "snippet": "<img class=\"hero-img\" src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"Авторский торт ручной работы — Milovi Cake, Санкт-Петербург\" fetchpriority=\"high\" decoding=\"async\" width=\"1440\" height=\"960\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 392.0,
+     "start": 1647.5,
+     "url": "https://milovicake.ru/"
+    },
+    {
+     "duration": 325.0,
+     "start": 1007.5,
+     "url": "Unattributable"
+    },
+    {
+     "duration": 232.0,
+     "start": 2073.5,
+     "url": "https://milovicake.ru/"
+    },
+    {
+     "duration": 192.0,
+     "start": 4042.4,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    },
+    {
+     "duration": 97.0,
+     "start": 4234.4,
+     "url": "https://milovicake.ru/js/nav.js?v=20260728r27"
+    },
+    {
+     "duration": 95.0,
+     "start": 4422.4,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    },
+    {
+     "duration": 88.0,
+     "start": 1499.5,
+     "url": "Unattributable"
+    },
+    {
+     "duration": 81.0,
+     "start": 1332.5,
+     "url": "https://milovicake.ru/"
+    },
+    {
+     "duration": 60.0,
+     "start": 1587.5,
+     "url": "Unattributable"
+    },
+    {
+     "duration": 57.0,
+     "start": 4365.4,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 1638.8,
+     "Parse HTML & CSS": 201.0,
+     "Rendering": 338.4,
+     "Script Evaluation": 642.7,
+     "Script Parsing & Compilation": 27.7,
+     "Style & Layout": 1283.5
+    },
+    "total_ms": 4132.1
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 3472.2,
+    "lcp": 4271.7,
+    "max_potential_fid": 192.0,
+    "si": 5282.4,
+    "tbt": 181.1,
+    "tti": 4380.7
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 3472.2,
+    "lcp": 4271.7,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 4380.7,
+    "recomputed": 189.0,
+    "reported": 181.1,
+    "start": 3472.2
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/"
+  },
+  {
+   "benchmark_index": 2607.5,
+   "bytes": {
+    "requests": 26,
+    "total": 401553.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T16:58:45.001Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 145.4,
+     "Render Delay": 1374.8,
+     "TTFB": 605.4
+    },
+    "snippet": "<img class=\"hero-img\" src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"Авторский торт ручной работы — Milovi Cake, Санкт-Петербург\" fetchpriority=\"high\" decoding=\"async\" width=\"1440\" height=\"960\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 155.0,
+     "start": 1196.1,
+     "url": "https://milovicake.ru/"
+    },
+    {
+     "duration": 141.0,
+     "start": 956.1,
+     "url": "https://milovicake.ru/"
+    },
+    {
+     "duration": 99.0,
+     "start": 1097.1,
+     "url": "https://milovicake.ru/"
+    },
+    {
+     "duration": 82.0,
+     "start": 3793.9,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    },
+    {
+     "duration": 77.0,
+     "start": 1351.1,
+     "url": "https://milovicake.ru/"
+    },
+    {
+     "duration": 52.0,
+     "start": 3992.6,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 897.5,
+     "Parse HTML & CSS": 73.8,
+     "Rendering": 211.7,
+     "Script Evaluation": 122.3,
+     "Script Parsing & Compilation": 29.6,
+     "Style & Layout": 923.7
+    },
+    "total_ms": 2258.7
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1822.1,
+    "lcp": 2125.5,
+    "max_potential_fid": 82.0,
+    "si": 1822.1,
+    "tbt": 17.0,
+    "tti": 3900.5
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 1822.1,
+    "lcp": 2125.5,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 3900.5,
+    "recomputed": 32.0,
+    "reported": 17.0,
+    "start": 1822.1
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/"
+  },
+  {
+   "benchmark_index": 2541,
+   "bytes": {
+    "requests": 26,
+    "total": 401436.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T16:59:00.005Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 0.0,
+     "Render Delay": 3575.1,
+     "TTFB": 691.0
+    },
+    "snippet": "<img class=\"hero-img\" src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"Авторский торт ручной работы — Milovi Cake, Санкт-Петербург\" fetchpriority=\"high\" decoding=\"async\" width=\"1440\" height=\"960\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 169.0,
+     "start": 1113.7,
+     "url": "https://milovicake.ru/"
+    },
+    {
+     "duration": 129.0,
+     "start": 1282.7,
+     "url": "https://milovicake.ru/"
+    },
+    {
+     "duration": 68.0,
+     "start": 3870.7,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    },
+    {
+     "duration": 63.0,
+     "start": 3938.7,
+     "url": "https://milovicake.ru/js/nav.js?v=20260728r27"
+    },
+    {
+     "duration": 57.0,
+     "start": 4028.8,
+     "url": "https://milovicake.ru/js/consent-analytics.js?v=20261026r02"
+    },
+    {
+     "duration": 52.0,
+     "start": 4085.8,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 1012.8,
+     "Parse HTML & CSS": 60.6,
+     "Rendering": 270.5,
+     "Script Evaluation": 131.1,
+     "Script Parsing & Compilation": 37.3,
+     "Style & Layout": 949.2
+    },
+    "total_ms": 2461.4
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 3764.5,
+    "lcp": 4266.1,
+    "max_potential_fid": 68.0,
+    "si": 5059.0,
+    "tbt": 40.0,
+    "tti": 4274.0
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 3764.5,
+    "lcp": 4266.1,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 4274.0,
+    "recomputed": 40.0,
+    "reported": 40.0,
+    "start": 3764.5
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/"
+  },
+  {
+   "benchmark_index": 2504,
+   "bytes": {
+    "requests": 48,
+    "total": 4876702.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T16:59:17.519Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 495.0,
+     "Render Delay": 1331.5,
+     "TTFB": 674.2
+    },
+    "snippet": "<img class=\"card-media\" alt=\"\" loading=\"eager\" decoding=\"async\" fetchpriority=\"high\" src=\"https://milovicake.ru/img/gallery/gallery-01.avif\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 190.0,
+     "start": 1249.0,
+     "url": "Unattributable"
+    },
+    {
+     "duration": 154.0,
+     "start": 920.0,
+     "url": "https://milovicake.ru/gallery/"
+    },
+    {
+     "duration": 120.0,
+     "start": 1936.9,
+     "url": "https://milovicake.ru/js/gallery/main.js?v=20261026r01"
+    },
+    {
+     "duration": 101.0,
+     "start": 1074.0,
+     "url": "https://milovicake.ru/js/gallery/main.js?v=20261026r01"
+    },
+    {
+     "duration": 81.0,
+     "start": 1543.0,
+     "url": "Unattributable"
+    },
+    {
+     "duration": 69.0,
+     "start": 2405.7,
+     "url": "https://milovicake.ru/js/consent-analytics.js"
+    },
+    {
+     "duration": 54.0,
+     "start": 1439.0,
+     "url": "https://milovicake.ru/gallery/"
+    },
+    {
+     "duration": 53.0,
+     "start": 1175.0,
+     "url": "https://milovicake.ru/gallery/"
+    },
+    {
+     "duration": 52.0,
+     "start": 2474.7,
+     "url": "https://milovicake.ru/js/gallery/main.js?v=20261026r01"
+    },
+    {
+     "duration": 50.0,
+     "start": 1493.0,
+     "url": "https://milovicake.ru/gallery/"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 2151.9,
+     "Parse HTML & CSS": 51.3,
+     "Rendering": 445.1,
+     "Script Evaluation": 340.8,
+     "Script Parsing & Compilation": 12.3,
+     "Style & Layout": 721.2
+    },
+    "total_ms": 3722.5
+   },
+   "metrics": {
+    "cls": 0.1,
+    "fcp": 1155.5,
+    "lcp": 2500.7,
+    "max_potential_fid": 190.0,
+    "si": 1470.1,
+    "tbt": 268.0,
+    "tti": 2503.3
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 1155.5,
+    "lcp": 2500.7,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 2503.3,
+    "recomputed": 267.0,
+    "reported": 268.0,
+    "start": 1155.5
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/gallery/"
+  },
+  {
+   "benchmark_index": 2522.5,
+   "bytes": {
+    "requests": 48,
+    "total": 5406842.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T16:59:32.054Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 0.0,
+     "Render Delay": -3228.7,
+     "TTFB": 5181.9
+    },
+    "snippet": "<img class=\"card-media\" alt=\"\" loading=\"eager\" decoding=\"async\" fetchpriority=\"high\" src=\"https://milovicake.ru/img/gallery/gallery-01.avif\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 113.0,
+     "start": 954.2,
+     "url": "https://milovicake.ru/gallery/"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 1398.0,
+     "Parse HTML & CSS": 45.9,
+     "Rendering": 368.9,
+     "Script Evaluation": 240.7,
+     "Script Parsing & Compilation": 7.8,
+     "Style & Layout": 612.5
+    },
+    "total_ms": 2673.7
+   },
+   "metrics": {
+    "cls": 0.1,
+    "fcp": 1203.2,
+    "lcp": 1953.2,
+    "max_potential_fid": 30.0,
+    "si": 8700.0,
+    "tbt": 0.0,
+    "tti": 1953.2
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 1203.2,
+    "lcp": 1953.2,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 1953.2,
+    "recomputed": 0.0,
+    "reported": 0.0,
+    "start": 1203.2
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/gallery/"
+  },
+  {
+   "benchmark_index": 2588.5,
+   "bytes": {
+    "requests": 48,
+    "total": 5407564.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T16:59:51.495Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 122.2,
+     "Load Time": 605.2,
+     "Render Delay": 529.2,
+     "TTFB": 677.6
+    },
+    "snippet": "<img class=\"card-media\" alt=\"\" loading=\"eager\" decoding=\"async\" fetchpriority=\"high\" src=\"https://milovicake.ru/img/gallery/gallery-01.avif\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 165.0,
+     "start": 905.6,
+     "url": "Unattributable"
+    },
+    {
+     "duration": 65.0,
+     "start": 1173.6,
+     "url": "https://milovicake.ru/gallery/"
+    },
+    {
+     "duration": 55.0,
+     "start": 1282.6,
+     "url": "Unattributable"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 1615.9,
+     "Parse HTML & CSS": 38.3,
+     "Rendering": 376.3,
+     "Script Evaluation": 195.0,
+     "Script Parsing & Compilation": 6.5,
+     "Style & Layout": 612.9
+    },
+    "total_ms": 2844.8
+   },
+   "metrics": {
+    "cls": 0.1,
+    "fcp": 1155.9,
+    "lcp": 1934.2,
+    "max_potential_fid": 65.0,
+    "si": 1529.0,
+    "tbt": 20.0,
+    "tti": 1934.2
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 1155.9,
+    "lcp": 1934.2,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 1934.2,
+    "recomputed": 20.0,
+    "reported": 20.0,
+    "start": 1155.9
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/gallery/"
+  },
+  {
+   "benchmark_index": 2546.5,
+   "bytes": {
+    "requests": 23,
+    "total": 345399.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T17:00:05.641Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 405.3,
+     "Load Time": 841.5,
+     "Render Delay": 1599.4,
+     "TTFB": 676.0
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/wedding-hero-mobile.avif\" alt=\"\" width=\"1376\" height=\"768\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 482.0,
+     "start": 1285.6,
+     "url": "https://milovicake.ru/svadebnye-torty/"
+    },
+    {
+     "duration": 266.0,
+     "start": 1767.6,
+     "url": "https://milovicake.ru/svadebnye-torty/"
+    },
+    {
+     "duration": 263.0,
+     "start": 993.6,
+     "url": "https://milovicake.ru/svadebnye-torty/"
+    },
+    {
+     "duration": 86.0,
+     "start": 858.6,
+     "url": "https://milovicake.ru/svadebnye-torty/"
+    },
+    {
+     "duration": 62.0,
+     "start": 2805.4,
+     "url": "https://milovicake.ru/js/consent-analytics.js"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 1725.4,
+     "Parse HTML & CSS": 27.6,
+     "Rendering": 58.9,
+     "Script Evaluation": 103.1,
+     "Script Parsing & Compilation": 8.4,
+     "Style & Layout": 338.1
+    },
+    "total_ms": 2261.4
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1628.5,
+    "lcp": 3522.2,
+    "max_potential_fid": 482.0,
+    "si": 1628.5,
+    "tbt": 317.0,
+    "tti": 3544.7
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 1628.5,
+    "lcp": 3522.2,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 3544.7,
+    "recomputed": 317.1,
+    "reported": 317.0,
+    "start": 1628.5
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/svadebnye-torty/"
+  },
+  {
+   "benchmark_index": 2556,
+   "bytes": {
+    "requests": 23,
+    "total": 345196.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T17:00:18.284Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 612.6,
+     "Load Time": 628.3,
+     "Render Delay": 1628.3,
+     "TTFB": 669.2
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/wedding-hero-mobile.avif\" alt=\"\" width=\"1376\" height=\"768\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 497.0,
+     "start": 967.0,
+     "url": "https://milovicake.ru/svadebnye-torty/"
+    },
+    {
+     "duration": 334.0,
+     "start": 1485.0,
+     "url": "https://milovicake.ru/svadebnye-torty/"
+    },
+    {
+     "duration": 91.0,
+     "start": 876.0,
+     "url": "https://milovicake.ru/svadebnye-torty/"
+    },
+    {
+     "duration": 56.0,
+     "start": 3534.3,
+     "url": "https://milovicake.ru/js/consent-analytics.js"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 1055.2,
+     "Parse HTML & CSS": 31.6,
+     "Rendering": 44.7,
+     "Script Evaluation": 70.4,
+     "Script Parsing & Compilation": 7.8,
+     "Style & Layout": 331.8
+    },
+    "total_ms": 1541.4
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1641.4,
+    "lcp": 3538.4,
+    "max_potential_fid": 334.0,
+    "si": 1641.4,
+    "tbt": 130.5,
+    "tti": 3560.9
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 1641.4,
+    "lcp": 3538.4,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 3560.9,
+    "recomputed": 127.6,
+    "reported": 130.5,
+    "start": 1641.4
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/svadebnye-torty/"
+  },
+  {
+   "benchmark_index": 2592.5,
+   "bytes": {
+    "requests": 22,
+    "total": 345357.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T17:00:31.088Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 0.0,
+     "Render Delay": 3016.5,
+     "TTFB": 721.6
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/wedding-hero-mobile.avif\" alt=\"\" width=\"1376\" height=\"768\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 122.0,
+     "start": 3119.2,
+     "url": "https://milovicake.ru/js/consent-analytics.js"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 176.5,
+     "Parse HTML & CSS": 26.1,
+     "Rendering": 24.0,
+     "Script Evaluation": 66.0,
+     "Script Parsing & Compilation": 6.4,
+     "Style & Layout": 315.3
+    },
+    "total_ms": 614.3
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 3363.1,
+    "lcp": 3738.1,
+    "max_potential_fid": 16.0,
+    "si": 4665.0,
+    "tbt": 0.0,
+    "tti": 3745.6
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 3363.1,
+    "lcp": 3738.1,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 3745.6,
+    "recomputed": 0.0,
+    "reported": 0.0,
+    "start": 3363.1
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/svadebnye-torty/"
+  },
+  {
+   "benchmark_index": 2585,
+   "bytes": {
+    "requests": 21,
+    "total": 491432.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T17:00:45.653Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 540.3,
+     "Load Time": 1536.5,
+     "Render Delay": 614.8,
+     "TTFB": 881.6
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/bento_1-mobile-640.avif\" alt=\"Бенто-торты на заказ в СПб — Milovi Cake\" width=\"1280\" height=\"1280\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 218.0,
+     "start": 1186.9,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 82.0,
+     "start": 1404.9,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 56.0,
+     "start": 1073.9,
+     "url": "https://milovicake.ru/bento-torty/"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 288.6,
+     "Parse HTML & CSS": 26.1,
+     "Rendering": 67.0,
+     "Script Evaluation": 46.2,
+     "Script Parsing & Compilation": 5.9,
+     "Style & Layout": 686.9
+    },
+    "total_ms": 1120.8
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1129.9,
+    "lcp": 3573.1,
+    "max_potential_fid": 218.0,
+    "si": 1781.3,
+    "tbt": 200.0,
+    "tti": 3580.6
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 1129.9,
+    "lcp": 3573.1,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 3580.6,
+    "recomputed": 200.0,
+    "reported": 200.0,
+    "start": 1129.9
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/bento-torty/"
+  },
+  {
+   "benchmark_index": 2586.5,
+   "bytes": {
+    "requests": 21,
+    "total": 491352.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T17:00:58.475Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 251.5,
+     "Load Time": 1145.7,
+     "Render Delay": 1327.9,
+     "TTFB": 824.1
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/bento_1-mobile-640.avif\" alt=\"Бенто-торты на заказ в СПб — Milovi Cake\" width=\"1280\" height=\"1280\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 297.0,
+     "start": 1714.5,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 249.0,
+     "start": 1307.5,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 229.0,
+     "start": 2011.5,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 158.0,
+     "start": 1556.5,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 118.0,
+     "start": 1189.5,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 100.0,
+     "start": 1089.5,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 56.0,
+     "start": 1033.5,
+     "url": "https://milovicake.ru/bento-torty/"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 1766.3,
+     "Parse HTML & CSS": 32.0,
+     "Rendering": 45.8,
+     "Script Evaluation": 43.8,
+     "Script Parsing & Compilation": 6.0,
+     "Style & Layout": 390.3
+    },
+    "total_ms": 2284.3
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1803.0,
+    "lcp": 3549.2,
+    "max_potential_fid": 297.0,
+    "si": 1803.0,
+    "tbt": 337.6,
+    "tti": 3556.7
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 1803.0,
+    "lcp": 3549.2,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 3556.7,
+    "recomputed": 337.5,
+    "reported": 337.6,
+    "start": 1803.0
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/bento-torty/"
+  },
+  {
+   "benchmark_index": 2569.5,
+   "bytes": {
+    "requests": 21,
+    "total": 491363.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T17:01:10.746Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 0.0,
+     "Render Delay": 953.3,
+     "TTFB": 602.9
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/bento_1-mobile-640.avif\" alt=\"Бенто-то��ты на заказ в СПб — Milovi Cake\" width=\"1280\" height=\"1280\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 408.0,
+     "start": 1735.3,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 354.0,
+     "start": 1058.3,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 293.0,
+     "start": 1442.3,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 153.0,
+     "start": 905.3,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 60.0,
+     "start": 845.3,
+     "url": "https://milovicake.ru/bento-torty/"
+    },
+    {
+     "duration": 58.0,
+     "start": 787.3,
+     "url": "https://milovicake.ru/bento-torty/"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 1466.9,
+     "Parse HTML & CSS": 33.1,
+     "Rendering": 74.2,
+     "Script Evaluation": 53.8,
+     "Script Parsing & Compilation": 5.9,
+     "Style & Layout": 420.2
+    },
+    "total_ms": 2054.0
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1556.2,
+    "lcp": 1556.2,
+    "max_potential_fid": 408.0,
+    "si": 1556.2,
+    "tbt": 457.6,
+    "tti": 2116.8
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 1556.2,
+    "lcp": 1556.2,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 2116.8,
+    "recomputed": 460.6,
+    "reported": 457.6,
+    "start": 1556.2
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/bento-torty/"
+  },
+  {
+   "benchmark_index": 2603,
+   "bytes": {
+    "requests": 18,
+    "total": 471106.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T17:01:22.699Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 0.0,
+     "Render Delay": 2641.9,
+     "TTFB": 676.3
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile.avif\" alt=\"Заказать торт в СПб — Milovi Cake\" width=\"900\" height=\"1200\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 400.0,
+     "start": 974.1,
+     "url": "https://milovicake.ru/zakazat-tort-spb/"
+    },
+    {
+     "duration": 78.0,
+     "start": 874.1,
+     "url": "https://milovicake.ru/zakazat-tort-spb/"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 606.5,
+     "Parse HTML & CSS": 23.6,
+     "Rendering": 29.0,
+     "Script Evaluation": 59.3,
+     "Script Parsing & Compilation": 6.7,
+     "Style & Layout": 196.1
+    },
+    "total_ms": 921.2
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 3168.2,
+    "lcp": 3318.2,
+    "max_potential_fid": 16.0,
+    "si": 3387.6,
+    "tbt": 0.0,
+    "tti": 3318.2
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 3168.2,
+    "lcp": 3318.2,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 3318.2,
+    "recomputed": 0.0,
+    "reported": 0.0,
+    "start": 3168.2
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/zakazat-tort-spb/"
+  },
+  {
+   "benchmark_index": 2589.5,
+   "bytes": {
+    "requests": 18,
+    "total": 444327.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T17:01:35.706Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 0.0,
+     "Render Delay": 2567.4,
+     "TTFB": 604.7
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile.avif\" alt=\"Заказать торт в СПб — Milovi Cake\" width=\"900\" height=\"1200\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 1845.0,
+     "start": 864.2,
+     "url": "https://milovicake.ru/zakazat-tort-spb/"
+    },
+    {
+     "duration": 230.0,
+     "start": 2709.2,
+     "url": "https://milovicake.ru/js/consent-analytics.js"
+    },
+    {
+     "duration": 55.0,
+     "start": 809.2,
+     "url": "https://milovicake.ru/zakazat-tort-spb/"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 184.2,
+     "Parse HTML & CSS": 24.1,
+     "Rendering": 30.2,
+     "Script Evaluation": 54.2,
+     "Script Parsing & Compilation": 7.5,
+     "Style & Layout": 4227.8
+    },
+    "total_ms": 4528.1
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 3097.1,
+    "lcp": 3172.1,
+    "max_potential_fid": 16.0,
+    "si": 3462.1,
+    "tbt": 0.0,
+    "tti": 3179.6
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 3097.1,
+    "lcp": 3172.1,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 3179.6,
+    "recomputed": 0.0,
+    "reported": 0.0,
+    "start": 3097.1
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/zakazat-tort-spb/"
+  },
+  {
+   "benchmark_index": 2565,
+   "bytes": {
+    "requests": 19,
+    "total": 470988.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T17:01:48.732Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 0.0,
+     "Render Delay": 1131.1,
+     "TTFB": 602.2
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile.avif\" alt=\"Заказать торт в СПб — Milovi Cake\" width=\"900\" height=\"1200\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 463.0,
+     "start": 1258.3,
+     "url": "https://milovicake.ru/zakazat-tort-spb/"
+    },
+    {
+     "duration": 397.0,
+     "start": 861.3,
+     "url": "https://milovicake.ru/zakazat-tort-spb/"
+    },
+    {
+     "duration": 229.0,
+     "start": 1747.3,
+     "url": "https://milovicake.ru/zakazat-tort-spb/"
+    },
+    {
+     "duration": 60.0,
+     "start": 801.3,
+     "url": "https://milovicake.ru/zakazat-tort-spb/"
+    },
+    {
+     "duration": 53.0,
+     "start": 3005.5,
+     "url": "https://milovicake.ru/js/consent-analytics.js"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 1334.2,
+     "Parse HTML & CSS": 29.4,
+     "Rendering": 36.4,
+     "Script Evaluation": 38.7,
+     "Script Parsing & Compilation": 10.5,
+     "Style & Layout": 268.8
+    },
+    "total_ms": 1718.1
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1576.5,
+    "lcp": 1733.4,
+    "max_potential_fid": 463.0,
+    "si": 1576.5,
+    "tbt": 275.3,
+    "tti": 2573.7
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 1576.5,
+    "lcp": 1733.4,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 2573.7,
+    "recomputed": 273.8,
+    "reported": 275.3,
+    "start": 1576.5
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/zakazat-tort-spb/"
+  },
+  {
+   "benchmark_index": 2581,
+   "bytes": {
+    "requests": 13,
+    "total": 234046.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T17:02:00.764Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 702.9,
+     "Load Time": 1064.2,
+     "Render Delay": 851.7,
+     "TTFB": 601.3
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/viktoria.avif\" alt=\"Частный кондитер Виктория Милованова — Milovi Cake\" width=\"600\" height=\"900\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 199.0,
+     "Parse HTML & CSS": 18.4,
+     "Rendering": 34.5,
+     "Script Evaluation": 31.8,
+     "Script Parsing & Compilation": 6.2,
+     "Style & Layout": 208.0
+    },
+    "total_ms": 497.9
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1550.7,
+    "lcp": 3220.2,
+    "max_potential_fid": 16.0,
+    "si": 1550.7,
+    "tbt": 0.0,
+    "tti": 3220.2
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 1550.7,
+    "lcp": 3220.2,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 3220.2,
+    "recomputed": 0.0,
+    "reported": 0.0,
+    "start": 1550.7
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/o-konditere/"
+  },
+  {
+   "benchmark_index": 2563.5,
+   "bytes": {
+    "requests": 13,
+    "total": 233883.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T17:02:12.391Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 666.6,
+     "Load Time": 904.2,
+     "Render Delay": 1066.8,
+     "TTFB": 601.3
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/viktoria.avif\" alt=\"Частный кондитер Виктория Милованова — Milovi Cake\" width=\"600\" height=\"900\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 182.1,
+     "Parse HTML & CSS": 20.9,
+     "Rendering": 35.8,
+     "Script Evaluation": 30.9,
+     "Script Parsing & Compilation": 6.1,
+     "Style & Layout": 196.1
+    },
+    "total_ms": 471.9
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1570.1,
+    "lcp": 3238.9,
+    "max_potential_fid": 44.0,
+    "si": 1570.1,
+    "tbt": 0.0,
+    "tti": 3238.9
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 1570.1,
+    "lcp": 3238.9,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 3238.9,
+    "recomputed": 0.0,
+    "reported": 0.0,
+    "start": 1570.1
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/o-konditere/"
+  },
+  {
+   "benchmark_index": 2553.5,
+   "bytes": {
+    "requests": 19,
+    "total": 233832.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T17:02:24.051Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 52.0,
+     "Load Time": 345.8,
+     "Render Delay": 760.6,
+     "TTFB": 602.3
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/viktoria.avif\" alt=\"Частный кондитер Виктория Милованова — Milovi Cake\" width=\"600\" height=\"900\" fetchpriority=\"high\" decoding=\"async\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 66.0,
+     "start": 2994.7,
+     "url": "https://milovicake.ru/js/consent-analytics.js"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 212.6,
+     "Parse HTML & CSS": 19.2,
+     "Rendering": 48.3,
+     "Script Evaluation": 36.8,
+     "Script Parsing & Compilation": 5.4,
+     "Style & Layout": 271.2
+    },
+    "total_ms": 593.5
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1571.1,
+    "lcp": 1760.7,
+    "max_potential_fid": 66.0,
+    "si": 1571.1,
+    "tbt": 8.0,
+    "tti": 2460.9
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 1571.1,
+    "lcp": 1760.7,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 2460.9,
+    "recomputed": 0.0,
+    "reported": 8.0,
+    "start": 1571.1
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/o-konditere/"
+  },
+  {
+   "benchmark_index": 2592,
+   "bytes": {
+    "requests": 46,
+    "total": 1690508.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T17:02:35.623Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 407.5,
+     "Load Time": 720.5,
+     "Render Delay": 391.4,
+     "TTFB": 676.2
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"Авторский торт Milovi Cake — ручная работа, Санкт-Петербург\" fetchpriority=\"high\" decoding=\"async\" width=\"1200\" height=\"800\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 136.0,
+     "start": 4526.3,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    },
+    {
+     "duration": 134.0,
+     "start": 1052.0,
+     "url": "https://milovicake.ru/prigorody/gatchina/"
+    },
+    {
+     "duration": 129.0,
+     "start": 4331.3,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    },
+    {
+     "duration": 86.0,
+     "start": 1209.0,
+     "url": "https://milovicake.ru/prigorody/gatchina/"
+    },
+    {
+     "duration": 64.0,
+     "start": 4662.3,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 707.2,
+     "Parse HTML & CSS": 73.4,
+     "Rendering": 155.3,
+     "Script Evaluation": 159.8,
+     "Script Parsing & Compilation": 48.1,
+     "Style & Layout": 796.0
+    },
+    "total_ms": 1939.8
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1958.2,
+    "lcp": 2195.6,
+    "max_potential_fid": 136.0,
+    "si": 2158.9,
+    "tbt": 129.0,
+    "tti": 4616.8
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 1958.2,
+    "lcp": 2195.6,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 4616.8,
+    "recomputed": 119.5,
+    "reported": 129.0,
+    "start": 1958.2
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/prigorody/gatchina/"
+  },
+  {
+   "benchmark_index": 2574,
+   "bytes": {
+    "requests": 46,
+    "total": 1690524.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T17:02:51.686Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 121.0,
+     "Render Delay": 1400.0,
+     "TTFB": 604.3
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"Авторский торт Milovi Cake — ручная работа, Санкт-Петербург\" fetchpriority=\"high\" decoding=\"async\" width=\"1200\" height=\"800\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 131.0,
+     "start": 979.7,
+     "url": "https://milovicake.ru/prigorody/gatchina/"
+    },
+    {
+     "duration": 124.0,
+     "start": 4263.0,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    },
+    {
+     "duration": 91.0,
+     "start": 1126.7,
+     "url": "https://milovicake.ru/prigorody/gatchina/"
+    },
+    {
+     "duration": 86.0,
+     "start": 4438.0,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    },
+    {
+     "duration": 70.0,
+     "start": 4597.0,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    },
+    {
+     "duration": 51.0,
+     "start": 4387.0,
+     "url": "https://milovicake.ru/js/nav.js?v=20260728r27"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 739.6,
+     "Parse HTML & CSS": 72.6,
+     "Rendering": 145.8,
+     "Script Evaluation": 187.7,
+     "Script Parsing & Compilation": 62.7,
+     "Style & Layout": 775.2
+    },
+    "total_ms": 1983.6
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1887.8,
+    "lcp": 2125.3,
+    "max_potential_fid": 124.0,
+    "si": 2111.9,
+    "tbt": 91.8,
+    "tti": 4531.4
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 1887.8,
+    "lcp": 2125.3,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 4531.4,
+    "recomputed": 111.0,
+    "reported": 91.8,
+    "start": 1887.8
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/prigorody/gatchina/"
+  },
+  {
+   "benchmark_index": 2586,
+   "bytes": {
+    "requests": 46,
+    "total": 1690424.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T17:03:07.762Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 491.7,
+     "Load Time": 229.6,
+     "Render Delay": 800.5,
+     "TTFB": 604.4
+    },
+    "snippet": "<img src=\"https://milovicake.ru/img/head_mobile-640.avif\" alt=\"Авторский торт Milovi Cake — ручная работа, Санкт-Петербург\" fetchpriority=\"high\" decoding=\"async\" width=\"1200\" height=\"800\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [
+    {
+     "duration": 143.0,
+     "start": 1245.1,
+     "url": "https://milovicake.ru/prigorody/gatchina/"
+    },
+    {
+     "duration": 123.0,
+     "start": 1020.1,
+     "url": "https://milovicake.ru/prigorody/gatchina/"
+    },
+    {
+     "duration": 102.0,
+     "start": 1143.1,
+     "url": "https://milovicake.ru/prigorody/gatchina/"
+    },
+    {
+     "duration": 98.0,
+     "start": 4265.0,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    },
+    {
+     "duration": 53.0,
+     "start": 938.1,
+     "url": "Unattributable"
+    },
+    {
+     "duration": 51.0,
+     "start": 4445.5,
+     "url": "https://milovicake.ru/js/main.js?v=20261027r01"
+    }
+   ],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 765.1,
+     "Parse HTML & CSS": 58.8,
+     "Rendering": 133.0,
+     "Script Evaluation": 132.9,
+     "Script Parsing & Compilation": 32.2,
+     "Style & Layout": 698.5
+    },
+    "total_ms": 1820.5
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1888.6,
+    "lcp": 2126.3,
+    "max_potential_fid": 98.0,
+    "si": 2173.2,
+    "tbt": 24.5,
+    "tti": 4365.1
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 1888.6,
+    "lcp": 2126.3,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 4365.1,
+    "recomputed": 48.0,
+    "reported": 24.5,
+    "start": 1888.6
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/prigorody/gatchina/"
+  },
+  {
+   "benchmark_index": 2592.5,
+   "bytes": {
+    "requests": 4,
+    "total": 53912.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T17:03:23.899Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 0.0,
+     "Render Delay": 450.0,
+     "TTFB": 601.5
+    },
+    "snippet": "<p class=\"privacy-page__lead\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 113.1,
+     "Parse HTML & CSS": 12.7,
+     "Rendering": 13.7,
+     "Script Evaluation": 22.3,
+     "Script Parsing & Compilation": 4.4,
+     "Style & Layout": 70.8
+    },
+    "total_ms": 236.9
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1051.5,
+    "lcp": 1051.5,
+    "max_potential_fid": 16.0,
+    "si": 1059.5,
+    "tbt": 0.0,
+    "tti": 1051.5
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 1051.5,
+    "lcp": 1051.5,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 1051.5,
+    "recomputed": 0.0,
+    "reported": 0.0,
+    "start": 1051.5
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/privacy/"
+  },
+  {
+   "benchmark_index": 2602.5,
+   "bytes": {
+    "requests": 4,
+    "total": 53922.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T17:03:35.250Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 0.0,
+     "Render Delay": 450.0,
+     "TTFB": 601.4
+    },
+    "snippet": "<p class=\"privacy-page__lead\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 114.1,
+     "Parse HTML & CSS": 12.1,
+     "Rendering": 13.8,
+     "Script Evaluation": 24.1,
+     "Script Parsing & Compilation": 5.2,
+     "Style & Layout": 73.3
+    },
+    "total_ms": 242.6
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1051.4,
+    "lcp": 1051.4,
+    "max_potential_fid": 16.0,
+    "si": 1051.4,
+    "tbt": 0.0,
+    "tti": 1051.4
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 1051.4,
+    "lcp": 1051.4,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 1051.4,
+    "recomputed": 0.0,
+    "reported": 0.0,
+    "start": 1051.4
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/privacy/"
+  },
+  {
+   "benchmark_index": 2584,
+   "bytes": {
+    "requests": 4,
+    "total": 53889.0
+   },
+   "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "cpu_slowdown": null,
+   "fetch_time": "2026-10-29T17:03:46.500Z",
+   "lcp_element": {
+    "phases": {
+     "Load Delay": 0.0,
+     "Load Time": 0.0,
+     "Render Delay": 467.0,
+     "TTFB": 604.2
+    },
+    "snippet": "<p class=\"privacy-page__lead\">"
+   },
+   "lighthouse_version": "12.6.1",
+   "long_tasks": [],
+   "main_thread": {
+    "by_group_ms": {
+     "Other": 115.2,
+     "Parse HTML & CSS": 11.2,
+     "Rendering": 11.6,
+     "Script Evaluation": 22.2,
+     "Script Parsing & Compilation": 4.0,
+     "Style & Layout": 67.8
+    },
+    "total_ms": 232.0
+   },
+   "metrics": {
+    "cls": 0.0,
+    "fcp": 1071.2,
+    "lcp": 1071.2,
+    "max_potential_fid": 16.0,
+    "si": 1165.1,
+    "tbt": 0.0,
+    "tti": 1071.2
+   },
+   "observed": {
+    "dom_content_loaded": null,
+    "fcp": 1071.2,
+    "lcp": 1071.2,
+    "load": null,
+    "tbt": null
+   },
+   "run_warnings": [],
+   "tbt_window": {
+    "end": 1071.2,
+    "recomputed": 0.0,
+    "reported": 0.0,
+    "start": 1071.2
+   },
+   "throttling_method": null,
+   "url": "https://milovicake.ru/privacy/"
+  }
+ ],
+ "source_dir": "/tmp/lh"
+}
