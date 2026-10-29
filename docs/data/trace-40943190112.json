@@ -1,0 +1,181 @@
+{
+ "reports": [
+  {
+   "by_event_ms": [
+    {
+     "event": "RunTask",
+     "ms": 2.5
+    },
+    {
+     "event": "FunctionCall",
+     "ms": 1.4
+    },
+    {
+     "event": "UpdateLayoutTree",
+     "ms": 1.1
+    },
+    {
+     "event": "Layerize",
+     "ms": 1.1
+    },
+    {
+     "event": "PrePaint",
+     "ms": 0.7
+    },
+    {
+     "event": "Commit",
+     "ms": 0.3
+    },
+    {
+     "event": "Layout",
+     "ms": 0.3
+    },
+    {
+     "event": "Paint",
+     "ms": 0.2
+    },
+    {
+     "event": "UpdateLayer",
+     "ms": 0.2
+    },
+    {
+     "event": "IntersectionObserverController::computeIntersections",
+     "ms": 0.2
+    },
+    {
+     "event": "FireIdleCallback",
+     "ms": 0.1
+    },
+    {
+     "event": "v8.callFunction",
+     "ms": 0.1
+    },
+    {
+     "event": "PaintImage",
+     "ms": 0.1
+    },
+    {
+     "event": "TimerFire",
+     "ms": 0.1
+    },
+    {
+     "event": "FireAnimationFrame",
+     "ms": 0.0
+    }
+   ],
+   "by_group_ms": {
+    "Commit": 0.3,
+    "IntersectionObserverController::computeIntersections": 0.2,
+    "Layerize": 1.1,
+    "PageTimingMetricsSender::SendNow": 0.0,
+    "UpdateLayer": 0.2,
+    "idle-callback": 0.1,
+    "\u0432\u044b\u043f\u043e\u043b\u043d\u0435\u043d\u0438\u0435 \u0441\u043a\u0440\u0438\u043f\u0442\u043e\u0432": 1.5,
+    "\u0432\u0451\u0440\u0441\u0442\u043a\u0430 (layout)": 0.3,
+    "\u043a\u0430\u0434\u0440\u044b \u0430\u043d\u0438\u043c\u0430\u0446\u0438\u0438": 0.0,
+    "\u043f\u0435\u0440\u0435\u0441\u0447\u0451\u0442 \u0441\u0442\u0438\u043b\u0435\u0439": 1.1,
+    "\u043f\u043e\u0434\u0433\u043e\u0442\u043e\u0432\u043a\u0430 \u043a \u043e\u0442\u0440\u0438\u0441\u043e\u0432\u043a\u0435": 0.7,
+    "\u0440\u0430\u0441\u0442\u0435\u0440\u0438\u0437\u0430\u0446\u0438\u044f": 0.3,
+    "\u0441\u043b\u0443\u0436\u0435\u0431\u043d\u043e\u0435": 2.5,
+    "\u0442\u0430\u0439\u043c\u0435\u0440\u044b": 0.1
+   },
+   "long_tasks": [],
+   "main_thread_work_ms": 8.4,
+   "trace_file": "/tmp/trace-1/report-0.trace.json",
+   "window": {
+    "end_ms": 2531.6,
+    "first_paint_ms": 2531.6,
+    "gap_ms": 919.2,
+    "last_resource": "https://milovicake.ru/gallery/",
+    "start_ms": 1612.3
+   }
+  },
+  {
+   "by_event_ms": [
+    {
+     "event": "Layout",
+     "ms": 6.1
+    },
+    {
+     "event": "v8.run",
+     "ms": 1.7
+    },
+    {
+     "event": "UpdateLayoutTree",
+     "ms": 1.6
+    },
+    {
+     "event": "RunTask",
+     "ms": 1.0
+    },
+    {
+     "event": "v8.compile",
+     "ms": 0.9
+    },
+    {
+     "event": "ParseHTML",
+     "ms": 0.4
+    },
+    {
+     "event": "EventDispatch",
+     "ms": 0.3
+    },
+    {
+     "event": "FunctionCall",
+     "ms": 0.3
+    },
+    {
+     "event": "ScriptCatchup",
+     "ms": 0.1
+    },
+    {
+     "event": "v8.newInstance",
+     "ms": 0.1
+    },
+    {
+     "event": "EvaluateScript",
+     "ms": 0.0
+    },
+    {
+     "event": "RunMicrotasks",
+     "ms": 0.0
+    },
+    {
+     "event": "v8.produceCache",
+     "ms": 0.0
+    },
+    {
+     "event": "v8.callFunction",
+     "ms": 0.0
+    },
+    {
+     "event": "ScriptCompiled",
+     "ms": 0.0
+    }
+   ],
+   "by_group_ms": {
+    "EventDispatch": 0.3,
+    "RunMicrotasks": 0.0,
+    "\u0432\u044b\u043f\u043e\u043b\u043d\u0435\u043d\u0438\u0435 \u0441\u043a\u0440\u0438\u043f\u0442\u043e\u0432": 2.3,
+    "\u0432\u0451\u0440\u0441\u0442\u043a\u0430 (layout)": 6.1,
+    "\u043a\u0430\u0434\u0440\u044b \u0430\u043d\u0438\u043c\u0430\u0446\u0438\u0438": 0.0,
+    "\u043a\u043e\u043c\u043f\u0438\u043b\u044f\u0446\u0438\u044f JS": 0.9,
+    "\u043f\u0430\u0440\u0441\u0438\u043d\u0433 HTML": 0.4,
+    "\u043f\u0435\u0440\u0435\u0441\u0447\u0451\u0442 \u0441\u0442\u0438\u043b\u0435\u0439": 1.6,
+    "\u0441\u043b\u0443\u0436\u0435\u0431\u043d\u043e\u0435": 1.0
+   },
+   "long_tasks": [],
+   "main_thread_work_ms": 12.7,
+   "trace_file": "/tmp/trace-2/report-0.trace.json",
+   "window": {
+    "end_ms": 152.2,
+    "first_paint_ms": 152.2,
+    "gap_ms": 12.7,
+    "last_resource": "https://milovicake.ru/js/consent-analytics.js",
+    "start_ms": 139.5
+   }
+  }
+ ],
+ "run_id": "40943190112",
+ "sha": "978e88637184d46fc07d209fd5ee22b1f04f0723"
+}
