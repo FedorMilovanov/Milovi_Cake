@@ -4,16 +4,6 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
-    inputs:
-      native_run_id:
-        description: 'Optional run ID containing a WebKit native investigation artifact'
-        required: false
-        type: string
-      native_run_attempt:
-        description: 'Artifact run attempt (default 1)'
-        required: false
-        default: '1'
-        type: string
 
 permissions:
   contents: read
@@ -24,8 +14,6 @@ concurrency:
 
 jobs:
   qa:
-    # A manual artifact inspection is separate from the mandatory PR QA.
-    if: github.event_name != 'workflow_dispatch' || inputs.native_run_id == ''
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
@@ -71,8 +59,9 @@ jobs:
           include-hidden-files: false
 
   inspect-native-artifact:
-    name: Inspect an existing native investigation artifact
-    if: github.event_name == 'workflow_dispatch' && inputs.native_run_id != ''
+    name: Inspect previous native investigation artifact
+    # Informational only: it never replaces the exact-HEAD PR checks.
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -82,17 +71,26 @@ jobs:
       - name: Checkout exact inspection code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
-      - name: Read selected thread stacks from the existing artifact
+      - name: Read selected thread stacks from previous artifact
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          RUN_ID: ${{ inputs.native_run_id }}
-          RUN_ATTEMPT: ${{ inputs.native_run_attempt }}
+          PR_BRANCH: ${{ github.event.pull_request.head.ref }}
         shell: bash
         run: |
           set -euo pipefail
-          [[ "$RUN_ID" =~ ^[0-9]+$ && "$RUN_ATTEMPT" =~ ^[0-9]+$ ]]
-          gh run download "$RUN_ID" --name "webkit-native-$RUN_ID-$RUN_ATTEMPT" --dir "$RUNNER_TEMP/native-artifact"
+          artifact=$(gh api "repos/$GH_REPO/actions/artifacts?per_page=100" | jq -r '
+            [.artifacts[] | select(.expired == false and (.name | startswith("webkit-native-"))
+              and .workflow_run.head_branch == env.PR_BRANCH)]
+            | sort_by(.created_at) | reverse | .[0] // empty | [.workflow_run.id, .name] | @tsv')
+          if [[ -z "$artifact" ]]; then
+            echo 'No previous native investigation artifact on this branch.'
+            exit 0
+          fi
+          IFS=$'\t' read -r run_id name <<< "$artifact"
+          [[ "$run_id" =~ ^[0-9]+$ && "$name" =~ ^webkit-native-[0-9]+-[0-9]+$ ]]
+          echo "::notice title=Historical diagnostic::Reading artifact $name from run $run_id; not an exact-HEAD result."
+          gh run download "$run_id" --name "$name" --dir "$RUNNER_TEMP/native-artifact"
           python3 scripts/webkit_trace_excerpt.py "$RUNNER_TEMP/native-artifact"
