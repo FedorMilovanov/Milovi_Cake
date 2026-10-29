@@ -49,8 +49,13 @@ expected = {
         'threshold': 0.1,
         'aggregation': 'pessimistic',
     },
+    # Simulated TBT is a Lantern artefact, not a measurement of the page: on
+    # byte-identical trees it spans 0-1076 ms depending on the session, the
+    # window position and the CPU multiplier (docs/TBT_VERDICT_2026-10-28.md
+    # sections 10-21). It therefore warns, but keeps its reference threshold and
+    # median aggregation so the reported number stays comparable over time.
     'total-blocking-time': {
-        'level': 'error',
+        'level': 'warn',
         'threshold_key': 'maxNumericValue',
         'threshold': 300,
         'aggregation': 'median',
