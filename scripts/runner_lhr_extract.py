@@ -144,6 +144,35 @@ def savings(lhr: dict, audit_id: str, key: str = "wastedMs") -> dict:
     }
 
 
+def network_tail(lhr: dict, limit: int = 16) -> list[dict]:
+    """Что приезжает последним.
+
+    Нужно, чтобы отличить «страница долго не рисуется» от «ресурс долго едет»:
+    без списка временных меток обе версии одинаково правдоподобны.
+    """
+    rows = []
+    for item in audit_items(lhr, "network-requests"):
+        end = item.get("networkEndTime")
+        start = item.get("networkRequestTime")
+        if not isinstance(end, (int, float)):
+            continue
+        url = str(item.get("url") or "")
+        for prefix in ("https://milovicake.ru", "https://fonts.googleapis.com",
+                       "https://fonts.gstatic.com"):
+            url = url.replace(prefix, "")
+        rows.append({
+            "url": url[:90],
+            "type": str(item.get("resourceType") or ""),
+            "start": round(float(start or 0.0), 1),
+            "end": round(float(end), 1),
+            "bytes": item.get("transferSize"),
+            "priority": item.get("priority"),
+            "status": item.get("statusCode"),
+        })
+    rows.sort(key=lambda row: row["end"], reverse=True)
+    return rows[:limit]
+
+
 def extract(lhr: dict) -> dict:
     tasks = [
         {
@@ -194,6 +223,7 @@ def extract(lhr: dict) -> dict:
             "total": numeric(lhr, "total-byte-weight"),
             "requests": len(audit_items(lhr, "network-requests")),
         },
+        "network": network_tail(lhr),
         "blocking": {
             "render_blocking": savings(lhr, "render-blocking-resources", "wastedMs"),
             "unused_css": savings(lhr, "unused-css-rules", "wastedBytes"),
