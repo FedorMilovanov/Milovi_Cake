@@ -25,7 +25,11 @@ on:
       - 'css/**'
       - 'js/**'
       - 'img/**'
-      - '*.html'
+      - 'fonts/**'
+      - 'prigorody/**'
+      - 'sw.js'
+      - 'manifest.json'
+      - '**/*.html'
 
 permissions:
   contents: read
