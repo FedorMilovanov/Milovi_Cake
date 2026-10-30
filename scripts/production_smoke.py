@@ -20,6 +20,7 @@ HTTP_HOST = "http://milovicake.ru"
 WWW_HOST = "https://www.milovicake.ru"
 TIMEOUT = 20
 INDEXNOW_KEY = "f5c91a4d89e84b2ca6d4f3e7a1029b6c"
+LEAN_ALLOWED_CSS = ["/css/fonts.css", "/css/style.css"]
 
 LEAN_LANDING_PATHS = [
     "/zakazat-tort-spb/",
@@ -211,7 +212,10 @@ def run_checks() -> tuple[list[Result], dict[str, str]]:
             for href in css_hrefs
             if href.startswith("/css/") or href.startswith("css/")
         )
-        ok = local_css == ["/css/style.css"]
+        # С 2026-10-30 шрифты самохостинговые: fonts.css обязателен на каждой
+        # странице. Контракт тот же, что у audit.py (LEAN_ALLOWED_CSS) —
+        # лёгкая страница не тянет ничего, кроме шрифтов и базовых стилей.
+        ok = local_css == LEAN_ALLOWED_CSS
         results.append(Result(f"{path} lean CSS", ok, 200, f"{local_css}" if not ok else "style.css only"))
 
     key_body = bodies.get(f"/{INDEXNOW_KEY}.txt", "").strip()
