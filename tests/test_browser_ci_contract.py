@@ -90,7 +90,7 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
 
         primary = step('Exercise desktop and narrow-screen fault contracts')
         primary_log = step('Summarize WebKit primary process events')
-        baseline = step('Diagnose WebKit 1.63 active-video baseline')
+        baseline = step('Diagnose WebKit active-video baseline')
         baseline_log = step('Summarize WebKit baseline process events')
         firefox = step('Diagnose Firefox failures on exact source')
         firefox_photo = step('Diagnose Firefox photo-filter input')
@@ -160,7 +160,7 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         # may exit before the browser starts. Each piped step must opt into bash.
         for name in (
             'Exercise desktop and narrow-screen fault contracts',
-            'Diagnose WebKit 1.63 active-video baseline',
+            'Diagnose WebKit active-video baseline',
         ):
             with self.subTest(name=name):
                 section = workflow.split(f'- name: {name}', 1)[1].split('\n      - name:', 1)[0]

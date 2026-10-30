@@ -18,7 +18,7 @@ jobs:
     # Match the Playwright version in package.json: this official image already
     # contains its browsers and system libraries, avoiding apt/CDN setup stalls.
     container:
-      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
       # Provide headless browsers ample shared memory for media-heavy pages;
       # this does not alter page assets or assertions.
       options: --shm-size=1g
@@ -39,7 +39,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup pinned Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '22.13.0'
           cache: npm
@@ -94,7 +94,7 @@ jobs:
 
       - name: Upload failed browser artifacts
         if: failure()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: compatibility-${{ matrix.engine }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
@@ -142,7 +142,7 @@ jobs:
 
       - name: Upload Firefox diagnostic artifacts
         if: always() && matrix.engine == 'firefox' && steps.firefox_diagnostic.outcome == 'failure'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: firefox-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
           path: test-results/
@@ -164,7 +164,7 @@ jobs:
 
       - name: Upload Firefox gallery focus diagnostic artifacts
         if: always() && matrix.engine == 'firefox' && steps.firefox_caption_repeat.outcome == 'failure'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: firefox-caption-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/firefox-caption-results/
@@ -172,7 +172,7 @@ jobs:
           retention-days: 7
           include-hidden-files: false
 
-      - name: Diagnose WebKit 1.63 active-video baseline
+      - name: Diagnose WebKit active-video baseline
         shell: bash
         id: webkit_baseline
         if: failure() && matrix.engine == 'webkit'
@@ -182,7 +182,7 @@ jobs:
           DEBUG_COLORS: '0'
         run: |
           set -o pipefail
-          echo '::notice title=WebKit diagnostic::Original 1.63 source, four independent active-video runs'
+          echo '::notice title=WebKit diagnostic::Original exact-head source, four independent active-video runs'
           npx playwright test tests/video-posters.spec.js --project=webkit-desktop \
             --grep='gallery can close an active video' --repeat-each=4 --workers=1 --retries=0 --reporter=list,github \
             2>&1 | tee "$RUNNER_TEMP/webkit-baseline-browser.log"
@@ -193,7 +193,7 @@ jobs:
 
       - name: Upload WebKit baseline process log
         if: always() && matrix.engine == 'webkit' && steps.webkit_baseline.outcome != 'skipped'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: webkit-baseline-process-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/webkit-baseline-browser.log
@@ -221,14 +221,14 @@ jobs:
             use: { ...base.use, video: 'off', trace: { mode: 'retain-on-failure', screenshots: false } },
           };
           NODE
-          echo '::notice title=WebKit diagnostic::Original 1.63 source without video or trace screenshots; primary result remains failed'
+          echo '::notice title=WebKit diagnostic::Original exact-head source without video or trace screenshots; primary result remains failed'
           npx playwright test tests/video-posters.spec.js --config="$RUNNER_TEMP/milovi-no-capture.config.cjs" \
             --project=webkit-desktop --grep='gallery can close an active video' \
             --repeat-each=4 --workers=1 --retries=0 --reporter=list,github --output="$RUNNER_TEMP/milovi-no-capture-results"
 
       - name: Upload WebKit capture diagnostic artifacts
         if: always() && matrix.engine == 'webkit' && steps.webkit_no_capture.outcome == 'failure'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: webkit-no-capture-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/milovi-no-capture-results/
@@ -264,7 +264,7 @@ jobs:
     if: ${{ !cancelled() && needs.compatibility.result == 'failure' }}
     runs-on: ubuntu-24.04
     container:
-      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
       options: --shm-size=1g
     timeout-minutes: 25
     strategy:
@@ -282,7 +282,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
       - name: Setup pinned Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '22.13.0'
           cache: npm
@@ -310,7 +310,7 @@ jobs:
     name: ${{ matrix.engine }} reduced-motion ordering
     runs-on: ubuntu-24.04
     container:
-      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
       options: --shm-size=1g
     timeout-minutes: 12
     env:
@@ -329,7 +329,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup pinned Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '22.13.0'
           cache: npm
@@ -351,7 +351,7 @@ jobs:
 
       - name: Upload motion failure artifacts
         if: failure()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: motion-ordering-${{ matrix.engine }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: test-results/
@@ -367,7 +367,7 @@ jobs:
     if: ${{ !cancelled() && needs.compatibility.result == 'failure' }}
     runs-on: ubuntu-24.04
     container:
-      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
       options: --shm-size=1g --cap-add=SYS_PTRACE --security-opt seccomp=unconfined
     timeout-minutes: 20
     env:
@@ -384,7 +384,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
       - name: Setup pinned Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '22.13.0'
           cache: npm
@@ -455,7 +455,7 @@ jobs:
           exit "$result"
       - name: Upload native investigation artifacts
         if: always() && steps.native_tests.outcome != 'skipped'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: webkit-native-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
