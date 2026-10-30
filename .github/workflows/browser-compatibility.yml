@@ -267,7 +267,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mode: [original, no-backdrop, no-cart, no-cart-gallery, no-chip]
+        mode: [original, no-backdrop, no-chip, no-vtile, no-tooltips]
     env:
       HOME: /root
       MILOVI_BROWSER_COMPAT: '1'
@@ -299,37 +299,32 @@ jobs:
           mode = os.environ['MODE']
           gallery = pathlib.Path('css/gallery/gallery-2026.css')
           paths = list(pathlib.Path('css').rglob('*.css')) + [pathlib.Path('index.html'), pathlib.Path('gallery/index.html')]
-          if mode in ('no-cart', 'no-cart-gallery'):
-              paths = [pathlib.Path('css/style.css')]
-              if mode == 'no-cart-gallery':
-                  paths.append(gallery)
-          elif mode == 'no-chip':
+          if mode == 'no-chip':
               paths = [gallery]
-          elif mode != 'no-backdrop':
+              selected = re.compile(r'(\.gx-chip\s*\{)([^{}]*)(\})')
+          elif mode == 'no-vtile':
+              paths = [pathlib.Path('css/mc-2026.css')]
+              selected = re.compile(r'(\.vtile-play\s*\{)([^{}]*)(\})')
+          elif mode == 'no-tooltips':
+              paths = list(pathlib.Path('css').rglob('*.css'))
+              selected = re.compile(r'([^{}]*\.(?:thumb-hint|fill-tooltip|fill-toast|bento-weight-toast)[^{}]*\{)([^{}]*)(\})')
+          elif mode == 'no-backdrop':
+              selected = None
+          else:
               raise ValueError(f'Unknown mode {mode}')
           count = 0
           pattern = re.compile(r'((?:-webkit-)?backdrop-filter\s*:\s*)([^;{}]+)')
-          cart_rule = re.compile(r'([^{}]*\.cart-(?:overlay|drawer)[^{}]*\{)([^{}]*)(\})')
-          chip_rule = re.compile(r'(\.gx-chip\s*\{)([^{}]*)(\})')
           for path in paths:
               text = path.read_text()
               def replace(match):
                   return match.group(1) + ('none !important' if '!important' in match.group(2) else 'none')
-              if mode in ('no-cart', 'no-cart-gallery') and path != gallery:
+              if selected:
                   n = [0]
                   def change_rule(match):
                       body, changed_count = pattern.subn(replace, match.group(2))
                       n[0] += changed_count
                       return match.group(1) + body + match.group(3)
-                  changed = cart_rule.sub(change_rule, text)
-                  n = n[0]
-              elif mode == 'no-chip':
-                  n = [0]
-                  def change_chip(match):
-                      body, changed_count = pattern.subn(replace, match.group(2))
-                      n[0] += changed_count
-                      return match.group(1) + body + match.group(3)
-                  changed = chip_rule.sub(change_chip, text)
+                  changed = selected.sub(change_rule, text)
                   n = n[0]
               else:
                   changed, n = pattern.subn(replace, text)

@@ -147,9 +147,10 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         self.assertLess(experiment.index('sha256sum js/gallery/main.js'), experiment.index('p.write_text'))
         self.assertIn('sha256sum --check', restore)
         comparison = workflow.split('  webkit-backdrop-comparison:', 1)[1].split('  motion-ordering:', 1)[0]
-        self.assertIn('mode: [original, no-backdrop, no-cart, no-cart-gallery, no-chip]', comparison)
+        self.assertIn('mode: [original, no-backdrop, no-chip, no-vtile, no-tooltips]', comparison)
         self.assertIn('ref: ${{ github.event.pull_request.head.sha }}', comparison)
-        self.assertIn("'no-cart-gallery'", comparison)
+        self.assertIn("mode == 'no-vtile'", comparison)
+        self.assertIn("mode == 'no-tooltips'", comparison)
         self.assertIn("mode == 'no-chip'", comparison)
         self.assertIn('No backdrop declarations found', comparison)
         self.assertIn('git -c safe.directory="$GITHUB_WORKSPACE" diff --exit-code', comparison)
