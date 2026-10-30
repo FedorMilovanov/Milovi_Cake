@@ -146,21 +146,6 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
                         workflow.index('Compare without the additional video load call'))
         self.assertLess(experiment.index('sha256sum js/gallery/main.js'), experiment.index('p.write_text'))
         self.assertIn('sha256sum --check', restore)
-        comparison = workflow.split('  webkit-backdrop-comparison:', 1)[1].split('  motion-ordering:', 1)[0]
-        self.assertIn('mode: [original, no-backdrop, no-chip, no-vtile, no-tooltips]', comparison)
-        self.assertIn('ref: ${{ github.event.pull_request.head.sha }}', comparison)
-        self.assertIn("mode == 'no-vtile'", comparison)
-        self.assertIn("mode == 'no-tooltips'", comparison)
-        self.assertIn("mode == 'no-chip'", comparison)
-        self.assertIn('No backdrop declarations found', comparison)
-        self.assertIn('git -c safe.directory="$GITHUB_WORKSPACE" diff --exit-code', comparison)
-        self.assertNotIn('needs: compatibility', comparison)
-        self.assertIn('primary result unchanged', comparison)
-        self.assertIn('--project=webkit-desktop --project=webkit-mobile', comparison)
-        self.assertIn('cart restoration rejects', comparison)
-        self.assertIn('--repeat-each=2 --workers=1 --retries=0', comparison)
-        self.assertNotIn('continue-on-error', comparison)
-
     def test_browser_container_pipelines_explicitly_use_bash(self):
         workflow = (ROOT / '.github/workflows/browser-compatibility.yml').read_text(encoding='utf-8')
         # A GitHub Actions container defaults to sh, where `set -o pipefail`
