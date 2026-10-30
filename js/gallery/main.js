@@ -6,6 +6,7 @@ const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
 const SIZE_MAP = { tall: '1x2', wide: '2x1', big: '2x2', m: '1x1' };
 const PHONE_CARD_MEDIA = '(max-width: 430px) and (max-resolution: 1.75dppx)';
 const PHONE_CARD_IDS = new Set(['p05', 'p06', 'p09', 'p12', 'p18']);
+const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
 const GRID_RENDER_BATCH_SIZE = 6;
 const filterButtons = [
   { id: 'all', label: 'Все' }, { id: 'photo', label: 'Фото' }, { id: 'video', label: 'Видео' },
@@ -15,7 +16,7 @@ const filterButtons = [
 ];
 const CONTACT_PHONE = '79119038886';
 const TELEGRAM_USERNAME = 'milovi_cake';
-const state = { filter:'all', items:[], visible:[], swiper:null, lbIndex:0, observer:null, bgTimer:null, isNavigating: false, mediaWarmupTimer: null, gridRenderToken: 0 };
+const state = { filter:'all', items:[], visible:[], swiper:null, lbIndex:0, observer:null, bgTimer:null, mediaWarmupTimer: null, gridRenderToken: 0 };
 
 
 function esc(s=''){ return String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
@@ -25,10 +26,14 @@ function phoneCardAvifFor(item) {
   return item.src.replace(/\.webp(\?|$)/i, '-card.avif$1');
 }
 
-/* r57/r60: AVIF support for gallery cards AND lightbox photos.
-   Wraps an <img src="...webp"> into a <picture> with an AVIF <source>.
-   If the AVIF twin does not exist on the server the browser will silently
-   ignore the source and fall back to the <img>. Safe and idempotent. */
+function enablePhotoFallback(img) {
+  const picture = img.parentElement;
+  const fallback = () => picture.querySelectorAll('source').forEach(source => source.remove());
+  img.addEventListener('error', fallback, { once: true });
+  if (img.complete && !img.naturalWidth) fallback();
+}
+
+/* Wrap WebP cards and lightbox photos in an AVIF-aware picture. */
 function wrapInPictureWithAvif(img) {
   const src = img.getAttribute('src') || '';
   // только для webp; если уже не webp — отдаём <img> как есть
@@ -48,6 +53,7 @@ function wrapInPictureWithAvif(img) {
   source.srcset = avifSrc;
   picture.appendChild(source);
   picture.appendChild(img);
+  enablePhotoFallback(img);
   return picture;
 }
 
@@ -110,9 +116,8 @@ function renderFilters(){
     state.filter=btn.dataset.filter; 
     renderFilters(); 
     renderGrid(); 
-    $('#galleryGrid')?.scrollIntoView({behavior:'smooth',block:'start'});
-    // Restore focus
-    $(`.gx-chip[data-filter="${state.filter}"]`, wrap)?.focus();
+    // Keep the selected filter focused without starting a competing scroll.
+    $(`.gx-chip[data-filter="${state.filter}"]`, wrap)?.focus({preventScroll:true});
   })); 
 }
 function sizeClasses(size){ if(size==='2x2') return 'col-span-2 row-span-2'; if(size==='2x1') return 'col-span-2'; if(size==='1x2') return 'row-span-2'; return ''; }
@@ -143,20 +148,13 @@ function renderGrid(){
   const reuseStaticLcp = state.filter === 'all' && staticCard && visibleItems[0]?.id === staticCard.dataset.id;
   if (reuseStaticLcp) {
     Array.from(grid.children).forEach(child => { if (child !== staticCard) child.remove(); });
-    staticCard.dataset.index = '0';
   } else {
     grid.innerHTML='';
   }
-  if(empty) {
-    // FIX r24: HTML has inline style="display:none". JS was only toggling .hidden attr,
-    // but inline style overrides CSS rules. Fix: removeProperty so CSS takes full control.
-    if (visibleItems.length > 0) {
-      empty.hidden = true;
-      empty.style.removeProperty('display');
-    } else {
-      empty.hidden = false;
-      empty.style.removeProperty('display');
-    }
+  if (empty) {
+    empty.hidden = visibleItems.length > 0;
+    // Clear the inline display:none so the hidden attribute controls visibility.
+    empty.style.removeProperty('display');
   }
   if(!visibleItems.length) {
     grid.removeAttribute('data-hydrating');
@@ -173,6 +171,7 @@ function renderGrid(){
       const item=visibleItems[index];
       if (reuseStaticLcp && index === 0) {
         if (staticCard.dataset.hydrated !== 'true') {
+          enablePhotoFallback($('img', staticCard));
           staticCard.addEventListener('click',()=>openLightbox(0));
           attachCardTilt(staticCard);
           staticCard.dataset.hydrated = 'true';
@@ -185,7 +184,6 @@ function renderGrid(){
       // Animation is handled by CSS now (added to fixes), but we keep delay for stagger
       if(index<4) card.style.animation='none';
       else card.style.animationDelay=`${Math.min(index*0.04, 1.2)}s`;
-      card.dataset.index=String(index);
       card.dataset.id=item.id;
       card.setAttribute('aria-label',`${item.title}. Открыть в 3D-галерее`);
       if(item.type==='video') {
@@ -207,7 +205,6 @@ function renderGrid(){
         img.loading=index<4?'eager':'lazy';
         img.decoding='async';
         if(index===0) img.fetchPriority='high';
-        img.onerror=()=>{ if(img.src!==item.src) img.src=item.src; };
         /* r18: premium skeleton — soft golden shimmer until the image loads, then fade in */
         card.classList.add('is-loading');
         var _reveal=function(){ card.classList.remove('is-loading'); card.classList.add('is-loaded'); };
@@ -275,7 +272,7 @@ function attachCardTilt(card){
 }
 function setupVideoObserver(){ 
   if(state.observer) state.observer.disconnect(); 
-  if(!('IntersectionObserver' in window)) return; 
+  if(!('IntersectionObserver' in window) || $('#lbRoot') || motionPreference.matches) return;
   /* r16 perf: on Save-Data or slow (2g) connections, keep posters only and skip
      auto-downloading grid videos (each is ~1–2.5 MB). Saves mobile data. */
   var conn = navigator.connection || navigator.webkitConnection || navigator.mozConnection;
@@ -297,6 +294,7 @@ function setupVideoObserver(){
     try { v.pause(); } catch(e){}
   }
   state.observer=new IntersectionObserver(entries=>{
+    if ($('#lbRoot') || motionPreference.matches) return; // Callbacks can arrive after either state changes.
     entries.forEach(entry=>{
       const v=entry.target; 
       if(entry.isIntersecting){ 
@@ -319,13 +317,13 @@ function lightboxTemplate(){
     <button class="lb-nav lb-nav-prev" id="lbPrev" type="button" aria-label="Предыдущая"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
     <button class="lb-nav lb-nav-next" id="lbNext" type="button" aria-label="Следующая"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
     <div class="lb-swiper-wrap"><div class="swiper lb-swiper" id="lbSwiper"><div class="swiper-wrapper" id="lbWrapper"></div></div></div>
-    <div class="lb-info">
+    <div class="lb-info" role="region" aria-label="Описание работы и действия" tabindex="0">
       <div class="lb-info-inner">
         <h2 class="lb-title" id="lbTitle"></h2>
         <p class="lb-desc" id="lbDesc"></p>
         <div class="lb-actions">
           <button type="button" class="lb-action" id="lbShare">Поделиться</button>
-          <div class="lb-order-choice" aria-label="Написать пожелания по этой работе">
+          <div class="lb-order-choice" role="group" aria-label="Написать пожелания по этой работе">
             <span class="lb-order-label">Хочу такой</span>
             <a class="lb-order-icon lb-order-wa" id="lbWantWa" target="_blank" rel="noopener noreferrer" aria-label="Написать в WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.08-.3-.15-1.26-.46-2.39-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.08-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.07c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.69.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35z"/><path d="M12.05 2.01A9.88 9.88 0 0 0 2.16 11.9c0 1.75.46 3.45 1.34 4.95L2.06 22l5.28-1.38a9.88 9.88 0 0 0 4.71 1.2h.01a9.89 9.89 0 0 0-.01-19.81zm0 18.14h-.01a8.2 8.2 0 0 1-4.18-1.14l-.3-.18-3.13.82.84-3.05-.2-.31a8.18 8.18 0 1 1 6.98 3.86z"/></svg></a>
             <a class="lb-order-icon lb-order-tg" id="lbWantTg" target="_blank" rel="noopener noreferrer" data-copy-msg="1" aria-label="Написать в Telegram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.7 4.3 2.7 11.7c-1.1.44-1.08 1.05-.2 1.32l4.88 1.52 1.87 5.86c.24.66.12.92.82.92.54 0 .78-.25 1.08-.54l2.6-2.53 5.4 3.99c.99.55 1.7.27 1.95-.92l3.53-16.62c.36-1.45-.55-2.1-1.99-1.5zm-3.26 3.82-8.58 7.75-.34 3.6-1.53-5.1 10.45-6.25z"/></svg></a>
@@ -344,6 +342,7 @@ function openLightbox(index){
     closeLightbox._skipObserverRestore = true; // don't rebuild observer, we'll disconnect it immediately
     closeLightbox();
   }
+  state.lbReturnFocus = document.activeElement;
   // Pause grid videos
   if(state.observer) state.observer.disconnect();
   $$('#galleryGrid video').forEach(v => v.pause());
@@ -357,7 +356,6 @@ function openLightbox(index){
   state.visible.forEach((item,i)=>{ 
     const slide=document.createElement('div'); 
     slide.className='swiper-slide'; 
-    slide.dataset.index = String(i);
     const wrap=document.createElement('div'); 
     wrap.className='lb-media-wrap'; 
     if(item.type==='video'){ 
@@ -379,16 +377,18 @@ function openLightbox(index){
     } else { 
       const img=document.createElement('img'); 
       img.className='lb-media lb-media-photo'; 
+      img.loading=Math.abs(i-index)<=1?'eager':'lazy';
       img.src=item.src; 
       img.alt=item.title; 
-      img.loading=Math.abs(i-index)<=1?'eager':'lazy'; 
       img.decoding='async';
       img.fetchPriority = i === index ? 'high' : 'auto';
-      img.dataset.previewSrc = item.src;
       img.dataset.fullSrc = item.fullSrc || item.src;
       img.dataset.resolved = (item.fullSrc && item.fullSrc !== item.src) ? 'preview' : 'full';
       if (img.dataset.resolved === 'preview') img.classList.add('is-preview');
-      img.onerror=()=>{ if(img.src!==item.src) img.src=item.src; wrap.classList.remove('is-loading'); }; 
+      img.onerror = () => {
+        if (!img.parentElement?.querySelector('source') && img.getAttribute('src') !== item.src) img.src = item.src;
+        wrap.classList.remove('is-loading');
+      };
       wrap.appendChild(wrapInPictureWithAvif(img)); 
     } 
     slide.appendChild(wrap); 
@@ -398,15 +398,15 @@ function openLightbox(index){
     th.type='button'; 
     th.setAttribute('aria-label',item.title); 
     th.innerHTML=`<img src="${item.src}" alt="" loading="lazy" decoding="async">${item.type==='video'?'<span class="thumb-play"><svg viewBox="0 0 12 12"><path d="M3.5 2v8l6.5-4z"/></svg></span>':''}`; 
-    th.addEventListener('click',e=>{e.stopPropagation(); state.swiper?.slideTo(i);}); 
+    th.addEventListener('click',e=>{e.stopPropagation(); showLightboxSlide(i);});
     thumbs.appendChild(th); 
   });
   
   $('#lbRoot').addEventListener('click',e=>{ if(e.target.id==='lbRoot') closeLightbox(); }); 
   $('.lb-backdrop')?.addEventListener('click',e=>{e.stopPropagation(); closeLightbox();}); 
   $('#lbClose').addEventListener('click',e=>{e.stopPropagation(); closeLightbox();}); 
-  $('#lbPrev').addEventListener('click',e=>{e.stopPropagation(); state.swiper?.slidePrev();}); 
-  $('#lbNext').addEventListener('click',e=>{e.stopPropagation(); state.swiper?.slideNext();}); 
+  $('#lbPrev').addEventListener('click',e=>{e.stopPropagation(); showLightboxSlide(state.lbIndex-1);});
+  $('#lbNext').addEventListener('click',e=>{e.stopPropagation(); showLightboxSlide(state.lbIndex+1);});
   $('#lbShare')?.addEventListener('click', e=>{ e.stopPropagation(); shareCurrentWork(); }); 
   $('#lbCopy')?.addEventListener('click', e=>{ e.stopPropagation(); copyCurrentLink(); }); 
   // FIX r25/r26: copy wish text without delaying popup navigation; delayed window.open on mobile
@@ -418,9 +418,21 @@ function openLightbox(index){
     if (href) window.open(href, '_blank', 'noopener,noreferrer');
   })); 
   
-  initSwiperWhenReady(index); 
-  updateLightbox(index,true); 
-  requestAnimationFrame(() => warmupLightboxMedia(index));
+  // Keep the lightbox usable when either Swiper asset is unavailable.
+  let touchStart;
+  $('#lbSwiper').addEventListener('touchstart', e=>{
+    if (!state.swiper && e.touches.length === 1) touchStart = [e.touches[0].clientX, e.touches[0].clientY];
+  }, {passive:true});
+  $('#lbSwiper').addEventListener('touchend', e=>{
+    if (!state.swiper && touchStart && e.changedTouches.length === 1) {
+      const dx = e.changedTouches[0].clientX-touchStart[0];
+      const dy = e.changedTouches[0].clientY-touchStart[1];
+      if (Math.abs(dx)>40 && Math.abs(dx)>Math.abs(dy)) showLightboxSlide(state.lbIndex+(dx<0?1:-1));
+    }
+    touchStart = null;
+  }, {passive:true});
+  showLightboxSlide(index,true);
+  initSwiperWhenReady();
   window.addEventListener('keydown',onLightboxKey);
   window.addEventListener('popstate', onPopState);
   window.addEventListener('resize', onLightboxResize, { passive: true });
@@ -433,20 +445,21 @@ function onPopState() {
   if ($('#lbRoot')) closeLightbox(false);
 }
 
-function initSwiperWhenReady(index){ 
-  let _swiperTries = 0;
-  const _swiperToken = {};
-  state._swiperAbort = _swiperToken;
-  const init=()=>{ 
-    if(state._swiperAbort !== _swiperToken) return;
-    if(!window.Swiper){ 
-      if(++_swiperTries >= 40){ /* r34: #29 — reduced from 120 (6s) to 40 (2s) */
-        /* Swiper CDN timeout — silent in prod */
-        return;
-      }
-      setTimeout(init,50); 
-      return; 
-    } 
+function showLightboxSlide(index, immediate=false){
+  index=Math.max(0,Math.min(index,state.visible.length-1));
+  if(state.swiper){ state.swiper.slideTo(index); return; }
+  $$('#lbWrapper .swiper-slide').forEach((slide,i)=>slide.classList.toggle('swiper-slide-active',i===index));
+  updateLightbox(index,immediate);
+}
+
+function initSwiperWhenReady(){
+  const controller = new AbortController();
+  state._swiperAbort = controller;
+  const css = document.querySelector('link[href*="swiper-bundle.min.css"]');
+  const script = document.querySelector('script[data-gallery-swiper]');
+  const init=()=>{
+    if(controller.signal.aborted || state.swiper || !window.Swiper || !css?.sheet || css.media === 'print') return;
+    const index=state.lbIndex;
     const mobile=window.innerWidth<768; 
     const tablet=window.innerWidth<1024;
     state.swiper=new Swiper('#lbSwiper',{
@@ -483,9 +496,12 @@ function initSwiperWhenReady(index){
           centerThumb(this.activeIndex, 'auto');
         }
       }
-    }); 
-  }; 
-  requestAnimationFrame(init); 
+    });
+  };
+  const options = {once:true, signal:controller.signal};
+  script?.addEventListener('load',init,options);
+  css?.addEventListener('load',init,options);
+  requestAnimationFrame(init);
 }
 function updateLightbox(index, immediate=false){ 
   state.lbIndex=index; 
@@ -640,13 +656,6 @@ function ensureSlideMedia(index, priority = 'auto') {
 }
 function warmupLightboxMedia(index) {
   clearTimeout(state.mediaWarmupTimer);
-  /* r34: #27 — cancel stale video preloads from previous slides */
-  $$('#lbWrapper .swiper-slide').forEach(function(slide, i) {
-    if (Math.abs(i - index) > 2) {
-      var v = slide.querySelector('video[preload="low"]');
-      if (v && !v.paused) { v.pause(); }
-    }
-  });
   ensureSlideMedia(index, 'high');
   ensureSlideMedia(index - 1, 'auto');
   ensureSlideMedia(index + 1, 'auto');
@@ -670,8 +679,8 @@ function onLightboxResize() {
 
 function onLightboxKey(e){ 
   if(e.key==='Escape') closeLightbox(); 
-  if(e.key==='ArrowLeft') state.swiper?.slidePrev(); 
-  if(e.key==='ArrowRight') state.swiper?.slideNext(); 
+  if(e.key==='ArrowLeft') showLightboxSlide(state.lbIndex-1);
+  if(e.key==='ArrowRight') showLightboxSlide(state.lbIndex+1);
   if(e.key==='Tab') {
     const focusables = $$('button, a', $('#lbRoot'));
     const first = focusables[0];
@@ -681,7 +690,8 @@ function onLightboxKey(e){
   }
 }
 function closeLightbox(updateState = true){ 
-  state._swiperAbort = null; // abort pending Swiper init
+  state._swiperAbort?.abort();
+  state._swiperAbort = null;
   window.removeEventListener('keydown',onLightboxKey); 
   window.removeEventListener('popstate', onPopState);
   window.removeEventListener('resize', onLightboxResize);
@@ -693,10 +703,22 @@ function closeLightbox(updateState = true){
   $('#lbRoot')?.remove(); 
   /* r31: bug #40 — iOS-safe scroll unlock */ document.body.style.position=''; document.body.style.top=''; document.body.style.left=''; document.body.style.right=''; document.body.style.overflow=''; window.scrollTo(0,_gLockY||0); 
   if (updateState) history.replaceState(null,'',location.pathname+location.search); 
-  if (!closeLightbox._skipObserverRestore) setupVideoObserver(); // Re-enable grid videos
+  if (!closeLightbox._skipObserverRestore) {
+    setupVideoObserver(); // Re-enable grid videos
+    if (state.lbReturnFocus?.isConnected) state.lbReturnFocus.focus({preventScroll:true});
+  }
+  state.lbReturnFocus = null;
   closeLightbox._skipObserverRestore = false;
 }
-function boot(){ 
+function boot(){
+  const onMotionChange = () => {
+    if (motionPreference.matches) {
+      state.observer?.disconnect();
+      $$('#galleryGrid video').forEach(v => v.pause());
+    } else setupVideoObserver();
+  };
+  if (motionPreference.addEventListener) motionPreference.addEventListener('change', onMotionChange);
+  else motionPreference.addListener(onMotionChange);
   const seal = $('#gxSeal');
   if(seal) seal.innerHTML=luxeSeal(); 
   state.items=buildInterleavedItems(); 

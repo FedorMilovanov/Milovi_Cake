@@ -21,11 +21,13 @@ on:
     paths:
       - '.github/lighthouse-artifact-config.json'
       - '.github/workflows/lighthouse-artifact.yml'
+      - '.github/workflows/browser-compatibility.yml'
       - 'scripts/serve_pages_artifact.py'
       - 'css/**'
       - 'js/**'
       - 'img/**'
       - 'fonts/**'
+      - '*.html'
       - 'prigorody/**'
       - 'sw.js'
       - 'manifest.json'

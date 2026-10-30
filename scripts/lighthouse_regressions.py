@@ -205,7 +205,7 @@ require('media="(max-width: 768px)" srcset="/img/head_mobile.avif"' in order, 'o
 gallery = read('gallery/index.html')
 require('id="preloader"' not in gallery, 'gallery blocking preloader returned')
 require('/img/gallery/gallery-01.avif" fetchpriority="high"' in gallery, 'gallery LCP preload missing')
-require('/js/gallery/main.js?v=20261026r01' in gallery, 'gallery runtime revision drift')
+require('/js/gallery/main.js?v=20261027r07' in gallery, 'gallery runtime revision drift')
 require("./data.js?v=20261026r01" in read('js/gallery/main.js'), 'gallery data import revision drift')
 require('#galleryGrid[data-hydrating="true"] { min-height: 100svh; }' in gallery, 'gallery hydration reserve missing')
 require('#galleryGrid[data-static-lcp-root="true"] { animation: none; }' in gallery, 'gallery grid animation gates initial LCP again')
@@ -255,7 +255,7 @@ for event in ['pointerdown', 'focusin', 'click']:
     )
 require('script.async = true;' in gallery, 'gallery Swiper interaction load is not asynchronous')
 require("script.addEventListener('error'" in gallery and 'loading = false;' in gallery, 'gallery Swiper loader cannot retry after CDN failure')
-require('/css/gallery/gallery-2026.css?v=20261022r04" />' in gallery, 'gallery critical local CSS became deferred')
+require('/css/gallery/gallery-2026.css?v=20261027r06" />' in gallery, 'gallery critical local CSS became deferred or changed revision')
 require('/css/final-fixes.css?v=20261023r01" />' in gallery, 'gallery final critical CSS became deferred')
 require('id="gallery-lcp-media-fastpath"' in gallery, 'gallery eager-media LCP fast path missing')
 require(
@@ -293,7 +293,14 @@ require("grid.removeAttribute('data-hydrating');" in gallery_js, 'gallery hydrat
 require("v.preload='none';" in gallery_js, 'gallery video preload competes with LCP')
 require('v.autoplay=true' not in gallery_js, 'gallery videos autoplay during initial load')
 require("if(index<4) card.style.animation='none';" in gallery_js, 'above-fold gallery cards animate into LCP')
-require('if(!window.Swiper)' in gallery_js and 'setTimeout(init,50)' in gallery_js, 'gallery lightbox lost its Swiper late-load polling fallback')
+require(
+    "script?.addEventListener('load',init,options)" in gallery_js
+    and "css?.addEventListener('load',init,options)" in gallery_js
+    and 'const index=state.lbIndex;' in gallery_js
+    and 'function showLightboxSlide(index, immediate=false)' in gallery_js
+    and 'state._swiperAbort?.abort();' in gallery_js,
+    'gallery lost cancellable late Swiper initialization or its offline navigation fallback',
+)
 require("card.setAttribute('role', 'listitem')" not in gallery_js, 'gallery dynamic native button regained incompatible listitem role')
 require("img.alt='';" in gallery_js, 'gallery dynamic card media is no longer decorative inside its labelled button')
 require("card.setAttribute('aria-label',`${item.title}. Открыть в 3D-галерее`);" in gallery_js, 'gallery cards lost explicit accessible names')
@@ -346,18 +353,25 @@ for public_html in public_html_files():
         require(style_ref.lstrip('/') in html, f'{public_html} shared style revision drifted')
         require('style.css?v=20261023r01' not in html, f'{public_html} still references stale shared style revision')
 
-# Shared main.js and CSS identities must move together across every HTML consumer.
+# Changed shared styles must agree between every consumer and the precache.
+for asset in ('style.css', 'mc-2026.css', 'premium-overrides.css', 'v20-dark-and-fixes.css'):
+    revision = {'style.css': '20261027r04', 'mc-2026.css': '20261027r04', 'premium-overrides.css': '20261027r05'}.get(asset, '20261027r03')
+    require(f"'/css/{asset}?v={revision}'," in sw, f'{asset} service-worker revision drifted')
+    for public_html in public_html_files():
+        refs = re.findall(rf'css/{re.escape(asset)}\?v=([0-9a-z]+)', read(public_html))
+        require(all(ref == revision for ref in refs), f'{public_html} {asset} revision drifted')
+
+# Shared main.js identity must agree across every HTML consumer.
 for public_html in public_html_files():
     html = read(public_html)
-    if 'js/main.js?v=' in html:
-        require('main.js?v=20261027r01' in html, f'{public_html} shared main.js revision drifted')
-        require('main.js?v=20260916r01' not in html, f'{public_html} still references stale shared main.js revision')
+    refs = re.findall(r'js/main\.js\?v=([0-9a-z]+)', html)
+    require(all(ref == '20261027r05' for ref in refs), f'{public_html} shared main.js revision drifted')
 
-# Поколение кэша двигается вместе с содержимым precache: r94 добавил css/fonts.css.
-require("const CACHE_NAME = 'milovi-cake-v2026.10.30-r94';" in sw, 'service-worker cache generation drifted')
+require("const CACHE_NAME = 'milovi-cake-v2026.10.27-r105';" in sw, 'service-worker cache generation drifted')
+require("'/css/gallery/gallery-2026.css?v=20261027r06'," in sw, 'gallery CSS service-worker revision drifted')
 require(style_ref != '/css/style.css?v=20261023r01', 'service-worker precache still points at stale shared CSS revision')
-require("'/js/main.js?v=20261027r01'," in sw, 'service-worker precache still points at stale shared main.js revision')
-require("'/js/gallery/main.js?v=20261026r01'," in sw, 'service-worker precache still points at stale gallery runtime revision')
+require("'/js/main.js?v=20261027r05'," in sw, 'service-worker precache still points at stale shared main.js revision')
+require("'/js/gallery/main.js?v=20261027r07'," in sw, 'service-worker precache still points at stale gallery runtime revision')
 require("'/js/gallery/data.js?v=20261026r01'," in sw, 'service-worker precache still points at stale gallery data revision')
 
 cfg = json.loads(read('.github/lighthouse-config.json'))

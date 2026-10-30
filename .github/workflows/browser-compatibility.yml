@@ -1,0 +1,417 @@
+name: Browser compatibility
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: browser-compatibility-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compatibility:
+    name: ${{ matrix.engine }} resilient interactions
+    runs-on: ubuntu-24.04
+    # Match the Playwright version in package.json: this official image already
+    # contains its browsers and system libraries, avoiding apt/CDN setup stalls.
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      # Provide headless browsers ample shared memory for media-heavy pages;
+      # this does not alter page assets or assertions.
+      options: --shm-size=1g
+    # Failure-only comparisons can run after the unchanged primary matrix.
+    timeout-minutes: 40
+    env:
+      MILOVI_BROWSER_COMPAT: '1'
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [firefox, webkit]
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Setup pinned Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22.13.0'
+          cache: npm
+
+      - name: Setup Python for the local test server
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        with:
+          python-version: '3.12'
+
+      - name: Install project dependencies
+        run: npm ci
+
+      - name: Record browser shared memory
+        run: echo "::notice title=Browser shared memory::$(df -h /dev/shm | tail -n 1)"
+
+      - name: Exercise desktop and narrow-screen fault contracts
+        shell: bash
+        id: primary_contracts
+        # The container runs as root; Firefox requires HOME to belong to it.
+        env:
+          HOME: /root
+          DEBUG: ${{ matrix.engine == 'webkit' && 'pw:browser' || '' }}
+          DEBUG_COLORS: '0'
+        run: |
+          set -o pipefail
+          npx playwright test \
+            --project=${{ matrix.engine }}-desktop --project=${{ matrix.engine }}-mobile \
+            --workers=1 --retries=0 --reporter=list,github,html 2>&1 | tee "$RUNNER_TEMP/${{ matrix.engine }}-primary-browser.log"
+
+      - name: Summarize WebKit primary process events
+        if: failure() && matrix.engine == 'webkit' && steps.primary_contracts.outcome == 'failure'
+        run: python3 scripts/browser_log_summary.py "$RUNNER_TEMP/webkit-primary-browser.log"
+
+      - name: Repeat WebKit storage fault interactions
+        if: matrix.engine == 'webkit'
+        env:
+          HOME: /root
+        run: >-
+          npx playwright test tests/cart-accessibility.spec.js
+          --project=webkit-desktop --grep='cart stays usable and warns'
+          --repeat-each=3 --workers=1 --retries=0 --reporter=list,github
+
+      - name: Repeat WebKit gallery close and delayed-load interactions
+        if: matrix.engine == 'webkit'
+        env:
+          HOME: /root
+        run: >-
+          npx playwright test tests/video-posters.spec.js
+          --project=webkit-desktop --project=webkit-mobile
+          --grep='gallery can close an active video|late Swiper initializes'
+          --repeat-each=3 --workers=1 --retries=0 --reporter=list,github
+
+      - name: Upload failed browser artifacts
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: compatibility-${{ matrix.engine }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            playwright-report/
+            test-results/
+            ${{ runner.temp }}/${{ matrix.engine }}-primary-browser.log
+          if-no-files-found: ignore
+          retention-days: 7
+          include-hidden-files: false
+
+      # Failure-only diagnostics. The primary exact-HEAD step above stays
+      # failed; these are independent comparisons, not retries that can turn it green.
+      - name: Diagnose Firefox failures on exact source
+        id: firefox_diagnostic
+        if: failure() && matrix.engine == 'firefox' && steps.primary_contracts.outcome == 'failure'
+        env:
+          HOME: /root
+        run: |
+          echo '::notice title=Firefox diagnostic::Three independent runs of the two observed failures; the primary step remains failed'
+          npx playwright test tests/cart-accessibility.spec.js tests/protected-interactions.spec.js \
+            --project=firefox-desktop --grep='cart restoration rejects|review modal keeps Google' \
+            --repeat-each=3 --workers=1 --retries=0 --reporter=list,github
+
+      # Keep the primary result unchanged while collecting trusted input targets
+      # for the intermittent photo-filter failure on the exact same source.
+      - name: Diagnose Firefox photo-filter input
+        if: failure() && matrix.engine == 'firefox' && steps.primary_contracts.outcome == 'failure'
+        env:
+          HOME: /root
+        run: >-
+          npx playwright test tests/video-posters.spec.js
+          --project=firefox-mobile --grep='photo-only gallery can repeatedly open and close'
+          --repeat-each=20 --workers=1 --retries=0 --reporter=list,github
+          --output="$RUNNER_TEMP/firefox-photo-input-results"
+
+      - name: Repeat Firefox empty-filter input
+        if: ${{ !cancelled() && matrix.engine == 'firefox' && steps.primary_contracts.outcome != 'skipped' }}
+        env:
+          HOME: /root
+        run: >-
+          npx playwright test tests/video-posters.spec.js
+          --project=firefox-mobile --grep='gallery empty state can be reset'
+          --repeat-each=12 --workers=1 --retries=0 --reporter=list,github
+          --output="$RUNNER_TEMP/firefox-empty-filter-results"
+
+      - name: Upload Firefox diagnostic artifacts
+        if: always() && matrix.engine == 'firefox' && steps.firefox_diagnostic.outcome == 'failure'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: firefox-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+          include-hidden-files: false
+
+      # This is a required stability check, not a retry that can erase a failure.
+      - name: Repeat Firefox gallery focus visibility
+        id: firefox_caption_repeat
+        if: ${{ !cancelled() && matrix.engine == 'firefox' && steps.primary_contracts.outcome != 'skipped' }}
+        env:
+          HOME: /root
+        run: |
+          echo '::notice title=Firefox focus checks::Six independent caption keyboard checks; the primary result is unchanged'
+          npx playwright test tests/video-posters.spec.js --project=firefox-desktop \
+            --grep='caption reflows and remains keyboard reachable' \
+            --repeat-each=6 --workers=1 --retries=0 --reporter=list,github --output="$RUNNER_TEMP/firefox-caption-results"
+
+      - name: Upload Firefox gallery focus diagnostic artifacts
+        if: always() && matrix.engine == 'firefox' && steps.firefox_caption_repeat.outcome == 'failure'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: firefox-caption-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/firefox-caption-results/
+          if-no-files-found: ignore
+          retention-days: 7
+          include-hidden-files: false
+
+      - name: Diagnose WebKit active-video baseline
+        shell: bash
+        id: webkit_baseline
+        if: failure() && matrix.engine == 'webkit'
+        env:
+          HOME: /root
+          DEBUG: pw:browser
+          DEBUG_COLORS: '0'
+        run: |
+          set -o pipefail
+          echo '::notice title=WebKit diagnostic::Original exact-head source, four independent active-video runs'
+          npx playwright test tests/video-posters.spec.js --project=webkit-desktop \
+            --grep='gallery can close an active video' --repeat-each=4 --workers=1 --retries=0 --reporter=list,github \
+            2>&1 | tee "$RUNNER_TEMP/webkit-baseline-browser.log"
+
+      - name: Summarize WebKit baseline process events
+        if: failure() && matrix.engine == 'webkit' && steps.webkit_baseline.outcome != 'skipped'
+        run: python3 scripts/browser_log_summary.py "$RUNNER_TEMP/webkit-baseline-browser.log"
+
+      - name: Upload WebKit baseline process log
+        if: always() && matrix.engine == 'webkit' && steps.webkit_baseline.outcome != 'skipped'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: webkit-baseline-process-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/webkit-baseline-browser.log
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Compare WebKit without screencast capture
+        id: webkit_no_capture
+        if: failure() && matrix.engine == 'webkit' && steps.webkit_baseline.outcome != 'skipped'
+        env:
+          HOME: /root
+        run: |
+          # Diagnostic only: keep the original source, tests and assertions.
+          # Trace snapshots remain available, but video and trace screenshots
+          # are disabled together to isolate capture instrumentation as a group.
+          cat > "$RUNNER_TEMP/milovi-no-capture.config.cjs" <<'NODE'
+          const path = require('node:path');
+          const root = process.env.GITHUB_WORKSPACE;
+          const base = require(path.join(root, 'playwright.config.js'));
+          module.exports = {
+            ...base,
+            testDir: path.join(root, 'tests'),
+            // The generated config lives outside the checkout; serve the real site.
+            webServer: { ...base.webServer, cwd: root, url: 'http://127.0.0.1:4173/gallery/' },
+            use: { ...base.use, video: 'off', trace: { mode: 'retain-on-failure', screenshots: false } },
+          };
+          NODE
+          echo '::notice title=WebKit diagnostic::Original exact-head source without video or trace screenshots; primary result remains failed'
+          npx playwright test tests/video-posters.spec.js --config="$RUNNER_TEMP/milovi-no-capture.config.cjs" \
+            --project=webkit-desktop --grep='gallery can close an active video' \
+            --repeat-each=4 --workers=1 --retries=0 --reporter=list,github --output="$RUNNER_TEMP/milovi-no-capture-results"
+
+      - name: Upload WebKit capture diagnostic artifacts
+        if: always() && matrix.engine == 'webkit' && steps.webkit_no_capture.outcome == 'failure'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: webkit-no-capture-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/milovi-no-capture-results/
+          if-no-files-found: ignore
+          retention-days: 7
+          include-hidden-files: false
+
+      - name: Compare without the additional video load call
+        id: webkit_no_load
+        if: failure() && matrix.engine == 'webkit' && steps.webkit_baseline.outcome != 'skipped'
+        env:
+          HOME: /root
+        run: |
+          cp js/gallery/main.js "$RUNNER_TEMP/gallery-main-original.js"
+          sha256sum js/gallery/main.js > "$RUNNER_TEMP/gallery-main-original.sha256"
+          python3 -c 'from pathlib import Path; p=Path("js/gallery/main.js"); s=p.read_text(); old="    video.load();\n"; assert s.count(old) == 1; p.write_text(s.replace(old, ""))'
+          echo '::notice title=WebKit diagnostic::Experimental source without the extra video.load call; not the exact HEAD'
+          npx playwright test tests/video-posters.spec.js --project=webkit-desktop \
+            --grep='gallery can close an active video' --repeat-each=4 --workers=1 --retries=0 --reporter=list,github
+
+      - name: Restore exact source after WebKit comparison
+        id: webkit_restore
+        if: always() && matrix.engine == 'webkit' && steps.webkit_no_load.outcome != 'skipped'
+        run: |
+          cp "$RUNNER_TEMP/gallery-main-original.js" js/gallery/main.js
+          sha256sum --check "$RUNNER_TEMP/gallery-main-original.sha256"
+
+  motion-ordering:
+    name: ${{ matrix.engine }} reduced-motion ordering
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --shm-size=1g
+    timeout-minutes: 12
+    env:
+      HOME: /root
+      MILOVI_BROWSER_COMPAT: '1'
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [firefox, webkit]
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Setup pinned Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22.13.0'
+          cache: npm
+
+      - name: Setup Python for the local test server
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        with:
+          python-version: '3.12'
+
+      - name: Install project dependencies
+        run: npm ci
+
+      - name: Repeat actual motion-preference ordering
+        run: >-
+          npx playwright test tests/video-posters.spec.js
+          --project=${{ matrix.engine }}-desktop --project=${{ matrix.engine }}-mobile
+          --grep='queued grid observer callbacks respect a newly reduced-motion preference'
+          --repeat-each=3 --workers=1 --retries=0 --reporter=list,github
+
+      - name: Upload motion failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: motion-ordering-${{ matrix.engine }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+          include-hidden-files: false
+
+  # Diagnostic only: process tracing changes timing and is isolated from the
+  # unchanged primary job. A debugger stop is not automatically a crash.
+  webkit-native-investigation:
+    name: WebKit native process investigation
+    needs: compatibility
+    if: ${{ !cancelled() && (needs.compatibility.result == 'failure' || needs.compatibility.result == 'cancelled') }}
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --shm-size=1g --cap-add=SYS_PTRACE --security-opt seccomp=unconfined
+    timeout-minutes: 20
+    env:
+      HOME: /root
+      MILOVI_BROWSER_COMPAT: '1'
+      MILOVI_NATIVE_DIAGNOSTICS: '1'
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+      DEBUG: pw:browser
+      DEBUG_COLORS: '0'
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Setup pinned Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22.13.0'
+          cache: npm
+      - name: Setup Python for the local test server
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        with:
+          python-version: '3.12'
+      - name: Install project and debugger dependencies
+        run: |
+          npm ci
+          apt-get update -qq
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends gdb
+      - name: Verify debugger on a controlled native signal
+        shell: bash
+        run: |
+          set -euo pipefail
+          ulimit -c 0
+          python3 scripts/webkit_native_monitor.py monitor "$RUNNER_TEMP/native-preflight" &
+          monitor=$!
+          python3 scripts/webkit_native_probe.py &
+          probe=$!
+          set +e
+          wait "$probe"
+          probe_status=$?
+          # GDB can flush its backtrace slightly after the inferior exits.
+          python3 - "$RUNNER_TEMP/native-preflight" <<'PY'
+          import pathlib, sys, time
+          root = pathlib.Path(sys.argv[1])
+          for _ in range(80):
+              if any('received signal SIGABRT' in p.read_text(errors='replace') for p in root.glob('wpe-*.log')):
+                  break
+              time.sleep(.1)
+          PY
+          kill "$monitor"
+          wait "$monitor"
+          set -e
+          python3 scripts/webkit_native_monitor.py summary "$RUNNER_TEMP/native-preflight"
+          test "$probe_status" -eq 134
+          grep -El 'received signal SIGABRT' "$RUNNER_TEMP"/native-preflight/wpe-*.log
+      - name: Compare unchanged gallery under native debugger
+        shell: bash
+        id: native_tests
+        run: |
+          set -uo pipefail
+          ulimit -c 0
+          python3 scripts/webkit_native_monitor.py monitor "$RUNNER_TEMP/native-traces" &
+          monitor=$!
+          trap 'kill "$monitor" 2>/dev/null; wait "$monitor" 2>/dev/null' EXIT
+          echo '::notice title=Native investigation::Debugger attachment changes timing; primary result remains unchanged'
+          # GitHub invokes bash with -e: preserve failures, but first stop the
+          # debugger and publish the evidence instead of exiting mid-pipeline.
+          set +e
+          npx playwright test tests/video-posters.spec.js tests/cart-accessibility.spec.js \
+            --project=webkit-desktop --project=webkit-mobile \
+            --grep='gallery can close an active video|photo-only gallery can repeatedly open and close|cart restoration rejects' \
+            --repeat-each=1 --workers=1 --retries=0 --reporter=list,github \
+            2>&1 | tee "$RUNNER_TEMP/webkit-native.log"
+          statuses=("${PIPESTATUS[@]}")
+          result=${statuses[0]}
+          if [ "$result" -eq 0 ] && [ "${statuses[1]}" -ne 0 ]; then result=${statuses[1]}; fi
+          kill "$monitor"
+          wait "$monitor"
+          monitor_result=$?
+          set -e
+          trap - EXIT
+          python3 scripts/webkit_native_monitor.py summary "$RUNNER_TEMP/native-traces"
+          if [ "$result" -eq 0 ] && [ "$monitor_result" -ne 0 ]; then result=$monitor_result; fi
+          exit "$result"
+      - name: Upload native investigation artifacts
+        if: always() && steps.native_tests.outcome != 'skipped'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: webkit-native-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/native-traces/
+            ${{ runner.temp }}/webkit-native.log
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+          include-hidden-files: false

@@ -1205,8 +1205,42 @@ form .btn-wa {
   
   .calc-result-expandable {
     transition:
-      max-height 0.46s cubic-bezier(0.22, 1, 0.36, 1) !important;
+      max-height 0.46s cubic-bezier(0.22, 1, 0.36, 1);
   }
+}
+@media (max-width: 560px) and (prefers-reduced-motion: reduce) {
+  /* Inherited visibility must not transition down the tree during fast Tab. */
+  .calc-result-expandable,
+  .calc-result-expandable * {
+    transition-property: none;
+  }
+}
+
+[data-theme="dark"] .calc-decor-hint {
+  color: var(--text-muted);
+}
+
+/* The named result needs a box to be focusable on wider layouts. */
+@media (min-width: 561px) {
+  .calc-result-expandable {
+    display: flex;
+    flex: 1;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+@media (min-width: 561px) and (max-width: 768px) {
+  .calc-result-expandable,
+  .calc-add-btn,
+  #calcOpenCartBtn {
+    scroll-margin-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  }
+}
+.calc-result-expandable:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: -2px;
 }
 
 
@@ -1799,14 +1833,14 @@ button[disabled] {
   
   body:has(.calc-right-col.calc-result-open) #mcNav,
   body:has(.calc-right-col.calc-result-open) .mc-nav {
-    transform: translateY(110%) !important;
+    transform: translateY(calc(110% + env(safe-area-inset-bottom, 0px))) !important;
   }
 }
 @supports not selector(:has(*)) {
   @media (max-width: 560px) {
     body.calc-panel-open #mcNav,
     body.calc-panel-open .mc-nav {
-      transform: translateY(110%) !important;
+      transform: translateY(calc(110% + env(safe-area-inset-bottom, 0px))) !important;
     }
   }
 }

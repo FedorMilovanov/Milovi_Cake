@@ -170,6 +170,82 @@ test.describe('premium baseline consolidation contracts', () => {
     await expect(page.locator('.mc-consent-overlay')).not.toHaveClass(/is-open/);
   });
 
+  test('review modal keeps Google entries without unverified dates', async ({ page }) => {
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await page.addInitScript(() => {
+      const events = [];
+      window.__reviewDiagnostic = events;
+      const record = (phase, event) => {
+        const target = event.target instanceof Element ? event.target : null;
+        events.push({ phase, type: event.type, target: target?.tagName, id: target?.id,
+          classes: target ? [...target.classList].slice(0, 3) : [], badge: target?.closest('.map-badge')?.className,
+          trusted: event.isTrusted, modal: document.getElementById('reviewsModal')?.className,
+          lock: document.body?.dataset.lockCount });
+      };
+      for (const type of ['pointerdown', 'pointerup', 'click']) document.addEventListener(type, (event) => record('capture', event), true);
+      document.addEventListener('click', (event) => record('bubble', event));
+      document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('reviewsModal');
+        if (modal) new MutationObserver(() => events.push({ type: 'modal-class', value: modal.className })).observe(modal, { attributes: true, attributeFilter: ['class'] });
+      });
+    });
+    for (const route of ['/', '/prigorody/pushkin/']) {
+      for (const badge of ['google', 'yandex']) {
+        await page.goto(route, { waitUntil: 'domcontentloaded' });
+        // A natural press can span several frames while the section enters view.
+        await page.locator(`.map-badge-${badge}`).click({ delay: 150 });
+        try {
+          await expect(page.locator('#reviewsModal')).toHaveClass(/open/);
+        } catch (error) {
+          const state = await page.evaluate((name) => {
+            const button = document.querySelector(`.map-badge-${name}`);
+            const rect = button?.getBoundingClientRect();
+            const hit = rect && document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
+            return { ready: document.readyState, lock: document.body.dataset.lockCount, bodyPosition: document.body.style.position,
+              modal: document.getElementById('reviewsModal')?.className, buttonRect: rect?.toJSON(),
+              hit: hit ? `${hit.tagName}#${hit.id}.${[...hit.classList].join('.')}` : null, events: window.__reviewDiagnostic.slice(-20) };
+          }, badge).catch((diagnosticError) => ({ diagnosticError: diagnosticError.message }));
+          throw new Error(`${error.message}\nReview diagnostics: ${JSON.stringify({ route, badge, ...state, errors })}`, { cause: error });
+        }
+        await expect(page.locator(`#reviews${badge === 'google' ? 'Google' : 'Yandex'}`)).toBeVisible();
+        await expect(page.locator('#reviewsGoogle .modal-review')).toHaveCount(4);
+        await expect(page.locator('#reviewsGoogle .modal-review-date, #reviewsGoogle time')).toHaveCount(0);
+        await page.locator('#tabYandex').click();
+        await expect(page.locator('#reviewsYandex .modal-review-date')).toHaveCount(4);
+        await page.locator('.reviews-modal-close').click();
+        await expect(page.locator('#reviewsModal')).not.toHaveClass(/open/);
+      }
+    }
+  });
+
+  test('review lists have named keyboard scroll regions', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 700 });
+    await page.goto('/prigorody/pushkin/', { waitUntil: 'domcontentloaded' });
+    await page.locator('.map-badge-google').click({ delay: 150 });
+    await expect(page.locator('#reviewsModal')).toHaveClass(/open/);
+
+    for (const [name, label] of [['Google', 'Отзывы на Google Картах'], ['Yandex', 'Отзывы на Яндекс Картах']]) {
+      if (name === 'Yandex') await page.locator('#tabYandex').click();
+      const list = page.locator(`#reviews${name}`);
+      await expect(list).toHaveAttribute('role', 'region');
+      await expect(list).toHaveAttribute('aria-label', label);
+      await expect(list).toHaveAttribute('tabindex', '0');
+      let reached = false;
+      for (let step = 0; step < 150; step++) {
+        await page.keyboard.press('Tab');
+        if (await list.evaluate((element) => element === document.activeElement)) { reached = true; break; }
+      }
+      expect(reached, `${name} list is reached using Tab`).toBe(true);
+      const dimensions = await list.evaluate((element) => ({ height: element.clientHeight, content: element.scrollHeight }));
+      expect(dimensions.content, `${name} list must actually overflow in this viewport`).toBeGreaterThan(dimensions.height);
+      await page.keyboard.press('PageDown');
+      await expect.poll(() => list.evaluate((element) => element.scrollTop), { message: `${name} list scrolls with Page Down` }).toBeGreaterThan(0);
+    }
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#reviewsModal')).not.toHaveClass(/open/);
+  });
+
   test('review and calculator controls keep explicit accessible names', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
 

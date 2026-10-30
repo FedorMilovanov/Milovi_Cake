@@ -212,11 +212,11 @@
       padding: 0 56px;
       height: 68px;
       display: flex; align-items: center; justify-content: space-between;
-      background: transparent;
+      background: #130c07;
       transition: background 0.6s ease, backdrop-filter 0.6s ease, box-shadow 0.6s ease;
     }
     .site-hdr.scrolled {
-      background: rgba(11,8,6,0.9);
+      background: #130c07;
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       box-shadow: 0 1px 0 rgba(201,147,74,0.12);
@@ -240,7 +240,7 @@
     }
     .hdr-logo-sub {
       font-family: var(--sans); font-size: 9px; font-weight: 400;
-      letter-spacing: 0.22em; color: var(--muted);
+      letter-spacing: 0.22em; color: rgba(237,224,204,0.75);
       text-transform: uppercase; margin-top: 4px;
       display: flex; gap: 0.3em;
     }
@@ -256,7 +256,7 @@
     .hdr-back {
       font-family: var(--sans); font-size: 11px; font-weight: 400;
       letter-spacing: 0.18em; text-transform: uppercase;
-      color: var(--muted); text-decoration: none;
+      color: rgba(237,224,204,0.75); text-decoration: none;
       transition: color 0.3s, letter-spacing 0.3s, text-shadow 0.3s;
       position: relative;
     }
@@ -297,16 +297,16 @@
       text-transform: uppercase;
       margin-bottom: 12px;
     }
-    .breadcrumb a { color: var(--muted); text-decoration: none; transition: color 0.3s, letter-spacing 0.3s; }
+    .breadcrumb a { color: rgba(237,224,204,0.75); text-decoration: none; transition: color 0.3s, letter-spacing 0.3s; }
     .breadcrumb a:hover { color: var(--gold2); letter-spacing: 0.16em; }
     .breadcrumb span { color: rgba(201,147,74,0.4); }
-    .breadcrumb-current {
-      color: var(--gold);
+    .breadcrumb .breadcrumb-current {
+      color: var(--gold2);
       cursor: default;
       display: inline-block;
       transition: color 0.4s ease, letter-spacing 0.4s ease, text-shadow 0.4s ease;
     }
-    .breadcrumb-current:hover {
+    .breadcrumb .breadcrumb-current:hover {
       color: var(--gold2);
       letter-spacing: 0.14em;
       text-shadow: 0 0 12px rgba(201,147,74,0.25);
@@ -455,7 +455,7 @@
     }
     .hero-desc {
       font-size: 15px; line-height: 1.8; font-weight: 300;
-      color: var(--muted);
+      color: rgba(237,224,204,0.75);
       margin-bottom: 48px; max-width: 400px;
       opacity: 0; transform: translateY(12px);
       animation: fadeUp 0.7s ease 0.8s forwards;
@@ -488,7 +488,7 @@
     }
     .hero-price-meta { display: flex; flex-direction: column; gap: 3px; }
     .hero-price-weight {
-      font-size: 12px; letter-spacing: 0.12em; color: var(--muted);
+      font-size: 12px; letter-spacing: 0.12em; color: rgba(237,224,204,0.75);
       transition: color 0.3s ease, letter-spacing 0.3s ease;
       cursor: default;
     }
@@ -624,7 +624,7 @@
     }
     .sec-title em { font-style: italic; color: var(--gold2); font-weight: 400; }
     .sec-body {
-      font-size: 14px; line-height: 1.85; color: var(--muted); font-weight: 300;
+      font-size: 14px; line-height: 1.85; color: rgba(237,224,204,0.75); font-weight: 300;
     }
 
     /* ─── GALLERY STRIP ─── */
@@ -813,12 +813,12 @@
     .ingredient:last-child { border-bottom: none; }
     .ingredient-num {
       font-family: var(--serif); font-size: 26px; font-weight: 300;
-      color: rgba(201,147,74,0.25); flex-shrink: 0; width: 32px;
+      color: rgba(201,147,74,0.75); flex-shrink: 0; width: 32px;
       line-height: 1;
       transition: color 0.35s ease;
     }
     .ingredient:hover .ingredient-num {
-      color: rgba(201,147,74,0.55);
+      color: rgba(201,147,74,0.95);
     }
     .ingredient-name {
       font-family: var(--serif); font-size: 18px; font-weight: 400;
@@ -1433,7 +1433,7 @@
       0%   { background-position: 100% center; }
       100% { background-position: 0% center; }
     }
-    .footer-brand-desc { font-size: 13px; line-height: 1.7; color: var(--muted); }
+    .footer-brand-desc { font-size: 13px; line-height: 1.7; color: rgba(237,224,204,0.75); }
     .footer-socials { display: flex; gap: 14px; margin-top: 24px; }
     .footer-social {
       width: 36px; height: 36px; border-radius: 50%;
@@ -1458,6 +1458,7 @@
       margin-bottom: 10px; line-height: 1.5;
       transition: color 0.25s ease, padding-left 0.25s ease;
     }
+    .footer-col--nav a { color: rgba(237,224,204,0.75); }
     .footer-col a:hover { color: var(--gold2); padding-left: 4px; }
     .footer-bottom {
       display: flex; align-items: center; justify-content: space-between;
@@ -1465,7 +1466,7 @@
       border-top: 1px solid rgba(201,147,74,0.08);
       font-size: 12px; letter-spacing: 0.08em; color: rgba(237,224,204,0.3);
     }
-    .footer-bottom a { color: rgba(237,224,204,0.3); text-decoration: none; transition: color 0.4s, letter-spacing 0.4s; }
+    .footer-bottom a { color: rgba(237,224,204,0.75); text-decoration: none; transition: color 0.4s, letter-spacing 0.4s; }
     .footer-bottom a:hover { color: var(--gold2); letter-spacing: 0.06em; }
 
     /* [NM-4 FIXED] ~35 lines of dead .bottom-nav CSS removed.
@@ -1553,6 +1554,10 @@
         padding-left:  max(20px, env(safe-area-inset-left));
         padding-right: max(20px, env(safe-area-inset-right));
       }
+      .hdr-logo { font-size: clamp(14px, 4vw, 17px); letter-spacing: 0.1em; white-space: nowrap; }
+      .hdr-logo-sub { font-size: 8px; letter-spacing: 0.12em; }
+      .hdr-right { gap: 8px; flex-shrink: 0; }
+      .hdr-order { padding-left: 10px; padding-right: 10px; letter-spacing: 0.12em; }
       .hdr-back { display: none; }
       .breadcrumb { top: 70px; left: 20px; }
 
@@ -1802,8 +1807,8 @@
   }
   </script>
 
-  <link rel="stylesheet" href="/css/premium-overrides.css?v=20260728r27" />
-  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260728r27">
+  <link rel="stylesheet" href="/css/premium-overrides.css?v=20261027r05" />
+  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20261027r03">
   <link rel="stylesheet" href="/css/v20-fixes.css?v=20260728r27">
   <link rel="stylesheet" href="/css/final-fixes.css?v=20261023r01" />
 <style id="lp-theme-toggle-css">
@@ -2331,7 +2336,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
         </a>
       </div>
     </div>
-    <div class="footer-col">
+    <div class="footer-col footer-col--nav">
       <div class="footer-col-title">Навигация</div>
       <a href="https://milovicake.ru/">Главная</a>
       <a href="https://milovicake.ru/zakazat-tort-spb/">Заказать торт в СПб</a>
@@ -2341,7 +2346,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
       <a href="https://milovicake.ru/gallery/">Галерея работ</a>
       <a href="https://milovicake.ru/o-konditere/">О кондитере</a>
     </div>
-    <div class="footer-col">
+    <div class="footer-col footer-col--nav">
       <div class="footer-col-title">Доставка в пригороды</div>
       <a href="https://milovicake.ru/prigorody/pushkin/">Пушкин</a>
       <a href="https://milovicake.ru/prigorody/peterhof/">Петергоф</a>
@@ -2379,12 +2384,14 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
   (function() {
     var ld = document.getElementById('loader');
     if (!ld) return;
-    if (sessionStorage.getItem('meringueLoaded')) {
-      ld.classList.add('gone'); // instant — no transition needed for cached visit
-    }
+    try {
+      if (sessionStorage.getItem('meringueLoaded')) {
+        ld.classList.add('gone'); // instant — no transition needed for cached visit
+      }
+      sessionStorage.setItem('meringueLoaded', '1');
+      sessionStorage.setItem('fromMeringue', '1');
+    } catch (err) { /* Storage may be disabled; the load handlers still hide the loader. */ }
   })();
-  sessionStorage.setItem('meringueLoaded', '1');
-  sessionStorage.setItem('fromMeringue', '1');
   window.addEventListener('load', () => {
     setTimeout(() => document.getElementById('loader').classList.add('gone'), 350);
   });

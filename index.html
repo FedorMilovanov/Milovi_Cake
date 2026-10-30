@@ -409,10 +409,10 @@
     @media(max-width:768px){#catalogGrid{grid-template-columns:repeat(2,1fr);gap:16px;padding:0 16px 32px}}
     @media(max-width:560px){#catalogGrid{grid-template-columns:1fr;gap:20px;padding:0 16px 36px}}
   </style>
-<link rel="stylesheet" href="css/style.css?v=20261023r02" />
-  <link rel="stylesheet" href="css/mc-2026.css?v=20261023r02" />
-  <link rel="stylesheet" href="css/premium-overrides.css?v=20260728r27" />
-  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20260728r27">
+<link rel="stylesheet" href="css/style.css?v=20261027r04" />
+  <link rel="stylesheet" href="css/mc-2026.css?v=20261027r04" />
+  <link rel="stylesheet" href="css/premium-overrides.css?v=20261027r05" />
+  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20261027r03">
 <!-- Необязательная аналитика и LCP-телеметрия управляются согласием пользователя. -->
 <link rel="stylesheet" href="/css/v20-fixes.css?v=20260728r27">
   <link rel="stylesheet" href="/css/final-fixes.css?v=20261023r01" />
@@ -846,7 +846,7 @@
           <div class="calc-result" id="calcResultBox">
 
             <!-- Компактная полоска — всегда видна, тап раскрывает -->
-            <div class="calc-result-collapsed" id="calcCollapsedBar" onclick="toggleCalcPanel()">
+            <div class="calc-result-collapsed" id="calcCollapsedBar" aria-controls="calcExpandable" aria-expanded="false" onclick="toggleCalcPanel()">
               <div class="calc-result-collapsed-handle"></div>
               <div style="display:flex;flex-direction:column;gap:1px;flex:1;padding-top:6px;">
                 <span class="calc-result-collapsed-label">Примерная стоимость</span>
@@ -858,7 +858,7 @@
             </div>
 
             <!-- Раскрывающаяся часть — полный блок -->
-            <div class="calc-result-expandable" id="calcExpandable">
+            <div class="calc-result-expandable" id="calcExpandable" role="region" aria-label="Итог расчёта торта" tabindex="0">
               <div class="calc-result-expand-inner">
                 <div class="calc-result-label" id="calcLabel">Примерная стоимость<span class="calc-approx-badge" id="calcApproxBadge" aria-hidden="true">~</span></div>
                 <div class="calc-result-price" id="calcResult">5 600 ₽</div>
@@ -915,7 +915,7 @@
       <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(7)" aria-label="Открыть скриншот отзыва 8 в полном размере"><img src="img/review_8-thumb.webp" alt="Скриншот отзыва покупателя 8" loading="lazy" width="200" height="433"></button>
     </div>
   </div>
-  <div class="map-badges-center reveal">
+  <div class="map-badges-center">
     <button type="button" class="map-badge map-badge-yandex" onclick="openReviewsModal('yandex')" aria-label="Яндекс Карты ★ 4.8">
       <svg class="map-badge-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#FC3F1D"/><path d="M13.18 7.2h-.92c-1.2 0-1.84.58-1.84 1.54 0 1.1.48 1.62 1.44 2.28l.8.54-2.28 3.44H8.9l2.08-3.12c-1.2-.86-1.88-1.7-1.88-3.06 0-1.76 1.22-2.92 3.16-2.92h2.3V17h-1.38V7.2z" fill="#fff"/></svg>
       <span>Яндекс Карты</span>
@@ -1251,7 +1251,7 @@
     </div>
 
     <!-- Яндекс отзывы -->
-    <div class="reviews-modal-list" id="reviewsYandex">
+    <div class="reviews-modal-list" id="reviewsYandex" role="region" aria-label="Отзывы на Яндекс Картах" tabindex="0">
 
       <div class="modal-review">
         <div class="modal-review-header">
@@ -1304,14 +1304,13 @@
     </div>
 
     <!-- Google отзывы -->
-    <div class="reviews-modal-list" id="reviewsGoogle" style="display:none;">
+    <div class="reviews-modal-list" id="reviewsGoogle" role="region" aria-label="Отзывы на Google Картах" tabindex="0" style="display:none;">
 
       <div class="modal-review">
         <div class="modal-review-header">
           <div class="modal-review-avatar" style="background:#8B4513;">Т</div>
           <div class="modal-review-meta">
             <span class="modal-review-name">Татьяна</span>
-            <span class="modal-review-date"><time datetime="2025-05-01">год назад</time></span>
           </div>
           <div class="modal-review-stars">★★★★★</div>
         </div>
@@ -1323,7 +1322,6 @@
           <div class="modal-review-avatar" style="background:#4285F4;">Л</div>
           <div class="modal-review-meta">
             <span class="modal-review-name">Liras Магазин</span>
-            <span class="modal-review-date"><time datetime="2024-05-01">2 года назад</time></span>
           </div>
           <div class="modal-review-stars">★★★★★</div>
         </div>
@@ -1335,7 +1333,6 @@
           <div class="modal-review-avatar" style="background:#34A853;">И</div>
           <div class="modal-review-meta">
             <span class="modal-review-name">Ирина Силантьева</span>
-            <span class="modal-review-date"><time datetime="2025-05-01">год назад</time></span>
           </div>
           <div class="modal-review-stars">★★★★★</div>
         </div>
@@ -1347,7 +1344,6 @@
           <div class="modal-review-avatar" style="background:#EA4335;">Е</div>
           <div class="modal-review-meta">
             <span class="modal-review-name">Елена Кузнецова</span>
-            <span class="modal-review-date"><time datetime="2024-05-01">2 года назад</time></span>
           </div>
           <div class="modal-review-stars">★★★★★</div>
         </div>
@@ -1503,10 +1499,10 @@
 </script>
 
 <script>var IMG_BASE = 'img';</script>
-<script src="js/main.js?v=20261027r01" defer></script>
+<script src="js/main.js?v=20261027r05" defer></script>
 
 <script src="js/nav.js?v=20260728r27" defer></script>
-<script src="js/mc-2026.js?v=20260916r02" defer></script>
+<script src="js/mc-2026.js?v=20261027r02" defer></script>
 
 <script defer src="/js/v20-faq-fix.js?v=20260728r27"></script>
 

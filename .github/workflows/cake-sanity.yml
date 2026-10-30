@@ -57,3 +57,75 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
           include-hidden-files: false
+
+  inspect-native-artifact:
+    name: Inspect previous native investigation artifact
+    # Informational only: it never replaces the exact-HEAD PR checks.
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - name: Checkout exact inspection code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Read selected thread stacks from previous artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_BRANCH: ${{ github.event.pull_request.head.ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          artifact=$(gh api "repos/$GH_REPO/actions/artifacts?per_page=100" | jq -r '
+            [.artifacts[] | select(.expired == false and (.name | startswith("webkit-native-"))
+              and .workflow_run.head_branch == env.PR_BRANCH)]
+            | sort_by(.created_at) | reverse | .[0] // empty | [.workflow_run.id, .name] | @tsv')
+          if [[ -z "$artifact" ]]; then
+            echo 'No previous native investigation artifact on this branch.'
+            exit 0
+          fi
+          IFS=$'\t' read -r run_id name <<< "$artifact"
+          [[ "$run_id" =~ ^[0-9]+$ && "$name" =~ ^webkit-native-[0-9]+-[0-9]+$ ]]
+          echo "::notice title=Historical diagnostic::Reading artifact $name from run $run_id; not an exact-HEAD result."
+          gh run download "$run_id" --name "$name" --dir "$RUNNER_TEMP/native-artifact"
+          python3 scripts/webkit_trace_excerpt.py "$RUNNER_TEMP/native-artifact"
+
+  compare-lighthouse-artifacts:
+    name: Inspect historical Lighthouse transfer changes
+    # Failure investigation only. These two completed runs are fixed so the
+    # report compares the same artifact metric on main and the PR candidate.
+    # It cannot change the independent Lighthouse result or browser checks.
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - name: Checkout comparison code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Compare saved main and PR Lighthouse requests
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/lh-main" "$RUNNER_TEMP/lh-candidate"
+          if ! gh run download 40936774252 --name lighthouse-results --dir "$RUNNER_TEMP/lh-main"; then
+            echo '::warning title=Lighthouse comparison unavailable::Historical main artifact could not be downloaded; no comparison was made.'
+            exit 0
+          fi
+          if ! gh run download 40941227909 --name lighthouse-results --dir "$RUNNER_TEMP/lh-candidate"; then
+            echo '::warning title=Lighthouse comparison unavailable::Historical PR artifact could not be downloaded; no comparison was made.'
+            exit 0
+          fi
+          python3 scripts/lighthouse_network_comparison.py "$RUNNER_TEMP/lh-main" "$RUNNER_TEMP/lh-candidate"

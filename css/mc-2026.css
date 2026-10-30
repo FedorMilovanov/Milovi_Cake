@@ -79,7 +79,7 @@
   .calc-wrap.reveal,
   .calc-wrap.reveal.visible{
     transform: none !important;
-    will-change: opacity !important;
+    will-change: auto !important;
     transition: opacity .65s ease !important;
   }
   
@@ -205,8 +205,6 @@
 :root:not([data-theme="dark"]) .cb-fl-name,
 :root:not([data-theme="dark"]) .cb-occ-name,
 :root:not([data-theme="dark"]) .review-quote,
-:root:not([data-theme="dark"]) .calc-result-price,
-:root:not([data-theme="dark"]) .calc-summary-chip .chip-val,
 :root:not([data-theme="dark"]) .stats-grid .stat-num,
 :root:not([data-theme="dark"]) .features-grid .feature-num,
 :root:not([data-theme="dark"]) .cb-section-label span,
@@ -1057,7 +1055,7 @@ button:focus-visible, a:focus-visible {
 .vtile-play{
   position:absolute; top:6px; left:6px; width:20px; height:20px; border-radius:50%;
   background:rgba(20,11,4,.5); display:flex; align-items:center; justify-content:center;
-  -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px); transition:opacity .3s ease;
+  transition:opacity .3s ease;
 }
 .vtile.is-magnet .vtile-play{ opacity:0; }
 .vtile-play svg{ width:9px; height:9px; fill:#fdf3e0; margin-left:1px; }
@@ -1145,3 +1143,6 @@ button:focus-visible, a:focus-visible {
 @media (prefers-reduced-motion:reduce){
   .catalog-grid .product-card:hover .slider-wrap img{ transform:none; }
 }
+
+/* Keep status messages readable within narrow viewports. */
+.toast { width:max-content; max-width:calc(100vw - 32px); white-space:normal; overflow-wrap:anywhere; text-align:center; }

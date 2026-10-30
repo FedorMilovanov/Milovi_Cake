@@ -220,42 +220,6 @@
   });
 
 
-  /* ═══════════════════════════════════════════════════════════════════
-     8. Мониторинг INP / LCP / CLS (только при ?mc-debug=1)
-     ═══════════════════════════════════════════════════════════════════ */
-  if (location.search.indexOf('mc-debug=1') > -1 && 'PerformanceObserver' in window){
-    try {
-      new PerformanceObserver(function(list){
-        var entries = list.getEntries();
-        for (var i = 0; i < entries.length; i++){
-          var e = entries[i];
-          /* debug removed r28 */
-        }
-      }).observe({ type: 'largest-contentful-paint', buffered: true });
-
-      var clsTotal = 0;
-      new PerformanceObserver(function(list){
-        var entries = list.getEntries();
-        for (var i = 0; i < entries.length; i++){
-          if (!entries[i].hadRecentInput) clsTotal += entries[i].value;
-        }
-        /* debug removed r28 */
-      }).observe({ type: 'layout-shift', buffered: true });
-
-      if (PerformanceObserver.supportedEntryTypes &&
-          PerformanceObserver.supportedEntryTypes.indexOf('event') > -1){
-        new PerformanceObserver(function(list){
-          var entries = list.getEntries();
-          for (var i = 0; i < entries.length; i++){
-            if (entries[i].duration > 100){
-              /* debug removed r28 */
-            }
-          }
-        }).observe({ type: 'event', buffered: true, durationThreshold: 100 });
-      }
-    } catch(e){ /* ignore */ }
-  }
-
 })();
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -265,32 +229,7 @@
 (function() {
   'use strict';
   
-  // 1. DEBOUNCE utility for scroll/resize
-  function debounce(func, wait) {
-    var timeout;
-    return function() {
-      var context = this, args = arguments;
-      clearTimeout(timeout);
-      timeout = setTimeout(function() {
-        func.apply(context, args);
-      }, wait);
-    };
-  }
-  
-  // 2. THROTTLE for high-frequency events
-  function throttle(func, limit) {
-    var inThrottle;
-    return function() {
-      var args = arguments, context = this;
-      if (!inThrottle) {
-        func.apply(context, args);
-        inThrottle = true;
-        setTimeout(function() { inThrottle = false; }, limit);
-      }
-    };
-  }
-  
-  // 3. LAZY LOAD images with IntersectionObserver
+  // LAZY LOAD images with IntersectionObserver
   if ('IntersectionObserver' in window) {
     var lazyImages = [].slice.call(document.querySelectorAll('img[loading="lazy"]'));
     var lazyObserver = new IntersectionObserver(function(entries) {
@@ -310,47 +249,6 @@
       lazyObserver.observe(img);
     });
   }
-  
-  // 4. PREFETCH removed — causes unnecessary bandwidth on mobile
-  
-  // 5. OPTIMIZE SCROLL HANDLERS
-  var ticking = false;
-  function updateOnScroll() {
-    // Batch all scroll updates here
-    ticking = false;
-  }
-  
-  window.addEventListener('scroll', function() {
-    if (!ticking) {
-      requestAnimationFrame(updateOnScroll);
-      ticking = true;
-    }
-  }, { passive: true });
-  
-  // 6. REDUCE LAYOUT THRASHING
-  function batchDOMReads() {
-    // Read all at once
-    var scrollY = window.scrollY;
-    var innerHeight = window.innerHeight;
-    var bodyHeight = document.body.offsetHeight;
-    
-    // Then write
-    requestAnimationFrame(function() {
-      // DOM writes here
-    });
-  }
-  
-  // 7. MEMORY LEAK PREVENTION — cleanup on page hide
-  document.addEventListener('visibilitychange', function() {
-    if (document.hidden) {
-      // Pause animations, timers
-      if (window.slideTimers) {
-        Object.keys(window.slideTimers).forEach(function(key) {
-          clearInterval(window.slideTimers[key]);
-        });
-      }
-    }
-  });
   
   // 8. VIEW TRANSITIONS API removed — breaks analytics and Safari
   
@@ -382,6 +280,8 @@
   var items;
   try { items = JSON.parse(strip.getAttribute('data-videos') || '[]'); }
   catch (e) { items = []; }
+  if (!Array.isArray(items)) return;
+  items = items.filter(function(it) { return it && typeof it.t === 'string' && typeof it.p === 'string' && typeof it.v === 'string'; });
   if (!items.length) return;
 
   var PLAY_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';

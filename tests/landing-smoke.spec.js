@@ -1193,3 +1193,167 @@ test.describe('production-measured contrast regressions', () => {
     await assertContrast(page, '.prigorody-page .calc-options:not(#calcDecor) .calc-opt.selected .opt-label');
   });
 });
+
+test.describe('suburb links and page-specific resilience', () => {
+  test.use({ serviceWorkers: 'block', reducedMotion: 'reduce' });
+
+  test('a suburb Pavlova link hydrates the catalog; the roll link opens the roll', async ({ page }) => {
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await page.goto('/prigorody/pushkin/', { waitUntil: 'domcontentloaded' });
+    const promo = page.locator('.meringue-promo');
+    const pavlova = promo.getByRole('link', { name: 'пирожное Павлова' });
+    const roll = promo.getByRole('link', { name: 'меренговый рулет' });
+    await expect(pavlova).toHaveAttribute('href', '#catalog');
+    await expect(roll).toHaveAttribute('href', '/meringue-roll/?city=pushkin');
+    await pavlova.click();
+    await expect(page).toHaveURL(/\/prigorody\/pushkin\/#catalog$/);
+    const card = page.locator('#card-5');
+    await card.scrollIntoViewIfNeeded();
+    await expect(card).toContainText('Павлова');
+    await expect(card).toBeVisible();
+    await expect.poll(() => card.locator('img').first().evaluate((image) => image.naturalWidth)).toBeGreaterThan(0);
+    await roll.click();
+    await expect(page).toHaveURL(/\/meringue-roll\/\?city=pushkin$/);
+    await expect(page.locator('h1')).toContainText('Меренговый');
+    expect(errors).toEqual([]);
+  });
+
+  for (const failure of ['session-read', 'session-quota', 'both-storages']) {
+    test(`meringue page and FAQ work when ${failure} fails`, async ({ page }) => {
+      const errors = [];
+      page.on('pageerror', (error) => errors.push(error.message));
+      await page.addInitScript((mode) => {
+        if (mode === 'session-read' || mode === 'both-storages') {
+          Object.defineProperty(window, 'sessionStorage', { configurable: true, get() {
+            throw new DOMException('Storage blocked', 'SecurityError');
+          }});
+        } else {
+          const setItem = Storage.prototype.setItem;
+          Storage.prototype.setItem = function (key, value) {
+            if (this === window.sessionStorage) throw new DOMException('Quota exceeded', 'QuotaExceededError');
+            return setItem.call(this, key, value);
+          };
+        }
+        if (mode === 'both-storages') Object.defineProperty(window, 'localStorage', { configurable: true, get() {
+          throw new DOMException('Storage blocked', 'SecurityError');
+        }});
+      }, failure);
+      await page.goto('/meringue-roll/', { waitUntil: 'domcontentloaded' });
+      if (failure === 'both-storages') {
+        await page.getByRole('button', { name: 'Без аналитики' }).click();
+        await expect(page.locator('.mc-consent-overlay')).toBeHidden();
+      }
+      await expect(page.locator('#loader')).toBeHidden();
+      const faq = page.locator('details.mr-faq-item').first();
+      await faq.locator('summary').click();
+      await expect(faq).toHaveAttribute('open', '');
+      await expect(faq.locator('p')).toBeVisible();
+      expect(errors).toEqual([]);
+    });
+  }
+
+  test('suburb header and text remain readable while actually switching themes', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('mc_theme', 'light'));
+    await page.goto('/prigorody/', { waitUntil: 'domcontentloaded' });
+    for (const theme of ['light', 'dark']) {
+      await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+      const header = page.locator('#siteHeader');
+      expect(await header.evaluate((node) => getComputedStyle(node).backgroundColor)).toBe('rgb(41, 27, 18)');
+      expect(await contrastOnBackground(page.locator('#themeToggleBtn'), '#siteHeader')).toBeGreaterThanOrEqual(3);
+      expect(await contrastOnBackground(page.locator('#siteHeader .header-logo'), '#siteHeader')).toBeGreaterThanOrEqual(4.5);
+      await page.locator('#hubSeoTitle').evaluate((node) => node.scrollIntoView({ block: 'start', behavior: 'instant' }));
+      const headerBox = await header.boundingBox();
+      const headingBox = await page.locator('#hubSeoTitle').boundingBox();
+      expect(headingBox.y).toBeGreaterThanOrEqual(headerBox.y + headerBox.height - 1);
+      expect(await contrastOnBackground(page.locator('.hub-seo > p'), 'body')).toBeGreaterThanOrEqual(4.5);
+      expect(await contrastOnBackground(page.locator('.hub-back a'), 'body')).toBeGreaterThanOrEqual(4.5);
+      await page.locator('#themeToggleBtn').click();
+    }
+  });
+
+  test('roll header stays legible and uncrowded at 320–1440px', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('mc_theme', 'dark'));
+    await page.goto('/meringue-roll/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('#loader')).toBeHidden();
+    for (const width of [320, 390, 1440]) {
+      await page.setViewportSize({ width, height: 844 });
+      for (const theme of ['dark', 'light']) {
+        await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+        const header = page.locator('.site-hdr');
+        expect(await header.evaluate((node) => getComputedStyle(node).backgroundColor)).toBe('rgb(19, 12, 7)');
+        const logo = page.locator('.hdr-logo');
+        const order = page.locator('.hdr-order');
+        const toggle = page.locator('.lp-theme-toggle');
+        // Include the button's own surface, including its real hover transition.
+        await expect.poll(() => contrastOnBackground(order, '.site-hdr', '.hdr-order')).toBeGreaterThanOrEqual(4.5);
+        await expect.poll(() => contrastOnBackground(toggle, '.site-hdr', '.lp-theme-toggle')).toBeGreaterThanOrEqual(3);
+        const [headBox, logoBox, orderBox, toggleBox] = await Promise.all(
+          [header, logo, order, toggle].map((item) => item.boundingBox())
+        );
+        expect(logoBox.x + logoBox.width + 4).toBeLessThanOrEqual(orderBox.x);
+        expect(orderBox.x + orderBox.width).toBeLessThanOrEqual(toggleBox.x);
+        expect(toggleBox.x + toggleBox.width).toBeLessThanOrEqual(width);
+        expect(logoBox.y + logoBox.height).toBeLessThanOrEqual(headBox.y + headBox.height);
+        await toggle.click();
+      }
+    }
+  });
+
+  test('roll copy and navigation retain contrast in both selected themes', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('mc_theme', 'dark'));
+    await page.goto('/meringue-roll/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('#loader')).toBeHidden();
+    for (const theme of ['dark', 'light']) {
+      await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+      for (const [selector, background, minimum] of [
+        ['.hero-desc', 'body', 4.5],
+        ['.breadcrumb-current', 'body', 4.5],
+        ['.sec-body', '.split-text', 4.5],
+        ['.ingredient-num', '.split-text', 3],
+        ['.footer-col--nav a', '.site-footer', 4.5],
+      ]) {
+        const item = page.locator(selector).first();
+        await item.scrollIntoViewIfNeeded();
+        // Wait for the site's own reveal/hover transitions rather than forcing their state.
+        await expect.poll(() => item.evaluate((node) => Number(getComputedStyle(node).opacity))).toBe(1);
+        await expect.poll(() => contrastOnBackground(item, background), { message: `${theme} ${selector}` }).toBeGreaterThanOrEqual(minimum);
+      }
+      await page.locator('.lp-theme-toggle').click();
+    }
+  });
+});
+
+const localFontPages = ['/o-konditere/', '/bento-torty/', '/svadebnye-torty/',
+  '/zakazat-tort-spb/', '/dostavka-i-oplata/', '/otzyvy/'];
+
+test('local landing fonts render without third-party font requests', async ({ page }) => {
+  const externalFonts = [];
+  const errors = [];
+  page.on('request', (request) => {
+    if (/^https:\/\/fonts\.(googleapis|gstatic)\.com\//.test(request.url())) externalFonts.push(request.url());
+  });
+  page.on('pageerror', (error) => errors.push(error.message));
+  for (const path of localFontPages) {
+    await page.goto(path, { waitUntil: 'load' });
+    await page.evaluate(() => document.fonts.ready);
+    const loaded = await page.evaluate(() => [...document.fonts]
+      .filter((face) => face.status === 'loaded').map((face) => face.family));
+    expect(loaded, `${path}: loaded font families`).toContain('Cormorant Garamond');
+    expect(loaded, `${path}: loaded font families`).toContain('Jost');
+    await expect(page.locator('h1')).toBeVisible();
+  }
+  expect(externalFonts).toEqual([]);
+  expect(errors).toEqual([]);
+});
+
+test('landing content remains usable when local fonts fail', async ({ page }) => {
+  await page.route('**/fonts/*.woff2', (route) => route.abort());
+  await page.goto('/o-konditere/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('h1')).toBeVisible();
+  const themeButton = page.locator('.lp-theme-toggle');
+  await expect(themeButton).toBeVisible();
+  const before = await page.locator('html').getAttribute('data-theme');
+  await themeButton.click();
+  await expect(page.locator('html')).not.toHaveAttribute('data-theme', before || '');
+});
