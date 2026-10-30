@@ -25,7 +25,9 @@ on:
       - 'css/**'
       - 'js/**'
       - 'img/**'
+      - 'fonts/**'
       - '*.html'
+      - '**/*.html'
 
 permissions:
   contents: read

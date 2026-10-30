@@ -1321,3 +1321,37 @@ test.describe('suburb links and page-specific resilience', () => {
     }
   });
 });
+
+const localFontPages = ['/o-konditere/', '/bento-torty/', '/svadebnye-torty/',
+  '/zakazat-tort-spb/', '/dostavka-i-oplata/', '/otzyvy/'];
+
+test('local landing fonts render without third-party font requests', async ({ page }) => {
+  const externalFonts = [];
+  const errors = [];
+  page.on('request', (request) => {
+    if (/^https:\/\/fonts\.(googleapis|gstatic)\.com\//.test(request.url())) externalFonts.push(request.url());
+  });
+  page.on('pageerror', (error) => errors.push(error.message));
+  for (const path of localFontPages) {
+    await page.goto(path, { waitUntil: 'load' });
+    await page.evaluate(() => document.fonts.ready);
+    const loaded = await page.evaluate(() => [...document.fonts]
+      .filter((face) => face.status === 'loaded').map((face) => face.family));
+    expect(loaded, `${path}: loaded font families`).toContain('Cormorant Garamond');
+    expect(loaded, `${path}: loaded font families`).toContain('Jost');
+    await expect(page.locator('h1')).toBeVisible();
+  }
+  expect(externalFonts).toEqual([]);
+  expect(errors).toEqual([]);
+});
+
+test('landing content remains usable when local fonts fail', async ({ page }) => {
+  await page.route('**/fonts/fontsource-5.3.0/**', (route) => route.abort());
+  await page.goto('/o-konditere/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('h1')).toBeVisible();
+  const themeButton = page.locator('.lp-theme-toggle');
+  await expect(themeButton).toBeVisible();
+  const before = await page.locator('html').getAttribute('data-theme');
+  await themeButton.click();
+  await expect(page.locator('html')).not.toHaveAttribute('data-theme', before || '');
+});
