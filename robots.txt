@@ -21,7 +21,6 @@ Disallow: /prigorody/_template.html
 Disallow: /prigorody/_cities.csv
 Allow: /
 Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term&yclid&gclid&fbclid&_openstat&etext&from /
-Host: milovicake.ru
 
 # /call/ is crawlable so its noindex directive can be read.
 Sitemap: https://milovicake.ru/sitemap.xml
