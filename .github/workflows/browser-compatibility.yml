@@ -267,7 +267,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mode: [original, no-backdrop, no-shared, no-gallery]
+        mode: [original, no-backdrop, no-cart, no-cart-gallery, no-chip]
     env:
       HOME: /root
       MILOVI_BROWSER_COMPAT: '1'
@@ -299,19 +299,40 @@ jobs:
           mode = os.environ['MODE']
           gallery = pathlib.Path('css/gallery/gallery-2026.css')
           paths = list(pathlib.Path('css').rglob('*.css')) + [pathlib.Path('index.html'), pathlib.Path('gallery/index.html')]
-          if mode == 'no-shared':
-              paths = [path for path in paths if path != gallery]
-          elif mode == 'no-gallery':
+          if mode in ('no-cart', 'no-cart-gallery'):
+              paths = [pathlib.Path('css/style.css')]
+              if mode == 'no-cart-gallery':
+                  paths.append(gallery)
+          elif mode == 'no-chip':
               paths = [gallery]
           elif mode != 'no-backdrop':
               raise ValueError(f'Unknown mode {mode}')
           count = 0
           pattern = re.compile(r'((?:-webkit-)?backdrop-filter\s*:\s*)([^;{}]+)')
+          cart_rule = re.compile(r'([^{}]*\.cart-(?:overlay|drawer)[^{}]*\{)([^{}]*)(\})')
+          chip_rule = re.compile(r'(\.gx-chip\s*\{)([^{}]*)(\})')
           for path in paths:
               text = path.read_text()
               def replace(match):
                   return match.group(1) + ('none !important' if '!important' in match.group(2) else 'none')
-              changed, n = pattern.subn(replace, text)
+              if mode in ('no-cart', 'no-cart-gallery') and path != gallery:
+                  n = [0]
+                  def change_rule(match):
+                      body, changed_count = pattern.subn(replace, match.group(2))
+                      n[0] += changed_count
+                      return match.group(1) + body + match.group(3)
+                  changed = cart_rule.sub(change_rule, text)
+                  n = n[0]
+              elif mode == 'no-chip':
+                  n = [0]
+                  def change_chip(match):
+                      body, changed_count = pattern.subn(replace, match.group(2))
+                      n[0] += changed_count
+                      return match.group(1) + body + match.group(3)
+                  changed = chip_rule.sub(change_chip, text)
+                  n = n[0]
+              else:
+                  changed, n = pattern.subn(replace, text)
               if n:
                   path.write_text(changed)
                   count += n
