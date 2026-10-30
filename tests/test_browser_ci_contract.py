@@ -146,6 +146,16 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
                         workflow.index('Compare without the additional video load call'))
         self.assertLess(experiment.index('sha256sum js/gallery/main.js'), experiment.index('p.write_text'))
         self.assertIn('sha256sum --check', restore)
+    def test_gallery_comparison_keeps_primary_independent(self):
+        workflow = (ROOT / '.github/workflows/browser-compatibility.yml').read_text(encoding='utf-8')
+        comparison = workflow.split('  webkit-gallery-backdrop-comparison:', 1)[1].split('  motion-ordering:', 1)[0]
+        self.assertIn('mode: [original, no-gallery-backdrop]', comparison)
+        self.assertIn('ref: ${{ github.event.pull_request.head.sha }}', comparison)
+        self.assertIn('assert count == 7', comparison)
+        self.assertIn('--repeat-each=5 --workers=1 --retries=0', comparison)
+        self.assertNotIn('needs: compatibility', comparison)
+        self.assertNotIn('continue-on-error', comparison)
+
     def test_browser_container_pipelines_explicitly_use_bash(self):
         workflow = (ROOT / '.github/workflows/browser-compatibility.yml').read_text(encoding='utf-8')
         # A GitHub Actions container defaults to sh, where `set -o pipefail`
