@@ -259,8 +259,6 @@ jobs:
   # Isolated comparison only: checkout is modified in one job, never the primary.
   webkit-backdrop-comparison:
     name: WebKit backdrop comparison (${{ matrix.mode }})
-    needs: compatibility
-    if: ${{ !cancelled() && (needs.compatibility.result == 'failure' || needs.compatibility.result == 'cancelled') }}
     runs-on: ubuntu-24.04
     container:
       image: mcr.microsoft.com/playwright:v1.64.1-noble
@@ -313,7 +311,7 @@ jobs:
           print(f'::notice title=WebKit diagnostic::Disabled {count} backdrop declarations in isolated checkout')
           PYCODE
           else
-            git diff --exit-code
+            git -c safe.directory="$GITHUB_WORKSPACE" diff --exit-code
           fi
           echo '::notice title=WebKit diagnostic::mode=${{ matrix.mode }}; independent comparison, primary result unchanged'
           npx playwright test tests/video-posters.spec.js tests/cart-accessibility.spec.js \
