@@ -256,60 +256,6 @@ jobs:
           cp "$RUNNER_TEMP/gallery-main-original.js" js/gallery/main.js
           sha256sum --check "$RUNNER_TEMP/gallery-main-original.sha256"
 
-  # Independent experiment: never changes the primary exact-HEAD result.
-  webkit-gallery-backdrop-comparison:
-    name: WebKit gallery backdrop comparison (${{ matrix.mode }})
-    runs-on: ubuntu-24.04
-    container:
-      image: mcr.microsoft.com/playwright:v1.64.1-noble
-      options: --shm-size=1g
-    timeout-minutes: 25
-    strategy:
-      fail-fast: false
-      matrix:
-        mode: [original, no-gallery-backdrop]
-    env:
-      HOME: /root
-      MILOVI_BROWSER_COMPAT: '1'
-      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
-    steps:
-      - name: Checkout exact PR head
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          persist-credentials: false
-      - name: Setup pinned Node
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: '22.13.0'
-          cache: npm
-      - name: Setup Python
-        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
-        with:
-          python-version: '3.12'
-      - name: Install dependencies
-        run: npm ci
-      - name: Compare unmodified keyboard interaction
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [[ '${{ matrix.mode }}' == 'no-gallery-backdrop' ]]; then
-            python3 - <<'PYCODE'
-          import pathlib, re
-          path = pathlib.Path('css/gallery/gallery-2026.css')
-          text = path.read_text()
-          changed, count = re.subn(r'((?:-webkit-)?backdrop-filter\s*:\s*)([^;{}]+)', r'\g<1>none', text)
-          assert count == 7, f'Unexpected declarations: {count}'
-          path.write_text(changed)
-          print(f'::notice title=Gallery comparison::Disabled {count} declarations only in isolated checkout')
-          PYCODE
-          else
-            git -c safe.directory="$GITHUB_WORKSPACE" diff --exit-code
-          fi
-          npx playwright test tests/video-posters.spec.js --project=webkit-mobile \
-            --grep='fallback supports buttons, thumbnails, keyboard and focus return' \
-            --repeat-each=5 --workers=1 --retries=0 --reporter=list,github
-
   motion-ordering:
     name: ${{ matrix.engine }} reduced-motion ordering
     runs-on: ubuntu-24.04
