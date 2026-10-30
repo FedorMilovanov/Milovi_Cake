@@ -364,7 +364,7 @@ jobs:
   webkit-native-investigation:
     name: WebKit native process investigation
     needs: compatibility
-    if: ${{ !cancelled() && needs.compatibility.result == 'failure' }}
+    if: ${{ !cancelled() && (needs.compatibility.result == 'failure' || needs.compatibility.result == 'cancelled') }}
     runs-on: ubuntu-24.04
     container:
       image: mcr.microsoft.com/playwright:v1.64.1-noble
@@ -437,10 +437,10 @@ jobs:
           # GitHub invokes bash with -e: preserve failures, but first stop the
           # debugger and publish the evidence instead of exiting mid-pipeline.
           set +e
-          npx playwright test tests/video-posters.spec.js \
+          npx playwright test tests/video-posters.spec.js tests/cart-accessibility.spec.js \
             --project=webkit-desktop --project=webkit-mobile \
-            --grep='gallery can close an active video|photo-only gallery can repeatedly open and close' \
-            --repeat-each=4 --workers=1 --retries=0 --reporter=list,github \
+            --grep='gallery can close an active video|photo-only gallery can repeatedly open and close|cart restoration rejects' \
+            --repeat-each=1 --workers=1 --retries=0 --reporter=list,github \
             2>&1 | tee "$RUNNER_TEMP/webkit-native.log"
           statuses=("${PIPESTATUS[@]}")
           result=${statuses[0]}

@@ -52,6 +52,7 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         workflow = (ROOT / '.github/workflows/browser-compatibility.yml').read_text(encoding='utf-8')
         native = workflow.split('  webkit-native-investigation:', 1)[1]
         self.assertIn("needs.compatibility.result == 'failure'", native)
+        self.assertIn("needs.compatibility.result == 'cancelled'", native)
         self.assertIn('ref: ${{ github.event.pull_request.head.sha }}', native)
         self.assertIn('--cap-add=SYS_PTRACE', native)
         self.assertIn("MILOVI_NATIVE_DIAGNOSTICS: '1'", native)
@@ -60,7 +61,9 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         self.assertNotIn('gcc', native)
         self.assertIn('received signal SIGABRT', native)
         self.assertIn('Debugger attachment changes timing', native)
-        self.assertIn('--repeat-each=4 --workers=1 --retries=0', native)
+        self.assertIn('--repeat-each=1 --workers=1 --retries=0', native)
+        self.assertIn('tests/cart-accessibility.spec.js', native)
+        self.assertIn('cart restoration rejects', native)
         self.assertIn('scripts/webkit_native_monitor.py summary', native)
         tests_step = native.split('- name: Compare unchanged gallery under native debugger', 1)[1].split('\n      - name:', 1)[0]
         self.assertIn('set +e', tests_step)
