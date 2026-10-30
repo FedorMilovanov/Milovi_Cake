@@ -49,18 +49,15 @@
   <meta name="apple-mobile-web-app-title" content="Milovi Cake" />
   <meta name="view-transition" content="same-origin" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="dns-prefetch" href="https://wa.me" />
   <link rel="dns-prefetch" href="https://t.me" />
   <link rel="dns-prefetch" href="https://yandex.ru" />
   <link rel="preload" as="image" type="image/avif" href="img/head_desktop.avif" media="(min-width:769px)" fetchpriority="high" />
   <link rel="preload" as="image" type="image/avif" href="img/head_mobile-640.avif" media="(max-width:768px)" fetchpriority="high" />
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Jost:wght@400;500&display=optional" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Jost:wght@400;500&display=optional" rel="stylesheet"/></noscript>
-
-
-  <!-- Основной граф структурированных данных сайта -->
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/cormorant-garamond-cyrillic-wght-normal.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/jost-cyrillic-wght-normal.woff2" />
+<link rel="stylesheet" href="/css/fonts.css?v=20261030r01" />
+<!-- Основной граф структурированных данных сайта -->
   <script type="application/ld+json">
   {
   "@context": "https://schema.org",
@@ -533,7 +530,6 @@
     </a>
   </div>
 </div>
-
 
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Просмотр изображения">
@@ -1379,9 +1375,6 @@
   </div>
 </div>
 
-
-
-
 <!-- FILL POPUP -->
 <div class="fill-mobile-overlay" id="fillOverlay"></div>
 <div class="fill-mobile-popup" id="fillPopup" role="dialog" aria-modal="true" aria-label="Информация о начинке">
@@ -1473,8 +1466,6 @@
   </div>
 </div>
 
-
-
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
@@ -1510,12 +1501,8 @@
 <script>var IMG_BASE = 'img';</script>
 <script src="js/main.js?v=20261027r05" defer></script>
 
-
 <script src="js/nav.js?v=20260728r27" defer></script>
 <script src="js/mc-2026.js?v=20261027r02" defer></script>
-
-
-
 
 <script defer src="/js/v20-faq-fix.js?v=20260728r27"></script>
 

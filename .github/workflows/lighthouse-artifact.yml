@@ -27,6 +27,9 @@ on:
       - 'img/**'
       - 'fonts/**'
       - '*.html'
+      - 'prigorody/**'
+      - 'sw.js'
+      - 'manifest.json'
       - '**/*.html'
 
 permissions:

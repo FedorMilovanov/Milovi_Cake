@@ -25,9 +25,16 @@ require(style_match is not None, 'service-worker precache lost its versioned sha
 style_ref = f'/css/style.css?v={style_match.group(1)}'
 
 home = read('index.html')
+# Шрифты переехали на самохостинг 2026-10-30: третьесторонний origin из
+# критического пути убран. Контракт теперь требует ровно обратного — что
+# Google Fonts не вернулись ни ссылкой, ни preconnect.
 require(
-    '<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />' in home,
-    'homepage Google Fonts preconnect lost its reusable CORS connection contract',
+    'href="/css/fonts.css?v=' in home,
+    'homepage lost its self-hosted font stylesheet',
+)
+require(
+    'fonts.googleapis.com' not in home and 'fonts.gstatic.com' not in home,
+    'homepage regained a third-party font origin (IP leak before consent)',
 )
 require('id="anti-fouc-body"' not in home, 'homepage body-level anti-FOUC gate returned')
 require('body:not(.ready){opacity:0}' not in home, 'homepage can still be hidden before DOMContentLoaded')
@@ -213,20 +220,25 @@ require(
     'id="gxEmpty" style="display: none;"' in gallery,
     'gallery initial-layout reserve sentinel drifted',
 )
-font_css = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600;700&display=optional'
 swiper_css = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css'
 swiper_js = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js'
 require(
-    f'href="{font_css}" rel="stylesheet" media="print" onload="this.onload=null;this.media=\'all\'"' in gallery,
-    'gallery Google Fonts CSS returned to the critical render path',
+    'href="/css/fonts.css?v=' in gallery,
+    'gallery lost its self-hosted font stylesheet',
+)
+require(
+    'fonts.googleapis.com' not in gallery,
+    'gallery regained a third-party font origin',
 )
 require(
     f'href="{swiper_css}" media="print" onload="this.onload=null;this.media=\'all\'"' in gallery,
     'gallery Swiper CSS returned to the critical render path',
 )
+# Локальный css/fonts.css грузится обычным stylesheet: noscript-дубль больше
+# не нужен, а его возврат означал бы, что кто-то снова сделал шрифты асинхронными.
 require(
-    f'<noscript><link href="{font_css}" rel="stylesheet" /></noscript>' in gallery,
-    'gallery Google Fonts noscript fallback missing',
+    'fonts.googleapis.com' not in gallery,
+    'gallery font stylesheet became third-party again',
 )
 require(
     f'<noscript><link rel="stylesheet" href="{swiper_css}" /></noscript>' in gallery,
