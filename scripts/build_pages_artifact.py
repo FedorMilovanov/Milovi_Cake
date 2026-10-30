@@ -53,6 +53,9 @@ FORBIDDEN_PARTS = {
     'test-results', '_mockups', '_review_screens', 'audit', '_site',
 }
 PRIGORODY_SOURCE_ONLY = {'_template.html', '_cities.csv', 'build.py'}
+# Входные данные сборки, а не веб-файлы: полные шрифты для
+# `scripts/subset_fonts.py` и манифест покрытия для тестов.
+FONTS_SOURCE_ONLY = {'source', 'subset-manifest.json'}
 
 
 def copy_file(source: Path, destination: Path) -> None:
@@ -72,6 +75,8 @@ def copy_runtime_dir(name: str) -> int:
         if any(part in FORBIDDEN_PARTS for part in relative.parts):
             continue
         if name == 'prigorody' and source.name in PRIGORODY_SOURCE_ONLY:
+            continue
+        if name == 'fonts' and relative.parts[1] in FONTS_SOURCE_ONLY:
             continue
         if source.suffix in {'.py', '.pyc', '.csv', '.md'}:
             continue

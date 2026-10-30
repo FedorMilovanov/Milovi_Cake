@@ -28,15 +28,13 @@
   <meta name="twitter:title" content="Бенто-торты на заказ в СПб от 1 600 ₽ — Milovi Cake" />
   <meta name="twitter:description" content="Бенто-торты на заказ в Санкт-Петербурге от 1 600 ₽: с надписью, мемом, рисунком подруге, парню, другу, маме или сестре. Доставка по СПб и самовывоз." />
   <meta name="twitter:image" content="https://milovicake.ru/img/bento_1.webp" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-  <!-- r58: hero LCP preload (AVIF + WebP fallback) -->
+<!-- r58: hero LCP preload (AVIF + WebP fallback) -->
   <link rel="preload" as="image" type="image/avif" href="/img/bento_1-mobile-640.avif" media="(max-width: 768px)" fetchpriority="high" />
   <link rel="preload" as="image" type="image/avif" href="/img/bento_1.avif" media="(min-width: 769px)" fetchpriority="high" />
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=optional" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=optional" rel="stylesheet" /></noscript>
-  <!-- First-screen geometry stays stable while the shared stylesheet loads asynchronously. -->
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/cormorant-garamond-cyrillic-wght-normal.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/jost-cyrillic-wght-normal.woff2" />
+<link rel="stylesheet" href="/css/fonts.css?v=20261030r01" />
+<!-- First-screen geometry stays stable while the shared stylesheet loads asynchronously. -->
   <style id="bento-critical">
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--cream:#f5f0e8;--gold:#c9934a;--brown:#3d2b1f;--brown-light:#6b4c38;--text:#2c1a10;--text-muted:#9a7a62}
@@ -463,10 +461,6 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 })();
 </script>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
-
-
-
-
 
   <script defer src="/js/consent-analytics.js"></script>
 </body>

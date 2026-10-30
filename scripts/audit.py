@@ -38,6 +38,7 @@ REPORT_DIR = ROOT / "audit"
 # Allowed CSS files (AGENTS.md §2 + AI_DO_NOT_TOUCH §9)
 ALLOWED_CSS = {
     "css/style.css",
+    "css/fonts.css",   # self-hosted Cormorant Garamond + Jost (was fonts.googleapis.com)
     "css/mc-2026.css",
     "css/premium-overrides.css",
     "css/v20-dark-and-fixes.css",
@@ -337,8 +338,11 @@ with R.section("1. File Structure Guard"):
     if not forbidden_js and not missing_js:
         R.ok(f"JS structure: exactly {len(ALLOWED_JS)} files as specified in AGENTS.md")
 
-    # Lean landing pages intentionally load only shared style.css for performance.
-    # This protects the CSS payload trim from accidental regression.
+    # Lean landing pages intentionally load only shared style.css plus the
+    # font-face stylesheet. fonts.css contains nothing but @font-face rules with
+    # unicode-range, so it costs ~4 KB and never blocks rendering; the trim this
+    # guard protects is about component CSS, not font declarations.
+    LEAN_ALLOWED_CSS = ["/css/fonts.css", "/css/style.css"]
     landing_css_issues = []
     for rel in sorted(LEAN_LANDING_PAGES):
         path = ROOT / rel
@@ -351,13 +355,14 @@ with R.section("1. File Structure Guard"):
             for href in parsed.stylesheets
             if href.startswith("/css/") or href.startswith("css/") or href.startswith("../css/")
         )
-        if local_styles != ["/css/style.css"]:
-            landing_css_issues.append(f"{rel}: expected only /css/style.css, got {local_styles}")
+        if local_styles != LEAN_ALLOWED_CSS:
+            landing_css_issues.append(
+                f"{rel}: expected {LEAN_ALLOWED_CSS}, got {local_styles}")
     if landing_css_issues:
         for issue in landing_css_issues:
             R.err(f"Lean landing CSS: {issue}")
     else:
-        R.ok(f"Lean landing CSS payload: {len(LEAN_LANDING_PAGES)} pages use only style.css")
+        R.ok(f"Lean landing CSS payload: {len(LEAN_LANDING_PAGES)} pages use only style.css + fonts.css")
 
 # ═══════════════════════════════════════════════════════════════════════════
 # CHECK 2: File Size Budget
