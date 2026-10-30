@@ -256,19 +256,52 @@ jobs:
           cp "$RUNNER_TEMP/gallery-main-original.js" js/gallery/main.js
           sha256sum --check "$RUNNER_TEMP/gallery-main-original.sha256"
 
-      # Diagnostic only: Mesa documents 0 as disabling llvmpipe worker threads.
-      # A different result may reflect timing; this does not prove the active
-      # renderer or replace the unchanged primary and baseline runs.
-      - name: Compare llvmpipe without worker threads
-        if: failure() && matrix.engine == 'webkit' && steps.webkit_restore.outcome == 'success'
-        env:
-          HOME: /root
-          LP_NUM_THREADS: '0'
+  # Failure-only comparison; never changes the required primary result.
+  # The active renderer is not independently verified, and timings can vary.
+  webkit-llvmpipe-comparison:
+    name: WebKit thread comparison (${{ matrix.mode }})
+    needs: compatibility
+    if: ${{ !cancelled() && needs.compatibility.result == 'failure' }}
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --shm-size=1g
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [default, no-workers]
+    env:
+      HOME: /root
+      MILOVI_BROWSER_COMPAT: '1'
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Setup pinned Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          cache: npm
+      - name: Setup Python
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: npm ci
+      - name: Compare repeated gallery interactions
+        shell: bash
         run: |
-          echo '::notice title=WebKit diagnostic::LP_NUM_THREADS=0 comparison after restoring exact source; active renderer not independently verified'
-          npx playwright test tests/video-posters.spec.js --project=webkit-desktop \
-            --grep='gallery can close an active video' --repeat-each=4 --workers=1 --retries=0 --reporter=list,github \
-            --output="$RUNNER_TEMP/webkit-no-llvmpipe-workers"
+          set -euo pipefail
+          unset LP_NUM_THREADS
+          if [[ '${{ matrix.mode }}' == 'no-workers' ]]; then export LP_NUM_THREADS=0; fi
+          echo "::notice title=WebKit diagnostic::mode=${{ matrix.mode }}, LP_NUM_THREADS=${LP_NUM_THREADS-unset}; active renderer not independently verified"
+          npx playwright test tests/video-posters.spec.js \
+            --project=webkit-desktop --project=webkit-mobile \
+            --grep='gallery can close an active video' --repeat-each=12 --workers=1 --retries=0 --reporter=list,github
 
   # Independent exact-HEAD stability check. It cannot change the primary
   # matrix result and reports media-query event ordering even if that long
