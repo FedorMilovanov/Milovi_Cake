@@ -209,7 +209,7 @@ function renderCatalog() {
       : `<h3 id="name-${p.id}">${p.name}</h3>`;
 
     return `
-    <div class="product-card reveal" id="card-${p.id}">
+    <div class="product-card" id="card-${p.id}">
       ${imgHtml}
       <div class="product-info">
         ${titleHtml}

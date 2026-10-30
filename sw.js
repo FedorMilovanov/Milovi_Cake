@@ -7,7 +7,7 @@
      - skipWaiting + clients.claim → обновления подхватываются мгновенно
    ═══════════════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'milovi-cake-v2026.10.27-r104';
+const CACHE_NAME = 'milovi-cake-v2026.10.27-r105';
 
 const PRECACHE = [
   '/',
@@ -18,7 +18,7 @@ const PRECACHE = [
   '/css/v20-fixes.css?v=20260728r27',
   '/css/final-fixes.css?v=20261023r01',
   '/css/gallery/gallery-2026.css?v=20261027r06',
-  '/js/main.js?v=20261027r04',
+  '/js/main.js?v=20261027r05',
   '/js/nav.js?v=20260728r27',
   '/js/mc-2026.js?v=20261027r02',
   '/js/v20-faq-fix.js?v=20260728r27',
