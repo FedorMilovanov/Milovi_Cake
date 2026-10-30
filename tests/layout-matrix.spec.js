@@ -68,11 +68,13 @@ for (const width of WIDTHS) {
   }
 }
 
-// Prove the catalog CTA still fits if a visitor cannot reach Google Fonts.
+// Prove the catalog CTA still fits if the webfonts never arrive.
+// С 2026-10-30 шрифты самохостинговые: отказ эмулируется блокировкой
+// собственных файлов, а не внешнего хоста, которого больше нет.
 for (const theme of THEMES) {
   test(`@layout-matrix home 561px ${theme}: buttons fit without web fonts`, async ({ page }) => {
     await page.setViewportSize({ width: 561, height: 900 });
-    await page.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => route.abort('blockedbyclient'));
+    await page.route('**/fonts/*.woff2', (route) => route.abort('blockedbyclient'));
     await page.addInitScript((selectedTheme) => localStorage.setItem('mc_theme', selectedTheme), theme);
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.locator('body').dispatchEvent('click');
@@ -98,7 +100,7 @@ for (const width of [900, 1024, 1280, 1440]) {
   for (const theme of THEMES) {
     test(`@layout-matrix home ${width}px ${theme}: narrow desktop prices stay on one line`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
-      await page.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => route.abort('blockedbyclient'));
+      await page.route('**/fonts/*.woff2', (route) => route.abort('blockedbyclient'));
       await page.addInitScript((selectedTheme) => localStorage.setItem('mc_theme', selectedTheme), theme);
       await page.goto('/', { waitUntil: 'domcontentloaded' });
       await page.waitForSelector('.product-card');

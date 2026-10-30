@@ -611,7 +611,9 @@ test.describe('premium media blocks', () => {
 
   test('wedding menu stays in the viewport at 320px when web fonts fail', async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 568 });
-    await page.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => route.abort());
+    // Шрифты самохостинговые с 2026-10-30: отказ эмулируется блокировкой
+    // собственных файлов, иначе тест «без веб-шрифтов» проверял бы ничего.
+    await page.route('**/fonts/*.woff2', (route) => route.abort());
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
     await page.evaluate(async () => { await document.fonts.ready; });
     const bounds = await page.evaluate(() => {
