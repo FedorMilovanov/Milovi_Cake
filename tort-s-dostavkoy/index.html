@@ -28,14 +28,12 @@
   <meta name="twitter:title" content="Торт с доставкой на дом в СПб — Milovi Cake" />
   <meta name="twitter:description" content="Торты с доставкой на дом в Санкт-Петербурге и пригородах: бисквитные, бенто, 3D, детские и свадебные торты Milovi Cake." />
   <meta name="twitter:image" content="https://milovicake.ru/img/og-cover.jpg" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-  <!-- r58: hero LCP preload (AVIF + WebP fallback) -->
+<!-- r58: hero LCP preload (AVIF + WebP fallback) -->
   <link rel="preload" as="image" type="image/avif" href="/img/head_desktop.avif" fetchpriority="high" />
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" /></noscript>
-  <link rel="stylesheet" href="/css/style.css?v=20261023r02" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/cormorant-garamond-cyrillic-wght-normal.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/jost-cyrillic-wght-normal.woff2" />
+<link rel="stylesheet" href="/css/fonts.css?v=20261030r01" />
+<link rel="stylesheet" href="/css/style.css?v=20261023r02" />
   <script type="application/ld+json">
   {
   "@context": "https://schema.org",
@@ -390,10 +388,6 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 })();
 </script>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
-
-
-
-
 
   <script defer src="/js/consent-analytics.js"></script>
 </body>

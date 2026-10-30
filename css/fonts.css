@@ -1,0 +1,99 @@
+/* Self-hosted brand fonts.
+ *
+ * Why this file exists: until 2026-10-30 the site loaded Cormorant Garamond and
+ * Jost from fonts.googleapis.com. That made the measured page weight
+ * non-deterministic — the byte totals depended on how many font subsets the
+ * browser managed to request before Lighthouse stopped gathering — and it sent
+ * every visitor's IP to a third party before any consent decision.
+ *
+ * Files are the official Google Fonts builds redistributed by Fontsource
+ * (SIL Open Font License 1.1, see fonts/OFL-*.txt). Variable axes cover every
+ * weight the site uses (Jost 300-700, Cormorant 300-600) in one file per
+ * subset per style, which is smaller than shipping each static weight.
+ *
+ * unicode-range values are copied verbatim from the Fontsource CSS, i.e. the
+ * same subsetting Google used, so glyph coverage is unchanged: cyrillic for
+ * Russian text, latin for the brand name, digits and punctuation.
+ *
+ * font-display: optional is deliberate. Measured on 2026-10-30: with swap the
+ * webfont replaced the fallback after first paint and pushed content below the
+ * hero — /bento-torty/ went from CLS 0.0000 to 0.1548 against a 0.1 budget.
+ * With optional the layout never reflows, so CLS stays 0 on every page.
+ *
+ * The byte cost stays predictable: the set of faces is bounded by the files in
+ * this repository (no third party can add subsets), and the CI assertion is
+ * pessimistic (worst of six runs), so it always sees the same upper bound.
+ */
+
+
+@font-face {
+  font-family: 'Jost';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/jost-cyrillic-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;
+}
+
+@font-face {
+  font-family: 'Jost';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/jost-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+@font-face {
+  font-family: 'Jost';
+  font-style: italic;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/jost-cyrillic-wght-italic.woff2') format('woff2-variations');
+  unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;
+}
+
+@font-face {
+  font-family: 'Jost';
+  font-style: italic;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/jost-latin-wght-italic.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/cormorant-garamond-cyrillic-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;
+}
+
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/cormorant-garamond-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: italic;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/cormorant-garamond-cyrillic-wght-italic.woff2') format('woff2-variations');
+  unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;
+}
+
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: italic;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/cormorant-garamond-latin-wght-italic.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
