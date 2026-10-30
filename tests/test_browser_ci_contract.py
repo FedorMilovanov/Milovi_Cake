@@ -146,15 +146,17 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
                         workflow.index('Compare without the additional video load call'))
         self.assertLess(experiment.index('sha256sum js/gallery/main.js'), experiment.index('p.write_text'))
         self.assertIn('sha256sum --check', restore)
-        comparison = workflow.split('  webkit-llvmpipe-comparison:', 1)[1].split('  motion-ordering:', 1)[0]
+        comparison = workflow.split('  webkit-backdrop-comparison:', 1)[1].split('  motion-ordering:', 1)[0]
         self.assertIn("needs.compatibility.result == 'failure'", comparison)
-        self.assertIn('mode: [default, no-workers]', comparison)
+        self.assertIn("needs.compatibility.result == 'cancelled'", comparison)
+        self.assertIn('mode: [original, no-backdrop]', comparison)
         self.assertIn('ref: ${{ github.event.pull_request.head.sha }}', comparison)
-        self.assertIn('unset LP_NUM_THREADS', comparison)
-        self.assertIn('export LP_NUM_THREADS=0', comparison)
-        self.assertIn('active renderer not independently verified', comparison)
+        self.assertIn('No backdrop declarations found', comparison)
+        self.assertIn('git diff --exit-code', comparison)
+        self.assertIn('primary result unchanged', comparison)
         self.assertIn('--project=webkit-desktop --project=webkit-mobile', comparison)
-        self.assertIn('--repeat-each=12 --workers=1 --retries=0', comparison)
+        self.assertIn('cart restoration rejects', comparison)
+        self.assertIn('--repeat-each=2 --workers=1 --retries=0', comparison)
         self.assertNotIn('continue-on-error', comparison)
 
     def test_browser_container_pipelines_explicitly_use_bash(self):
