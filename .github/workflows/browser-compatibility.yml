@@ -267,7 +267,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mode: [original, no-backdrop]
+        mode: [original, no-backdrop, no-shared, no-gallery]
     env:
       HOME: /root
       MILOVI_BROWSER_COMPAT: '1'
@@ -293,10 +293,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ '${{ matrix.mode }}' == 'no-backdrop' ]]; then
-            python3 - <<'PYCODE'
-          import pathlib, re
+          if [[ '${{ matrix.mode }}' != 'original' ]]; then
+            MODE='${{ matrix.mode }}' python3 - <<'PYCODE'
+          import os, pathlib, re
+          mode = os.environ['MODE']
+          gallery = pathlib.Path('css/gallery/gallery-2026.css')
           paths = list(pathlib.Path('css').rglob('*.css')) + [pathlib.Path('index.html'), pathlib.Path('gallery/index.html')]
+          if mode == 'no-shared':
+              paths = [path for path in paths if path != gallery]
+          elif mode == 'no-gallery':
+              paths = [gallery]
+          elif mode != 'no-backdrop':
+              raise ValueError(f'Unknown mode {mode}')
           count = 0
           pattern = re.compile(r'((?:-webkit-)?backdrop-filter\s*:\s*)([^;{}]+)')
           for path in paths:

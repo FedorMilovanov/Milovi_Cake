@@ -147,8 +147,10 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         self.assertLess(experiment.index('sha256sum js/gallery/main.js'), experiment.index('p.write_text'))
         self.assertIn('sha256sum --check', restore)
         comparison = workflow.split('  webkit-backdrop-comparison:', 1)[1].split('  motion-ordering:', 1)[0]
-        self.assertIn('mode: [original, no-backdrop]', comparison)
+        self.assertIn('mode: [original, no-backdrop, no-shared, no-gallery]', comparison)
         self.assertIn('ref: ${{ github.event.pull_request.head.sha }}', comparison)
+        self.assertIn("mode == 'no-shared'", comparison)
+        self.assertIn("mode == 'no-gallery'", comparison)
         self.assertIn('No backdrop declarations found', comparison)
         self.assertIn('git -c safe.directory="$GITHUB_WORKSPACE" diff --exit-code', comparison)
         self.assertNotIn('needs: compatibility', comparison)
