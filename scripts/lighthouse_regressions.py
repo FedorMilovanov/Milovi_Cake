@@ -255,7 +255,7 @@ for event in ['pointerdown', 'focusin', 'click']:
     )
 require('script.async = true;' in gallery, 'gallery Swiper interaction load is not asynchronous')
 require("script.addEventListener('error'" in gallery and 'loading = false;' in gallery, 'gallery Swiper loader cannot retry after CDN failure')
-require('/css/gallery/gallery-2026.css?v=20261027r06" />' in gallery, 'gallery critical local CSS became deferred or changed revision')
+require('/css/gallery/gallery-2026.css?v=20261027r07" />' in gallery, 'gallery critical local CSS became deferred or changed revision')
 require('/css/final-fixes.css?v=20261023r01" />' in gallery, 'gallery final critical CSS became deferred')
 require('id="gallery-lcp-media-fastpath"' in gallery, 'gallery eager-media LCP fast path missing')
 require(
@@ -367,8 +367,8 @@ for public_html in public_html_files():
     refs = re.findall(r'js/main\.js\?v=([0-9a-z]+)', html)
     require(all(ref == '20261027r05' for ref in refs), f'{public_html} shared main.js revision drifted')
 
-require("const CACHE_NAME = 'milovi-cake-v2026.10.27-r108';" in sw, 'service-worker cache generation drifted')
-require("'/css/gallery/gallery-2026.css?v=20261027r06'," in sw, 'gallery CSS service-worker revision drifted')
+require("const CACHE_NAME = 'milovi-cake-v2026.10.27-r109';" in sw, 'service-worker cache generation drifted')
+require("'/css/gallery/gallery-2026.css?v=20261027r07'," in sw, 'gallery CSS service-worker revision drifted')
 require(style_ref != '/css/style.css?v=20261023r01', 'service-worker precache still points at stale shared CSS revision')
 require("'/js/main.js?v=20261027r05'," in sw, 'service-worker precache still points at stale shared main.js revision')
 require("'/js/gallery/main.js?v=20261027r07'," in sw, 'service-worker precache still points at stale gallery runtime revision')
