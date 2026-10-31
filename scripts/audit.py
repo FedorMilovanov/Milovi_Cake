@@ -100,6 +100,7 @@ DEV_TOOLING_JS = {
     "tests/lcp-consent.spec.js",
     "tests/video-posters.spec.js",
     "tests/contrast-regressions.spec.js",
+    "tests/image-intrinsics.spec.js",
     "scripts/lighthouse_tbt_window.js",
 }
 
