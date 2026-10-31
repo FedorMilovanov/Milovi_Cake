@@ -691,6 +691,7 @@
     .roll-float {
       position: absolute;
       width: 55%;
+      height: auto;
       top: 2%;
       left: 50%;
       transform: translateX(-50%);
@@ -716,6 +717,7 @@
     .box-float {
       position: absolute;
       width: 52%;
+      height: auto;
       top: 84%;
       left: 55%;
       transform: translate(-50%, -50%);
@@ -1685,6 +1687,7 @@
       .box-float-mobile {
         display: block;
         width: 140px;
+        height: auto;
         position: relative;
         z-index: 1;
       }
@@ -2017,8 +2020,8 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     <div class="split-overlay"></div>
   </div>
   <div class="split-text split-text--light" style="position:relative;overflow:hidden;">
-    <picture><source type="image/avif" srcset="../img/meringue_rolls_cut.avif"><img class="roll-float" src="../img/meringue_rolls_cut.webp" alt="" aria-hidden="true" width="800" height="500" /></picture>
-    <picture><source type="image/avif" srcset="../img/meringue_box_nobg.avif"><img class="box-float" src="../img/meringue_box_nobg.webp" alt="" aria-hidden="true" width="600" height="600" /></picture>
+    <picture><source type="image/avif" srcset="../img/meringue_rolls_cut.avif"><img class="roll-float" src="../img/meringue_rolls_cut.webp" alt="" aria-hidden="true" width="500" height="500" /></picture>
+    <picture><source type="image/avif" srcset="../img/meringue_box_nobg.avif"><img class="box-float" src="../img/meringue_box_nobg.webp" alt="" aria-hidden="true" width="408" height="612" /></picture>
     <span class="sec-label reveal" style="display:inline-block;transition:color 0.4s,letter-spacing 0.4s,text-shadow 0.4s;cursor:default;" onmouseenter="this.style.color='#e8b87a';this.style.letterSpacing='0.4em';this.style.textShadow='0 0 16px rgba(201,147,74,0.2)'" onmouseleave="this.style.color='';this.style.letterSpacing='';this.style.textShadow=''">Детали заказа</span>
     <h2 class="sec-title reveal rd1">
       <span class="ht-word ht-word-wide">Вес и цена</span><br><em class="ht-em">меренгового рулета</em>
@@ -2050,7 +2053,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     </div>
     <!-- Коробка — только мобиль, под списком -->
     <div class="box-float-mobile-wrap">
-      <picture><source type="image/avif" srcset="../img/meringue_box_nobg.avif"><img class="box-float-mobile" src="../img/meringue_box_nobg.webp" alt="Фирменная коробка Milovi Cake" width="600" height="600" /></picture>
+      <picture><source type="image/avif" srcset="../img/meringue_box_nobg.avif"><img class="box-float-mobile" src="../img/meringue_box_nobg.webp" alt="Фирменная коробка Milovi Cake" width="408" height="612" /></picture>
     </div>
   </div>
 </div>
@@ -2539,7 +2542,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
   <div class="lb-backdrop" id="lbBg"></div>
   <button type="button" class="lb-x" id="lbX" aria-label="Закрыть">✕</button>
   <div class="lb-box" id="lbBox">
-    <img id="lbImg" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Фото десерта Milovi Cake" width="1200" height="900" style="max-width:100%;height:auto;aspect-ratio:4/3;" decoding="async">
+    <img id="lbImg" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Фото десерта Milovi Cake" style="max-width:100%;height:auto;" decoding="async">
   </div>
   <div class="lb-arrows" id="lbArrows">
     <button type="button" class="lb-arr-btn" id="lbPrev" aria-label="Назад">
