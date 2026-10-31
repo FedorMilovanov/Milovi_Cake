@@ -461,7 +461,9 @@ test.describe('premium media blocks', () => {
   test('wedding tasting request states individual terms and hands off to WhatsApp', async ({ page }) => {
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
     const section = page.locator('#wedTasting');
-    const link = section.getByRole('link', { name: /обсудить дегустацию/i });
+    // Имя ссылки начинается с видимого текста («Обсудить в WhatsApp»),
+    // иначе нарушается WCAG 2.5.3 label-in-name. Дегустация — в конце.
+    const link = section.getByRole('link', { name: /обсудить в whatsapp: дегустация/i });
     await expect(section).toContainText(/по запросу/i);
     await expect(section).toContainText('стоимость, сроки и возможность изготовления');
     for (const theme of ['light', 'dark']) {

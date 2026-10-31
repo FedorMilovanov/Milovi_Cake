@@ -194,6 +194,11 @@
 
 [data-theme="dark"] .calc-weight-hint {
   color: #a08060 !important;
+  /* Светлая тема уже не полагается на прозрачность (см. mc-2026.css:
+     «Muted supporting copy must remain readable instead of relying on
+     opacity»). В тёмной тема осталась с opacity .7: на градиентной подложке
+     это 3.09:1 при норме 4.5, то есть подсказка не читалась. */
+  opacity: 1;
 }
 
 [data-theme="dark"] .calc-guests-badge {

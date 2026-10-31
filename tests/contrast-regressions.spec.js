@@ -114,6 +114,16 @@ test.describe('production-measured contrast regressions', () => {
     await assertContrast(page, '.info-btn-primary');
   });
 
+  // Те же кнопки стоят ещё на двух страницах, и цвет им задавал не
+  // style.css, а локальное правило одной страницы. На /otzyvy/ его не было:
+  // белый на золотом давал 2.70:1. Проверяем все три.
+  test('gold primary CTAs stay readable on every page that uses them', async ({ page }) => {
+    for (const route of ['/otzyvy/', '/dostavka-i-oplata/']) {
+      await page.goto(route);
+      await assertContrast(page, '.info-btn-primary');
+    }
+  });
+
   // Проверка предупреждающих CTA Гатчины (.btn-primary.btn-warn) здесь
   // намеренно отсутствует: этот блок и его класс были удалены из шаблона
   // пригородов в сентябре 2026, целей для проверки больше нет. Если такой
