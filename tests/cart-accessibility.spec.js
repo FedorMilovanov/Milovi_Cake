@@ -10,19 +10,100 @@ function luminance(rgb) {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-async function contrast(page, selector) {
-  const { foreground, background } = await page.locator(selector).first().evaluate((element) => {
-    const foreground = getComputedStyle(element).color;
-    for (let node = element; node; node = node.parentElement) {
-      const color = getComputedStyle(node).backgroundColor;
-      if (color !== 'rgba(0, 0, 0, 0)' && color !== 'transparent') {
-        return { foreground, background: color };
-      }
+function channels(color) {
+  const match = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?/);
+  if (!match) throw new Error(`Cannot parse color: ${color}`);
+  const alpha = match[4] === undefined ? 1 : Number(match[4]);
+  return { rgb: match.slice(1, 4).map(Number), alpha };
+}
+
+function over(foreground, background, alpha) {
+  return foreground.map((channel, index) => Math.round(channel * alpha + background[index] * (1 - alpha)));
+}
+
+// Замер имеет смысл только после появления элемента. У .hero-actions стоит
+// `animation: fadeUp .8s .3s both`, поэтому сразу после domcontentloaded
+// прозрачность равна 0 — любой контраст там 1:1 и не значит ничего.
+async function waitForPaint(page, selector) {
+  await page.locator(selector).first().waitFor({ state: 'visible' });
+  await page.waitForFunction((sel) => {
+    const element = document.querySelector(sel);
+    if (!element) return false;
+    // собственную прозрачность элемента не ждём: у .btn-price-hint это
+    // осознанные 0.85, и раскрытие контейнера тут ни при чём
+    for (let node = element.parentElement; node; node = node.parentElement) {
+      if (Number(getComputedStyle(node).opacity) < 1) return false;
     }
-    throw new Error('No opaque background found');
-  });
-  const values = [luminance(foreground), luminance(background)].sort((a, b) => b - a);
-  return (values[0] + 0.05) / (values[1] + 0.05);
+    // бесконечные анимации (орбиты в hero) не завершатся никогда — их не ждём
+    return document.getAnimations()
+      .filter((animation) => animation.effect?.getTiming().iterations !== Infinity)
+      .every((animation) => animation.playState === 'finished');
+  }, selector, { timeout: 8_000 }).catch(() => {});
+}
+
+// Контраст обязан учитывать opacity: браузер рисует текст с произведением
+// прозрачностей всех предков. Пока хелпер читал только `color`, кнопка с
+// `color:#fff; opacity:0.78` на золотом фоне считалась проходной (6.00:1),
+// хотя рисуется с 4.38:1 — это и поймал axe на 16 страницах.
+async function contrast(page, selector) {
+  await waitForPaint(page, selector);
+  const { foreground, stops, canvas, elementOpacity, backgroundOpacity } = await page
+    .locator(selector).first().evaluate((element) => {
+      const chain = [];
+      for (let node = element; node; node = node.parentElement) {
+        const style = getComputedStyle(node);
+        chain.push({ opacity: Number(style.opacity),
+          background: style.backgroundColor, image: style.backgroundImage });
+      }
+      const elementOpacity = chain.reduce((product, layer) => product * layer.opacity, 1);
+      // Подложка под градиентом — реальный фон страницы, а не белый:
+      // в тёмной теме белая подложка дала бы завышенную яркость и ложный
+      // провал (проверено: 4.36 вместо 5.05).
+      const pageLayer = [...chain].reverse().find((layer) =>
+        layer.background !== 'rgba(0, 0, 0, 0)' && layer.background !== 'transparent');
+      const canvas = pageLayer
+        ? (pageLayer.background.match(/\d+/g) || []).slice(0, 3).map(Number)
+        : [255, 255, 255];
+      const visible = (layer) => (layer.background !== 'rgba(0, 0, 0, 0)' && layer.background !== 'transparent')
+        || (layer.image && layer.image !== 'none');
+      const index = chain.findIndex(visible);
+      if (index === -1) throw new Error('No opaque background found');
+      // Градиент не сводится к одному цвету: берём все его стопы и потом
+      // считаем контраст по худшему. Иначе хелпер молча измеряет фон далеко
+      // вверху и выдаёт несуществующее нарушение (проверено на #guestsPopup).
+      const layer = chain[index];
+      // Числа берём регуляркой целиком: `split(',')[3]` от «rgba(…, 0.9)»
+      // даёт « 0.9)», Number от него — NaN, и дальше весь контраст ломается.
+      const numbers = (color) => (color.match(/[\d.]+/g) || []).map(Number);
+      const stops = (layer.image && layer.image !== 'none')
+        ? (layer.image.match(/rgba?\([^)]+\)/g) || []).map((color) => {
+          const parts = numbers(color);
+          return { rgb: parts.slice(0, 3), alpha: parts.length > 3 ? parts[3] : 1 };
+        })
+        : [{ rgb: numbers(layer.background).slice(0, 3),
+          alpha: numbers(layer.background).length > 3 ? numbers(layer.background)[3] : 1 }];
+      // Слой с фоном и его предки, но не потомки: opacity подписи не делает
+      // полупрозрачной кнопку под ней.
+      const backgroundOpacity = chain.slice(index)
+        .reduce((product, item) => product * item.opacity, 1);
+      return { foreground: getComputedStyle(element).color,
+        stops: stops.length ? stops : [{ rgb: canvas, alpha: 1 }], canvas, elementOpacity, backgroundOpacity };
+    });
+  const text = channels(foreground);
+  // У кнопок без своей подложки фон приходит из `background` шорткатом —
+  // тогда backgroundColor прозрачный, и надо смотреть background-image.
+  if (!stops.length || !stops.every((stop) => stop.rgb.length === 3
+    && stop.rgb.every((channel) => Number.isFinite(channel)))) {
+    throw new Error(`No measurable background for ${selector}`);
+  }
+  // Худший стоп градиента определяет худший контраст — по нему и судим.
+  return Math.min(...stops.map((stop) => {
+    const backdrop = over(stop.rgb, canvas, stop.alpha * backgroundOpacity);
+    const painted = over(text.rgb, backdrop, text.alpha * elementOpacity);
+    const values = [luminance(`rgb(${painted.join(',')})`), luminance(`rgb(${backdrop.join(',')})`)]
+      .sort((a, b) => b - a);
+    return (values[0] + 0.05) / (values[1] + 0.05);
+  }));
 }
 
 test('home calculator hints retain AA contrast in both themes', async ({ page }) => {
@@ -32,7 +113,9 @@ test('home calculator hints retain AA contrast in both themes', async ({ page })
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     for (const selector of ['.calc-type-card.selected .calc-type-hint',
       '.calc-type-card:not(.selected) .calc-type-hint', '#guestsPopup',
-      '.hero .btn-primary--hero', '#fillSheetSelect']) {
+      '.hero .btn-primary--hero', '#fillSheetSelect',
+      // цена-подсказка на главной кнопке: opacity < 1 на мелком кегле
+      '.hero .btn-price-hint']) {
       expect(await contrast(page, selector), `${theme} ${selector}`).toBeGreaterThanOrEqual(4.5);
     }
     await page.locator('.hero .btn-primary--hero').hover();
@@ -47,7 +130,7 @@ test('suburb calculator and contact labels retain AA contrast', async ({ page })
     await page.addInitScript((mode) => { localStorage.setItem('mc_theme', mode); }, theme);
     await page.goto('/prigorody/pushkin/', { waitUntil: 'domcontentloaded' });
     for (const selector of ['.calc-type-card.selected .calc-type-hint',
-      '.contact-primary-label']) {
+      '.contact-primary-label', '.btn-primary--hero .btn-price-hint']) {
       expect(await contrast(page, selector), `${theme} ${selector}`).toBeGreaterThanOrEqual(4.5);
     }
   }
