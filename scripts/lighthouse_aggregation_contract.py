@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+import re
 
 
 def require(condition, message):
@@ -78,6 +79,115 @@ for audit, contract in expected.items():
     require(
         options.get('aggregationMethod') != 'optimistic',
         f'{audit} must never fall back to optimistic aggregation',
+    )
+
+# --- Артефактный аудит: второй, независимый инструмент ---------------------
+#
+# Живой прогон (конфиг выше) меряет путь «раннер -> CDN» и потому держит LCP/TBT
+# на уровне warn. Артефактный прогон (.github/lighthouse-artifact-config.json)
+# меряет саму страницу: собранный `_site` отдаётся локальным сервером, CDN в
+# цепочке нет, поэтому его числа воспроизводимы — это единственный инструмент,
+# которым можно доказывать регресс LCP/TBT.
+#
+# До этой проверки его пороги не были закреплены НИЧЕМ: поднять байтовый бюджет
+# или порог LCP/TBT можно было одной правкой JSON, и ни один тест бы не упал.
+# Это ровно тот способ «закрыть» предупреждение, который запрещён: значение
+# поднимается, причина остаётся. Поэтому бюджеты и пороги закреплены здесь,
+# а состав аудита сверяется с самим воркфлоу, чтобы страницу нельзя было
+# молча выкинуть из замера.
+#
+# Пороги НЕ меняются: это те же 2500/300/0.1, что и раньше. Проверка фиксирует
+# их, а не ослабляет.
+artifact_config = json.loads(Path('.github/lighthouse-artifact-config.json').read_text('utf-8'))
+artifact_ci = artifact_config['ci']
+require(
+    artifact_ci['collect'].get('numberOfRuns') == 3,
+    'artifact collection must remain three runs',
+)
+
+# Байтовый бюджет каждой страницы. Это не «порог на всякий случай»: именно вес
+# страницы определяет LCP на смоделированном канале, поэтому бюджет и LCP-порог
+# держат одну и ту же причину с двух сторон.
+ARTIFACT_BYTE_BUDGETS = {
+    '^http://127\\.0\\.0\\.1:4300/$': 438272,
+    '^http://127\\.0\\.0\\.1:4300/gallery/$': 5942272,
+    '^http://127\\.0\\.0\\.1:4300/svadebnye-torty/$': 377856,
+    '^http://127\\.0\\.0\\.1:4300/bento-torty/$': 537600,
+    '^http://127\\.0\\.0\\.1:4300/zakazat-tort-spb/$': 516096,
+    '^http://127\\.0\\.0\\.1:4300/o-konditere/$': 256000,
+    '^http://127\\.0\\.0\\.1:4300/prigorody/gatchina/$': 1854464,
+    '^http://127\\.0\\.0\\.1:4300/privacy/$': 58368,
+}
+
+matrix = artifact_ci['assert']['assertMatrix']
+seen_patterns = {}
+for entry in matrix:
+    pattern = entry.get('matchingUrlPattern')
+    require(pattern not in seen_patterns, f'artifact URL pattern duplicated: {pattern}')
+    seen_patterns[pattern] = entry.get('assertions') or {}
+
+require(
+    set(seen_patterns) == set(ARTIFACT_BYTE_BUDGETS) | {'.*'},
+    'artifact audited URL set drifted from the pinned byte budgets',
+)
+
+for pattern, budget in ARTIFACT_BYTE_BUDGETS.items():
+    byte_rule = seen_patterns[pattern].get('total-byte-weight')
+    require(byte_rule is not None, f'artifact byte budget missing for {pattern}')
+    require(byte_rule[0] == 'error', f'artifact byte budget for {pattern} must stay fail-closed')
+    require(
+        byte_rule[1].get('maxNumericValue') == budget,
+        f'artifact byte budget for {pattern} drifted from {budget}',
+    )
+    require(
+        byte_rule[1].get('aggregationMethod') == 'pessimistic',
+        f'artifact byte budget for {pattern} must keep pessimistic aggregation',
+    )
+
+artifact_assertions = seen_patterns['.*']
+ARTIFACT_EXPECTED = {
+    'categories:accessibility': ('error', 'minScore', 0.95, 'pessimistic'),
+    'categories:best-practices': ('error', 'minScore', 0.95, 'pessimistic'),
+    'categories:seo': ('error', 'minScore', 0.98, 'pessimistic'),
+    'cumulative-layout-shift': ('error', 'maxNumericValue', 0.1, 'pessimistic'),
+    # LCP и TBT остаются warn намеренно: числа этого инструмента воспроизводимы,
+    # но пока выше порога (docs/LCP_TBT_LIVE_BUDGETS_2026-11-01.md). Повышение
+    # severity до error — отдельное решение после того, как они станут ниже;
+    # понижение порога ради зелёного здесь запрещено и проверяется ниже.
+    'largest-contentful-paint': ('warn', 'maxNumericValue', 2500, 'median'),
+    'total-blocking-time': ('warn', 'maxNumericValue', 300, 'median'),
+}
+require(
+    set(artifact_assertions) == set(ARTIFACT_EXPECTED),
+    'artifact assertion set drifted',
+)
+for audit, (level, key, threshold, aggregation) in ARTIFACT_EXPECTED.items():
+    rule = artifact_assertions[audit]
+    require(rule[0] == level, f'artifact {audit} severity drifted from {level}')
+    require(
+        rule[1].get(key) == threshold,
+        f'artifact {audit} threshold drifted from {threshold}',
+    )
+    require(
+        rule[1].get('aggregationMethod') == aggregation,
+        f'artifact {audit} aggregation drifted from {aggregation}',
+    )
+
+# Состав аудита сверяется с самим воркфлоу: выкинутая из замера страница
+# перестаёт давать предупреждение, но это не улучшение, а пропажа измерения.
+artifact_workflow = Path('.github/workflows/lighthouse-artifact.yml').read_text('utf-8')
+audited_urls = re.findall(r'^\s+(http://127\.0\.0\.1:4300\S*)$', artifact_workflow, re.M)
+require(
+    len(audited_urls) == len(ARTIFACT_BYTE_BUDGETS),
+    f'artifact workflow audits {len(audited_urls)} URLs, budgets define {len(ARTIFACT_BYTE_BUDGETS)}',
+)
+for url in audited_urls:
+    # Экранируем только точки: re.escape() добавил бы «\-» и не совпал бы
+    # с ключами словаря, записанными как в JSON-конфиге.
+    pattern = '^' + url.replace('.', '\\.') + '$'
+    require(
+        pattern in ARTIFACT_BYTE_BUDGETS,
+        f'artifact workflow audits an unpinned URL: {url}',
     )
 
 print('Lighthouse aggregation contract OK')
