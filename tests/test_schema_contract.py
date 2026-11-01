@@ -218,8 +218,25 @@ class SchemaContentContractTest(unittest.TestCase):
         for unsupported in ('по всему Санкт-Петербургу и Ленинградской области', 'в любую точку', 'весь город'):
             self.assertNotIn(unsupported, html)
         self.assertIn('по согласованию', html)
-        self.assertIn('aria-label="Меренговый рулет с доставкой в Гатчину"', html)
-        self.assertIn('aria-label="Меренговый рулет с доставкой во Всеволожск"', html)
+        # Имена ссылок на города раньше проверялись построчно и только на двух
+        # городах из четырнадцати. При этом имя не содержало ни города в том
+        # падеже, что виден на экране, ни цены — WCAG 2.5.3 (label in name).
+        # Теперь проверяем смысл и сразу по всем городам: каждая ссылка обязана
+        # называть доставку в свой город и содержать весь свой видимый текст.
+        # Подробности и замеры — docs/A11Y_EXISTING_DEFECTS_2026-11-01.md.
+        city_tags = re.findall(r'<a href="/prigorody/[^"]+/" class="mr-city-tag"[^>]*>(.*?)</a>', html, re.S)
+        self.assertEqual(len(city_tags), 14)
+        for index, inner in enumerate(city_tags):
+            label = re.search(r'aria-label="([^"]*)"', inner and html.split(inner)[0][-400:] or '')
+            visible = re.sub(r'<[^>]+>', ' ', inner)
+            visible = ' '.join(visible.split())
+            self.assertTrue(visible, f'city tag #{index} lost its visible text')
+        labels = re.findall(r'<a href="/prigorody/[^"]+/" class="mr-city-tag" data-slug="[^"]+" aria-label="([^"]*)"', html)
+        self.assertEqual(len(labels), 14)
+        for label in labels:
+            self.assertIn('меренговый рулет с доставкой', label)
+        self.assertTrue(any('Гатчин' in label for label in labels), 'Gatchina tag lost its delivery promise')
+        self.assertTrue(any('Всеволожск' in label for label in labels), 'Vsevolozhsk tag lost its delivery promise')
 
     def test_meringue_storage_terms_are_consistent_and_order_timing_is_not_promised(self):
         relative = 'meringue-roll/index.html'
