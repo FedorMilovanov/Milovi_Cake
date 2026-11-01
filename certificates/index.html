@@ -130,11 +130,11 @@
 
     :root {
       --cream: #f5f0e8;
-      --gold: #c9934a;
+      --gold: #896029;
       --gold-light: #e8c07a;
       --brown: #3d2b1f;
       --text: #2c1a10;
-      --text-muted: #9a7a62;
+      --text-muted: #7d634f;
       --white: #FDFBF7;
       --border: rgba(201,147,74,0.18);
     }
@@ -290,7 +290,7 @@
     }
     .breadcrumb a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
     .breadcrumb a:hover { color: var(--gold); }
-    .breadcrumb span { opacity: 0.5; }
+    .breadcrumb span:not([aria-current]) { opacity: 0.5; }
 
     /* ── CERTIFICATES GRID ── */
     .certs-section {
@@ -433,6 +433,10 @@
       padding: 24px;
     }
     .lb-overlay.active { display: flex; }
+
+    /* Кнопка настроек аналитики наследует светлый футер этой страницы:
+       глобальный стиль рассчитан на тёмный .site-footer и здесь давал 1.04:1. */
+    .cert-footer .mc-consent-trigger { color: var(--text-muted); }
 
     .lb-img-wrap {
       position: relative;
@@ -750,7 +754,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     <div class="certs-grid">
 
       <!-- Cert 1: Tort na million (featured — most prestigious) -->
-      <article class="cert-card featured" onclick="openLightbox(0)" role="button" tabindex="0" aria-label="Открыть сертификат: Торт на миллион 3.0">
+      <article class="cert-card featured" onclick="openLightbox(0)" role="button" tabindex="0">
         <div class="cert-img-wrap">
           <img src="../img/cert_tort_million.webp"
                alt="Сертификат Виктории Миловановой — курс «Торт на миллион 3.0», Ксения Большан, октябрь 2022"
@@ -764,7 +768,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
       </article>
 
       <!-- Cert 2: Shokoladnaya floristika -->
-      <article class="cert-card" onclick="openLightbox(1)" role="button" tabindex="0" aria-label="Открыть сертификат: Шоколадная флористика">
+      <article class="cert-card" onclick="openLightbox(1)" role="button" tabindex="0">
         <div class="cert-img-wrap">
           <img src="../img/cert_shokolad.webp"
                alt="Сертификат курса «Шоколадная флористика» — Ирина Мошкина, золотой призёр чемпионата России, май 2024"
@@ -778,7 +782,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
       </article>
 
       <!-- Cert 3: Detskie torty -->
-      <article class="cert-card" onclick="openLightbox(2)" role="button" tabindex="0" aria-label="Открыть сертификат: Детские торты">
+      <article class="cert-card" onclick="openLightbox(2)" role="button" tabindex="0">
         <div class="cert-img-wrap">
           <img src="../img/cert_detskie_torty.webp"
                alt="Сертификат мастер-класса «Детские торты» — Виктория Милованова, школа Praline, май 2024"
@@ -792,7 +796,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
       </article>
 
       <!-- Cert 4: Akvarel / Baryef -->
-      <article class="cert-card" onclick="openLightbox(3)" role="button" tabindex="0" aria-label="Открыть сертификат: Акварельная роспись по мастике">
+      <article class="cert-card" onclick="openLightbox(3)" role="button" tabindex="0">
         <div class="cert-img-wrap">
           <img src="../img/cert_akvarel.webp"
                alt="Сертификат — основы акварельной росписи по мастике, техника «Барельеф», школа Praline, декабрь 2023"
@@ -806,7 +810,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
       </article>
 
       <!-- Cert 5: Tort A do Ya -->
-      <article class="cert-card" onclick="openLightbox(4)" role="button" tabindex="0" aria-label="Открыть сертификат: Торт от А до Я">
+      <article class="cert-card" onclick="openLightbox(4)" role="button" tabindex="0">
         <div class="cert-img-wrap">
           <img src="../img/cert_tort_a_ya.webp"
                alt="Сертификат кондитерского мастер-класса «Торт от А до Я» — Виктория Милованова, школа Praline, октябрь 2022"

@@ -43,6 +43,13 @@ class GuardParser(html.parser.HTMLParser):
         if 'map-badge-google' in classes and data.get('aria-label') != 'Google Maps ★ 4.7':
             self.errors.append(f'{self.rel}:{line}: Google map badge accessible name must match visible text')
 
+        # label-content-name-mismatch на /meringue-roll/: имя тега города не содержало
+        # ни названия города, ни цены, то есть весь видимый текст был вне имени.
+        if 'mr-city-tag' in classes:
+            label = data.get('aria-label') or ''
+            if not label:
+                self.errors.append(f'{self.rel}:{line}: city tag must not drop its accessible name')
+
 
 def require_text(path: str, needles: tuple[str, ...]) -> list[str]:
     text = (ROOT / path).read_text('utf-8', errors='replace')
@@ -81,6 +88,23 @@ def main() -> int:
         'window.toggleTheme = function ()',
         "document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light')",
     )))
+    # /certificates/: палитра проходила по контрасту только на тёмном фоне.
+    # Золото #c9934a на кремовом #f5f0e8 давало 2.39:1, приглушённый #9a7a62 — 3.47:1.
+    errors.extend(require_text('certificates/index.html', (
+        '--gold: #896029;',
+        '--text-muted: #7d634f;',
+        '.breadcrumb span:not([aria-current]) { opacity: 0.5; }',
+        '.cert-footer .mc-consent-trigger { color: var(--text-muted); }',
+    )))
+    certificates = (ROOT / 'certificates/index.html').read_text('utf-8', errors='replace')
+    if 'aria-label="Открыть сертификат' in certificates:
+        errors.append('certificates/index.html: card accessible name must come from its content, not a shortened aria-label')
+
+    # /meringue-roll/: приглушённый текст футера был 4.35:1 при пороге 4.5.
+    errors.extend(require_text('meringue-roll/index.html', (
+        '--muted:   rgba(237,224,204,0.56);',
+    )))
+
     errors.extend(require_text('css/style.css', (
         '.mobile-menu-nav a{font-family:',
         '.cart-close{background:transparent',
