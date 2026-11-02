@@ -1,0 +1,5 @@
+# IndexNow ownership key: intentionally public as a site verification file.
+# These exact historical findings only; do not suppress the rule or paths.
+0074d35372e2a15f54a6089229cb302ed2375b89:scripts/submit_indexnow.py:generic-api-key:24
+13004d1bba937a3dc449ee51c75fcc8d5b4273ea:scripts/production_smoke.py:generic-api-key:19
+9835e1e79f1144766515ce191efc07b0a35ec946:.github/workflows/indexnow.yml:generic-api-key:34

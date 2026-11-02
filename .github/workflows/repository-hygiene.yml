@@ -32,6 +32,12 @@ jobs:
           GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"
           GITLEAKS_ENABLE_SUMMARY: "true"
 
+      # The action scans only the PR range; also exercise the scheduled full-history
+      # scan on every PR, including changes to the narrowly scoped ignore file.
+      - name: Verify full history on pull requests
+        if: github.event_name == 'pull_request'
+        run: gitleaks detect --redact --no-banner --exit-code=2
+
       - name: Reject repository junk and unsafe workflow refs
         run: |
           python3 - <<'PY'
