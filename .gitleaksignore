@@ -1,13 +1,17 @@
-# Ложные срабатывания gitleaks — точные отпечатки, а не allowlist путей.
+# Ложные срабатывания gitleaks — только точные отпечатки, без allowlist путей.
 #
-# INDEXNOW_KEY в scripts/production_smoke.py и KEY в scripts/submit_indexnow.py —
-# это ключ IndexNow. По протоколу он НЕ секрет: сайт обязан опубликовать его
-# открытым текстом в корне (файл f5c91a4d89e84b2ca6d4f3e7a1029b6c.txt лежит в
-# репозитории и отдаётся Pages). Правило generic-api-key ловит его по энтропии.
+# IndexNow ownership key: intentionally public as a site verification file.
+# По протоколу ключ публикуется открытым текстом в корне сайта
+# (f5c91a4d89e84b2ca6d4f3e7a1029b6c.txt закоммичен и отдаётся Pages), поэтому
+# это не секрет; правило generic-api-key ловит его по энтропии.
 #
-# Отпечатки привязаны к конкретным коммиту/файлу/строке, поэтому любой НОВЫЙ
-# ключ в любом другом месте по-прежнему будет найден. Найдено на 504da51 —
-# то есть это состояние main, а не следствие правок в ветке.
-
+# Отпечатки привязаны к коммиту/файлу/строке, поэтому новый ключ в любом другом
+# месте по-прежнему будет найден. Набор — объединение двух независимых проходов:
+# три записи из main (#133) и две, которые скан отдаёт на текущей истории
+# (504da51, полный прогон --exit-code=2). Без второго набора шаг
+# «Verify full history on pull requests» падал уже после мержа #133.
+0074d35372e2a15f54a6089229cb302ed2375b89:scripts/submit_indexnow.py:generic-api-key:24
+13004d1bba937a3dc449ee51c75fcc8d5b4273ea:scripts/production_smoke.py:generic-api-key:19
 504da51c5506a867f305c8378fad970372b680e4:scripts/production_smoke.py:generic-api-key:22
 504da51c5506a867f305c8378fad970372b680e4:scripts/submit_indexnow.py:generic-api-key:24
+9835e1e79f1144766515ce191efc07b0a35ec946:.github/workflows/indexnow.yml:generic-api-key:34
