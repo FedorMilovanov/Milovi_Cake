@@ -21,7 +21,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 HOST = "milovicake.ru"
-KEY = "f5c91a4d89e84b2ca6d4f3e7a1029b6c"
+KEY = "f5c91a4d89e84b2ca6d4f3e7a1029b6c"  # gitleaks:allow
 KEY_LOCATION = f"https://{HOST}/{KEY}.txt"
 ENDPOINTS = [
     "https://api.indexnow.org/indexnow",

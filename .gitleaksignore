@@ -1,0 +1,13 @@
+# Ложные срабатывания gitleaks — точные отпечатки, а не allowlist путей.
+#
+# INDEXNOW_KEY в scripts/production_smoke.py и KEY в scripts/submit_indexnow.py —
+# это ключ IndexNow. По протоколу он НЕ секрет: сайт обязан опубликовать его
+# открытым текстом в корне (файл f5c91a4d89e84b2ca6d4f3e7a1029b6c.txt лежит в
+# репозитории и отдаётся Pages). Правило generic-api-key ловит его по энтропии.
+#
+# Отпечатки привязаны к конкретным коммиту/файлу/строке, поэтому любой НОВЫЙ
+# ключ в любом другом месте по-прежнему будет найден. Найдено на 504da51 —
+# то есть это состояние main, а не следствие правок в ветке.
+
+504da51c5506a867f305c8378fad970372b680e4:scripts/production_smoke.py:generic-api-key:22
+504da51c5506a867f305c8378fad970372b680e4:scripts/submit_indexnow.py:generic-api-key:24

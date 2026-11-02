@@ -19,7 +19,7 @@ HOST = "https://milovicake.ru"
 HTTP_HOST = "http://milovicake.ru"
 WWW_HOST = "https://www.milovicake.ru"
 TIMEOUT = 20
-INDEXNOW_KEY = "f5c91a4d89e84b2ca6d4f3e7a1029b6c"
+INDEXNOW_KEY = "f5c91a4d89e84b2ca6d4f3e7a1029b6c"  # gitleaks:allow
 LEAN_ALLOWED_CSS = ["/css/fonts.css", "/css/style.css"]
 
 LEAN_LANDING_PATHS = [
