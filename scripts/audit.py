@@ -39,6 +39,7 @@ REPORT_DIR = ROOT / "audit"
 ALLOWED_CSS = {
     "css/style.css",
     "css/fonts.css",   # self-hosted Cormorant Garamond + Jost (was fonts.googleapis.com)
+    "css/fonts-italic.css",  # курсив Cormorant — грузится после первой отрисовки
     "css/mc-2026.css",
     "css/premium-overrides.css",
     "css/v20-dark-and-fixes.css",
