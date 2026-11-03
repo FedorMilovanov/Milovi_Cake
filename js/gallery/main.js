@@ -7,7 +7,7 @@ const SIZE_MAP = { tall: '1x2', wide: '2x1', big: '2x2', m: '1x1' };
 const PHONE_CARD_MEDIA = '(max-width: 430px) and (max-resolution: 1.75dppx)';
 const PHONE_CARD_IDS = new Set(['p05', 'p06', 'p09', 'p12', 'p18']);
 const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
-const GRID_RENDER_BATCH_SIZE = 6;
+const GRID_RENDER_BATCH_SIZE = 24;
 const filterButtons = [
   { id: 'all', label: 'Все' }, { id: 'photo', label: 'Фото' }, { id: 'video', label: 'Видео' },
   { id: 'wedding', label: 'Свадебные' }, { id: 'bento', label: 'Бенто' }, { id: '3d', label: '3D' },
@@ -271,6 +271,8 @@ function attachCardTilt(card){
   });
 }
 function setupVideoObserver(){ 
+  // Keep hidden previews idle while the consent dialog covers the gallery.
+  if(document.body.classList.contains('mc-consent-open')) { state.observer?.disconnect(); return; }
   if(state.observer) state.observer.disconnect(); 
   if(!('IntersectionObserver' in window) || $('#lbRoot') || motionPreference.matches) return;
   /* r16 perf: on Save-Data or slow (2g) connections, keep posters only and skip
@@ -294,7 +296,7 @@ function setupVideoObserver(){
     try { v.pause(); } catch(e){}
   }
   state.observer=new IntersectionObserver(entries=>{
-    if ($('#lbRoot') || motionPreference.matches) return; // Callbacks can arrive after either state changes.
+    if ($('#lbRoot') || motionPreference.matches || document.body.classList.contains('mc-consent-open')) return; // Callbacks can arrive after either state changes.
     entries.forEach(entry=>{
       const v=entry.target; 
       if(entry.isIntersecting){ 
@@ -711,6 +713,21 @@ function closeLightbox(updateState = true){
   closeLightbox._skipObserverRestore = false;
 }
 function boot(){
+  // Consent can open or close after gallery hydration. Preserve autoplay once
+  // the overlay is gone, but never decode videos behind the modal.
+  let consentOpen = document.body.classList.contains('mc-consent-open');
+  const consentGateObserver = new MutationObserver(() => {
+    const open = document.body.classList.contains('mc-consent-open');
+    if (open === consentOpen) return;
+    consentOpen = open;
+    if (open) {
+      state.observer?.disconnect();
+      $('#galleryGrid video').forEach(v => v.pause());
+    } else if (!$('#lbRoot') && !motionPreference.matches) {
+      setupVideoObserver();
+    }
+  });
+  consentGateObserver.observe(document.body, {attributes:true,attributeFilter:['class']});
   const onMotionChange = () => {
     if (motionPreference.matches) {
       state.observer?.disconnect();
