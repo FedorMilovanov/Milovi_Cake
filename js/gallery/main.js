@@ -722,7 +722,7 @@ function boot(){
     consentOpen = open;
     if (open) {
       state.observer?.disconnect();
-      $('#galleryGrid video').forEach(v => v.pause());
+      document.querySelectorAll('#galleryGrid video').forEach(v => v.pause());
     } else if (!$('#lbRoot') && !motionPreference.matches) {
       setupVideoObserver();
     }
