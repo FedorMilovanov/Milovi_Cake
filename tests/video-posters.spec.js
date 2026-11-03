@@ -52,6 +52,36 @@ test('all gallery clips show their own lightweight, decodable frame before playb
   await expect(card).toHaveAttribute('poster', '/img/gallery/video-01-knigi-poster.webp');
 });
 
+test('gallery defers grid video playback behind consent then restores it after closing', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.addInitScript(() => localStorage.removeItem('milovi_analytics_consent_v1'));
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+
+  await page.goto('/gallery/', { waitUntil: 'load' });
+  await expect(page.locator('body')).toHaveClass(/mc-consent-open/);
+  await expect(page.locator('#galleryGrid')).not.toHaveAttribute('data-hydrating', 'true');
+  await expect(page.locator('#galleryGrid video')).toHaveCount(16);
+  await expect(page.locator('#galleryGrid video[src]')).toHaveCount(0);
+
+  await page.locator('.mc-consent-button--deny').click();
+  await expect(page.locator('body')).not.toHaveClass(/mc-consent-open/);
+  const card = page.locator('#galleryGrid [data-id="v01"]');
+  await card.scrollIntoViewIfNeeded();
+  await expect.poll(() => card.locator('video').getAttribute('src')).toContain('/img/gallery/videos/video-01-knigi.webm');
+
+  await page.evaluate(() => window.MiloviConsent.open());
+  await expect(page.locator('body')).toHaveClass(/mc-consent-open/);
+  await expect.poll(() => page.locator('#galleryGrid video').evaluateAll((videos) =>
+    videos.every((video) => video.paused))).toBe(true);
+
+  await page.evaluate(() => window.MiloviConsent.close());
+  await expect(page.locator('body')).not.toHaveClass(/mc-consent-open/);
+  await card.click();
+  await expect(page.locator('#lbRoot')).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
 // This small test double verifies the loading lifecycle without depending on CDN
 // availability in CI. Real Swiper is also exercised separately in browser QA.
 const swiperStub = `
