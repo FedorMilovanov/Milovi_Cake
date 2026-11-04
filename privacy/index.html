@@ -28,9 +28,7 @@
         var theme = localStorage.getItem('mc_theme');
         if (theme === 'light' || theme === 'dark') {
           document.documentElement.setAttribute('data-theme', theme);
-        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          document.documentElement.setAttribute('data-theme', 'dark');
-        }
+        } else document.documentElement.setAttribute('data-theme','light');
       } catch (_) {}
     })();
   </script>

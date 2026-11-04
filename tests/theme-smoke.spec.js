@@ -79,6 +79,31 @@ async function waitForMobileAppShell(page) {
   });
 }
 
+// A system-wide dark preference is not an explicit choice of the site's theme.
+// Match AGENTS.md: default light except the standalone meringue-roll page.
+test.describe('first-visit default theme contract', () => {
+  const routes = [
+    '/', '/gallery/', '/bento-torty/', '/svadebnye-torty/',
+    '/detskie-torty/', '/dostavka-i-oplata/', '/otzyvy/',
+    '/o-konditere/', '/zakazat-tort-spb/', '/certificates/',
+    '/call/', '/privacy/', '/prigorody/', '/prigorody/pushkin/',
+    '/tort-na-den-rozhdeniya/', '/tort-s-dostavkoy/', '/404.html',
+    '/meringue-roll/',
+  ];
+  for (const route of routes) {
+    test(`${route} honors site default regardless of OS scheme`, async ({ page }) => {
+      await page.addInitScript(() => localStorage.removeItem('mc_theme'));
+      for (const osScheme of ['dark', 'light']) {
+        await page.emulateMedia({ colorScheme: osScheme });
+        await page.goto(route, { waitUntil: 'domcontentloaded' });
+        const expected = route === '/meringue-roll/' ? 'dark' : 'light';
+        await expect(page.locator('html')).toHaveAttribute('data-theme', expected);
+        expect(await page.evaluate(() => localStorage.getItem('mc_theme'))).toBeNull();
+      }
+    });
+  }
+});
+
 test.describe('light/dark UI smoke', () => {
   for (const theme of ['light', 'dark']) {
     for (const route of themePages) {
