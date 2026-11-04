@@ -316,7 +316,7 @@ for (const width of [360, 390, 414, 561, 600, 768, 900, 1024, 1536]) {
   }
 }
 
-test('@layout-matrix @wedding-hero follows system dark mode without a saved theme', async ({ browser }) => {
+test('@layout-matrix @wedding-hero defaults to light without a saved theme even on dark OS', async ({ browser }) => {
   const context = await browser.newContext({
     baseURL: 'http://127.0.0.1:4173',
     storageState: 'tests/analytics-denied.storage-state.json',
@@ -329,11 +329,11 @@ test('@layout-matrix @wedding-hero follows system dark mode without a saved them
   try {
     const page = await context.newPage();
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
-    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-    await expect(page.locator('.wed-hero')).toHaveCSS('background-color', 'rgb(26, 17, 8)');
-    await page.locator('.lp-theme-toggle').click();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
     await expect(page.locator('.wed-hero')).toHaveCSS('background-color', 'rgb(239, 231, 218)');
+    await page.locator('.lp-theme-toggle').click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await expect(page.locator('.wed-hero')).toHaveCSS('background-color', 'rgb(26, 17, 8)');
   } finally {
     await context.close();
   }

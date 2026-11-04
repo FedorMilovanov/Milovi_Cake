@@ -8,9 +8,7 @@
       try {
         var t = localStorage.getItem('mc_theme');
         if (t) document.documentElement.setAttribute('data-theme', t);
-        else if (window.matchMedia('(prefers-color-scheme: dark)').matches)
-          document.documentElement.setAttribute('data-theme', 'dark');
-      } catch(e){}
+        else document.documentElement.setAttribute('data-theme','light');} catch(e){}
     })();
   </script>
   <link rel="icon" href="favicon.svg?v=20260728r27" type="image/svg+xml">
@@ -1499,7 +1497,7 @@
 </script>
 
 <script>var IMG_BASE = 'img';</script>
-<script src="js/main.js?v=20261027r05" defer></script>
+<script src="js/main.js?v=20261104r01" defer></script>
 
 <script src="js/nav.js?v=20260728r27" defer></script>
 <script src="js/mc-2026.js?v=20261027r02" defer></script>

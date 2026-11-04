@@ -8,8 +8,8 @@
 // ── THEME ENGINE ──
 (function initTheme() {
   var saved       = (function(){ try { return localStorage.getItem('mc_theme'); } catch(e){ return null; } })();
-  var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  var theme       = saved || (prefersDark ? 'dark' : 'light');
+  // Default light; explicit saved choice wins.
+  var theme       = saved === 'dark' ? 'dark' : 'light';
   document.documentElement.setAttribute('data-theme', theme);
 })();
 
