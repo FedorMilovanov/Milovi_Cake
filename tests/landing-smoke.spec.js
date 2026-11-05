@@ -51,7 +51,7 @@ test.describe('new SEO landing pages', () => {
       await expect(page.locator('h1')).toContainText(pageInfo.h1);
       await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', new RegExp(`${pageInfo.path.replace(/\//g, '\\/')}$`));
       await expect(page.locator('.landing-footer')).toBeVisible();
-      await expect(page.locator('.landing-footer')).toContainText('Пн–Сб, 10:00–20:00');
+      await expect(page.locator('.landing-footer')).toContainText('Пн–Сб, 10:00–21:00');
       await expect(page.locator('body')).not.toContainText('Пн–Вс');
 
       const wa = page.locator('a[href*="wa.me"]').first();
@@ -1081,7 +1081,7 @@ test.describe('SEO infrastructure', () => {
 
   test('homepage business hours are Monday-Saturday in visible text and schema', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
-    await expect(page.locator('body')).toContainText('Пн–Сб, 10:00–20:00');
+    await expect(page.locator('body')).toContainText('Пн–Сб, 10:00–21:00');
     await expect(page.locator('body')).not.toContainText('Пн–Вс');
     const graph = await page.locator('head script[type="application/ld+json"]').evaluate((node) => JSON.parse(node.textContent)['@graph']);
     const business = graph.find((item) => Array.isArray(item['@type']) && item['@type'].includes('LocalBusiness'));
