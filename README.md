@@ -14,7 +14,7 @@
 
 ## Текущий production-статус
 
-- Режим работы: **Пн–Сб, 10:00–20:00**.
+- Режим работы: **Пн–Сб, 10:00–21:00**.
 - Release identity: **exact Git SHA** из live `/release.json`; cache revisions проверяются per-asset через `npm run audit:release`.
 - `npm run qa` — JS/privacy/a11y/release/Lighthouse regression+aggregation/security/site audits + idempotency пригородов + Playwright desktop/mobile/responsive matrix.
 - `npm run smoke:prod` — transport/content smoke; `npm run smoke:prod:release` — exact SHA + privacy + true 404 contract.

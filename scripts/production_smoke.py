@@ -178,7 +178,7 @@ def run_checks() -> tuple[list[Result], dict[str, str]]:
     # arbitrary ?v= label: per-asset revisions can legitimately differ.
     home = bodies.get("/", "")
     if home:
-        for needle in ["Пн–Сб, 10:00–20:00", "https://milovicake.ru/#business"]:
+        for needle in ["Пн–Сб, 10:00–21:00", "https://milovicake.ru/#business"]:
             results.append(Result(f"/ content:{needle}", needle in home, 200, "found" if needle in home else "missing"))
         results.append(
             Result(
