@@ -51,6 +51,11 @@ class MeasurementContractTest(unittest.TestCase):
             self.assertEqual(len(data['duplicates']), 1)
             self.assertEqual(data['failures'], [])
 
+    def test_cls_keeps_precision_below_the_budget(self):
+        lhr = report()
+        lhr['audits']['cumulative-layout-shift'] = {'numericValue': 0.06881791354761611}
+        self.assertEqual(extract(lhr)['metrics']['cls'], 0.068818)
+
     def test_conflicting_copies_fail_instead_of_biasing_the_median(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
