@@ -12,8 +12,9 @@
 
 Скрипт читает каталог с LHR (так их раскладывает lighthouse-ci-action),
 достаёт метрики, состояние машины, разбивку main-thread и длинные задачи,
-и пересчитывает TBT тем же правилом, что Lighthouse, — чтобы числа можно
-было проверить, а не принять на веру.
+и даёт диагностическую оценку TBT из опубликованных long-tasks. Это не
+точный повтор Lantern: округлённые audit items не заменяют исходный trace.
+Для бюджета используется только reported TBT самого Lighthouse.
 
 Usage:
     python3 scripts/runner_lhr_extract.py <dir-with-lhr> --out <file.json>
@@ -33,7 +34,7 @@ LONG_TASK_MS = 50.0
 
 def tbt_from_long_tasks(tasks: list[dict], window_start: float | None,
                         window_end: float | None) -> float:
-    """TBT по правилу TBTUtils.calculateTbtImpactForEvent.
+    """Приближённый TBT из audit items по правилу обрезания длинных задач.
 
     Задача обрезается до окна [симулированный FCP, симулированный TTI],
     из обрезанной длины вычитается 50 мс; всё, что вне окна, не считается.
@@ -189,7 +190,9 @@ def extract(lhr: dict) -> dict:
     reported_tbt = numeric(lhr, "total-blocking-time")
 
     environment = lhr.get("environment") or {}
-    settings = lhr.get("settings") or {}
+    # Lighthouse serializes the effective collection settings as configSettings.
+    # Keep the old key only for historical exports, never ahead of the real key.
+    settings = lhr.get("configSettings") or lhr.get("settings") or {}
 
     return {
         "url": lhr.get("finalDisplayedUrl") or lhr.get("finalUrl") or lhr.get("requestedUrl"),
@@ -240,7 +243,8 @@ def is_lhr(payload: object) -> bool:
 
 
 def extract_dir(root: Path) -> dict:
-    reports, failures = [], []
+    reports, failures, duplicates = [], [], []
+    seen = {}
     for path in sorted(root.rglob("*.json")):
         try:
             payload = json.loads(path.read_text("utf-8"))
@@ -250,10 +254,26 @@ def extract_dir(root: Path) -> dict:
         if not is_lhr(payload):
             continue
         try:
+            url = payload.get("finalDisplayedUrl") or payload.get("finalUrl") or payload.get("requestedUrl")
+            identity = (url, payload.get("fetchTime"))
+            if not all(isinstance(value, str) and value for value in identity):
+                raise ValueError("LHR needs a URL and fetchTime to identify an independent run")
+            if identity in seen:
+                previous, source = seen[identity]
+                if previous != payload:
+                    raise ValueError(f"conflicting LHR copies for {identity!r}: {source}")
+                duplicates.append({"file": str(path), "duplicate_of": source})
+                continue
+            settings = payload.get("configSettings") or payload.get("settings") or {}
+            if not settings.get("throttlingMethod") or not (settings.get("throttling") or {}).get("cpuSlowdownMultiplier"):
+                raise ValueError("LHR collection method and CPU multiplier are missing")
             reports.append(extract(payload))
+            seen[identity] = (payload, str(path))
         except (KeyError, TypeError, ValueError) as exc:
             failures.append({"file": str(path), "error": f"{type(exc).__name__}: {exc}"})
-    return {"reports": reports, "failures": failures}
+    if not reports:
+        failures.append({"file": str(root), "error": "no valid independent Lighthouse reports"})
+    return {"reports": reports, "failures": failures, "duplicates": duplicates}
 
 
 def self_test() -> int:

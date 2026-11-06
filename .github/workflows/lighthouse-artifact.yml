@@ -2,14 +2,10 @@ name: Lighthouse artifact
 
 # Аудит артефакта, а не живого URL.
 #
-# Живой аудит (lighthouse.yml) измеряет путь от раннера до CDN: те же байты
-# локально дают LCP около 2,0-2,4 с, через прод — 4,3 с (docs/TBT_VERDICT §29.4).
-# Поэтому LCP и TBT там вынужденно остаются warning-уровнем: гейтить ими
-# живой прогон — значит гейтить сеть раннера.
-#
-# Здесь измеряется сама страница: собранный `_site` отдаётся локально с gzip,
-# трафик до CDN отсутствует. Эти числа воспроизводимы, и по ним LCP/TBT можно
-# держать в error.
+# После deploy скачивается именно опубликованный immutable Pages payload.
+# Ручной запуск проверяет пересборку выбранного source SHA. Оба режима требуют
+# exact release witness. Локальный gzip исключает CDN, но не CPU/планировщик.
+# LCP 2500 ms / TBT 300 ms пока warn: SUCCESS не означает соблюдение бюджета.
 
 on:
   workflow_run:
@@ -35,6 +31,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: lighthouse-artifact-${{ github.ref }}
@@ -47,6 +44,7 @@ jobs:
     timeout-minutes: 45
     env:
       AUDIT_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+      RELEASE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
     steps:
       - name: Checkout exact source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -59,11 +57,28 @@ jobs:
         with:
           node-version: '22.13.0'
 
-      - name: Build exact Pages artifact
+      - name: Download the published Pages payload
+        if: github.event_name == 'workflow_run'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEPLOY_RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          set -euo pipefail
+          [[ "$DEPLOY_RUN_ID" =~ ^[0-9]+$ ]]
+          gh run download "$DEPLOY_RUN_ID" --repo "$GITHUB_REPOSITORY" \
+            --name github-pages --dir "$RUNNER_TEMP/pages-release"
+          mkdir -p _site
+          tar --extract --file "$RUNNER_TEMP/pages-release/artifact.tar" \
+            --directory _site --no-same-owner --no-same-permissions
+
+      - name: Build exact source snapshot for a direct audit
+        if: github.event_name != 'workflow_run'
         run: |
           set -euo pipefail
           npm run build:pages
-          npm run audit:pages
+
+      - name: Prove the payload release identity
+        run: npm run audit:pages
 
       - name: Serve artifact locally
         run: |
@@ -84,7 +99,8 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import gzip, urllib.request
+          import gzip, json, os, urllib.request
+          from pathlib import Path
           request = urllib.request.Request(
               'http://127.0.0.1:4300/', headers={'Accept-Encoding': 'gzip'})
           with urllib.request.urlopen(request, timeout=10) as response:
@@ -92,8 +108,12 @@ jobs:
               body = gzip.decompress(response.read()) if encoding == 'gzip' else response.read()
           if encoding != 'gzip':
               raise SystemExit(f'Pages отдаёт текст сжатым, а сервер — нет ({encoding})')
-          if b'<html' not in body.lower():
-              raise SystemExit('сервер отдал не HTML')
+          if body != Path('_site/index.html').read_bytes():
+              raise SystemExit('served HTML differs from the audited Pages payload')
+          with urllib.request.urlopen('http://127.0.0.1:4300/release.json', timeout=10) as response:
+              release = json.load(response)
+          if release.get('sha') != os.environ['AUDIT_SHA']:
+              raise SystemExit('served release witness differs from the audit SHA')
           print(f'ok: gzip, {len(body)} байт HTML')
           PY
 
@@ -122,17 +142,16 @@ jobs:
           # закрывает канал раньше, find получает SIGPIPE и шаг падает.
           results=$(find "$GITHUB_WORKSPACE" /tmp -maxdepth 6 -type d -name '.lighthouseci' -print -quit 2>/dev/null || true)
           if [ -z "$results" ]; then
-            echo "::notice::каталог .lighthouseci не найден — per-run числа недоступны"
-            exit 0
+            echo "::error::каталог .lighthouseci не найден — измерение не подтверждено"
+            exit 1
           fi
-          python3 scripts/runner_lhr_extract.py "$results" --out /tmp/artifact-runs.json || true
+          python3 scripts/runner_lhr_extract.py "$results" --out /tmp/artifact-runs.json
           python3 - /tmp/artifact-runs.json <<'PY'
           import json, statistics as st, sys
           try:
               data = json.load(open(sys.argv[1]))
           except Exception as exc:
-              print(f'::notice::не удалось прочитать извлечение: {exc}')
-              raise SystemExit(0)
+              raise SystemExit(f'не удалось прочитать извлечение: {exc}')
 
           pages = {}
           for report in data.get('reports', []):
@@ -146,6 +165,8 @@ jobs:
               return f'{st.median(clean):.0f}/{max(clean):.0f}'
 
           for url, reports in pages.items():
+              if len(reports) != 3:
+                  raise SystemExit(f'{url}: expected 3 independent runs, found {len(reports)}')
               metrics = [r['metrics'] for r in reports]
               print(
                   f"::notice::artifact {url} | n={len(reports)} "

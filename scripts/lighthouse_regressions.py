@@ -366,12 +366,12 @@ for asset in ('style.css', 'mc-2026.css', 'premium-overrides.css', 'v20-dark-and
 for public_html in public_html_files():
     html = read(public_html)
     refs = re.findall(r'js/main\.js\?v=([0-9a-z]+)', html)
-    require(all(ref == '20261104r01' for ref in refs), f'{public_html} shared main.js revision drifted')
+    require(all(ref == '20261106r01' for ref in refs), f'{public_html} shared main.js revision drifted')
 
 require("const CACHE_NAME = 'milovi-cake-v2026.11.03-r112';" in sw, 'service-worker cache generation drifted')
 require("'/css/gallery/gallery-2026.css?v=20261027r07'," in sw, 'gallery CSS service-worker revision drifted')
 require(style_ref != '/css/style.css?v=20261023r01', 'service-worker precache still points at stale shared CSS revision')
-require("'/js/main.js?v=20261104r01'," in sw, 'service-worker precache still points at stale shared main.js revision')
+require("'/js/main.js?v=20261106r01'," in sw, 'service-worker precache still points at stale shared main.js revision')
 require("'/js/gallery/main.js?v=20261103r08'," in sw, 'service-worker precache still points at stale gallery runtime revision')
 require("'/js/gallery/data.js?v=20261026r01'," in sw, 'service-worker precache still points at stale gallery data revision')
 

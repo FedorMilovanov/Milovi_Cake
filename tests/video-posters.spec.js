@@ -1176,3 +1176,34 @@ test.describe('video strip fault handling', () => {
     expect(errors).toEqual([]);
   });
 });
+
+test.describe('catalog image fallback', () => {
+  test.use({ serviceWorkers: 'block' });
+  for (const route of ['/', '/prigorody/gatchina/']) {
+    test(`${route} failed catalog photo renders its fallback without a script error`, async ({ page }) => {
+      const errors = [];
+      page.on('pageerror', error => errors.push(error.message));
+      await page.route('**/img/cupcakes*.webp', request => request.abort());
+      await page.goto(route, { waitUntil: 'load' });
+      await page.locator('#catalog').scrollIntoViewIfNeeded();
+      await expect(page.locator('#card-6')).toBeVisible();
+      await page.locator('#card-6').scrollIntoViewIfNeeded();
+      await expect(page.locator('#card-6 .slide-img.active .slide-img-fallback')).toHaveText('🧁');
+      await expect(page.locator('#card-6 .btn-add')).toBeEnabled();
+      expect(errors).toEqual([]);
+    });
+  }
+
+  test('failed maxi-bento photo keeps the variant and cart usable', async ({ page }) => {
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.route('**/img/bento_maxi.webp', request => request.abort());
+    await page.goto('/', { waitUntil: 'load' });
+    await page.locator('#catalog').scrollIntoViewIfNeeded();
+    await page.locator('#tab-maxi-2').click();
+    await expect(page.locator('#card-2 .slide-img.active .slide-img-fallback')).toHaveText('🍰');
+    await expect(page.locator('#tab-maxi-2')).toHaveClass(/active/);
+    await expect(page.locator('#card-2 .btn-add')).toBeEnabled();
+    expect(errors).toEqual([]);
+  });
+});

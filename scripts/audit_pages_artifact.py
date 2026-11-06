@@ -10,6 +10,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urljoin, urlparse
 from xml.etree import ElementTree as ET
+from release_identity import release_sha
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / '_site'
@@ -100,7 +101,7 @@ def main() -> int:
         if not (SITE / required).exists():
             errors.append(f'missing required Pages file: {required}')
 
-    expected_sha = os.environ.get('RELEASE_SHA', '').strip() or 'development'
+    expected_sha = release_sha()
     try:
         release = json.loads((SITE / 'release.json').read_text('utf-8'))
         if release != {

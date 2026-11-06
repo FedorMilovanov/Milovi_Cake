@@ -1,18 +1,5 @@
-/* ═══════════════════════════════════════════════════════════════════════
-   MILOVI CAKE — Premium 2026 JS Layer
-   Версия: 1.1 (V3-FIX, полный quality pass)
-   Май 2026
-
-   Загружается ПОСЛЕ main.js и nav.js с defer.
-   Цель: исправить баги, отложить тяжёлое, добавить премиум-фичи 2026,
-         НЕ затрагивая логику калькулятора и корзины.
-
-   Изменения v1.1 (V3-FIX):
-     – Убран дубль регистрации Service Worker (уже есть в HTML).
-     – Убран дубль ESC-handler (уже есть в main.js).
-     – Использован чистый ES5 (для совместимости со всеми браузерами).
-     – Добавлен MO disconnect после первого срабатывания патча img.
-   ═══════════════════════════════════════════════════════════════════════ */
+/* Milovi Cake shared UX layer. Loaded after main.js and nav.js with defer.
+   Cart/calculator behavior stays in main.js; this file progressively enhances it. */
 
 (function(){
   'use strict';
