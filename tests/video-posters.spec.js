@@ -1207,3 +1207,35 @@ test.describe('catalog image fallback', () => {
     expect(errors).toEqual([]);
   });
 });
+
+test.describe('suburb catalog deferral', () => {
+  test.use({ serviceWorkers: 'block' });
+
+  for (const route of ['/prigorody/gatchina/', '/prigorody/pushkin/']) {
+    test(`${route} keeps offscreen product photos out of the cold load and opens the catalog on intent`, async ({ page }) => {
+      const photos = [];
+      const errors = [];
+      page.on('request', request => {
+        if (/\/img\/cake_biscuit_[0-5]\.webp(?:\?|$)/.test(request.url())) photos.push(request.url());
+      });
+      page.on('pageerror', error => errors.push(error.message));
+      await page.goto(route, { waitUntil: 'load' });
+      await expect(page.locator('#card-1')).toHaveCount(0);
+      expect(photos).toEqual([]);
+      await page.locator('.btn-primary--hero[href="#catalog"]').click();
+      await expect(page.locator('#card-1')).toBeVisible();
+      await expect(page.locator('#card-1 .btn-add')).toBeEnabled();
+      await expect.poll(() => photos.length).toBeGreaterThan(0);
+      expect(errors).toEqual([]);
+    });
+  }
+
+  test('a suburb product deep link hydrates before any interaction', async ({ page }) => {
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.goto('/prigorody/gatchina/#card-6', { waitUntil: 'load' });
+    await expect(page.locator('#card-6')).toBeVisible();
+    await expect(page.locator('#card-6 .btn-add')).toBeEnabled();
+    expect(errors).toEqual([]);
+  });
+});

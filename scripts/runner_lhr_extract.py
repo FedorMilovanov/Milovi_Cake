@@ -54,10 +54,10 @@ def tbt_from_long_tasks(tasks: list[dict], window_start: float | None,
     return round(total, 1)
 
 
-def numeric(lhr: dict, audit_id: str) -> float | None:
+def numeric(lhr: dict, audit_id: str, precision: int = 1) -> float | None:
     audit = (lhr.get("audits") or {}).get(audit_id) or {}
     value = audit.get("numericValue")
-    return round(float(value), 1) if isinstance(value, (int, float)) else None
+    return round(float(value), precision) if isinstance(value, (int, float)) else None
 
 
 def audit_items(lhr: dict, audit_id: str) -> list[dict]:
@@ -209,7 +209,7 @@ def extract(lhr: dict) -> dict:
             "tbt": reported_tbt,
             "tti": sim_tti,
             "si": numeric(lhr, "speed-index"),
-            "cls": numeric(lhr, "cumulative-layout-shift"),
+            "cls": numeric(lhr, "cumulative-layout-shift", 6),
             "max_potential_fid": numeric(lhr, "max-potential-fid"),
         },
         "observed": observed_metrics(lhr),

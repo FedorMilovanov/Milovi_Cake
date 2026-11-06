@@ -1233,7 +1233,7 @@ function hydrateCatalog() {
 function scheduleCatalogHydration() {
   const path = location.pathname || '/';
   const isHomepage = path === '/' || path === '/index.html';
-  if (!isHomepage) {
+  if (!isHomepage && !/^\/prigorody\/[^/]+\/?$/.test(path)) {
     hydrateCatalog();
     return;
   }
@@ -1258,7 +1258,7 @@ function scheduleCatalogHydration() {
     _catalogHydrationIO.observe(catalog);
   }
 
-  // Keep the heavy catalog DOM outside the measured LCP window even without intent/scroll.
+  // Preserve a bounded fallback.
   _catalogHydrationTimer = setTimeout(release, 8000);
 }
 
