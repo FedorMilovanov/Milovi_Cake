@@ -59,6 +59,34 @@ class SchemaContentContractTest(unittest.TestCase):
                 self.assertEqual(offer['priceCurrency'], 'RUB')
                 self.assertNotIn('availability', offer)
 
+    def test_single_item_offers_link_to_dedicated_purchasable_pages(self):
+        # Multi-product landings can mention a concrete bento or meringue roll,
+        # but its Offer URL should reach the corresponding existing item page.
+        # This asserts actual routes and factual prices, not unverified stock.
+        cases = (
+            ('detskie-torty/index.html', 'Бенто для ребёнка', '1600', 'bento-torty'),
+            ('tort-na-den-rozhdeniya/index.html', 'Бенто на день рождения', '1600', 'bento-torty'),
+            ('tort-s-dostavkoy/index.html', 'Бенто с доставкой', '1600', 'bento-torty'),
+            ('tort-s-dostavkoy/index.html', 'Меренговый рулет', '2500', 'meringue-roll'),
+            ('zakazat-tort-spb/index.html', 'Бенто-торт', '1600', 'bento-torty'),
+        )
+        for relative, name, price, destination in cases:
+            with self.subTest(page=relative, item=name):
+                offer = product(relative, name)['offers']
+                self.assertEqual(str(offer['price']), price)
+                self.assertEqual(offer['priceCurrency'], 'RUB')
+                self.assertEqual(
+                    offer['url'], f'https://milovicake.ru/{destination}/')
+                self.assertEqual(
+                    offer['seller']['@id'], 'https://milovicake.ru/#business')
+                self.assertNotIn('availability', offer)
+                self.assertTrue(
+                    (ROOT / destination / 'index.html').is_file(),
+                    f'missing dedicated order page: {destination}')
+                self.assertIn(
+                    f'href="/{destination}/"',
+                    (ROOT / relative).read_text(encoding='utf-8'))
+
     def test_no_in_stock_or_unconfirmed_price_expiry_in_product_offers(self):
         for relative in (
             'index.html', 'bento-torty/index.html', 'detskie-torty/index.html',
