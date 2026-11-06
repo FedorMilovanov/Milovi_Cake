@@ -12,7 +12,7 @@
     "audit:prigorody-sitemap": "python3 scripts/sync_prigorody_sitemap.py --check",
     "audit:ip-copy": "python3 scripts/ip_copy_contract.py",
     "audit:video-schema": "python3 scripts/video_schema_contract.py",
-    "audit:content-contracts": "python3 -m unittest discover -s tests -p 'test_*contract.py'",
+    "audit:content-contracts": "python3 scripts/run_contract_tests.py",
     "audit:lighthouse-aggregation": "python3 scripts/lighthouse_aggregation_contract.py",
     "audit:all": "npm run audit:js && npm run audit:analytics && npm run audit:a11y && npm run audit:release && npm run audit:lighthouse-regressions && npm run audit:lighthouse-aggregation && npm run audit:ip-copy && npm run audit:video-schema && npm run audit:content-contracts && npm run audit:prigorody && npm run audit:prigorody-sitemap && npm run audit:security && npm run audit",
     "build:prigorody": "python3 prigorody/build.py",

@@ -35,7 +35,9 @@
 ├── f5c91a4d89e84b2ca6d4f3e7a1029b6c.txt # IndexNow key-file
 ├── favicon.svg, icon-*.png       # Иконки PWA и Apple Touch
 │
-├── css/                          # РОВНО 7 CSS-файлов
+├── css/                          # РОВНО 9 CSS-файлов
+│   ├── fonts.css                 # Самохостинг основных начертаний
+│   ├── fonts-italic.css          # Отложенный курсив
 │   ├── style.css                 # Базовый визуальный слой + shared landing styles
 │   ├── mc-2026.css               # Премиум-слой 2026: UX, доступность, CWV
 │   ├── premium-overrides.css     # Финальные safe overrides + protected hero messenger blocks
@@ -300,6 +302,8 @@ npm run indexnow:submit
 - [Запреты и защищённые зоны](AI_DO_NOT_TOUCH_GUARDRAILS.md).
 
 Разборы и измерения:
+
+- [Текущий статус производительности и критерии закрытия](docs/PERFORMANCE_STATUS.md).
 
 - [Вердикт по TBT и LCP: причины, замеры, отрицательные результаты](docs/TBT_VERDICT_2026-10-28.md).
 - [Диагностика LCP и ограничения измерений](docs/LCP_DIAGNOSIS_2026-10-25.md).

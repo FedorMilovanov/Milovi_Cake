@@ -186,7 +186,7 @@ function renderCatalog() {
           ${p.slides.map((src, i) => {
             const active = i === 0 ? ' active' : '';
             return `<div class="slide-img${active}">
-              <img src="${src}" alt="${p.name}" width="600" height="800" loading="lazy" decoding="async" onerror="this.closest('.slide-img').innerHTML='<div class=\\'slide-img-fallback\\\\'>${p.emoji || '🎂'}</div>'" />
+              <img src="${src}" alt="${p.name}" width="600" height="800" loading="lazy" decoding="async" onerror="this.outerHTML='<div class=slide-img-fallback>${p.emoji || '🎂'}</div>'" />
             </div>`;
           }).join('')}
           ${totalSlides > 1 ? `
@@ -309,7 +309,7 @@ function switchBentoTab(pid, mode) {
     let newSlidesHtml = '';
     slides.forEach((src, i) => {
       const active = i === 0 ? ' active' : '';
-      newSlidesHtml += `<div class="slide-img${active}"><img src="${src}" alt="${variant.name}" width="600" height="800" decoding="async" loading="lazy" onerror="this.closest('.slide-img').innerHTML='<div class=\\'slide-img-fallback\\\\'>${variantEmoji}</div>'" style="object-position:${positions[i]};transform:scale(${scales[i]});transform-origin:${positions[i]};"></div>`;
+      newSlidesHtml += `<div class="slide-img${active}"><img src="${src}" alt="${variant.name}" width="600" height="800" decoding="async" loading="lazy" onerror="this.outerHTML='<div class=slide-img-fallback>${variantEmoji}</div>'" style="object-position:${positions[i]};transform:scale(${scales[i]});transform-origin:${positions[i]};"></div>`;
     });
     if (dotsEl) {
       dotsEl.insertAdjacentHTML('beforebegin', newSlidesHtml);

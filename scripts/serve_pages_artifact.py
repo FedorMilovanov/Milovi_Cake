@@ -51,6 +51,7 @@ CONTENT_TYPES = {
     ".avif": "image/avif",
     ".woff2": "font/woff2",
     ".mp4": "video/mp4",
+    ".webm": "video/webm",
 }
 
 # Сжимаем только текст: gzip на avif/webp/woff2 только тратит время.
@@ -87,7 +88,7 @@ class ArtifactHandler(http.server.BaseHTTPRequestHandler):
     def _resolve(self) -> pathlib.Path | None:
         path = urllib.parse.unquote(urllib.parse.urlparse(self.path).path)
         target = (self.root / path.lstrip('/')).resolve()
-        if not str(target).startswith(str(self.root)):
+        if not target.is_relative_to(self.root):
             return None  # попытка выйти за пределы артефакта
         if target.is_dir():
             target = target / 'index.html'
@@ -124,6 +125,9 @@ class ArtifactHandler(http.server.BaseHTTPRequestHandler):
 class ReusableServer(socketserver.ThreadingTCPServer):
     allow_reuse_address = True
     daemon_threads = True
+    # Browsers request several assets and SW precaches concurrently. The default
+    # five-connection backlog can refuse requests during Windows QA bursts.
+    request_queue_size = 128
 
 
 def main(argv: list[str]) -> int:

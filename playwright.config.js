@@ -9,6 +9,8 @@ module.exports = defineConfig({
   timeout: 60_000,
   expect: { timeout: 10_000 },
   fullyParallel: false,
+  // Match the ordinary CI lane instead of scaling with every local CPU core.
+  workers: 2,
   retries: 1,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
@@ -19,15 +21,15 @@ module.exports = defineConfig({
     video: 'retain-on-failure',
   },
   webServer: {
-    command: 'python3 -m http.server 4173',
+    command: 'python3 scripts/serve_pages_artifact.py --port 4173 --root .',
     url: 'http://127.0.0.1:4173',
-    reuseExistingServer: true,
+    reuseExistingServer: false,
     timeout: 20_000,
   },
   // The ordinary full QA remains Chromium-only. CI opts into a separate
   // cross-engine lane for the user-facing failure and accessibility contracts.
   grep: compatibility
-    ? /cart restoration rejects|cart restores unusual|cart restores legacy conflicts|cart stays usable|cart merges matching|cart preserves different|cart refuses incompatible|cart keeps repeated|cart keeps the total honest|cart rejects a quantity|selected calculator decor retains contrast|review modal keeps Google entries|review lists have named keyboard scroll regions|mobile calculator panel stays reachable|mobile calculator fast Tab keeps actions available|wider calculator result keeps its labelled|mobile calculator ignores a stale scroll|mobile calculator after fast scroll|mobile calculator resize clears|gallery lightbox with missing or late CDN assets|video strip fault handling|suburb links and page-specific resilience/
+    ? /cart restoration rejects|cart restores unusual|cart restores legacy conflicts|cart stays usable|cart merges matching|cart preserves different|cart refuses incompatible|cart keeps repeated|cart keeps the total honest|cart rejects a quantity|selected calculator decor retains contrast|review modal keeps Google entries|review lists have named keyboard scroll regions|mobile calculator panel stays reachable|mobile calculator fast Tab keeps actions available|wider calculator result keeps its labelled|mobile calculator ignores a stale scroll|mobile calculator after fast scroll|mobile calculator resize clears|gallery lightbox with missing or late CDN assets|video strip fault handling|suburb links and page-specific resilience|catalog image fallback/
     : undefined,
   projects: compatibility ? [
     { name: 'firefox-desktop', use: { ...devices['Desktop Firefox'], viewport: { width: 1440, height: 1100 } } },
