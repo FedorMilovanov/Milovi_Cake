@@ -38,6 +38,25 @@ class GalleryMetadataContractTest(unittest.TestCase):
         self.assertEqual({item.findtext('i:loc', namespaces=namespace):
                           item.findtext('i:title', namespaces=namespace) for item in images}, expected)
 
+    def test_public_page_visible_seo_and_readme_counts_follow_gallery_data(self):
+        data = (ROOT / 'js/gallery/data.js').read_text(encoding='utf-8')
+        photos = len(PHOTO.findall(data))
+        videos = len(re.findall(r"\btype:\s*'video'", data))
+        total = photos + videos
+        self.assertEqual((photos, videos, total), (28, 16, 44))
+
+        html = (ROOT / 'gallery/index.html').read_text(encoding='utf-8')
+        photo_mentions = [int(count) for count in re.findall(r'(\d+) HD-фото', html)]
+        self.assertGreaterEqual(len(photo_mentions), 6)
+        self.assertEqual(set(photo_mentions), {photos})
+        self.assertEqual([int(count) for count in re.findall(
+            r'(\d+) фото и видео работ', html)], [total])
+        self.assertIn(f'<span id="gxTotalCount">{total}</span>', html)
+
+        readme = (ROOT / 'README.md').read_text(encoding='utf-8')
+        self.assertIn(f'портфолио из {photos} HD-фото', readme)
+        self.assertIn(f'// ========== PHOTOS ({photos}) ==========', data)
+
     def test_roll_slice_is_in_roll_filter_not_pavlova(self):
         photos = {item[0]: item for item in PHOTO.findall((ROOT / 'js/gallery/data.js').read_text(encoding='utf-8'))}
         _, _, title, description, tags = photos['p17']

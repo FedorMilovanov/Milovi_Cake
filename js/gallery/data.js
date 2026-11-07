@@ -27,7 +27,7 @@ export const GALLERY_ITEMS = [
   { id: 'v15', type: 'video', src: '/img/gallery/videos/video-15-basketball.webm',     poster: '/img/gallery/video-15-basketball-poster.webp', title: 'Видео: 3D-торт «Баскетбол»',     desc: 'Спортивный торт с баскетбольной тематикой', tags: ['3d','bday'] },
   { id: 'v16', type: 'video', src: '/img/gallery/videos/video-16-moon-stars.webm',     poster: '/img/gallery/video-16-moon-stars-poster.webp', title: 'Видео: торт «Луна и звёзды»',    desc: 'Голубой торт с космическими мотивами и золотыми звёздами', tags: ['bday'] },
 
-  // ========== PHOTOS (30) ==========
+  // ========== PHOTOS (28) ==========
   { id: 'p01', type: 'photo', src: '/img/gallery/gallery-01.webp', full: '/img/gallery/gallery-01-hd.webp', title: 'Шоколадный торт с фигурками животных',       desc: 'Торт с шоколадной глазурью и фигурками животных', tags: ['3d','bday'], size: 'big' },
   { id: 'p02', type: 'photo', src: '/img/gallery/gallery-02.webp', full: '/img/gallery/gallery-02-hd.webp', title: 'Розовый торт с цветами',          desc: 'Нежный торт на день рождения с цветочным декором', tags: ['bday'] },
   { id: 'p03', type: 'photo', src: '/img/gallery/gallery-03.webp', full: '/img/gallery/gallery-03-hd.webp', title: 'Детский торт с зайчиком',        desc: 'Праздничный торт с зайчиком, цветами и звёздами', tags: ['3d','bday'] },

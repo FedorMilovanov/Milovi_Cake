@@ -122,7 +122,7 @@
 - `/dostavka-i-oplata/` — согласование доставки по адресу, ориентиры тарифов пригородов, самовывоз с Пулковской ул., 19 (индекс `196158`), ориентиры цен и чеки НПД.
 - `/otzyvy/` — подборка отзывов клиентов и ссылки на карточки Яндекс Карт и Google Maps, где доступны актуальные оценки площадок.
 - `/certificates/` — 5 показанных сертификатов и подтверждающих их записей `hasCredential`.
-- `/gallery/` — портфолио из 30 HD-фото (`ImageGallery` JSON-LD) и 16 видео (`sitemap-videos.xml`).
+- `/gallery/` — портфолио из 28 HD-фото (`ImageGallery` JSON-LD) и 16 видео (`sitemap-videos.xml`).
 
 ### Structured data & GEO (`robots.txt` + `llms.txt`)
 
