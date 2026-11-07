@@ -20,7 +20,7 @@ function browserCrashResources() {
 test('all gallery clips show their own lightweight, decodable frame before playback', async ({ page, request }) => {
   await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
   const reels = await page.evaluate(async () => {
-    const { GALLERY_ITEMS } = await import('/js/gallery/data.js?v=20261026r01');
+    const { GALLERY_ITEMS } = await import('/js/gallery/data.js?v=20261107r01');
     return GALLERY_ITEMS.filter(({ type }) => type === 'video');
   });
   expect(reels).toHaveLength(16);
@@ -122,17 +122,17 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     const card = page.locator('#galleryGrid [data-id="p01"]');
     await card.focus();
     await card.press('Enter');
-    await expect(page.locator('#lbCounter')).toHaveText('01 / 46');
+    await expect(page.locator('#lbCounter')).toHaveText('01 / 44');
     await expect(page.locator('#lbWrapper .swiper-slide-active')).toHaveCount(1);
     await expect(page.locator('#lbWrapper .swiper-slide').nth(0)).toBeVisible();
     await expect(page.locator('#lbWrapper .swiper-slide').nth(1)).toBeHidden();
     await page.locator('#lbNext').click();
-    await expect(page.locator('#lbCounter')).toHaveText('02 / 46');
+    await expect(page.locator('#lbCounter')).toHaveText('02 / 44');
     await expect(page.locator('#lbWrapper .swiper-slide').nth(1)).toBeVisible();
     await page.locator('#lbThumbs .lb-thumb').nth(5).click();
-    await expect(page.locator('#lbCounter')).toHaveText('06 / 46');
+    await expect(page.locator('#lbCounter')).toHaveText('06 / 44');
     await page.keyboard.press('ArrowLeft');
-    await expect(page.locator('#lbCounter')).toHaveText('05 / 46');
+    await expect(page.locator('#lbCounter')).toHaveText('05 / 44');
     await page.keyboard.press('Escape');
     await expect(page.locator('#lbRoot')).toHaveCount(0);
     await expect(card).toBeFocused();
@@ -159,7 +159,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       const response = await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
       expect(response.status()).toBe(200);
       await page.locator('#galleryGrid [data-id="v01"]').click();
-      await expect(page.locator('#lbCounter')).toHaveText('02 / 46');
+      await expect(page.locator('#lbCounter')).toHaveText('02 / 44');
       await expect(page.locator('#lbWrapper .swiper-slide-active video')).toBeVisible();
       await expect(page.locator('#galleryGrid')).not.toHaveAttribute('data-hydrating', 'true');
       expect(blockedImages).toBeGreaterThan(0);
@@ -233,7 +233,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     await card.scrollIntoViewIfNeeded();
     await page.waitForFunction(() => window.__galleryObserverGate.pending.length > 0);
     await card.click();
-    await expect(page.locator('#lbCounter')).toHaveText('02 / 46');
+    await expect(page.locator('#lbCounter')).toHaveText('02 / 44');
     const gridVideos = page.locator('#galleryGrid video');
     expect(await gridVideos.evaluateAll((videos) => videos.filter((video) => video.hasAttribute('src')).length)).toBe(0);
     await page.evaluate(() => {
@@ -579,7 +579,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       await expect(page.locator('#galleryGrid .card')).toHaveCount(0);
       await page.locator('#resetFilter').click();
       await expect(page.locator('#gxEmpty')).toBeHidden();
-      await expect(page.locator('#galleryGrid .card')).toHaveCount(46);
+      await expect(page.locator('#galleryGrid .card')).toHaveCount(44);
     } catch (error) {
       let input = null;
       if (testInfo.project.name.startsWith('firefox-') && !page.isClosed()) {
@@ -602,9 +602,9 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     page.on('pageerror', (error) => errors.push(error.message));
     await page.goto('/gallery/', { waitUntil: 'load' });
     await page.locator('#galleryGrid [data-id="v01"]').click();
-    await expect(page.locator('#lbCounter')).toHaveText('02 / 46');
+    await expect(page.locator('#lbCounter')).toHaveText('02 / 44');
     await page.locator('#lbThumbs .lb-thumb').nth(4).click();
-    await expect(page.locator('#lbCounter')).toHaveText('05 / 46');
+    await expect(page.locator('#lbCounter')).toHaveText('05 / 44');
     const active = page.locator('#lbWrapper .swiper-slide-active video');
     await expect(active).toBeVisible();
     await expect.poll(() => active.evaluate((video) => !video.paused)).toBe(true);
@@ -614,7 +614,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     expect(videoStates.every((video) => ['auto', 'metadata'].includes(video.preload))).toBe(true);
     expect(videoStates.filter((video) => !video.paused).every((video) => video.active)).toBe(true);
     await page.locator('#lbThumbs .lb-thumb').nth(1).click();
-    await expect(page.locator('#lbCounter')).toHaveText('02 / 46');
+    await expect(page.locator('#lbCounter')).toHaveText('02 / 44');
     await expect.poll(() => page.locator('#lbWrapper .swiper-slide-active video').evaluate((video) => !video.paused)).toBe(true);
     expect(errors).toEqual([]);
   });
@@ -639,7 +639,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       await expect(card).toBeVisible();
       await card.click();
       await page.locator('#lbNext').click();
-      await expect(page.locator('#lbCounter')).toHaveText('02 / 46');
+      await expect(page.locator('#lbCounter')).toHaveText('02 / 44');
       const video = page.locator('#lbWrapper .swiper-slide-active video');
       await expect(video).toBeVisible();
       await expect(video).toHaveAttribute('src', /video-01-knigi\.webm/);
@@ -659,7 +659,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       await page.locator('#lbClose').click();
       await expect(page.locator('#lbRoot')).toHaveCount(0);
       await card.click();
-      await expect(page.locator('#lbCounter')).toHaveText('01 / 46');
+      await expect(page.locator('#lbCounter')).toHaveText('01 / 44');
       expect(errors).toEqual([]);
     } catch (error) {
       diagnostic.resources ||= browserCrashResources();
@@ -681,7 +681,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       await page.goto('/gallery/', { waitUntil: 'load' });
       await page.locator('#galleryGrid [data-id="p01"]').click();
       if (viewport.height === 320) {
-        await page.locator('.lb-thumb[aria-label="3D-торт с игровым тематическим декором"]').click();
+        await page.locator('.lb-thumb[aria-label="3D-торт с собаками"]').click();
       } else {
         await page.locator('#lbNext').click();
         await page.locator('#lbNext').click();
@@ -870,7 +870,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     await page.waitForTimeout(900);
     expect(Math.abs((await page.evaluate(() => window.scrollY)) - scrollBefore)).toBeLessThanOrEqual(1);
     await page.locator('#galleryGrid [data-id="p01"]').click();
-    await expect(page.locator('#lbCounter')).toHaveText('01 / 30');
+    await expect(page.locator('#lbCounter')).toHaveText('01 / 28');
     await page.locator('#lbClose').click();
     await expect(page.locator('#lbRoot')).toHaveCount(0);
   });
@@ -912,7 +912,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       const card = page.locator('#galleryGrid [data-id="p01"]');
       for (let i = 0; i < 2; i++) {
         await card.click();
-        await expect(page.locator('#lbCounter')).toHaveText('01 / 30');
+        await expect(page.locator('#lbCounter')).toHaveText('01 / 28');
         await page.locator('#lbClose').click();
         await expect(page.locator('#lbRoot')).toHaveCount(0);
       }
@@ -952,7 +952,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       await page.locator('#lbClose').click();
       await expect(page.locator('#lbRoot')).toHaveCount(0);
       await card.click();
-      await expect(page.locator('#lbCounter')).toHaveText('01 / 46');
+      await expect(page.locator('#lbCounter')).toHaveText('01 / 44');
       expect(diagnostic.errors).toEqual([]);
     } catch (error) {
       diagnostic.resources ||= browserCrashResources();
@@ -1032,7 +1032,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       // The former implementation stopped waiting after roughly two seconds.
       await page.waitForTimeout(2200);
       await page.locator('#lbNext').click();
-      await expect(page.locator('#lbCounter')).toHaveText('02 / 46');
+      await expect(page.locator('#lbCounter')).toHaveText('02 / 44');
       try {
         await page.locator('#lbClose').click({ timeout: 10_000 });
       } catch (error) {
@@ -1058,12 +1058,12 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       await card.click();
       await page.locator('#lbNext').click();
       await page.locator('#lbNext').click();
-      await expect(page.locator('#lbCounter')).toHaveText('03 / 46');
+      await expect(page.locator('#lbCounter')).toHaveText('03 / 44');
       release();
       await expect(page.locator('#lbSwiper')).toHaveClass(/swiper-initialized/);
-      await expect(page.locator('#lbCounter')).toHaveText('03 / 46');
+      await expect(page.locator('#lbCounter')).toHaveText('03 / 44');
       await page.locator('#lbNext').click();
-      await expect(page.locator('#lbCounter')).toHaveText('04 / 46');
+      await expect(page.locator('#lbCounter')).toHaveText('04 / 44');
     } catch (error) {
       stats.resources ||= browserCrashResources();
       throw new Error(`${error.message}\nGallery server diagnostics: ${JSON.stringify(stats)}`, { cause: error });
@@ -1082,7 +1082,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     await page.waitForFunction(() => !!window.Swiper);
     await expect(page.locator('#lbSwiper')).not.toHaveClass(/swiper-initialized/);
     await page.locator('#lbNext').click();
-    await expect(page.locator('#lbCounter')).toHaveText('02 / 46');
+    await expect(page.locator('#lbCounter')).toHaveText('02 / 44');
   });
 
   test('mobile lightbox respects safe areas and touch-scrolls enlarged captions', async ({ page, browserName }, testInfo) => {
@@ -1097,7 +1097,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       await page.setViewportSize(viewport);
       await client.send('Emulation.setSafeAreaInsetsOverride', { insets });
       await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
-      await page.locator('#galleryGrid [data-id="p22"]').tap();
+      await page.locator('#galleryGrid [data-id="p24"]').tap();
       await expect(page.locator('#lbRoot')).toHaveCSS('transform', 'none');
       await page.locator('#lbRoot').evaluate(async (root) => {
         await Promise.all(root.getAnimations().map((animation) => animation.finished.catch(() => {})));
@@ -1145,7 +1145,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: x + 65, y }] });
     await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x - 65, y }] });
     await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-    await expect(page.locator('#lbCounter')).toHaveText('02 / 46');
+    await expect(page.locator('#lbCounter')).toHaveText('02 / 44');
     await client.detach();
   });
 });
