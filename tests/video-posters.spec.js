@@ -1116,6 +1116,13 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       }
       expect(boxes.thumbs.bottom).toBeLessThanOrEqual(viewport.height - insets.bottom);
 
+      // At short landscape heights the published description is intentionally
+      // hidden. Exercise a legitimate future long gallery heading so this test
+      // proves real scrolling and touch affordances without depending on an
+      // arbitrary current portfolio item's editorial title length.
+      await page.locator('#lbTitle').evaluate((el) => {
+        el.textContent = 'Праздничный авторский 3D-торт с фактурой древесины, зелёными элементами декора, объёмными фигурками ручной работы и большой персональной поздравительной табличкой для детского торжества с множеством гостей';
+      });
       await enlargeCaptionText(page);
       const info = page.locator('.lb-info');
       await expect.poll(() => info.evaluate((el) => el.scrollHeight - el.clientHeight)).toBeGreaterThan(100);
