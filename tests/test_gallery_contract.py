@@ -15,9 +15,9 @@ PHOTO = re.compile(
 class GalleryMetadataContractTest(unittest.TestCase):
     def test_photo_names_match_gallery_schema_and_image_sitemap(self):
         photos = PHOTO.findall((ROOT / 'js/gallery/data.js').read_text(encoding='utf-8'))
-        self.assertEqual(len(photos), 30)
+        self.assertEqual(len(photos), 28)
         expected = {f'{ORIGIN}{path}': title for _, path, title, _, _ in photos}
-        self.assertEqual(len(expected), 30)
+        self.assertEqual(len(expected), 28)
 
         html = (ROOT / 'gallery/index.html').read_text(encoding='utf-8')
         block = re.search(r'<script type="application/ld\+json">(.*?)</script>', html, re.S)
@@ -25,7 +25,7 @@ class GalleryMetadataContractTest(unittest.TestCase):
         graph = json.loads(block.group(1))['@graph']
         gallery_schema = next(item for item in graph if item.get('@type') == 'ImageGallery')
         image_objects = gallery_schema['image']
-        self.assertEqual(len(image_objects), 30)
+        self.assertEqual(len(image_objects), 28)
         self.assertEqual({item['contentUrl']: item['name'] for item in image_objects}, expected)
 
         namespace = {'s': 'http://www.sitemaps.org/schemas/sitemap/0.9',
@@ -34,7 +34,7 @@ class GalleryMetadataContractTest(unittest.TestCase):
         gallery = next(entry for entry in root.findall('s:url', namespace)
                        if entry.findtext('s:loc', namespaces=namespace) == f'{ORIGIN}/gallery/')
         images = gallery.findall('i:image', namespace)
-        self.assertEqual(len(images), 30)
+        self.assertEqual(len(images), 28)
         self.assertEqual({item.findtext('i:loc', namespaces=namespace):
                           item.findtext('i:title', namespaces=namespace) for item in images}, expected)
 

@@ -1,6 +1,6 @@
 /* ===========================================================================
  * Milovi Cake — Gallery Data (Single Source of Truth)
- * 46 works: 30 photos + 16 videos
+ * 44 works: 28 photos + 16 videos
  * Поля: { id, type, src, full?, poster?, title, desc, tags[], size? }
  * size: 'm' (1×1), 'tall' (1×2), 'wide' (2×1), 'big' (2×2)
  * tags: 3d | bento | meringue | wedding | pavlova | bday
@@ -48,7 +48,6 @@ export const GALLERY_ITEMS = [
   { id: 'p17', type: 'photo', src: '/img/gallery/gallery-17.webp', full: '/img/gallery/gallery-17-hd.webp', title: 'Срез меренгового рулета',    desc: 'Меренговый рулет с кремом и ягодной начинкой', tags: ['meringue'] },
   { id: 'p18', type: 'photo', src: '/img/gallery/gallery-18.webp', full: '/img/gallery/gallery-18-hd.webp', title: 'Премиальный торт с золотом',    desc: 'Торт в прозрачном цилиндре с золотыми акцентами', tags: ['bday'] },
   { id: 'p19', type: 'photo', src: '/img/gallery/gallery-19.webp', full: '/img/gallery/gallery-19-hd.webp', title: 'Бенто ко дню рождения',         desc: 'Мини-торт с поздравительной надписью', tags: ['bento','bday'], size: 'tall' },
-  { id: 'p20', type: 'photo', src: '/img/gallery/gallery-20.webp', full: '/img/gallery/gallery-20-hd.webp', title: '3D-торт с игровым тематическим декором',     desc: 'Детский торт с игровым персонажем и шарами', tags: ['3d','bday'] },
   { id: 'p22', type: 'photo', src: '/img/gallery/gallery-22.webp', full: '/img/gallery/gallery-22-hd.webp', title: '3D-торт с собаками',            desc: 'Шоколадный торт с объёмными фигурками собак', tags: ['3d','bday'], size: 'wide' },
   { id: 'p23', type: 'photo', src: '/img/gallery/gallery-23.webp', full: '/img/gallery/gallery-23-hd.webp', title: 'Бенто с романтичной надписью',   desc: 'Мини-торт с ягодами и персональным посланием', tags: ['bento'] },
   { id: 'p24', type: 'photo', src: '/img/gallery/gallery-24.webp', full: '/img/gallery/gallery-24-hd.webp', title: '3D-торт со сказочным персонажем',    desc: 'Праздничный торт со сказочной фигуркой и фактурным декором', tags: ['3d','bday'] },
@@ -57,8 +56,6 @@ export const GALLERY_ITEMS = [
   // FIX: p27 дублировал p12 — оба «Бенто Happy Birthday». Уникализируем p27 (не удаляем — есть в JSON-LD галереи).
   { id: 'p27', type: 'photo', src: '/img/gallery/gallery-27.webp', full: '/img/gallery/gallery-27-hd.webp', title: 'Бенто «С днём рождения!»',     desc: 'Мини-торт на день рождения в подарочной коробке', tags: ['bento','bday'] },
   { id: 'p28', type: 'photo', src: '/img/gallery/gallery-28.webp', full: '/img/gallery/gallery-28-hd.webp', title: 'Павлова с кремовым декором',    desc: 'Порционный десерт Павлова крупным планом', tags: ['pavlova'] },
-  /* r19: moved p21 here to separate the two near-identical game-themed cakes (p20 was adjacent to p21) */
-  { id: 'p21', type: 'photo', src: '/img/gallery/gallery-21.webp', full: '/img/gallery/gallery-21-hd.webp', title: '3D-торт с игровым декором',             desc: 'Вертикальная композиция с игровым героем', tags: ['3d','bday'] },
   { id: 'p29', type: 'photo', src: '/img/gallery/gallery-29.webp', full: '/img/gallery/gallery-29-hd.webp', title: 'Торт к 8 Марта',                desc: 'Нежный сиреневый торт с цветочным декором', tags: ['bday'] },
   { id: 'p30', type: 'photo', src: '/img/gallery/gallery-30.webp', full: '/img/gallery/gallery-30-hd.webp', title: 'Подарочный бенто-торт',         desc: 'Мини-торт с нежным оформлением рядом с букетом', tags: ['bento'] },
 ];

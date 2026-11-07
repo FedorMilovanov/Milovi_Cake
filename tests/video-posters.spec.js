@@ -715,7 +715,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     for (const viewport of [{ width: 320, height: 568 }, { width: 568, height: 320 }]) {
       await page.setViewportSize(viewport);
       await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
-      await page.locator('#galleryGrid [data-id="p20"]').click();
+      await page.locator('#galleryGrid [data-id="p22"]').click();
       await expect(page.locator('#lbClose')).toBeFocused();
 
       await enlargeCaptionText(page);
@@ -822,7 +822,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     for (const viewport of [{ width: 320, height: 568 }, { width: 568, height: 320 }]) {
       await page.setViewportSize(viewport);
       await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
-      await page.locator('#galleryGrid [data-id="p20"]').click();
+      await page.locator('#galleryGrid [data-id="p22"]').click();
       await enlargeCaptionText(page);
       const info = page.locator('.lb-info');
       await expect.poll(() => info.evaluate((el) => el.scrollHeight - el.clientHeight)).toBeGreaterThan(100);
@@ -842,7 +842,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     await page.setViewportSize({ width: 320, height: 568 });
     await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
     await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
-    await page.locator('#galleryGrid [data-id="p20"]').click();
+    await page.locator('#galleryGrid [data-id="p22"]').click();
     await enlargeCaptionText(page);
     const info = page.locator('.lb-info');
     await expect.poll(() => info.evaluate((el) => el.scrollHeight - el.clientHeight)).toBeGreaterThan(100);
@@ -852,7 +852,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     // Use an actual edge click/tap rather than invoking the handler directly.
     if (await page.evaluate(() => navigator.maxTouchPoints > 0)) await next.tap({ position, timeout: 5000 });
     else await next.click({ position, timeout: 5000 });
-    await expect(page.locator('#lbCounter')).toHaveText('31 / 46');
+    await expect(page.locator('#lbCounter')).toHaveText('31 / 44');
     await page.locator('#lbClose').click();
   });
 
@@ -1097,7 +1097,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       await page.setViewportSize(viewport);
       await client.send('Emulation.setSafeAreaInsetsOverride', { insets });
       await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
-      await page.locator('#galleryGrid [data-id="p20"]').tap();
+      await page.locator('#galleryGrid [data-id="p22"]').tap();
       await expect(page.locator('#lbRoot')).toHaveCSS('transform', 'none');
       await page.locator('#lbRoot').evaluate(async (root) => {
         await Promise.all(root.getAnimations().map((animation) => animation.finished.catch(() => {})));
