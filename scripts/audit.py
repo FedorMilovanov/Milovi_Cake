@@ -1250,8 +1250,10 @@ with R.section("12. robots.txt & Sitemap"):
         )
         gallery_issues = []
         expected_images = {f"{SITE_URL}{path}": (title, desc) for path, title, desc in photos}
-        if len(photos) != 30 or len(expected_images) != 30:
-            gallery_issues.append("Gallery photo manifest must contain 30 unique reviewed works")
+        # Two previously reviewed photos were withdrawn from public use after
+        # an exact-object character-rights check; the verified manifest is 28.
+        if len(photos) != 28 or len(expected_images) != 28:
+            gallery_issues.append("Gallery photo manifest must contain 28 unique reviewed works")
         missing_photos = [path for path, _, _ in photos if not (ROOT / path.lstrip('/')).is_file()]
         if missing_photos:
             gallery_issues.append(f'Gallery HD photo files are missing: {missing_photos}')

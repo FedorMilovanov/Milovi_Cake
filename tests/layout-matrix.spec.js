@@ -173,18 +173,18 @@ test('@layout-matrix @gallery progressive grid hydration cancels stale filter ba
 
   const grid = page.locator('#galleryGrid');
   const cards = grid.locator('.card');
-  await expect(cards).toHaveCount(46);
+  await expect(cards).toHaveCount(44);
   await expect(grid).not.toHaveAttribute('data-hydrating', 'true');
 
   await page.locator('[data-filter="video"]').click();
   await page.locator('[data-filter="all"]').click();
-  await expect(cards).toHaveCount(46);
+  await expect(cards).toHaveCount(44);
   await expect(grid).not.toHaveAttribute('data-hydrating', 'true');
   await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 
   const ids = await cards.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-id')));
-  expect(ids).toHaveLength(46);
-  expect(new Set(ids).size).toBe(46);
+  expect(ids).toHaveLength(44);
+  expect(new Set(ids).size).toBe(44);
   expect(ids[0]).toBe('p01');
 });
 
