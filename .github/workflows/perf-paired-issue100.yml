@@ -1,0 +1,147 @@
+name: Issue 100 paired Lighthouse experiment
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'js/main.js'
+      - '.github/workflows/perf-paired-issue100.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: issue100-paired-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  paired:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout exact published baseline
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: baseline
+          persist-credentials: false
+
+      - name: Checkout exact candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: candidate
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22.13.0'
+
+      - name: Check source identities and compressed JS budget
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import gzip
+          paths = ['js/main.js','js/nav.js','js/mc-2026.js','js/consent-analytics.js','js/v20-faq-fix.js','js/gallery/main.js','js/gallery/data.js']
+          for repo in ['baseline','candidate']:
+              blobs = b''.join((Path(repo) / p).read_bytes() for p in sorted(paths))
+              size = len(gzip.compress(blobs))
+              print(f'{repo}: combined diagnostic JS gzip={size} B, max=80000 B')
+              if size > 80000:
+                  raise SystemExit(f'{repo}: JS budget exceeded')
+          PY
+          test "$(git -C baseline rev-parse HEAD)" = "${{ github.event.pull_request.base.sha }}"
+          test "$(git -C candidate rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+
+      - name: Build exact-source Pages candidates
+        run: |
+          set -euo pipefail
+          (cd baseline && RELEASE_SHA="${{ github.event.pull_request.base.sha }}" npm run build:pages)
+          (cd candidate && RELEASE_SHA="${{ github.event.pull_request.head.sha }}" npm run build:pages)
+
+      - name: Install pinned Lighthouse CLI
+        run: |
+          set -euo pipefail
+          npm install --prefix "$RUNNER_TEMP/lh" --no-audit --no-fund lighthouse@12.6.1
+          command -v google-chrome || command -v google-chrome-stable || command -v chromium || exit 1
+
+      - name: Start both audited static servers
+        run: |
+          set -euo pipefail
+          (cd baseline && python3 scripts/serve_pages_artifact.py --port 4370 --root _site > "$RUNNER_TEMP/base-server.log" 2>&1 &)
+          (cd candidate && python3 scripts/serve_pages_artifact.py --port 4371 --root _site > "$RUNNER_TEMP/candidate-server.log" 2>&1 &)
+          for port in 4370 4371; do
+            for i in $(seq 1 30); do
+              if curl --fail --silent "http://127.0.0.1:$port/release.json" >/dev/null; then break; fi
+              sleep 1
+            done
+            curl --fail --silent "http://127.0.0.1:$port/release.json"
+          done
+
+      - name: Alternating A/B/B/A Lighthouse samples on one runner
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/lighthouse-config.cjs" <<'CONFIG'
+          module.exports = {
+            extends: 'lighthouse:default',
+            settings: {
+              onlyCategories: ['performance'],
+              throttlingMethod: 'simulate',
+              formFactor: 'mobile',
+              screenEmulation: { mobile: true, width: 412, height: 915, deviceScaleFactor: 1.75, disabled: false },
+              throttling: { rttMs: 150, throughputKbps: 1638.4, cpuSlowdownMultiplier: 4 },
+            },
+          };
+          CONFIG
+          mkdir -p "$RUNNER_TEMP/issue100-lhr"
+          LH="$RUNNER_TEMP/lh/node_modules/.bin/lighthouse"
+          for route in home gatchina; do
+            case "$route" in home) path=/;; gatchina) path=/prigorody/gatchina/;; esac
+            n=0
+            for variant in A B B A A B B A; do
+              n=$((n+1))
+              if [ "$variant" = A ]; then port=4370; else port=4371; fi
+              "$LH" "http://127.0.0.1:$port$path" \
+                --config-path="$RUNNER_TEMP/lighthouse-config.cjs" \
+                --chrome-flags='--headless=new --no-sandbox --disable-dev-shm-usage' \
+                --output=json --output-path="$RUNNER_TEMP/issue100-lhr/${route}_${n}_${variant}.json" --quiet
+              echo "$route run $n variant $variant complete"
+            done
+          done
+
+      - name: Summarize exact per-run metrics
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json, os, statistics as st
+          from pathlib import Path
+          files = list(Path(os.environ['RUNNER_TEMP']).joinpath('issue100-lhr').glob('*.json'))
+          if len(files) != 16:
+              raise SystemExit(f'Expected 16 raw reports, found {len(files)}')
+          for route in ['home', 'gatchina']:
+              print('\n' + route)
+              by = {}
+              for mode in ('A','B'):
+                  rs = sorted([p for p in files if p.stem.startswith(route+'_') and p.stem.endswith('_'+mode)])
+                  by[mode] = []
+                  for p in rs:
+                      x = json.loads(p.read_text())
+                      audits=x['audits']
+                      m={k:round(audits[k]['numericValue']) for k in ['first-contentful-paint','largest-contentful-paint','total-blocking-time']}
+                      by[mode].append(m)
+                  if len(rs)!=4: raise SystemExit('Unexpected sample count for '+route+mode)
+                  print(mode, by[mode])
+                  print('medians', {k:st.median(x[k] for x in by[mode]) for k in by[mode][0]})
+              print('A/B is laboratory Lighthouse simulate, not field p75 or a release decision.')
+          PY
+
+      - name: Save paired Lighthouse evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: issue100-paired-lhr-${{ github.run_id }}
+          path: ${{ runner.temp }}/issue100-lhr/*.json
+          if-no-files-found: ignore
+          retention-days: 7
