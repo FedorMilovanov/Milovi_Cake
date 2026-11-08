@@ -85,9 +85,9 @@ for audit, contract in expected.items():
 #
 # Живой прогон (конфиг выше) меряет путь «раннер -> CDN» и потому держит LCP/TBT
 # на уровне warn. Артефактный прогон (.github/lighthouse-artifact-config.json)
-# меряет саму страницу: собранный `_site` отдаётся локальным сервером, CDN в
-# цепочке нет, поэтому его числа воспроизводимы — это единственный инструмент,
-# которым можно доказывать регресс LCP/TBT.
+# меряет тот же `_site` по локальному HTTPS/h2 (как production), CDN в
+# цепочке нет, поэтому числа сопоставимее при одинаковом протоколе — инструмент,
+# которым можно проверять регресс LCP/TBT, но не field p75.
 #
 # До этой проверки его пороги не были закреплены НИЧЕМ: поднять байтовый бюджет
 # или порог LCP/TBT можно было одной правкой JSON, и ни один тест бы не упал.
@@ -101,6 +101,10 @@ for audit, contract in expected.items():
 artifact_config = json.loads(Path('.github/lighthouse-artifact-config.json').read_text('utf-8'))
 artifact_ci = artifact_config['ci']
 require(
+    '--allow-insecure-localhost' in artifact_ci['collect'].get('settings', {}).get('chromeFlags', ''),
+    'HTTPS/H2 local fixture needs loopback-only cert handling in Chrome',
+)
+require(
     artifact_ci['collect'].get('numberOfRuns') == 3,
     'artifact collection must remain three runs',
 )
@@ -109,14 +113,14 @@ require(
 # страницы определяет LCP на смоделированном канале, поэтому бюджет и LCP-порог
 # держат одну и ту же причину с двух сторон.
 ARTIFACT_BYTE_BUDGETS = {
-    '^http://127\\.0\\.0\\.1:4300/$': 438272,
-    '^http://127\\.0\\.0\\.1:4300/gallery/$': 5942272,
-    '^http://127\\.0\\.0\\.1:4300/svadebnye-torty/$': 377856,
-    '^http://127\\.0\\.0\\.1:4300/bento-torty/$': 537600,
-    '^http://127\\.0\\.0\\.1:4300/zakazat-tort-spb/$': 516096,
-    '^http://127\\.0\\.0\\.1:4300/o-konditere/$': 256000,
-    '^http://127\\.0\\.0\\.1:4300/prigorody/gatchina/$': 1854464,
-    '^http://127\\.0\\.0\\.1:4300/privacy/$': 58368,
+    '^https://127\\.0\\.0\\.1:4300/$': 438272,
+    '^https://127\\.0\\.0\\.1:4300/gallery/$': 5942272,
+    '^https://127\\.0\\.0\\.1:4300/svadebnye-torty/$': 377856,
+    '^https://127\\.0\\.0\\.1:4300/bento-torty/$': 537600,
+    '^https://127\\.0\\.0\\.1:4300/zakazat-tort-spb/$': 516096,
+    '^https://127\\.0\\.0\\.1:4300/o-konditere/$': 256000,
+    '^https://127\\.0\\.0\\.1:4300/prigorody/gatchina/$': 1854464,
+    '^https://127\\.0\\.0\\.1:4300/privacy/$': 58368,
 }
 
 matrix = artifact_ci['assert']['assertMatrix']
@@ -176,7 +180,11 @@ for audit, (level, key, threshold, aggregation) in ARTIFACT_EXPECTED.items():
 # Состав аудита сверяется с самим воркфлоу: выкинутая из замера страница
 # перестаёт давать предупреждение, но это не улучшение, а пропажа измерения.
 artifact_workflow = Path('.github/workflows/lighthouse-artifact.yml').read_text('utf-8')
-audited_urls = re.findall(r'^\s+(http://127\.0\.0\.1:4300\S*)$', artifact_workflow, re.M)
+# Match only the eight LHCI URLs, never the curl/release healthcheck URLs.
+url_list_marker = '          urls: |\n'
+require(artifact_workflow.count(url_list_marker) == 1, 'expected one artifact URL list')
+audit_list = artifact_workflow.split(url_list_marker, 1)[1].split('          configPath:', 1)[0]
+audited_urls = re.findall(r'^\s+(https://127\.0\.0\.1:4300\S*)$', audit_list, re.M)
 require(
     len(audited_urls) == len(ARTIFACT_BYTE_BUDGETS),
     f'artifact workflow audits {len(audited_urls)} URLs, budgets define {len(ARTIFACT_BYTE_BUDGETS)}',
