@@ -121,7 +121,7 @@ function startProductSlider(pid, total) {
   slideTimers[pid] = setInterval(() => {
     if (document.hidden) return;
     const wrap = document.getElementById('slider-' + pid);
-    if (wrap && wrap.matches(':hover')) return;
+    if (wrap && (wrap.matches(':hover') || wrap._slidePending != null)) return;
     goSlide(pid, (sliderCurrentIdx[pid] || 0) + 1);
   }, 3000);
 }
@@ -134,13 +134,29 @@ function goSlide(pid, idx) {
   const wrap = document.getElementById('slider-' + pid);
   if (!wrap) return;
   const slides = wrap.querySelectorAll('.slide-img');
-  const dots = wrap.querySelectorAll('.dot');
-  const total = slides.length;
-  if (total === 0) return;
-  const next = (idx + total) % total;
-  sliderCurrentIdx[pid] = next;
-  slides.forEach((el, i) => el.classList.toggle('active', i === next));
-  dots.forEach((el, i) => el.classList.toggle('active', i === next));
+  if (!slides.length) return;
+  const next = (idx + slides.length) % slides.length;
+  if (wrap._slidePending === next) return;
+
+  // Skip stale loads.
+  const ticket = wrap._slideTicket = (wrap._slideTicket || 0) + 1;
+  wrap._slidePending = next;
+  const show = () => {
+    if (wrap._slideTicket !== ticket || !slides[next].isConnected) return;
+    wrap._slidePending = null;
+    wrap.removeAttribute('aria-busy');
+    sliderCurrentIdx[pid] = next;
+    slides.forEach((slide, i) => slide.classList.toggle('active', i === next));
+    wrap.querySelectorAll('.dot').forEach((dot, i) => dot.classList.toggle('active', i === next));
+  };
+  const img = slides[next].querySelector('img');
+  if (!img) { show(); return; }
+  const loaded = () => img.decode ? img.decode().then(show, show) : show();
+  if (img.complete && img.naturalWidth) { loaded(); return; }
+  wrap.setAttribute('aria-busy', 'true');
+  img.addEventListener('load', loaded, { once: true });
+  img.addEventListener('error', () => requestAnimationFrame(show), { once: true });
+  if (img.complete && !img.naturalWidth) requestAnimationFrame(show);
 }
 
 // ── DATA ──
@@ -180,7 +196,6 @@ function renderCatalog() {
   grid.innerHTML = products.map(p => {
     let imgHtml;
     if (p.slides && p.slides.length) {
-      const totalSlides = p.slides.length;
       imgHtml = `
         <div class="slider-wrap" id="slider-${p.id}">
           ${p.slides.map((src, i) => {
@@ -189,9 +204,9 @@ function renderCatalog() {
               <img src="${src}" alt="${p.name}" width="600" height="800" loading="lazy" decoding="async" onerror="this.outerHTML='<div class=slide-img-fallback>${p.emoji || '🎂'}</div>'" />
             </div>`;
           }).join('')}
-          ${totalSlides > 1 ? `
-            <button type="button" class="slide-btn slide-prev" onclick="sliderStep('${p.id}',-1,${totalSlides})" aria-label="Предыдущее фото — ${p.name}">&#8249;</button>
-            <button type="button" class="slide-btn slide-next" onclick="sliderStep('${p.id}',1,${totalSlides})" aria-label="Следующее фото — ${p.name}">&#8250;</button>
+          ${p.slides.length > 1 ? `
+            <button type="button" class="slide-btn slide-prev" onclick="sliderStep('${p.id}',-1)" aria-label="Предыдущее фото — ${p.name}">&#8249;</button>
+            <button type="button" class="slide-btn slide-next" onclick="sliderStep('${p.id}',1)" aria-label="Следующее фото — ${p.name}">&#8250;</button>
             <div class="slide-dots">${p.slides.map((_,i) => `<span class="dot${i===0?' active':''}" onclick="goSlide('${p.id}',${i})"></span>`).join('')}</div>
           ` : ''}
         </div>`;
@@ -241,7 +256,10 @@ function renderCatalog() {
 
 
 
-function sliderStep(pid, dir, total) { goSlide(pid, (sliderCurrentIdx[pid] || 0) + dir); }
+function sliderStep(pid, dir) {
+  const wrap = document.getElementById('slider-' + pid);
+  goSlide(pid, (wrap?._slidePending ?? sliderCurrentIdx[pid] ?? 0) + dir);
+}
 
 // ── CALCULATOR STATE ──
 let _calcWeight = 2;
@@ -259,7 +277,7 @@ const CAKE_CONFIGS = {
 function addSliderTouch(pid, total) {
   const wrap = document.getElementById('slider-' + pid);
   if (!wrap) return;
-  // switchBentoTab пересоздаёт слушатели при смене таба; снимаем прошлые, чтобы не копить их (утечка + двойной свайп).
+  // Rebind touch listeners on mode change.
   if (wrap._touchAbort) wrap._touchAbort.abort();
   const _sig = (wrap._touchAbort = new AbortController()).signal;
   let startX = 0;
@@ -268,11 +286,9 @@ function addSliderTouch(pid, total) {
     const dx = e.changedTouches[0].clientX - startX;
     if (Math.abs(dx) < 40) return;
     wrap._wasSwiped = true;
-    let cur = 0;
-    wrap.querySelectorAll('.dot').forEach((d, i) => { if (d.classList.contains('active')) cur = i; });
-    const next = dx < 0 ? (cur + 1) % total : (cur - 1 + total) % total;
-    goSlide(pid, next);
-    if (slideTimers[pid]) { clearInterval(slideTimers[pid]); let c = next; slideTimers[pid] = setInterval(() => { if (document.hidden) return; c = (c + 1) % total; goSlide(pid, c); }, 3000); }
+    const cur = wrap._slidePending ?? sliderCurrentIdx[pid] ?? 0;
+    goSlide(pid, cur + (dx < 0 ? 1 : -1));
+    if (slideTimers[pid]) startProductSlider(pid, total);
     setTimeout(() => { wrap._wasSwiped = false; }, 300);
   }, { passive: true, signal: _sig });
 }
@@ -300,6 +316,9 @@ function switchBentoTab(pid, mode) {
 
   const wrap = document.getElementById('slider-' + pid);
   if (wrap) {
+    wrap._slideTicket = (wrap._slideTicket || 0) + 1;
+    wrap._slidePending = null;
+    wrap.removeAttribute('aria-busy');
     const slides = variant.slides;
     const positions = variant.slidePos || slides.map(() => 'center center');
     const scales = variant.slideScale || slides.map(() => 1);
@@ -317,13 +336,7 @@ function switchBentoTab(pid, mode) {
     }
     sliderCurrentIdx[pid] = 0;
     if (slideTimers[pid]) { clearInterval(slideTimers[pid]); delete slideTimers[pid]; }
-    if (slides.length > 1 && !wrap.matches(':hover')) {
-      slideTimers[pid] = setInterval(() => {
-        if (document.hidden) return;
-        sliderCurrentIdx[pid] = ((sliderCurrentIdx[pid] || 0) + 1) % slides.length;
-        goSlide(pid, sliderCurrentIdx[pid]);
-      }, 3000);
-    }
+    if (slides.length > 1 && !wrap.matches(':hover')) startProductSlider(pid, slides.length);
     addSliderTouch(pid, slides.length);
   }
 }

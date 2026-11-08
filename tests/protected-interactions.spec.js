@@ -46,7 +46,10 @@ test.describe('protected homepage interactions', () => {
       ).toBeLessThan(0.25);
       const after = await flat.evaluate((el) => ({ opacity: Number(el.getAttribute('opacity') || '0'), y: Number(el.getAttribute('y') || '0') }));
       expect(after.opacity, `${item.label} flat label returns`).toBeLessThan(0.25);
-      expect(after.y, `${item.label} y returns`).toBeGreaterThan(4);
+      await expect.poll(
+        async () => Number(await flat.getAttribute('y') || '0'),
+        { message: `${item.label} y returns after hover animation`, timeout: 2000 },
+      ).toBeGreaterThan(4);
     }
   });
 
@@ -415,4 +418,176 @@ test.describe('landing page interactive basics', () => {
     await expect.poll(async () => video.evaluate((el) => el.paused)).toBeFalsy();
     await video.evaluate((el) => el.pause());
   });
+});
+
+
+// Previously the carousel arrows had no positioning or hit-target styling;
+// images intercepted clicks at all mobile and desktop widths.
+for (const route of ['/', '/prigorody/gatchina/']) {
+  test(`product carousel arrows are visible and clickable on ${route}`, async ({ page }) => {
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.goto(route, { waitUntil: 'domcontentloaded' });
+    const deny = page.locator('.mc-consent-overlay.is-open .mc-consent-button--deny');
+    if (await deny.isVisible()) await deny.click();
+    if (route === '/') await page.locator('body').dispatchEvent('click');
+
+    const next = page.locator('#slider-1 .slide-next');
+    await expect(next).toBeVisible();
+    await next.scrollIntoViewIfNeeded();
+
+    const hitTarget = await next.evaluate(button => {
+      const box = button.getBoundingClientRect();
+      const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+      return { width: box.width, height: box.height, clickable: hit === button || button.contains(hit) };
+    });
+    expect(hitTarget.width).toBeGreaterThanOrEqual(44);
+    expect(hitTarget.height).toBeGreaterThanOrEqual(44);
+    expect(hitTarget.clickable).toBe(true);
+
+    const before = await page.locator('#slider-1').evaluate(slider =>
+      [...slider.querySelectorAll('.slide-img')].findIndex(el => el.classList.contains('active')));
+    await next.click();
+    await expect.poll(() => page.locator('#slider-1').evaluate(slider =>
+      [...slider.querySelectorAll('.slide-img')].findIndex(el => el.classList.contains('active')))
+    ).toBe((before + 1) % 6);
+    expect(errors).toEqual([]);
+  });
+}
+
+
+// Regression: never expose an undecoded product photo on a slow or failing connection.
+async function readyCatalogForSlowPhoto(page, route) {
+  await page.addInitScript(() => {
+    Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
+  });
+  await page.goto(route, { waitUntil: 'domcontentloaded' });
+  const deny = page.locator('.mc-consent-overlay.is-open .mc-consent-button--deny');
+  if (await deny.isVisible()) await deny.click();
+  if (route === '/') await page.locator('body').dispatchEvent('click');
+  const slider = page.locator('#slider-1');
+  await slider.scrollIntoViewIfNeeded();
+  await expect.poll(() => slider.locator('.slide-img.active img').evaluate(
+    img => img.complete && img.naturalWidth > 0
+  )).toBe(true);
+  return slider;
+}
+
+async function catalogSlideState(slider) {
+  return slider.evaluate(el => {
+    const slides = [...el.querySelectorAll('.slide-img')];
+    const index = slides.findIndex(x => x.classList.contains('active'));
+    const img = slides[index]?.querySelector('img');
+    return {
+      index,
+      pending: el._slidePending ?? null,
+      busy: el.getAttribute('aria-busy'),
+      ready: !!img && img.complete && img.naturalWidth > 0,
+    };
+  });
+}
+
+test.describe('controlled slow product photos', () => {
+  test.use({ serviceWorkers: 'block' });
+
+  for (const route of ['/', '/prigorody/gatchina/']) {
+  test('slow product image retains visible photo on ' + route, async ({ page }) => {
+    test.setTimeout(45000);
+    let release;
+    const hold = new Promise(resolve => { release = resolve; });
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.route(/cake_biscuit_1\.webp$/, async request => {
+      await hold;
+      await request.continue().catch(() => {});
+    });
+    try {
+      const slider = await readyCatalogForSlowPhoto(page, route);
+      await slider.locator('.slide-next').click();
+      await expect.poll(() => catalogSlideState(slider)).toMatchObject({
+        index: 0, pending: 1, busy: 'true', ready: true,
+      });
+      release();
+      await expect.poll(() => catalogSlideState(slider)).toMatchObject({
+        index: 1, pending: null, busy: null, ready: true,
+      });
+      expect(errors).toEqual([]);
+    } finally { release(); }
+  });
+
+  test('rapid product arrows ignore obsolete downloads on ' + route, async ({ page }) => {
+    test.setTimeout(45000);
+    const gates = {};
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    for (const n of [1, 2]) {
+      const hold = new Promise(resolve => { gates[n] = resolve; });
+      await page.route(new RegExp('cake_biscuit_' + n + '\\.webp$'), async request => {
+        await hold;
+        await request.continue().catch(() => {});
+      });
+    }
+    try {
+      const slider = await readyCatalogForSlowPhoto(page, route);
+      const next = slider.locator('.slide-next');
+      await next.click();
+      await next.click();
+      await expect.poll(() => catalogSlideState(slider)).toMatchObject({
+        index: 0, pending: 2, busy: 'true', ready: true,
+      });
+      gates[1]();
+      await expect.poll(() => slider.locator('.slide-img').nth(1).locator('img')
+        .evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+      expect((await catalogSlideState(slider)).index).toBe(0);
+      gates[2]();
+      await expect.poll(() => catalogSlideState(slider)).toMatchObject({
+        index: 2, pending: null, busy: null, ready: true,
+      });
+      expect(errors).toEqual([]);
+    } finally { Object.values(gates).forEach(release => release()); }
+  });
+
+  test('missing product photo displays fallback without busy lock on ' + route, async ({ page }) => {
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.route(/cake_biscuit_1\.webp$/, request => request.fulfill({
+      status: 404, contentType: 'text/plain', body: 'not found',
+    }));
+    const slider = await readyCatalogForSlowPhoto(page, route);
+    await slider.locator('.slide-next').click();
+    await expect(slider.locator('.slide-img.active .slide-img-fallback')).toBeVisible();
+    expect((await catalogSlideState(slider)).pending).toBeNull();
+    await expect(slider).not.toHaveAttribute('aria-busy');
+    expect(errors).toEqual([]);
+  });
+}
+
+test('switching Bento mode cancels a pending old-photo transition', async ({ page }) => {
+  test.setTimeout(45000);
+  let release;
+  const hold = new Promise(resolve => { release = resolve; });
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.route(/bento_2\.webp$/, async request => {
+    await hold;
+    await request.continue().catch(() => {});
+  });
+  try {
+    await readyCatalogForSlowPhoto(page, '/prigorody/gatchina/');
+    const slider = page.locator('#slider-2');
+    await slider.scrollIntoViewIfNeeded();
+    await expect.poll(() => slider.locator('.slide-img.active img').evaluate(
+      img => img.complete && img.naturalWidth > 0
+    )).toBe(true);
+    await slider.locator('.slide-next').click();
+    await expect.poll(() => slider.evaluate(el => el._slidePending)).toBe(1);
+    await page.locator('#tab-maxi-2').click();
+    release();
+    await expect(slider.locator('.slide-img')).toHaveCount(1);
+    await expect(slider.locator('.slide-img.active')).toHaveCount(1);
+    await expect(slider).not.toHaveAttribute('aria-busy');
+    expect(await slider.evaluate(el => el._slidePending ?? null)).toBeNull();
+    expect(errors).toEqual([]);
+  } finally { release(); }
+});
 });
