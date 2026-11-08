@@ -86,8 +86,8 @@ for audit, contract in expected.items():
 # Живой прогон (конфиг выше) меряет путь «раннер -> CDN» и потому держит LCP/TBT
 # на уровне warn. Артефактный прогон (.github/lighthouse-artifact-config.json)
 # меряет тот же `_site` по локальному HTTPS/h2 (как production), CDN в
-# цепочке нет, поэтому его числа лучше сопоставимы при одинаковом протоколе — инструмент,
-# которым можно проверять изменения LCP/TBT, но не полевой p75.
+# цепочке нет, поэтому числа сопоставимее при одинаковом протоколе — инструмент,
+# которым можно проверять регресс LCP/TBT, но не field p75.
 #
 # До этой проверки его пороги не были закреплены НИЧЕМ: поднять байтовый бюджет
 # или порог LCP/TBT можно было одной правкой JSON, и ни один тест бы не упал.
@@ -180,28 +180,11 @@ for audit, (level, key, threshold, aggregation) in ARTIFACT_EXPECTED.items():
 # Состав аудита сверяется с самим воркфлоу: выкинутая из замера страница
 # перестаёт давать предупреждение, но это не улучшение, а пропажа измерения.
 artifact_workflow = Path('.github/workflows/lighthouse-artifact.yml').read_text('utf-8')
-# Parse only the LHCI URL list, not incidental curl/release witness URLs.
-# Previously, a standalone loopback health-check URL could be miscounted as
-# an audited route. Keep the full eight-route set pinned below.
+# Match only the eight LHCI URLs, never the curl/release healthcheck URLs.
 url_list_marker = '          urls: |\n'
-require(artifact_workflow.count(url_list_marker) == 1, 'expected one artifact Lighthouse URL list')
+require(artifact_workflow.count(url_list_marker) == 1, 'expected one artifact URL list')
 audit_list = artifact_workflow.split(url_list_marker, 1)[1].split('          configPath:', 1)[0]
-audited_urls = re.findall(r'^\s+(https://127\.0\.0\.1:4300\S*)
-require(
-    len(audited_urls) == len(ARTIFACT_BYTE_BUDGETS),
-    f'artifact workflow audits {len(audited_urls)} URLs, budgets define {len(ARTIFACT_BYTE_BUDGETS)}',
-)
-for url in audited_urls:
-    # Экранируем только точки: re.escape() добавил бы «\-» и не совпал бы
-    # с ключами словаря, записанными как в JSON-конфиге.
-    pattern = '^' + url.replace('.', '\\.') + '$'
-    require(
-        pattern in ARTIFACT_BYTE_BUDGETS,
-        f'artifact workflow audits an unpinned URL: {url}',
-    )
-
-print('Lighthouse aggregation contract OK')
-, audit_list, re.M)
+audited_urls = re.findall(r'^\s+(https://127\.0\.0\.1:4300\S*)$', audit_list, re.M)
 require(
     len(audited_urls) == len(ARTIFACT_BYTE_BUDGETS),
     f'artifact workflow audits {len(audited_urls)} URLs, budgets define {len(ARTIFACT_BYTE_BUDGETS)}',
