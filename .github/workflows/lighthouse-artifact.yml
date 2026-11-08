@@ -80,55 +80,74 @@ jobs:
       - name: Prove the payload release identity
         run: npm run audit:pages
 
-      - name: Serve artifact locally
+      - name: Serve published artifact via production-like HTTPS/HTTP2
         run: |
           set -euo pipefail
-          python3 scripts/serve_pages_artifact.py --port 4300 --root _site &
+          # Only the loopback fixture uses a temporary self-signed certificate.
+          openssl req -x509 -newkey rsa:2048 -nodes -days 1 \
+            -keyout "$RUNNER_TEMP/pages-local.key" \
+            -out "$RUNNER_TEMP/pages-local.crt" \
+            -subj "/CN=localhost" \
+            -addext "subjectAltName=DNS:localhost,IP:127.0.0.1" >/dev/null 2>&1
+          node --check scripts/serve_pages_artifact_h2.mjs
+          node scripts/serve_pages_artifact_h2.mjs --port 4300 --root _site \
+            --cert "$RUNNER_TEMP/pages-local.crt" \
+            --key "$RUNNER_TEMP/pages-local.key" > "$RUNNER_TEMP/pages-h2.log" 2>&1 &
           echo $! > /tmp/artifact-server.pid
           for _ in $(seq 1 30); do
-            if python3 -c "import socket;socket.create_connection(('127.0.0.1',4300),1)" 2>/dev/null; then
-              echo "artifact server ready"
-              exit 0
+            if curl -fsS --http2 --cacert "$RUNNER_TEMP/pages-local.crt" \
+                https://127.0.0.1:4300/release.json >/dev/null 2>&1; then
+              echo "Pages HTTP/2 artifact server ready"
+              break
             fi
             sleep 1
           done
-          echo "artifact server did not start" >&2
-          exit 1
+          curl -fsS --http2 --cacert "$RUNNER_TEMP/pages-local.crt" \
+            https://127.0.0.1:4300/release.json
 
-      - name: Verify served bytes are the artifact
+      - name: Verify immutable artifact bytes and negotiated HTTP/2
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import gzip, json, os, urllib.request
+          import gzip, json, os, subprocess
           from pathlib import Path
-          request = urllib.request.Request(
-              'http://127.0.0.1:4300/', headers={'Accept-Encoding': 'gzip'})
-          with urllib.request.urlopen(request, timeout=10) as response:
-              encoding = response.headers.get('Content-Encoding')
-              body = gzip.decompress(response.read()) if encoding == 'gzip' else response.read()
-          if encoding != 'gzip':
-              raise SystemExit(f'Pages отдаёт текст сжатым, а сервер — нет ({encoding})')
+          cert = str(Path(os.environ['RUNNER_TEMP']) / 'pages-local.crt')
+          url = 'https://127.0.0.1:4300/'
+          headers = Path(os.environ['RUNNER_TEMP']) / 'pages-response-headers.txt'
+          encoded = subprocess.check_output([
+              'curl', '--fail', '--silent', '--show-error', '--http2',
+              '--cacert', cert, '-H', 'Accept-Encoding: gzip',
+              '-D', str(headers), url], timeout=20)
+          if b'content-encoding: gzip' not in headers.read_bytes().lower():
+              raise SystemExit('Pages artifact HTML lacks gzip transfer')
+          body = gzip.decompress(encoded)
           if body != Path('_site/index.html').read_bytes():
-              raise SystemExit('served HTML differs from the audited Pages payload')
-          with urllib.request.urlopen('http://127.0.0.1:4300/release.json', timeout=10) as response:
-              release = json.load(response)
+              raise SystemExit('served HTML differs from immutable Pages payload')
+          proto = subprocess.check_output([
+              'curl','--fail','--silent','--show-error','--http2',
+              '--cacert',cert,'-o','/dev/null','-w','%{http_version}',url],timeout=20).decode()
+          if proto != '2':
+              raise SystemExit('Pages fixture did not negotiate HTTP/2: '+proto)
+          release = json.loads(subprocess.check_output([
+              'curl','--fail','--silent','--show-error','--http2',
+              '--cacert',cert,url+'release.json'],timeout=20))
           if release.get('sha') != os.environ['AUDIT_SHA']:
-              raise SystemExit('served release witness differs from the audit SHA')
-          print(f'ok: gzip, {len(body)} байт HTML')
+              raise SystemExit('served release witness differs from audit SHA')
+          print(f'ok: exact release, gzip, HTTP/2, {len(body)} bytes HTML')
           PY
 
       - name: Audit artifact with Lighthouse
         uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12
         with:
           urls: |
-            http://127.0.0.1:4300/
-            http://127.0.0.1:4300/gallery/
-            http://127.0.0.1:4300/svadebnye-torty/
-            http://127.0.0.1:4300/bento-torty/
-            http://127.0.0.1:4300/zakazat-tort-spb/
-            http://127.0.0.1:4300/o-konditere/
-            http://127.0.0.1:4300/prigorody/gatchina/
-            http://127.0.0.1:4300/privacy/
+            https://127.0.0.1:4300/
+            https://127.0.0.1:4300/gallery/
+            https://127.0.0.1:4300/svadebnye-torty/
+            https://127.0.0.1:4300/bento-torty/
+            https://127.0.0.1:4300/zakazat-tort-spb/
+            https://127.0.0.1:4300/o-konditere/
+            https://127.0.0.1:4300/prigorody/gatchina/
+            https://127.0.0.1:4300/privacy/
           configPath: ./.github/lighthouse-artifact-config.json
           uploadArtifacts: true
 
@@ -155,7 +174,7 @@ jobs:
 
           pages = {}
           for report in data.get('reports', []):
-              url = (report.get('url') or '?').replace('http://127.0.0.1:4300', '') or '/'
+              url = (report.get('url') or '?').replace('https://127.0.0.1:4300', '') or '/'
               pages.setdefault(url, []).append(report)
 
           def stat(values):
