@@ -38,7 +38,7 @@
 - `scripts/a11y_static.py` хранит permanent guards для подтверждённых conformance-регрессий.
 - `scripts/release_contract.py` проверяет exact asset→revision, не глобальный набор версий.
 - Playwright имеет обычные desktop/mobile проекты и отдельную responsive matrix `360/390/414/561/600/768/900/1024` × light/dark для camel-rule дефектов.
-- CSS/JS budget считается по gzip transfer size; historical `!important` debt не должен расти.
+- CSS/JS source-size budget — **legacy concatenated gzip proxy**, не реальный HTTP transfer: сверять отдельные gzip суммы и actual per-route Lighthouse resource transfers. Historical `!important` debt не должен расти.
 - **Тема по умолчанию (КРИТИЧНО):** весь сайт — СВЕТЛАЯ тема по умолчанию, КРОМЕ `meringue-roll/`, где дефолт ТЁМНЫЙ; явный выбор пользователя всегда приоритетен.
 
 ---
@@ -209,7 +209,9 @@ Protected UI теперь проверяется двумя слоями:
 
 ### 4.5 CSS/JS budget policy
 
-- Runtime budget считается по gzip transfer size, а не raw bytes.
+- `MAX_JS_GZIP=80_000`, `MAX_CSS_GZIP=100_000`, `MAX_TOTAL_GZIP=180_000` в `scripts/audit.py` измеряют **legacy gzip одного общего буфера всех allowlisted файлов**. Это **WARN**, а не `ERROR`, и не фактические байты какого-либо маршрута.
+- Аудит дополнительно показывает сумму gzip **отдельных** файлов. И она не равна per-route HTTP transfer: проверять реальные `network-requests.transferSize` по JS/CSS/fonts/images в Lighthouse LHR и main-thread execution отдельно.
+- Не сокращать читабельность, обработку ошибок или пользовательские функции ради единиц байтов concat-gzip proxy. Пересмотр caps допустим после независимых пер-route и CPU-trace A/B, не ради исчезновения предупреждений.
 - Raw CSS/JS totals в `scripts/audit.py` — INFO/reference, не deploy-blocker.
 - `!important` counts зафиксированы baseline-бюджетом в `scripts/audit.py`.
 - Новые `!important` сверх baseline — **FAIL/ERROR** в `scripts/audit.py`; повышать baseline можно только отдельным осознанным review, а не вслед за случайно выросшим долгом.

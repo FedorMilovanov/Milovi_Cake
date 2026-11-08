@@ -175,6 +175,10 @@ jobs:
                   f"| TBT {stat([m['tbt'] for m in metrics])} "
                   f"| work {stat([r['main_thread']['total_ms'] for r in reports])} "
                   f"| bytes {stat([r['bytes']['total'] for r in reports])} "
+                  f"| tx JS {stat([r['bytes']['observed_network_transfer']['by_type_bytes'].get('Script', 0) for r in reports])} "
+                  f"| CSS {stat([r['bytes']['observed_network_transfer']['by_type_bytes'].get('Stylesheet', 0) for r in reports])} "
+                  f"| fonts {stat([r['bytes']['observed_network_transfer']['by_type_bytes'].get('Font', 0) for r in reports])} "
+                  f"| images {stat([r['bytes']['observed_network_transfer']['by_type_bytes'].get('Image', 0) for r in reports])} "
                   f"(медиана/максимум)"
               )
           PY

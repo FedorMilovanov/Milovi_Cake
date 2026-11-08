@@ -1,6 +1,25 @@
 # Performance: текущее состояние и критерии завершения
 
-## Актуальная доказательная точка — 8 ноября 2026
+## Подтверждённый production — 8 ноября 2026
+
+**Published SHA:** `d10c82caacf7a288d9e2174ccf00e69f5b60772a`, [Pages deploy + smoke success](https://github.com/FedorMilovanov/Milovi_Cake/actions/runs/42447340590); PR #149 (UX карусели) merged, branch deleted. **Performance issue #100 OPEN:** [48 первичных live/artifact LHR для merge SHA](https://github.com/FedorMilovanov/Milovi_Cake/issues/100#issuecomment-6717501238). Медиана LCP live прошла 8/8 URL; Pages-артефакт 7/8 (Гатчина 2619ms). Выбросы: live главная LCP 3205ms/TBT 574ms, live Гатчина LCP 2850ms, artifact Гатчина LCP 4073ms. Ни медиана, ни Lighthouse CI success не доказывают полевые CWV p75.
+
+### Диагностика ограничений CSS/JS (реальные 24 live Lighthouse LHR)
+
+В `scripts/audit.py` лимиты CSS 100000 B / JS 80000 B / суммарно 180000 B имеют **уровень WARN** и считают gzip **одного объединённого буфера всех разрешённых файлов**. Это source-size proxy, а **не сумма отдельных HTTP-ресурсов и не размер загрузки страницы**. На точном merge SHA proxy JS **79735 B** (на 265 B ниже порога) и CSS **88663 B**; сумма отдельных gzip потоков JS **83266 B** и CSS **93583 B** (тоже не per-route). Ранее замеренные 80000/83409 B относились к иной локальной рабочей копии — их нельзя приписывать опубликованному SHA. Формальная погоня за последним байтом способна ухудшить поддерживаемость без ускорения LCP. Новые превышения не игнорировать, но рассматривать вместе с нагрузкой маршрута и runtime CPU; численные caps здесь не изменены.
+
+| Страница | JS transfer | CSS transfer | Font transfer | Image transfer |
+|---|---:|---:|---:|---:|
+| Главная `/` | 69378 B | 89961 B | 139734 B | 38545 B |
+| Гатчина `/prigorody/gatchina/` | 69374 B | 89981 B | 139598 B | **867065 B** |
+| Свадебная `/svadebnye-torty/` | 7990 B | 43199 B | 86563 B | 105116 B |
+| Галерея `/gallery/` | 24262 B | 21805 B | 29534 B | **1153763 B** |
+
+Это медианы transferSize по типам ресурсов оригинальных LHR, **не field-данные, не raw on-disk bytes**. Скрипты на LCP-проблемных URL занимают порядка 143–157ms Script Evaluation, тогда как Style/Layout ~933–949ms и LCP render delay ~3052–3228ms в соответствующем *другом* artifact-прогоне PR #149 (точные данные и объяснение различия серий — [#100](https://github.com/FedorMilovanov/Milovi_Cake/issues/100#issuecomment-6717603724)). Грубое откладывание всего каталога ранее ухудшало первый ввод и отклонено; не повторять.
+
+**Политика:** запретить тихий drift наборов URL, нарушения a11y/CLS/SEO, сломанные ссылки, потерю release SHA и увеличение защищённого CSS-долга. Для производительности отслеживать route-level transfer JS/CSS/fonts/images, долгие задачи, реальные first interactions и LCP/INP/CLS p75; пороги LCP 2500ms / TBT 300ms не ослаблять без доказательства. Source gzip оставлять диагностическим ориентиром, а не «физическим пределом» качества кода.
+
+## Историческая доказательная точка — релиз 7 ноября 2026
 
 **Issue #100 OPEN.** Подтверждённый опубликованный SHA `243cd00e520521b67e5928b8bca4a37eb46a4f2a` (PR #148, [deploy 42340807637](https://github.com/FedorMilovanov/Milovi_Cake/actions/runs/42340807637)). Две независимые полные серии 7 ноября: [live 42342062948](https://github.com/FedorMilovanov/Milovi_Cake/actions/runs/42342062948), [оригинальный Pages artifact 42342062960](https://github.com/FedorMilovanov/Milovi_Cake/actions/runs/42342062960), каждая 8 URL × 3 Lighthouse 12.6.1 / Chrome 156, mobile simulate CPU×4. Pages аудит подтвердил exact-release identity, без повторного счёта копий LHR.
 
