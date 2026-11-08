@@ -1,5 +1,32 @@
 # Performance: текущее состояние и критерии завершения
 
+## Актуальная доказательная точка — 8 ноября 2026
+
+**Issue #100 OPEN.** Подтверждённый опубликованный SHA `243cd00e520521b67e5928b8bca4a37eb46a4f2a` (PR #148, [deploy 42340807637](https://github.com/FedorMilovanov/Milovi_Cake/actions/runs/42340807637)). Две независимые полные серии 7 ноября: [live 42342062948](https://github.com/FedorMilovanov/Milovi_Cake/actions/runs/42342062948), [оригинальный Pages artifact 42342062960](https://github.com/FedorMilovanov/Milovi_Cake/actions/runs/42342062960), каждая 8 URL × 3 Lighthouse 12.6.1 / Chrome 156, mobile simulate CPU×4. Pages аудит подтвердил exact-release identity, без повторного счёта копий LHR.
+
+| URL | Live median LCP, ms | Pages median LCP, ms | Live median TBT, ms | Pages median TBT, ms |
+| --- | ---: | ---: | ---: | ---: |
+| `/` | **2966** | **3033** | 58 | 71 |
+| `/prigorody/gatchina/` | 2341 | **4061** | 18 | 16 |
+| `/gallery/` | 1861 | 1546 | 94 | 1 |
+| `/bento-torty/` | 1669 | 1803 | 13 | 12 |
+| `/svadebnye-torty/` | 1921 | 2106 | 70 | 0 |
+| `/zakazat-tort-spb/` | 2316 | 2104 | **1442** | 0 |
+| `/o-konditere/` | 2061 | 1953 | 0 | 0 |
+| `/privacy/` | 1057 | 1052 | 0 | 0 |
+
+**LCP≤2500 и TBT≤300 не выполнены на всех восьми маршрутах в двух средах; успешный workflow — не закрытие бюджета, поскольку LCP/TBT имеют уровень `warn`.** Индивидуальные TBT хвосты live заказа: 1502/0/1442 ms; свадебной: 0/70/1793 ms. Field CWV p75 не подтверждён. Не подменять реальные CPU/network-throttled измерения значениями Lantern simulate.
+
+**Сильная зависимость результата от среды:** [compare 0456427e…243cd00e](https://github.com/FedorMilovanov/Milovi_Cake/compare/0456427e10266b4f0680a475af477b0c878...243cd00e520521b67e5928b8bca4a37eb46a4f2a) показывает неизменность основного HTML/JS/CSS Гатчины, но Pages simulated LCP меняется с 2937 до 4061 ms (+1124), а observed raw LCP с 237 до 225 ms; 37 запросов, 1 214 653 B transfer совпадают. Это не является доказательством ни реального regress, ни превосходства 225ms над 4061ms по пользовательскому CWV: условия измерений различны.
+
+**8 ноября проведён новый причинный A/B на авторизованном Windows-компьютере:** отдельная копия точного SHA, Chromium 156.0.8078.4, CPU×4 и CDP network RTT150ms/1638.4kbps, 412×915 DPR1.75, SW off, 8 холодных запусков поочерёдно A B B A A B B A. Изменение B: двухкадровый `requestAnimationFrame` для `hydrateCatalog()` на пригородах. Медиана фактического LCP **1648→1628ms (-20ms)**; медиана Layout **910→927ms**; один B-выброс LCP 2564ms, JS errors=0, все 6 каталожных фото в каждом прогоне загружались **после FCP**. **B отклонён, в production НЕ вошёл**. Подробности и все восемь первичных чисел: [issue #100, комментарий 6715861106](https://github.com/FedorMilovanov/Milovi_Cake/issues/100#issuecomment-6715861106).
+
+Не возвращать отклонённые `e1241ea` и двухкадровый B, не ослаблять performance assertions и не выдавать исправление других UX-багов за выигрыш LCP. Новая попытка требует изолированного actual A/B с интеракциями **и** официального simulate; при отсутствии устойчивого выигрыша — reject.
+
+---
+
+## Историческое состояние от 6 ноября 2026
+
 Обновлено 6 ноября 2026. Исторические исследования в соседних документах не являются текущим release verdict.
 
 ## Проверенный промежуточный выпуск PR #143

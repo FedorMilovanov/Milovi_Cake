@@ -741,3 +741,37 @@ html #contacts .card.card--dark .contact-primary-icon {
 :root:not([data-theme="dark"]) .prigorody-page .calc-options:not(#calcDecor) .calc-opt.selected .opt-label {
   color:#2c1a10;
 }
+
+/* Accessible product-carousel controls: restore the missing base button styling.
+   Scoped to product sliders; preserve the existing dark-theme palette. */
+.product-card .slider-wrap > .slide-btn {
+  position: absolute;
+  top: 50%;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  transform: translateY(-50%);
+  border: 1px solid rgba(255,255,255,.38);
+  border-radius: 50%;
+  background: rgba(33,21,12,.70);
+  color: #fff;
+  font: 500 28px/1 'Jost', sans-serif;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.product-card .slider-wrap > .slide-prev { left: 12px; }
+.product-card .slider-wrap > .slide-next { right: 12px; }
+@media (hover: hover) and (pointer: fine) {
+  .product-card .slider-wrap > .slide-btn:hover {
+    background: rgba(201,147,74,.90);
+    border-color: rgba(255,255,255,.64);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .product-card .slider-wrap > .slide-btn { transition: none; }
+}

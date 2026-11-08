@@ -256,7 +256,7 @@ for event in ['pointerdown', 'focusin', 'click']:
 require('script.async = true;' in gallery, 'gallery Swiper interaction load is not asynchronous')
 require("script.addEventListener('error'" in gallery and 'loading = false;' in gallery, 'gallery Swiper loader cannot retry after CDN failure')
 require('/css/gallery/gallery-2026.css?v=20261027r07" />' in gallery, 'gallery critical local CSS became deferred or changed revision')
-require('/css/final-fixes.css?v=20261023r01" />' in gallery, 'gallery final critical CSS became deferred')
+require('/css/final-fixes.css?v=20261108r01" />' in gallery, 'gallery final critical CSS became deferred')
 require('id="gallery-lcp-media-fastpath"' in gallery, 'gallery eager-media LCP fast path missing')
 require(
     '#galleryGrid .card:has(img.card-media[loading="eager"]) .card-skeleton { display: none; }' in gallery,

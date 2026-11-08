@@ -416,3 +416,38 @@ test.describe('landing page interactive basics', () => {
     await video.evaluate((el) => el.pause());
   });
 });
+
+
+// Previously the carousel arrows had no positioning or hit-target styling;
+// images intercepted clicks at all mobile and desktop widths.
+for (const route of ['/', '/prigorody/gatchina/']) {
+  test(`product carousel arrows are visible and clickable on ${route}`, async ({ page }) => {
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.goto(route, { waitUntil: 'domcontentloaded' });
+    const deny = page.locator('.mc-consent-overlay.is-open .mc-consent-button--deny');
+    if (await deny.isVisible()) await deny.click();
+    if (route === '/') await page.locator('body').dispatchEvent('click');
+
+    const next = page.locator('#slider-1 .slide-next');
+    await expect(next).toBeVisible();
+    await next.scrollIntoViewIfNeeded();
+
+    const hitTarget = await next.evaluate(button => {
+      const box = button.getBoundingClientRect();
+      const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+      return { width: box.width, height: box.height, clickable: hit === button || button.contains(hit) };
+    });
+    expect(hitTarget.width).toBeGreaterThanOrEqual(44);
+    expect(hitTarget.height).toBeGreaterThanOrEqual(44);
+    expect(hitTarget.clickable).toBe(true);
+
+    const before = await page.locator('#slider-1').evaluate(slider =>
+      [...slider.querySelectorAll('.slide-img')].findIndex(el => el.classList.contains('active')));
+    await next.click();
+    const after = await page.locator('#slider-1').evaluate(slider =>
+      [...slider.querySelectorAll('.slide-img')].findIndex(el => el.classList.contains('active')));
+    expect(after).toBe((before + 1) % 6);
+    expect(errors).toEqual([]);
+  });
+}
