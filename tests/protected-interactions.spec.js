@@ -591,3 +591,46 @@ test('switching Bento mode cancels a pending old-photo transition', async ({ pag
   } finally { release(); }
 });
 });
+
+
+test.describe('deferred reviews initialization regression (#100)', () => {
+  for (const route of ['/', '/prigorody/gatchina/']) {
+    test('reviews do not force an offscreen height read before first intent on ' + route, async ({ page }) => {
+      await page.addInitScript(() => {
+        window.__reviewHeightReads = 0;
+        const descriptor = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetHeight');
+        if (!descriptor || typeof descriptor.get !== 'function') throw new Error('offsetHeight instrumentation unavailable');
+        Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
+          configurable: true,
+          get() {
+            if (this.id === 'reviews') window.__reviewHeightReads++;
+            return descriptor.get.call(this);
+          },
+        });
+      });
+
+      await page.goto(route, { waitUntil: 'domcontentloaded' });
+      await page.waitForTimeout(450);
+      const initialDistance = await page.locator('#reviews').evaluate((el) =>
+        el.getBoundingClientRect().top - innerHeight
+      );
+      expect(initialDistance, 'reviews must start outside the proximity margin').toBeGreaterThan(700);
+      expect(await page.evaluate(() => window.__reviewHeightReads), 'no forced offscreen reviews geometry').toBe(0);
+
+      await page.locator('#reviews').scrollIntoViewIfNeeded();
+      await expect.poll(
+        async () => page.evaluate(() => window.__reviewHeightReads),
+        { message: 'review geometry measured when near viewport', timeout: 10_000 },
+      ).toBeGreaterThan(0);
+
+      const slides = page.locator('#track .review-slide');
+      const activeIndex = async () => slides.evaluateAll((els) =>
+        els.findIndex((el) => el.classList.contains('active'))
+      );
+      await expect(slides).toHaveCount(8);
+      const before = await activeIndex();
+      await page.locator('#btnNext').click();
+      await expect.poll(activeIndex).toBe((before + 1) % 8);
+    });
+  }
+});
