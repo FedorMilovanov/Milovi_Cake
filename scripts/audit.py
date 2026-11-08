@@ -393,7 +393,8 @@ with R.section("2. File Size Budget"):
             if sz > MAX_SINGLE_JS:
                 large_raw_js.append((rel, sz))
 
-    # Gzip sizes (what actually ships over the wire)
+    # Legacy size proxy: one gzip stream for ALL allowlisted files.
+    # This is NOT HTTP transfer: pages request separate resources.
     css_bytes = b"".join(
         (ROOT / rel).read_bytes() for rel in sorted(ALLOWED_CSS) if (ROOT / rel).exists()
     )
@@ -403,6 +404,16 @@ with R.section("2. File Size Budget"):
     gz_css = len(gzip.compress(css_bytes)) if css_bytes else 0
     gz_js = len(gzip.compress(js_bytes)) if js_bytes else 0
     gz_total = gz_css + gz_js
+    # Better size estimate: each delivered HTTP resource is compressed separately.
+    # This still includes files not requested by a given route and excludes headers/cache.
+    gz_css_individual = sum(
+        len(gzip.compress((ROOT / rel).read_bytes()))
+        for rel in sorted(ALLOWED_CSS) if (ROOT / rel).exists()
+    )
+    gz_js_individual = sum(
+        len(gzip.compress((ROOT / rel).read_bytes()))
+        for rel in sorted(ALLOWED_JS) if (ROOT / rel).exists()
+    )
 
     if gz_css > MAX_CSS_GZIP:
         R.warn(f"Gzip CSS exceeds budget: {gz_css:,} bytes (budget {MAX_CSS_GZIP:,})")
@@ -424,7 +435,12 @@ with R.section("2. File Size Budget"):
     if large_raw_js:
         R.note("Raw JS reference: " + ", ".join(f"{rel} {sz:,} bytes" for rel, sz in large_raw_js))
     R.note(f"Raw CSS/JS totals: CSS {css_total:,} bytes | JS {js_total:,} bytes")
-    R.note(f"Wire size (gzip): CSS {gz_css:,} bytes | JS {gz_js:,} bytes | Total {gz_total:,} bytes")
+    R.note(f"Legacy concatenated gzip proxy: CSS {gz_css:,} B | JS {gz_js:,} B | total {gz_total:,} B")
+    R.note(
+        f"Independent gzip estimate (all allowed files): CSS {gz_css_individual:,} B"
+        f" | JS {gz_js_individual:,} B | total {gz_css_individual + gz_js_individual:,} B"
+    )
+    R.note("Actual per-route HTTP transfer and execution: use Lighthouse LHR resource and main-thread metrics")
 
 # ═══════════════════════════════════════════════════════════════════════════
 # CHECK 3: Version Sync (sw.js ↔ HTML ?v= cache-bust)

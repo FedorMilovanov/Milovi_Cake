@@ -174,6 +174,28 @@ def network_tail(lhr: dict, limit: int = 16) -> list[dict]:
     return rows[:limit]
 
 
+def transfer_by_resource_type(lhr: dict) -> dict:
+    """Observed per-resource HTTP transfer, not the static concatenated gzip proxy.
+
+    Lighthouse network-requests.transferSize may include HTTP overhead; cached
+    requests need separate interpretation. Never equate this with source bytes.
+    """
+    buckets: dict[str, int] = {}
+    counted = 0
+    for request in audit_items(lhr, "network-requests"):
+        size = request.get("transferSize")
+        if not isinstance(size, (int, float)) or size < 0:
+            continue
+        kind = str(request.get("resourceType") or "Other")
+        buckets[kind] = buckets.get(kind, 0) + round(size)
+        counted += 1
+    return {
+        "total_transfer_bytes": sum(buckets.values()),
+        "by_type_bytes": dict(sorted(buckets.items())),
+        "measured_requests": counted,
+    }
+
+
 def extract(lhr: dict) -> dict:
     tasks = [
         {
@@ -225,6 +247,7 @@ def extract(lhr: dict) -> dict:
         "bytes": {
             "total": numeric(lhr, "total-byte-weight"),
             "requests": len(audit_items(lhr, "network-requests")),
+            "observed_network_transfer": transfer_by_resource_type(lhr),
         },
         "network": network_tail(lhr),
         "blocking": {
@@ -309,6 +332,22 @@ def self_test() -> int:
     }
 
     failures = 0
+    synthetic = {
+        "audits": {"network-requests": {"details": {"items": [
+            {"resourceType": "Script", "transferSize": 120},
+            {"resourceType": "Script", "transferSize": 130},
+            {"resourceType": "Stylesheet", "transferSize": 240},
+            {"resourceType": "Image", "transferSize": None},
+        ]}}}
+    }
+    transfer = transfer_by_resource_type(synthetic)
+    if transfer != {
+        "total_transfer_bytes": 490,
+        "by_type_bytes": {"Script": 250, "Stylesheet": 240},
+        "measured_requests": 3,
+    }:
+        failures += 1
+        print("  resource transfer by type self-test FAIL", transfer)
     for name, lhr, expected, tolerance in (
         ("svadebnye", svadebnye, 690.0, 0.0),
         ("bento", bento, 730.0, 5.0),
