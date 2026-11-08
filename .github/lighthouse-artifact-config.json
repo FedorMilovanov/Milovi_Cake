@@ -21,14 +21,15 @@
           "accessibility",
           "best-practices",
           "seo"
-        ]
+        ],
+        "chromeFlags": "--allow-insecure-localhost --no-sandbox"
       },
       "numberOfRuns": 3
     },
     "assert": {
       "assertMatrix": [
         {
-          "matchingUrlPattern": "^http://127\\.0\\.0\\.1:4300/$",
+          "matchingUrlPattern": "^https://127\\.0\\.0\\.1:4300/$",
           "assertions": {
             "total-byte-weight": [
               "error",
@@ -40,7 +41,7 @@
           }
         },
         {
-          "matchingUrlPattern": "^http://127\\.0\\.0\\.1:4300/gallery/$",
+          "matchingUrlPattern": "^https://127\\.0\\.0\\.1:4300/gallery/$",
           "assertions": {
             "total-byte-weight": [
               "error",
@@ -52,7 +53,7 @@
           }
         },
         {
-          "matchingUrlPattern": "^http://127\\.0\\.0\\.1:4300/svadebnye-torty/$",
+          "matchingUrlPattern": "^https://127\\.0\\.0\\.1:4300/svadebnye-torty/$",
           "assertions": {
             "total-byte-weight": [
               "error",
@@ -64,7 +65,7 @@
           }
         },
         {
-          "matchingUrlPattern": "^http://127\\.0\\.0\\.1:4300/bento-torty/$",
+          "matchingUrlPattern": "^https://127\\.0\\.0\\.1:4300/bento-torty/$",
           "assertions": {
             "total-byte-weight": [
               "error",
@@ -76,7 +77,7 @@
           }
         },
         {
-          "matchingUrlPattern": "^http://127\\.0\\.0\\.1:4300/zakazat-tort-spb/$",
+          "matchingUrlPattern": "^https://127\\.0\\.0\\.1:4300/zakazat-tort-spb/$",
           "assertions": {
             "total-byte-weight": [
               "error",
@@ -88,7 +89,7 @@
           }
         },
         {
-          "matchingUrlPattern": "^http://127\\.0\\.0\\.1:4300/o-konditere/$",
+          "matchingUrlPattern": "^https://127\\.0\\.0\\.1:4300/o-konditere/$",
           "assertions": {
             "total-byte-weight": [
               "error",
@@ -100,7 +101,7 @@
           }
         },
         {
-          "matchingUrlPattern": "^http://127\\.0\\.0\\.1:4300/prigorody/gatchina/$",
+          "matchingUrlPattern": "^https://127\\.0\\.0\\.1:4300/prigorody/gatchina/$",
           "assertions": {
             "total-byte-weight": [
               "error",
@@ -112,7 +113,7 @@
           }
         },
         {
-          "matchingUrlPattern": "^http://127\\.0\\.0\\.1:4300/privacy/$",
+          "matchingUrlPattern": "^https://127\\.0\\.0\\.1:4300/privacy/$",
           "assertions": {
             "total-byte-weight": [
               "error",
