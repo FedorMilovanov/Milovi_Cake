@@ -2130,8 +2130,9 @@ if (scField && trackEl && dotsEl && stageEl) {
   let sectionSnapH = 0;
   function snapSectionHeight(){ sectionSnapH = document.getElementById('reviews').offsetHeight; }
   let _snapResizeTimer = null;
-  window.addEventListener('resize', function() { clearTimeout(_snapResizeTimer); _snapResizeTimer = setTimeout(snapSectionHeight, 150); });
-  setTimeout(snapSectionHeight, 100);
+  let reviewBootstrapped = false;
+  window.addEventListener('resize', function() { if (!reviewBootstrapped) return; clearTimeout(_snapResizeTimer); _snapResizeTimer = setTimeout(snapSectionHeight, 150); });
+  // Section geometry is sampled only when reviews approach the viewport.
 
   let cachedTrackEl = null, cachedSectionWidth = 0, cachedSectionHeight = 0, _cachedSecEl = null;
   const _sectionResizeObs = new ResizeObserver(entries => { const rect = entries[0].contentRect; cachedSectionWidth = rect.width; cachedSectionHeight = rect.height; _cachedSecEl = null; snapSectionHeight(); });
@@ -2144,7 +2145,20 @@ if (scField && trackEl && dotsEl && stageEl) {
 
   const _revTypeObserver = new IntersectionObserver(function(entries) { if (entries[0].isIntersecting && STATE === 'typing' && !typeTimer) { setTimeout(function() { startTypewriter(); }, 100); } }, { rootMargin: '-20% 0px -20% 0px', threshold: 0 });
 
-  setTimeout(() => { const secEl = document.getElementById('reviews'); if (secEl) { _sectionResizeObs.observe(secEl); _revObserver.observe(secEl); _revTypeObserver.observe(secEl); cachedSectionWidth = secEl.offsetWidth; cachedSectionHeight = secEl.offsetHeight; } }, 100);
+  const reviewProximity = new IntersectionObserver(entries => {
+    if (!entries[0].isIntersecting) return;
+    reviewProximity.disconnect();
+    const secEl = entries[0].target;
+    reviewBootstrapped = true;
+    _sectionResizeObs.observe(secEl);
+    _revObserver.observe(secEl);
+    _revTypeObserver.observe(secEl);
+    cachedSectionWidth = secEl.offsetWidth;
+    cachedSectionHeight = secEl.offsetHeight;
+    sectionSnapH = cachedSectionHeight;
+  }, { rootMargin: '700px 0px 700px 0px', threshold: 0 });
+  const reviewSection = document.getElementById('reviews');
+  if (reviewSection) reviewProximity.observe(reviewSection);
 
   let lastT=0;
   function loop(ts){
