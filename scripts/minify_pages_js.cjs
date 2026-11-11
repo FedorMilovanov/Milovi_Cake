@@ -7,6 +7,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const {minify} = require('terser');
+const {transformSync: transformCss} = require('esbuild');
 
 const root = path.resolve(__dirname, '..');
 const artifact = path.join(root, '_site');
@@ -20,6 +21,12 @@ const cssNames = Object.freeze([
   'v20-fixes.css', 'final-fixes.css', 'gallery/gallery-2026.css',
 ]);
 const cssNameSet = new Set(cssNames);
+// Minify only the six verified runtime stylesheets. Preserve their link order,
+// non-target font/gallery stylesheets and all original readable source CSS.
+const minifiedCssNames = new Set([
+  'style.css', 'mc-2026.css', 'premium-overrides.css',
+  'v20-dark-and-fixes.css', 'v20-fixes.css', 'final-fixes.css',
+]);
 const verify = process.argv.slice(2).includes('--verify');
 if (process.argv.slice(2).some(arg => arg !== '--verify')) {
   throw new Error('Usage: node scripts/minify_pages_js.cjs [--verify]');
@@ -199,16 +206,34 @@ function auditSw(sw, digests, cssDigests, cacheName) {
     else fs.writeFileSync(targetPath, bytes);
   }
   const aggregateHash = sha256(Buffer.from(names.map(name => name + ':' + digests[name]).join('\n'))).slice(0, 12);
-  // Bind deployed CSS revisions to source bytes, not a manually maintained date.
+  // Bind deployed CSS URLs to the exact transformed artifact bytes. The same
+  // deterministic transform must pass verification without rewriting files.
   const cssDigests = {};
   for (const name of cssNames) {
     const sourcePath = path.join(root, 'css', name);
     const targetPath = path.join(artifact, 'css', name);
     ensure(fs.existsSync(sourcePath) && fs.existsSync(targetPath),
       'missing CSS source or artifact ' + name);
-    const bytes = fs.readFileSync(sourcePath);
-    ensure(fs.readFileSync(targetPath).equals(bytes),
-      'CSS artifact bytes differ from source ' + name);
+    const sourceBytes = fs.readFileSync(sourcePath);
+    let bytes = sourceBytes;
+    if (minifiedCssNames.has(name)) {
+      const result = transformCss(sourceBytes.toString('utf8'), {
+        loader:'css', minify:true, charset:'utf8', sourcefile:name,
+        target:['chrome100', 'firefox100', 'safari15'], legalComments:'none',
+      });
+      ensure(!result.warnings.length, 'CSS minification warning in ' + name);
+      bytes = Buffer.from(result.code, 'utf8');
+      ensure(bytes.length > 100, 'invalid CSS minifier output for ' + name);
+      // Standard backdrop-filter is required for Chrome/Firefox. A previous
+      // Lightning CSS experiment removed it and visibly changed the header.
+      const countBackdrop = value =>
+        (value.toString('utf8').match(/(?<!-webkit-)backdrop-filter\s*:/g) || []).length;
+      ensure(countBackdrop(bytes) >= countBackdrop(sourceBytes),
+        'CSS minification removed standard backdrop-filter in ' + name);
+    }
+    if (verify) ensure(fs.readFileSync(targetPath).equals(bytes),
+      'CSS artifact byte mismatch for ' + name);
+    else fs.writeFileSync(targetPath, bytes);
     cssDigests[name] = sha256(bytes).slice(0, 12);
   }
   const cssAggregateHash = sha256(Buffer.from(cssNames.map(name =>

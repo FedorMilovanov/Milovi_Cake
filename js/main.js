@@ -151,6 +151,8 @@ function goSlide(pid, idx) {
   };
   const img = slides[next].querySelector('img');
   if (!img) { show(); return; }
+  // Resolve only the requested slide; preserve the visible old slide while it decodes.
+  if (img.dataset.src) { img.src = img.dataset.src; delete img.dataset.src; }
   const loaded = () => img.decode ? img.decode().then(show, show) : show();
   if (img.complete && img.naturalWidth) { loaded(); return; }
   wrap.setAttribute('aria-busy', 'true');
@@ -201,7 +203,7 @@ function renderCatalog() {
           ${p.slides.map((src, i) => {
             const active = i === 0 ? ' active' : '';
             return `<div class="slide-img${active}">
-              <img src="${src}" alt="${p.name}" width="600" height="800" loading="lazy" decoding="async" onerror="this.outerHTML='<div class=slide-img-fallback>${p.emoji || '🎂'}</div>'" />
+              <img ${i === 0 ? `src="${src}"` : `data-src="${src}"`} alt="${p.name}" width="600" height="800" loading="lazy" decoding="async" onerror="this.outerHTML='<div class=slide-img-fallback>${p.emoji || '🎂'}</div>'" />
             </div>`;
           }).join('')}
           ${p.slides.length > 1 ? `
@@ -328,7 +330,7 @@ function switchBentoTab(pid, mode) {
     let newSlidesHtml = '';
     slides.forEach((src, i) => {
       const active = i === 0 ? ' active' : '';
-      newSlidesHtml += `<div class="slide-img${active}"><img src="${src}" alt="${variant.name}" width="600" height="800" decoding="async" loading="lazy" onerror="this.outerHTML='<div class=slide-img-fallback>${variantEmoji}</div>'" style="object-position:${positions[i]};transform:scale(${scales[i]});transform-origin:${positions[i]};"></div>`;
+      newSlidesHtml += `<div class="slide-img${active}"><img ${i === 0 ? `src="${src}"` : `data-src="${src}"`} alt="${variant.name}" width="600" height="800" decoding="async" loading="lazy" onerror="this.outerHTML='<div class=slide-img-fallback>${variantEmoji}</div>'" style="object-position:${positions[i]};transform:scale(${scales[i]});transform-origin:${positions[i]};"></div>`;
     });
     if (dotsEl) {
       dotsEl.insertAdjacentHTML('beforebegin', newSlidesHtml);
