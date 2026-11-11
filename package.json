@@ -7,7 +7,7 @@
     "audit": "python3 scripts/audit.py",
     "audit:analytics": "python3 scripts/analytics_contract.py",
     "audit:security": "npm audit --audit-level=high",
-    "audit:js": "node --check js/main.js && node --check js/nav.js && node --check js/mc-2026.js && node --check js/consent-analytics.js && node --check js/v20-faq-fix.js && node --check js/gallery/main.js && node --check js/gallery/data.js && node --check sw.js && node --check scripts/css_coverage.cjs && echo '✅ All JS valid'",
+    "audit:js": "node --check js/main.js && node --check js/nav.js && node --check js/mc-2026.js && node --check js/consent-analytics.js && node --check js/v20-faq-fix.js && node --check js/gallery/main.js && node --check js/gallery/data.js && node --check sw.js && node --check scripts/css_coverage.cjs && node --check scripts/minify_pages_js.cjs && echo '✅ All JS valid'",
     "audit:prigorody": "python3 scripts/check_prigorody_idempotent.py",
     "audit:prigorody-sitemap": "python3 scripts/sync_prigorody_sitemap.py --check",
     "audit:ip-copy": "python3 scripts/ip_copy_contract.py",
@@ -47,6 +47,7 @@
   "license": "UNLICENSED",
   "devDependencies": {
     "@playwright/test": "1.64.1",
-    "playwright": "1.64.1"
+    "playwright": "1.64.1",
+    "terser": "5.51.2"
   }
 }

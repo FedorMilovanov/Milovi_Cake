@@ -57,6 +57,9 @@ jobs:
         with:
           node-version: '22.13.0'
 
+      - name: Install locked build and artifact-audit dependencies
+        run: npm ci
+
       - name: Download the published Pages payload
         if: github.event_name == 'workflow_run'
         env:

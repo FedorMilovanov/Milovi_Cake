@@ -12,6 +12,7 @@ import json
 import os
 import re
 import shutil
+import subprocess
 from pathlib import Path
 from release_identity import release_sha
 
@@ -116,6 +117,11 @@ def main() -> int:
         html = html.replace('</head>',
                             f'  <meta name="milovi-release-sha" content="{resolved_sha}">\n</head>', 1)
         page.write_text(html, encoding='utf-8')
+
+    # Keep readable scripts in source; minify only the deployed Pages artifact.
+    # Also derive the SW cache namespace and HTML script revisions from bytes.
+    subprocess.run(['node', str(ROOT / 'scripts/minify_pages_js.cjs')],
+                   cwd=ROOT, check=True)
 
     release = {
         'repository': 'FedorMilovanov/Milovi_Cake',

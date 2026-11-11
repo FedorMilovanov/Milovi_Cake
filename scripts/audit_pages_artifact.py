@@ -6,6 +6,7 @@ import argparse
 import json
 import os
 import sys
+import subprocess
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urljoin, urlparse
@@ -111,6 +112,14 @@ def main() -> int:
             errors.append(f'release.json drift: {release!r}')
     except Exception as error:
         errors.append(f'invalid release.json: {error}')
+
+    # Fail closed if a served script, HTML cache-buster, or precache entry does
+    # not match deterministic build-time minification output.
+    try:
+        subprocess.run(['node', str(ROOT / 'scripts/minify_pages_js.cjs'), '--verify'],
+                       cwd=ROOT, check=True)
+    except (subprocess.CalledProcessError, OSError) as error:
+        errors.append(f'Pages JS byte/hash/SW audit failed: {error}')
 
     html_files = sorted(SITE.rglob('*.html'))
     for page in html_files:
