@@ -58,8 +58,19 @@ test('first-visit bento LCP is buffered but sent exactly once only after opt-in'
   await expect.poll(async () => (await vitalEvents(page)).length).toBe(1);
   expect(await page.evaluate(() => window.__siteLcpObservers)).toBe(1);
   const [[, , metric]] = await vitalEvents(page);
+  // Source fixture has no release witness. The built Pages artifact injects
+  // the exact deployed release SHA; verify both forms without weakening either.
+  const releaseMeta = await page.evaluate(() =>
+    document.querySelector('meta[name="milovi-release-sha"]')?.content || null);
+  if (releaseMeta) {
+    expect(releaseMeta).toMatch(/^[0-9a-f]{40}$/);
+    const response = await page.request.get('/release.json');
+    expect(response.ok()).toBe(true);
+    expect((await response.json()).sha).toBe(releaseMeta);
+  }
   expect(metric).toMatchObject({
-    lcp_page: 'bento', lcp_consent: 'granted_on_visit', lcp_release: 'unverified',
+    lcp_page: 'bento', lcp_consent: 'granted_on_visit',
+    lcp_release: releaseMeta || 'unverified',
   });
   expect(metric.lcp_ms).toBeGreaterThan(0);
   expect(metric.lcp_ms).toBeLessThan(30_000);
