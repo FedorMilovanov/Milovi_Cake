@@ -1,3 +1,19 @@
+/* Product catalog: AA-readable secondary copy; keep the quiet-gold palette in both themes. */
+:root {
+  --catalog-secondary-copy: #80644c;
+  --catalog-order-copy: #865a24;
+}
+[data-theme="dark"] {
+  --catalog-secondary-copy: #c8a880;
+  --catalog-order-copy: #d4a76a;
+}
+.catalog-grid .product-info .desc {
+  color: var(--catalog-secondary-copy);
+}
+.catalog-grid .product-info .min-order {
+  color: var(--catalog-order-copy);
+}
+
 
 
 
@@ -689,14 +705,14 @@ input, textarea, select{
     font-size: 15px !important;
     line-height: 1.5 !important;
     margin-bottom: 12px !important;
-    color: var(--text-muted) !important;
+    color: var(--catalog-secondary-copy) !important;
     font-weight: 300 !important;
   }
   
   .product-info .min-order {
     font-size: 13px !important;
     margin-bottom: 24px !important;
-    color: var(--gold-acc, #b07a3a) !important;
+    color: var(--catalog-order-copy) !important;
     font-weight: 400 !important;
     display: flex !important;
     align-items: center !important;

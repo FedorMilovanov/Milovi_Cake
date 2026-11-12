@@ -130,3 +130,24 @@ test.describe('production-measured contrast regressions', () => {
   // блок вернётся — вернуть и проверку, иначе страж будет падать на пустом
   // селекторе и мешать, как это было при восстановлении теста.
 });
+
+
+test.describe('catalog secondary-copy contrast across themes and widths', () => {
+  for (const route of ['/', '/prigorody/gatchina/']) {
+    for (const width of [390, 600, 900]) {
+      for (const theme of ['light', 'dark']) {
+        test(route + ' ' + width + 'px ' + theme + ': captions and order conditions meet WCAG AA', async ({ page }) => {
+          await page.setViewportSize({ width, height: 900 });
+          await page.addInitScript((preferredTheme) => {
+            localStorage.setItem('mc_theme', preferredTheme);
+          }, theme);
+          await page.goto(route);
+          await page.locator('#catalog').scrollIntoViewIfNeeded();
+          await expect(page.locator('#catalogGrid .product-card')).toHaveCount(6);
+          await assertContrast(page, '#catalogGrid .product-card .product-info .desc');
+          await assertContrast(page, '#catalogGrid .product-card .product-info .min-order');
+        });
+      }
+    }
+  }
+});
