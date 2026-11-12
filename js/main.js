@@ -121,7 +121,7 @@ function startProductSlider(pid, total) {
   slideTimers[pid] = setInterval(() => {
     if (document.hidden) return;
     const wrap = document.getElementById('slider-' + pid);
-    if (wrap && (wrap.matches(':hover') || wrap._slidePending != null)) return;
+    if (wrap && (wrap.matches(':hover, :focus-within') || wrap._slidePending != null)) return;
     goSlide(pid, (sliderCurrentIdx[pid] || 0) + 1);
   }, 3000);
 }
@@ -147,7 +147,12 @@ function goSlide(pid, idx) {
     wrap.removeAttribute('aria-busy');
     sliderCurrentIdx[pid] = next;
     slides.forEach((slide, i) => slide.classList.toggle('active', i === next));
-    wrap.querySelectorAll('.dot').forEach((dot, i) => dot.classList.toggle('active', i === next));
+    wrap.querySelectorAll('.dot').forEach((dot, i) => {
+      const active = i === next;
+      dot.classList.toggle('active', active);
+      if (active) dot.setAttribute('aria-current', 'true');
+      else dot.removeAttribute('aria-current');
+    });
   };
   const img = slides[next].querySelector('img');
   if (!img) { show(); return; }
@@ -189,6 +194,14 @@ const products = [
 
 let cart = {};
 
+// Native controls keep carousel dots operable by keyboard and screen readers.
+function renderSlideDots(pid, count) {
+  return Array.from({ length: count }, (_, i) => `
+    <button type="button" class="dot${i === 0 ? ' active' : ''}"
+      onclick="goSlide('${pid}',${i})"
+      aria-label="Фото ${i + 1} из ${count}"${i === 0 ? ' aria-current="true"' : ''}></button>
+  `).join('');
+}
 
 function renderCatalog() {
   products.forEach(p => stopProductSlider(p.id));
@@ -209,7 +222,7 @@ function renderCatalog() {
           ${p.slides.length > 1 ? `
             <button type="button" class="slide-btn slide-prev" onclick="sliderStep('${p.id}',-1)" aria-label="Предыдущее фото — ${p.name}">&#8249;</button>
             <button type="button" class="slide-btn slide-next" onclick="sliderStep('${p.id}',1)" aria-label="Следующее фото — ${p.name}">&#8250;</button>
-            <div class="slide-dots">${p.slides.map((_,i) => `<span class="dot${i===0?' active':''}" onclick="goSlide('${p.id}',${i})"></span>`).join('')}</div>
+            <div class="slide-dots">${renderSlideDots(p.id, p.slides.length)}</div>
           ` : ''}
         </div>`;
     } else {
@@ -334,7 +347,7 @@ function switchBentoTab(pid, mode) {
     });
     if (dotsEl) {
       dotsEl.insertAdjacentHTML('beforebegin', newSlidesHtml);
-      dotsEl.innerHTML = slides.map((s, i) => `<span class="dot${i === 0 ? ' active' : ''}" onclick="goSlide(${pid},${i})"></span>`).join('');
+      dotsEl.innerHTML = renderSlideDots(pid, slides.length);
     }
     sliderCurrentIdx[pid] = 0;
     if (slideTimers[pid]) { clearInterval(slideTimers[pid]); delete slideTimers[pid]; }
