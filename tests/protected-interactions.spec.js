@@ -1,6 +1,39 @@
 const { test, expect } = require('@playwright/test');
 
 test.describe('protected homepage interactions', () => {
+  test('catalog photo dots support Enter, Space, and bento variant replacement', async ({ page }) => {
+    for (const route of ['/', '/prigorody/gatchina/']) {
+      await page.goto(route, { waitUntil: 'domcontentloaded' });
+      await page.locator('body').dispatchEvent('click');
+
+      const dots = page.locator('#slider-1 .slide-dots .dot');
+      await expect(dots).toHaveCount(6);
+      await expect(dots.nth(0)).toHaveAttribute('aria-current', 'true');
+      await expect(dots.nth(1)).toHaveAttribute('type', 'button');
+      await expect(dots.nth(1)).toHaveAttribute('aria-label', 'Фото 2 из 6');
+
+      await dots.nth(1).focus();
+      await page.keyboard.press('Enter');
+      await expect(dots.nth(1)).toHaveClass(/active/);
+      await expect(dots.nth(1)).toHaveAttribute('aria-current', 'true');
+
+      await dots.nth(2).focus();
+      await page.keyboard.press('Space');
+      await expect(dots.nth(2)).toHaveClass(/active/);
+      await expect(dots.nth(1)).not.toHaveAttribute('aria-current');
+
+      await page.locator('#tab-maxi-2').evaluate((el) => el.click());
+      await expect(page.locator('#slider-2 .slide-dots button.dot')).toHaveCount(1);
+      await page.locator('#tab-regular-2').evaluate((el) => el.click());
+      const bentoDots = page.locator('#slider-2 .slide-dots button.dot');
+      await expect(bentoDots).toHaveCount(3);
+      await bentoDots.nth(1).focus();
+      await page.keyboard.press('Enter');
+      await expect(bentoDots.nth(1)).toHaveClass(/active/);
+      await expect(bentoDots.nth(1)).toHaveAttribute('aria-current', 'true');
+    }
+  });
+
   test('hero messenger ring hover animation stays intact on desktop', async ({ page }, testInfo) => {
     if ((testInfo.project.name || '').includes('mobile')) test.skip(true, 'hover animation is desktop-only');
 
