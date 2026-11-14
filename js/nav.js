@@ -722,6 +722,8 @@
       var open = sheetOpen();
       if (sheet) sheet.setAttribute('aria-hidden', open ? 'false' : 'true');
       if (backdrop) backdrop.setAttribute('aria-hidden', 'true');
+      // При открытии листа строки-ссылки должны сразу показать текущую секцию.
+      if (open) syncActiveRows();
 
       clearTimeout(closeFocusTimer);
       if (open) {
@@ -758,11 +760,16 @@
     var activeRaf = 0;
     function syncActiveRows(){
       if (activeRaf) return;
+      // Строки-ссылки живут только внутри мобильного листа: когда он закрыт,
+      // подсветка не видна, а расчёт секций гоняет getBoundingClientRect на
+      // каждом scroll-кадре (длинная задача 177–215 мс после FCP, см. #100).
+      if (!sheetOpen()) return;
       activeRaf = requestAnimationFrame(function(){
         activeRaf = 0;
-        var id = currentSectionId();
         var sheet = q('mcSheet');
-        if (!sheet || !id) return;
+        if (!sheet || !sheetOpen()) return;
+        var id = currentSectionId();
+        if (!id) return;
         sheet.querySelectorAll('.mc-row-anchor').forEach(function(row){
           var href = row.getAttribute('href') || '';
           var on = href === '#' + id;

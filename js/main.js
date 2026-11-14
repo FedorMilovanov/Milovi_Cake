@@ -2143,13 +2143,15 @@ if (scField && trackEl && dotsEl && stageEl) {
 
   function getStageCenter(){ if (!stageEl) return { x:0, y:0 }; const r=stageEl.getBoundingClientRect(); return { x: r.left+r.width/2, y: r.top+r.height/2 }; }
   let sectionSnapH = 0;
-  function snapSectionHeight(){ sectionSnapH = document.getElementById('reviews').offsetHeight; }
+  function snapSectionHeight(){ const el = document.getElementById('reviews'); sectionSnapH = el ? el.offsetHeight : 0; }
   let _snapResizeTimer = null;
   window.addEventListener('resize', function() { clearTimeout(_snapResizeTimer); _snapResizeTimer = setTimeout(snapSectionHeight, 150); });
-  setTimeout(snapSectionHeight, 100);
+  // Ранний setTimeout(snapSectionHeight, 100) удалён: forced Layout в грязном
+  // дереве давал до 390 мс после FCP (#100). Замер теперь ленивый — при первом
+  // подходе к секции (loop стартует только у её IntersectionObserver).
 
   let cachedTrackEl = null, cachedSectionWidth = 0, cachedSectionHeight = 0, _cachedSecEl = null;
-  const _sectionResizeObs = new ResizeObserver(entries => { const rect = entries[0].contentRect; cachedSectionWidth = rect.width; cachedSectionHeight = rect.height; _cachedSecEl = null; snapSectionHeight(); });
+  const _sectionResizeObs = new ResizeObserver(entries => { const rect = entries[0].contentRect; cachedSectionWidth = rect.width; cachedSectionHeight = rect.height; _cachedSecEl = null; if (sectionSnapH) snapSectionHeight(); });
   let loopActive = false, loopRunning = false;
 
   const _revObserver = new IntersectionObserver(function(entries) {
@@ -2159,11 +2161,12 @@ if (scField && trackEl && dotsEl && stageEl) {
 
   const _revTypeObserver = new IntersectionObserver(function(entries) { if (entries[0].isIntersecting && STATE === 'typing' && !typeTimer) { setTimeout(function() { startTypewriter(); }, 100); } }, { rootMargin: '-20% 0px -20% 0px', threshold: 0 });
 
-  setTimeout(() => { const secEl = document.getElementById('reviews'); if (secEl) { _sectionResizeObs.observe(secEl); _revObserver.observe(secEl); _revTypeObserver.observe(secEl); cachedSectionWidth = secEl.offsetWidth; cachedSectionHeight = secEl.offsetHeight; } }, 100);
+  setTimeout(() => { const secEl = document.getElementById('reviews'); if (secEl) { _sectionResizeObs.observe(secEl); _revObserver.observe(secEl); _revTypeObserver.observe(secEl); } }, 100);
 
   let lastT=0;
   function loop(ts){
     if (!loopRunning || !loopActive) return;
+    if (!sectionSnapH) snapSectionHeight();
     if (!_cachedSecEl) _cachedSecEl = document.getElementById('reviews');
     const secEl = _cachedSecEl;
     if (!secEl) { if (loopActive) requestAnimationFrame(loop); return; }
