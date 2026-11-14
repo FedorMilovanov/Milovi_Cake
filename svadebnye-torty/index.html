@@ -291,6 +291,32 @@ html:not([data-theme="dark"]) .lp-theme-toggle .lp-ti-moon{display:block}
 html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 @media(max-width:768px){.lp-theme-toggle{margin-left:12px;width:40px;height:40px;min-width:40px}}
 </style>
+  <!-- [P100] Детерминированный пропуск offscreen-layout на первом кадре:
+       content-visibility:auto для секций ниже сгиба работает только до 2 кадров
+       после FCP (или до первого взаимодействия / жёсткого таймаута 1500 мс),
+       затем класс снимается и документ раскладывается точно как раньше.
+       Без JavaScript и в браузерах без content-visibility класс не добавляется —
+       обычная отрисовка. Геометрия после загрузки идентична базовой. -->
+  <style id="mc-fast-init-css">
+    html.mc-fast-init main > *:not(#home):not(.section-fade-divider){content-visibility:auto;contain-intrinsic-size:auto 1000px}
+  </style>
+  <script>
+    (function(){
+      var d=document.documentElement;
+      d.classList.add('mc-fast-init');
+      var done=false;
+      function rm(){if(done)return;done=true;d.classList.remove('mc-fast-init');}
+      function after2raf(){requestAnimationFrame(function(){requestAnimationFrame(rm);});}
+      try{var po=new PerformanceObserver(function(list){for(var i=0;i<list.getEntries().length;i++){if(list.getEntries()[i].name==='first-contentful-paint'){po.disconnect();after2raf();}}});po.observe({type:'paint',buffered:true});}catch(e){after2raf();}
+      window.addEventListener('load',function(){setTimeout(after2raf,0);},false);
+      setTimeout(rm,1500);
+      window.addEventListener('pageshow',function(){setTimeout(rm,50);},false);
+      window.addEventListener('pointerdown',rm,{once:true,passive:true,capture:true});
+      window.addEventListener('keydown',rm,{once:true,passive:true,capture:true});
+      window.addEventListener('wheel',rm,{once:true,passive:true,capture:true});
+      window.addEventListener('touchstart',rm,{once:true,passive:true,capture:true});
+    })();
+  </script>
 </head>
 <body>
 <div class="lp-wrap wed-wrap">
