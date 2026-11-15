@@ -1331,14 +1331,29 @@ if (document.readyState === 'loading') { document.addEventListener('DOMContentLo
 // ── SCROLL HANDLER ──
 const _scrollEl = document.getElementById('scroll-progress');
 const backToTopEl = document.getElementById('backToTop');
+// Soft-premium scroll-progress ring inside the back-to-top control (owner round).
+const _bttRingR = 20.2;
+const _bttRingC = 2 * Math.PI * _bttRingR;
+let _bttFill = null;
+if (backToTopEl && !backToTopEl.querySelector('.btt-ring')) {
+  backToTopEl.insertAdjacentHTML('afterbegin',
+    '<svg class="btt-ring" width="46" height="46" viewBox="0 0 46 46" aria-hidden="true" focusable="false">' +
+    '<circle class="btt-ring-track" cx="23" cy="23" r="' + _bttRingR + '"/>' +
+    '<circle class="btt-ring-fill" cx="23" cy="23" r="' + _bttRingR + '"/></svg>');
+  _bttFill = backToTopEl.querySelector('.btt-ring-fill');
+  _bttFill.style.strokeDasharray = _bttRingC.toFixed(2);
+  _bttFill.style.strokeDashoffset = _bttRingC.toFixed(2);
+}
 let _scrollTicking = false;
 function _onScroll() {
   if (_scrollTicking) return;
   _scrollTicking = true;
   requestAnimationFrame(() => {
     const y = window.scrollY, total = document.body.scrollHeight - window.innerHeight;
-    if (_scrollEl) _scrollEl.style.width = (y / total * 100) + '%';
+    const p = total > 0 ? Math.min(1, Math.max(0, y / total)) : 0;
+    if (_scrollEl) _scrollEl.style.width = (p * 100) + '%';
     if (backToTopEl) backToTopEl.classList.toggle('visible', y > 600);
+    if (_bttFill) _bttFill.style.strokeDashoffset = (_bttRingC * (1 - p)).toFixed(2);
     _scrollTicking = false;
   });
 }
