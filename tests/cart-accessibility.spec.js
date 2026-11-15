@@ -571,6 +571,7 @@ test('cart keeps repeated calculator additions instead of silently truncating th
     // Wait for the lazy catalog to settle before tapping the fixed price panel.
     await expect(page.locator('#card-2 .btn-add')).toBeAttached();
     await page.locator('#fillings').scrollIntoViewIfNeeded();
+    await page.locator('#calcType .calc-type-card.selected').click(); // dock spec 2026-11-16: first real choice reveals the price strip
     await page.locator('#calcCollapsedBar').click();
     await expect(page.locator('#calcCollapsedBar')).toHaveAttribute('aria-expanded', 'true');
   }
@@ -700,7 +701,10 @@ test('cart rejects a quantity merge that would overflow safe prices without losi
   await page.reload({ waitUntil: 'domcontentloaded' });
   await page.locator('#card-2 .btn-add').waitFor({ state: 'visible' });
   await page.locator('#fillings').scrollIntoViewIfNeeded();
-  if (testInfo.project.name.includes('mobile')) await page.locator('#calcCollapsedBar').click();
+  if (testInfo.project.name.includes('mobile')) {
+    await page.locator('#calcType .calc-type-card.selected').click();
+    await page.locator('#calcCollapsedBar').click();
+  }
   await page.locator('.calc-add-btn').click();
   await expect(page.locator('#toast')).toContainText('Слишком большое количество');
   expect(await page.evaluate((key) => JSON.parse(localStorage.getItem('milovicake_cart'))[key].qty, cakeKey)).toBe(cakeMax);
@@ -778,6 +782,11 @@ test('mobile calculator panel stays reachable and restores keyboard focus', asyn
     await page.locator('#mcNav [data-section="catalog"]').click();
     await expect(page.locator('#card-2 .btn-add')).toBeVisible();
     await page.locator('#fillings').scrollIntoViewIfNeeded();
+    // Dock spec 2026-11-16: the price strip stays idle until the first real
+    // choice — then it is revealed for good.
+    await expect(page.locator('body')).toHaveClass(/mc-dock-idle/);
+    await page.locator('#calcType .calc-type-card.selected').click();
+    await expect(page.locator('body')).toHaveClass(/mc-dock-shown/);
     const bar = page.locator('#calcCollapsedBar');
     const region = page.locator('#calcExpandable');
     const add = page.locator('.calc-add-btn');
@@ -824,6 +833,7 @@ test('mobile calculator fast Tab keeps actions available with reduced motion', a
     await page.locator('#mcNav [data-section="catalog"]').click();
     await expect(page.locator('#card-2 .btn-add')).toBeVisible();
     await page.locator('#fillings').scrollIntoViewIfNeeded();
+    await page.locator('#calcType .calc-type-card.selected').click(); // dock spec 2026-11-16: first real choice reveals the price strip
     const bar = page.locator('#calcCollapsedBar');
     await bar.focus();
     await page.keyboard.press('Enter');
@@ -875,6 +885,7 @@ test('mobile calculator ignores a stale scroll event but closes on a real scroll
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await page.locator('#mcNav [data-section="catalog"]').click();
   await page.locator('#fillings').scrollIntoViewIfNeeded();
+  await page.locator('#calcType .calc-type-card.selected').click();
   const bar = page.locator('#calcCollapsedBar');
   await bar.click();
   await expect(bar).toHaveAttribute('aria-expanded', 'true');
@@ -936,6 +947,7 @@ test('mobile calculator clears the navigation above a safe-area inset', async ({
       await page.locator('#mcNav [data-section="catalog"]').click();
       await expect(page.locator('#card-2 .btn-add')).toBeVisible();
       await page.locator('#fillings').scrollIntoViewIfNeeded();
+      await page.locator('#calcType .calc-type-card.selected').click();
       const closed = await page.evaluate(() => ({
         panel: document.querySelector('#calcRightCol').getBoundingClientRect().bottom,
         nav: document.querySelector('#mcNav').getBoundingClientRect().top,
@@ -974,7 +986,10 @@ test('cart refuses incompatible catalog and calculator additions without changin
   await page.locator('#cartDrawer .cart-close').click();
 
   await page.locator('#fillings').scrollIntoViewIfNeeded();
-  if (testInfo.project.name.endsWith('-mobile')) await page.locator('#calcCollapsedBar').click();
+  if (testInfo.project.name.endsWith('-mobile')) {
+    await page.locator('#calcType .calc-type-card.selected').click();
+    await page.locator('#calcCollapsedBar').click();
+  }
   await page.locator('.calc-add-btn').click();
   await page.locator('#calcOpenCartBtn').click();
   await page.locator('#cartDrawer .cart-item').getByRole('button', { name: 'Авторский' }).click();
@@ -999,6 +1014,7 @@ test('mobile calculator after fast scroll keeps its panel open when catalog hydr
   // A real scroll must release the lazy catalog even when it skips the section.
   await expect(page.locator('#card-2 .btn-add')).toBeAttached();
   await page.locator('#fillings').scrollIntoViewIfNeeded();
+  await page.locator('#calcType .calc-type-card.selected').click(); // dock spec 2026-11-16: first real choice reveals the price strip
   await page.locator('#calcCollapsedBar').click();
   await expect(page.locator('#calcCollapsedBar')).toHaveAttribute('aria-expanded', 'true');
   await page.waitForTimeout(500);
@@ -1021,6 +1037,7 @@ test('mobile calculator resize clears its backdrop before desktop and on return'
     await page.locator('#mcNav [data-section="catalog"]').click();
     await expect(page.locator('#card-2 .btn-add')).toBeVisible();
     await page.locator('#fillings').scrollIntoViewIfNeeded();
+    await page.locator('#calcType .calc-type-card.selected').click();
     await page.locator('#calcCollapsedBar').click();
     await expect(page.locator('#calcCollapsedBar')).toHaveAttribute('aria-expanded', 'true');
     await page.setViewportSize({ width: 1440, height: 900 });

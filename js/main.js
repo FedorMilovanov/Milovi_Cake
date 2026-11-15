@@ -2411,25 +2411,15 @@ if (typeof updateCalcCartBadge === 'function') {
     if (mq.addEventListener) mq.addEventListener('change', sync);
     else if (mq.addListener) mq.addListener(sync);
   }
-  // Reveal: calculator area enters the viewport…
-  var anchor = document.getElementById('fillings') || document.querySelector('.calc-wrap');
-  if (anchor && 'IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { if (e.isIntersecting) { reveal(); io.disconnect(); } });
-    }, { threshold: 0.02 });
-    io.observe(anchor);
+  // Reveal only when it is meaningful (owner: "5 600 before we chose
+  // anything is noise"): the first real interaction with the calculator,
+  // anything added to the cart, or keyboard focus reaching the dock.
+  function engaged(e) {
+    return e.target && e.target.closest &&
+      e.target.closest('.calc-wrap, .btn-add, #calcOpenCartBtn');
   }
-  // …any engagement anywhere (owner: "it appears when the user interacts
-  // or scrolls in"): pointer taps, page movement, keyboard use. The
-  // privacy dialog is not engagement — tapping it keeps the dock idle.
-  document.addEventListener('click', function (e) {
-    if (e.target && e.target.closest && e.target.closest('.mc-consent-overlay')) return;
-    reveal();
-  }, { passive: true, capture: true });
-  document.addEventListener('keydown', reveal, { passive: true, capture: true });
-  document.addEventListener('wheel', reveal, { passive: true, capture: true });
-  document.addEventListener('touchmove', reveal, { passive: true, capture: true });
-  window.addEventListener('scroll', reveal, { passive: true });
+  document.addEventListener('click', function (e) { if (engaged(e)) reveal(); }, { passive: true, capture: true });
+  document.addEventListener('change', function (e) { if (engaged(e)) reveal(); }, { passive: true, capture: true });
   // …keyboard focus reaching the dock (a11y: never trap focus in limbo)…
   document.addEventListener('focusin', function (e) {
     if (e.target && e.target.closest && e.target.closest('#calcRightCol')) reveal();
@@ -2452,7 +2442,10 @@ if (typeof updateCalcCartBadge === 'function') {
       b.style.setProperty('box-shadow', 'none', 'important');
     });
     document.querySelectorAll('.hero-actions .btn-hero-messenger svg').forEach(function (s) {
-      s.style.setProperty('transform', 'scale(1.42)', 'important');
+      // The MAX mark is drawn heavier than WA/TG — keep the trio optically
+      // equal by scaling it a notch below the others (owner note).
+      var scale = (s.closest && s.closest('.btn-hero-max')) ? 'scale(1.2)' : 'scale(1.42)';
+      s.style.setProperty('transform', scale, 'important');
     });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', paint);

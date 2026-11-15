@@ -463,9 +463,9 @@
 }
 
 [data-theme="dark"] .mc-row-icon {
-  background: rgba(212,167,106,0.09) !important;
+  background: linear-gradient(150deg, rgba(212,167,106,0.13), rgba(212,167,106,0.05)) !important;
   border-color: rgba(212,167,106,0.14) !important;
-  color: var(--gold) !important;
+  color: var(--gold-light) !important;
 }
 
 [data-theme="dark"] .mc-sheet-handle {

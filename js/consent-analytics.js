@@ -350,9 +350,9 @@
     section.innerHTML = '' +
       '<div class="mc-section-label">Настройки</div>' +
       '<button type="button" class="mc-row mc-row-privacy" id="mcPrivacyRow" aria-haspopup="dialog" aria-controls="mc-consent-dialog">' +
-        '<span class="mc-row-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9.5 12l1.7 1.7 3.6-4"/></svg></span>' +
+        '<span class="mc-row-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21.4c-.4 0-.8-.1-1.1-.3C7 19.2 4 15.7 4 11.7V5.9L12 2.6l8 3.3v5.8c0 4-3 7.5-6.9 9.4-.3.2-.7.3-1.1.3z"/><path d="m9.2 11.7 2 2 3.6-3.9"/></svg></span>' +
         '<span class="mc-row-text"><span class="mc-row-name">Конфиденциальность</span><span class="mc-row-sub">' + mobileStateLabel() + '</span></span>' +
-        '<span class="mc-row-arrow" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span>' +
+        '<span class="mc-row-arrow" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.6 5.8 6.2 6.2-6.2 6.2"/></svg></span>' +
       '</button>';
 
     var safe = sheet.querySelector('.mc-sheet-safe');

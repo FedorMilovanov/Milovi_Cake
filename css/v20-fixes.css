@@ -602,7 +602,7 @@ body.mc-consent-open { overflow:hidden; }
     border-radius:18px !important;
     background:linear-gradient(135deg,rgba(201,147,74,.075),rgba(255,255,255,.20)) !important;
   }
-  #mcSheet .mc-row-privacy .mc-row-icon { background:linear-gradient(145deg,rgba(201,147,74,.15),rgba(255,255,255,.28)) !important; }
+  #mcSheet .mc-row-privacy .mc-row-icon { background:linear-gradient(150deg,rgba(201,147,74,.12),rgba(201,147,74,.05)) !important; }
   #mcSheet .mc-row-privacy .mc-row-sub { display:block !important; }
   body.mc-consent-open #mcNav,
   body.mc-consent-open .mc-nav { transform:translateY(115%) !important; pointer-events:none !important; }
@@ -655,7 +655,7 @@ html[data-theme="dark"] #mcSheet .mc-row-privacy {
   border-color:rgba(232,184,122,.18) !important;
   background:linear-gradient(135deg,rgba(232,184,122,.09),rgba(255,255,255,.018)) !important;
 }
-html[data-theme="dark"] #mcSheet .mc-row-privacy .mc-row-icon { background:linear-gradient(145deg,rgba(232,184,122,.14),rgba(255,255,255,.025)) !important; }
+html[data-theme="dark"] #mcSheet .mc-row-privacy .mc-row-icon { background:linear-gradient(150deg,rgba(212,167,106,.13),rgba(212,167,106,.05)) !important; }
 @media (prefers-reduced-motion:reduce) {
   #contacts .card:not(.card--dark) .form-group.float-label,
   #contacts .card:not(.card--dark) .form-group.float-label label,
