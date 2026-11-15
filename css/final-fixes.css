@@ -473,24 +473,24 @@ html[data-theme="dark"] #why .feature h3 { color:#f0e4d0; }
   html[data-theme="dark"] #mcNav .mc-btn.mc-active { color:#e0ae6d !important; }
   #mcNav .mc-sep { display:none !important; }
   #mcNav .mc-btn--order .mc-btn-circle {
-    width:46px !important;
-    height:46px !important;
-    margin-top:-6px !important;
-    background:var(--fab-matte-bg,radial-gradient(circle at 32% 20%,rgba(255,248,226,.85),transparent 46%),linear-gradient(155deg,#e2b87c 0%,#c9934a 52%,#b07f38 100%)) !important;
-    box-shadow:0 10px 22px rgba(146,96,38,.28),0 0 0 1px rgba(255,252,244,.35) inset,0 -2px 6px rgba(120,76,26,.16) inset !important;
+    width:44px !important;
+    height:44px !important;
+    margin-top:0 !important;
+    background:var(--fab-matte-bg,radial-gradient(circle at 32% 18%,rgba(255,242,214,.55),transparent 48%),linear-gradient(160deg,#d3a75f 0%,#b5853c 48%,#8e5f24 100%)) !important;
+    box-shadow:0 10px 22px rgba(122,78,24,.35),0 0 0 1px rgba(255,236,196,.32) inset,0 -3px 8px rgba(70,40,8,.28) inset !important;
   }
   html[data-theme="dark"] #mcNav .mc-btn--order .mc-btn-circle {
-    --fab-matte-bg:radial-gradient(circle at 32% 20%,rgba(255,244,214,.6),transparent 46%),linear-gradient(155deg,#e7c184 0%,#cfa059 52%,#b78c46 100%);
-    box-shadow:0 12px 26px rgba(0,0,0,.42),0 0 0 1px rgba(255,244,218,.18) inset,0 -2px 6px rgba(60,38,12,.22) inset !important;
+    --fab-matte-bg:radial-gradient(circle at 32% 18%,rgba(255,240,208,.45),transparent 48%),linear-gradient(160deg,#d8ab66 0%,#b9893f 48%,#926024 100%);
+    box-shadow:0 12px 26px rgba(0,0,0,.45),0 0 0 1px rgba(255,238,206,.22) inset,0 -3px 8px rgba(50,28,6,.32) inset !important;
   }
   body.has-mc-nav { padding-bottom:calc(88px + env(safe-area-inset-bottom,0px)) !important; }
   body.has-mc-nav .site-footer,
   body.has-mc-nav footer.site-footer { padding-bottom:34px !important; }
   .back-to-top {
     right:18px !important;
-    bottom:calc(122px + env(safe-area-inset-bottom,0px)) !important;
-    width:42px !important;
-    height:42px !important;
+    bottom:calc(94px + env(safe-area-inset-bottom,0px)) !important;
+    width:46px !important;
+    height:46px !important;
   }
   .back-to-top.footer-clearance { opacity:0 !important; pointer-events:none !important; transform:translateY(10px) scale(.9) !important; }
 

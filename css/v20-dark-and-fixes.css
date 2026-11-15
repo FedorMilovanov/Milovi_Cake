@@ -559,13 +559,13 @@
 
 
 [data-theme="dark"] #backToTop {
-  background: var(--card-bg) !important;
-  border-color: rgba(212,167,106,0.28) !important;
-  color: var(--gold) !important;
+  background: radial-gradient(circle at 32% 18%, rgba(255,240,208,0.32), transparent 48%), linear-gradient(160deg, #c49a5b 0%, #a2743a 55%, #865a22 100%) !important;
+  border-color: rgba(255,238,206,0.26) !important;
+  color: #fdf6e8 !important;
 }
 [data-theme="dark"] #backToTop:hover {
-  background: var(--gold) !important;
-  color: var(--cream) !important;
+  background: radial-gradient(circle at 32% 18%, rgba(255,244,218,0.42), transparent 48%), linear-gradient(160deg, #cfa362 0%, #ac7c3e 55%, #8f5f24 100%) !important;
+  color: #fffdf6 !important;
 }
 
 
