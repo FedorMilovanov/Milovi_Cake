@@ -49,3 +49,6 @@ desktop.ini
 playwright-report/
 test-results/
 tests/screenshots/
+
+# Local performance lab (issue #100 measurement harness and LHR evidence)
+.perf-lab/

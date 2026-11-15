@@ -82,6 +82,7 @@ EXCLUDED_AUDIT_DIRS = {
     ".git",
     ".cache",
     ".pytest_cache",
+    ".perf-lab",        # local perf/QA lab (gitignored, never deployed)
     "playwright-report",
     "test-results",
     "_site",           # generated Pages artifact; audited separately
@@ -102,6 +103,7 @@ DEV_TOOLING_JS = {
     "tests/video-posters.spec.js",
     "tests/contrast-regressions.spec.js",
     "tests/image-intrinsics.spec.js",
+    "tests/fastinit-layout-skip.spec.js",
     "scripts/lighthouse_tbt_window.js",
 }
 

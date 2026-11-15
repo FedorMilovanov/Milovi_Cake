@@ -148,6 +148,32 @@
     .prigorody-page .site-footer .footer-col>h3{color:#9a8a6d}
     .prigorody-page .site-footer .footer-col>h3{font-family:'Jost',sans-serif;font-size:11px;font-weight:400;letter-spacing:.12em;text-transform:uppercase;margin:0 0 14px}
   </style>
+  <!-- [P100] Детерминированный пропуск offscreen-layout на первом кадре:
+       content-visibility:auto для секций ниже сгиба работает только до 2 кадров
+       после FCP (или до первого взаимодействия / жёсткого таймаута 1500 мс),
+       затем класс снимается и документ раскладывается точно как раньше.
+       Без JavaScript и в браузерах без content-visibility класс не добавляется —
+       обычная отрисовка. Геометрия после загрузки идентична базовой. -->
+  <style id="mc-fast-init-css">
+    html.mc-fast-init main > *:not(#home):not(.section-fade-divider){content-visibility:auto;contain-intrinsic-size:auto 1000px}
+  </style>
+  <script>
+    (function(){
+      var d=document.documentElement;
+      d.classList.add('mc-fast-init');
+      var done=false;
+      function rm(){if(done)return;done=true;d.classList.remove('mc-fast-init');}
+      function after2raf(){requestAnimationFrame(function(){requestAnimationFrame(rm);});}
+      try{var po=new PerformanceObserver(function(list){for(var i=0;i<list.getEntries().length;i++){if(list.getEntries()[i].name==='first-contentful-paint'){po.disconnect();after2raf();}}});po.observe({type:'paint',buffered:true});}catch(e){after2raf();}
+      window.addEventListener('load',function(){setTimeout(after2raf,0);},false);
+      setTimeout(rm,1500);
+      window.addEventListener('pageshow',function(){setTimeout(rm,50);},false);
+      window.addEventListener('pointerdown',rm,{once:true,passive:true,capture:true});
+      window.addEventListener('keydown',rm,{once:true,passive:true,capture:true});
+      window.addEventListener('wheel',rm,{once:true,passive:true,capture:true});
+      window.addEventListener('touchstart',rm,{once:true,passive:true,capture:true});
+    })();
+  </script>
 </head>
 
 <body class="prigorody-page">
