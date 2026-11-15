@@ -477,9 +477,13 @@ html[data-theme="dark"] #why .feature h3 { color:#f0e4d0; }
     width:46px !important;
     height:46px !important;
     margin-top:0 !important;
-    box-shadow:0 6px 16px rgba(150,96,43,.28),0 0 0 1px rgba(255,255,255,.22) inset !important;
+    background:var(--fab-matte-bg,radial-gradient(circle at 34% 24%,rgba(255,248,228,.32),transparent 46%),linear-gradient(165deg,#d3a75f 0%,#c1934c 52%,#b4873f 100%)) !important;
+    box-shadow:0 2px 10px rgba(122,82,32,.22),0 0 0 1px rgba(255,252,244,.16) inset !important;
   }
-  html[data-theme="dark"] #mcNav .mc-btn--order .mc-btn-circle { box-shadow:0 6px 18px rgba(0,0,0,.40),0 0 0 1px rgba(255,244,218,.14) inset !important; }
+  html[data-theme="dark"] #mcNav .mc-btn--order .mc-btn-circle {
+    --fab-matte-bg:radial-gradient(circle at 34% 24%,rgba(255,244,214,.22),transparent 46%),linear-gradient(165deg,#d9b170 0%,#c69c56 52%,#b78c46 100%);
+    box-shadow:0 2px 12px rgba(0,0,0,.38),0 0 0 1px rgba(255,244,218,.10) inset !important;
+  }
   body.has-mc-nav { padding-bottom:calc(88px + env(safe-area-inset-bottom,0px)) !important; }
   body.has-mc-nav .site-footer,
   body.has-mc-nav footer.site-footer { padding-bottom:34px !important; }
@@ -774,4 +778,20 @@ html #contacts .card.card--dark .contact-primary-icon {
 }
 @media (prefers-reduced-motion: reduce) {
   .product-card .slider-wrap > .slide-btn { transition: none; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   [UI-2026-11-15 #2] Phone polish — owner request
+   1) Hero messenger chips are icon-only on phones; the ring/flat
+      labels (and their hover motion) stay untouched for desktop.
+   2) Order FAB: matte gold lives in the compact-bar block above
+      (--fab-matte-bg + softened shadow values).
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width:768px) {
+  .hero-ring-text,
+  .hero-flat-text,
+  [id^="ring-text-"],
+  [id^="flat-text-"] {
+    display: none;
+  }
 }
