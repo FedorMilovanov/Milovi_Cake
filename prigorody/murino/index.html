@@ -119,9 +119,9 @@
 <link rel="stylesheet" href="/css/fonts.css?v=20261102r01" />
 
   <!-- noscript fonts -->
-  <link rel="stylesheet" href="../../css/style.css?v=20261112r02" />
+  <link rel="stylesheet" href="../../css/style.css?v=20261115r01" />
   <link rel="stylesheet" href="../../css/mc-2026.css?v=20261112r01" />
-  <link rel="stylesheet" href="../../css/premium-overrides.css?v=20261027r05" />
+  <link rel="stylesheet" href="../../css/premium-overrides.css?v=20261115r01" />
   <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20261027r03">
   <script type="application/ld+json">
   {
@@ -135,7 +135,7 @@
   }
   </script>
   <link rel="stylesheet" href="/css/v20-fixes.css?v=20260728r27">
-  <link rel="stylesheet" href="/css/final-fixes.css?v=20261108r01" />
+  <link rel="stylesheet" href="/css/final-fixes.css?v=20261115r01" />
   <style id="suburb-a11y-contrast">
     :root:not([data-theme="dark"]) .prigorody-page .calc-opt.selected{color:#2c1a10}
     :root:not([data-theme="dark"]) .prigorody-page .calc-stepper-val{color:#8a5723}
@@ -461,21 +461,21 @@
             <span class="calc-label">Тип торта</span>
             <div class="calc-options calc-type-grid" id="calcType">
               <div class="calc-opt calc-type-card selected" data-price="2800" data-type="biscuit" onclick="selectCakeType(this,'biscuit')">
-                <span class="calc-type-icon">🎂</span>
+                <span class="calc-type-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.8V6"/><path d="M5.5 21h13v-6.5a4 4 0 0 0-4-4h-5a4 4 0 0 0-4 4z"/><path d="M6 15.2c1 0 1 .8 2 .8s1-.8 2-.8 1 .8 2 .8 1-.8 2-.8 1 .8 2 .8"/></svg></span>
                 <span class="opt-inner"><span class="opt-label">Бисквитный</span><span class="calc-type-hint">2 800 ₽/кг</span></span>
               </div>
               <div class="calc-opt calc-type-card" data-price="1600" data-type="bento" onclick="selectCakeType(this,'bento')">
-                <span class="calc-type-icon">🍰</span>
+                <span class="calc-type-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="9" width="16" height="11" rx="2.2"/><path d="M4 13h16"/><path d="M9 6.5h6l1 2.5H8z"/></svg></span>
                 <span class="opt-inner"><span class="opt-label">Бенто</span><span class="calc-type-hint">1 600 ₽/шт</span></span>
                 <span class="calc-weight-tooltip">~350 гр / шт</span>
               </div>
               <div class="calc-opt calc-type-card" data-price="3000" data-type="bentomaxi" onclick="selectCakeType(this,'bentomaxi')">
-                <span class="calc-type-icon calc-type-icon--double">🍰🍰</span>
+                <span class="calc-type-icon calc-type-icon--double"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5.5" y="13" width="13" height="7" rx="1.8"/><rect x="7.5" y="6" width="9" height="7" rx="1.8"/><path d="M7.5 9.2h9"/></svg></span>
                 <span class="opt-inner"><span class="opt-label">Макси Бенто</span><span class="calc-type-hint">3 000 ₽/шт</span></span>
                 <span class="calc-weight-tooltip">~1100 гр / шт</span>
               </div>
               <div class="calc-opt calc-type-card" data-price="5000" data-type="cake3d" onclick="selectCakeType(this,'cake3d')">
-                <span class="calc-type-icon">✨</span>
+                <span class="calc-type-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4l1.7 4.8L17.5 10.5l-4.8 1.7L11 17l-1.7-4.8L4.5 10.5l4.8-1.7z"/><path d="M17.5 14.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></svg></span>
                 <span class="opt-inner"><span class="opt-label">3D Торт</span><span class="calc-type-hint">5 000 ₽/кг</span></span>
               </div>
             </div>
@@ -563,7 +563,7 @@
             <!-- Компактная полоска — всегда видна, тап раскрывает -->
             <div class="calc-result-collapsed" id="calcCollapsedBar" aria-controls="calcExpandable" aria-expanded="false" onclick="toggleCalcPanel()">
               <div class="calc-result-collapsed-handle"></div>
-              <div style="display:flex;flex-direction:column;gap:1px;flex:1;padding-top:6px;">
+              <div class="calc-result-collapsed-main">
                 <span class="calc-result-collapsed-label">Примерная стоимость</span>
                 <span class="calc-result-collapsed-price" id="calcResultCollapsed">5 600 ₽</span>
               </div>
@@ -918,7 +918,7 @@
 </section>
 
 <script>var IMG_BASE = '../../img';</script>
-<script src="../../js/main.js?v=20261112r02" defer></script>
+<script src="../../js/main.js?v=20261115r01" defer></script>
 <script src="../../js/nav.js?v=20260728r27" defer></script>
 <script src="../../js/mc-2026.js?v=20261106r01" defer></script>
 

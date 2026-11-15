@@ -472,20 +472,20 @@ html[data-theme="dark"] #why .feature h3 { color:#f0e4d0; }
   #mcNav .mc-btn.mc-active { color:#9d672f !important; }
   html[data-theme="dark"] #mcNav .mc-btn.mc-active { color:#e0ae6d !important; }
   #mcNav .mc-btn.mc-active::before { top:5px !important; width:18px !important; height:1px !important; border-radius:99px !important; }
-  #mcNav .mc-sep { margin:17px 0 !important; background:rgba(145,102,59,.13) !important; }
+  #mcNav .mc-sep { display:none !important; }
   #mcNav .mc-btn--order .mc-btn-circle {
-    width:45px !important;
-    height:45px !important;
-    margin-top:-13px !important;
-    box-shadow:0 7px 20px rgba(150,96,43,.30),0 0 0 5px rgba(250,249,246,.94) !important;
+    width:46px !important;
+    height:46px !important;
+    margin-top:0 !important;
+    box-shadow:0 6px 16px rgba(150,96,43,.28),0 0 0 1px rgba(255,255,255,.22) inset !important;
   }
-  html[data-theme="dark"] #mcNav .mc-btn--order .mc-btn-circle { box-shadow:0 8px 22px rgba(0,0,0,.36),0 0 0 5px rgba(23,15,10,.94) !important; }
+  html[data-theme="dark"] #mcNav .mc-btn--order .mc-btn-circle { box-shadow:0 6px 18px rgba(0,0,0,.40),0 0 0 1px rgba(255,244,218,.14) inset !important; }
   body.has-mc-nav { padding-bottom:calc(88px + env(safe-area-inset-bottom,0px)) !important; }
   body.has-mc-nav .site-footer,
   body.has-mc-nav footer.site-footer { padding-bottom:34px !important; }
   .back-to-top {
     right:18px !important;
-    bottom:calc(92px + env(safe-area-inset-bottom,0px)) !important;
+    bottom:calc(122px + env(safe-area-inset-bottom,0px)) !important;
     width:42px !important;
     height:42px !important;
   }

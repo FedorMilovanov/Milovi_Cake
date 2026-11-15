@@ -1199,8 +1199,8 @@ form .btn-wa {
     box-shadow: 0 -10px 32px rgba(0,0,0,0.18);
   }
   .calc-result-collapsed {
-    padding-top: 18px !important;       
-    padding-bottom: max(14px, env(safe-area-inset-bottom, 0px)) !important;
+    padding-top: 11px !important;       
+    padding-bottom: max(9px, env(safe-area-inset-bottom, 0px)) !important;
   }
   
   .calc-result-expandable {
@@ -1772,28 +1772,28 @@ button[disabled] {
     box-shadow: 0 -18px 54px rgba(0,0,0,.42), 0 0 0 1px rgba(255,255,255,.035) inset !important;
   }
   .calc-result-collapsed {
-    min-height: 68px !important;
-    padding: 20px 18px 14px !important;
+    min-height: 52px !important;
+    padding: 11px 14px 9px !important;
     gap: 10px !important;
   }
   .calc-result-collapsed-handle {
-    top: 8px !important;
-    width: 44px !important;
-    height: 4px !important;
+    top: 5px !important;
+    width: 32px !important;
+    height: 3px !important;
     background: rgba(232,184,122,.38) !important;
   }
   .calc-result-collapsed-label {
-    font-size: 9.5px !important;
-    letter-spacing: .18em !important;
+    font-size: 8.5px !important;
+    letter-spacing: .14em !important;
   }
   .calc-result-collapsed-price {
-    font-size: clamp(27px, 8vw, 34px) !important;
+    font-size: clamp(19px, 5.4vw, 22px) !important;
     white-space: nowrap;
   }
   .calc-result-collapsed-arrow {
-    width: 38px !important;
-    height: 38px !important;
-    min-width: 38px !important;
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
   }
   .calc-right-col.calc-result-open .calc-result-expandable {
     max-height: min(58dvh, 430px) !important;
@@ -1924,16 +1924,16 @@ button[disabled] {
   }
   #mcNav .mc-btn--order .mc-btn-circle,
   .mc-nav .mc-btn--order .mc-btn-circle {
-    width: 48px !important;
-    height: 48px !important;
-    margin-top: -14px !important;
+    width: 46px !important;
+    height: 46px !important;
+    margin-top: 0 !important;
     background:
       radial-gradient(circle at 35% 25%, rgba(255,244,218,.55), transparent 34%),
       linear-gradient(145deg, #8a5e23 0%, #c9934a 54%, #e8b87a 100%) !important;
     box-shadow:
-      0 12px 28px rgba(201,147,74,.34),
+      0 10px 22px rgba(201,147,74,.30),
       0 0 0 1px rgba(255,255,255,.28) inset,
-      0 0 24px rgba(201,147,74,.18) !important;
+      0 0 18px rgba(201,147,74,.14) !important;
     transition: transform .24s cubic-bezier(.34,1.56,.64,1), box-shadow .24s ease, filter .24s ease !important;
   }
   #mcNav .mc-btn--order:active .mc-btn-circle,
