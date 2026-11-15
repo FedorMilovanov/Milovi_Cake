@@ -795,3 +795,19 @@ html #contacts .card.card--dark .contact-primary-icon {
     display: none;
   }
 }
+
+/* ═══ [UI-2026-11-16 #3] Mobile price dock — idle until relevant ═══
+   Owner: the fixed price strip must not occupy the screen on first
+   visit; body.mc-dock-idle (set by main.js) keeps it out of sight and
+   out of reach until the calculator becomes relevant. Slide-in reveal. */
+@media (max-width:560px) {
+  .calc-right-col { transition: opacity .38s ease, transform .38s cubic-bezier(.16,1,.3,1); }
+  body.mc-dock-idle .calc-right-col {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(24px);
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  .calc-right-col { transition: none; }
+}

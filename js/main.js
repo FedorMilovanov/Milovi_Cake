@@ -1063,11 +1063,10 @@ function renderCatalogNav() {
     'Меренговый рулет': 'Рулет', 'Пирожное "Павлова"': 'Павлова', 'Пирожное «Павлова»': 'Павлова', 'Капкейки': 'Капкейки',
   };
   nav.innerHTML = products.map(p => {
-    const thumbSrc = (p.slides && p.slides.length) ? p.slides[0] : '';
-    const thumbHtml = thumbSrc ? `<div class="catalog-nav-thumb"><img src="${thumbSrc}" alt="" width="48" height="48" decoding="async" loading="lazy"></div>` : `<div class="catalog-nav-emoji">${p.emoji}</div>`;
+    // [UI-2026-11-16] Owner: no thumbnail tiles — slim text pills only.
     const shortName = shortNames[p.name] || p.name;
     const shortPrice = p.price.replace('от ', '').replace(' ₽/кг', '₽/кг').replace(' ₽/шт', '₽');
-    return `<button class="catalog-nav-item" data-target="card-${p.id}" onclick="scrollToProduct(${p.id})" type="button">${thumbHtml}<span class="catalog-nav-label">${shortName}</span><span class="catalog-nav-price">${shortPrice}</span></button>`;
+    return `<button class="catalog-nav-item" data-target="card-${p.id}" onclick="scrollToProduct(${p.id})" type="button"><span class="catalog-nav-label">${shortName}</span><span class="catalog-nav-price">${shortPrice}</span></button>`;
   }).join('');
 }
 
@@ -2379,23 +2378,85 @@ if (typeof updateCalcCartBadge === 'function') {
 })();
 
 // ══════════════════════════════════════════════════════════════
-// Calc result magnetic parallax
+// Calc result magnetic parallax — REMOVED 2026-11-16 (owner: the
+// magnetic cursor-follow is distracting and costs jank; premium
+// hover glints stay CSS-only).
 // ══════════════════════════════════════════════════════════════
-(function() {
-  function initCalcMagnet() {
-    var block = document.querySelector('.calc-result');
-    if (!block) return;
-    var label = document.getElementById('calcLabel'), price = document.getElementById('calcResult'), note = document.getElementById('calcNote');
-    block.addEventListener('mousemove', function(e) {
-      var r = block.getBoundingClientRect(); var x = (e.clientX - r.left) / r.width - 0.5; var y = (e.clientY - r.top) / r.height - 0.5;
-      if (label) label.style.transform = 'translate('+(x*5)+'px,'+(y*3)+'px)';
-      if (price) price.style.transform = 'scale(1.05) translate('+(x*9)+'px,'+(y*6)+'px)';
-      if (note) note.style.transform = 'translate('+(x*4)+'px,'+(y*2)+'px)';
-    });
-    block.addEventListener('mouseleave', function() { [label, price, note].forEach(function(el) { if (el) el.style.transform = ''; }); });
+
+// ══════════════════════════════════════════════════════════════
+// [UI-2026-11-16] Mobile price dock — idle until relevant (owner:
+// it must not sit on the first screen with an unasked price; it
+// appears once the calculator area comes into play). Pure class
+// toggle: `body.mc-dock-idle` hides the fixed strip until reveal.
+// ══════════════════════════════════════════════════════════════
+(function initMobileCalcDock() {
+  var col = document.getElementById('calcRightCol');
+  if (!col) return;
+  var mq = window.matchMedia ? window.matchMedia('(max-width: 560px)') : null;
+  function reveal() {
+    if (!document.body.classList.contains('mc-dock-idle')) return;
+    document.body.classList.remove('mc-dock-idle');
+    document.body.classList.add('mc-dock-shown');
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initCalcMagnet);
-  else initCalcMagnet();
+  function sync() {
+    if (!mq) return;
+    if (mq.matches && !document.body.classList.contains('mc-dock-shown')) {
+      document.body.classList.add('mc-dock-idle');
+    } else if (!mq.matches) {
+      document.body.classList.remove('mc-dock-idle');
+    }
+  }
+  sync();
+  if (mq) {
+    if (mq.addEventListener) mq.addEventListener('change', sync);
+    else if (mq.addListener) mq.addListener(sync);
+  }
+  // Reveal: calculator area enters the viewport…
+  var anchor = document.getElementById('fillings') || document.querySelector('.calc-wrap');
+  if (anchor && 'IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { reveal(); io.disconnect(); } });
+    }, { threshold: 0.02 });
+    io.observe(anchor);
+  }
+  // …any engagement anywhere (owner: "it appears when the user interacts
+  // or scrolls in"): pointer taps, page movement, keyboard use. The
+  // privacy dialog is not engagement — tapping it keeps the dock idle.
+  document.addEventListener('click', function (e) {
+    if (e.target && e.target.closest && e.target.closest('.mc-consent-overlay')) return;
+    reveal();
+  }, { passive: true, capture: true });
+  document.addEventListener('keydown', reveal, { passive: true, capture: true });
+  document.addEventListener('wheel', reveal, { passive: true, capture: true });
+  document.addEventListener('touchmove', reveal, { passive: true, capture: true });
+  window.addEventListener('scroll', reveal, { passive: true });
+  // …keyboard focus reaching the dock (a11y: never trap focus in limbo)…
+  document.addEventListener('focusin', function (e) {
+    if (e.target && e.target.closest && e.target.closest('#calcRightCol')) reveal();
+  }, true);
+})();
+
+// ══════════════════════════════════════════════════════════════
+// [UI-2026-11-16] Hero messengers on phones: plain large brand
+// glyphs, no ring circles (owner). Desktop ring/flat design and
+// hover motion stay untouched — this only paints inline overrides
+// when the phone breakpoint matches. Inline !important is required
+// to beat the protected R9/R10 stylesheet flags.
+// ══════════════════════════════════════════════════════════════
+(function bareMobileMessengers() {
+  if (!window.matchMedia || !window.matchMedia('(max-width: 768px)').matches) return;
+  function paint() {
+    document.querySelectorAll('.hero-actions .btn-hero-messenger').forEach(function (b) {
+      b.style.setProperty('border', 'none', 'important');
+      b.style.setProperty('background', 'transparent', 'important');
+      b.style.setProperty('box-shadow', 'none', 'important');
+    });
+    document.querySelectorAll('.hero-actions .btn-hero-messenger svg').forEach(function (s) {
+      s.style.setProperty('transform', 'scale(1.42)', 'important');
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', paint);
+  else paint();
 })();
 
 // ══════════════════════════════════════════════════════════════

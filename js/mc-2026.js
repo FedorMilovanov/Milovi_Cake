@@ -302,11 +302,64 @@
     else tile.classList.add('is-playing');
   }
 
+  /* [UI-2026-11-16 #6] Inline video modal — clicking a tile plays the full
+     work right here (never navigates). The gallery lives in the side chip. */
+  var CLOSE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>';
+  var ARROW_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h12.2l-4.6-4.6L14 6l7 6-7 6-1.4-1.4 4.6-4.6H5z"/></svg>';
+  var modalEl = null, modalOpener = null;
+
+  function closeModal(){
+    if (!modalEl) return;
+    var v = modalEl.querySelector('video');
+    if (v) { try { v.pause(); } catch (e) {} }
+    if (modalEl.parentNode) modalEl.parentNode.removeChild(modalEl);
+    modalEl = null;
+    document.body.classList.remove('vmodal-open');
+    if (modalOpener && modalOpener.focus) { try { modalOpener.focus(); } catch (e) {} }
+    modalOpener = null;
+  }
+
+  function openVideoModal(it, opener){
+    if (modalEl) closeModal();
+    modalOpener = opener || null;
+    var ov = document.createElement('div');
+    ov.className = 'vmodal';
+    ov.setAttribute('role', 'dialog');
+    ov.setAttribute('aria-modal', 'true');
+    ov.setAttribute('aria-label', it.t);
+    ov.innerHTML =
+      '<div class="vmodal-bd"></div>' +
+      '<div class="vmodal-box">' +
+        '<button class="vmodal-close" type="button" aria-label="Закрыть видео">' + CLOSE_SVG + '</button>' +
+        '<video class="vmodal-video" controls autoplay playsinline preload="auto"></video>' +
+        '<div class="vmodal-cap"></div>' +
+        '<a class="vmodal-gal" href="/gallery/"><span>Вся галерея работ</span>' + ARROW_SVG + '</a>' +
+      '</div>';
+    var vid = ov.querySelector('video');
+    vid.src = it.v;
+    vid.setAttribute('playsinline', '');
+    if (it.p) vid.poster = it.p;
+    ov.querySelector('.vmodal-cap').textContent = it.t;
+    ov.querySelector('.vmodal-bd').addEventListener('click', closeModal);
+    ov.querySelector('.vmodal-close').addEventListener('click', closeModal);
+    document.body.appendChild(ov);
+    document.body.classList.add('vmodal-open');
+    modalEl = ov;
+    var closeBtn = ov.querySelector('.vmodal-close');
+    if (closeBtn && closeBtn.focus) { try { closeBtn.focus(); } catch (e) {} }
+    var pr = vid.play();
+    if (pr && pr.catch) pr.catch(function(){});
+  }
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' || e.keyCode === 27) closeModal();
+  });
+
   function makeTile(it){
     var d = document.createElement('a');
     d.className = 'vtile';
-    d.href = '/gallery/';
-    d.setAttribute('aria-label', it.t + ' — смотреть в галерее');
+    d.href = it.v;
+    d.setAttribute('aria-label', it.t + ' — смотреть видео');
 
     var img = document.createElement('img');
     img.src = it.p; img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
@@ -323,16 +376,15 @@
     if (canHover) {
       d.addEventListener('mouseenter', function(){ setMagnet(d, it); });
       d.addEventListener('mouseleave', function(){ clearMagnet(d); activeTile = null; });
-    } else {
-      // touch: tap toggles magnet+play; do not navigate on first tap
-      d.addEventListener('click', function(e){
-        if (!d.classList.contains('is-magnet')) {
-          e.preventDefault();
-          setMagnet(d, it);
-        }
-        // second tap on an already-active tile: let the <a> navigate to gallery
-      });
     }
+    // [UI-2026-11-16 #6] Click/tap plays the full video inline (no navigation).
+    // Modified clicks (ctrl/cmd/shift/middle) keep native behaviour.
+    d.addEventListener('click', function(e){
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || (typeof e.button === 'number' && e.button > 0)) return;
+      e.preventDefault();
+      clearMagnet(d);
+      openVideoModal(it, d);
+    });
     return d;
   }
 
@@ -342,6 +394,18 @@
   for (i = 0; i < items.length; i++) frag.appendChild(makeTile(items[i]));
   for (i = 0; i < items.length; i++) frag.appendChild(makeTile(items[i]));
   track.appendChild(frag);
+
+  // [UI-2026-11-16 #6] Side slide-in chip — the stylish way to the gallery.
+  // Lives on the section (outside the strip mask); slides in from the right
+  // on hover/focus, always visible for touch pointers.
+  if (strip.parentNode) {
+    var galChip = document.createElement('a');
+    galChip.className = 'vstrip-galchip';
+    galChip.href = '/gallery/';
+    galChip.innerHTML = '<span>Вся галерея</span>' + ARROW_SVG;
+    galChip.setAttribute('aria-label', 'Открыть галерею работ');
+    strip.parentNode.appendChild(galChip);
+  }
 
   // Pause the marquee animation when the strip is off-screen (battery/perf)
   if ('IntersectionObserver' in window) {
