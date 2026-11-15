@@ -172,9 +172,9 @@
 }
 
 [data-theme="dark"] .calc-wrap {
-  background: var(--cream) !important;
-  border-color: rgba(212,167,106,0.12) !important;
-  box-shadow: 0 24px 60px rgba(0,0,0,0.40) !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] .calc-left-col {
