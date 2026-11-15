@@ -22,7 +22,7 @@
         label: 'Главная',
         sublabel: 'Торты на заказ',
         href: '/',
-        icon: '<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+        icon: '<path d="M4 10.6 12 4l8 6.6v9.2a1.6 1.6 0 0 1-1.6 1.6H5.6A1.6 1.6 0 0 1 4 19.8z"/><path d="M9.6 21.4v-5.8h4.8v5.8"/>',
         pages: ['meringue', 'prigorod', 'prigorody-list'],
       },
       {
@@ -30,7 +30,7 @@
         label: 'Меренговый рулет',
         sublabel: '2 500 ₽ · 1 100 г',
         href: '/meringue-roll/',
-        icon: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 12h8M12 8v8"/>',
+        icon: '<path d="M20.8 12.4a8.8 8.8 0 1 1-3.6-7.1"/><path d="M16.6 16.2a5 5 0 1 1-2.2-4"/><path d="M13.2 13a1.7 1.7 0 1 1-.7-1.3"/>',
         pages: ['main', 'prigorod', 'prigorody-list'],
       },
       {
@@ -38,7 +38,7 @@
         label: 'Доставка в пригороды',
         sublabel: 'Пушкин, Петергоф, Гатчина…',
         href: '/prigorody/',
-        icon: '<circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 00-8 8c0 5.25 8 13 8 13s8-7.75 8-13a8 8 0 00-8-8z"/>',
+        icon: '<path d="M12 21.4s7-6.4 7-11.4a7 7 0 1 0-14 0c0 5 7 11.4 7 11.4z"/><circle cx="12" cy="10" r="2.7"/>',
         pages: ['main', 'meringue'],
       },
     ],
@@ -46,25 +46,25 @@
     // Якоря внутри страниц
     anchors: {
       main: [
-        { label: 'Каталог', href: '#catalog', icon: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>', section: 'catalog' },
-        { label: 'Начинки', href: '#fillings', icon: '<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>', section: 'fillings' },
-        { label: 'Отзывы', href: '#reviews', icon: '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>', section: 'reviews' },
-        { label: 'Контакты', href: '#contacts', icon: '<path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.07 2.18 2 2 0 012.03 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>', section: 'contacts' },
+        { label: 'Каталог', href: '#catalog', icon: '<rect x="3.6" y="3.6" width="7.2" height="7.2" rx="2.2"/><rect x="13.2" y="3.6" width="7.2" height="7.2" rx="2.2"/><rect x="3.6" y="13.2" width="7.2" height="7.2" rx="2.2"/><rect x="13.2" y="13.2" width="7.2" height="7.2" rx="2.2"/>', section: 'catalog' },
+        { label: 'Начинки', href: '#fillings', icon: '<path d="M12 20.8c-.3 0-.6-.1-.8-.3C6.4 16.7 3 13.6 3 9.9 3 7 5.1 4.8 7.9 4.8c1.5 0 2.9.7 4.1 2 1.2-1.3 2.6-2 4.1-2 2.8 0 4.9 2.2 4.9 5.1 0 3.7-3.4 6.8-8.2 10.6-.2.2-.5.3-.8.3z"/>', section: 'fillings' },
+        { label: 'Отзывы', href: '#reviews', icon: '<path d="M12 4.4c4.6 0 8.4 3.1 8.4 7s-3.8 7-8.4 7c-1 0-1.9-.1-2.8-.4l-4.5 1.4 1.3-3.7c-1.2-1.1-2-2.6-2-4.3 0-3.9 3.8-7 8-7z"/>', section: 'reviews' },
+        { label: 'Контакты', href: '#contacts', icon: '<path d="M8.4 3.6H5.6A2 2 0 0 0 3.6 5.8c.2 6.8 5.9 12.5 12.7 12.7a2 2 0 0 0 2.1-2v-2.7a2 2 0 0 0-1.6-2l-2-.3a2 2 0 0 0-1.8.8l-.8 1a12.4 12.4 0 0 1-5.1-5.1l1-.8a2 2 0 0 0 .8-1.8l-.3-2a2 2 0 0 0-2-1.6z"/>', section: 'contacts' },
       ],
       meringue: [
-        { label: 'Состав', href: '#composition', icon: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>' },
-        { label: 'Фото', href: '#gallery', icon: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>' },
-        { label: 'Отзывы', href: '#reviews', icon: '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>' },
-        { label: 'Заказать', href: '#order', icon: '<path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.07 2.18 2 2 0 012.03 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>' },
+        { label: 'Состав', href: '#composition', icon: '<path d="M13.8 2.6H6.8a2 2 0 0 0-2 2v14.8a2 2 0 0 0 2 2h10.4a2 2 0 0 0 2-2V7.6z"/><path d="M13.8 2.6v5h5"/><path d="M15.6 13.2H8.4M15.6 17H8.4"/>' },
+        { label: 'Фото', href: '#gallery', icon: '<rect x="3.4" y="4.6" width="17.2" height="15" rx="2.6"/><circle cx="9" cy="10" r="1.6"/><path d="m20.6 16.4-4.4-4.2-8.8 8"/>' },
+        { label: 'Отзывы', href: '#reviews', icon: '<path d="M12 4.4c4.6 0 8.4 3.1 8.4 7s-3.8 7-8.4 7c-1 0-1.9-.1-2.8-.4l-4.5 1.4 1.3-3.7c-1.2-1.1-2-2.6-2-4.3 0-3.9 3.8-7 8-7z"/>' },
+        { label: 'Заказать', href: '#order', icon: '<path d="M8.4 3.6H5.6A2 2 0 0 0 3.6 5.8c.2 6.8 5.9 12.5 12.7 12.7a2 2 0 0 0 2.1-2v-2.7a2 2 0 0 0-1.6-2l-2-.3a2 2 0 0 0-1.8.8l-.8 1a12.4 12.4 0 0 1-5.1-5.1l1-.8a2 2 0 0 0 .8-1.8l-.3-2a2 2 0 0 0-2-1.6z"/>' },
       ],
       prigorod: [
-        { label: 'Каталог', href: '#catalog', icon: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>', section: 'catalog' },
-        { label: 'Начинки', href: '#fillings', icon: '<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>', section: 'fillings' },
-        { label: 'Отзывы', href: '#reviews', icon: '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>', section: 'reviews' },
-        { label: 'Контакты', href: '#contacts', icon: '<path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.07 2.18 2 2 0 012.03 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>', section: 'contacts' },
+        { label: 'Каталог', href: '#catalog', icon: '<rect x="3.6" y="3.6" width="7.2" height="7.2" rx="2.2"/><rect x="13.2" y="3.6" width="7.2" height="7.2" rx="2.2"/><rect x="3.6" y="13.2" width="7.2" height="7.2" rx="2.2"/><rect x="13.2" y="13.2" width="7.2" height="7.2" rx="2.2"/>', section: 'catalog' },
+        { label: 'Начинки', href: '#fillings', icon: '<path d="M12 20.8c-.3 0-.6-.1-.8-.3C6.4 16.7 3 13.6 3 9.9 3 7 5.1 4.8 7.9 4.8c1.5 0 2.9.7 4.1 2 1.2-1.3 2.6-2 4.1-2 2.8 0 4.9 2.2 4.9 5.1 0 3.7-3.4 6.8-8.2 10.6-.2.2-.5.3-.8.3z"/>', section: 'fillings' },
+        { label: 'Отзывы', href: '#reviews', icon: '<path d="M12 4.4c4.6 0 8.4 3.1 8.4 7s-3.8 7-8.4 7c-1 0-1.9-.1-2.8-.4l-4.5 1.4 1.3-3.7c-1.2-1.1-2-2.6-2-4.3 0-3.9 3.8-7 8-7z"/>', section: 'reviews' },
+        { label: 'Контакты', href: '#contacts', icon: '<path d="M8.4 3.6H5.6A2 2 0 0 0 3.6 5.8c.2 6.8 5.9 12.5 12.7 12.7a2 2 0 0 0 2.1-2v-2.7a2 2 0 0 0-1.6-2l-2-.3a2 2 0 0 0-1.8.8l-.8 1a12.4 12.4 0 0 1-5.1-5.1l1-.8a2 2 0 0 0 .8-1.8l-.3-2a2 2 0 0 0-2-1.6z"/>', section: 'contacts' },
       ],
       'prigorody-list': [
-        { label: 'Наверх', href: '#home', icon: '<polyline points="18 15 12 9 6 15"/>' },
+        { label: 'Наверх', href: '#home', icon: '<path d="m6.2 14.6 5.8-5.8 5.8 5.8"/>' },
       ],
     },
   };
@@ -72,7 +72,7 @@
   // ── SVG хелпер ──
   function icon(paths, size) {
     size = size || 22;
-    return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + paths + '</svg>';
+    return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + paths + '</svg>';
   }
 
   // ── Создать панель навигации ──
@@ -95,7 +95,7 @@
     // CSS
     var style = document.createElement('style');
     style.textContent = [
-      /* ── Основной nav-bar ── */
+      /* ── Основной nav-bar — премиальный минимализм (2026-11-16) ── */
       '.mc-nav{',
         'display:none;',
       '}',
@@ -106,9 +106,9 @@
           'z-index:105;',
           'height:calc(60px + env(safe-area-inset-bottom));',
           'padding-bottom:env(safe-area-inset-bottom);',
-          'background:rgba(253,251,247,0.99);',
-          'border-top:1px solid rgba(201,147,74,0.13);',
-          'box-shadow:0 -2px 20px rgba(61,43,31,0.07);',
+          'background:rgba(252,250,246,0.98);',
+          'border-top:1px solid rgba(201,147,74,0.12);',
+          'box-shadow:0 -2px 20px rgba(61,43,31,0.06);',
           'align-items:stretch;',
           'transition:transform 0.28s cubic-bezier(.4,0,.2,1);',
         '}',
@@ -117,44 +117,50 @@
         /* Кнопки в баре */
         '.mc-btn{',
           'flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;',
-          'gap:3px;padding:6px 4px 4px;',
+          'gap:4px;padding:6px 4px 5px;',
           'background:none;border:none;cursor:pointer;',
-          'color:rgba(154,122,98,0.65);',
-          'font-size:9.5px;font-weight:500;letter-spacing:0.03em;',
+          'color:rgba(133,108,84,0.78);',
+          'font-size:9.5px;font-weight:500;letter-spacing:0.05em;',
           'font-family:Jost,sans-serif;',
           'text-decoration:none;',
           '-webkit-tap-highlight-color:transparent;',
           'touch-action:manipulation;',
-          'transition:color 0.15s,transform 0.12s;',
+          'transition:color 0.22s,transform 0.16s cubic-bezier(.34,1.56,.64,1);',
           'position:relative;',
           'min-height:60px;',
         '}',
-        '.mc-btn:active{transform:scale(0.9);}',
-        '.mc-btn.mc-active{color:var(--gold,#c9934a);}',
-        '.mc-btn.mc-active::before{',
-          'content:"";position:absolute;top:0;left:50%;',
-          'transform:translateX(-50%);',
-          'width:28px;height:2.5px;',
-          'background:var(--gold,#c9934a);',
-          'border-radius:0 0 3px 3px;',
+        '.mc-btn:active{transform:scale(0.92);}',
+        /* Дуотон: активная иконка мягко заливается золотом изнутри */
+        '.mc-btn svg{',
+          'width:23px;height:23px;',
+          'fill:rgba(0,0,0,0);fill-opacity:0;',
+          'transition:fill .3s ease,fill-opacity .3s ease,color .22s ease,transform .3s cubic-bezier(.34,1.56,.64,1);',
         '}',
-        '.mc-btn svg{transition:color 0.15s;}',
-        '.mc-btn.mc-active svg{color:var(--gold,#c9934a);}',
+        '.mc-btn.mc-active{color:#a06a28;}',
+        '.mc-btn.mc-active svg{',
+          'fill:currentColor;fill-opacity:0.22;',
+          'transform:translateY(-1px);',
+        '}',
+        '.mc-btn.mc-active::before{display:none;}',
         '.mc-btn-label{font-size:9.5px;line-height:1;white-space:nowrap;}',
 
-        /* Центральная кнопка заказать */
-        '.mc-btn--order{color:var(--gold,#c9934a);}',
+        /* Центральная кнопка «Заказать» — золотая плитка */
+        '.mc-btn--order{color:#a06a28;}',
         '.mc-btn--order .mc-btn-circle{',
-          'width:46px;height:46px;',
-          'background:linear-gradient(135deg,#c9934a,#d4a76a);',
-          'border-radius:50%;',
+          'width:46px;height:46px;border-radius:15px;',
+          'background:',
+            'radial-gradient(circle at 32% 20%, rgba(255,248,226,0.85), transparent 46%),',
+            'linear-gradient(155deg, #e2b87c 0%, #c9934a 52%, #b07f38 100%);',
           'display:flex;align-items:center;justify-content:center;',
-          'box-shadow:0 4px 14px rgba(201,147,74,0.4);',
-          'margin-top:-12px;margin-bottom:2px;',
-          'transition:transform 0.12s,box-shadow 0.12s;',
+          'box-shadow:',
+            '0 10px 22px rgba(146,96,38,0.28),',
+            '0 0 0 1px rgba(255,252,244,0.35) inset,',
+            '0 -2px 6px rgba(120,76,26,0.16) inset;',
+          'margin-top:-10px;margin-bottom:2px;',
+          'transition:transform 0.18s cubic-bezier(.34,1.56,.64,1),box-shadow 0.18s ease,filter 0.18s ease;',
         '}',
-        '.mc-btn--order:active .mc-btn-circle{transform:scale(0.88);box-shadow:0 2px 8px rgba(201,147,74,0.3);}',
-        '.mc-btn--order svg{color:#fff;width:21px;height:21px;}',
+        '.mc-btn--order:active .mc-btn-circle{transform:scale(0.92);box-shadow:0 4px 12px rgba(146,96,38,0.24);filter:brightness(0.97);}',
+        '.mc-btn--order svg{color:#fffdf7;width:22px;height:22px;}',
         '.mc-btn--order::before{display:none!important;}',
 
         /* Разделитель */
@@ -162,94 +168,95 @@
 
         /* ── SLIDE-UP ПАНЕЛЬ ── */
         '.mc-sheet-backdrop{',
-          'position:fixed;inset:0;z-index:295;', /* [N-3 FIXED] Was 290 = same as --z-overlay; raised to 295 so overlay-level elements don't bleed through */
-          'background:rgba(44,26,16,0);',
+          'position:fixed;inset:0;z-index:295;',
+          'background:rgba(28,16,8,0);',
           'transition:background 0.3s ease;',
           '-webkit-tap-highlight-color:transparent;',
           'pointer-events:none;',
         '}',
         '.mc-sheet-backdrop.mc-open{',
           'pointer-events:auto;',
-          'background:rgba(44,26,16,0.45);',
+          'background:rgba(24,13,6,0.42);',
         '}',
         '.mc-sheet{',
           'position:fixed;',
           'bottom:calc(60px + env(safe-area-inset-bottom));',
           'left:0;right:0;z-index:300;',
           'background:#fdfbf7;',
-          'border-radius:20px 20px 0 0;',
-          'border-top:1px solid rgba(201,147,74,0.15);',
-          'border-left:1px solid rgba(201,147,74,0.08);',
-          'border-right:1px solid rgba(201,147,74,0.08);',
-          'box-shadow:0 -8px 40px rgba(61,43,31,0.14);',
+          'border-radius:24px 24px 0 0;',
+          'border-top:1px solid rgba(201,147,74,0.16);',
+          'box-shadow:0 -12px 44px rgba(45,28,17,0.14);',
           'transform:translateY(100%);',
           'transition:transform 0.38s cubic-bezier(0.32,0.72,0,1);',
           'will-change:transform;',
           'overflow:hidden;',
-          'pointer-events:none;',  /* r09 FIX: closed sheet must NOT intercept taps on bottom-nav below it */
+          'pointer-events:none;',
         '}',
         '.mc-sheet.mc-open{transform:translateY(0);pointer-events:auto;}',
 
         /* Ручка */
         '.mc-sheet-handle{',
-          'width:36px;height:4px;',
-          'background:rgba(201,147,74,0.2);',
-          'border-radius:2px;',
+          'width:38px;height:4px;',
+          'background:rgba(201,147,74,0.22);',
+          'border-radius:99px;',
           'margin:12px auto 0;',
         '}',
 
         /* Заголовок панели */
         '.mc-sheet-head{',
           'display:flex;align-items:center;justify-content:space-between;',
-          'padding:12px 20px 10px;',
+          'padding:14px 22px 8px;',
         '}',
         '.mc-sheet-title{',
-          'font-size:11px;letter-spacing:0.14em;',
-          'text-transform:uppercase;color:rgba(154,122,98,0.6);',
+          'font-size:10.5px;letter-spacing:0.22em;',
+          'text-transform:uppercase;color:rgba(154,122,98,0.75);',
           'font-family:Jost,sans-serif;font-weight:500;',
         '}',
         '.mc-sheet-close{',
-          'width:28px;height:28px;',
-          'border-radius:50%;border:none;',
-          'background:rgba(201,147,74,0.08);',
-          'color:rgba(154,122,98,0.7);',
+          'width:32px;height:32px;',
+          'border-radius:50%;',
+          'border:1px solid rgba(201,147,74,0.22);',
+          'background:rgba(201,147,74,0.06);',
+          'color:rgba(138,113,90,0.85);',
           'display:flex;align-items:center;justify-content:center;',
           'cursor:pointer;',
           '-webkit-tap-highlight-color:transparent;',
-          'font-size:16px;line-height:1;',
+          'transition:transform 0.25s cubic-bezier(.34,1.56,.64,1),background 0.25s ease,color 0.25s ease;',
         '}',
+        '.mc-sheet-close:active{transform:scale(0.92);}',
 
         /* Секция в панели */
-        '.mc-section{padding:0 12px 12px;}',
+        '.mc-section{padding:0 14px 12px;}',
         '.mc-section-label{',
-          'font-size:9px;letter-spacing:0.18em;text-transform:uppercase;',
-          'color:rgba(154,122,98,0.4);',
+          'font-size:9px;letter-spacing:0.22em;text-transform:uppercase;',
+          'color:rgba(154,122,98,0.5);',
           'font-family:Jost,sans-serif;',
-          'padding:0 8px;margin-bottom:4px;',
+          'padding:0 8px;margin:10px 0 6px;',
         '}',
 
         /* Строка-ссылка в панели */
         '.mc-row{',
           'display:flex;align-items:center;gap:14px;',
-          'padding:13px 16px;',
-          'border-radius:14px;',
+          'padding:10px 14px;',
+          'border-radius:16px;',
           'text-decoration:none;',
           'color:var(--text,#2c1a10);',
           'font-family:Jost,sans-serif;',
           '-webkit-tap-highlight-color:transparent;',
-          'transition:background 0.15s;',
+          'transition:background 0.18s,transform 0.18s cubic-bezier(.34,1.56,.64,1);',
           'cursor:pointer;',
-          'background:none;border:none;width:100%;text-align:left;',
+          'background:none;border:1px solid transparent;width:100%;text-align:left;',
         '}',
-        '.mc-row:active{background:rgba(201,147,74,0.08);}',
+        '.mc-row:active{transform:scale(0.985);background:rgba(201,147,74,0.07);}',
         '.mc-row-icon{',
-          'width:38px;height:38px;border-radius:11px;',
-          'background:rgba(201,147,74,0.09);',
+          'width:42px;height:42px;border-radius:13px;',
+          'background:linear-gradient(150deg, rgba(201,147,74,0.12), rgba(201,147,74,0.05));',
           'display:flex;align-items:center;justify-content:center;',
           'flex-shrink:0;',
-          'color:rgba(201,147,74,0.7);',
+          'color:#b07a3a;',
+          'box-shadow:0 0 0 1px rgba(201,147,74,0.12) inset;',
         '}',
-        '.mc-row-icon svg{width:18px;height:18px;}',
+        '.mc-row-icon svg{width:20px;height:20px;}',
         '.mc-row-text{flex:1;min-width:0;}',
         '.mc-row-name{',
           'font-size:14px;font-weight:500;',
@@ -261,13 +268,17 @@
           'margin-top:1px;',
         '}',
         '.mc-row-arrow{',
-          'color:rgba(201,147,74,0.35);',
+          'color:rgba(201,147,74,0.38);',
           'flex-shrink:0;',
         '}',
-        /* Активная строка (текущая страница) */
-        '.mc-row--current .mc-row-icon{background:rgba(201,147,74,0.15);color:var(--gold,#c9934a);}',
-        '.mc-row--current .mc-row-name{color:var(--gold,#c9934a);}',
-        '.mc-row--current .mc-row-arrow{opacity:0;}',
+        /* Текущая строка: инвертированная золотая медальон-иконка (день и ночь) */
+        '.mc-row--current .mc-row-icon,.mc-row--active .mc-row-icon{',
+          'background:linear-gradient(155deg, #d9ad72 0%, #bf8c42 100%);',
+          'color:#fffaf0;',
+          'box-shadow:0 6px 16px rgba(176,122,58,0.32);',
+        '}',
+        '.mc-row--current .mc-row-name,.mc-row--active .mc-row-name{color:#a06a28;}',
+        '.mc-row--current .mc-row-arrow,.mc-row--active .mc-row-arrow{opacity:0.25;}',
 
         /* Divider внутри панели */
         '.mc-sheet-divider{height:1px;background:rgba(201,147,74,0.08);margin:4px 16px;}',
@@ -322,7 +333,7 @@
     orderBtn.className = 'mc-btn mc-btn--order';
     orderBtn.setAttribute('aria-label', 'Заказать');
     orderBtn.innerHTML = '<div class="mc-btn-circle">' +
-      icon('<path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>', 22) +
+      icon('<path d="M6.6 9.4h10.8l-.6 9.6a2.1 2.1 0 0 1-2.1 1.9H9.3a2.1 2.1 0 0 1-2.1-1.9z"/><path d="M9.7 9.4V7.9a2.3 2.3 0 0 1 4.6 0v1.5"/>', 22) +
       '</div><span class="mc-btn-label">Заказать</span>';
     if (typeof openCart === 'function') {
       orderBtn.addEventListener('click', function() {
@@ -351,7 +362,7 @@
     moreBtn.id = 'mcMoreBtn';
     moreBtn.setAttribute('aria-label', 'Ещё');
     moreBtn.setAttribute('aria-expanded', 'false');
-    moreBtn.innerHTML = icon('<circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/>') +
+    moreBtn.innerHTML = icon('<circle cx="12" cy="5.6" r="1.15"/><circle cx="12" cy="12" r="1.15"/><circle cx="12" cy="18.4" r="1.15"/>') +
       '<span class="mc-btn-label">Ещё</span>';
     nav.appendChild(moreBtn);
 
@@ -380,7 +391,7 @@
     var html = '<div class="mc-sheet-handle"></div>';
     html += '<div class="mc-sheet-head">';
     html += '<span class="mc-sheet-title">Навигация</span>';
-    html += '<button type="button" class="mc-sheet-close" id="mcSheetClose" aria-label="Закрыть">✕</button>';
+    html += '<button type="button" class="mc-sheet-close" id="mcSheetClose" aria-label="Закрыть"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="m6.4 6.4 11.2 11.2M17.6 6.4 6.4 17.6"/></svg></button>';
     html += '</div>';
 
     // Секция "Страницы"
@@ -394,7 +405,7 @@
         html += '<span class="mc-row-name">' + g.label + '</span>';
         html += '<span class="mc-row-sub">' + g.sublabel + '</span>';
         html += '</span>';
-        html += '<span class="mc-row-arrow">' + icon('<path d="M9 18l6-6-6-6"/>', 16) + '</span>';
+        html += '<span class="mc-row-arrow">' + icon('<path d="m9.6 5.8 6.2 6.2-6.2 6.2"/>', 16) + '</span>';
         html += '</a>';
       });
       html += '</div>';
@@ -410,7 +421,7 @@
         html += '<a href="' + a.href + '" class="mc-row mc-row-anchor">';
         html += '<span class="mc-row-icon">' + icon(a.icon, 18) + '</span>';
         html += '<span class="mc-row-text"><span class="mc-row-name">' + a.label + '</span></span>';
-        html += '<span class="mc-row-arrow">' + icon('<path d="M9 18l6-6-6-6"/>', 16) + '</span>';
+        html += '<span class="mc-row-arrow">' + icon('<path d="m9.6 5.8 6.2 6.2-6.2 6.2"/>', 16) + '</span>';
         html += '</a>';
       });
       html += '</div>';
