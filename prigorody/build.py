@@ -196,7 +196,7 @@ def render_city(template, p):
 
     # Delivery note block
     note = p.get('delivery_note', '').strip()
-    note_block = f'<p class="delivery-card__note">💡 {note}</p>' if note else ''
+    note_block = f'<p class="delivery-card__note"><svg class="ui-ico-inline" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2h5c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg> {note}</p>' if note else ''
     html = html.replace('{{delivery_note_block}}', note_block)
 
     # Nearby cities

@@ -641,3 +641,24 @@ body{background:var(--cream);color:var(--text)}
 .about-emoji{display:flex;align-items:center;justify-content:center}
 .chip-icon{display:inline-flex;align-items:center}
 .chip-icon svg{width:13px;height:13px;display:block}
+
+/* ═══ [UI-2026-11-15 #2] Unified surface icons (SVG replaces emoji on surfaces) ═══ */
+.feature-icon .ui-ico, .delivery-card__icon .ui-ico, .ingredient-num .ui-ico, .hub-card span .ui-ico { color: var(--gold); }
+.feature-icon .ui-ico { vertical-align: middle; }
+.delivery-card__icon .ui-ico { vertical-align: middle; }
+.ingredient-num .ui-ico { vertical-align: middle; }
+.hub-card span .ui-ico { vertical-align: -4px; }
+.hero-badge .ui-ico { color: currentColor; vertical-align: -2px; margin-right: 3px; }
+
+/* ═══ [UI-2026-11-15 #2b] inline icon alignment + mobile micro-typography ═══ */
+.ui-ico-inline { vertical-align: -2px; }
+.stat-text-heart { color: #cf7168; }
+.stat-text-heart .ui-ico-inline { vertical-align: -3px; }
+.cb-occ-icon svg { display: block; margin: 0 auto; }
+.local-context__landmark-icon .ui-ico-inline { vertical-align: -3px; }
+#calcFill .fill-tag, #calcFillBento .fill-tag, #calcFill3d .fill-tag { font-size: 9px; }
+@media (max-width: 768px) {
+  .hero-trust, .hero-trust-bar { flex-wrap: wrap; justify-content: center; }
+  .hero-trust-count { width: 100%; text-align: center; padding-left: 0; font-size: 11px; }
+  .calc-type-card .opt-label { min-height: 2.2em; }
+}
