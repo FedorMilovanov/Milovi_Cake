@@ -1588,17 +1588,27 @@ function updateCalc() {
   if (badge) badge.classList.toggle('visible', isApprox);
   const summaryEl = document.getElementById('calcSummary');
   if (summaryEl) {
+    const chipSvg = (inner) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${inner}</svg>`;
     const typeNames = { biscuit: 'Бисквитный', bento: 'Бенто', bentomaxi: 'Макси Бенто', cake3d: '3D Торт' };
-    const typeIcons = { biscuit: '🎂', bento: '🍰', bentomaxi: '🍰', cake3d: '✨' };
+    const typeIcons = {
+      biscuit: chipSvg('<path d="M12 2.8V6"/><path d="M5.5 21h13v-6.5a4 4 0 0 0-4-4h-5a4 4 0 0 0-4 4z"/>'),
+      bento: chipSvg('<rect x="4" y="9" width="16" height="11" rx="2.2"/><path d="M4 13h16"/>'),
+      bentomaxi: chipSvg('<rect x="5.5" y="13" width="13" height="7" rx="1.8"/><rect x="7.5" y="6" width="9" height="7" rx="1.8"/>'),
+      cake3d: chipSvg('<path d="M11 4l1.7 4.8L17.5 10.5l-4.8 1.7L11 17l-1.7-4.8L4.5 10.5l4.8-1.7z"/>')
+    };
+    const weightIcon = chipSvg('<rect x="4" y="8" width="16" height="11" rx="2.5"/><path d="M9 8a3 3 0 0 1 6 0"/>');
+    const qtyIcon = chipSvg('<path d="M12 5v14"/><path d="M5 12h14"/>');
+    const fillIcon = chipSvg('<circle cx="11" cy="15" r="5.5"/><path d="M11 9.5c0-2 1.2-3.2 3.2-3.7"/>');
+    const decorIcon = chipSvg('<path d="M12 4l1.7 4.8L18.5 10.5l-4.8 1.7L12 17l-1.7-4.8L5.5 10.5l4.8-1.7z"/>');
     const fillName = fillEl?.querySelector('.opt-label')?.textContent?.trim() || '';
     const decorName = decorEl?.querySelector('.opt-label')?.textContent?.trim() || '';
     let chips = [];
     chips.push({ icon: typeIcons[_cakeType], label: 'Тип', val: typeNames[_cakeType] });
-    if (cfg.hasQty && _cakeType === 'bento') { chips.push({ icon: '⚖️', label: 'Вес', val: '~350 гр / шт' }); chips.push({ icon: '🔢', label: 'Количество', val: _calcQty + ' шт' }); }
-    else if (cfg.hasQty && _cakeType === 'bentomaxi') { chips.push({ icon: '⚖️', label: 'Вес', val: '~1100 гр / шт' }); chips.push({ icon: '🔢', label: 'Количество', val: _calcQty + ' шт' }); }
-    else { const w = _calcWeight; const wStr = w % 1 === 0 ? w + ' кг' : w.toFixed(1) + ' кг'; const guests = Math.round(w / 0.2); chips.push({ icon: '⚖️', label: 'Вес', val: wStr + ' · ~' + guests + ' чел' }); }
-    if (fillName) chips.push({ icon: '🍓', label: 'Начинка', val: fillName });
-    if (_cakeType !== 'bento' && decorName) chips.push({ icon: '🎨', label: 'Декор', val: decorName });
+    if (cfg.hasQty && _cakeType === 'bento') { chips.push({ icon: weightIcon, label: 'Вес', val: '~350 гр / шт' }); chips.push({ icon: qtyIcon, label: 'Количество', val: _calcQty + ' шт' }); }
+    else if (cfg.hasQty && _cakeType === 'bentomaxi') { chips.push({ icon: weightIcon, label: 'Вес', val: '~1100 гр / шт' }); chips.push({ icon: qtyIcon, label: 'Количество', val: _calcQty + ' шт' }); }
+    else { const w = _calcWeight; const wStr = w % 1 === 0 ? w + ' кг' : w.toFixed(1) + ' кг'; const guests = Math.round(w / 0.2); chips.push({ icon: weightIcon, label: 'Вес', val: wStr + ' · ~' + guests + ' чел' }); }
+    if (fillName) chips.push({ icon: fillIcon, label: 'Начинка', val: fillName });
+    if (_cakeType !== 'bento' && decorName) chips.push({ icon: decorIcon, label: 'Декор', val: decorName });
     summaryEl.innerHTML = chips.map(c => `<span class="calc-summary-chip"><span class="chip-icon">${c.icon}</span>${c.label}: <span class="chip-val">${c.val}</span></span>`).join('');
   }
 }
@@ -2428,10 +2438,12 @@ if (typeof updateCalcCartBadge === 'function') {
   if (heroBg && window.DeviceOrientationEvent) {
     var baseGamma = null, baseBeta = null, curX = 0, curY = 0, targetX = 0, targetY = 0, rafId = null, MAX_SHIFT = 14;
     var gyroActive = false, heroInView = false;
+    var lastAnimTs = 0;
     var needsGyroPermission = typeof window.DeviceOrientationEvent.requestPermission === 'function';
     var gyroPermissionGranted = !needsGyroPermission;
     function lerp(a,b,t){ return a+(b-a)*t; }
     function stopParallax(resetTransform) {
+      lastAnimTs = 0;
       if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
       if (resetTransform) {
         baseGamma = null; baseBeta = null;
@@ -2439,11 +2451,16 @@ if (typeof updateCalcCartBadge === 'function') {
         heroBg.style.transform = '';
       }
     }
-    function animateParallax() {
+    function animateParallax(ts) {
       rafId = null;
-      if (!heroInView || document.hidden) return;
-      curX = lerp(curX, targetX, 0.06);
-      curY = lerp(curY, targetY, 0.06);
+      if (!heroInView || document.hidden) { lastAnimTs = 0; return; }
+      if (!ts) ts = performance.now();
+      var dt = lastAnimTs ? Math.min(64, ts - lastAnimTs) : 16.67;
+      lastAnimTs = ts;
+      /* Frame-rate-independent damping: 0.06 per 60fps frame, so settle time is wall-clock stable. */
+      var k = 1 - Math.pow(0.94, dt / 16.67);
+      curX = lerp(curX, targetX, k);
+      curY = lerp(curY, targetY, k);
       if (Math.abs(targetX-curX) < 0.05) curX = targetX;
       if (Math.abs(targetY-curY) < 0.05) curY = targetY;
       heroBg.style.transform = 'translate('+curX.toFixed(2)+'px,'+curY.toFixed(2)+'px) scale(1.06)';
@@ -2452,6 +2469,7 @@ if (typeof updateCalcCartBadge === 'function') {
     function scheduleParallax() {
       if (!heroInView || document.hidden || rafId) return;
       if (Math.abs(targetX-curX) < 0.05 && Math.abs(targetY-curY) < 0.05) return;
+      lastAnimTs = 0;
       rafId = requestAnimationFrame(animateParallax);
     }
     function onOrientation(e) {
