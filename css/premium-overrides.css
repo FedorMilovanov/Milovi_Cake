@@ -1918,12 +1918,10 @@ button[disabled] {
     height: 44px !important;
     margin-top: 0 !important;
     background:
-      radial-gradient(circle at 32% 18%, rgba(255,242,214,.55), transparent 48%),
-      linear-gradient(160deg, #d3a75f 0%, #b5853c 48%, #8e5f24 100%) !important;
+      linear-gradient(160deg, rgba(255,248,232,.20), rgba(201,147,74,.06)) !important;
     box-shadow:
-      0 10px 22px rgba(122,78,24,.35),
-      0 0 0 1px rgba(255,236,196,.32) inset,
-      0 -3px 8px rgba(70,40,8,.28) inset !important;
+      0 6px 16px rgba(120,78,30,.16),
+      0 0 0 1px rgba(255,252,244,.18) inset !important;
     transition: transform .24s cubic-bezier(.34,1.56,.64,1), box-shadow .24s ease, filter .24s ease !important;
   }
   #mcNav .mc-btn--order:active .mc-btn-circle,
