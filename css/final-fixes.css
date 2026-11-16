@@ -61,16 +61,16 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero,
    box-shadow на элементе с radius:0, и он читался как серая рамка вокруг CTA. */
 /* 7.1 Телефон: CTA плоский — на hover меняется только текст и стрелка. */
 @media (max-width: 768px) {
+  /* [r17-fix] hover НЕ убирает фон пилюли: раньше кнопка становилась прозрачной
+     и текст «исчезал». Реагирует только сам текст и стрелка. */
   :root:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
   [data-theme="dark"] .hero .btn-primary.btn-primary--hero:hover,
   .hero .btn-primary.btn-primary--hero:hover {
-    background: transparent !important;
     transform: none !important;
     border: 0 !important;
     outline: 0 !important;
-    box-shadow: none !important;
-    color: inherit;
+    filter: brightness(1.06);
   }
 }
 /* 7.2 Десктоп: кнопка залитая — hover не рисует коробку, только мягкая тень. */
@@ -1140,11 +1140,11 @@ html #contacts .card.card--dark .contact-primary-icon {
     transition: transform .42s cubic-bezier(.16,1,.3,1);
   }
   body.mc-home .hero-actions .btn-primary--hero:hover .btn-hero-go { transform: translateX(4px); }
+  /* [r17-fix] при наведении фон пилюли сохраняется — раньше кнопка
+     становилась прозрачной и надпись «исчезала» на фото. */
   body.mc-home .hero .hero-actions .btn-primary.btn-primary--hero:hover,
   body.mc-home .hero .hero-actions .btn-primary.btn-primary--hero:focus,
   body.mc-home .hero .hero-actions .btn-primary.btn-primary--hero:active {
-    background: none !important;
-    color: var(--brown) !important;
     transform: none !important;
   }
   /* наведение: сам текст уходит в глубокий золотистый тон, рамки нет */
@@ -1618,52 +1618,50 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
   body.mc-home .hero-art {
     display: block;
     position: absolute;
-    top: 50px;
-    right: -17vw;
-    width: 66vw;
+    inset: 0 0 auto 0;
+    width: 100%;
+    height: auto;
     z-index: 0;
     pointer-events: none;
   }
-  /* верхняя кромка арта уходит под шапку без видимого шва */
+  /* [r17-b] Арт живёт на всей площади героя, как на постере-референсе:
+     остаются и солнце на стене, и цветы, и лён внизу. Края не режем
+     прямоугольником, только мягкие световые переходы. */
   body.mc-home .hero-art::before {
     content: '';
     position: absolute;
-    inset: 0 0 auto 0;
-    height: 26%;
-    background: linear-gradient(180deg, var(--cream) 0%, rgba(247, 241, 232, .55) 46%, rgba(247, 241, 232, 0) 100%);
+    inset: 0;
     z-index: 1;
+    background:
+      linear-gradient(100deg, rgba(250, 245, 236, .5) 0%, rgba(250, 245, 236, .3) 22%, rgba(250, 245, 236, .06) 42%, rgba(250, 245, 236, 0) 54%),
+      radial-gradient(128% 46% at 6% 44%, rgba(250, 245, 236, .78) 0%, rgba(250, 245, 236, .46) 46%, rgba(250, 245, 236, 0) 74%),
+      linear-gradient(180deg, rgba(250, 245, 236, .3) 0%, rgba(250, 245, 236, 0) 14%);
     pointer-events: none;
   }
-  [data-theme="dark"] body.mc-home .hero-art::before {
-    background: linear-gradient(180deg, var(--cream) 0%, rgba(14, 9, 5, .55) 46%, rgba(14, 9, 5, 0) 100%);
-  }
-  /* кремовая вуаль: левая часть арта растворяется, текст остаётся на бумаге */
   body.mc-home .hero-art::after {
     content: '';
     position: absolute;
     inset: 0;
     z-index: 2;
-    background: linear-gradient(90deg, var(--cream) 0%, rgba(247, 241, 232, .82) 26%, rgba(247, 241, 232, .18) 46%, rgba(247, 241, 232, 0) 60%);
+    background: linear-gradient(180deg, rgba(247, 241, 232, 0) 46%, rgba(247, 241, 232, .34) 62%, rgba(247, 241, 232, .78) 80%, var(--cream) 94%);
     pointer-events: none;
   }
   body.mc-home .hero-art img {
     display: block;
     width: 100%;
     height: auto;
-    -webkit-mask-image: radial-gradient(74% 60% at 66% 40%, #000 52%, rgba(0, 0, 0, .5) 72%, transparent 90%);
-    mask-image: radial-gradient(74% 60% at 66% 40%, #000 52%, rgba(0, 0, 0, .5) 72%, transparent 90%);
   }
   [data-theme="dark"] body.mc-home .hero-art img {
-    opacity: .6;
-    filter: saturate(.8) brightness(.62) contrast(1.06);
+    filter: saturate(.9) brightness(.74) contrast(1.05);
   }
-  /* в тёмной теме вуаль тёмная: кремовый фон картинки не светит пятном */
+  [data-theme="dark"] body.mc-home .hero-art::before {
+    background:
+      linear-gradient(100deg, rgba(16, 10, 6, .68) 0%, rgba(16, 10, 6, .44) 24%, rgba(16, 10, 6, .1) 44%, rgba(16, 10, 6, 0) 56%),
+      radial-gradient(120% 42% at 4% 46%, rgba(16, 10, 6, .78) 0%, rgba(16, 10, 6, .44) 46%, rgba(16, 10, 6, 0) 72%),
+      linear-gradient(180deg, rgba(16, 10, 6, .34) 0%, rgba(16, 10, 6, 0) 14%);
+  }
   [data-theme="dark"] body.mc-home .hero-art::after {
-    z-index: 2;
-    background: linear-gradient(90deg, var(--cream) 0%, rgba(14, 9, 5, .9) 24%, rgba(14, 9, 5, .42) 46%, rgba(14, 9, 5, .08) 62%);
-  }
-  [data-theme="dark"] body.mc-home .hero {
-    background: linear-gradient(180deg, #17100a 0%, var(--cream) 46%, var(--cream) 100%);
+    background: linear-gradient(180deg, rgba(14, 9, 5, 0) 40%, rgba(14, 9, 5, .4) 58%, rgba(14, 9, 5, .82) 74%, var(--cream) 88%);
   }
   /* кнопка на постере держит нижнюю линию, как в референсе */
   body.mc-home .hero .hero-actions { margin-top: 22px; }
@@ -1671,9 +1669,11 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
 
 @media (max-width: 768px) {
   /* текст держится левее торта, как на постере: длинные строки переносятся */
-  body.mc-home .hero-subtitle .hero-sub-4 { max-width: 66%; }
-  body.mc-home .hero-features { max-width: 76%; }
-  body.mc-home .hero-features .hero-feature-item span { white-space: normal; }
+  body.mc-home .hero-subtitle .hero-sub-4 { max-width: 54%; }
+  body.mc-home .hero-features { max-width: 62%; }
+  /* Подписи фич живут в две строки, как на постере: длинная третья строка
+     уходила на торт. */
+  body.mc-home .hero-features .hero-feature-item span { white-space: normal; max-width: 156px; }
 }
 
 /* [r17] Шапка на мобиле больше не лежит на тёмном фото — фон героя кремовый,
@@ -1727,4 +1727,27 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
 /* [r17] Значки в шторке «Ещё» чуть крупнее — мелкие глифы читались как пятно. */
 @media (max-width: 768px) {
   .mc-sheet .mc-row-icon svg { width: 21px; height: 21px; }
+}
+
+/* [r17-fix] Степпер количества растягивался на всю строку и «2 ШТ» уезжало
+   влево от центра (для «Бенто»/«Макси Бенто»). Раскладываем по краям. */
+.calc-weight-stepper { justify-content: space-between; }
+
+/* [r17-b] Мессенджеры в герое — по центру, как на постере-референсе. */
+@media (max-width: 768px) {
+  body.mc-home .hero-actions .messenger-group--ring {
+    align-self: center;
+    justify-content: center;
+    gap: clamp(20px, 7vw, 34px);
+  }
+}
+
+@media (max-width: 768px) {
+  /* [r17-b] нижние строки героя уходят под торт: рейтинги, подпись, мессенджеры
+     и CTA стоят на чистом свете, как на постере-референсе. */
+  body.mc-home .hero-trust { margin-top: 46px; }
+  body.mc-home .hero-trust .hero-trust-badge { font-size: 12.5px; }
+  body.mc-home .hero-trust .hero-trust-icon--yandex { width: 16px; height: 16px; font-size: 10px; }
+  body.mc-home .hero-trust .hero-trust-rating { font-size: 13px; }
+  body.mc-home .hero-trust .hero-trust-stars { font-size: 9px; letter-spacing: -.6px; }
 }
