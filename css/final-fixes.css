@@ -1661,7 +1661,7 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
       linear-gradient(180deg, rgba(16, 10, 6, .34) 0%, rgba(16, 10, 6, 0) 14%);
   }
   [data-theme="dark"] body.mc-home .hero-art::after {
-    background: linear-gradient(180deg, rgba(14, 9, 5, 0) 40%, rgba(14, 9, 5, .4) 58%, rgba(14, 9, 5, .82) 74%, var(--cream) 88%);
+    background: linear-gradient(180deg, rgba(8, 5, 3, 0) 40%, rgba(8, 5, 3, .4) 58%, rgba(8, 5, 3, .82) 74%, #080503 88%);
   }
   /* кнопка на постере держит нижнюю линию, как в референсе */
   body.mc-home .hero .hero-actions { margin-top: 22px; }
@@ -1669,7 +1669,7 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
 
 @media (max-width: 768px) {
   /* текст держится левее торта, как на постере: длинные строки переносятся */
-  body.mc-home .hero-subtitle .hero-sub-4 { max-width: 54%; }
+  body.mc-home .hero-subtitle .hero-sub-4 { max-width: 100%; }
   body.mc-home .hero-features { max-width: 62%; }
   /* Подписи фич живут в две строки, как на постере: длинная третья строка
      уходила на торт. */
@@ -1745,9 +1745,88 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
 @media (max-width: 768px) {
   /* [r17-b] нижние строки героя уходят под торт: рейтинги, подпись, мессенджеры
      и CTA стоят на чистом свете, как на постере-референсе. */
-  body.mc-home .hero-trust { margin-top: 46px; }
+  body.mc-home .hero-trust { margin-top: 16px; }
   body.mc-home .hero-trust .hero-trust-badge { font-size: 12.5px; }
   body.mc-home .hero-trust .hero-trust-icon--yandex { width: 16px; height: 16px; font-size: 10px; }
   body.mc-home .hero-trust .hero-trust-rating { font-size: 13px; }
   body.mc-home .hero-trust .hero-trust-stars { font-size: 9px; letter-spacing: -.6px; }
 }
+
+/* ═══════════ [r19] Мессенджеры в герое как на постере: только иконки,
+   волосяные разделители и лучи по краям, подпись под ними. ═══════════ */
+@media (max-width: 768px) {
+  body.mc-home .hero-actions .btn-hero-wa::after,
+  body.mc-home .hero-actions .btn-hero-tg::after,
+  body.mc-home .hero-actions .btn-hero-max::after { content: none; }
+
+  body.mc-home .hero-actions .messenger-group--ring {
+    align-self: center;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 4px;
+  }
+  body.mc-home .hero-actions .btn-hero-tg,
+  body.mc-home .hero-actions .btn-hero-max { margin: 0; }
+
+  /* вертикальные волоски между иконками */
+  body.mc-home .hero-actions .btn-hero-tg::before,
+  body.mc-home .hero-actions .btn-hero-max::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -13px;
+    width: 1px;
+    height: 22px;
+    margin-top: -11px;
+    background: rgba(201, 147, 74, .42);
+    pointer-events: none;
+  }
+  /* короткие лучи по краям группы */
+  body.mc-home .hero-actions .btn-hero-wa::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: calc(100% + 17px);
+    width: 34px;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(201, 147, 74, 0), rgba(201, 147, 74, .5));
+    pointer-events: none;
+  }
+  body.mc-home .hero-actions .btn-hero-max::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 17px);
+    width: 34px;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(201, 147, 74, .5), rgba(201, 147, 74, 0));
+    pointer-events: none;
+  }
+
+  /* подпись под иконками */
+  body.mc-home .hero-actions .hero-msg-caption {
+    display: block;
+    order: 2;
+    align-self: center;
+    margin-top: 10px;
+    font-family: 'Jost', sans-serif;
+    font-size: 9.5px;
+    font-weight: 400;
+    letter-spacing: .26em;
+    text-transform: uppercase;
+    color: var(--brown-light);
+    text-align: center;
+  }
+  /* CTA и подсказка съезжают на шаг, чтобы подпись встала между ними */
+  body.mc-home .hero .hero-actions .btn-primary.btn-primary--hero { order: 3; }
+  body.mc-home .hero-actions .btn-price-hint { order: 4; }
+  /* прежняя подпись под рейтингами больше не нужна */
+  body.mc-home .hero-trust .hero-trust-count { display: none; }
+
+  /* заголовок держится левее торта — три строки, как на референсе */
+  body.mc-home .hero-subtitle { max-width: 56%; }
+  body.mc-home .hero-subtitle .hero-sub-1 { display: block; }
+}
+
+/* [r19] подпись под мессенджерами живёт только в мобильном постере */
+.hero-msg-caption { display: none; }
