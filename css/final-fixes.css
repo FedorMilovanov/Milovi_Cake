@@ -1723,3 +1723,8 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
   .hero .btn-primary.btn-primary--hero .btn-hero-go svg { width: 15px; height: 15px; }
   .hero .btn-primary.btn-primary--hero:hover .btn-hero-go { transform: translateX(4px); }
 }
+
+/* [r17] Значки в шторке «Ещё» чуть крупнее — мелкие глифы читались как пятно. */
+@media (max-width: 768px) {
+  .mc-sheet .mc-row-icon svg { width: 21px; height: 21px; }
+}
