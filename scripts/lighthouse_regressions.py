@@ -356,7 +356,7 @@ for public_html in public_html_files():
 
 # Changed shared styles must agree between every consumer and the precache.
 for asset in ('style.css', 'mc-2026.css', 'premium-overrides.css', 'v20-dark-and-fixes.css'):
-    revision = {'style.css': '20261116r20', 'mc-2026.css': '20261116r22', 'premium-overrides.css': '20261116r22', 'v20-dark-and-fixes.css': '20261116r10'}.get(asset, '20261116r06')
+    revision = {'style.css': '20261116r23', 'mc-2026.css': '20261116r22', 'premium-overrides.css': '20261116r22', 'v20-dark-and-fixes.css': '20261116r10'}.get(asset, '20261116r06')
     require(f"'/css/{asset}?v={revision}'," in sw, f'{asset} service-worker revision drifted')
     for public_html in public_html_files():
         refs = re.findall(rf'css/{re.escape(asset)}\?v=([0-9a-z]+)', read(public_html))
