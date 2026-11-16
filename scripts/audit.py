@@ -115,7 +115,7 @@ IMPORTANT_BUDGET = {
     "css/v20-dark-and-fixes.css": 600,
     "css/mc-2026.css": 191,
     "css/style.css": 124,
-    "css/final-fixes.css": 302,  # +5: mobile editorial hero (paper plate, photo fade, flat CTA, headline size)
+    "css/final-fixes.css": 308,  # +11: mobile editorial hero (paper plate, photo fade, flat CTA, headline size/colour/leading)
     "css/gallery/gallery-2026.css": 27,  # dark-theme active-chip override baseline
     "css/v20-fixes.css": 272,
 }

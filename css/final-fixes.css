@@ -845,7 +845,7 @@ html #contacts .card.card--dark .contact-primary-icon {
   /* 1 · Photo plate: our own cake shot, melting into the paper below */
   body.mc-home .hero { background: var(--cream); }
   body.mc-home .hero-photo-bg {
-    height: min(72vw, 340px);
+    height: min(66vw, 320px);
     min-height: 0;
     max-height: none;
   }
@@ -866,14 +866,15 @@ html #contacts .card.card--dark .contact-primary-icon {
 
   /* 3 · Masthead: the h1 becomes the small letterspaced line above the headline */
   body.mc-home .hero-title {
-    order: 1;
-    margin: 0 0 12px;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(15px, 4.4vw, 18px);
-    font-weight: 600;
-    line-height: 1.2;
-    letter-spacing: .24em;
-    text-transform: uppercase;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    clip-path: inset(50%);
+    font-size: 1px;
     color: var(--brown);
     text-shadow: none;
   }
@@ -906,13 +907,14 @@ html #contacts .card.card--dark .contact-primary-icon {
     order: 2;
     display: block;
     max-width: none;
-    margin: 0 0 14px;
+    margin: 0 0 12px;
     font-family: 'Cormorant Garamond', serif;
     font-size: clamp(33px, 10.4vw, 46px) !important;
     font-weight: 500;
-    line-height: 1.03;
-    letter-spacing: -.004em;
-    color: var(--brown);
+    line-height: 1.03 !important;
+    letter-spacing: -.004em !important;
+    color: var(--brown) !important;
+    text-shadow: none !important;
     opacity: 1;
   }
   body.mc-home .hero-subtitle .hero-sub-1,
@@ -942,7 +944,7 @@ html #contacts .card.card--dark .contact-primary-icon {
   body.mc-home .hero-features {
     order: 3;
     gap: 10px;
-    margin: 0 0 18px;
+    margin: 0 0 14px;
   }
   body.mc-home .hero-features .hero-feature-item { gap: 14px; }
   body.mc-home .hero-features .hero-feature-item svg {
@@ -1007,21 +1009,45 @@ html #contacts .card.card--dark .contact-primary-icon {
   /* 7 · Action stack: messengers first, then the big serif «ЗАКАЗАТЬ» + arrow */
   body.mc-home .hero-actions {
     order: 5;
-    gap: 18px;
-    margin-top: 26px;
+    gap: 16px;
+    margin-top: 20px;
     flex-direction: column;
     align-items: stretch;
   }
-  body.mc-home .hero-actions .messenger-group { order: 1; justify-content: flex-start; }
-  body.mc-home .hero-actions .btn-primary.btn-primary--hero {
+  body.mc-home .hero-actions .messenger-group {
+    order: 1;
+    justify-content: flex-start;
+    margin-bottom: 15px;
+  }
+  body.mc-home .hero-actions .btn-hero-tg { margin: 0 18px; }
+  body.mc-home .hero-actions .btn-hero-max { margin-right: 18px; }
+  body.mc-home .hero-actions .btn-hero-messenger { position: relative; }
+  body.mc-home .hero-actions .btn-hero-messenger::after {
+    position: absolute;
+    left: 50%;
+    bottom: -13px;
+    transform: translateX(-50%);
+    font-family: 'Jost', sans-serif;
+    font-size: 8.5px;
+    font-weight: 400;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--brown-light);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  body.mc-home .hero-actions .btn-hero-wa::after { content: 'WhatsApp'; }
+  body.mc-home .hero-actions .btn-hero-tg::after { content: 'Telegram'; }
+  body.mc-home .hero-actions .btn-hero-max::after { content: 'MAX'; }
+  body.mc-home .hero .hero-actions .btn-primary.btn-primary--hero {
     order: 2;
     width: 100%;
     height: auto;
     min-height: 0;
     padding: 0;
     border-radius: 0;
-    background: none;
-    color: var(--brown);
+    background: none !important;
+    color: var(--brown) !important;
     align-items: flex-start;
     justify-content: flex-start;
     gap: 0;
@@ -1033,9 +1059,9 @@ html #contacts .card.card--dark .contact-primary-icon {
     text-transform: uppercase;
     box-shadow: none !important;
   }
-  body.mc-home .hero-actions .btn-primary.btn-primary--hero:hover,
-  body.mc-home .hero-actions .btn-primary.btn-primary--hero:focus,
-  body.mc-home .hero-actions .btn-primary.btn-primary--hero:active {
+  body.mc-home .hero .hero-actions .btn-primary.btn-primary--hero:hover,
+  body.mc-home .hero .hero-actions .btn-primary.btn-primary--hero:focus,
+  body.mc-home .hero .hero-actions .btn-primary.btn-primary--hero:active {
     background: none !important;
     color: var(--brown) !important;
     transform: none !important;
@@ -1063,19 +1089,28 @@ html #contacts .card.card--dark .contact-primary-icon {
     position: absolute;
     top: 50%;
     left: 0;
-    right: 16px;
+    right: 11px;
     height: 1px;
-    background: linear-gradient(90deg, rgba(201, 147, 74, .10) 0%, rgba(201, 147, 74, .9) 16%, rgba(201, 147, 74, .9) 100%);
+    background: linear-gradient(90deg, rgba(201, 147, 74, .08) 0%, rgba(201, 147, 74, .55) 18%, rgba(201, 147, 74, .9) 100%);
   }
   body.mc-home .hero-actions .btn-hero-arrow::after {
     content: '';
     position: absolute;
-    top: calc(50% - 5px);
-    right: 1px;
-    width: 9px;
-    height: 9px;
-    border-top: 1px solid rgba(201, 147, 74, .9);
-    border-right: 1px solid rgba(201, 147, 74, .9);
+    top: calc(50% - 3.5px);
+    right: 4px;
+    width: 7px;
+    height: 7px;
+    border-top: 1px solid rgba(201, 147, 74, .92);
+    border-right: 1px solid rgba(201, 147, 74, .92);
     transform: rotate(45deg);
+  }
+
+  /* short phones (<=820px tall): tighter rhythm so the CTA clears the bar */
+  @media (max-height: 820px) {
+    body.mc-home .hero-photo-bg { height: min(58vw, 280px); }
+    body.mc-home .hero-features { gap: 8px; margin-bottom: 10px; }
+    body.mc-home .hero-actions { margin-top: 14px; gap: 12px; }
+    body.mc-home .hero-trust .hero-trust-count { margin-top: 4px; }
+    body.mc-home .hero-actions .btn-hero-arrow { margin-top: 8px; }
   }
 }
