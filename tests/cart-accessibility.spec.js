@@ -29,7 +29,7 @@ async function waitForPaint(page, selector) {
   await page.waitForFunction((sel) => {
     const element = document.querySelector(sel);
     if (!element) return false;
-    // собственную прозрачность элемента не ждём: у .btn-price-hint это
+    // собственную прозрачность элемента не ждём: у подсказок цен это
     // осознанные 0.85, и раскрытие контейнера тут ни при чём
     for (let node = element.parentElement; node; node = node.parentElement) {
       if (Number(getComputedStyle(node).opacity) < 1) return false;
@@ -111,11 +111,11 @@ test('home calculator hints retain AA contrast in both themes', async ({ page })
   for (const theme of ['light', 'dark']) {
     await page.addInitScript((mode) => { localStorage.setItem('mc_theme', mode); }, theme);
     await page.goto('/', { waitUntil: 'domcontentloaded' });
+    // [2026-11-16r16] С главной CTA убрана подсказка «от 1 600 ₽» — остался
+    // только сам текст «Выбрать торт», его и меряем.
     for (const selector of ['.calc-type-card.selected .calc-type-hint',
       '.calc-type-card:not(.selected) .calc-type-hint', '#guestsPopup',
-      '.hero .btn-primary--hero', '#fillSheetSelect',
-      // цена-подсказка на главной кнопке: opacity < 1 на мелком кегле
-      '.hero .btn-price-hint']) {
+      '.hero .btn-primary--hero', '#fillSheetSelect']) {
       expect(await contrast(page, selector), `${theme} ${selector}`).toBeGreaterThanOrEqual(4.5);
     }
     await page.locator('.hero .btn-primary--hero').hover();

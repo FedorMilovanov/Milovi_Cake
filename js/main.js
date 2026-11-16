@@ -1073,6 +1073,18 @@ function renderCatalogNav() {
 function scrollToProduct(id) {
   const card = document.getElementById('card-' + id);
   if (!card) return;
+  const grid = document.getElementById('catalogGrid');
+  // [2026-11-16r16] Владелец: на телефоне панель товаров листается на месте —
+  // чип ведёт карусель, а не прокручивает страницу вниз.
+  if (grid && window.innerWidth <= 768) {
+    const gridBox = grid.getBoundingClientRect();
+    const cardBox = card.getBoundingClientRect();
+    const padLeft = parseFloat(getComputedStyle(grid).paddingLeft) || 0;
+    const target = grid.scrollLeft + (cardBox.left - gridBox.left) - padLeft;
+    grid.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+    document.querySelectorAll('.catalog-nav-item').forEach(el => { el.classList.toggle('active', el.dataset.target === 'card-' + id); });
+    return;
+  }
   const hdr = document.getElementById('siteHeader');
   const headerHeight = hdr ? hdr.offsetHeight : 72;
   const nav = document.getElementById('catalogNav');
@@ -1084,6 +1096,36 @@ function scrollToProduct(id) {
   window.scrollTo({ top, behavior: 'smooth' });
   document.querySelectorAll('.catalog-nav-item').forEach(el => { el.classList.toggle('active', el.dataset.target === 'card-' + id); });
   // Active state is observer-owned.
+}
+
+// [2026-11-16r16] Свайп панели синхронизирует активный чип сверху.
+function initCatalogSwipeSync() {
+  const grid = document.getElementById('catalogGrid');
+  if (!grid) return;
+  let raf = null;
+  const sync = () => {
+    if (window.innerWidth > 768) return;
+    const left = grid.scrollLeft;
+    const center = left + grid.clientWidth / 2;
+    let best = null;
+    let bestDist = Infinity;
+    Array.prototype.forEach.call(grid.children, card => {
+      if (!card.id) return;
+      const box = card.getBoundingClientRect();
+      const gridBox = grid.getBoundingClientRect();
+      const cardCenter = left + (box.left - gridBox.left) + box.width / 2;
+      const dist = Math.abs(cardCenter - center);
+      if (dist < bestDist) { bestDist = dist; best = card; }
+    });
+    if (!best) return;
+    document.querySelectorAll('.catalog-nav-item').forEach(el => { el.classList.toggle('active', el.dataset.target === best.id); });
+  };
+  grid.addEventListener('scroll', () => {
+    if (raf) return;
+    raf = requestAnimationFrame(() => { raf = null; sync(); });
+  }, { passive: true });
+  window.addEventListener('resize', sync);
+  sync();
 }
 
 function initCatalogNavScroll() {
@@ -1253,7 +1295,7 @@ function hydrateCatalog() {
   renderCatalog();
   if (typeof requestIdleCallback !== 'undefined') requestIdleCallback(wireProductLightbox, { timeout: 500 });
   else requestAnimationFrame(() => requestAnimationFrame(wireProductLightbox));
-  setTimeout(initCatalogNavScroll, 500);
+  setTimeout(() => { initCatalogNavScroll(); initCatalogSwipeSync(); }, 500);
   initCatalogSliderVisibility();
 }
 
