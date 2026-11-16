@@ -323,8 +323,14 @@
     nav.className = 'mc-nav';
     nav.setAttribute('aria-label', 'Навигация');
 
+    // [2026-11-16f] Owner mockup: золотая медаль «Заказать» — центр бара,
+    // поэтому половина якорей идёт до неё, половина — после.
+    var barSplit = Math.ceil(barItems.length / 2);
+    var leadingItems = barItems.slice(0, barSplit);
+    var trailingItems = barItems.slice(barSplit);
+
     // Пункты якорей
-    barItems.forEach(function(item) {
+    function appendAnchorButton(item) {
       var el;
       el = document.createElement('a');
       el.href = item.href;
@@ -340,12 +346,9 @@
         }
       });
       nav.appendChild(el);
-    });
-
-    // Разделитель перед центральной кнопкой
-    if (barItems.length > 0) {
-      nav.appendChild(Object.assign(document.createElement('div'), { className: 'mc-sep' }));
     }
+
+    leadingItems.forEach(appendAnchorButton);
 
     // Центральная кнопка — заказать (WA) или открыть корзину
     var orderBtn = document.createElement('button'); orderBtn.type = 'button';
@@ -373,7 +376,7 @@
     }
     nav.appendChild(orderBtn);
 
-    nav.appendChild(Object.assign(document.createElement('div'), { className: 'mc-sep' }));
+    trailingItems.forEach(appendAnchorButton);
 
     // Кнопка "Ещё" — открывает панель
     var moreBtn = document.createElement('button'); moreBtn.type = 'button';

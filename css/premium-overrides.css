@@ -1886,8 +1886,9 @@ button[disabled] {
   }
   #mcNav .mc-btn-label,
   .mc-nav .mc-btn-label {
-    font-size: 9.5px !important;
-    letter-spacing: .05em !important;
+    font-size: 9px !important;
+    letter-spacing: .12em !important;
+    text-transform: uppercase;
     transform: translateY(0);
     transition: transform .22s ease, opacity .22s ease !important;
   }
