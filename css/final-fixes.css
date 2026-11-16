@@ -1270,3 +1270,11 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
     white-space: normal;
   }
 }
+
+/* ══ FIX 2026-11-16 (r13) · «ВЫБРАТЬ ТОРТ» ведёт к самим тортам ══
+   Раньше кнопка вела на #catalog — за 400px до первой карточки: на экран
+   попадали заголовок и чипы, а фото торта оставалось под нижним баром.
+   Теперь якорь — сетка товаров (#catalogGrid), с отступом под fixed-шапку. */
+#catalogGrid {
+  scroll-margin-top: 92px;
+}

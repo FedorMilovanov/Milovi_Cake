@@ -1065,7 +1065,7 @@ function renderCatalogNav() {
   nav.innerHTML = products.map(p => {
     // [UI-2026-11-16] Owner: no thumbnail tiles — slim text pills only.
     const shortName = shortNames[p.name] || p.name;
-    const shortPrice = p.price.replace('от ', '').replace(' ₽/кг', '₽/кг').replace(' ₽/шт', '₽');
+    const shortPrice = p.price.replace('от ', '').replace(' ₽/шт', ' ₽').replace(/\s+/g, ' ').replace(' /', ' ');
     return `<button class="catalog-nav-item" data-target="card-${p.id}" onclick="scrollToProduct(${p.id})" type="button"><span class="catalog-nav-label">${shortName}</span><span class="catalog-nav-price">${shortPrice}</span></button>`;
   }).join('');
 }
