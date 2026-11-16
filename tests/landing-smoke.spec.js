@@ -1123,7 +1123,14 @@ async function assertContrast(page, selector, minimum = 4.5) {
       let background = [255, 255, 255, 1];
       const layers = [];
       while (current) {
-        const color = parse(getComputedStyle(current).backgroundColor);
+        const style = getComputedStyle(current);
+        let color = parse(style.backgroundColor);
+        // Градиент рисует собственную поверхность: у «золотой»/тёмной кнопки
+        // background-color прозрачный, а фон задан background-image. Берём первый
+        // цветовой стоп, иначе проба сравнивала текст с фоном страницы.
+        if ((!color || color[3] === 0) && /gradient\(/i.test(style.backgroundImage)) {
+          color = parse(style.backgroundImage);
+        }
         if (color && color[3] > 0) layers.push(color);
         current = current.parentElement;
       }

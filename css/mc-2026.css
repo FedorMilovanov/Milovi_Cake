@@ -331,28 +331,43 @@
 
 @media (max-width: 360px){
   
+  /* [r24] Владелец: начинки — не простыня в один столбец, а плотная сетка 2×N. */
   #calcFill.calc-options,
   #calcFillBento.calc-options,
-  #calcFill3d.calc-options,
+  #calcFill3d.calc-options{
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
   #calcDecor.calc-options{
-    grid-template-columns: 1fr !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
   }
   #calcFill .opt-label,
   #calcFillBento .opt-label,
   #calcFill3d .opt-label{
-    -webkit-line-clamp: unset !important;
-    line-clamp: unset !important;
-    overflow: visible !important;
-    white-space: normal !important;
-    font-size: 13px !important;
+    -webkit-line-clamp: unset;
+    line-clamp: unset;
+    overflow: visible;
+    white-space: normal;
+    font-size: 13px;
   }
   #calcFill .calc-opt,
   #calcFillBento .calc-opt,
   #calcFill3d .calc-opt{
-    height: auto !important;
-    min-height: 48px !important;
-    padding: 10px 12px !important;
+    height: auto;
+    min-height: 40px;
+    padding: 7px 9px;
+    border-radius: 12px;
   }
+  #calcFill .fill-tag,
+  #calcFillBento .fill-tag,
+  #calcFill3d .fill-tag{
+    font-size: 7.5px;
+    padding: 1px 4px;
+  }
+  #calcFill .opt-inner,
+  #calcFillBento .opt-inner,
+  #calcFill3d .opt-inner{ gap: 3px; }
 }
 
 
@@ -361,8 +376,35 @@
     #calcFill.calc-options,
     #calcFillBento.calc-options,
     #calcFill3d.calc-options{
-      grid-template-columns: 1fr;
+      /* [r24] плотная сетка вместо одноколоночной простыни */
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
     }
+    #calcFill .calc-opt,
+    #calcFillBento .calc-opt,
+    #calcFill3d .calc-opt{
+      height: auto;
+      min-height: 40px;
+      padding: 7px 9px;
+      border-radius: 12px;
+    }
+    #calcFill .opt-label,
+    #calcFillBento .opt-label,
+    #calcFill3d .opt-label{
+      font-size: 12px;
+      line-height: 1.22;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+    }
+    #calcFill .fill-tag,
+    #calcFillBento .fill-tag,
+    #calcFill3d .fill-tag{
+      font-size: 7.5px;
+      padding: 1px 4px;
+    }
+    #calcFill .opt-inner,
+    #calcFillBento .opt-inner,
+    #calcFill3d .opt-inner{ gap: 3px; }
   }
 }
 

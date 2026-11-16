@@ -1865,3 +1865,53 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
 /* Сдвиг торта вправо запечён в сам постер (img/hero-poster-cake.jpg|webp):
    торт уходит за правый край, надписи остаются на чистом свете. */
 
+
+/* ══════════════════════════════════════════════════════════════
+   [r24] Стрелки карусели: тап-зона 44×44 при прежнем «камешке» 34 px.
+   Владельцу нравился лёгкий стеклянный диск — сохраняем его на ::before,
+   а сама кнопка становится полноразмерной целью для пальца (WCAG 2.5.5).
+   ══════════════════════════════════════════════════════════════ */
+.product-card .slider-wrap > .slide-btn{
+  width:44px;
+  height:44px;
+  background:none;
+  border:0;
+  box-shadow:none;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+}
+.product-card .slider-wrap > .slide-btn::before{
+  content:'';
+  position:absolute;
+  z-index:-1;
+  inset:5px;
+  border-radius:50%;
+  background:rgba(255,251,244,.74);
+  border:1px solid rgba(201,147,74,.42);
+  box-shadow:0 4px 14px rgba(60,36,16,.18), inset 0 1px 0 rgba(255,255,255,.72);
+  -webkit-backdrop-filter:blur(6px);
+  backdrop-filter:blur(6px);
+  transition:background-color .18s ease, border-color .18s ease;
+}
+@media (hover: hover) and (pointer: fine){
+  .product-card .slider-wrap > .slide-btn:hover{ background:none; border-color:transparent; }
+  .product-card .slider-wrap > .slide-btn:hover::before{
+    background:rgba(201,147,74,.90);
+    border-color:rgba(255,255,255,.64);
+  }
+}
+[data-theme="dark"] .product-card .slider-wrap > .slide-btn{
+  background:none !important;
+  border-color:transparent !important;
+  box-shadow:none !important;
+}
+[data-theme="dark"] .product-card .slider-wrap > .slide-btn::before{
+  background:rgba(26,18,9,.66);
+  border-color:rgba(212,167,106,.46);
+  box-shadow:0 4px 14px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08);
+}
+@media (hover: hover) and (pointer: fine){
+  [data-theme="dark"] .product-card .slider-wrap > .slide-btn:hover::before{
+    background:rgba(212,167,106,.75);
+  }
+}

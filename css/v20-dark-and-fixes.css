@@ -211,11 +211,18 @@
   background: #251a0c !important;
   border-color: rgba(212,167,106,0.22) !important;
   color: var(--gold) !important;
+  /* [r24] были квадратные плашки внутри круглой пилюли — теперь круги */
+  border-radius: 50% !important;
 }
 
 [data-theme="dark"] .calc-stepper-btn:hover {
   background: var(--gold) !important;
   color: var(--cream) !important;
+}
+
+/* [r24] «−» в disabled (мин. вес) на тёмной плашке был почти невидим */
+[data-theme="dark"] .calc-stepper-btn:disabled {
+  opacity: .48 !important;
 }
 
 [data-theme="dark"] #calcFixedWeightNote {
@@ -1886,3 +1893,8 @@ html[data-theme="dark"] .cb-occ,
   box-shadow: 0 18px 46px rgba(0,0,0,.46), 0 0 0 1px rgba(232,184,122,.045) inset !important;
 }
 
+/* [r24] контраст мелкого текста в ночной теме: золото/коричневый из светлой
+   палитры на тёмном фоне не дотягивали до 4.5:1 */
+[data-theme="dark"] .catalog-nav-price { color: rgba(240, 222, 196, .78); }
+[data-theme="dark"] .catalog-nav-item.active .catalog-nav-price { color: var(--gold-light, #d4a76a); }
+[data-theme="dark"] .map-badge-rating { color: var(--gold-light, #d4a76a); }

@@ -68,14 +68,15 @@ async function waitForMobileAppShell(page) {
     const rect = nav.getBoundingClientRect();
     const rightGap = window.innerWidth - rect.right;
     const bottomGap = window.innerHeight - rect.bottom;
+    // [r24] Нижний док — полноширинная панель с безопасными отступами снизу,
+    // а не «парящая» пилюля с боковыми полями: проверяем текущую геометрию.
     return style.position === 'fixed' &&
       style.display !== 'none' &&
       style.visibility === 'visible' &&
-      rect.left >= 8 && rect.left <= 16 &&
-      rightGap >= 8 && rightGap <= 16 &&
-      bottomGap >= 8 && bottomGap <= 16 &&
-      rect.width >= window.innerWidth - 32 &&
-      rect.width <= window.innerWidth - 16;
+      rect.left >= -1 && rect.left <= 2 &&
+      rightGap >= -1 && rightGap <= 2 &&
+      bottomGap >= -1 && bottomGap <= 2 &&
+      rect.width >= window.innerWidth - 2;
   });
 }
 
@@ -283,14 +284,13 @@ test.describe('contact, privacy and mobile application contracts', () => {
       };
     });
     expect(initial.visibleNavs).toEqual(['mcNav']);
-    expect(initial.left).toBeGreaterThanOrEqual(8);
-    expect(initial.left).toBeLessThanOrEqual(16);
-    expect(initial.rightGap).toBeGreaterThanOrEqual(8);
-    expect(initial.rightGap).toBeLessThanOrEqual(16);
-    expect(initial.bottomGap).toBeGreaterThanOrEqual(8);
-    expect(initial.bottomGap).toBeLessThanOrEqual(16);
-    expect(initial.width).toBeGreaterThanOrEqual(initial.viewport - 32);
-    expect(initial.width).toBeLessThanOrEqual(initial.viewport - 16);
+    expect(initial.left).toBeGreaterThanOrEqual(-1);
+    expect(initial.left).toBeLessThanOrEqual(2);
+    expect(initial.rightGap).toBeGreaterThanOrEqual(-1);
+    expect(initial.rightGap).toBeLessThanOrEqual(2);
+    expect(initial.bottomGap).toBeGreaterThanOrEqual(-1);
+    expect(initial.bottomGap).toBeLessThanOrEqual(2);
+    expect(initial.width).toBeGreaterThanOrEqual(initial.viewport - 2);
 
     await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight * 0.65, behavior: 'instant' }));
     await page.waitForTimeout(250);
@@ -305,8 +305,8 @@ test.describe('contact, privacy and mobile application contracts', () => {
         pointerEvents: style.pointerEvents,
       };
     });
-    expect(afterScroll.bottomGap).toBeGreaterThanOrEqual(8);
-    expect(afterScroll.bottomGap).toBeLessThanOrEqual(16);
+    expect(afterScroll.bottomGap).toBeGreaterThanOrEqual(-1);
+    expect(afterScroll.bottomGap).toBeLessThanOrEqual(2);
     expect(afterScroll.display).not.toBe('none');
     expect(afterScroll.visibility).toBe('visible');
     expect(afterScroll.pointerEvents).not.toBe('none');

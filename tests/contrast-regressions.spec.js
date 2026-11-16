@@ -39,7 +39,13 @@ async function assertContrast(page, selector, minimum = 4.5) {
       const layers = [];
       let node = element;
       while (node) {
-        const color = parse(getComputedStyle(node).backgroundColor);
+        const style = getComputedStyle(node);
+        let color = parse(style.backgroundColor);
+        // Фон может быть нарисован градиентом (background-image) при прозрачном
+        // background-color — тогда берём первый цветовой стоп.
+        if (color[3] === 0 && /gradient\(/i.test(style.backgroundImage)) {
+          color = parse(style.backgroundImage);
+        }
         if (color[3] > 0) layers.push(color);
         if (color[3] >= 0.999) break;
         node = node.parentElement;
