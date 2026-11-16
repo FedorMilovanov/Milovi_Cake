@@ -2509,10 +2509,11 @@ html:not([data-theme="dark"]) .theme-toggle > .theme-icon--sun  { display: none 
 html[data-theme="dark"] .theme-toggle > .theme-icon--moon { display: none !important; }
 html[data-theme="dark"] .theme-toggle > .theme-icon--sun  { display: block !important; }
 .hero-actions .btn-hero-messenger {
-  width: 68px !important; height: 68px !important; min-width: 68px !important;
+  width: 48px !important; height: 48px !important; min-width: 48px !important;
   padding: 0 !important; border-radius: 50% !important;
 }
-.hero-actions .btn-hero-messenger svg { width: 68px !important; height: 68px !important; overflow: visible; }
+/* [r22] Иконки — исходные брендовые SVG 48×48 (как до редизайна). */
+.hero-actions .btn-hero-messenger svg { width: 48px !important; height: 48px !important; overflow: visible; }
 @media (hover:hover) and (pointer:fine) {
   .hero-actions .btn-hero-messenger:hover .hero-flat-text,
   .hero-actions .btn-hero-messenger:hover [id^="flat-text-"] { opacity: 1 !important; transform: translateY(-13px) scale(1.04) !important; }

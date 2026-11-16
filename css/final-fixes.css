@@ -1758,8 +1758,8 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
   body.mc-home .hero-actions .messenger-group--ring {
     align-self: center;
     justify-content: center;
-    gap: 24px;
-    margin-bottom: 4px;
+    gap: 22px;
+    margin-bottom: 0;
   }
   body.mc-home .hero-actions .btn-hero-tg,
   body.mc-home .hero-actions .btn-hero-max { margin: 0; }
@@ -1770,7 +1770,8 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
     content: '';
     position: absolute;
     top: 50%;
-    left: -13px;
+    /* [r22] волосок ровно посередине между значками (было -13px — лип к левому) */
+    left: -6px;
     width: 1px;
     height: 22px;
     margin-top: -11px;
@@ -1800,13 +1801,12 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
   }
 
   /* подпись под иконками */
-  /* [r21] Как на референсе: подпись стоит НАД иконками, сразу под рейтингами,
-     а не под ними. */
+  /* [r22] Подпись снова ПОД иконками, но вплотную — не «висит» внизу. */
   body.mc-home .hero-actions .hero-msg-caption {
     display: block;
-    order: -1;
+    order: 2;
     align-self: center;
-    margin-top: 0;
+    margin-top: -6px;
     margin-bottom: 0;
     font-family: 'Jost', sans-serif;
     font-size: 9.5px;
@@ -1830,21 +1830,7 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
 /* [r19] подпись под мессенджерами живёт только в мобильном постере */
 .hero-msg-caption { display: none; }
 
-/* ════ r20 — messenger ring icons are compact glyphs now (38px svg inside
-   a 38px pill). premium-overrides still forces 68px for the old label rings,
-   which blew the icons up to ~62px and made them collide. ════ */
-.hero-actions .btn-hero-messenger svg,
-.hero.hero-city .btn-hero-messenger svg,
-.hero-city .hero-actions .btn-hero-messenger svg{
-  width:40px !important;
-  height:40px !important;
-  overflow:visible;
-}
-@media (max-width:480px){
-  .hero-actions .btn-hero-messenger svg,
-  .hero.hero-city .btn-hero-messenger svg,
-  .hero-city .hero-actions .btn-hero-messenger svg{ width:38px !important; height:38px !important; }
-}
+
 
 /* ════════════════════════════════════════════
    [r20] Card photo arrows — the owner asked for the lighter, jewel-like

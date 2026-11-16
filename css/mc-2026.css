@@ -1123,19 +1123,13 @@ button:focus-visible, a:focus-visible {
    No important-flags — uses higher specificity instead.
    ════════════════════════════════════════════════════════════════ */
 @media (hover:hover) and (pointer:fine){
-  /* F1 — refined hairline gold inset that tightens toward the edge on hover */
-  .catalog-grid .product-card::after{
-    inset:8px;
-    border:1px solid rgba(232,184,122,.0);
-    border-radius:calc(var(--radius) - 6px);
-    transition:inset .55s cubic-bezier(.22,1,.36,1), border-color .45s ease, opacity .45s ease;
-    opacity:0;
-    z-index:6;
-  }
+  /* [r22] Владелец: «полоска при наведении мышки до сих пор не убрана».
+     Золотой hairline внутри карточки снят полностью — на hover никакой рамки. */
+  .catalog-grid .product-card::after,
   .catalog-grid .product-card:hover::after{
-    inset:6px;
-    border-color:rgba(232,184,122,.55);
-    opacity:1;
+    content:none;
+    display:none;
+    border:0;
   }
   /* F3 — deeper, warmer glow ring + smooth lift (refines the base hover) */
   .catalog-grid .product-card{

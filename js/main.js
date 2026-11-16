@@ -2510,10 +2510,9 @@ if (typeof updateCalcCartBadge === 'function') {
       b.style.setProperty('box-shadow', 'none', 'important');
     });
     document.querySelectorAll('.hero-actions .btn-hero-messenger svg').forEach(function (s) {
-      // [r20] The glyphs are now pre-scaled inside the 24-unit viewBox and the
-      // ring is part of the SVG, so no extra CSS scale — a scale here used to
-      // blow the icons up past their 38px pill and the trio collided.
-      s.style.setProperty('transform', 'none', 'important');
+      // [r22] Исходные брендовые SVG (48-unit viewBox, без колец). Все три
+      // глифа уже приведены к одному размеру в разметке, поэтому масштаб общий.
+      s.style.setProperty('transform', 'scale(1.7)', 'important');
     });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', paint);
