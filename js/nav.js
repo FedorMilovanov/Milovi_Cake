@@ -177,9 +177,6 @@
           'border-color:rgba(232,190,120,0.22);',
         '}',
         '.mc-btn--order:active .mc-btn-circle{transform:scale(0.94);filter:brightness(0.97);}',
-        '.mc-btn--order svg{color:#b07a3a;width:22px;height:22px;}',
-        'html[data-theme="dark"] .mc-btn--order svg{color:#d9b072;}',
-        '.mc-btn--order::before{display:none!important;}',
 
         /* Разделитель */
         '.mc-sep{width:1px;background:rgba(201,147,74,0.1);margin:14px 0;flex-shrink:0;}',
@@ -353,10 +350,11 @@
     // Центральная кнопка — заказать (WA) или открыть корзину
     var orderBtn = document.createElement('button'); orderBtn.type = 'button';
     orderBtn.className = 'mc-btn mc-btn--order';
-    orderBtn.setAttribute('aria-label', 'Заказать');
-    orderBtn.innerHTML = '<div class="mc-btn-circle">' +
-      icon('<path d="M6.6 9.4h10.8l-.6 9.6a2.1 2.1 0 0 1-2.1 1.9H9.3a2.1 2.1 0 0 1-2.1-1.9z"/><path d="M9.7 9.4V7.9a2.3 2.3 0 0 1 4.6 0v1.5"/>', 22) +
-      '</div><span class="mc-btn-label">Заказать</span>';
+    orderBtn.setAttribute('aria-label', 'Корзина');
+    // [2026-11-16r14] Макет владельца (image-3): корзина — обычный пункт бара,
+    // без золотой медали; блик и подсветку рисует CSS (final-fixes.css).
+    orderBtn.innerHTML = icon('<path d="M3 4.2h2.1l2.3 9.8a1.9 1.9 0 0 0 1.85 1.45h7.9a1.9 1.9 0 0 0 1.85-1.45L21 7.1H6.2"/><circle cx="10" cy="19.3" r="1.45"/><circle cx="17.4" cy="19.3" r="1.45"/>', 22) +
+      '<span class="mc-btn-label">Корзина</span>';
     if (typeof openCart === 'function') {
       orderBtn.addEventListener('click', function() {
         // [N-1 FIXED] If the sheet is open when user taps "Заказать", calling openCart()

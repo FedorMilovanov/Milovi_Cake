@@ -260,7 +260,7 @@ test.describe('contact, privacy and mobile application contracts', () => {
     await waitForMobileAppShell(page);
 
     const nav = page.locator('#mcNav');
-    await expect(nav.locator('.mc-btn-label')).toHaveText(['Каталог', 'Начинки', 'Заказать', 'Отзывы', 'Ещё']);
+    await expect(nav.locator('.mc-btn-label')).toHaveText(['Каталог', 'Начинки', 'Корзина', 'Отзывы', 'Ещё']);
 
     const initial = await page.evaluate(() => {
       const visibleNavs = ['mcNav', 'bottomNav', 'mrBottomNav']

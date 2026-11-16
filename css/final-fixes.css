@@ -443,63 +443,85 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
 #why .feature h3 { font-size:18px; color:var(--brown); margin-bottom:8px; }
 html[data-theme="dark"] #why .feature h3 { color:#f0e4d0; }
 
-/* Floating mobile app bar — owner mockup 2026-11-16f:
-   espresso «dock» с золотой волосяной обводкой и золотой медалью «Заказать» в центре.
-   Поверхность одна и та же в обеих темах: на первом экране бар всегда лежит
-   на тёмном hero (он тёмный в обеих темах), поэтому эспрессо читается ровно.
-   Светлая тема возвращается одной заменой background/border ниже. */
-@media (max-width:768px) {
-  #mcNav.mc-nav,
-  html body #mcNav.mc-nav {
-    left:12px !important;
-    right:12px !important;
-    bottom:max(10px,env(safe-area-inset-bottom,0px)) !important;
-    width:auto !important;
-    height:66px !important;
-    max-width:none !important;
-    padding:0 5px !important;
-    border:1px solid rgba(201,147,74,.40) !important;
-    border-radius:24px !important;
-    background:linear-gradient(180deg,rgba(32,21,12,.975),rgba(20,13,7,.985)) !important;
-    -webkit-backdrop-filter:blur(22px) saturate(145%) !important;
-    backdrop-filter:blur(22px) saturate(145%) !important;
-    box-shadow:0 16px 44px rgba(17,9,3,.38),inset 0 1px 0 rgba(255,238,206,.12) !important;
-    overflow:visible !important;
-  }
-  html[data-theme="dark"] #mcNav.mc-nav {
-    border-color:rgba(226,188,137,.34) !important;
-    background:linear-gradient(180deg,rgba(29,19,11,.975),rgba(15,10,5,.985)) !important;
-    box-shadow:0 18px 46px rgba(0,0,0,.58),inset 0 1px 0 rgba(255,238,206,.075) !important;
-  }
-  #mcNav .mc-btn { min-height:64px !important; color:rgba(228,199,155,.72) !important; }
-  html[data-theme="dark"] #mcNav .mc-btn { color:rgba(232,204,160,.72) !important; }
-  #mcNav .mc-btn.mc-active { color:#f0c98a !important; }
-  html[data-theme="dark"] #mcNav .mc-btn.mc-active { color:#f2cf98 !important; }
-  #mcNav .mc-sep { display:none !important; }
-  /* Золотая медаль: заполненный круг высотой почти в бар, подпись скрыта
-     (доступное имя остаётся в aria-label="Заказать" на самой кнопке). */
-  #mcNav .mc-btn--order .mc-btn-circle {
-    width:54px !important;
-    height:54px !important;
-    margin-top:0 !important;
-    border-radius:50%;
-    border:1px solid rgba(255,236,198,.42);
-    color:#fffdf7;
-    background:var(--fab-matte-bg,radial-gradient(circle at 34% 14%,rgba(255,248,226,.36),transparent 44%),linear-gradient(158deg,#c8a06a 0%,#a97b3f 52%,#825a26 100%)) !important;
-    box-shadow:0 10px 24px rgba(24,12,2,.46),0 0 0 1px rgba(255,240,210,.28) inset,0 -3px 9px rgba(72,40,6,.30) inset,0 0 0 4px rgba(201,147,74,.10) !important;
-  }
-  #mcNav .mc-btn--order .mc-btn-circle::before {
-    inset:4px;
-    border-radius:50%;
-    border-color:rgba(255,246,224,.30);
-  }
-  #mcNav .mc-btn--order .mc-btn-circle svg,
-  #mcNav .mc-btn--order svg { color:#fffdf7; width:23px; height:23px; }
-  #mcNav .mc-btn--order .mc-btn-label { display:none; }
-  html[data-theme="dark"] #mcNav .mc-btn--order .mc-btn-circle {
-    --fab-matte-bg:radial-gradient(circle at 34% 14%,rgba(255,248,226,.34),transparent 44%),linear-gradient(158deg,#d2aa74 0%,#b0844a 52%,#8a6129 100%);
-    box-shadow:0 12px 26px rgba(0,0,0,.58),0 0 0 1px rgba(255,240,210,.24) inset,0 -3px 9px rgba(40,22,2,.42) inset,0 0 0 4px rgba(232,184,122,.09) !important;
-  }
+/* Floating mobile bar — owner reference 2026-11-16 (image-3 «вот так можно было бы»):
+   эспрессо-«пилюля» с золотой волосяной обводкой и пятью равными пунктами.
+   Корзина — обычный пункт по центру (не медаль): золотой блик сверху и
+   подсветка под подписью. Подписи в нижнем регистре, 10px.
+   !important только там, где premium-overrides уже стоит с !important. */
+html body #mcNav.mc-nav {
+  left:12px;
+  right:12px;
+  bottom:max(10px,env(safe-area-inset-bottom,0px));
+  width:auto;
+  max-width:none;
+  height:56px !important;
+  padding:0 6px !important;
+  border:1px solid rgba(201,147,74,.42) !important;
+  border-radius:999px !important;
+  background:linear-gradient(180deg,rgba(34,22,13,.972),rgba(19,12,6,.986)) !important;
+  -webkit-backdrop-filter:blur(22px) saturate(145%) !important;
+  backdrop-filter:blur(22px) saturate(145%) !important;
+  box-shadow:0 14px 38px rgba(17,9,3,.34),inset 0 1px 0 rgba(255,238,206,.10) !important;
+  overflow:visible;
+  align-items:center;
+  gap:0;
+}
+html[data-theme="dark"] body #mcNav.mc-nav {
+  border-color:rgba(226,188,137,.38) !important;
+  background:linear-gradient(180deg,rgba(30,20,11,.975),rgba(14,9,4,.987)) !important;
+  box-shadow:0 16px 40px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,238,206,.07) !important;
+}
+#mcNav .mc-btn {
+  min-height:52px !important;
+  padding:0;
+  gap:5px;
+  justify-content:center;
+  background:none !important;
+  color:rgba(240,228,208,.60) !important;
+}
+html[data-theme="dark"] #mcNav .mc-btn { color:rgba(240,228,208,.62) !important; }
+#mcNav .mc-btn svg { width:20px; height:20px; stroke-width:1.6; }
+#mcNav .mc-btn-label {
+  font-size:9.5px !important;
+  letter-spacing:.015em !important;
+  font-weight:400;
+  line-height:1;
+  text-transform:none;
+}
+#mcNav .mc-btn.mc-active { color:#f6e9d4 !important; }
+#mcNav .mc-sep { display:none !important; }
+/* Корзина по центру: блик сверху и подсветка под подписью, как в макете */
+#mcNav .mc-btn--order {
+  color:#f7ecdb !important;
+  position:relative;
+}
+#mcNav .mc-btn--order::before,
+#mcNav .mc-btn--order::after {
+  content:"";
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  pointer-events:none;
+  border-radius:999px;
+}
+#mcNav .mc-btn--order::before {
+  top:-10px;
+  width:26px;
+  height:44px;
+  border-radius:50% !important;
+  background:radial-gradient(50% 50% at 50% 42%,rgba(244,206,146,.34),rgba(244,206,146,.14) 55%,transparent 78%);
+  filter:blur(5px);
+  mix-blend-mode:screen;
+  z-index:0;
+}
+#mcNav .mc-btn--order::after {
+  bottom:2px;
+  width:30px;
+  height:2px;
+  background:linear-gradient(90deg,transparent,rgba(240,199,136,.98),transparent);
+  box-shadow:0 0 12px rgba(240,199,136,.62);
+}
+#mcNav .mc-btn--order svg { width:22px; height:22px; }
   /* Тёплые бары бургера поверх тёмного hero (в скролле остаются коричневыми). */
   .site-header:not(.scrolled) .burger-btn span { background:rgba(248,232,198,.90); }
   body.has-mc-nav { padding-bottom:calc(88px + env(safe-area-inset-bottom,0px)) !important; }
