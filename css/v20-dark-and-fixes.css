@@ -1243,7 +1243,7 @@ details.faq-item > div > p {
 
 .hero-actions .messenger-group,
 .hero-actions .messenger-group--ring {
-  gap: 10px !important;
+  gap: 12px !important;
   align-items: center !important;
   flex-wrap: nowrap !important;
 }
@@ -1283,7 +1283,7 @@ details.faq-item > div > p {
 
 .hero-actions .btn-hero-messenger .hero-ring-text text,
 .hero-actions .btn-hero-messenger [id^="ring-text-"] text {
-  font-size: 5.5px !important;   
+  font-size: 4.8px !important;   
 }
 
 

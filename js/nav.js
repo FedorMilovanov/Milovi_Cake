@@ -30,7 +30,7 @@
         label: 'Меренговый рулет',
         sublabel: '2 500 ₽ · 1 100 г',
         href: '/meringue-roll/',
-        icon: '<path d="M20.8 12.4a8.8 8.8 0 1 1-3.6-7.1"/><path d="M16.6 16.2a5 5 0 1 1-2.2-4"/><path d="M13.2 13a1.7 1.7 0 1 1-.7-1.3"/>',
+        icon: '<path d="M20 12a8 8 0 0 1-16 0 6.6 6.6 0 0 1 13.2 0 5.2 5.2 0 0 1-10.4 0 3.8 3.8 0 0 1 7.6 0 2.4 2.4 0 0 1-4.8 0 1.2 1.2 0 0 1 2.4 0"/>',
         pages: ['main', 'prigorod', 'prigorody-list'],
       },
       {
@@ -202,8 +202,8 @@
           'left:0;right:0;z-index:300;',
           'background:#fdfbf7;',
           'border-radius:24px 24px 0 0;',
-          'border-top:1px solid rgba(201,147,74,0.16);',
-          'box-shadow:0 -12px 44px rgba(45,28,17,0.14);',
+          'border-top:1px solid rgba(201,147,74,0.22);',
+          'box-shadow:0 -14px 44px rgba(45,28,17,0.18), 0 -1px 0 rgba(255,252,246,0.5) inset;',
           'transform:translateY(100%);',
           'transition:transform 0.38s cubic-bezier(0.32,0.72,0,1);',
           'will-change:transform;',
@@ -214,8 +214,8 @@
 
         /* Ручка */
         '.mc-sheet-handle{',
-          'width:38px;height:4px;',
-          'background:rgba(201,147,74,0.22);',
+          'width:34px;height:4px;',
+          'background:linear-gradient(90deg, rgba(201,147,74,0.10), rgba(201,147,74,0.30), rgba(201,147,74,0.10));',
           'border-radius:99px;',
           'margin:12px auto 0;',
         '}',
@@ -223,7 +223,7 @@
         /* Заголовок панели */
         '.mc-sheet-head{',
           'display:flex;align-items:center;justify-content:space-between;',
-          'padding:14px 22px 8px;',
+          'padding:15px 22px 6px;',
         '}',
         '.mc-sheet-title{',
           'font-size:10.5px;letter-spacing:0.22em;',
@@ -249,13 +249,13 @@
           'font-size:9px;letter-spacing:0.22em;text-transform:uppercase;',
           'color:rgba(154,122,98,0.5);',
           'font-family:Jost,sans-serif;',
-          'padding:0 8px;margin:10px 0 6px;',
+          'padding:0 8px;margin:12px 0 7px;',
         '}',
 
         /* Строка-ссылка в панели */
         '.mc-row{',
-          'display:flex;align-items:center;gap:14px;',
-          'padding:10px 14px;',
+          'display:flex;align-items:center;gap:13px;',
+          'padding:10px 13px;',
           'border-radius:16px;',
           'text-decoration:none;',
           'color:var(--text,#2c1a10);',
@@ -266,6 +266,7 @@
           'background:none;border:1px solid transparent;width:100%;text-align:left;',
         '}',
         '.mc-row:active{transform:scale(0.985);background:rgba(201,147,74,0.07);}',
+        '@media(hover:hover){.mc-row:hover{background:rgba(201,147,74,0.05);}}',
         '.mc-row-icon{',
           'width:42px;height:42px;border-radius:13px;',
           'background:linear-gradient(150deg, rgba(201,147,74,0.12), rgba(201,147,74,0.05));',
@@ -277,16 +278,16 @@
         '.mc-row-icon svg{width:20px;height:20px;}',
         '.mc-row-text{flex:1;min-width:0;}',
         '.mc-row-name{',
-          'font-size:14px;font-weight:500;',
+          'font-size:14px;font-weight:500;letter-spacing:0.01em;',
           'color:#2c1a10;',
-          'line-height:1.2;',
+          'line-height:1.25;',
         '}',
         '.mc-row-sub{',
-          'font-size:11px;color:rgba(154,122,98,0.7);',
-          'margin-top:1px;',
+          'font-size:11px;color:rgba(154,122,98,0.78);letter-spacing:0.02em;',
+          'margin-top:2px;',
         '}',
         '.mc-row-arrow{',
-          'color:rgba(201,147,74,0.38);',
+          'color:rgba(201,147,74,0.34);',
           'flex-shrink:0;',
         '}',
         /* Текущая строка: инвертированная золотая медальон-иконка (день и ночь) */
@@ -299,7 +300,7 @@
         '.mc-row--current .mc-row-arrow,.mc-row--active .mc-row-arrow{opacity:0.25;}',
 
         /* Divider внутри панели */
-        '.mc-sheet-divider{height:1px;background:rgba(201,147,74,0.08);margin:4px 16px;}',
+        '.mc-sheet-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(201,147,74,0.14),transparent);margin:6px 18px;}',
 
         /* Нижняя безопасная зона панели */
         '.mc-sheet-safe{height:env(safe-area-inset-bottom,0px);}',

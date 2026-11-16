@@ -79,7 +79,7 @@ html[data-theme="dark"] .delivery-faq .faq-item,
   .mc-sheet {
     background: rgba(253,251,247,.98) !important;
     border-top: 1px solid rgba(201,147,74,.22) !important;
-    box-shadow: 0 -12px 40px rgba(61,43,31,.16) !important;
+    box-shadow: 0 -14px 44px rgba(61,43,31,.20), 0 -1px 0 rgba(255,252,246,.5) inset !important;
   }
   .mc-row { border-radius: 16px !important; transition: background-color .2s ease !important; }
   .mc-row:active { background: rgba(201,147,74,.06) !important; }
@@ -93,7 +93,7 @@ html[data-theme="dark"] .delivery-faq .faq-item,
 [data-theme="dark"] .mc-sheet {
   background: rgba(26,17,8,.98) !important;
   border-top: 1px solid rgba(212,167,106,.25) !important;
-  box-shadow: 0 -12px 40px rgba(0,0,0,.48) !important;
+  box-shadow: 0 -14px 44px rgba(0,0,0,.52), 0 -1px 0 rgba(232,200,150,.07) inset !important;
 }
 [data-theme="dark"] .price { color: var(--gold,#d4a76a) !important; }
 :root, [data-theme="dark"] { transition: background-color .35s ease, color .35s ease; }
