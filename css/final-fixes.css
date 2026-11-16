@@ -905,9 +905,10 @@ html #contacts .card.card--dark .contact-primary-icon {
 
   /* 2 · Content plate becomes paper: no espresso block, no hairline */
   body.mc-home .hero .hero-content {
-    background: var(--cream) !important;
+    /* [r17] прозрачный слой: под текстом лежит арт с тортом */
+    background: transparent !important;
     border-top: 0 !important;
-    padding: 2px clamp(22px, 5vw, 54px) 104px !important;
+    padding: 92px clamp(22px, 5vw, 54px) 58px !important;
   }
   body.mc-home .hero-text { display: contents; }
 
@@ -1086,26 +1087,59 @@ html #contacts .card.card--dark .contact-primary-icon {
   body.mc-home .hero-actions .btn-hero-wa::after { content: 'WhatsApp'; }
   body.mc-home .hero-actions .btn-hero-tg::after { content: 'Telegram'; }
   body.mc-home .hero-actions .btn-hero-max::after { content: 'MAX'; }
+  /* [2026-11-16r17] CTA как в новом референсе: эспрессо-пилюля с золотой
+     обводкой, сумкой, разделителем, надписью в капители и стрелкой. */
   body.mc-home .hero .hero-actions .btn-primary.btn-primary--hero {
     order: 2;
     width: 100%;
     height: auto;
-    min-height: 0;
-    padding: 0;
-    border-radius: 0;
-    background: none !important;
-    color: var(--brown) !important;
-    align-items: flex-start;
-    justify-content: flex-start;
-    gap: 0;
+    min-height: 60px;
+    padding: 0 18px;
+    flex-wrap: nowrap;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #3b2413 0%, #271608 100%) !important;
+    color: #f4e5cb !important;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 13px;
     font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(30px, 9vw, 46px);
+    font-size: clamp(17px, 4.7vw, 22px);
     font-weight: 600;
-    line-height: 1.1;
-    letter-spacing: .07em;
+    line-height: 1;
+    letter-spacing: .12em;
     text-transform: uppercase;
-    box-shadow: none !important;
+    text-decoration: none;
+    box-shadow:
+      inset 0 0 0 1px rgba(201, 147, 74, .58),
+      inset 0 1px 0 rgba(255, 226, 176, .18),
+      0 14px 30px rgba(43, 26, 12, .26) !important;
   }
+  body.mc-home .hero-actions .btn-hero-bag {
+    display: inline-flex;
+    color: #d9b072;
+    flex: 0 0 auto;
+  }
+  body.mc-home .hero-actions .btn-hero-divider {
+    width: 1px;
+    height: 26px;
+    background: rgba(217, 176, 114, .38);
+    flex: 0 0 auto;
+  }
+  body.mc-home .hero-actions .btn-hero-label {
+    flex: 0 1 auto;
+    white-space: nowrap;
+  }
+  body.mc-home .hero-actions .btn-hero-go {
+    display: inline-flex;
+    align-items: center;
+    color: #d9b072;
+    flex: 0 0 auto;
+    margin-left: auto;
+    transition: transform .42s cubic-bezier(.16,1,.3,1);
+  }
+  body.mc-home .hero-actions .btn-primary--hero:hover .btn-hero-go { transform: translateX(4px); }
   body.mc-home .hero .hero-actions .btn-primary.btn-primary--hero:hover,
   body.mc-home .hero .hero-actions .btn-primary.btn-primary--hero:focus,
   body.mc-home .hero .hero-actions .btn-primary.btn-primary--hero:active {
@@ -1115,10 +1149,12 @@ html #contacts .card.card--dark .contact-primary-icon {
   }
   /* наведение: сам текст уходит в глубокий золотистый тон, рамки нет */
   html:not([data-theme="dark"]) body.mc-home .hero .hero-actions .btn-primary.btn-primary--hero:hover {
-    color: #6a4718 !important;
+    color: #fff1d8 !important;
+    filter: brightness(1.07);
   }
   [data-theme="dark"] body.mc-home .hero .hero-actions .btn-primary.btn-primary--hero:hover {
-    color: #fdf6ea !important;
+    color: #fff1d8 !important;
+    filter: brightness(1.12);
   }
   body.mc-home .hero-actions .btn-price-hint {
     order: 3;
@@ -1549,4 +1585,141 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
     scroll-snap-stop: always;
     margin: 0;
   }
+}
+
+/* ============ [2026-11-16r17] Док «примерная стоимость» ============ */
+/* Владелец: тёмная плашка во весь экран налезала на тексты разделов и
+   прижималась к нижнему бару, между ними просвечивала строка страницы.
+   Теперь это отдельная пилюля с отступами от краёв, а когда калькулятор
+   уходит с экрана — она уезжает вместе с ним (см. body.mc-dock-out). */
+@media (max-width: 560px) {
+  body.mc-dock-out .calc-right-col {
+    opacity: 0;
+    transform: translateY(22px);
+    pointer-events: none;
+  }
+}
+
+/* ============ [2026-11-16r17] Hero-постер по новому референсу ============ */
+/* Торт с боке и ветками цветов живёт справа и мягко растворяется в креме,
+   текст остаётся слева на чистом фоне. Только мобильный постер. */
+.hero-art { display: none; }
+
+@media (max-width: 768px) {
+  body.mc-home .hero {
+    background: linear-gradient(180deg, #f8f1e5 0%, var(--cream) 44%, var(--cream) 100%);
+    overflow: hidden;
+  }
+  body.mc-home .hero-photo-bg { display: none; }
+  body.mc-home .hero .hero-content {
+    position: relative;
+    z-index: 2;
+  }
+  body.mc-home .hero-art {
+    display: block;
+    position: absolute;
+    top: 50px;
+    right: -17vw;
+    width: 66vw;
+    z-index: 0;
+    pointer-events: none;
+  }
+  /* верхняя кромка арта уходит под шапку без видимого шва */
+  body.mc-home .hero-art::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 26%;
+    background: linear-gradient(180deg, var(--cream) 0%, rgba(247, 241, 232, .55) 46%, rgba(247, 241, 232, 0) 100%);
+    z-index: 1;
+    pointer-events: none;
+  }
+  [data-theme="dark"] body.mc-home .hero-art::before {
+    background: linear-gradient(180deg, var(--cream) 0%, rgba(14, 9, 5, .55) 46%, rgba(14, 9, 5, 0) 100%);
+  }
+  /* кремовая вуаль: левая часть арта растворяется, текст остаётся на бумаге */
+  body.mc-home .hero-art::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: linear-gradient(90deg, var(--cream) 0%, rgba(247, 241, 232, .82) 26%, rgba(247, 241, 232, .18) 46%, rgba(247, 241, 232, 0) 60%);
+    pointer-events: none;
+  }
+  body.mc-home .hero-art img {
+    display: block;
+    width: 100%;
+    height: auto;
+    -webkit-mask-image: radial-gradient(74% 60% at 66% 40%, #000 52%, rgba(0, 0, 0, .5) 72%, transparent 90%);
+    mask-image: radial-gradient(74% 60% at 66% 40%, #000 52%, rgba(0, 0, 0, .5) 72%, transparent 90%);
+  }
+  [data-theme="dark"] body.mc-home .hero-art img {
+    opacity: .6;
+    filter: saturate(.8) brightness(.62) contrast(1.06);
+  }
+  /* в тёмной теме вуаль тёмная: кремовый фон картинки не светит пятном */
+  [data-theme="dark"] body.mc-home .hero-art::after {
+    z-index: 2;
+    background: linear-gradient(90deg, var(--cream) 0%, rgba(14, 9, 5, .9) 24%, rgba(14, 9, 5, .42) 46%, rgba(14, 9, 5, .08) 62%);
+  }
+  [data-theme="dark"] body.mc-home .hero {
+    background: linear-gradient(180deg, #17100a 0%, var(--cream) 46%, var(--cream) 100%);
+  }
+  /* кнопка на постере держит нижнюю линию, как в референсе */
+  body.mc-home .hero .hero-actions { margin-top: 22px; }
+}
+
+@media (max-width: 768px) {
+  /* текст держится левее торта, как на постере: длинные строки переносятся */
+  body.mc-home .hero-subtitle .hero-sub-4 { max-width: 66%; }
+  body.mc-home .hero-features { max-width: 76%; }
+  body.mc-home .hero-features .hero-feature-item span { white-space: normal; }
+}
+
+/* [r17] Шапка на мобиле больше не лежит на тёмном фото — фон героя кремовый,
+   поэтому непрокрученная шапка перекрашивается в тёплый тёмный тон. */
+@media (max-width: 768px) {
+  body.mc-home .site-header:not(.scrolled) .header-logo {
+    color: var(--brown);
+    -webkit-text-fill-color: currentColor;
+    background: none;
+    text-shadow: none;
+  }
+  body.mc-home .site-header:not(.scrolled) .header-logo-sub { color: rgba(107, 76, 56, .72); }
+  body.mc-home .site-header:not(.scrolled) .header-nav a { color: var(--brown); }
+  body.mc-home .site-header:not(.scrolled) .header-nav a.header-order { color: #fff; }
+  body.mc-home .site-header:not(.scrolled) .theme-toggle,
+  body.mc-home .site-header:not(.scrolled) .header-cart-btn,
+  body.mc-home .site-header:not(.scrolled) .header-burger { color: var(--brown); }
+}
+@media (max-width: 768px) {
+  [data-theme="dark"] body.mc-home .site-header:not(.scrolled) .header-logo {
+    color: #f4e7d3;
+    -webkit-text-fill-color: #f4e7d3;
+    background: none;
+    text-shadow: none;
+  }
+  [data-theme="dark"] body.mc-home .site-header:not(.scrolled) .header-logo-sub { color: rgba(240, 228, 208, .6); }
+  [data-theme="dark"] body.mc-home .site-header:not(.scrolled) .header-nav a { color: #f4e7d3; }
+  [data-theme="dark"] body.mc-home .site-header:not(.scrolled) .theme-toggle,
+  [data-theme="dark"] body.mc-home .site-header:not(.scrolled) .header-cart-btn,
+  [data-theme="dark"] body.mc-home .site-header:not(.scrolled) .header-burger { color: #f4e7d3; }
+}
+
+/* [r17] На десктопе CTA — тоже одна строка: сумка · надпись · стрелка.
+   Цвет кнопки не трогаем (золотая пилюля как была). */
+@media (min-width: 769px) {
+  .hero .btn-primary.btn-primary--hero {
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 9px;
+  }
+  .hero .btn-primary.btn-primary--hero .btn-hero-bag { display: inline-flex; align-items: center; color: currentColor; }
+  .hero .btn-primary.btn-primary--hero .btn-hero-divider { display: none; }
+  .hero .btn-primary.btn-primary--hero .btn-hero-label { white-space: nowrap; }
+  .hero .btn-primary.btn-primary--hero .btn-hero-go { display: inline-flex; align-items: center; color: currentColor; margin-left: 2px; transition: transform .42s cubic-bezier(.16,1,.3,1); }
+  .hero .btn-primary.btn-primary--hero .btn-hero-go svg { width: 15px; height: 15px; }
+  .hero .btn-primary.btn-primary--hero:hover .btn-hero-go { transform: translateX(4px); }
 }

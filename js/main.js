@@ -2481,6 +2481,17 @@ if (typeof updateCalcCartBadge === 'function') {
   document.addEventListener('focusin', function (e) {
     if (e.target && e.target.closest && e.target.closest('#calcRightCol')) reveal();
   }, true);
+  // [2026-11-16r17] Владелец: док висел поверх отзывов и перекрывал тексты.
+  // Теперь он живёт только пока калькулятор на экране.
+  var host = col.closest('section') || col.closest('.fillings') || col.parentElement;
+  if (host && 'IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        document.body.classList.toggle('mc-dock-out', !entry.isIntersecting);
+      });
+    }, { rootMargin: '0px 0px -15% 0px', threshold: 0 });
+    io.observe(host);
+  }
 })();
 
 // ══════════════════════════════════════════════════════════════
