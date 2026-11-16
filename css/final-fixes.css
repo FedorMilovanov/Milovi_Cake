@@ -1178,3 +1178,75 @@ html #contacts .card.card--dark .contact-primary-icon {
   background: rgba(212, 167, 106, 0.10);
   border-color: rgba(212, 167, 106, 0.26);
 }
+
+/* ══ BUGFIX 2026-11-16 (r10) · контраст текста ниже нормы (WCAG AA) ══ */
+
+/* 1. Ответы в FAQ на главной. В style.css класс объявлен дважды, и позднее
+   правило перебивало задуманный --brown-light приглушённым --text-muted:
+   #9a7a62 на #ede5d5 = 3.14:1 при нужных 4.5:1 для 14px. */
+.cb-faq-a-inner {
+  color: var(--brown-light, #6b4c38);
+}
+
+/* 2. Меренговый рулет: золото на кремовой подложке почти не читалось.
+   #c9934a на #f1e8d7 = 2.23:1, --gold2 (#e8b87a) = 1.49:1, --gold3 = 1.29:1.
+   Тёмное золото #855a1f даёт 4.7:1 и остаётся в брендовой гамме.
+   Скоуп по body:has(.hero-tag) — эти классы есть только на этой странице,
+   и правило не должно задевать «гостевые» кнопки на других LP. */
+html:not([data-theme="dark"]) body:has(.hero-tag) .hero-title em,
+html:not([data-theme="dark"]) body:has(.hero-tag) .spb-tag,
+html:not([data-theme="dark"]) body:has(.hero-tag) .hero-tag,
+html:not([data-theme="dark"]) body:has(.hero-tag) .btn-ghost,
+html:not([data-theme="dark"]) body:has(.hero-tag) .sec-label {
+  color: #855a1f;
+}
+html:not([data-theme="dark"]) body:has(.hero-tag) .hero-price-portions {
+  color: #855a1f;
+  opacity: 1;
+}
+
+/* ── Меренговый рулет, светлая тема: ценовая карточка и «шиммер» ──
+   .pct («На заказ · 6–8 порций · В холодильнике») набирался --gold2 = 1.49:1
+   и к тому же ломался по словам в узких пилюлях («На / заказ»). Шиммер
+   .ht-em — градиент по тексту, поэтому color его не берёт, нужен background. */
+html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-label,
+html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-num,
+html:not([data-theme="dark"]) body:has(.hero-tag) .pct,
+html:not([data-theme="dark"]) body:has(.hero-tag) .brand-premium {
+  color: #855a1f;
+}
+html:not([data-theme="dark"]) body:has(.hero-tag) .ht-em {
+  background-image: linear-gradient(90deg, #855a1f 0%, #a2742c 38%, #b8832e 52%, #a2742c 65%, #855a1f 100%);
+}
+body:has(.hero-tag) .price-card-tags {
+  flex-wrap: wrap;
+  justify-content: center;
+  row-gap: 8px;
+}
+body:has(.hero-tag) .pct {
+  white-space: nowrap;
+}
+/* Рубль в цене был почти одного роста с цифрами (40px при 60px) и «прилипал»
+   к числу — уменьшаем до аккуратного надстрочного знака. */
+body:has(.hero-tag) .price-card-num {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.05em;
+}
+body:has(.hero-tag) .price-card-rub {
+  font-size: 24px;
+  line-height: 1;
+  vertical-align: baseline;
+  margin-top: 11px;
+}
+/* Надзаголовок «MILOVI CAKE · САНКТ-ПЕТЕРБУРГ» — 10px золотом на кремовом
+   (#c9934a на #f1e8d7 = 2.23:1); в H1 .ht-word трогать нельзя, поэтому
+   правим только .hero-eyebrow. */
+html:not([data-theme="dark"]) body:has(.hero-tag) .hero-eyebrow .ht-word {
+  color: #855a1f;
+}
+/* Подпись состава под ценой была 62% прозрачности — поднимаем до 78%. */
+html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
+  color: rgba(61, 43, 31, 0.78);
+}

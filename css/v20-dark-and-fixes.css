@@ -1716,7 +1716,7 @@ details.faq-item[open] {
   font-size: 15px !important;
   line-height: 1.78 !important;
   font-weight: 300 !important;
-  color: var(--text-muted, #9a7a62) !important;
+  color: var(--brown-light, #6b4c38) !important;
 }
 html[data-theme="dark"] .delivery-faq .faq-item > .cb-faq-q,
 [data-theme="dark"] .delivery-faq .faq-item > .cb-faq-q,
