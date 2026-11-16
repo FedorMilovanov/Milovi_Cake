@@ -138,11 +138,6 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero,
 }
 
 
-.hero-actions .btn-hero-max > svg > g {
-  transform: translate(6px, 3.5px) scale(0.27) !important;
-  transform-origin: 0 0 !important;
-  transform-box: view-box !important;
-}
 
 
 #preloader.hidden {
@@ -1872,3 +1867,12 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
   color:var(--gold-light);
   box-shadow:0 4px 14px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08);
 }
+
+/* ════════════════════════════════════════════
+   [r20-b] Торт на постере уезжает правее: владелец — «слишком заезжает на
+   надписи, подвинь правее, за край чуть». Сдвиг + лёгкое увеличение от
+   правого края, чтобы левый край арта остался закрытым (без полосы фона).
+   ════════════════════════════════════════════ */
+/* Сдвиг торта вправо запечён в сам постер (img/hero-poster-cake.jpg|webp):
+   торт уходит за правый край, надписи остаются на чистом свете. */
+
