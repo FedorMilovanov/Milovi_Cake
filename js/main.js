@@ -564,7 +564,7 @@ function updateCartUI() {
 
   const items = Object.entries(cart);
   if (!items.length) {
-    body.innerHTML = `<div class="cart-empty"><div style="font-size:48px;margin-bottom:16px">🧁</div><div style="font-size:18px;color:var(--brown);font-family:'Cormorant Garamond',serif;margin-bottom:8px">Корзина пуста</div><div class="cart-empty-message" style="font-size:14px;margin-bottom:28px">Добавьте что-нибудь вкусное!</div><a class="cart-empty-cta" href="#catalog" onclick="closeCart()" style="display:inline-flex;align-items:center;gap:8px;background:var(--gold);padding:12px 24px;border-radius:50px;text-decoration:none;font-family:'Jost',sans-serif;font-size:14px;font-weight:500;box-shadow:0 6px 20px rgba(201,147,74,0.35)">Перейти в каталог →</a></div>`;
+    body.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M4 7h16l-1 14H5L4 7z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></div><div style="font-size:18px;color:var(--brown);font-family:'Cormorant Garamond',serif;margin-bottom:8px">Корзина пуста</div><div class="cart-empty-message" style="font-size:14px;margin-bottom:28px">Добавьте что-нибудь вкусное!</div><a class="cart-empty-cta" href="#catalog" onclick="closeCart()" style="display:inline-flex;align-items:center;gap:8px;background:var(--gold);padding:12px 24px;border-radius:50px;text-decoration:none;font-family:'Jost',sans-serif;font-size:14px;font-weight:500;box-shadow:0 6px 20px rgba(201,147,74,0.35)">Перейти в каталог →</a></div>`;
     footer.style.display = 'none';
     return;
   }

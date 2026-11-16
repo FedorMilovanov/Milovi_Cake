@@ -1119,3 +1119,62 @@ html #contacts .card.card--dark .contact-primary-icon {
     body.mc-home .hero-actions .btn-hero-arrow { margin-top: 8px; }
   }
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BUGFIX — city pages header had no side gutter
+   `.site-header:has(.header-crumb-strip) .hdr-main-row{padding:0}` in style.css
+   outranked `.hdr-main-row{padding:0 60px}` (mc-2026.css), so on all 15
+   /prigorody/ pages the wordmark and the cart button sat flush against the
+   screen edges. Restore the gutter the row was designed with.
+   ═════════════════════════════════════════════════════════════════════════ */
+.site-header:has(.header-crumb-strip) .hdr-main-row {
+  padding-left: 60px;
+  padding-right: 60px;
+}
+@media (max-width: 900px) {
+  .site-header:has(.header-crumb-strip) .hdr-main-row {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BUGFIX — calculator type tiles were 4-across on 381…480px phones
+   The 2×2 fallback only existed at ≤380px (style.css) and ≤360px
+   (premium-overrides.css), so on 390/393/414/430 "Бисквитный" overflowed its
+   63px tile and prices were clipped. Two columns from 480px down.
+   ═════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .calc-type-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .calc-type-card .opt-label { white-space: normal; }
+}
+
+/* ══ BUGFIX 2026-11-16 (r10) · пустая корзина: эмодзи 🧁 → линейная иконка ══
+   В WebKit/Chromium без цветного emoji-шрифта 🧁 рисовался «тофу»-квадратом,
+   а цветной emoji спорил с линейным языком иконок сайта. Теперь сумка-иконка
+   в золотом круге, как в шапке и в карточках «Как заказать». */
+#cartBody .cart-empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  color: var(--gold);
+  background: rgba(201, 147, 74, 0.08);
+  border: 1px solid rgba(201, 147, 74, 0.24);
+}
+#cartBody .cart-empty-icon svg {
+  width: 36px;
+  height: 36px;
+  display: block;
+}
+[data-theme="dark"] #cartBody .cart-empty-icon {
+  background: rgba(212, 167, 106, 0.10);
+  border-color: rgba(212, 167, 106, 0.26);
+}
