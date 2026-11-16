@@ -1250,3 +1250,23 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .hero-eyebrow .ht-word {
 html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
   color: rgba(61, 43, 31, 0.78);
 }
+
+/* ══ BUGFIX 2026-11-16 (r11) · телефон в карточке контактов рвался по цифрам ══
+   «+7 911 903 88 86» переносился как «… 88 / 86»: 17px не влезали в 138px.
+   Теперь номер не переносится и забирает нужную ширину у флекса (карточка
+   на 390 даёт 166px), а на самых узких экранах шрифт чуть меньше. */
+.contact-primary-value {
+  white-space: nowrap;
+}
+@media (max-width: 380px) {
+  .card.card--dark .contact-primary-value {
+    font-size: 15px;
+  }
+}
+/* На 320px даже 15px не влезают в строку — там разрешаем перенос,
+   чтобы номер не выезжал за карточку. */
+@media (max-width: 339px) {
+  .contact-primary-value {
+    white-space: normal;
+  }
+}
