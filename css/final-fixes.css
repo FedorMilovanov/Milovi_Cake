@@ -454,7 +454,7 @@ html body #mcNav.mc-nav {
   bottom:max(10px,env(safe-area-inset-bottom,0px));
   width:auto;
   max-width:none;
-  height:56px !important;
+  height:52px !important;
   padding:0 6px !important;
   border:1px solid rgba(201,147,74,.42) !important;
   border-radius:999px !important;
@@ -472,17 +472,17 @@ html[data-theme="dark"] body #mcNav.mc-nav {
   box-shadow:0 16px 40px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,238,206,.07) !important;
 }
 #mcNav .mc-btn {
-  min-height:52px !important;
+  min-height:48px !important;
   padding:0;
-  gap:5px;
+  gap:4px;
   justify-content:center;
   background:none !important;
   color:rgba(240,228,208,.60) !important;
 }
 html[data-theme="dark"] #mcNav .mc-btn { color:rgba(240,228,208,.62) !important; }
-#mcNav .mc-btn svg { width:20px; height:20px; stroke-width:1.6; }
+#mcNav .mc-btn svg { width:19px; height:19px; stroke-width:1.55; }
 #mcNav .mc-btn-label {
-  font-size:9.5px !important;
+  font-size:9.2px !important;
   letter-spacing:.015em !important;
   font-weight:400;
   line-height:1;
@@ -505,9 +505,9 @@ html[data-theme="dark"] #mcNav .mc-btn { color:rgba(240,228,208,.62) !important;
   border-radius:999px;
 }
 #mcNav .mc-btn--order::before {
-  top:-10px;
-  width:26px;
-  height:44px;
+  top:-9px;
+  width:24px;
+  height:40px;
   border-radius:50% !important;
   background:radial-gradient(50% 50% at 50% 42%,rgba(244,206,146,.34),rgba(244,206,146,.14) 55%,transparent 78%);
   filter:blur(5px);
@@ -516,12 +516,12 @@ html[data-theme="dark"] #mcNav .mc-btn { color:rgba(240,228,208,.62) !important;
 }
 #mcNav .mc-btn--order::after {
   bottom:2px;
-  width:30px;
+  width:26px;
   height:2px;
   background:linear-gradient(90deg,transparent,rgba(240,199,136,.98),transparent);
   box-shadow:0 0 12px rgba(240,199,136,.62);
 }
-#mcNav .mc-btn--order svg { width:22px; height:22px; }
+#mcNav .mc-btn--order svg { width:20px; height:20px; }
   /* Тёплые бары бургера поверх тёмного hero (в скролле остаются коричневыми). */
   .site-header:not(.scrolled) .burger-btn span { background:rgba(248,232,198,.90); }
   body.has-mc-nav { padding-bottom:calc(88px + env(safe-area-inset-bottom,0px)) !important; }
