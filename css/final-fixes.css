@@ -476,12 +476,12 @@ html[data-theme="dark"] #why .feature h3 { color:#f0e4d0; }
     width:44px !important;
     height:44px !important;
     margin-top:0 !important;
-    background:var(--fab-matte-bg,radial-gradient(circle at 32% 18%,rgba(255,242,214,.55),transparent 48%),linear-gradient(160deg,#d3a75f 0%,#b5853c 48%,#8e5f24 100%)) !important;
-    box-shadow:0 10px 22px rgba(122,78,24,.35),0 0 0 1px rgba(255,236,196,.32) inset,0 -3px 8px rgba(70,40,8,.28) inset !important;
+    background:var(--fab-matte-bg,linear-gradient(160deg,rgba(255,248,232,.20),rgba(201,147,74,.06))) !important;
+    box-shadow:0 6px 16px rgba(120,78,30,.16),0 0 0 1px rgba(255,252,244,.18) inset !important;
   }
   html[data-theme="dark"] #mcNav .mc-btn--order .mc-btn-circle {
-    --fab-matte-bg:radial-gradient(circle at 32% 18%,rgba(255,240,208,.45),transparent 48%),linear-gradient(160deg,#d8ab66 0%,#b9893f 48%,#926024 100%);
-    box-shadow:0 12px 26px rgba(0,0,0,.45),0 0 0 1px rgba(255,238,206,.22) inset,0 -3px 8px rgba(50,28,6,.32) inset !important;
+    --fab-matte-bg:linear-gradient(160deg,rgba(255,244,214,.10),rgba(212,167,106,.04));
+    box-shadow:0 8px 18px rgba(0,0,0,.35),0 0 0 1px rgba(255,244,218,.10) inset !important;
   }
   body.has-mc-nav { padding-bottom:calc(88px + env(safe-area-inset-bottom,0px)) !important; }
   body.has-mc-nav .site-footer,
