@@ -1813,10 +1813,10 @@
   }
   </script>
 
-  <link rel="stylesheet" href="/css/premium-overrides.css?v=20261116r04" />
-  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20261116r04">
+  <link rel="stylesheet" href="/css/premium-overrides.css?v=20261116r05" />
+  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20261116r05">
   <link rel="stylesheet" href="/css/v20-fixes.css?v=20260728r27">
-  <link rel="stylesheet" href="/css/final-fixes.css?v=20261116r04" />
+  <link rel="stylesheet" href="/css/final-fixes.css?v=20261116r05" />
 <style id="lp-theme-toggle-css">
 .lp-theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;min-width:38px;border-radius:50%;border:1px solid rgba(201,147,74,.3);background:rgba(255,255,255,.04);color:var(--gold,#c9934a);cursor:pointer;padding:0;flex-shrink:0;margin-left:auto;-webkit-tap-highlight-color:transparent;transition:border-color .2s,background .2s,transform .15s}
 .lp-theme-toggle:hover{border-color:var(--gold,#c9934a);background:rgba(201,147,74,.1)}
@@ -1837,6 +1837,71 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 .mr-faq-item[open] summary::after{content:'−'}
 .mr-faq-item p{margin-top:12px;font-size:14px;line-height:1.75;color:var(--warm)}
 @media(max-width:768px){.mr-faq{padding:56px 20px}.mr-faq-item{padding:16px 18px}.mr-faq-item summary{font-size:18px}}
+</style>
+<style id="lp-light-skin">
+  /* Day skin for the meringue landing (owner round 2026-11-16d).
+     Night = the original espresso design (default). Cinematic photo bands
+     (hero, features, style-band, parallax, delivery) stay dark on purpose
+     in both modes — they are the page's editorial signature. */
+  html[data-theme="light"] {
+    --ink: #f1e8d7;
+    --dark: #f6efe3;
+    --surface: #fcf8ee;
+    --mr-cream: #2c1a10;
+    --warm: #6b4c38;
+    --text: #2c1a10;
+    --muted: rgba(61, 43, 31, 0.62);
+  }
+  html[data-theme="light"] body { background: var(--ink); }
+
+  /* header: the dark brand bar is contractual in both themes — the day skin
+     only dresses the page below it */
+  html[data-theme="light"] .breadcrumb a { color: rgba(61, 43, 31, 0.72); }
+  html[data-theme="light"] .breadcrumb a:hover { color: #a06a28; }
+  html[data-theme="light"] .breadcrumb .breadcrumb-current { color: #2c1a10; }
+  html[data-theme="light"] .breadcrumb span { color: rgba(201, 147, 74, 0.55); }
+
+  /* hero copy below the photo sits on the cream page in day mode */
+  html[data-theme="light"] .hero-desc { color: rgba(61, 43, 31, 0.82); }
+  html[data-theme="light"] .hero-price-weight { color: rgba(61, 43, 31, 0.74); }
+  html[data-theme="light"] .spb-v { color: rgba(61, 43, 31, 0.62); }
+
+  /* page sections: warm espresso type on cream */
+  html[data-theme="light"] .sec-title { color: #2c1a10; }
+  html[data-theme="light"] .sec-body { color: rgba(61, 43, 31, 0.82); }
+  html[data-theme="light"] .ingredient-name { color: #2c1a10; }
+  html[data-theme="light"] .ingredient:hover .ingredient-name { color: #7a4f1c; text-shadow: none; }
+  html[data-theme="light"] .ingredient-num { color: #a06a28; }
+  html[data-theme="light"] .ingredient-desc { color: #7a4c1a; opacity: 1; }
+  /* …but the cinematic dark bands keep their ivory type in day mode */
+  html[data-theme="light"] .delivery-section .sec-title,
+  html[data-theme="light"] .delivery-section .sec-body,
+  html[data-theme="light"] .style-band .sec-title,
+  html[data-theme="light"] .parallax-band .sec-title { color: #f5ede0; }
+  html[data-theme="light"] .delivery-section .sec-body { color: rgba(237, 224, 204, 0.75); }
+  html[data-theme="light"] .dc-title { color: #f5ede0; }
+  html[data-theme="light"] .dc-text { color: rgba(237, 224, 204, 0.68); }
+
+  /* cards that sit on page sections */
+  html[data-theme="light"] .price-card { background: rgba(255, 255, 255, 0.6); border-color: rgba(201, 147, 74, 0.25); }
+  html[data-theme="light"] .price-card:hover { background: rgba(255, 255, 255, 0.82); border-color: rgba(201, 147, 74, 0.45); }
+  html[data-theme="light"] .review-card { background: rgba(255, 255, 255, 0.55); border-color: rgba(201, 147, 74, 0.14); }
+  html[data-theme="light"] .review-card:hover { background: rgba(255, 255, 255, 0.78); border-color: rgba(201, 147, 74, 0.32); }
+  html[data-theme="light"] .city-item { background: rgba(255, 255, 255, 0.45); border-color: rgba(201, 147, 74, 0.12); }
+  html[data-theme="light"] .city-item:hover { background: rgba(255, 255, 255, 0.72); border-color: rgba(201, 147, 74, 0.3); }
+
+  /* footer */
+  html[data-theme="light"] .footer-brand-desc,
+  html[data-theme="light"] .footer-col--nav a,
+  html[data-theme="light"] .footer-bottom a { color: rgba(61, 43, 31, 0.82); }
+  html[data-theme="light"] .footer-col a { color: rgba(61, 43, 31, 0.76); }
+  html[data-theme="light"] .footer-bottom { color: rgba(61, 43, 31, 0.58); }
+  html[data-theme="light"] .footer-col a:hover,
+  html[data-theme="light"] .footer-bottom a:hover { color: #a06a28; }
+
+  /* floating helpers */
+  html[data-theme="light"] .back-top { background: rgba(255, 255, 255, 0.72); border-color: rgba(201, 147, 74, 0.32); }
+  html[data-theme="light"] .back-top:hover { background: rgba(255, 255, 255, 0.9); border-color: rgba(201, 147, 74, 0.6); }
 </style>
 </head>
 <body>
