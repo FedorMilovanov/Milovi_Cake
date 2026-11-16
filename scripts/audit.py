@@ -1041,8 +1041,11 @@ with R.section("10. Forbidden Patterns"):
     # Hero messengers: round SVG ring icons with flat label hover must remain intact.
     for needle in ("messenger-group--ring", "btn-hero-ring", "btn-hero-wa", "btn-hero-tg", "btn-hero-max"):
         require_contains("index.html", needle)
-    require_count("index.html", "hero-ring-text", 3, "hero ring text SVG labels")
-    require_count("index.html", "hero-flat-text", 3, "hero flat text SVG labels")
+    # [r20] Владелец: подписи WhatsApp/Telegram/MAX внутри кольца убраны.
+    # Теперь это круглые кольца с чистым глифом без текста, поэтому
+    # контракт требует три кольца-иконки, а не три текстовых подписи.
+    require_count("index.html", "btn-hero-ring", 3, "hero ring messenger icons")
+    require_count('index.html', 'viewBox="0 0 24 24"', 3, "hero messenger glyph viewBox")
     require_contains("css/premium-overrides.css", "AI DO NOT TOUCH — R10 PROTECTED BLOCK", "R10 protected CSS marker")
     require_contains("css/premium-overrides.css", "PATCH R9", "R9/R10 protected CSS marker")
     require_contains("css/final-fixes.css", ".hero-actions .btn-hero-messenger:hover .hero-flat-text", "final hero messenger hover override")

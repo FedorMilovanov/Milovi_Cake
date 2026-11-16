@@ -1098,7 +1098,7 @@ html #contacts .card.card--dark .contact-primary-icon {
     flex-wrap: nowrap;
     border-radius: 999px;
     background: linear-gradient(180deg, #3b2413 0%, #271608 100%) !important;
-    color: #f4e5cb !important;
+    color: #e8c79b !important;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -1112,8 +1112,9 @@ html #contacts .card.card--dark .contact-primary-icon {
     text-transform: uppercase;
     text-decoration: none;
     box-shadow:
-      inset 0 0 0 1px rgba(201, 147, 74, .58),
-      inset 0 1px 0 rgba(255, 226, 176, .18),
+      inset 0 0 0 1px rgba(226, 172, 102, .82),
+      inset 0 1px 0 rgba(255, 231, 190, .22),
+      0 0 26px rgba(201, 147, 74, .18),
       0 14px 30px rgba(43, 26, 12, .26) !important;
   }
   body.mc-home .hero-actions .btn-hero-bag {
@@ -1124,7 +1125,7 @@ html #contacts .card.card--dark .contact-primary-icon {
   body.mc-home .hero-actions .btn-hero-divider {
     width: 1px;
     height: 26px;
-    background: rgba(217, 176, 114, .38);
+    background: rgba(226, 172, 102, .5);
     flex: 0 0 auto;
   }
   body.mc-home .hero-actions .btn-hero-label {
@@ -1149,12 +1150,12 @@ html #contacts .card.card--dark .contact-primary-icon {
   }
   /* наведение: сам текст уходит в глубокий золотистый тон, рамки нет */
   html:not([data-theme="dark"]) body.mc-home .hero .hero-actions .btn-primary.btn-primary--hero:hover {
-    color: #fff1d8 !important;
-    filter: brightness(1.07);
+    color: #f7dfb8 !important;
+    filter: brightness(1.06);
   }
   [data-theme="dark"] body.mc-home .hero .hero-actions .btn-primary.btn-primary--hero:hover {
-    color: #fff1d8 !important;
-    filter: brightness(1.12);
+    color: #f7dfb8 !important;
+    filter: brightness(1.1);
   }
   body.mc-home .hero-actions .btn-price-hint {
     order: 3;
@@ -1830,3 +1831,44 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
 
 /* [r19] подпись под мессенджерами живёт только в мобильном постере */
 .hero-msg-caption { display: none; }
+
+/* ════ r20 — messenger ring icons are compact glyphs now (38px svg inside
+   a 38px pill). premium-overrides still forces 68px for the old label rings,
+   which blew the icons up to ~62px and made them collide. ════ */
+.hero-actions .btn-hero-messenger svg,
+.hero.hero-city .btn-hero-messenger svg,
+.hero-city .hero-actions .btn-hero-messenger svg{
+  width:40px !important;
+  height:40px !important;
+  overflow:visible;
+}
+@media (max-width:480px){
+  .hero-actions .btn-hero-messenger svg,
+  .hero.hero-city .btn-hero-messenger svg,
+  .hero-city .hero-actions .btn-hero-messenger svg{ width:38px !important; height:38px !important; }
+}
+
+/* ════════════════════════════════════════════
+   [r20] Card photo arrows — the owner asked for the lighter, jewel-like
+   reference style instead of the heavy dark discs: frosted cream glass,
+   hairline gold rim, warm brown chevron. Dark theme keeps a smoky glass.
+   ════════════════════════════════════════════ */
+.product-card .slider-wrap > .slide-btn{
+  width:34px;
+  height:34px;
+  background:rgba(255,251,244,.74);
+  border:1px solid rgba(201,147,74,.42);
+  color:#8a5a28;
+  font:500 22px/1 'Jost',sans-serif;
+  box-shadow:0 4px 14px rgba(60,36,16,.18), inset 0 1px 0 rgba(255,255,255,.72);
+  -webkit-backdrop-filter:blur(6px);
+  backdrop-filter:blur(6px);
+}
+.product-card .slider-wrap > .slide-prev{ left:10px; }
+.product-card .slider-wrap > .slide-next{ right:10px; }
+[data-theme="dark"] .product-card .slider-wrap > .slide-btn{
+  background:rgba(26,18,9,.66);
+  border-color:rgba(212,167,106,.46);
+  color:var(--gold-light);
+  box-shadow:0 4px 14px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08);
+}

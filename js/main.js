@@ -2510,10 +2510,10 @@ if (typeof updateCalcCartBadge === 'function') {
       b.style.setProperty('box-shadow', 'none', 'important');
     });
     document.querySelectorAll('.hero-actions .btn-hero-messenger svg').forEach(function (s) {
-      // The MAX mark is drawn heavier than WA/TG — keep the trio optically
-      // equal by scaling it a notch below the others (owner note).
-      var scale = (s.closest && s.closest('.btn-hero-max')) ? 'scale(1.2)' : 'scale(1.42)';
-      s.style.setProperty('transform', scale, 'important');
+      // [r20] The glyphs are now pre-scaled inside the 24-unit viewBox and the
+      // ring is part of the SVG, so no extra CSS scale — a scale here used to
+      // blow the icons up past their 38px pill and the trio collided.
+      s.style.setProperty('transform', 'none', 'important');
     });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', paint);
