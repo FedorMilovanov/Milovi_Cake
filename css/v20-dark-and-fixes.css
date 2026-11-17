@@ -426,13 +426,9 @@
 }
 
 
-[data-theme="dark"] .cart-step {
-  background: var(--card-bg) !important;
-  border-color: rgba(212,167,106,0.14) !important;
-}
-[data-theme="dark"] .cart-step.active {
-  border-color: rgba(212,167,106,0.55) !important;
-}
+/* [r35] У шагов корзины больше нет «карточек»: в тёмной теме каждый шаг
+   получал фон --card-bg и рамку, которых нет в светлой, и под точками
+   появлялись три посторонних прямоугольника. */
 [data-theme="dark"] .step-num {
   color: var(--text-muted) !important;
   background: var(--card-bg-hover) !important;

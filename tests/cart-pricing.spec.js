@@ -310,15 +310,20 @@ test('delivery date minimum stays correct in the evening (UTC date equals SPb da
 });
 
 test('a different biscuit is a different position (protected cart key)', async ({ page }, testInfo) => {
-  test.fixme(true, 'buildCartKey/parseCartKey — защищённый контракт: бисквит не входит в ключ (формат numId:mode:fill:decor), поэтому два одинаковых Бенто с ванильным и шоколадным бисквитом сливаются в одну позицию qty=2. Нужно разрешение владельца на 5-й сегмент ключа + миграцию старых корзин (план в отчёте r32).');
   await prepare(page, testInfo);
   await resetCart(page);
   await selectType(page, 'bento', testInfo);
   const vanilla = page.locator('#calcBiscuitSeg .calc-biscuit-opt').filter({ hasText: 'Ванильный' });
-  if (await vanilla.count()) await vanilla.first().click();
+  await ensureCalcPanelOpen(page, testInfo);
+  await expect(vanilla.first()).toHaveCount(1);
+  await tapCenter(page, vanilla.first());
   await addFromCalculator(page, testInfo);
   const choco = page.locator('#calcBiscuitSeg .calc-biscuit-opt').filter({ hasText: 'Шоколадный' });
-  if (await choco.count()) await choco.first().click();
+  // После добавления на телефоне панель остаётся раскрытой с подложкой —
+  // закрываем её так же, как живой пользователь, и раскрываем заново.
+  await closeCalcOverlay(page, testInfo);
+  await ensureCalcPanelOpen(page, testInfo);
+  await tapCenter(page, choco.first());
   await addFromCalculator(page, testInfo);
   const cart = await cartSnapshot(page);
   expect(cart.lineTexts).toHaveLength(2);

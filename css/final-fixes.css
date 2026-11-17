@@ -2134,3 +2134,50 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
 .product-card > .slider-wrap { flex: 0 0 auto; }
 .product-card > .product-info { flex: 1 1 auto; display: flex; flex-direction: column; }
 .product-card > .product-info > .product-footer { margin-top: auto; }
+
+/* ═══ [r35] Планшетная шапка: 769–1149 px ═══
+   Выше 768 px шапка включает полное меню, но строка «логотип + сертификаты +
+   шесть ссылок + Заказать + тема + корзина» при текущей типографике занимает
+   ~1150 px. На 769–1149 она вылезала за правый край: «Заказать», переключатель
+   темы и корзина оказывались за вьюпортом, а логотип сжимался в четыре строки.
+   Здесь только раскладка: узкая типографика, меньше отступы, у чипа сертификатов
+   скрывается подпись (сама ссылка-медальон остаётся, дубль есть в футере). */
+@media (min-width: 769px) and (max-width: 1149px) {
+  .site-header { padding: 0 24px; }
+  .header-logo { flex: 0 0 auto; white-space: nowrap; }
+  .header-logo-sub { white-space: nowrap; }
+  /* Медальон сертификатов уступает место меню: ссылка на /certificates/
+     остаётся в футере, поэтому доступ к странице не теряется. */
+  .header-trust { display: none; }
+  .header-nav { gap: 8px; min-width: 0; }
+  /* Ссылки не сжимаются: иначе «Заказать» обрезался до «ЗА» внутри пилюли. */
+  .header-nav a { flex: 0 0 auto; font-size: 12px; letter-spacing: 0.02em; white-space: nowrap; }
+  .header-nav a.header-order { padding: 8px 14px; }
+  .header-nav .theme-toggle,
+  .header-nav .header-cart-btn { flex: 0 0 auto; }
+}
+
+/* ═══ [r35] Шаги корзины: цифры на кружках ═══
+   В тёмной теме завершённый шаг получал фон var(--brown) (#f0e4d0 — светлый)
+   и белый текст: цифра «1» пропадала. Пара «фон --brown + текст --cream»
+   работает в обеих темах: в светлой это прежние #3d2b1f/#f5f0e8, в тёмной —
+   светлый кружок с тёмной цифрой. Активный шаг: на золоте читается тёмная
+   цифра (в светлой теме --cream почти белый, вид не меняется). */
+.cart-step.done .cart-step-dot { color: var(--cream); }
+.cart-step.active .cart-step-dot { color: var(--cart-cta-ink); }
+
+/* ═══ [r35] Заголовок корзины на 320 px ═══
+   «Ваш заказ» вместе с бейджем, «Очистить» и крестиком не влезал в одну
+   строку и переносился на две — шапка становилась 93 px вместо 85. */
+@media (max-width: 360px) {
+  /* Освобождаем строку заголовка: у «Очистить» остаётся иконка и aria-label,
+     а «Ваш заказ» перестаёт переноситься на две строки. */
+  .cart-clear-label { display: none; }
+  #cartClearBtn { padding: 0 9px; }
+  #cartDrawerTitle { font-size: 19px; gap: 6px; white-space: nowrap; }
+}
+
+/* ═══ [r35] Пустой состав в шторке начинки ═══
+   У бенто и 3D описаний нет (см. отчёт, контентный HOLD). Раньше шторка
+   показывала пустой блок с отступами — теперь он не занимает места. */
+#fillPopupText:empty { display: none; }

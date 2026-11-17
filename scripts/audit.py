@@ -107,6 +107,8 @@ DEV_TOOLING_JS = {
     "tests/cart-pricing.spec.js",
     "tests/back-to-top.spec.js",
     "tests/fillings-composition.spec.js",
+    "tests/cart-biscuit-key.spec.js",
+    "tests/tablet-header.spec.js",
     "scripts/lighthouse_tbt_window.js",
 }
 

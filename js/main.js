@@ -35,24 +35,44 @@ function getFillsForProduct(p) {
   return FILLS[p.fillGroup] || [];
 }
 
-// ── ЕДИНАЯ ТОЧКА ФОРМИРОВАНИЯ КЛЮЧА КОРЗИНЫ (r18) ──
-// Для ВСЕХ товаров используется единый формат: "id:mode:fill:decor"
-// mode = 'regular' | 'maxi'
-function buildCartKey(numId, mode, hasMaxi, fillName, decorName) {
+// ── ЕДИНАЯ ТОЧКА ФОРМИРОВАНИЯ КЛЮЧА КОРЗИНЫ (r18, формат расширен в r35) ──
+// Формат для ВСЕХ товаров: "id:mode:fill:decor[:biscuit]"
+// mode = 'regular' | 'maxi'; biscuit = 'vanilla' | 'choco' — пятый сегмент
+// существует ТОЛЬКО у Бенто/Макси Бенто и ТОЛЬКО когда выбор известен.
+// Так старые корзины (4 сегмента) читаются как раньше, а ванильный и
+// шоколадный Бенто больше не схлопываются в одну строку.
+/* Экранирование разделителя. Прежняя версия делала s.replace(/:/g, '\u003A'),
+   а '\u003A' — это тот же символ ':', то есть замена двоеточия двоеточием:
+   название с ':' ломало разбор ключа. Кодируем '%' и ':' в %25 и %3A. */
+function encodeCartPart(s) {
+  return typeof s === 'string' && s ? s.replace(/%/g, '%25').replace(/:/g, '%3A') : '';
+}
+function decodeCartPart(s) {
+  if (typeof s !== 'string' || !s) return '';
+  return s.replace(/%(3A|25)/g, function (m, g) { return g === '3A' ? ':' : '%'; });
+}
+function buildCartKey(numId, mode, hasMaxi, fillName, decorName, biscuit) {
   const m = hasMaxi ? (mode || 'regular') : 'regular';
-  /* r34: escape colons in fill/decor names to prevent parseCartKey collision */
-  var esc = function(s) { return s ? s.replace(/:/g, '\u003A') : ''; };
-  const f = fillName  ? ':' + esc(fillName)  : '';
-  const d = decorName ? ':' + esc(decorName) : '';
-  return numId + ':' + m + f + d;
+  const hasDecor = !!decorName;
+  // Если декор есть, а начинки нет, второй сегмент всё равно нужен пустой:
+  // иначе «:декор» читался как начинка и декор терялся при разборе.
+  const f = (fillName || hasDecor) ? ':' + encodeCartPart(fillName || '') : '';
+  const d = hasDecor ? ':' + encodeCartPart(decorName) : '';
+  const b = (biscuit === 'choco' || biscuit === 'vanilla') ? ':' + biscuit : '';
+  return numId + ':' + m + f + d + b;
 }
 
 // ── РАЗБОР КЛЮЧА КОРЗИНЫ ──
 function parseCartKey(key) {
   const parts = String(key).split(':');
-  /* r34: unescape colons that were escaped in buildCartKey */
-  var unesc = function(s) { return s ? s.replace(/\u003A/g, ':') : ''; };
-  return { numId: parseInt(parts[0]), mode: parts[1] || 'regular', fill: unesc(parts[2] || ''), decor: unesc(parts[3] || '') };
+  const biscuit = (parts[4] === 'choco' || parts[4] === 'vanilla') ? parts[4] : '';
+  return {
+    numId: parseInt(parts[0]),
+    mode: parts[1] || 'regular',
+    fill: decodeCartPart(parts[2] || ''),
+    decor: decodeCartPart(parts[3] || ''),
+    biscuit: biscuit,
+  };
 }
 
 /* [r34] Старые корзины: до r33 в FILLS лежали названия с эмодзи, и ключ
@@ -65,15 +85,21 @@ function normalizeLegacyFill(name) {
   return LEGACY_FILL_ALIASES[raw] || raw;
 }
 
+/* Приведение ключа к текущему формату. Работает идемпотентно: повторный
+   прогон на уже приведённом ключе ничего не меняет. Поля записи главнее
+   ключа (в записи живёт точный выбор), но отсутствующий бисквит НЕ
+   выдумываем: если его нет ни в записи, ни в ключе — сегмент не появляется. */
 function normalizeCartKey(key, entry) {
   const parsed = parseCartKey(key);
   if (!parsed.numId) return key;
   const p = products.find(x => x.id === parsed.numId);
   if (!p) return key;
   const mode = (entry && entry.mode) || parsed.mode || 'regular';
-  const fill = normalizeLegacyFill((entry && entry.fill) || parsed.fill || '');
-  const decor = (entry && entry.decor) || parsed.decor || '';
-  return buildCartKey(parsed.numId, mode, !!p.hasMaxi, fill, decor);
+  const fillRaw = (entry && typeof entry.fill === 'string') ? entry.fill : (parsed.fill || '');
+  const fill = normalizeLegacyFill(fillRaw);
+  const decor = (entry && typeof entry.decor === 'string') ? entry.decor : (parsed.decor || '');
+  const biscuit = p.id === 2 ? ((entry && entry.biscuit) || parsed.biscuit || '') : '';
+  return buildCartKey(parsed.numId, mode, !!p.hasMaxi, fill, decor, biscuit);
 }
 
 function isSafeCartQty(qty, product) {
@@ -95,7 +121,9 @@ function setCartItemFill(oldCartKey, fill, select) {
   const parsed  = parseCartKey(oldCartKey);
   const p       = products.find(x => x.id === parsed.numId);
   const mode    = entry.mode || parsed.mode;
-  const newKey  = p ? buildCartKey(parsed.numId, mode, !!p.hasMaxi, newFill, entry.decor || parsed.decor || '') : oldCartKey;
+  // [r35] бисквит — часть ключа: без него смена начинки у шоколадного
+  // Бенто «сливала» его с ванильным.
+  const newKey  = p ? buildCartKey(parsed.numId, mode, !!p.hasMaxi, newFill, entry.decor || parsed.decor || '', entry.biscuit || parsed.biscuit || '') : oldCartKey;
 
   if (newKey !== oldCartKey) {
     if (cart[newKey]) {
@@ -470,7 +498,12 @@ function loadCartFromStorage() {
       // Санитизируем, а не выбрасываем строку: старые корзины остаются живыми.
       const _decorAdd = Number(entry.decorAdd);
       entry.decorAdd = (Number.isFinite(_decorAdd) && _decorAdd > 0 && _decorAdd <= 100000) ? Math.round(_decorAdd) : 0;
-      if (entry.biscuit !== 'choco' && entry.biscuit !== 'vanilla') delete entry.biscuit;
+      /* [r35] Бисквит теперь входит в ключ позиции. Источник истины — запись
+         (entry.biscuit), иначе ключ. Для товаров без выбора бисквита поле
+         не храним вовсе; отсутствующий выбор не восстанавливаем. */
+      const _entryBiscuit = (entry.biscuit === 'choco' || entry.biscuit === 'vanilla') ? entry.biscuit : '';
+      const _biscuit = product.id === 2 ? (_entryBiscuit || parsedKey.biscuit || '') : '';
+      if (_biscuit) entry.biscuit = _biscuit; else delete entry.biscuit;
       // [r34] Старое название начинки в самой строке — к современному виду до сборки ключа.
       if (typeof entry.fill === 'string' && entry.fill) entry.fill = normalizeLegacyFill(entry.fill);
       originals[key] = { ...entry, mode };
@@ -770,7 +803,9 @@ function buildMessage(compact) {
     // [r31] Бисквит принадлежит бенто (там и находится переключатель), а не
     // бисквитному торту: раньше строке id 1 подставлялось глобальное значение,
     // которого покупатель для этого торта не выбирал.
-    const biscuit = (parsed.numId === 2) ? (entry.biscuit || window._calcBiscuit || '') : '';
+    // [r35] Только достоверный выбор строки или ключа: подставлять текущий
+    // выбор калькулятора нельзя — в старой корзине его могло не быть.
+    const biscuit = (parsed.numId === 2) ? (entry.biscuit || parsed.biscuit || '') : '';
     const details = [`десерт: ${dessertLabel}`];
     if (entry.fill)  details.push(`начинка: ${entry.fill}`);
     if (biscuit) details.push(`бисквит: ${biscuit === 'choco' ? 'шоколадный' : 'ванильный'}`);
@@ -2779,8 +2814,11 @@ function addCalcToCart() {
   const decorEl = document.querySelector('#calcDecor .selected .opt-label');
   const fillName = fillEl ? fillEl.textContent.trim() : '';
   const decorName = decorEl ? decorEl.textContent.trim() : '';
+  // [r35] Бенто/Макси Бенто: бисквит покупатель выбирает прямо здесь, поэтому
+  // он входит в ключ позиции (иначе два разных торта становились одной строкой).
+  const biscuit = (id === 2) ? (window._calcBiscuit === 'choco' ? 'choco' : 'vanilla') : '';
   // [r18] buildCartKey — единый формат для всех
-  const cartKey = buildCartKey(id, mode, !!(p && p.hasMaxi), fillName, decorName);
+  const cartKey = buildCartKey(id, mode, !!(p && p.hasMaxi), fillName, decorName, biscuit);
   const qty = cfg.fixedPrice !== null ? _calcQty : _calcWeight;
   if (cart[cartKey] && cart[cartKey].mode === mode) {
     if (!addCartQty(cart[cartKey], qty, mode === 'maxi' ? p.maxiVariant : p)) return false;
@@ -2792,7 +2830,7 @@ function addCalcToCart() {
   const decorPriceEl = document.querySelector('#calcDecor .selected');
   const decorAdd = calcDecorSurcharge(_cakeType, decorPriceEl);
   cart[cartKey].decorAdd = Number.isFinite(decorAdd) && decorAdd > 0 ? decorAdd : 0;
-  if (id === 2) cart[cartKey].biscuit = (window._calcBiscuit === 'choco') ? 'choco' : 'vanilla';
+  if (biscuit) cart[cartKey].biscuit = biscuit;
   updateCartUI();
   saveCartToStorage();
 }
