@@ -564,6 +564,47 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
  .wed-wrap .wed-contact-links a.btn-hero-messenger svg {transition:none!important;}
 }
 
+/* Related educational project: contextual link, separated from wedding ordering. */
+.wed-wrap .wed-school-project {
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+  margin:18px 0 0;padding:18px 22px;border:1px solid var(--wed-divider);
+  border-radius:18px;background:rgba(201,147,74,.045);
+}
+.wed-wrap .wed-school-project-copy {flex:1;min-width:0;}
+.wed-wrap .wed-school-project-kicker {
+  display:block;margin-bottom:7px;color:var(--wed-accent);
+  font:600 10px/1.4 'Jost',sans-serif;letter-spacing:.14em;text-transform:uppercase;
+}
+.wed-wrap .wed-school-project-copy p {
+  margin:0;max-width:58ch;color:var(--wed-muted);font:400 12px/1.6 'Jost',sans-serif;
+}
+.wed-wrap .wed-school-project-link {
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  flex:0 0 auto;min-height:48px;padding:7px 14px;border:1px solid var(--wed-divider);
+  border-radius:12px;color:var(--brown);text-decoration:none;
+  background:rgba(255,255,255,.065);
+  font:500 14px/1.4 'Jost',sans-serif;letter-spacing:.015em;
+  transition:border-color .2s ease,background .2s ease,color .2s ease;
+}
+.wed-wrap .wed-school-project-link small {
+  display:block;margin-top:2px;font-size:11px;font-weight:400;color:var(--wed-muted);
+}
+.wed-wrap .wed-school-project-link > span:last-child {color:var(--wed-accent);font-size:20px;}
+@media (hover:hover) and (pointer:fine) {
+  .wed-wrap .wed-school-project-link:hover {
+    border-color:var(--gold);background:rgba(201,147,74,.095);color:var(--gold);
+  }
+}
+.wed-wrap .wed-school-project-link:focus-visible {
+  outline:2px solid var(--gold);outline-offset:3px;
+}
+@media (max-width:700px) {
+  .wed-wrap .wed-school-project {flex-direction:column;align-items:stretch;gap:14px;padding:18px 16px;}
+  .wed-wrap .wed-school-project-link {width:100%;box-sizing:border-box;}
+}
+@media (prefers-reduced-motion:reduce) {
+  .wed-wrap .wed-school-project-link {transition:none;}
+}
 /* Wedding mobile footer: reliable 44px targets without enlarging editorial text. */
 @media (max-width:700px) {
   .wed-wrap .lp-related a {
@@ -951,7 +992,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
           <summary>Что нужно прислать для расчёта свадебного торта?</summary>
           <p>Нужны дата свадьбы, площадка, примерное количество гостей, палитра и 2–3 референса. По ним можно подобрать вес, стиль, начинку и доставку.</p>
         </details></div></section>
-    <section class="lp-final"><h2>Обсудим ваш свадебный торт?</h2><p>Расскажите о дате свадьбы, площадке и числе гостей. Подскажем вес и начинку, подготовим индивидуальный расчёт.</p><div class="lp-actions" style="justify-content:center"><a class="lp-btn lp-btn-primary" href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BE%D0%B1%D1%81%D1%83%D0%B4%D0%B8%D1%82%D1%8C%20%D1%81%D0%B2%D0%B0%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D0%B9%20%D1%82%D0%BE%D1%80%D1%82.%0A%D0%94%D0%B0%D1%82%D0%B0%20%D1%81%D0%B2%D0%B0%D0%B4%D1%8C%D0%B1%D1%8B%3A%20___%0A%D0%9F%D0%BB%D0%BE%D1%89%D0%B0%D0%B4%D0%BA%D0%B0%3A%20___%0A%D0%93%D0%BE%D1%81%D1%82%D0%B5%D0%B9%3A%20___%0A%D0%9F%D0%B0%D0%BB%D0%B8%D1%82%D1%80%D0%B0%3A%20___%0A%D0%A0%D0%B5%D1%84%D0%B5%D1%80%D0%B5%D0%BD%D1%81%D1%8B%3A%20___">Отправить бриф</a><a class="lp-btn lp-btn-ghost" href="tel:+79119038886">Позвонить</a></div>
+    <section class="lp-final"><h2>Обсудим ваш свадебный торт?</h2><p>Посмотрите сертификаты обучения кондитера или расскажите о дате, площадке и числе гостей в удобном мессенджере. Поможем подобрать вес и оформление.</p><div class="lp-actions" style="justify-content:center"><a class="lp-btn lp-btn-primary" href="/certificates/">Посмотреть сертификаты</a><a class="lp-btn lp-btn-ghost" href="tel:+79119038886">Позвонить</a></div>
           <div class="wed-messenger-contact wed-messenger-contact--final" aria-label="Связаться с Milovi Cake">
             <span class="wed-messenger-caption">Удобнее в мессенджере?</span>
             <div class="wed-contact-links">
@@ -997,6 +1038,16 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
           <a href="/certificates/">Сертификаты</a>
         </nav>
       </div>
+      <aside class="wed-school-project" aria-label="Образовательный проект Milovi Cake">
+        <div class="wed-school-project-copy">
+          <span class="wed-school-project-kicker">Наш образовательный проект</span>
+          <p>Milovi School — бесплатная библиотека о французском кондитерском искусстве: техники, рецепты и разборы работ известных шефов. Это отдельный информационный проект, не каталог заказов.</p>
+        </div>
+        <a class="wed-school-project-link" href="https://french.milovicake.ru/" target="_blank" rel="noopener noreferrer" aria-label="Milovi School — Pâtisserie Russe, образовательная библиотека (откроется в новой вкладке)">
+          <span>Milovi School <small>Pâtisserie Russe</small></span>
+          <span aria-hidden="true">↗</span>
+        </a>
+      </aside>
     </footer>
   </main>
 </div>
