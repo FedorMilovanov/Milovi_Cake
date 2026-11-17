@@ -506,6 +506,8 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
   .wed-wrap .wed-proof-grid .wed-proof-process {
     width:100%;min-width:0;max-width:none;margin-left:0;margin-right:0;
   }
+  /* Outrank the generic .wed-proof-grid figure {margin:0} rule. */
+  .wed-wrap .wed-proof-grid figure.wed-proof-process {margin-top:clamp(26px,4.5vw,38px);}
   .wed-wrap .wed-proof-grid .wed-proof-cake-visual,
   .wed-wrap .wed-proof-grid .wed-proof-video-frame {
     display:block;width:100%;max-width:none;margin-left:0;margin-right:0;
@@ -517,7 +519,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
   .wed-wrap .wed-messenger-contact--final {
     display:flex;flex-direction:column;align-items:stretch;justify-content:center;
     box-sizing:border-box;gap:10px;width:100%;max-width:360px;
-    margin:20px 0 0;padding:16px 0 13px;
+    margin:20px auto 0;padding:16px 0 13px;
     border-top:1px solid var(--wed-divider);
     border-bottom:1px solid var(--wed-divider);
   }
