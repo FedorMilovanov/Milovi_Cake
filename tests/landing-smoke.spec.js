@@ -1660,10 +1660,11 @@ test('wedding navigation has a subtle gold hover line and accessible keyboard st
   expect(duration.split(',').every((value) => parseFloat(value) === 0)).toBe(true);
 });
 
-test('wedding mobile dock never covers controls and stays reachable', async ({ page }) => {
+test('wedding mobile dock never obscures content and remains reachable', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('milovi_analytics_consent_v1', 'granted'));
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('html')).not.toHaveClass(/mc-fast-init/, { timeout: 3500 });
 
   const firstAction = page.locator('.wed-mobile-first-action');
   const sticky = page.locator('.wed-mobile-sticky');
@@ -1672,38 +1673,47 @@ test('wedding mobile dock never covers controls and stays reachable', async ({ p
   expect((await firstAction.boundingBox()).height).toBeGreaterThanOrEqual(44);
   expect((await page.locator('.wed-header .lp-logo').boundingBox()).height).toBeGreaterThanOrEqual(44);
   await expect(sticky).toBeHidden();
+  await page.evaluate(() => { document.documentElement.style.scrollBehavior = 'auto'; });
 
-  // A free editorial area shows the dock, but interactive content has priority.
-  await page.evaluate(() => {
-    document.documentElement.style.scrollBehavior = 'auto';
-    scrollTo(0, 1300);
-  });
-  await expect(sticky).toBeVisible();
+  // The optional dock shows only in genuinely free areas of a long editorial page.
+  async function findSafeDock() {
+    for (const y of [3500, 3900, 4700, 6100, 7000, 7400, 8200, 8500, 9900]) {
+      await page.evaluate((top) => scrollTo(0, top), y);
+      await page.waitForTimeout(85);
+      if (await sticky.isVisible()) return;
+    }
+    throw new Error('Wedding enquiry dock is no longer reachable anywhere in its safe scroll areas');
+  }
+
+  await findSafeDock();
   const dock = await sticky.boundingBox();
   expect(dock.x).toBeGreaterThanOrEqual(0);
   expect(dock.x + dock.width).toBeLessThanOrEqual(390);
   expect(dock.y + dock.height).toBeLessThanOrEqual(844);
+  expect(dock.height).toBeGreaterThanOrEqual(44);
 
-  async function placeControlUnderDock(selector) {
+  async function placeContentUnderDock(selector) {
     await page.evaluate((sel) => {
       const element = document.querySelector(sel);
       const rect = element.getBoundingClientRect();
-      window.scrollBy(0, rect.top - (innerHeight - 60));
+      window.scrollBy(0, rect.top - (innerHeight - 58));
     }, selector);
     await expect(sticky).toBeHidden();
   }
-  await placeControlUnderDock('.wed-clip-toggle');
-  await placeControlUnderDock('.wed-collection-card a');
-  await placeControlUnderDock('.lp-faq-item summary');
+  for (const selector of [
+    '.wed-clip-toggle', '.wed-collection-card a', '.lp-faq-item summary',
+    '.wed-collection-head h2', '.wed-collection-head > p',
+    '.wed-proof-cake-visual'
+  ]) {
+    await placeContentUnderDock(selector);
+  }
 
-  await page.evaluate(() => scrollTo(0, 1300));
-  await expect(sticky).toBeVisible();
+  await findSafeDock();
   await sticky.click();
   await expect(form).toBeInViewport();
   await expect(sticky).toBeHidden();
 
-  await page.evaluate(() => scrollTo(0, 1300));
-  await expect(sticky).toBeVisible();
+  await findSafeDock();
   const menu = page.locator('.wed-mobile-menu summary');
   await menu.click();
   await expect(sticky).toBeHidden();
