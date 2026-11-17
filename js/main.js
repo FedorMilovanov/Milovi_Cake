@@ -469,9 +469,22 @@ function switchBentoTab(pid, mode) {
 }
 
 // ── LOCALSTORAGE ──
+let cartStorageWarned = false;
 function saveCartToStorage() {
-  try { localStorage.setItem('milovicake_cart', JSON.stringify(cart)); }
-  catch(e) { showToast('Корзина не сохранится при обновлении'); }
+  try {
+    localStorage.setItem('milovicake_cart', JSON.stringify(cart));
+    cartStorageWarned = false;
+  } catch (e) {
+    /* [r37] Одна реплика на серию отказов. Раньше каждый шаг корзины под
+       запретом localStorage (iOS Private Mode, QuotaExceeded) заново бросал
+       исключение и заново показывал тост: пользователь видел мигающую плашку
+       после каждого «+/−», а страница получала лишний layout на каждый шаг.
+       Признак сбрасывается, как только запись снова проходит. */
+    if (!cartStorageWarned) {
+      cartStorageWarned = true;
+      showToast('Корзина не сохранится при обновлении');
+    }
+  }
 }
 
 function loadCartFromStorage() {
