@@ -1698,6 +1698,51 @@ test('wedding mobile dock never covers controls and stays reachable', async ({ p
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 });
 
+test('wedding mobile photo and video align, branded contacts remain touch accessible', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('milovi_analytics_consent_v1', 'granted'));
+  for (const width of [320, 390, 560, 700]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    const geometry = await page.evaluate(() => {
+      const rect = (selector) => document.querySelector(selector).getBoundingClientRect();
+      const image = rect('.wed-proof-cake-visual');
+      const video = rect('.wed-proof-video-frame');
+      const caption = rect('.wed-proof-cake .wed-proof-caption');
+      const frame = rect('.wed-proof-process');
+      const groups = [...document.querySelectorAll('.wed-messenger-contact')];
+      return {
+        photoWidth: image.width, videoWidth: video.width, xGap: Math.abs(image.left - video.left),
+        verticalGap: frame.top - caption.bottom, scrollWidth: document.documentElement.scrollWidth,
+        viewportWidth: innerWidth,
+        groups: groups.map((group) => ({
+          direction: getComputedStyle(group).flexDirection,
+          columns: getComputedStyle(group.querySelector('.wed-contact-links')).gridTemplateColumns.split(' ').length,
+          names: [...group.querySelectorAll('.wed-contact-brand-name')].map((name) => ({
+            label: name.textContent.trim(),
+            visible: getComputedStyle(name).display !== 'none',
+          })),
+          sizes: [...group.querySelectorAll('a.btn-hero-messenger')].map((el) => el.getBoundingClientRect().height),
+        })),
+      };
+    });
+    expect(Math.abs(geometry.photoWidth - geometry.videoWidth)).toBeLessThanOrEqual(1);
+    expect(geometry.xGap).toBeLessThanOrEqual(1);
+    expect(geometry.verticalGap).toBeGreaterThanOrEqual(25);
+    expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.viewportWidth + 1);
+    expect(geometry.groups).toHaveLength(2);
+    for (const group of geometry.groups) {
+      expect(group.direction).toBe('column');
+      expect(group.columns).toBe(3);
+      expect(group.names).toEqual([
+        { label: 'WhatsApp', visible: true },
+        { label: 'Telegram', visible: true },
+        { label: 'MAX', visible: true },
+      ]);
+      expect(group.sizes.every((height) => height >= 44)).toBe(true);
+    }
+  }
+});
+
 const localFontPages = ['/o-konditere/', '/bento-torty/', '/svadebnye-torty/',
   '/zakazat-tort-spb/', '/dostavka-i-oplata/', '/otzyvy/'];
 
