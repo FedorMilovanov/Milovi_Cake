@@ -401,6 +401,43 @@ test('cart restoration rejects corrupt entries and preserves valid quantities', 
   expect(errors).toEqual([]);
 });
 
+// [r30] Владелец видел 9 в баре и 4 на кнопке калькулятора: бар считал позиции
+// (Object.keys()), калькулятор — сумму qty, то есть килограммы. Контракт один:
+// количество изделий. Этот тест держит счётчики согласованными.
+test('all cart counters show the same item count, not the weight sum', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  // 1 — весовой торт: qty 2.5 кг — это одно изделие, а не 2.5 штуки.
+  // 2 — штучный: qty 2 — это два изделия.
+  await page.evaluate(() => localStorage.setItem('milovicake_cart', JSON.stringify({
+    '1:regular': { qty: 2.5 },
+    '2:regular': { qty: 2 },
+  })));
+  await page.reload({ waitUntil: 'domcontentloaded' });
+
+  const counters = () => page.evaluate(() => ({
+    contract: typeof window.cartItemCount === 'function' ? window.cartItemCount() : null,
+    header: document.getElementById('cartBadge')?.textContent.trim() ?? null,
+    nav: document.querySelector('#mcNav [data-cart-badge]')?.textContent.trim() ?? null,
+    cartCount: document.getElementById('cartCountBadge')?.textContent.trim() ?? null,
+    calc: document.getElementById('calcCartBadge')?.textContent.trim() ?? null,
+  }));
+
+  await expect.poll(async () => (await counters()).nav).toBe('3');
+  const values = await counters();
+  expect(values.contract).toBe(3);
+  for (const key of ['header', 'nav', 'cartCount', 'calc']) {
+    // счётчик может отсутствовать на конкретной раскладке, но если он есть —
+    // обязан показывать то же число
+    if (values[key] !== null) expect({ key, value: values[key] }).toEqual({ key, value: '3' });
+  }
+  // сумма веса (2.5 + 2 = 4.5) не должна всплывать ни в одном счётчике
+  expect(Object.values(values).join(' ')).not.toMatch(/4\.5|2\.5/);
+  expect(errors).toEqual([]);
+});
+
 test('cart restores unusual labels as text and keeps their controls functional', async ({ page }) => {
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));

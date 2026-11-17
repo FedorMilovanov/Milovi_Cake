@@ -296,6 +296,19 @@ test.describe('premium baseline consolidation contracts', () => {
 
     await page.locator('.site-footer').scrollIntoViewIfNeeded();
     await expect.poll(async () => backToTop.evaluate((el) => el.classList.contains('footer-clearance'))).toBeTruthy();
+
+    // [r30] «Наверх» — матово-бронзовый квадрат, а прогресс — один замкнутый
+    // контур по его периметру. Двух <circle> и золотого круга больше нет.
+    await expect(backToTop.locator('.btt-ring circle')).toHaveCount(0);
+    const fillPath = backToTop.locator('.btt-ring path.btt-ring-fill');
+    await expect(fillPath).toHaveCount(1);
+    await expect(fillPath).toHaveAttribute('pathLength', '100');
+    await expect(fillPath).toHaveAttribute('d', /^M23 1/); // старт — верхняя центр-точка
+    const shape = await backToTop.evaluate((el) => {
+      const style = getComputedStyle(el);
+      return { radius: style.borderRadius, background: style.backgroundColor, width: Math.round(el.getBoundingClientRect().width), border: style.borderTopWidth };
+    });
+    expect(shape).toEqual({ radius: '13px', background: 'rgb(59, 40, 29)', width: 46, border: '0px' });
   });
 
   test('mobile app bar and sheet preserve closed/open visibility contract', async ({ page }) => {

@@ -363,7 +363,12 @@
     (function () {
       var badge = orderBtn.querySelector('[data-cart-badge]');
       var count = 0;
-      try { count = (typeof cart !== 'undefined' && cart) ? Object.keys(cart).length : 0; } catch (e) { count = 0; }
+      // [r30] Первичное состояние — по общему контракту main.js (cartItemCount):
+      // количество изделий, а не число позиций.
+      try {
+        count = (typeof window.cartItemCount === 'function') ? window.cartItemCount()
+          : ((typeof cart !== 'undefined' && cart) ? Object.keys(cart).length : 0);
+      } catch (e) { count = 0; }
       if (!badge) return;
       badge.textContent = count;
       badge.classList.toggle('visible', count > 0);

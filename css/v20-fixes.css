@@ -55,16 +55,11 @@ html[data-theme="dark"] .delivery-faq .faq-item,
 @media (max-width: 768px) {
   .back-to-top {
     /* [r29] Токен вместо магических 94 px: та же геометрия, что у бара. */
+    /* [r30] Форму, цвет и тень здесь больше не дублируем: источник один —
+       base-правило .back-to-top в style.css (матовый бронзовый квадрат).
+       Тут только положение на телефоне. */
     bottom: calc(var(--mc-nav-total) + var(--mc-btt-gap)) !important;
     right: calc(var(--mc-nav-side) + 6px) !important;
-    width: 46px !important;
-    height: 46px !important;
-    background: radial-gradient(circle at 32% 18%, rgba(255,242,214,.38), transparent 48%), linear-gradient(160deg, #b98d4c 0%, #96682c 55%, #7a5220 100%) !important;
-    border: 1px solid rgba(255,236,200,.30) !important;
-    border-radius: 50% !important;
-    color: #fdf6e8 !important;
-    box-shadow: 0 10px 26px rgba(58,32,6,.35), 0 0 0 1px rgba(60,34,8,.18) inset, 0 -3px 8px rgba(40,20,2,.20) inset !important;
-    transition: opacity .25s ease, transform .25s ease !important;
     z-index: 102 !important;
   }
   .site-footer,
@@ -665,9 +660,15 @@ html[data-theme="dark"] #mcSheet .mc-row-privacy .mc-row-icon { background:linea
   .mc-consent-dialog { transition:none !important; }
 }
 
-/* Soft-premium back-to-top scroll ring (owner round 2026-11-16) */
-.back-to-top .btt-ring{position:absolute;inset:0;transform:rotate(-90deg);pointer-events:none}
-.back-to-top .btt-ring circle{fill:none;stroke-width:2.6;stroke-linecap:round}
-.back-to-top .btt-ring .btt-ring-track{stroke:rgba(255,238,206,0.16)}
-.back-to-top .btt-ring .btt-ring-fill{stroke:rgba(236,201,142,0.95);transition:stroke-dashoffset 0.12s linear}
-[data-theme="dark"] .back-to-top .btt-ring .btt-ring-fill{stroke:rgba(240,209,152,0.98)}
+/* [r30] Прогресс прокрутки — один замкнутый контур по периметру кнопки.
+   Раньше это были два <circle> с rotate(-90deg): кольцо читалось второй
+   рамкой, а поворот SVG давал лишний композитный слой. Теперь один path,
+   старт — верхняя центральная точка, pathLength=100, dashoffset 100→0.
+   Контур идёт на 1 px внутри кнопки: визуально форма 44 px, hitbox 46 px. */
+.back-to-top .btt-ring{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.back-to-top .btt-ring path{fill:none;stroke-width:1.6;stroke-linejoin:round;stroke-linecap:butt;vector-effect:non-scaling-stroke}
+.back-to-top .btt-ring .btt-ring-track{stroke:rgba(240,211,166,0.16)}
+.back-to-top .btt-ring .btt-ring-fill{stroke:rgba(212,167,106,0.95);transition:stroke-dashoffset 0.18s linear}
+@media (prefers-reduced-motion: reduce){ .back-to-top .btt-ring .btt-ring-fill{transition:none} }
+/* Стрелка: тонкая шампань, без второй рамки вокруг. */
+.back-to-top svg{stroke-width:1.6}

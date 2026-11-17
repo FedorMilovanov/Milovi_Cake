@@ -1181,9 +1181,11 @@ form .btn-wa {
     background: linear-gradient(135deg, #a06a38 0%, #c9934a 100%) !important;
     color: #fff !important;
     border-color: rgba(201,147,74,0.55) !important;
+    /* [r30] Ореол вокруг CTA убран: он растекался на соседнюю кнопку
+       корзины и читался прямоугольной подложкой. */
     box-shadow:
-      0 14px 32px rgba(120, 80, 30, 0.35),
-      0 0 0 1px rgba(255,255,255,0.18) inset !important;
+      0 8px 20px rgba(120, 80, 30, 0.20),
+      0 0 0 1px rgba(255,255,255,0.14) inset !important;
     transform: translateY(-3px);
     letter-spacing: 0.05em;
   }
@@ -1196,7 +1198,9 @@ form .btn-wa {
 @media (max-width: 560px) {
   .calc-right-col {
     z-index: 105 !important;            
-    box-shadow: 0 -10px 32px rgba(0,0,0,0.18);
+    /* [r30] У обёртки дока своей тени больше нет: она лишь расширяла тёмное
+       облако вокруг панели. Глубину даёт сама панель. */
+    box-shadow: none;
   }
   .calc-result-collapsed {
     padding-top: 11px !important;       
@@ -1286,12 +1290,13 @@ form .btn-wa {
 
 @media (max-width: 560px) {
   .calc-summary-chip {
+    /* [r30] Сводка стала типографической: капсул, рамок и центрирования нет. */
     white-space: normal !important;
     word-break: break-word !important;
     max-width: 100% !important;
-    text-align: center !important;
-    justify-content: center !important;
-    padding: 4px 12px !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
+    padding: 0 !important;
   }
 }
 
@@ -1786,8 +1791,12 @@ button[disabled] {
       linear-gradient(180deg, rgba(48,30,17,.994) 0%, rgba(36,23,13,.988) 42%, rgba(36,23,13,.988) 100%) !important;
     border: 0 !important;
     border-top: 1px solid rgba(226,188,137,.30) !important;
+    /* [r30] Тень панели больше не «облако»: прежние 0 -16px 44px .44
+       расползались над доком на 60 px и ложились серым прямоугольником на
+       карточки калькулятора — владелец видел «полупрозрачную подложку» за
+       доком и баром. Осталась тонкая тень у самой кромки. */
     box-shadow:
-      0 -16px 44px rgba(16,9,3,.44),
+      0 -4px 14px -6px rgba(16,9,3,.30),
       0 1px 0 rgba(255,238,206,.14) inset,
       0 26px 40px -28px rgba(240,205,150,.16) inset !important;
   }
@@ -1796,7 +1805,9 @@ button[disabled] {
      на стыке читалась вторая полоса. Теперь блик живёт только в верхней
      половине панели — низ ровно того же тона, что бар. */
   .calc-right-col .calc-result::after {
-    background: radial-gradient(120% 52% at 50% 0%, rgba(240,205,150,.10), rgba(240,205,150,0) 72%) !important;
+    /* [r30] Тёплый блик сверху был второй яркой полосой рядом с ручкой —
+       теперь он вдвое тише и ниже, только намёк на свет из-под бара. */
+    background: radial-gradient(120% 44% at 50% 0%, rgba(240,205,150,.055), rgba(240,205,150,0) 70%) !important;
   }
   .calc-result-collapsed {
     min-height: 70px !important;
@@ -1808,8 +1819,10 @@ button[disabled] {
     width: 44px !important;
     height: 5px !important;
     border-radius: 3px !important;
-    background: linear-gradient(90deg, rgba(232,184,122,.18), rgba(246,214,160,.90), rgba(232,184,122,.18)) !important;
-    box-shadow: 0 0 12px rgba(232,184,122,.42) !important;
+    /* [r30] Ручка была самым ярким пятном панели (золото .90 + свечение 12 px).
+       Теперь это тихая метка: полупрозрачная шампань без ореола. */
+    background: linear-gradient(90deg, rgba(240,211,166,.06), rgba(240,211,166,.22), rgba(240,211,166,.06)) !important;
+    box-shadow: none !important;
   }
   .calc-result-collapsed-label {
     font-size: 9px !important;
@@ -1827,10 +1840,14 @@ button[disabled] {
     width: 42px !important;
     height: 42px !important;
     min-width: 42px !important;
-    border: 1px solid rgba(232,184,122,.50);
-    background: radial-gradient(circle at 32% 26%, rgba(246,214,160,.22), rgba(232,184,122,.06));
-    color: #f5d9a8;
-    box-shadow: 0 6px 16px rgba(0,0,0,.38), 0 0 0 1px rgba(255,238,206,.10) inset;
+    /* [r30] Кнопка раскрытия перестала быть «вторым объектом» на панели:
+       золотое кольцо + глянцевый радиальный блик + тень читались как
+       отдельная капсула поверх дока. Теперь это матовый диск на тон светлее
+       панели, без обводки и без тени. */
+    border: 0;
+    background: rgba(246,222,186,.07);
+    color: #f0d3a6;
+    box-shadow: none;
   }
   .calc-right-col.calc-result-open .calc-result-expandable {
     max-height: min(58dvh, 430px) !important;
@@ -1843,18 +1860,23 @@ button[disabled] {
   }
   .calc-right-col .calc-result-summary {
     flex-wrap: wrap !important;
-    justify-content: center !important;
+    /* [r30] Сводка — типографический список, а не ряд капсул: он читается
+       слева, как подпись и цена над ним. */
+    justify-content: flex-start !important;
     max-width: 100% !important;
   }
   .calc-right-col .calc-summary-chip {
     max-width: 100% !important;
-    min-height: 26px !important;
+    min-height: 0 !important;
   }
   .calc-add-row {
     position: sticky;
     bottom: 0;
     padding-top: 8px;
-    background: linear-gradient(180deg, rgba(22,13,7,0), rgba(22,13,7,.98) 38%);
+    /* [r30] Подложка под CTA была темнее панели (22,13,7 против 36,23,13) и
+       читалась прямоугольной полосой с резкой верхней кромкой. Теперь
+       она гасит прокручиваемый текст ровно тем же тоном, что панель. */
+    background: linear-gradient(180deg, rgba(36,23,13,0), rgba(36,23,13,.98) 38%);
   }
   .calc-add-btn,
   .calc-order-btn {
@@ -1913,8 +1935,13 @@ button[disabled] {
   }
   #mcNav .mc-btn-label,
   .mc-nav .mc-btn-label {
-    font-size: 9px !important;
-    letter-spacing: .12em !important;
+    /* [r30] Владелец: подпись должна читаться как подпись, а не как код —
+       10.5 px вместо 9 px, трекинг .055em вместо .12em. Это единственный
+       источник кегля подписи: дубль 9.2 px ниже удалён. */
+    /* [r30] 10–11 px, но на 320 px подписи вплотную друг к другу: кегль
+       ужимается до нижней границы 10 px через clamp, без отдельного медиа. */
+    font-size: clamp(10px, 2.9vw, 10.5px) !important;
+    letter-spacing: .055em !important;
     text-transform: uppercase;
     transform: translateY(0);
     transition: transform .22s ease, opacity .22s ease !important;
@@ -2238,7 +2265,6 @@ button[disabled] {
 @media (max-width: 360px) {
   #mcSheet.mc-sheet { left: 6px !important; right: 6px !important; }
   #mcSheet .mc-row { min-height: 58px !important; padding: 11px 12px !important; }
-  #mcNav .mc-btn-label, .mc-nav .mc-btn-label { font-size: 9.2px !important; }
 }
 @media (prefers-reduced-motion: reduce) {
   #mcNav .mc-btn,

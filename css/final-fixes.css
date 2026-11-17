@@ -485,8 +485,10 @@ html body #mcNav.mc-nav {
      верхней кромки, и на стыке с доком проступала вторая линия. */
   /* Тень сдвинута вниз и поджата, чтобы она не выползала 1–2 px над верхней
      кромкой бара — иначе на стыке с доком видна тонкая тёмная линия. */
+  /* [r30] Тень стала мягче (.58 → .44): в 8-пиксельной щели под баром она
+     читалась тёмной полосой-рамкой, хотя это воздух над краем экрана. */
   box-shadow:
-    0 18px 34px -10px rgba(10,6,2,.58) !important;
+    0 18px 34px -10px rgba(10,6,2,.44) !important;
   overflow:visible;
   align-items:center;
   gap:0;
@@ -496,7 +498,7 @@ html[data-theme="dark"] body #mcNav.mc-nav {
   /* В тёмной теме бар чуть светлее страницы — иначе он растворяется. */
   background: linear-gradient(180deg,rgba(46,31,17,.985),rgba(20,13,7,.995)) !important;
   box-shadow:
-    0 18px 34px -10px rgba(0,0,0,.70) !important;
+    0 18px 34px -10px rgba(0,0,0,.52) !important;
 }
 #mcNav .mc-btn {
   min-height:48px !important;
@@ -508,10 +510,12 @@ html[data-theme="dark"] body #mcNav.mc-nav {
      [r29] Один и тот же тон чернил в обеих темах — день и ночь равны. */
   color:rgba(240,228,208,.84) !important;
 }
-#mcNav .mc-btn svg { width:19px; height:19px; stroke-width:1.55; }
+#mcNav .mc-btn svg { width:20px; height:20px; stroke-width:1.5; }
 #mcNav .mc-btn-label {
-  font-size:9.5px !important;
-  letter-spacing:.08em !important;
+  /* [r30] Кегль подписи — из premium-overrides (10.5 px); здесь только
+     начертание и регистр, чтобы не плодить второй источник размера. */
+  font-size:clamp(10px, 2.9vw, 10.5px) !important;
+  letter-spacing:.055em !important;
   font-weight:500;
   line-height:1;
   text-transform:uppercase;
@@ -537,7 +541,8 @@ html[data-theme="dark"] body #mcNav.mc-nav {
     width:46px !important;
     height:46px !important;
   }
-  .back-to-top.footer-clearance { opacity:0 !important; pointer-events:none !important; transform:translateY(10px) scale(.9) !important; }
+  /* [r30] Уход кнопки у футера — только прозрачность и сдвиг, без масштаба. */
+  .back-to-top.footer-clearance { opacity:0 !important; pointer-events:none !important; transform:translateY(8px) !important; }
 
 
   #why .features-grid {
@@ -1968,13 +1973,11 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
    ════════════════════════════════════════════════════════════════════════ */
 .back-to-top,
 .back-to-top:hover {
+  /* [r30] У кнопки нет рамки; тень одна и мягкая — квадрат стоит на странице,
+     а не «висит» в золотом ореоле. */
   border: 0 !important;
-  box-shadow: 0 10px 26px rgba(58,32,6,.34) !important;
+  box-shadow: 0 6px 18px rgba(24,12,2,.30) !important;
 }
-.back-to-top .btt-ring circle { stroke-width: 2.6; }
-/* Трек не рисуем отдельным кольцом: контур кнопки и есть его «начало». */
-.back-to-top .btt-ring .btt-ring-track { stroke: rgba(255,238,206,0); }
-.back-to-top .btt-ring .btt-ring-fill { stroke: rgba(255,246,224,.98); }
 
 @media (max-width: 560px) {
   /* Нижний бар перекрывает док — он и есть «дно», из-под которого тот выезжает. */
@@ -2008,11 +2011,13 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
     content: "";
     position: absolute;
     left: -1px;
-    top: 15px;
-    bottom: 15px;
+    /* [r30] Сепараторы были ярче неактивных подписей и читались как сетка.
+       Теперь это волосяная тень между пунктами: 18 px высотой, .16 в центре. */
+    top: 21px;
+    bottom: 21px;
     width: 1px;
     opacity: 1;
-    background: linear-gradient(180deg, transparent, rgba(232,184,122,.34), transparent);
+    background: linear-gradient(180deg, transparent, rgba(232,184,122,.16), transparent);
     pointer-events: none;
   }
   #mcNav .mc-btn:first-child::before { display: none; }
@@ -2072,6 +2077,11 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
        видимой части и не заезжают под бар ни на пиксель. */
     padding-bottom: calc(13px + var(--mc-dock-overlap)) !important;
   }
+  /* [r30] Базовый .calc-result (style.css) несёт margin-top: 8px. На телефоне
+     эта щель была видна над доком: в неё просвечивала страница и ложилась тень
+     — читалось как прямоугольная подложка под панелью. Док и бар — одна
+     конструкция, поэтому щели нет. */
+  #calcRightCol .calc-result { margin-top: 0; }
 }
 
 /* [r29] 320–360 px: подпись и цена вдвоём в строку не влезают — цена уходила

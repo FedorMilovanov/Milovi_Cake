@@ -602,8 +602,32 @@ function cartTotalText(total) {
   return Number.isSafeInteger(total) ? total.toLocaleString('ru') + ' ₽' : 'Цена уточняется';
 }
 
+/* [r30] Единый контракт счётчиков: «количество изделий в корзине».
+   Раньше бар показывал число позиций (Object.keys(cart).length), а бейдж
+   калькулятора — сумму qty, то есть килограммы (9 против 4 на скриншоте
+   владельца). Теперь одно число во всех счётчиках: штучный торт считается по
+   количеству штук, весовой — как одно изделие (его qty — килограммы). */
+function cartItemCount() {
+  let total = 0;
+  Object.keys(cart).forEach(key => {
+    const entry = cart[key];
+    if (!entry) return;
+    const parsed = parseCartKey(key);
+    let p = products.find(x => x.id === parsed.numId);
+    if (p && p.hasMaxi && entry.mode === 'maxi') p = p.maxiVariant;
+    if (p && p.unit !== 'кг') {
+      const pieces = Math.round(entry.qty);
+      total += Number.isFinite(pieces) && pieces > 0 ? pieces : 1;
+    } else {
+      total += 1;
+    }
+  });
+  return total;
+}
+window.cartItemCount = cartItemCount;
+
 function updateCartUI() {
-  const totalItems = Object.keys(cart).length;
+  const totalItems = cartItemCount();
   document.querySelectorAll('#cartBadge, [data-cart-badge]').forEach(badge => {
     badge.textContent = totalItems;
     badge.classList.toggle('visible', totalItems > 0);
@@ -1441,20 +1465,22 @@ if (document.readyState === 'loading') { document.addEventListener('DOMContentLo
 // ── SCROLL HANDLER ──
 const _scrollEl = document.getElementById('scroll-progress');
 const backToTopEl = document.getElementById('backToTop');
-// Soft-premium scroll-progress ring inside the back-to-top control (owner round).
-// [r26] Кольцо прогресса — самый внешний контур кнопки (46 px): r + stroke/2
-// доходит ровно до края, чтобы не читалось как вторая рамка внутри.
-const _bttRingR = 21.3;
-const _bttRingC = 2 * Math.PI * _bttRingR;
+// [r30] Прогресс прокрутки — один замкнутый контур по периметру кнопки.
+// Было два <circle> с rotate(-90deg) на SVG: кольцо читалось второй рамкой,
+// а поворот давал лишний композитный слой. Теперь один path по контуру
+// скруглённого квадрата: старт в верхней центральной точке, обход по часовой,
+// pathLength=100 — прогресс это dasharray/dashoffset, без пересчёта длины.
+// Контур идёт на 1 px внутри кнопки: визуально 44 px, hitbox остаётся 46 px.
+const _bttRingPath = 'M23 1H32A12 12 0 0 1 44 13V33A12 12 0 0 1 32 45H14A12 12 0 0 1 2 33V13A12 12 0 0 1 14 1H23Z';
 let _bttFill = null;
 if (backToTopEl && !backToTopEl.querySelector('.btt-ring')) {
   backToTopEl.insertAdjacentHTML('afterbegin',
-    '<svg class="btt-ring" width="46" height="46" viewBox="0 0 46 46" aria-hidden="true" focusable="false">' +
-    '<circle class="btt-ring-track" cx="23" cy="23" r="' + _bttRingR + '"/>' +
-    '<circle class="btt-ring-fill" cx="23" cy="23" r="' + _bttRingR + '"/></svg>');
+    '<svg class="btt-ring" viewBox="0 0 46 46" aria-hidden="true" focusable="false">' +
+    '<path class="btt-ring-track" d="' + _bttRingPath + '" pathLength="100"/>' +
+    '<path class="btt-ring-fill" d="' + _bttRingPath + '" pathLength="100"/></svg>');
   _bttFill = backToTopEl.querySelector('.btt-ring-fill');
-  _bttFill.style.strokeDasharray = _bttRingC.toFixed(2);
-  _bttFill.style.strokeDashoffset = _bttRingC.toFixed(2);
+  _bttFill.style.strokeDasharray = '100';
+  _bttFill.style.strokeDashoffset = '100';
 }
 let _scrollTicking = false;
 function _onScroll() {
@@ -1465,7 +1491,7 @@ function _onScroll() {
     const p = total > 0 ? Math.min(1, Math.max(0, y / total)) : 0;
     if (_scrollEl) _scrollEl.style.width = (p * 100) + '%';
     if (backToTopEl) backToTopEl.classList.toggle('visible', y > 600);
-    if (_bttFill) _bttFill.style.strokeDashoffset = (_bttRingC * (1 - p)).toFixed(2);
+    if (_bttFill) _bttFill.style.strokeDashoffset = ((1 - p) * 100).toFixed(2);
     _scrollTicking = false;
   });
 }
@@ -1839,7 +1865,18 @@ function _setCalcBackdrop(show) {
 
 document.addEventListener('click', function(e) { if (window.innerWidth > 560) return; const col = document.getElementById('calcRightCol'); if (!col || !col.classList.contains('calc-result-open')) return; if (!col.contains(e.target)) closeCalcPanel(); }, { passive: true });
 
-window.addEventListener('scroll', function() { if (window.innerWidth > 560) return; const col = document.getElementById('calcRightCol'); if (col?.classList.contains('calc-result-open') && col._scrollY !== window.scrollY) closeCalcPanel(); }, { passive: true });
+window.addEventListener('scroll', function() {
+  if (window.innerWidth > 560) return;
+  const col = document.getElementById('calcRightCol');
+  if (!col || !col.classList.contains('calc-result-open')) return;
+  // [r30] Если фокус внутри сметы, прокрутку мог вызвать сам браузер
+  // (Tab к кнопке «Добавить в корзину»). Раньше это молча закрывало панель —
+  // клавиатурой было не добраться до действий. Держим панель, но запоминаем
+  // позицию, чтобы следующий настоящий скролл её всё равно закрыл.
+  const expandable = document.getElementById('calcExpandable');
+  if (expandable && expandable.contains(document.activeElement)) { col._scrollY = window.scrollY; return; }
+  if (col._scrollY !== window.scrollY) closeCalcPanel();
+}, { passive: true });
 
 let _fillToastTimer = null;
 function showFillToast(optEl, groupId) {
@@ -2416,10 +2453,10 @@ if (scField && trackEl && dotsEl && stageEl) {
 function updateCalcCartBadge() {
   const badge = document.getElementById('calcCartBadge');
   if (!badge) return;
-  const total = Object.values(cart).reduce((sum, entry) => sum + (entry.qty || 0), 0);
-  const rounded = Math.round(total * 10) / 10;
-  badge.textContent = rounded;
-  badge.classList.toggle('visible', rounded > 0);
+  /* [r30] То же число, что в баре и шапке: количество изделий, не сумма веса. */
+  const total = cartItemCount();
+  badge.textContent = total;
+  badge.classList.toggle('visible', total > 0);
 }
 
 function addCalcToCartOnly(btn) {

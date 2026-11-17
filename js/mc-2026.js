@@ -591,6 +591,7 @@
 
   ready(function () {
     var topButton = document.getElementById('backToTop');
+    var runId = 0;
     if (topButton) {
       topButton.removeAttribute('onclick');
       topButton.addEventListener('click', function (event) {
@@ -603,7 +604,16 @@
         var start = window.scrollY || document.documentElement.scrollTop || 0;
         var started = performance.now();
         var duration = Math.min(720, Math.max(360, start * 0.09));
+        // [r30] Один прогон за раз: повторный клик или ручная прокрутка
+        // отменяют предыдущий кадр-цикл, иначе два requestAnimationFrame
+        // борются за scrollY и картинка дёргается.
+        runId += 1;
+        var myRun = runId;
+        function stopRun() { runId += 1; }
+        window.addEventListener('wheel', stopRun, { passive: true, once: true });
+        window.addEventListener('touchstart', stopRun, { passive: true, once: true });
         function frame(now) {
+          if (myRun !== runId) return;
           var progress = Math.min((now - started) / duration, 1);
           var eased = 1 - Math.pow(1 - progress, 4);
           window.scrollTo(0, Math.round(start * (1 - eased)));
