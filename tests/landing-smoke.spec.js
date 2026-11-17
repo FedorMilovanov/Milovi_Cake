@@ -435,10 +435,10 @@ test.describe('premium media blocks', () => {
     const cards = page.locator('#wedStyles .lp-card');
     await expect(cards).toHaveCount(3);
     await expect(cards.locator('.wed-collection-kicker')).toHaveText([
-      'Реальная работа', 'Визуализация стиля', 'Визуализация стиля',
+      'Реальная работа', 'По фото реального торта', 'Фото реальных работ',
     ]);
     await expect(cards.nth(1).locator('source[type="image/avif"]'))
-      .toHaveAttribute('srcset', '/img/wedding-style-golden-atelier.avif');
+      .toHaveAttribute('srcset', /wedding-superhero-couple-sm\.avif 480w, \/img\/wedding-superhero-couple\.avif 720w/);
     await expect(cards.nth(1).locator('img')).toHaveAttribute('loading', 'lazy');
     await cards.nth(1).locator('img').scrollIntoViewIfNeeded();
     await expect.poll(() => cards.nth(1).locator('img').evaluate((img) => img.naturalWidth)).toBeGreaterThan(0);
@@ -480,7 +480,8 @@ test.describe('premium media blocks', () => {
     expect(formats).toHaveLength(3);
     for (const { product, image, credit, label } of formats) {
       expect(product.image).toBe(image);
-      if (credit === 'Визуализация стиля') expect(product.description).toContain('Визуализация стиля');
+      if (credit === 'По фото реального торта') expect(product.description).toContain('художественная визуализация');
+      if (credit === 'Фото реальных работ') expect(product.description).toContain('Фотоподборка реальных работ');
       // These are starting rates or require a minimum quantity, not the total
       // purchase price of a single fixed offer.
       expect(product.offers).toBeUndefined();
@@ -488,8 +489,9 @@ test.describe('premium media blocks', () => {
     expect(formats[0].label).toBe('от\u00a03\u00a0000\u00a0₽/кг'); // Keep the price together with real web fonts.
     expect(formats[0].product.description).toContain('от 3 000 ₽/кг');
     expect(formats[2].label).toBe('от 350 ₽/шт.');
-    expect(formats[2].product.description).toContain('минимальный заказ — 2 пирожных или 6 капкейков');
-    await expect(page.locator('#wedStyles .lp-card').nth(2)).toContainText('Минимальный заказ — 2 пирожных или 6 капкейков');
+    expect(formats[2].product.description).toContain('Минимальный заказ: 6 капкейков одного вкуса или 2 пирожных Павлова');
+    await expect(page.locator('#wedStyles .lp-card').nth(2)).toContainText('Капкейки (от 6 шт. одного вкуса)');
+    await expect(page.locator('#wedStyles .lp-card').nth(2)).toContainText('пирожные «Павлова» (от 2 шт.)');
     await expect(page.locator('.wed-meta')).toContainText('От 3 000 ₽/кг');
     await expect(page.locator('.bridal-panel .lp-section-head')).toContainText('от 3 000 ₽/кг');
     for (const selector of ['.wed-meta', '.bridal-panel .lp-section-head p']) {
