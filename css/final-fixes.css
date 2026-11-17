@@ -472,19 +472,18 @@ html body #mcNav.mc-nav {
   height:60px !important;
   padding:0 5px !important;
   border:1px solid rgba(226,188,137,.40) !important;
-  /* [r27] Макет владельца (round G): эспрессо-стекло с золотой волосяной
-     обводкой и мягким свечением. Тёплый отсвет сверху — inset-тень, а не
-     слой фона: первый rgba() в background-image должен остаться непрозрачным
-     (контракт tests/layout-matrix MIN_MOBILE_NAV_ALPHA). */
-  background: linear-gradient(180deg,rgba(36,23,13,.978),rgba(17,10,5,.991)) !important;
-  -webkit-backdrop-filter:blur(24px) saturate(150%) !important;
-  backdrop-filter:blur(24px) saturate(150%) !important;
+  /* [r28] Верх бара — тот же тон, что низ дока: две поверхности читаются
+     как одна. Отсвет сверху — inset-тень, а не слой фона: первый rgba()
+     в background-image должен остаться непрозрачным (контракт
+     tests/layout-matrix MIN_MOBILE_NAV_ALPHA). */
+  background: linear-gradient(180deg,rgba(36,23,13,.986),rgba(17,10,5,.991)) !important;
+  /* [r28] Без верхней inset-подсветки и без тени вверх: они меняли тон
+     верхней кромки, и на стыке с доком проступала вторая линия. */
+  /* Тень сдвинута вниз и поджата, чтобы она не выползала 1–2 px над верхней
+     кромкой бара — иначе на стыке с доком видна тонкая тёмная линия. */
   box-shadow:
-    0 16px 34px rgba(10,6,2,.52),
-    0 -8px 22px rgba(8,4,2,.42),
-    0 0 34px rgba(232,184,122,.11),
-    0 26px 40px -26px rgba(232,184,122,.34) inset,
-    0 1px 0 rgba(255,238,206,.13) inset !important;
+    0 20px 30px -4px rgba(10,6,2,.55),
+    0 0 34px rgba(232,184,122,.11) !important;
   overflow:visible;
   align-items:center;
   gap:0;
@@ -495,8 +494,7 @@ html[data-theme="dark"] body #mcNav.mc-nav {
   background: linear-gradient(180deg,rgba(46,31,17,.985),rgba(20,13,7,.995)) !important;
   box-shadow:
     0 18px 40px rgba(0,0,0,.62),
-    0 0 26px rgba(232,184,122,.06),
-    0 1px 0 rgba(255,238,206,.10) inset !important;
+    0 0 26px rgba(232,184,122,.06) !important;
 }
 #mcNav .mc-btn {
   min-height:48px !important;
@@ -2018,4 +2016,61 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
 
 @media (prefers-reduced-motion: reduce) {
   #mcNav .mc-btn.mc-active::before { animation: none; }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   [r28] Пока док на экране, верхняя золотая обводка бара не нужна: она
+   давала вторую линию на стыке. И выбранный пункт — без рамки, тёплой
+   подсветкой (владелец: «лучше, если выбрано без рамок»).
+   ════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  body:not(.mc-dock-idle):not(.mc-dock-out) #mcNav.mc-nav {
+    border-top-color: transparent !important;
+  }
+
+  /* [r28] Выбранный пункт — без капсулы и без рамки (владелец: «просто она
+     приобретает другой интересный цвет, подсветку, без рамок»). Только
+     мягкое тёплое свечение за иконкой: оно гаснет до нуля внутри плитки,
+     поэтому никакой границы/ореола не читается. */
+  #mcNav .mc-btn.mc-active::before {
+    border: 0;
+    border-radius: 50%;
+    background:
+      radial-gradient(52% 50% at 50% 42%, rgba(247,216,163,.34), rgba(238,192,132,.13) 56%, rgba(238,192,132,0) 100%);
+    box-shadow: none;
+  }
+  #mcNav .mc-btn.mc-active .mc-btn-label {
+    color: #f8ddb0;
+    text-shadow: 0 0 12px rgba(240,201,138,.42);
+  }
+  #mcNav .mc-btn.mc-active svg {
+    filter: drop-shadow(0 0 8px rgba(240,201,138,.50));
+    fill: rgba(240,201,138,.16);
+  }
+}
+
+@media (max-width: 560px) {
+  /* [r28] Внутренняя полоса «примерная стоимость» была залита card-bg и
+     перекрывала градиент панели — отсюда «отдельная панель» на стыке с баром.
+     Теперь поверхность одна: градиент .calc-result, полоса прозрачная. */
+  #calcRightCol .calc-result-collapsed {
+    background: transparent !important;
+    border-top-color: transparent !important;
+  }
+}
+
+/* [r28] Бар и док — одна поверхность: на телефоне у бара вообще нет верхней
+   обводки (даже прозрачной: она всё равно давала полоску на стыке). */
+@media (max-width: 560px) {
+  /* [r28] У бара на телефоне обводки нет вовсе: золотые боковые линии
+     заворачивались по скруглению и рисовали на стыке дугу — «вторую полосу». */
+  html body #mcNav.mc-nav { border: 0 !important; }
+}
+
+/* [r28] В раскрытом виде бар уезжает, и панель висела в 46 px над нижним
+   краем — под ней просвечивала страница. Теперь панель доходит до низа. */
+@media (max-width: 560px) {
+  body.calc-panel-open .calc-right-col {
+    bottom: env(safe-area-inset-bottom, 0px) !important;
+  }
 }

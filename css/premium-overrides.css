@@ -1761,11 +1761,17 @@ button[disabled] {
     /* [r26] Док — продолжение нижнего бара (владелец: «чтобы она такой доп
        панелью от нижнего меню вылезала, из неё вытекала»): во всю ширину и
        вплотную к бару, без просвета, через который просвечивал текст. */
-    left: 12px !important;
-    right: 12px !important;
+    /* [r28] Во всю ширину, как сам бар: вертикальных боковых кромок у дока
+       нет («по краям будто отдельная панель» — владелец). Скруглены только
+       верхние углы, поэтому силуэт бара продолжается вверх без стыка. */
+    left: 0 !important;
+    right: 0 !important;
     width: auto !important;
-    /* [r26] Стык в стык с баром: 8 px от низа + 56 px его высоты. */
-    bottom: calc(64px + env(safe-area-inset-bottom, 0px)) !important;
+    /* [r28] Низ панели заходит под бар на 22 px (12 + 10 внутреннего
+       отступа): край, обводка и вырезы скруглённых верхних углов бара
+       скрыты, поэтому стык читается как одна поверхность, без «двух полос».
+       Верх панели при этом не двигается. */
+    bottom: calc(46px + env(safe-area-inset-bottom, 0px)) !important;
   }
   /* [r17] док цены — отдельная пилюля над баром, а не плашка во весь экран:
      скруглена со всех сторон, с волосяной золотой обводкой и мягкой тенью,
@@ -1774,16 +1780,29 @@ button[disabled] {
     /* [r27] Док по макету владельца (round G): эспрессо-панель с золотой
        волосяной обводкой, тёплым отсветом сверху и мягким свечением.
        Скруглены только верхние углы — низ уходит под нижний бар. */
-    border-radius: 26px 26px 0 0 !important;
+    border-radius: 22px 22px 0 0 !important;
     max-height: calc(100dvh - 116px - env(safe-area-inset-top, 0px)) !important;
+    /* [r28] Низ панели совпадает по цвету с верхом бара, нижней обводки нет:
+       панель не «отдельная карточка», а продолжение бара (владелец). */
+    /* [r28] Плоский эспрессо, ровно того же тона, что верх бара: любая
+       вертикальная растяжка давала на стыке ступеньку и «вторую полосу».
+       Глубина — отсветом сверху (inset), который до стыка не доходит. */
     background:
-      radial-gradient(120% 120% at 12% 0%, rgba(232,184,122,.12), transparent 62%),
-      linear-gradient(165deg, rgba(46,29,16,.995), rgba(20,12,6,.998)) !important;
-    border: 1px solid rgba(226,188,137,.40) !important;
+      linear-gradient(180deg, rgba(48,30,17,.994) 0%, rgba(36,23,13,.988) 42%, rgba(36,23,13,.988) 100%) !important;
+    border: 0 !important;
+    border-top: 1px solid rgba(226,188,137,.34) !important;
+    padding-bottom: 10px !important;
     box-shadow:
       0 -16px 44px rgba(16,9,3,.44),
-      0 10px 28px rgba(16,9,3,.30),
-      0 1px 0 rgba(255,238,206,.14) inset !important;
+      0 1px 0 rgba(255,238,206,.14) inset,
+      0 26px 40px -28px rgba(240,205,150,.16) inset !important;
+  }
+  /* [r28] Тёплый блик панели раньше расползался до самого низа (radial «at
+     50% 0%» с farthest-corner), из-за чего низ дока был светлее верха бара и
+     на стыке читалась вторая полоса. Теперь блик живёт только в верхней
+     половине панели — низ ровно того же тона, что бар. */
+  .calc-right-col .calc-result::after {
+    background: radial-gradient(120% 52% at 50% 0%, rgba(240,205,150,.10), rgba(240,205,150,0) 72%) !important;
   }
   .calc-result-collapsed {
     min-height: 70px !important;
@@ -1869,9 +1888,12 @@ button[disabled] {
   }
 }
 [data-theme="dark"] .calc-right-col .calc-result {
-  background: linear-gradient(165deg, rgba(31,20,11,.99), rgba(9,6,3,.99)) !important;
+  /* [r28] Низ панели = верх бара в тёмной теме: стык без ступеньки тона. */
+  background: linear-gradient(180deg, rgba(58,39,23,.994) 0%, rgba(46,31,17,.99) 42%, rgba(46,31,17,.99) 100%) !important;
   border-color: rgba(232,184,122,.22) !important;
-  box-shadow: 0 -20px 60px rgba(0,0,0,.62), 0 0 30px rgba(212,167,106,.08) !important;
+  box-shadow:
+    0 -20px 60px rgba(0,0,0,.62),
+    0 26px 40px -28px rgba(240,205,150,.12) inset !important;
 }.cart-overlay[role="button"],#cookiePrivacyOverlay[role="button"],[id$="Overlay"][role="button"]{
   outline: none !important;
 }
