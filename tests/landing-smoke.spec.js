@@ -192,6 +192,32 @@ test.describe('premium media blocks', () => {
     await expect(page.locator('img[src*="gallery-11.webp"]').first()).toBeVisible();
   });
 
+  test('wedding superhero cake is a distinct card with honest provenance and responsive assets', async ({ page, request }) => {
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    const card = page.locator('#wedStyles .lp-card').nth(1);
+    await expect(card).toContainText('Многоярусный торт с характером');
+    await expect(card).toContainText('свадебный фон на фото — художественная визуализация');
+    await expect(card.locator('img')).toHaveAttribute('src', '/img/wedding-superhero-couple.webp');
+    await expect(card.locator('img')).toHaveAttribute('alt', /свадебном фоне/);
+    await expect(card.locator('img')).toHaveAttribute('loading', 'lazy');
+    const responsiveSources = await card.locator('source[type="image/avif"]').getAttribute('srcset');
+    expect(responsiveSources).toContain('/img/wedding-superhero-couple-sm.avif 480w');
+    await expect(page.locator('.wed-collection-card')).toHaveCount(4);
+    await expect(page.locator('img[src*="wedding-style-golden-atelier.webp"]')).toHaveCount(1);
+    for (const file of ['/img/wedding-superhero-couple-sm.avif', '/img/wedding-superhero-couple.avif', '/img/wedding-superhero-couple.webp']) {
+      const response = await request.get(file);
+      expect(response.status()).toBe(200);
+      expect(response.headers()['content-type'].startsWith('image/')).toBe(true);
+    }
+    const schemaProduct = await page.evaluate(() => {
+      const data = JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent);
+      const list = data['@graph'].find(item => item['@type'] === 'ItemList');
+      return list.itemListElement.find(item => item.item.name === 'Многоярусный торт с характером')?.item;
+    });
+    expect(schemaProduct.image).toBe('https://milovicake.ru/img/wedding-superhero-couple.webp');
+    expect(schemaProduct.description).toContain('художественная визуализация');
+  });
+
   test('real wedding photo uses a compact mobile source and the process clip stays portrait', async ({ page }) => {
     for (const width of [320, 390, 412]) {
       await page.setViewportSize({ width, height: 844 });
