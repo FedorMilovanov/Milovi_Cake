@@ -1237,11 +1237,12 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
    '.wed-wrap main textarea, .wed-wrap main summary, .wed-wrap main h1, .wed-wrap main h2, '+
    '.wed-wrap main h3, .wed-wrap main p, .wed-wrap main figcaption, '+
    '.wed-wrap main .wed-proof-cake-visual, .wed-wrap main .wed-proof-video-frame, '+
-   '.wed-wrap main .wed-collection-photo, .wed-wrap main .bridal-step, .wed-wrap main .bridal-mini'
+   '.wed-wrap main .wed-collection-photo, .wed-wrap main .bridal-step, .wed-wrap main .bridal-mini, '+
+   '.wed-wrap main picture, .wed-wrap main img, .wed-wrap main video'
  );
  var pending=false;
  function controlBehindDock(){
-   // Keep this optional dock off controls, headlines, body text and featured photos.
+   // Keep this optional dock off controls, all photographed media and editorial text.
    // Estimate the dock's hit rectangle even while [hidden] keeps it display:none.
    var bottomOffset=parseFloat(getComputedStyle(bar).bottom)||12;
    var dockHeight=Math.max(55,parseFloat(getComputedStyle(bar).height)||55);
