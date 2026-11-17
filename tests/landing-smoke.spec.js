@@ -1757,6 +1757,45 @@ test('wedding mobile photo and video align, branded contacts remain touch access
   }
 });
 
+test('wedding compact phones keep gallery, calculator and enquiry usable', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('milovi_analytics_consent_v1', 'granted'));
+  for (const width of [320, 360, 375, 390, 430]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+
+    const layout = await page.evaluate(() => {
+      const card = document.querySelector('.wed-collection-card').getBoundingClientRect();
+      const calc = document.querySelector('.wed-calc').getBoundingClientRect();
+      const grid = document.querySelector('.wed-collection-grid');
+      const dock = document.querySelector('.wed-mobile-sticky');
+      const gridColumns = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
+      // Measure the dock's true width without changing its normal visibility lifecycle.
+      const wasHidden = dock.hidden;
+      dock.hidden = false;
+      const dockRect = dock.getBoundingClientRect();
+      dock.hidden = wasHidden;
+      return {
+        cardWidth: card.width, calcWidth: calc.width, gridColumns,
+        dockWidth: dockRect.width, dockLeft: dockRect.left, dockRight: dockRect.right,
+        dockHeight: dockRect.height, scrollWidth: document.documentElement.scrollWidth,
+        viewportWidth: innerWidth,
+      };
+    });
+
+    const compact = width <= 375;
+    expect(layout.gridColumns).toBe(compact ? 1 : 2);
+    if (compact) {
+      expect(layout.cardWidth).toBeGreaterThanOrEqual(width - 48);
+      expect(layout.calcWidth).toBeGreaterThanOrEqual(width - 85);
+    }
+    expect(layout.dockWidth).toBeLessThanOrEqual(240);
+    expect(layout.dockHeight).toBeGreaterThanOrEqual(44);
+    expect(layout.dockLeft).toBeGreaterThanOrEqual(0);
+    expect(layout.dockRight).toBeLessThanOrEqual(width + 1);
+    expect(layout.scrollWidth).toBeLessThanOrEqual(layout.viewportWidth + 1);
+  }
+});
+
 const localFontPages = ['/o-konditere/', '/bento-torty/', '/svadebnye-torty/',
   '/zakazat-tort-spb/', '/dostavka-i-oplata/', '/otzyvy/'];
 
