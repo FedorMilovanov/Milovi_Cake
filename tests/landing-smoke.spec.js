@@ -218,6 +218,44 @@ test.describe('premium media blocks', () => {
     expect(schemaProduct.description).toContain('художественная визуализация');
   });
 
+
+  test('wedding dessert card shows real Milovi Cake photography instead of mock dessert table', async ({ page, request }) => {
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    const card = page.locator('#wedStyles .lp-card').nth(2);
+    await expect(card).toContainText('Фото реальных работ');
+    await expect(card).toContainText('меренговые рулеты');
+    await expect(card).toContainText('Павлова');
+    await expect(card.locator('img')).toHaveAttribute('src', '/img/wedding-desserts-real.webp');
+    await expect(card.locator('img')).toHaveAttribute('alt', /Три реальные работы Milovi Cake/);
+    const responsive = await card.locator('source[type="image/avif"]').getAttribute('srcset');
+    expect(responsive).toContain('wedding-desserts-real-sm.avif 480w');
+    expect(responsive).toContain('wedding-desserts-real.avif 720w');
+    await expect(page.locator('#wedStyles img[src*="wedding-table"]')).toHaveCount(0);
+    const detail = page.locator('.wed-collection-detail');
+    await expect(detail.locator('img')).toHaveAttribute('src', '/img/meringue_roll_5.webp');
+    await expect(detail.locator('a')).toHaveAttribute('href', '#wedStyles');
+    await expect(page.locator('img[src*="wedding-style-pure-ivory.webp"]')).toHaveCount(1);
+    for (const file of [
+      '/img/wedding-desserts-real-sm.avif',
+      '/img/wedding-desserts-real.avif',
+      '/img/wedding-desserts-real.webp',
+      '/img/cupcakes.webp',
+      '/img/meringue_roll_6.webp',
+      '/img/pavlova.webp',
+      '/img/meringue_roll_5.avif',
+    ]) {
+      const response = await request.get(file);
+      expect(response.status()).toBe(200);
+      expect(response.headers()['content-type'].startsWith('image/')).toBe(true);
+    }
+    const schema = await page.evaluate(() => {
+      const graph = JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent)['@graph'];
+      return graph.find(item => item['@type'] === 'ItemList').itemListElement.find(item => item.item.name === 'Десерты к свадьбе').item;
+    });
+    expect(schema.image).toBe('https://milovicake.ru/img/wedding-desserts-real.webp');
+    expect(schema.description).toContain('реальных работ');
+  });
+
   test('real wedding photo uses a compact mobile source and the process clip stays portrait', async ({ page }) => {
     for (const width of [320, 390, 412]) {
       await page.setViewportSize({ width, height: 844 });
@@ -582,7 +620,7 @@ test.describe('premium media blocks', () => {
         });
         expect(photo.width).toBeCloseTo(width - margin, 0);
         expect(photo.loaded).toBe(true);
-        expect(photo.url).toContain('/img/wedding-style-pure-ivory.avif');
+        expect(photo.url).toContain('/img/meringue_roll_5.avif');
       } finally {
         await context.close();
       }
