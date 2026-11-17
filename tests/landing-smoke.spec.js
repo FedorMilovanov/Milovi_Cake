@@ -1830,6 +1830,45 @@ test('wedding compact phones keep gallery, calculator and enquiry usable', async
   }
 });
 
+test('wedding touch layout keeps navigation and gallery return action accessible through tablet breakpoints', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('milovi_analytics_consent_v1', 'granted'));
+  for (const width of [320, 390, 700, 768, 860]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('html')).not.toHaveClass(/mc-fast-init/, { timeout: 3500 });
+
+    expect(await page.locator('.wed-proof-note a').count()).toBe(0);
+    const backLink = page.locator('.wed-collection-backlink');
+    await expect(backLink).toHaveAttribute('href', '#mediaShowcaseTitle');
+    await expect(backLink).toContainText('Смотреть реальные работы');
+    const geometry = await page.evaluate(() => {
+      const selectors = [
+        '.wed-wrap .landing-footer nav a',
+        '.wed-wrap .landing-footer address a',
+        '.wed-wrap .lp-related a',
+        '.wed-wrap .mc-consent-trigger',
+        '.wed-wrap .wed-collection-backlink',
+      ];
+      return {
+        links: selectors.flatMap((selector) =>
+          [...document.querySelectorAll(selector)].map((el) => ({
+            selector, height: el.getBoundingClientRect().height,
+            right: el.getBoundingClientRect().right,
+          }))),
+        returnDisplay: getComputedStyle(document.querySelector('.wed-collection-backlink')).display,
+        overflow: document.documentElement.scrollWidth - innerWidth,
+      };
+    });
+    expect(geometry.links.length).toBeGreaterThanOrEqual(15);
+    for (const link of geometry.links) {
+      expect(link.height, `${width}px ${link.selector}`).toBeGreaterThanOrEqual(44);
+      expect(link.right, `${width}px ${link.selector}`).toBeLessThanOrEqual(width + 1);
+    }
+    expect(geometry.returnDisplay).toBe('flex');
+    expect(geometry.overflow).toBeLessThanOrEqual(1);
+  }
+});
+
 const localFontPages = ['/o-konditere/', '/bento-torty/', '/svadebnye-torty/',
   '/zakazat-tort-spb/', '/dostavka-i-oplata/', '/otzyvy/'];
 
