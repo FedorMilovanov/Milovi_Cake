@@ -233,7 +233,10 @@ test.describe('premium media blocks', () => {
     expect(responsive).toContain('wedding-cupcakes-styled.avif 720w');
     await expect(page.locator('#wedStyles img[src*="wedding-table"]')).toHaveCount(0);
     const detail = page.locator('.wed-collection-detail');
-    await expect(detail.locator('img')).toHaveAttribute('src', '/img/meringue_roll_5.webp');
+    await expect(detail.locator('img')).toHaveAttribute('src', '/img/wedding-roulade-detail.webp');
+    await expect(detail.locator('.wed-collection-kicker')).toHaveText('Визуализация');
+    await expect(detail.locator('img')).toHaveAttribute('alt', /Художественная визуализация/);
+    await expect(detail.locator('source')).toHaveAttribute('srcset', /wedding-roulade-detail-sm\.avif 800w/);
     await expect(detail.locator('a')).toHaveAttribute('href', '#wedStyles');
     await expect(page.locator('img[src*="wedding-style-pure-ivory.webp"]')).toHaveCount(1);
     for (const file of [
@@ -243,7 +246,9 @@ test.describe('premium media blocks', () => {
       '/img/cupcakes.webp',
       '/img/meringue_roll_6.webp',
       '/img/pavlova.webp',
-      '/img/meringue_roll_5.avif',
+      '/img/wedding-roulade-detail-sm.avif',
+      '/img/wedding-roulade-detail.avif',
+      '/img/wedding-roulade-detail.webp',
     ]) {
       const response = await request.get(file);
       expect(response.status()).toBe(200);
@@ -436,7 +441,7 @@ test.describe('premium media blocks', () => {
     const cards = page.locator('#wedStyles .lp-card');
     await expect(cards).toHaveCount(3);
     await expect(cards.locator('.wed-collection-kicker')).toHaveText([
-      'Реальная работа', 'По фото реального торта', 'Фото реальных работ',
+      'Реальная работа', 'По фото реального торта', 'Визуализация оформления',
     ]);
     await expect(cards.nth(1).locator('source[type="image/avif"]'))
       .toHaveAttribute('srcset', /wedding-superhero-couple-sm\.avif 480w, \/img\/wedding-superhero-couple\.avif 720w/);
@@ -482,7 +487,7 @@ test.describe('premium media blocks', () => {
     for (const { product, image, credit, label } of formats) {
       expect(product.image).toBe(image);
       if (credit === 'По фото реального торта') expect(product.description).toContain('художественная визуализация');
-      if (credit === 'Фото реальных работ') expect(product.description).toContain('Фотоподборка реальных работ');
+      if (credit === 'Визуализация оформления') expect(product.description).toContain('Художественная визуализация');
       // These are starting rates or require a minimum quantity, not the total
       // purchase price of a single fixed offer.
       expect(product.offers).toBeUndefined();
@@ -623,7 +628,7 @@ test.describe('premium media blocks', () => {
         });
         expect(photo.width).toBeCloseTo(width - margin, 0);
         expect(photo.loaded).toBe(true);
-        expect(photo.url).toContain('/img/meringue_roll_5.avif');
+        expect(photo.url).toMatch(/\/img\/wedding-roulade-detail(?:-sm)?\.avif/);
       } finally {
         await context.close();
       }
@@ -753,6 +758,17 @@ test.describe('premium media blocks', () => {
         }
       }
     }
+  });
+
+  test('wedding date click sends consent-mediated lead handoff even with noopener', async ({ page }) => {
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    await page.evaluate(() => {
+      window.weddingAnalyticsCalls = [];
+      window.MiloviConsent = { leadHandoff: (...args) => window.weddingAnalyticsCalls.push(args) };
+      window.open = () => null;
+    });
+    await page.locator('#wedDate').evaluate((el) => el.form.requestSubmit());
+    await expect.poll(() => page.evaluate(() => window.weddingAnalyticsCalls)).toEqual([['whatsapp', 'wedding_date']]);
   });
 
   test('wedding date form still opens a prefilled WhatsApp brief after the mobile layout change', async ({ page }) => {

@@ -441,8 +441,8 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
         </div>
         <p class="wed-collection-note">Эти четыре образа — визуализации стиля, а не фотографии выполненных заказов. Нажмите на карточку, чтобы обсудить идею в WhatsApp. <a href="#mediaShowcaseTitle">Реальные работы и видео — выше ↑</a>.</p>
         <div class="wed-collection-detail">
-          <picture><source type="image/avif" srcset="/img/meringue_roll_5.avif"><img src="/img/meringue_roll_5.webp" alt="Настоящий меренговый рулет Milovi Cake с кремовым декором в подарочной коробке" width="1024" height="1536" loading="lazy" decoding="async"/></picture>
-          <div class="wed-collection-detail-copy"><span class="wed-collection-kicker">Реальная работа</span><h3>Десерты, которые дополняют праздник</h3><a href="#wedStyles">Посмотреть десерты <span aria-hidden="true">→</span></a></div>
+          <picture><source type="image/avif" srcset="/img/wedding-roulade-detail-sm.avif 800w, /img/wedding-roulade-detail.avif 1600w" sizes="(max-width: 500px) calc(100vw - 48px), (max-width: 860px) 50vw, 820px"><img src="/img/wedding-roulade-detail.webp" alt="Художественная визуализация двух меренговых рулетов с кремом, фисташкой и шоколадными украшениями на основе работ Milovi Cake" width="1600" height="900" loading="lazy" decoding="async"/></picture>
+          <div class="wed-collection-detail-copy"><span class="wed-collection-kicker">Визуализация</span><h3>Десерты, которые дополняют праздник</h3><a href="#wedStyles">Посмотреть десерты <span aria-hidden="true">→</span></a></div>
         </div>
       </div>
     </section>
@@ -631,8 +631,11 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
         }) : 'дата пока не выбрана';
         var text = 'Здравствуйте! Хочу проверить дату свадьбы в Санкт-Петербурге. Дата свадьбы: ' + label +
           '. Площадка: ___, гостей: ___. Подскажите, свободна ли дата и какой формат торта подойдёт?';
-        var handoff = window.open('https://wa.me/79119038886?text=' + encodeURIComponent(text), '_blank', 'noopener,noreferrer');
-        if (handoff && window.MiloviConsent) window.MiloviConsent.leadHandoff('whatsapp', 'wedding_date');
+        window.open('https://wa.me/79119038886?text=' + encodeURIComponent(text), '_blank', 'noopener,noreferrer');
+        // Track the user's handoff action; noopener returns null even when the tab opens.
+        if (window.MiloviConsent && typeof window.MiloviConsent.leadHandoff === 'function') {
+          window.MiloviConsent.leadHandoff('whatsapp', 'wedding_date');
+        }
       });
       input.addEventListener('focus', refreshMinDate);
       document.addEventListener('visibilitychange', function () {
