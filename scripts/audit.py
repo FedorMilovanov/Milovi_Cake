@@ -106,6 +106,7 @@ DEV_TOOLING_JS = {
     "tests/fastinit-layout-skip.spec.js",
     "tests/cart-pricing.spec.js",
     "tests/back-to-top.spec.js",
+    "tests/fillings-composition.spec.js",
     "scripts/lighthouse_tbt_window.js",
 }
 

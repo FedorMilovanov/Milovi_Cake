@@ -524,6 +524,14 @@
             </div>
           </div>
 
+          <!-- [r34] Панель состава начинки — та же, что на главной: до этого на
+               пригородах состав читался только по hover-подсказке, а на телефоне
+               его нельзя было узнать вовсе. Блок общий для всех 14 страниц,
+               правки — только здесь + пересборка build.py. -->
+          <div class="fill-desc-panel" id="fillDescPanel" style="opacity:0">
+            <p class="fill-desc-text" id="fillDescText"></p>
+          </div>
+
           <div class="calc-row calc-fill-section calc-row--hidden" id="calcFillBentoRow" data-for="bento bentomaxi">
             <span class="calc-label">Начинка</span>
             <div class="calc-options" id="calcFillBento">
@@ -903,7 +911,7 @@
 </section>
 
 <script>var IMG_BASE = '../../img';</script>
-<script src="../../js/main.js?v=20261118r35" defer></script>
+<script src="../../js/main.js?v=20261118r36" defer></script>
 <script src="../../js/nav.js?v=20261118r21" defer></script>
 <script src="../../js/mc-2026.js?v=20261118r26" defer></script>
 

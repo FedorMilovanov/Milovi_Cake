@@ -155,3 +155,141 @@ test('dark theme keeps the back-to-top hover matte', async ({ page }) => {
     expect(tapped.background).toBe('rgb(59, 40, 29)');
   }
 });
+
+/* r34: «Наверх» уступает видеоленте «Наши работы · в движении».
+   Плитки ленты — ссылки на видео с кнопкой Play; пока кнопка стоит на ленте,
+   она не должна ни закрывать плитку, ни перехватывать тап. Геометрия берётся
+   по статическому контейнеру #mcVideoStrip, поэтому движущийся трек на
+   результат не влияет. */
+async function frame(page, times = 2) {
+  await page.evaluate((n) => new Promise((resolve) => {
+    let i = 0;
+    const step = () => (++i >= n ? resolve() : requestAnimationFrame(step));
+    requestAnimationFrame(step);
+  }), times);
+}
+
+/* Доводим скролл до нужного положения ленты итеративно: страница догружается
+   (картинки, секции), и одиночный scrollTo промахивается на десятки пикселей. */
+async function settle(page, gap) {
+  for (let i = 0; i < 8; i++) {
+    const delta = await page.evaluate((g) => {
+      const strip = document.getElementById('mcVideoStrip').getBoundingClientRect();
+      const btt = document.getElementById('backToTop').getBoundingClientRect();
+      if (g === 'center') return (strip.top + strip.height / 2) - (btt.top + btt.height / 2);
+      return (strip.bottom + g) - btt.top;
+    }, gap);
+    if (i > 0 && Math.abs(delta) < 5) break;
+    await page.evaluate((d) => window.scrollTo({ top: Math.max(0, window.scrollY + d), behavior: 'instant' }), Math.round(delta));
+    await frame(page, 2);
+    await page.waitForTimeout(180);
+  }
+  await page.waitForTimeout(450); // даём переходам доиграть
+}
+
+async function tapPoint(page, x, y) {
+  const touch = await page.evaluate(() => ('ontouchstart' in window) || navigator.maxTouchPoints > 0);
+  if (touch) await page.touchscreen.tap(x, y);
+  else await page.mouse.click(x, y);
+}
+
+test('back-to-top steps aside from the video strip and lets tiles be tapped', async ({ page }) => {
+  for (const width of [320, 390, 768, 1440]) {
+    await openHome(page, width, 800);
+    await settle(page, 'center');
+
+    const state = await page.evaluate(() => {
+      const btt = document.getElementById('backToTop');
+      const strip = document.getElementById('mcVideoStrip');
+      const b = btt.getBoundingClientRect();
+      const s = strip.getBoundingClientRect();
+      const overlap = !(b.right < s.left || b.left > s.right || b.bottom < s.top || b.top > s.bottom);
+      const hit = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2);
+      return {
+        overlap,
+        obstructed: btt.classList.contains('btt-obstructed'),
+        pointerEvents: getComputedStyle(btt).pointerEvents,
+        hitIsBtt: !!(hit && hit.closest && hit.closest('#backToTop')),
+        point: { x: Math.round(b.left + b.width / 2), y: Math.round(b.top + b.height / 2) },
+      };
+    });
+
+    expect(state.overlap, `кнопка стоит на ленте при ${width}px`).toBe(true);
+    expect(state.obstructed, `кнопка обязана уйти с ленты при ${width}px`).toBe(true);
+    expect(state.pointerEvents).toBe('none');
+    expect(state.hitIsBtt).toBe(false);
+    await expect(page.locator('#backToTop')).toHaveCSS('opacity', '0');
+  }
+});
+
+test('a tap on the video strip under the hidden back-to-top opens the video', async ({ page }) => {
+  for (const width of [390, 768]) {
+    await openHome(page, width, 800);
+    await settle(page, 'center');
+
+    const point = await page.evaluate(() => {
+      const btt = document.getElementById('backToTop').getBoundingClientRect();
+      const hit = document.elementFromPoint(btt.left + btt.width / 2, btt.top + btt.height / 2);
+      return {
+        x: Math.round(btt.left + btt.width / 2),
+        y: Math.round(btt.top + btt.height / 2),
+        onTile: !!(hit && hit.closest && hit.closest('.vtile')),
+        hitIsBtt: !!(hit && hit.closest && hit.closest('#backToTop')),
+      };
+    });
+    expect(point.hitIsBtt).toBe(false);
+    expect(point.onTile, `под кнопкой на ${width}px должна быть плитка ленты`).toBe(true);
+
+    // Живой тап ровно в точку кнопки: событие обязано дойти до плитки и
+    // открыть видео, а не «съесться» невидимой кнопкой.
+    await tapPoint(page, point.x, point.y);
+    await expect(page.locator('body')).toHaveClass(/vview-open/, { timeout: 5_000 });
+    await page.keyboard.press('Escape');
+    await expect(page.locator('body')).not.toHaveClass(/vview-open/, { timeout: 5_000 });
+    await expect(page.locator('#backToTop')).toHaveCSS('opacity', '0');
+  }
+});
+
+test('back-to-top keeps a 12/24 px hysteresis on the video strip and never flickers', async ({ page }) => {
+  await openHome(page, 390, 800);
+
+  // 8 px от ленты — внутри зоны срабатывания (12): кнопка обязана уйти.
+  await settle(page, 8);
+  await expect(page.locator('#backToTop')).toHaveClass(/btt-obstructed/);
+  const gapNow = await page.evaluate(() => {
+    const s = document.getElementById('mcVideoStrip').getBoundingClientRect();
+    const b = document.getElementById('backToTop').getBoundingClientRect();
+    return Math.round(b.top - s.bottom);
+  });
+  expect(gapNow).toBeLessThan(12);
+
+  // 16 px — между порогами: состояние удерживается, кнопка не возвращается.
+  await settle(page, 16);
+  const held = await page.evaluate(() => {
+    const s = document.getElementById('mcVideoStrip').getBoundingClientRect();
+    const b = document.getElementById('backToTop').getBoundingClientRect();
+    return { gap: Math.round(b.top - s.bottom), obstructed: document.getElementById('backToTop').classList.contains('btt-obstructed') };
+  });
+  expect(held.gap).toBeGreaterThanOrEqual(12);
+  expect(held.gap).toBeLessThan(24);
+  expect(held.obstructed).toBe(true);
+
+  // 30 px — за порогом возврата: кнопка появляется снова.
+  await settle(page, 30);
+  await expect(page.locator('#backToTop')).not.toHaveClass(/btt-obstructed/);
+
+  // Быстрые проходы вверх/вниз через ленту: состояние каждый раз совпадает
+  // с геометрией, «залипания» и мерцания нет.
+  for (let i = 0; i < 3; i++) {
+    await settle(page, 30);
+    expect(await page.locator('#backToTop').evaluate((el) => el.classList.contains('btt-obstructed'))).toBe(false);
+    await settle(page, 'center');
+    expect(await page.locator('#backToTop').evaluate((el) => el.classList.contains('btt-obstructed'))).toBe(true);
+  }
+
+  // Возврат после последнего ухода с ленты.
+  await settle(page, 30);
+  await expect(page.locator('#backToTop')).not.toHaveClass(/btt-obstructed/);
+  await expect(page.locator('#backToTop')).toHaveClass(/visible/);
+  await expect(page.locator('#backToTop')).toHaveCSS('opacity', '1');
+});

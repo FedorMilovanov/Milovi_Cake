@@ -55,13 +55,23 @@ function parseCartKey(key) {
   return { numId: parseInt(parts[0]), mode: parts[1] || 'regular', fill: unesc(parts[2] || ''), decor: unesc(parts[3] || '') };
 }
 
+/* [r34] Старые корзины: до r33 в FILLS лежали названия с эмодзи, и ключ
+   строки содержал «Микс ягод 🍓». Чистим только ИЗВЕСТНЫЕ старые написания —
+   произвольные эмодзи из пользовательского текста не вырезаем: список явный
+   и пополняется вручную, если название менялось ещё когда-то. */
+const LEGACY_FILL_ALIASES = { 'Микс ягод 🍓': 'Микс ягод' };
+function normalizeLegacyFill(name) {
+  const raw = typeof name === 'string' ? name.trim() : '';
+  return LEGACY_FILL_ALIASES[raw] || raw;
+}
+
 function normalizeCartKey(key, entry) {
   const parsed = parseCartKey(key);
   if (!parsed.numId) return key;
   const p = products.find(x => x.id === parsed.numId);
   if (!p) return key;
   const mode = (entry && entry.mode) || parsed.mode || 'regular';
-  const fill = (entry && entry.fill) || parsed.fill || '';
+  const fill = normalizeLegacyFill((entry && entry.fill) || parsed.fill || '');
   const decor = (entry && entry.decor) || parsed.decor || '';
   return buildCartKey(parsed.numId, mode, !!p.hasMaxi, fill, decor);
 }
@@ -461,6 +471,8 @@ function loadCartFromStorage() {
       const _decorAdd = Number(entry.decorAdd);
       entry.decorAdd = (Number.isFinite(_decorAdd) && _decorAdd > 0 && _decorAdd <= 100000) ? Math.round(_decorAdd) : 0;
       if (entry.biscuit !== 'choco' && entry.biscuit !== 'vanilla') delete entry.biscuit;
+      // [r34] Старое название начинки в самой строке — к современному виду до сборки ключа.
+      if (typeof entry.fill === 'string' && entry.fill) entry.fill = normalizeLegacyFill(entry.fill);
       originals[key] = { ...entry, mode };
       const normalizedKey = normalizeCartKey(key, entry);
       const existing = cart[normalizedKey];
@@ -738,6 +750,13 @@ function buildMessage(compact) {
   if (!phone || phone === '—') { showToast('Пожалуйста, укажите телефон'); return null; }
   const phoneDigits = phone.replace(/\D/g, '');
   if (phoneDigits.length < 11) { showToast('Введите корректный номер телефона'); if (cphoneEl) cphoneEl.focus(); return null; }
+  // [r34] Дата, выбранная до полуночи, к моменту отправки может быть уже прошедшей.
+  const _minDate = refreshCartDateMin();
+  if (date && date !== '—' && _minDate && date < _minDate) {
+    showToast('Дата доставки уже недоступна — выберите не раньше ' + formatSpbDate(_minDate));
+    if (cdateEl) cdateEl.focus();
+    return null;
+  }
 
   const lineOf = ([cartKey, entry]) => {
     const parsed = parseCartKey(cartKey);
@@ -784,28 +803,38 @@ function buildWA(e) {
   /* r34: bug #22 — WhatsApp limit. [r31] Режем СОСТАВ, а не хвост: раньше
      msg.substring(0, 800) отрезал имя, телефон, дату и комментарий — заказ
      уходил без контактов. Компактная версия сохраняет шапку, позиции одной
-     строкой, итог и все поля покупателя. */
+     строкой, итог и все поля покупателя.
+     [r34] Обрезка теперь считается по реальной длине ссылки: бюджет «120
+     символов на позицию» не учитывал процентное кодирование кириллицы
+     (каждый символ ≈ 9 знаков в URL), и при 30 позициях ссылка весила 4304
+     при лимите 4096. Полный текст на всякий случай копируем в буфер обмена —
+     заказ не теряется, даже если WhatsApp получил сокращённую версию. */
+  var fullMsg = msg;
   if (waUrl.length > 4096) {
     var compactMsg = buildMessage(true);
-    if (compactMsg) {
-      msg = compactMsg;
-      waUrl = 'https://wa.me/79119038886?text=' + encodeURIComponent(msg);
-    }
+    if (compactMsg) { msg = compactMsg; waUrl = 'https://wa.me/79119038886?text=' + encodeURIComponent(msg); }
     if (waUrl.length > 4096) {
-      // Крайний случай: оставляем шапку, итог и контакты, режем только список.
       var lines = msg.split('\n');
       var head = lines.slice(0, 2);
       var tailStart = lines.findIndex(function (l) { return l.indexOf('Итого (предварительно)') === 0; });
       if (tailStart > -1) {
         var tail = lines.slice(tailStart);
-        var keep = Math.max(0, Math.floor((4096 - encodeURIComponent(head.join('\n') + tail.join('\n')).length) / 120));
-        var kept = lines.slice(2, tailStart).filter(function (l) { return l.indexOf('•') === 0; }).slice(0, keep);
-        var rest = lines.slice(2, tailStart).filter(function (l) { return l.indexOf('•') === 0; }).length - kept.length;
-        msg = head.concat(kept).join('\n') + (rest > 0 ? '\n  …и ещё ' + rest + ' поз.' : '') + '\n' + tail.join('\n');
-        waUrl = 'https://wa.me/79119038886?text=' + encodeURIComponent(msg);
+        var items = lines.slice(2, tailStart).filter(function (l) { return l.indexOf('•') === 0; });
+        var kept = items.slice();
+        var rest = 0;
+        while (kept.length > 0) {
+          var candidate = head.concat(kept).join('\n') + (rest > 0 ? '\n  …и ещё ' + rest + ' поз.' : '') + '\n' + tail.join('\n');
+          var candidateUrl = 'https://wa.me/79119038886?text=' + encodeURIComponent(candidate);
+          if (candidateUrl.length <= 4096) { msg = candidate; waUrl = candidateUrl; break; }
+          kept.pop();
+          rest = items.length - kept.length;
+        }
       }
     }
-    showToast('Заказ очень длинный — состав сокращён, контакты сохранены');
+    showToast('Заказ очень длинный — состав сокращён, контакты и итог сохранены. Полный текст в буфере обмена');
+    try {
+      if (fullMsg && navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(fullMsg).catch(function () {});
+    } catch (err) {}
   }
   // Keep the popup in the user gesture; delayed opens are blocked on mobile.
   const handoff = window.open(waUrl, '_blank');
@@ -1563,9 +1592,15 @@ let _bttObstructed = false;
    аккордеона), а не каждый кадр скролла: rect-чтения в кадре заставляют
    браузер синхронно пересобирать layout прямо посреди анимации. */
 let _bttAvoidRows = null;
+let _bttAvoidDocH = -1;
 function _bttRowsInvalidate() { _bttAvoidRows = null; }
 function _bttRowsCached() {
-  if (_bttAvoidRows) return _bttAvoidRows;
+  /* [r34] Кэш живёт до изменения высоты документа: лента и FAQ догружаются
+     картинками уже после load, и координаты молча уезжали на десятки пикселей.
+     Одно чтение scrollHeight за кадр дешевле, чем пересборка всех квадратов,
+     и не инвалидирует layout, пока страница не менялась. */
+  const docH = document.documentElement.scrollHeight;
+  if (_bttAvoidRows && _bttAvoidDocH === docH) return _bttAvoidRows;
   const rows = [];
   const nodes = document.querySelectorAll(BTT_AVOID_SELECTOR);
   const sy = window.scrollY;
@@ -1574,7 +1609,16 @@ function _bttRowsCached() {
     if (!r.width || !r.height) continue;
     rows.push({ top: r.top + sy, bottom: r.bottom + sy, left: r.left, right: r.right });
   }
+  /* [r34] Лента «Наши работы · в движении» — плитки ссылок под кнопкой.
+     Контейнер статичен: движется только .vstrip-track внутри, поэтому берём
+     одну рамку контейнера в координатах документа и не трогаем плитки в кадре. */
+  const strip = document.getElementById('mcVideoStrip');
+  if (strip) {
+    const rs = strip.getBoundingClientRect();
+    if (rs.width && rs.height) rows.push({ top: rs.top + sy, bottom: rs.bottom + sy, left: rs.left, right: rs.right });
+  }
   _bttAvoidRows = rows;
+  _bttAvoidDocH = docH;
   return rows;
 }
 
@@ -1887,6 +1931,9 @@ function _syncFillDescPanel(opt) {
   } else {
     panel.style.opacity = '0';
     panel.style.display = 'none';
+    /* [r34] Чужой текст не оставляем даже в скрытом узле: если состав вернётся
+       (панель покажут снова), он не должен воскреснуть с чужой начинкой. */
+    text.textContent = '';
   }
 }
 
@@ -1894,27 +1941,31 @@ function selectOpt(el, groupId) {
   const opt = el && el.closest ? el.closest('.calc-opt') : el;
   if (!opt) return;
   const _fillGroups = ['calcFill', 'calcFillBento', 'calcFill3d', 'calcDecor'];
-  if (_fillGroups.indexOf(groupId) !== -1 && window.innerWidth < 768) {
-    document.querySelectorAll(`#${groupId} .calc-opt.selected`).forEach(x => x.classList.remove('selected'));
-    opt.classList.add('selected');
-    if (groupId === 'calcDecor') { const hint = document.getElementById('calcDecorHint'); if (hint) { const price = parseInt(opt.dataset.price || 0); hint.classList.toggle('visible', price > 0); } }
-    updateCalc && updateCalc();
-    showFillToast(opt, groupId);
-    const _inner = opt.querySelector('.opt-inner');
-    if (_inner) { _inner.classList.remove('rubber-click'); void _inner.offsetWidth; _inner.classList.add('rubber-click'); _inner.addEventListener('animationend', () => _inner.classList.remove('rubber-click'), { once: true }); }
-    return;
-  }
+  const _isFillPick = _fillGroups.indexOf(groupId) !== -1;
+  const _isMobileSheet = _isFillPick && window.innerWidth < 768;
+
+  /* [r34] Общая часть выбора — одна на мобильный и десктопный путь.
+     Раньше мобильная ветка уходила в return до синхронизации панели, и на
+     телефоне «Состав начинки» показывал первую начинку при выбранной третьей,
+     хотя live-region был верный. */
   document.querySelectorAll(`#${groupId} .calc-opt.selected`).forEach(x => x.classList.remove('selected'));
   opt.classList.add('selected');
   if (groupId === 'calcDecor') { const hint = document.getElementById('calcDecorHint'); if (hint) { const price = parseInt(opt.dataset.price || 0); hint.classList.toggle('visible', price > 0); } }
-  const inner = opt.querySelector('.opt-inner');
-  if (inner) { inner.classList.remove('rubber-click'); void inner.offsetWidth; inner.classList.add('rubber-click'); inner.addEventListener('animationend', () => inner.classList.remove('rubber-click'), { once: true }); }
-  const label = opt.querySelector('.opt-label');
-  if (label) { label.classList.remove('opt-label-shake'); void label.offsetWidth; label.classList.add('opt-label-shake'); label.addEventListener('animationend', () => label.classList.remove('opt-label-shake'), { once: true }); }
-  if (groupId === 'calcType') { const _w = document.getElementById('calcWeightRow'); const _f = document.getElementById('calcFillRow'); if (_w) _w.style.display = 'block'; if (_f) _f.style.display = 'block'; }
   if (groupId === 'calcFill' || groupId === 'calcFillBento' || groupId === 'calcFill3d') {
     _syncFillDescPanel(opt);
   }
+  const inner = opt.querySelector('.opt-inner');
+  if (inner) { inner.classList.remove('rubber-click'); void inner.offsetWidth; inner.classList.add('rubber-click'); inner.addEventListener('animationend', () => inner.classList.remove('rubber-click'), { once: true }); }
+
+  if (_isMobileSheet) {
+    updateCalc && updateCalc();
+    showFillToast(opt, groupId);
+    return;
+  }
+
+  const label = opt.querySelector('.opt-label');
+  if (label) { label.classList.remove('opt-label-shake'); void label.offsetWidth; label.classList.add('opt-label-shake'); label.addEventListener('animationend', () => label.classList.remove('opt-label-shake'), { once: true }); }
+  if (groupId === 'calcType') { const _w = document.getElementById('calcWeightRow'); const _f = document.getElementById('calcFillRow'); if (_w) _w.style.display = 'block'; if (_f) _f.style.display = 'block'; }
   updateCalc();
 }
 
@@ -2181,7 +2232,30 @@ function spbDatePlusDays(days) {
   fallback.setDate(fallback.getDate() + days);
   return fallback.toISOString().slice(0, 10);
 }
-(function() { const dateInput = document.getElementById('cdate'); if (dateInput) dateInput.min = spbDatePlusDays(2); })();
+/* [r34] Минимум пересчитывается и после загрузки: страница может висеть в
+   фоне через полночь по Москве, и вчерашнее «+2 дня» становится разрешением
+   на прошедшую дату. Считаем заново при возврате в вкладку, при фокусе на поле
+   и на самой отправке; старую выбранную дату не стираем — её отклонит проверка. */
+function refreshCartDateMin() {
+  const el = document.getElementById('cdate');
+  if (!el) return '';
+  const min = spbDatePlusDays(2);
+  el.min = min;
+  return min;
+}
+function formatSpbDate(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
+  return m ? `${m[3]}.${m[2]}.${m[1]}` : iso;
+}
+(function() {
+  const dateInput = document.getElementById('cdate');
+  if (dateInput) {
+    dateInput.min = spbDatePlusDays(2);
+    dateInput.addEventListener('focus', refreshCartDateMin);
+    dateInput.addEventListener('pointerdown', refreshCartDateMin);
+  }
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) refreshCartDateMin(); });
+})();
 
 // ── Mouse-tracking glow ──
 document.addEventListener('DOMContentLoaded', () => {
@@ -3017,7 +3091,7 @@ if (typeof updateCalcCartBadge === 'function') {
     var spinStyle = document.createElement('style'); spinStyle.textContent = '@keyframes ptrSpin{to{transform:rotate(360deg)}} .ptr-spinning{animation:ptrSpin 0.65s linear infinite!important}'; document.head.appendChild(spinStyle);
   }
   function setPtrPos(dy) { var d = Math.min(dy, PTR_MAX); var progress = d / PTR_THRESHOLD; ptrIndicator.style.transform = 'translateY('+(d-56)+'px)'; ptrIndicator.style.background = 'rgba(28,20,16,'+Math.min(progress*0.85,0.85)+')'; ptrLabel.textContent = d >= PTR_THRESHOLD ? 'Отпусти' : 'Потяни ещё'; ptrSpinner.style.opacity = Math.min(progress,1); if (d >= PTR_THRESHOLD) ptrSpinner.classList.add('ptr-spinning'); else ptrSpinner.classList.remove('ptr-spinning'); }
-  function ptrRelease(dy) { ptrActive = false; document.body.style.overscrollBehaviorY = ''; if (dy >= PTR_THRESHOLD && !ptrBusy) { ptrBusy = true; setPtrPos(PTR_MAX); ptrSpinner.classList.add('ptr-spinning'); ptrLabel.textContent = 'Обновляем...'; vibe([8,40,8]); setTimeout(function() { ptrSpinner.classList.remove('ptr-spinning'); ptrLabel.textContent = '✓ Обновлено'; ptrIndicator.style.transition = 'transform 0.4s ease, background 0.4s ease'; ptrIndicator.style.transform = 'translateY(-56px)'; ptrIndicator.style.background = 'transparent'; setTimeout(function() { ptrIndicator.style.transition = 'none'; ptrBusy = false; var ev = new CustomEvent('ptr:refresh', { bubbles: true, cancelable: true }); if (!document.dispatchEvent(ev)) window.location.reload(); }, 500); }, 1000); } else { ptrIndicator.style.transition = 'transform 0.3s ease, background 0.3s ease'; ptrIndicator.style.transform = 'translateY(-56px)'; ptrIndicator.style.background = 'transparent'; setTimeout(function() { ptrIndicator.style.transition = 'none'; }, 350); } }
+  function ptrRelease(dy) { ptrActive = false; document.body.style.overscrollBehaviorY = ''; if (dy >= PTR_THRESHOLD && !ptrBusy) { ptrBusy = true; setPtrPos(PTR_MAX); ptrSpinner.classList.add('ptr-spinning'); ptrLabel.textContent = 'Обновляем...'; vibe([8,40,8]); /* [r34] «Обновлено» показываем только если кто-то реально взял обновление на себя (ptr:refresh с preventDefault). Иначе — честный перезапуск страницы: раньше плашка успевала соврать «✓ Обновлено» за 1.5 с до reload. */ setTimeout(function() { var ev = new CustomEvent('ptr:refresh', { bubbles: true, cancelable: true }); if (document.dispatchEvent(ev)) { ptrSpinner.classList.remove('ptr-spinning'); ptrLabel.textContent = '✓ Обновлено'; ptrIndicator.style.transition = 'transform 0.4s ease, background 0.4s ease'; ptrIndicator.style.transform = 'translateY(-56px)'; ptrIndicator.style.background = 'transparent'; setTimeout(function() { ptrIndicator.style.transition = 'none'; ptrBusy = false; }, 500); return; } window.location.reload(); }, 600); } else { ptrIndicator.style.transition = 'transform 0.3s ease, background 0.3s ease'; ptrIndicator.style.transform = 'translateY(-56px)'; ptrIndicator.style.background = 'transparent'; setTimeout(function() { ptrIndicator.style.transition = 'none'; }, 350); } }
   document.addEventListener('touchstart', function(e) { if (ptrBusy) return; var sy = window.scrollY; if (sy > 16 || sy < 0) return; _ensurePtrIndicator(); if (document.body.classList.contains('cart-open')||document.body.classList.contains('fill-open')||document.body.classList.contains('menu-open')) return; var _lb = document.getElementById('lightbox'); if (_lb && _lb.classList.contains('open')) return; var _rm = document.getElementById('reviewsModal'); if (_rm && _rm.classList.contains('open')) return; ptrStartY = e.touches[0].clientY; ptrCurrent = 0; ptrActive = true; document.body.style.overscrollBehaviorY = 'none'; }, { passive: true });
   document.addEventListener('touchmove', function(e) { if (!ptrActive) return; var dy = e.touches[0].clientY - ptrStartY; if (dy < 0) { ptrActive = false; document.body.style.overscrollBehaviorY = ''; return; } ptrCurrent = dy; setPtrPos(dy * 0.55); }, { passive: true });
   document.addEventListener('touchend', function() { if (!ptrActive) return; ptrRelease(ptrCurrent * 0.55); }, { passive: true });
@@ -3032,7 +3106,7 @@ if (typeof updateCalcCartBadge === 'function') {
      (замер: клик по «Авторский декор» попадал в подсказку «Базовый»). */
   function showTip(tip, opt) { if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; } if (activeTip && activeTip !== tip) { activeTip.style.opacity = '0'; activeTip.style.pointerEvents = 'none'; } activeTip = tip; const r = opt.getBoundingClientRect(); let left = r.left + r.width/2 - 110; let top = r.top - 14; left = Math.max(8, Math.min(left, window.innerWidth - 228)); tip.style.left = left+'px'; tip.style.top = top+'px'; tip.style.transform = 'translateY(-100%) translateY(-4px)'; tip.style.opacity = '1'; tip.style.pointerEvents = 'none'; }
   function hideTip(tip, delay) { hideTimer = setTimeout(() => { tip.style.opacity = '0'; tip.style.pointerEvents = 'none'; if (activeTip === tip) activeTip = null; hideTimer = null; }, delay || 120); }
-  function bindTooltips() { document.querySelectorAll('.calc-opt').forEach(opt => { if (opt._tooltipBound) return; opt._tooltipBound = true; const tip = opt.querySelector('.fill-tooltip'); if (!tip) return; if (opt.closest('#calcFillBento, #calcFill3d')) { tip.remove(); return; } if (!tip.querySelector('.fill-tooltip-arrow')) { tip.insertAdjacentHTML('beforeend', ARROW_SVG); } /* [r33] кэш описания, пока подсказка ещё внутри опции: после переноса в body opt.querySelector('.fill-tooltip') уже null */ var _tipStrong = tip.querySelector('strong'); opt._fillDesc = tip.textContent.replace(_tipStrong ? _tipStrong.textContent : '', '').replace(/\s+/g, ' ').trim(); document.body.appendChild(tip); tip.style.opacity = '0'; tip.style.pointerEvents = 'none'; opt.addEventListener('mouseenter', () => showTip(tip, opt)); opt.addEventListener('mousemove', () => showTip(tip, opt)); opt.addEventListener('mouseleave', () => hideTip(tip, 120)); tip.addEventListener('mouseenter', () => { if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; } }); tip.addEventListener('mouseleave', () => hideTip(tip, 80)); }); }
+  function bindTooltips() { document.querySelectorAll('.calc-opt').forEach(opt => { if (opt._tooltipBound) return; opt._tooltipBound = true; const tip = opt.querySelector('.fill-tooltip'); if (!tip) return; /* [r34] Кэш описания — до любого переноса/удаления: .fill-tooltip уезжает в body (иначе его режет overflow), а у бенто и 3D вообще удаляется. Без кэша opt.querySelector('.fill-tooltip') уже null и состав теряется. */ var _tipStrong = tip.querySelector('strong'); opt._fillDesc = tip.textContent.replace(_tipStrong ? _tipStrong.textContent : '', '').replace(/\s+/g, ' ').trim(); if (opt.closest('#calcFillBento, #calcFill3d')) { tip.remove(); return; } if (!tip.querySelector('.fill-tooltip-arrow')) { tip.insertAdjacentHTML('beforeend', ARROW_SVG); } document.body.appendChild(tip); tip.style.opacity = '0'; tip.style.pointerEvents = 'none'; opt.addEventListener('mouseenter', () => showTip(tip, opt)); opt.addEventListener('mousemove', () => showTip(tip, opt)); opt.addEventListener('mouseleave', () => hideTip(tip, 120)); tip.addEventListener('mouseenter', () => { if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; } }); tip.addEventListener('mouseleave', () => hideTip(tip, 80)); }); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindTooltips); else bindTooltips();
 })();
 
@@ -3052,8 +3126,8 @@ window.cbFlavor = cbFlavor; window.cbFaq = cbFaq;
   var style = document.createElement('style');
   style.textContent = '@keyframes goldStarFly{0%{transform:translate(0,0) scale(1) rotate(0deg);opacity:1;}60%{opacity:0.8;}100%{transform:translate(var(--sx),var(--sy)) scale(0) rotate(var(--sr));opacity:0;}}.gold-star{position:fixed;pointer-events:none;z-index:99998;font-style:normal;line-height:1;animation:goldStarFly var(--sd) cubic-bezier(.25,.46,.45,.94) forwards;will-change:transform,opacity;}';
   document.head.appendChild(style);
-  function burst(cx, cy) { var count = 18; for (var i = 0; i < count; i++) { (function(i) { var delay = Math.random() * 80; setTimeout(function() { var el = document.createElement('span'); el.className = 'gold-star'; var angle = (i/count)*360+(Math.random()-0.5)*28; var rad = angle*Math.PI/180; var dist = 38+Math.random()*40; var sx = Math.cos(rad)*dist; var sy = Math.sin(rad)*dist-(Math.random()*18+8); var size = 10+Math.random()*8; var dur = (0.75+Math.random()*0.45)+'s'; var rot = (Math.random()-0.5)*200+'deg'; var color = COLORS[Math.floor(Math.random()*COLORS.length)]; var char = CHARS[Math.floor(Math.random()*CHARS.length)]; el.style.cssText = 'left:'+(cx-size/2)+'px;top:'+(cy-size/2)+'px;font-size:'+size+'px;color:'+color+';--sx:'+sx+'px;--sy:'+sy+'px;--sd:'+dur+';--sr:'+rot+';'; el.textContent = char; document.body.appendChild(el); var ms = parseFloat(dur)*1000+100; setTimeout(function() { if(el.parentNode) el.remove(); }, ms); }, delay); })(i); } }
-  function bindStars(el) { if (el._goldStarBound) return; el._goldStarBound = true; el.addEventListener('touchstart', function(e) { var t = e.touches[0]; burst(t.clientX, t.clientY); }, { passive: true }); el.addEventListener('click', function(e) { if (e.isTrusted) burst(e.clientX, e.clientY); }); }
+  function burst(cx, cy) { /* [r34] prefers-reduced-motion: декоративный залп отключаем целиком, кнопка остаётся рабочей. */ try { if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; } catch (e) {} var count = 18; for (var i = 0; i < count; i++) { (function(i) { var delay = Math.random() * 80; setTimeout(function() { var el = document.createElement('span'); el.className = 'gold-star'; var angle = (i/count)*360+(Math.random()-0.5)*28; var rad = angle*Math.PI/180; var dist = 38+Math.random()*40; var sx = Math.cos(rad)*dist; var sy = Math.sin(rad)*dist-(Math.random()*18+8); var size = 10+Math.random()*8; var dur = (0.75+Math.random()*0.45)+'s'; var rot = (Math.random()-0.5)*200+'deg'; var color = COLORS[Math.floor(Math.random()*COLORS.length)]; var char = CHARS[Math.floor(Math.random()*CHARS.length)]; el.style.cssText = 'left:'+(cx-size/2)+'px;top:'+(cy-size/2)+'px;font-size:'+size+'px;color:'+color+';--sx:'+sx+'px;--sy:'+sy+'px;--sd:'+dur+';--sr:'+rot+';'; el.textContent = char; document.body.appendChild(el); var ms = parseFloat(dur)*1000+100; setTimeout(function() { if(el.parentNode) el.remove(); }, ms); }, delay); })(i); } }
+  function bindStars(el) { if (el._goldStarBound) return; el._goldStarBound = true; var _lastTouch = 0; el.addEventListener('touchstart', function(e) { _lastTouch = Date.now(); var t = e.touches[0]; burst(t.clientX, t.clientY); }, { passive: true }); /* [r34] После тапа браузер всё равно шлёт click — без окна тишины звёзды вспыхивали дважды (36 частиц вместо 18). */ el.addEventListener('click', function(e) { if (!e.isTrusted) return; if (Date.now() - _lastTouch < 600) return; burst(e.clientX, e.clientY); }); }
   function init() { var mcOrder = document.querySelector('.mc-btn--order'); if (mcOrder) bindStars(mcOrder); var bnOrder = document.querySelector('.bottom-nav-item--order'); if (bnOrder) bindStars(bnOrder); var heroBtn = document.querySelector('.btn-primary--hero'); if (heroBtn) bindStars(heroBtn); var calcBtn = document.querySelector('.calc-add-btn'); if (calcBtn) bindStars(calcBtn); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
   (function waitForMcOrder() { var attempts = 0; function check() { var mcOrder = document.querySelector('.mc-btn--order'); if (mcOrder && !mcOrder._goldStarBound) { bindStars(mcOrder); return; } if (++attempts < 20) setTimeout(check, 500); } setTimeout(check, 1000); })();
