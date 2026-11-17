@@ -216,6 +216,37 @@ test.describe('premium media blocks', () => {
     expect(await desktop.evaluate(el => getComputedStyle(el).outlineStyle)).not.toBe('none');
   });
 
+
+  test('wedding brand SVGs match local Milovi r22 with floating labels and no circular chrome', async ({ page }) => {
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    for (const area of ['hero', 'final']) {
+      const group = page.locator('.wed-messenger-contact--' + area);
+      await expect(group.locator('a')).toHaveCount(3);
+      await expect(group.locator('svg text.hero-flat-text')).toHaveCount(3);
+      await expect(group.locator('svg textPath, svg .hero-ring-text, svg circle')).toHaveCount(0);
+      for (const link of await group.locator('a').all()) {
+        const base = await link.evaluate(el => {
+          const style=getComputedStyle(el);
+          return {background: style.backgroundColor, border: style.borderTopWidth, radius: style.borderTopLeftRadius};
+        });
+        expect(base.background).toBe('rgba(0, 0, 0, 0)');
+        expect(base.border).toBe('0px');
+        expect(base.radius).toBe('0px');
+      }
+    }
+    const desktop=page.locator('.wed-messenger-contact--hero a').first();
+    if (await page.evaluate(() => matchMedia('(hover: hover)').matches)) {
+      await desktop.hover();
+      const label=desktop.locator('.hero-flat-text');
+      await expect.poll(() => label.evaluate(el => getComputedStyle(el).opacity)).toBe('1');
+      const position=await desktop.evaluate(link => ({
+        label:link.querySelector('.hero-flat-text').getBoundingClientRect().top,
+        icon:link.querySelector('svg > path').getBoundingClientRect().top
+      }));
+      expect(position.label).toBeLessThan(position.icon);
+    }
+  });
+
   test('wedding messenger links fit mobile widths and reduced-motion remains static', async ({ page }) => {
     for (const width of [320,390,768,1440]) {
       await page.setViewportSize({ width, height: 844 });
