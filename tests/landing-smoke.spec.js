@@ -192,6 +192,55 @@ test.describe('premium media blocks', () => {
     await expect(page.locator('img[src*="gallery-11.webp"]').first()).toBeVisible();
   });
 
+
+  test('wedding contacts have three official messenger links in hero and final, with accessible hover and focus', async ({ page }) => {
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    for (const place of ['hero', 'final']) {
+      const group = page.locator('.wed-messenger-contact--' + place);
+      await expect(group).toHaveCount(1);
+      await expect(group.locator('a')).toHaveCount(3);
+      const links = group.locator('a');
+      await expect(links.nth(0)).toHaveAttribute('href', /^https:\/\/wa\.me\/79119038886\?text=/);
+      await expect(links.nth(1)).toHaveAttribute('href', 'https://t.me/+79119038886');
+      await expect(links.nth(2)).toHaveAttribute('href', 'https://max.ru/MiloviCake');
+      for (const [i, label] of ['Написать в WhatsApp','Написать в Telegram','Написать в MAX'].entries()) {
+        await expect(links.nth(i)).toHaveAttribute('aria-label', label);
+        await expect(links.nth(i)).toHaveAttribute('rel', /noopener/);
+      }
+      const ids = await group.locator('path[id]').evaluateAll(nodes => nodes.map(node => node.id));
+      expect(new Set(ids).size).toBe(ids.length);
+    }
+    const desktop = page.locator('.wed-messenger-contact--hero a').first();
+    await desktop.focus();
+    await expect(desktop).toBeFocused();
+    expect(await desktop.evaluate(el => getComputedStyle(el).outlineStyle)).not.toBe('none');
+  });
+
+  test('wedding messenger links fit mobile widths and reduced-motion remains static', async ({ page }) => {
+    for (const width of [320,390,768,1440]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+      for (const place of ['hero', 'final']) {
+        const group = page.locator('.wed-messenger-contact--' + place);
+        await group.scrollIntoViewIfNeeded();
+        const dimensions = await group.evaluate(el => ({
+          viewport: innerWidth, right: el.getBoundingClientRect().right,
+          left: el.getBoundingClientRect().left,
+          minSize: Math.min(...Array.from(el.querySelectorAll('a')).map(a => Math.min(a.getBoundingClientRect().width, a.getBoundingClientRect().height)))
+        }));
+        expect(dimensions.left).toBeGreaterThanOrEqual(-1);
+        expect(dimensions.right).toBeLessThanOrEqual(width+1);
+        expect(dimensions.minSize).toBeGreaterThanOrEqual(44);
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+    }
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.setViewportSize({ width: 390, height: 844 });
+    const link = page.locator('.wed-messenger-contact--hero a').first();
+    await link.hover();
+    expect(await link.evaluate(el => getComputedStyle(el).transform)).toBe('none');
+  });
+
   test('wedding superhero cake is a distinct card with honest provenance and responsive assets', async ({ page, request }) => {
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
     const card = page.locator('#wedStyles .lp-card').nth(1);
