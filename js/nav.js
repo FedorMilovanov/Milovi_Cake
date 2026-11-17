@@ -66,7 +66,9 @@
         { label: 'Контакты', href: '#contacts', icon: '<path d="M8.4 3.6H5.6A2 2 0 0 0 3.6 5.8c.2 6.8 5.9 12.5 12.7 12.7a2 2 0 0 0 2.1-2v-2.7a2 2 0 0 0-1.6-2l-2-.3a2 2 0 0 0-1.8.8l-.8 1a12.4 12.4 0 0 1-5.1-5.1l1-.8a2 2 0 0 0 .8-1.8l-.3-2a2 2 0 0 0-2-1.6z"/>', section: 'contacts' },
       ],
       'prigorody-list': [
-        { label: 'Наверх', href: '#home', icon: '<path d="m6.2 14.6 5.8-5.8 5.8 5.8"/>' },
+        // [r31] На /prigorody/ нет #home (id живёт только на главной и в городах);
+        // верх страницы — реальный <main id="main">.
+        { label: 'Наверх', href: '#main', icon: '<path d="m6.2 14.6 5.8-5.8 5.8 5.8"/>' },
       ],
     },
   };
@@ -352,12 +354,16 @@
     // Центральная кнопка — заказать (WA) или открыть корзину
     var orderBtn = document.createElement('button'); orderBtn.type = 'button';
     orderBtn.className = 'mc-btn mc-btn--order';
-    orderBtn.setAttribute('aria-label', 'Корзина');
+    // [r31] На страницах без корзины (меренговый рулет, хаб пригородов) кнопка
+    // называлась «Корзина», но открывала WhatsApp — покупатель ждал корзину.
+    // Теперь подпись честная: есть корзина → «Корзина», нет → «Заказать».
+    var hasCart = (typeof openCart === 'function') && !!document.getElementById('cartDrawer');
+    orderBtn.setAttribute('aria-label', hasCart ? 'Корзина' : 'Заказать');
     // [2026-11-16r14] Макет владельца (image-3): корзина — обычный пункт бара,
     // без золотой медали; блик и подсветку рисует CSS (final-fixes.css).
     orderBtn.innerHTML = icon('<path d="M3 4.2h2.1l2.3 9.8a1.9 1.9 0 0 0 1.85 1.45h7.9a1.9 1.9 0 0 0 1.85-1.45L21 7.1H6.2"/><circle cx="10" cy="19.3" r="1.45"/><circle cx="17.4" cy="19.3" r="1.45"/>', 22) +
-      '<span class="mc-btn-badge" data-cart-badge aria-hidden="true">0</span>' +
-      '<span class="mc-btn-label">Корзина</span>';
+      (hasCart ? '<span class="mc-btn-badge" data-cart-badge aria-hidden="true">0</span>' : '') +
+      '<span class="mc-btn-label">' + (hasCart ? 'Корзина' : 'Заказать') + '</span>';
     // [r26] Счётчик в баре: updateCartUI() обновляет его через [data-cart-badge];
     // здесь — только первичное состояние, если корзина уже была непустой.
     (function () {
@@ -373,7 +379,7 @@
       badge.textContent = count;
       badge.classList.toggle('visible', count > 0);
     })();
-    if (typeof openCart === 'function') {
+    if (typeof openCart === 'function' && hasCart) {
       orderBtn.addEventListener('click', function() {
         // [N-1 FIXED] If the sheet is open when user taps "Заказать", calling openCart()
         // immediately creates two simultaneous overlays + double lockBody() → scroll freeze.
@@ -647,7 +653,25 @@
   mo.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
   // ── Emergency cleanup: сброс если body застрял ──
+  // [r31] Что-то реально открыто сейчас? Тогда ничего не «аварийно» сбрасываем.
+  function isOverlayOpen() {
+    var b = document.body;
+    if (b.classList.contains('cart-open') || b.classList.contains('fill-open') || b.classList.contains('fill-open-ios') || b.classList.contains('menu-open')) return true;
+    var d = document.getElementById('cartDrawer');
+    if (d && d.classList.contains('open')) return true;
+    var p = document.getElementById('fillPopup');
+    if (p && p.classList.contains('open')) return true;
+    var lb = document.getElementById('lightbox');
+    if (lb && lb.classList.contains('open')) return true;
+    var rm = document.getElementById('reviewsModal');
+    if (rm && rm.classList.contains('open')) return true;
+    return false;
+  }
   function emergencyReset() {
+    // [r31] Возврат из фона / bfcache при ОТКРЫТОЙ корзине обнулял lockCount:
+    // страница разблокировалась под модалкой, а closeCart() уже не возвращал
+    // позицию скролла. Сбрасываем только по-настоящему застрявшее состояние.
+    if (isOverlayOpen()) return;
     if (document.body.dataset.mcSheetOpen) {
       document.body.style.overflow = '';
       document.documentElement.style.overflow = '';

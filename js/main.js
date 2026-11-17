@@ -438,6 +438,11 @@ function loadCartFromStorage() {
       const qty = entry.qty;
       const min = variant.minQty || variant.minKg || 1;
       if (typeof qty !== 'number' || qty < min || !isSafeCartQty(qty, variant)) return;
+      // [r31] Новые поля строки: доплата за декор и выбранный бисквит.
+      // Санитизируем, а не выбрасываем строку: старые корзины остаются живыми.
+      const _decorAdd = Number(entry.decorAdd);
+      entry.decorAdd = (Number.isFinite(_decorAdd) && _decorAdd > 0 && _decorAdd <= 100000) ? Math.round(_decorAdd) : 0;
+      if (entry.biscuit !== 'choco' && entry.biscuit !== 'vanilla') delete entry.biscuit;
       originals[key] = { ...entry, mode };
       const normalizedKey = normalizeCartKey(key, entry);
       const existing = cart[normalizedKey];
@@ -656,7 +661,10 @@ function updateCartUI() {
     if (!p) return '';
     if (p.hasMaxi && entry.mode === 'maxi') p = { ...p, ...p.maxiVariant };
     const qty = entry.qty;
-    const lineTotal = p.priceNum * qty;
+    // [r31] Калькулятор уже включал авторский декор в «Примерную стоимость»,
+    // а корзина считала только базовую цену — один и тот же торт стоил по-разному.
+    const decorAdd = Number.isFinite(entry.decorAdd) ? entry.decorAdd : 0;
+    const lineTotal = p.priceNum * qty + decorAdd;
     total += lineTotal;
     const isKg = p.unit === 'кг';
     const qtyLabel = isKg ? `${qty} кг` : `${qty} шт.`;
@@ -676,7 +684,7 @@ function updateCartUI() {
       return `<label style="display:flex;align-items:center;gap:6px;margin-top:6px;min-width:0;"><span style="font-size:11px;color:var(--cart-muted);letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;">Начинка:</span><select onchange="setCartItemFill(${keyArg}, this.value, this)" style="font-size:12px;font-family:'Jost',sans-serif;padding:3px 8px;border-radius:12px;border:1px solid var(--cream-dark);background:transparent;color:var(--text);cursor:pointer;flex:1;max-width:180px;"><option value="">— уточнить —</option>${opts}</select></label>`;
     })()}</div>`;
 
-    return `<div class="cart-item" data-cart-id="${keyAttr}"><div class="cart-item-info"><h4>${p.name}</h4><div class="item-price">${p.price}</div>${p.min && !entry.fill ? `<div class="item-min">${p.min}</div>` : ''}${entry.decor ? `<div class="item-min" style="opacity:0.7">🎨 ${escapeCartHtml(entry.decor)}</div>` : ''}${dessertToggle}</div><div class="qty-ctrl"><button type="button" class="qty-btn" onclick="changeQty(${keyArg}, -1)" ${atMin ? 'title="Минимальный заказ"' : ''}>−</button><span class="qty-val">${qtyLabel}</span><button type="button" class="qty-btn" onclick="changeQty(${keyArg}, 1)">+</button></div><div class="cart-item-right"><div class="cart-line-total">${lineTotalFmt}</div><button type="button" class="del-btn" onclick="removeFromCart(${keyArg})" aria-label="Удалить"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true"><path d="M4 7h16M10 4h4M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></button></div></div>`;
+    return `<div class="cart-item" data-cart-id="${keyAttr}"><div class="cart-item-info"><h4>${p.name}</h4><div class="item-price">${p.price}</div>${p.min && !entry.fill ? `<div class="item-min">${p.min}</div>` : ''}${entry.decor ? `<div class="item-min" style="opacity:0.7">🎨 ${escapeCartHtml(entry.decor)}${decorAdd > 0 ? ` · +${decorAdd.toLocaleString('ru')} ₽` : ''}</div>` : ''}${entry.biscuit ? `<div class="item-min" style="opacity:0.7">🧁 бисквит: ${entry.biscuit === 'choco' ? 'шоколадный' : 'ванильный'}</div>` : ''}${dessertToggle}</div><div class="qty-ctrl"><button type="button" class="qty-btn" onclick="changeQty(${keyArg}, -1)" ${atMin ? 'title="Минимальный заказ"' : ''}>−</button><span class="qty-val">${qtyLabel}</span><button type="button" class="qty-btn" onclick="changeQty(${keyArg}, 1)">+</button></div><div class="cart-item-right"><div class="cart-line-total">${lineTotalFmt}</div><button type="button" class="del-btn" onclick="removeFromCart(${keyArg})" aria-label="Удалить"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true"><path d="M4 7h16M10 4h4M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></button></div></div>`;
   }).join('');
 
   const totalFmt = cartTotalText(total);
@@ -699,7 +707,7 @@ function goToFormStep() {
   cartFooter.classList.add('step-enter');
 }
 
-function buildMessage() {
+function buildMessage(compact) {
   const cnameEl    = document.getElementById('cname');
   const cphoneEl   = document.getElementById('cphone');
   const cdateEl    = document.getElementById('cdate');
@@ -713,7 +721,7 @@ function buildMessage() {
   const phoneDigits = phone.replace(/\D/g, '');
   if (phoneDigits.length < 11) { showToast('Введите корректный номер телефона'); if (cphoneEl) cphoneEl.focus(); return null; }
 
-  const items = Object.entries(cart).map(([cartKey, entry]) => {
+  const lineOf = ([cartKey, entry]) => {
     const parsed = parseCartKey(cartKey);
     let p = products.find(x => x.id === parsed.numId);
     if (!p) return null;
@@ -721,20 +729,27 @@ function buildMessage() {
     const qty = entry.qty;
     const label = p.unit === 'кг' ? `${qty} кг` : `${qty} шт.`;
     const dessertLabel = entry.dessertType === 'author' ? 'авторский' : 'базовый';
-    let details = [`десерт: ${dessertLabel}`];
+    const decorAdd = Number.isFinite(entry.decorAdd) ? entry.decorAdd : 0;
+    // [r31] Бисквит принадлежит бенто (там и находится переключатель), а не
+    // бисквитному торту: раньше строке id 1 подставлялось глобальное значение,
+    // которого покупатель для этого торта не выбирал.
+    const biscuit = (parsed.numId === 2) ? (entry.biscuit || window._calcBiscuit || '') : '';
+    const details = [`десерт: ${dessertLabel}`];
     if (entry.fill)  details.push(`начинка: ${entry.fill}`);
-    // Biscuit is product 1.
-    if ((parsed.numId === 1) && window._calcBiscuit) details.push(`бисквит: ${window._calcBiscuit === 'vanilla' ? 'ванильный' : 'шоколадный'}`);
-    if (entry.decor) details.push(`декор: ${entry.decor}`);
-    return `• ${p.name} — ${label} (${p.price})\n  ${details.join(' · ')}`;
-  }).filter(Boolean).join('\n');
+    if (biscuit) details.push(`бисквит: ${biscuit === 'choco' ? 'шоколадный' : 'ванильный'}`);
+    if (entry.decor) details.push(`декор: ${entry.decor}${decorAdd > 0 ? ` (+${decorAdd.toLocaleString('ru')} ₽)` : ''}`);
+    const head = `• ${p.name} — ${label} (${p.price})`;
+    return compact ? head : `${head}\n  ${details.join(' · ')}`;
+  };
+  const items = Object.entries(cart).map(lineOf).filter(Boolean).join('\n');
 
   const total = Object.entries(cart).reduce((s, [cartKey, entry]) => {
     const parsed = parseCartKey(cartKey);
     let p = products.find(x => x.id === parsed.numId);
     if (!p) return s;
     if (p.hasMaxi && entry.mode === 'maxi') p = { ...p, ...p.maxiVariant };
-    return s + (p.priceNum || 0) * (entry.qty || 1);
+    const decorAdd = Number.isFinite(entry.decorAdd) ? entry.decorAdd : 0;
+    return s + (p.priceNum || 0) * (entry.qty || 1) + decorAdd;
   }, 0);
 
   return `Привет! Хочу сделать заказ 🎂\n\n${items}\n\nИтого (предварительно): ${cartTotalText(total)}\n⚠️ Цена предварительная — окончательная стоимость согласовывается после обсуждения декора и нюансов.\n\nИмя: ${name}\nТелефон: ${phone}\nДата: ${date}\nКомментарий: ${comment}`;
@@ -742,17 +757,37 @@ function buildMessage() {
 
 function buildWA(e) {
   e.preventDefault();
-  const msg = buildMessage();
+  let msg = buildMessage();
   if (!msg) return;
   setCartStep(3);
   const btn = document.getElementById('btnWA');
   if (btn) btn.classList.add('loading');
   var waUrl = 'https://wa.me/79119038886?text=' + encodeURIComponent(msg);
-  /* r34: bug #22 — truncate message if URL exceeds WhatsApp limit */
+  /* r34: bug #22 — WhatsApp limit. [r31] Режем СОСТАВ, а не хвост: раньше
+     msg.substring(0, 800) отрезал имя, телефон, дату и комментарий — заказ
+     уходил без контактов. Компактная версия сохраняет шапку, позиции одной
+     строкой, итог и все поля покупателя. */
   if (waUrl.length > 4096) {
-    var trimmed = msg.substring(0, 800) + '\n\n(сообщение сокращено — слишком длинный заказ)';
-    waUrl = 'https://wa.me/79119038886?text=' + encodeURIComponent(trimmed);
-    showToast('Заказ очень длинный — сообщение сокращено');
+    var compactMsg = buildMessage(true);
+    if (compactMsg) {
+      msg = compactMsg;
+      waUrl = 'https://wa.me/79119038886?text=' + encodeURIComponent(msg);
+    }
+    if (waUrl.length > 4096) {
+      // Крайний случай: оставляем шапку, итог и контакты, режем только список.
+      var lines = msg.split('\n');
+      var head = lines.slice(0, 2);
+      var tailStart = lines.findIndex(function (l) { return l.indexOf('Итого (предварительно)') === 0; });
+      if (tailStart > -1) {
+        var tail = lines.slice(tailStart);
+        var keep = Math.max(0, Math.floor((4096 - encodeURIComponent(head.join('\n') + tail.join('\n')).length) / 120));
+        var kept = lines.slice(2, tailStart).filter(function (l) { return l.indexOf('•') === 0; }).slice(0, keep);
+        var rest = lines.slice(2, tailStart).filter(function (l) { return l.indexOf('•') === 0; }).length - kept.length;
+        msg = head.concat(kept).join('\n') + (rest > 0 ? '\n  …и ещё ' + rest + ' поз.' : '') + '\n' + tail.join('\n');
+        waUrl = 'https://wa.me/79119038886?text=' + encodeURIComponent(msg);
+      }
+    }
+    showToast('Заказ очень длинный — состав сокращён, контакты сохранены');
   }
   // Keep the popup in the user gesture; delayed opens are blocked on mobile.
   const handoff = window.open(waUrl, '_blank');
@@ -1471,7 +1506,12 @@ const backToTopEl = document.getElementById('backToTop');
 // скруглённого квадрата: старт в верхней центральной точке, обход по часовой,
 // pathLength=100 — прогресс это dasharray/dashoffset, без пересчёта длины.
 // Контур идёт на 1 px внутри кнопки: визуально 44 px, hitbox остаётся 46 px.
-const _bttRingPath = 'M23 1H32A12 12 0 0 1 44 13V33A12 12 0 0 1 32 45H14A12 12 0 0 1 2 33V13A12 12 0 0 1 14 1H23Z';
+// [r31] Контур пересобран математически. Было: rect 42×44 с отступами
+// top/bottom 1 px и left/right 2 px, радиус 12 при border-radius кнопки 13 —
+// линия шла на 0.2 px от верхней кромки и на 1.2 px от боковой, углы не
+// концентричны. Стало: квадрат 41×41 по центру (отступ 2.5 px, stroke 1.6
+// лежит внутри), радиус 13 − 2.5 = 10.5 — контур концентричен скруглению.
+const _bttRingPath = 'M23 2.5H33A10.5 10.5 0 0 1 43.5 13V33A10.5 10.5 0 0 1 33 43.5H13A10.5 10.5 0 0 1 2.5 33V13A10.5 10.5 0 0 1 13 2.5H23Z';
 let _bttFill = null;
 if (backToTopEl && !backToTopEl.querySelector('.btt-ring')) {
   backToTopEl.insertAdjacentHTML('afterbegin',
@@ -1483,19 +1523,34 @@ if (backToTopEl && !backToTopEl.querySelector('.btt-ring')) {
   _bttFill.style.strokeDashoffset = '100';
 }
 let _scrollTicking = false;
+// [r31] Один rAF-конвейер без пересчёта layout: высоту документа кэшируем
+// и обновляем только при реальном изменении размера (RO ниже), а dashoffset
+// пишем лишь когда значение изменилось — иначе каждый кадр инвалидировал стиль.
+let _scrollTotalCache = 0;
+let _bttLastOffset = null;
+function _syncScrollTotal() { _scrollTotalCache = Math.max(0, document.documentElement.scrollHeight - window.innerHeight); }
 function _onScroll() {
   if (_scrollTicking) return;
   _scrollTicking = true;
   requestAnimationFrame(() => {
-    const y = window.scrollY, total = document.body.scrollHeight - window.innerHeight;
+    const y = window.scrollY;
+    const total = _scrollTotalCache;
     const p = total > 0 ? Math.min(1, Math.max(0, y / total)) : 0;
     if (_scrollEl) _scrollEl.style.width = (p * 100) + '%';
     if (backToTopEl) backToTopEl.classList.toggle('visible', y > 600);
-    if (_bttFill) _bttFill.style.strokeDashoffset = ((1 - p) * 100).toFixed(2);
+    if (_bttFill) {
+      const off = ((1 - p) * 100).toFixed(2);
+      if (off !== _bttLastOffset) { _bttFill.style.strokeDashoffset = off; _bttLastOffset = off; }
+    }
     _scrollTicking = false;
   });
 }
 window.addEventListener('scroll', _onScroll, { passive: true });
+_syncScrollTotal();
+window.addEventListener('resize', _syncScrollTotal, { passive: true });
+window.addEventListener('load', _syncScrollTotal);
+window.addEventListener('pageshow', function (e) { if (e && e.persisted) _syncScrollTotal(); });
+if (typeof ResizeObserver === 'function') { try { new ResizeObserver(_syncScrollTotal).observe(document.documentElement); } catch (err) {} }
 
 // ── TOAST ──
 function showToast(msg) {
@@ -1569,6 +1624,10 @@ function _lbUpdateArrows() {
 function closeLightbox() {
   const lb = document.getElementById('lightbox');
   if (!lb) return;
+  /* [r31] Глобальный Escape звал closeLightbox() всегда, и та снимала
+     блокировку прокрутки у ЧУЖОГО открытого окна (корзина/шторка начинок):
+     страница разблокировалась под модалкой. Закрываем только открытый. */
+  if (!lb.classList.contains('open')) return;
   /* r32: bug #38 — release focus trap */
   if (window._lbTrapRelease) { window._lbTrapRelease(); window._lbTrapRelease = null; }
   lb.classList.remove('open'); unlockBody();
@@ -1629,7 +1688,14 @@ function selectCakeType(el, type) {
     if (lbl) lbl.textContent = 'Вес торта';
   }
   if (cfg.hasWeight && type !== 'bento' && type !== 'bentomaxi') {
-    if (_calcWeight < cfg.weightMin) { _calcWeight = cfg.weightMin; const v = document.getElementById('calcWeightVal'); if (v) v.textContent = _calcWeight + ' кг'; const i = document.getElementById('calcWeight'); if (i) i.value = _calcWeight; }
+    // [r31] Раньше вес подтягивался только к минимуму: после 3D-торта 15 кг
+    // бисквитный торт оставался 15-килограммовым при максимуме 10 кг и уходил
+    // в корзину таким же. Теперь ограничение двустороннее.
+    if (_calcWeight < cfg.weightMin || _calcWeight > cfg.weightMax) {
+      _calcWeight = Math.min(cfg.weightMax, Math.max(cfg.weightMin, _calcWeight));
+      const v = document.getElementById('calcWeightVal'); if (v) v.textContent = _calcWeight % 1 === 0 ? _calcWeight + ' кг' : _calcWeight.toFixed(1) + ' кг';
+      const i = document.getElementById('calcWeight'); if (i) i.value = _calcWeight;
+    }
     if (minus) minus.disabled = _calcWeight <= cfg.weightMin;
     if (plus) plus.disabled = _calcWeight >= cfg.weightMax;
   }
@@ -1878,26 +1944,30 @@ window.addEventListener('scroll', function() {
   if (col._scrollY !== window.scrollY) closeCalcPanel();
 }, { passive: true });
 
-let _fillToastTimer = null;
+// [r31] Владелец: плавающая плашка дублировала уже выбранный вариант и
+// закрывала «Примерную стоимость». Визуальный toast удалён — выбор читается
+// по золотой подсветке и составу в разделе; #fillToast теперь невидимый
+// live-region, чтобы скринридер подтвердил выбор так же, как раньше.
 function showFillToast(optEl, groupId) {
   if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
   closeCalcPanel();
   const title = optEl.querySelector('.opt-label')?.textContent?.trim() || '';
   const tooltipEl = optEl.querySelector('.fill-tooltip');
-  const desc = tooltipEl ? Array.from(tooltipEl.childNodes).filter(n => n.nodeName !== 'STRONG').map(n => n.textContent).join('').trim() : '';
-  let toast = document.getElementById('fillToast');
-  if (!toast) return;
-  const titleEl = toast.querySelector('.fill-toast-title'), descEl = toast.querySelector('.fill-toast-desc');
-  if (titleEl) titleEl.textContent = title;
-  if (descEl) descEl.textContent = desc;
-  clearTimeout(_fillToastTimer);
-  toast.classList.remove('fill-toast--out');
-  toast.classList.add('fill-toast--in');
-  _fillToastTimer = setTimeout(() => { toast.classList.add('fill-toast--out'); toast.addEventListener('animationend', () => { toast.classList.remove('fill-toast--in', 'fill-toast--out'); }, { once: true }); }, 2800);
+  let desc = '';
+  if (tooltipEl) {
+    const strong = tooltipEl.querySelector('strong');
+    desc = tooltipEl.textContent.replace(strong ? strong.textContent : '', '').replace(/\s+/g, ' ').trim();
+  }
+  const live = document.getElementById('fillToast');
+  if (!live) return;
+  live.textContent = title ? ('Выбрано: ' + title + (desc ? '. ' + desc : '')) : '';
 }
 
 function closeFillPopup() {
   const popup = document.getElementById('fillPopup'), overlay = document.getElementById('fillOverlay');
+  // [r31] Та же причина, что у closeLightbox: не открытую шторку не закрываем,
+  // иначе Escape снимает чужой lock и тело разблокируется под корзиной.
+  if (!popup || !popup.classList.contains('open')) return;
   if (popup) popup.classList.remove('open');
   if (overlay) overlay.classList.remove('open');
   document.body.classList.remove('fill-open');
@@ -2487,6 +2557,13 @@ function addCalcToCart() {
     if (!addCartQty(cart[cartKey], qty, mode === 'maxi' ? p.maxiVariant : p)) return false;
   } else { cart[cartKey] = { qty, mode }; }
   cart[cartKey].fill = fillName; cart[cartKey].decor = decorName;
+  // [r31] Доплата за декор и выбранный бисквит живут в строке корзины:
+  // иначе корзина и сообщение считают одну базовую цену, а калькулятор
+  // показывает другую (см. updateCartUI/buildMessage).
+  const decorPriceEl = document.querySelector('#calcDecor .selected');
+  const decorAdd = (_cakeType === 'bento') ? 0 : +(decorPriceEl?.dataset.price || 0);
+  cart[cartKey].decorAdd = Number.isFinite(decorAdd) && decorAdd > 0 ? decorAdd : 0;
+  if (id === 2) cart[cartKey].biscuit = (window._calcBiscuit === 'choco') ? 'choco' : 'vanilla';
   updateCartUI();
   saveCartToStorage();
 }
@@ -2833,6 +2910,6 @@ window.cbFlavor = cbFlavor; window.cbFaq = cbFaq;
   function labelFor(el) { if (!el) return 'Интерактивный элемент'; if (el.getAttribute('aria-label')) return el.getAttribute('aria-label'); var text = (el.textContent||'').replace(/\s+/g,' ').trim(); if (text) return text.slice(0,120); if (el.classList && el.classList.contains('dot')) return 'Перейти к слайду'; return 'Интерактивный элемент'; }
   function enhance(root) { root = root || document; if (!root.querySelectorAll) return; root.querySelectorAll(SELECTOR).forEach(function(el) { if (el.matches('a,button,input,textarea,select')) return; if (!el.hasAttribute('role')) el.setAttribute('role','button'); if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex','0'); if (!el.hasAttribute('aria-label')) el.setAttribute('aria-label',labelFor(el)); if (el.classList && (el.classList.contains('calc-opt')||el.classList.contains('calc-biscuit-opt')||el.classList.contains('cart-step'))) el.setAttribute('aria-pressed',el.classList.contains('selected')||el.classList.contains('active')?'true':'false'); }); }
   function syncPressed(el) { if (!el||!el.classList) return; var group = null; if (el.classList.contains('calc-opt')||el.classList.contains('calc-biscuit-opt')) group = el.parentElement; if (el.classList.contains('cart-step')) group = el.parentElement; var nodes = group ? group.querySelectorAll('[role="button"]') : [el]; Array.prototype.forEach.call(nodes,function(n){ if (n.classList&&(n.classList.contains('calc-opt')||n.classList.contains('calc-biscuit-opt')||n.classList.contains('cart-step'))) n.setAttribute('aria-pressed',n.classList.contains('selected')||n.classList.contains('active')?'true':'false'); }); }
-  function init() { enhance(document); document.addEventListener('keydown',function(e){ var el = e.target&&e.target.closest?e.target.closest(SELECTOR):null; if(!el||el.matches('a,button,input,textarea,select')) return; if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); setTimeout(function(){syncPressed(el);},0); } }); document.addEventListener('click',function(e){ var el = e.target&&e.target.closest?e.target.closest(SELECTOR):null; if(el) setTimeout(function(){syncPressed(el);},0); },true); if('MutationObserver' in window){ var mo = new MutationObserver(function(muts){ muts.forEach(function(m){ m.addedNodes&&Array.prototype.forEach.call(m.addedNodes,function(node){ if(node.nodeType===1){ if(node.matches&&node.matches(SELECTOR)) enhance({querySelectorAll:function(){return[node];}}); enhance(node); } }); }); }); mo.observe(document.documentElement,{childList:true,subtree:true}); } }
+  function init() { enhance(document); document.addEventListener('keydown',function(e){ var el = e.target&&e.target.closest?e.target.closest(SELECTOR):null; if(!el||el.matches('a,button,input,textarea,select')) return; /* [r31] У .calc-opt и .calc-type-card есть свой inline onkeydown — синтетический click отсюда выполнял выбор ДВАЖДЫ (двойной updateCalc и двойное открытие шторки). */ if(el.hasAttribute('onkeydown')) return; if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); setTimeout(function(){syncPressed(el);},0); } }); document.addEventListener('click',function(e){ var el = e.target&&e.target.closest?e.target.closest(SELECTOR):null; if(el) setTimeout(function(){syncPressed(el);},0); },true); if('MutationObserver' in window){ var mo = new MutationObserver(function(muts){ muts.forEach(function(m){ m.addedNodes&&Array.prototype.forEach.call(m.addedNodes,function(node){ if(node.nodeType===1){ if(node.matches&&node.matches(SELECTOR)) enhance({querySelectorAll:function(){return[node];}}); enhance(node); } }); }); }); mo.observe(document.documentElement,{childList:true,subtree:true}); } }
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
 })();

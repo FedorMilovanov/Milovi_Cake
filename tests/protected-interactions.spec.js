@@ -303,7 +303,19 @@ test.describe('premium baseline consolidation contracts', () => {
     const fillPath = backToTop.locator('.btt-ring path.btt-ring-fill');
     await expect(fillPath).toHaveCount(1);
     await expect(fillPath).toHaveAttribute('pathLength', '100');
-    await expect(fillPath).toHaveAttribute('d', /^M23 1/); // старт — верхняя центр-точка
+    /* [r31] Контракт — «старт в верхней центр-точке», а не конкретный отступ.
+       Раньше здесь был пином `M23 1`: контур шёл в 1 px от края, и замер
+       (PIL по кропам DPR 2/3) показал, что слева и снизу золота 0 px —
+       обводка срезалась кромкой viewBox. Геометрия исправлена на симметричный
+       отступ 2.5 (видимая полоса 1.5–3.0 CSS с обеих сторон), поэтому
+       проверяем смысл: x старта = 23, а отступ остаётся в разумном коридоре. */
+    const ringD = await fillPath.getAttribute('d');
+    const ringStart = /^M([\d.]+) ([\d.]+)/.exec(ringD || '');
+    expect(ringStart, 'ring path must start with an absolute M point').not.toBeNull();
+    expect(Number(ringStart[1]), 'ring path starts at the top-centre point').toBe(23);
+    expect(Number(ringStart[2]), 'ring contour is not clipped by the viewBox edge').toBeGreaterThanOrEqual(1);
+    expect(Number(ringStart[2]), 'ring contour stays close to the tile edge').toBeLessThanOrEqual(3);
+    expect(ringD).toMatch(/Z$/, 'ring contour is a closed loop');
     const shape = await backToTop.evaluate((el) => {
       const style = getComputedStyle(el);
       return { radius: style.borderRadius, background: style.backgroundColor, width: Math.round(el.getBoundingClientRect().width), border: style.borderTopWidth };

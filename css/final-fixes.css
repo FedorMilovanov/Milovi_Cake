@@ -1986,9 +1986,12 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
   /* Высота дока меняется (крупная цена, узкий экран) — берём её из
      --mc-dock-h, который пишет main.js, чтобы кнопка не садилась на панель. */
   body:not(.mc-dock-idle):not(.mc-dock-out) .back-to-top {
-    /* [r29] Кнопка стоит над доком: низ дока (--mc-dock-bottom) + его высота
-       (--mc-dock-h, её пишет main.js, включая раскрытую панель) + воздух. */
-    bottom: calc(var(--mc-dock-bottom) + var(--mc-dock-h) - var(--mc-dock-overlap) + var(--mc-btt-gap)) !important;
+    /* [r31] Формула давала НАЛОЖЕНИЕ 12 px: вычитание --mc-dock-overlap
+       опускало кнопку внутрь панели (замер: btt 669…715, док 703…798).
+       Верх видимого дока от низа экрана = --mc-dock-bottom + --mc-dock-h
+       (её пишет ResizeObserver в main.js), воздух — --mc-btt-gap.
+       Кнопка всегда целиком над доком, зазор 10–14 px. */
+    bottom: calc(var(--mc-dock-bottom) + var(--mc-dock-h) + var(--mc-btt-gap)) !important;
   }
   /* Раскрытая панель расчёта занимает низ экрана — кнопке там нечего делать. */
   body.calc-panel-open .back-to-top {
