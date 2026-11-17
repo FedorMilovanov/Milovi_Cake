@@ -564,6 +564,16 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
  .wed-wrap .wed-contact-links a.btn-hero-messenger svg {transition:none!important;}
 }
 
+/* Keep the editorial section label on one line on the smallest phones. */
+@media (max-width:370px) {
+  .wed-wrap .wed-proof-head .wed-collection-kicker {
+    white-space:nowrap;
+    font-size:9px;
+    letter-spacing:.1em;
+    gap:7px;
+  }
+  .wed-wrap .wed-proof-head .wed-collection-kicker::after {width:16px;}
+}
 /* Wedding compact-width refinement: premium readable editorial rhythm at 320–375 px. */
 @media (max-width:375px) {
   .wed-wrap .wed-collection-grid {
