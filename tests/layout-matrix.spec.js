@@ -358,6 +358,7 @@ for (const width of [360, 390, 414, 561, 600, 768, 900, 1024, 1536]) {
         const pageErrors = [];
         page.on('pageerror', (error) => pageErrors.push(error.message));
         await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+        await page.waitForLoadState('load');
         // Wait for the page's own two-frame offscreen-layout optimization to finish.
         // Geometry measured while mc-fast-init is present is intentionally provisional.
         await expect(page.locator('html')).not.toHaveClass(/mc-fast-init/, { timeout: 3500 });
@@ -372,6 +373,10 @@ for (const width of [360, 390, 414, 561, 600, 768, 900, 1024, 1536]) {
         await expect.poll(() => page.locator('.wed-collection-card img').evaluateAll(
           (images) => images.every((image) => image.complete && image.naturalWidth > 0)
         ), { timeout: 10000, intervals: [50, 150, 300] }).toBe(true);
+        // Force a real on-screen layout; content-visibility:auto may skip
+        // grid track resolution again after scrolling past the last card.
+        await page.locator('.wed-collection-card').first().scrollIntoViewIfNeeded();
+        await page.waitForTimeout(50);
         const expectedColumns = width <= 375 ? 1 : width <= 860 ? 2 : 4;
         await expect.poll(() => page.evaluate(() =>
           getComputedStyle(document.querySelector('.wed-collection-grid'))
