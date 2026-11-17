@@ -403,6 +403,53 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
   .wed-wrap .wed-btn:hover span[aria-hidden="true"], .wed-wrap .wed-link:hover span[aria-hidden="true"] { transform: none; }
 }
 
+/* Mobile-first wedding conversion and touch quality. Scoped to wedding; no global assets. */
+@media (max-width:900px) {
+ .wed-wrap #wedDateForm { scroll-margin-top:calc(94px + env(safe-area-inset-top,0px)); }
+ .wed-wrap .wed-mobile-first-action {
+   display:inline-flex; align-items:center; justify-content:space-between; gap:26px;
+   min-height:46px; width:max-content; max-width:100%; margin-top:17px;
+   padding:0 1px; border-bottom:1px solid var(--wed-accent);
+   color:var(--wed-ink); font:600 10.5px/1.3 'Jost',sans-serif;
+   letter-spacing:.17em; text-transform:uppercase; text-decoration:none;
+   transition:color .25s ease, gap .3s cubic-bezier(.22,1,.36,1);
+ }
+ .wed-wrap .wed-mobile-first-action span {font-size:18px;font-weight:400;line-height:1;}
+ .wed-wrap .wed-mobile-first-action:focus-visible { outline:2px solid var(--gold);outline-offset:4px; }
+ .wed-wrap .wed-hero-details > .wed-link {min-height:44px;align-items:center;margin-top:12px;}
+ .wed-wrap .wed-collection-card a:focus-visible { outline:2px solid var(--gold);outline-offset:4px; }
+}
+@media (min-width:901px) { .wed-wrap .wed-mobile-first-action {display:none;} }
+.wed-wrap .wed-mobile-sticky[hidden] {display:none!important}
+@media (max-width:600px) {
+ .wed-wrap .wed-mobile-sticky {
+   position:fixed;z-index:35;bottom:calc(12px + env(safe-area-inset-bottom,0px));
+   left:17px;right:17px;min-height:55px;display:flex;align-items:center;
+   justify-content:space-between;gap:12px;padding:8px 18px;
+   border:1px solid rgba(212,167,106,.75);border-radius:15px;
+   background:#261b14;color:#f6e9d7;text-decoration:none;
+   box-shadow:0 12px 34px rgba(33,21,12,.25);
+   animation:wedMobileStickyIn .24s ease both;
+ }
+ .wed-wrap .wed-mobile-sticky > span {
+   display:block;max-width:94px;font:500 9px/1.45 'Jost',sans-serif;
+   letter-spacing:.11em;text-transform:uppercase;color:#ddbd8f;
+ }
+ .wed-wrap .wed-mobile-sticky strong {
+   display:flex;align-items:center;gap:10px;white-space:nowrap;
+   font:500 12px/1.4 'Jost',sans-serif;letter-spacing:.04em;
+ }
+ .wed-wrap .wed-mobile-sticky strong span {font-size:20px;color:#e5bb79;line-height:1;}
+ .wed-wrap .wed-mobile-sticky:focus-visible {outline:2px solid #e5bb79;outline-offset:3px;}
+ .wed-wrap .wed-collection-card a:active .wed-collection-photo img {transform:scale(1.018);}
+}
+@keyframes wedMobileStickyIn {from {opacity:0;transform:translateY(12px);}to {opacity:1;transform:translateY(0);}}
+@media (min-width:601px) {.wed-wrap .wed-mobile-sticky {display:none!important;}}
+@media (prefers-reduced-motion:reduce) {
+ .wed-wrap .wed-mobile-first-action,.wed-wrap .wed-mobile-sticky {transition:none!important;animation:none!important;}
+ .wed-wrap .wed-collection-card a:active .wed-collection-photo img {transform:none!important;}
+}
+
 /* wed-contact-visual-r25: exact brand glyph scaling and label timing from
    local MILOVI desktop r25 candidate (agent-integration-v06-20261117).
    Base SVG paths: local r22 074ffcb0; NO visible rings or curved lettering.
@@ -505,6 +552,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
       <nav aria-label="Мобильная навигация"><a href="/gallery/">Галерея</a><a href="/zakazat-tort-spb/">Заказать</a><a href="/prigorody/">Доставка</a><a href="/#contacts">Контакты</a></nav>
     </details>
   </header>
+  <a class="wed-mobile-sticky" href="#wedDateForm" hidden><span>Свадебный заказ</span><strong>Уточнить дату <span aria-hidden="true">↗</span></strong></a>
   <main>
     <section class="wed-hero" aria-labelledby="wedHeroTitle">
       <div class="wed-hero-visual">
@@ -515,11 +563,11 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
         <div class="wed-hero-intro">
           <div class="wed-kicker">Свадебные торты · Санкт-Петербург</div>
           <h1 id="wedHeroTitle">Свадебные торты, которые станут частью вашей истории</h1>
-          <p class="wed-lead">Авторские свадебные торты ручной работы в Санкт-Петербурге.</p>
+          <p class="wed-lead">Авторские свадебные торты ручной работы в Санкт-Петербурге.</p><a class="wed-mobile-first-action" href="#wedDateForm">Уточнить дату свадьбы <span aria-hidden="true">↗</span></a>
         </div>
         <div class="wed-hero-details">
           <p class="wed-date-intro">Укажите дату свадьбы — проверим, свободна ли она, и предложим торт под ваш зал, палитру и число гостей.</p>
-          <form class="wed-date-form">
+          <form class="wed-date-form" id="wedDateForm">
             <label class="wed-date-label" for="wedDate">Дата вашей свадьбы</label>
             <div class="wed-date-row"><input type="date" id="wedDate" name="weddingDate" aria-label="Дата свадьбы" aria-describedby="wedDateHint"><button class="wed-btn" type="submit">Проверить дату <span aria-hidden="true">→</span></button></div>
             <p class="wed-note" id="wedDateHint">Откроется WhatsApp. Дату подставим, если выберете; площадку и число гостей укажете в сообщении.</p>
@@ -964,6 +1012,38 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
       update();
     })();
   </script>
+<script>
+/* Mobile wedding enquiry: unobtrusive CTA, only on long-page scroll. */
+(function(){
+ 'use strict';
+ var bar=document.querySelector('.wed-mobile-sticky');
+ var form=document.getElementById('wedDateForm');
+ var footer=document.querySelector('.landing-footer');
+ var menu=document.querySelector('.wed-mobile-menu');
+ if(!bar||!form||!footer)return;
+ var media=window.matchMedia('(max-width:600px)');
+ var pending=false;
+ function refresh(){
+   pending=false;
+   var rect=form.getBoundingClientRect();
+   var bottom=footer.getBoundingClientRect();
+   var formVisible=rect.top<innerHeight*.92&&rect.bottom>85;
+   var footerVisible=bottom.top<innerHeight;
+   bar.hidden=!(media.matches&&scrollY>Math.max(550,innerHeight*.8)&&!formVisible&&!footerVisible&&!(menu&&menu.open)&&!document.hidden);
+ }
+ function schedule(){
+   if(pending)return;
+   pending=true;
+   requestAnimationFrame(refresh);
+ }
+ addEventListener('scroll',schedule,{passive:true});
+ addEventListener('resize',schedule);
+ document.addEventListener('visibilitychange',schedule);
+ if(menu)menu.addEventListener('toggle',schedule);
+ bar.addEventListener('click',function(){bar.hidden=true;});
+ refresh();
+})();
+</script>
 <script defer src="/js/consent-analytics.js"></script>
 <script>
 /* MILOVI CAKE wedding messenger labels — scoped reuse of the local desktop
