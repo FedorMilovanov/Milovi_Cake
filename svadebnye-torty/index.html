@@ -406,6 +406,8 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
   .wed-wrap .wed-btn:hover span[aria-hidden="true"], .wed-wrap .wed-link:hover span[aria-hidden="true"] { transform: none; }
 }
 
+/* Keep the visual wordmark size, but make its touch target accessible. */
+.wed-wrap .wed-header .lp-logo {display:inline-flex;align-items:center;min-height:44px;}
 /* Mobile-first wedding conversion and touch quality. Scoped to wedding; no global assets. */
 @media (max-width:900px) {
  .wed-wrap #wedDateForm { scroll-margin-top:calc(94px + env(safe-area-inset-top,0px)); }
@@ -1029,14 +1031,37 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
  var menu=document.querySelector('.wed-mobile-menu');
  if(!bar||!form||!footer)return;
  var media=window.matchMedia('(max-width:600px)');
+ var controls=document.querySelectorAll('.wed-wrap main a, .wed-wrap main button, .wed-wrap main input, .wed-wrap main select, .wed-wrap main textarea, .wed-wrap main summary');
  var pending=false;
+ function controlBehindDock(){
+   // The fixed dock must never intercept a video button, card, form field or FAQ.
+   // Estimate the dock's hit rectangle even while [hidden] keeps it display:none.
+   var bottomOffset=parseFloat(getComputedStyle(bar).bottom)||12;
+   var dockHeight=Math.max(55,parseFloat(getComputedStyle(bar).height)||55);
+   var top=innerHeight-bottomOffset-dockHeight-6;
+   var bottomEdge=innerHeight-bottomOffset+6;
+   for(var i=0;i<controls.length;i++){
+     var el=controls[i];
+     if(el===bar||bar.contains(el)||el.disabled)continue;
+     var r=el.getBoundingClientRect();
+     if(r.bottom<=top||r.top>=bottomEdge||r.right<=17||r.left>=innerWidth-17)continue;
+     var style=getComputedStyle(el);
+     if(style.display!=='none'&&style.visibility!=='hidden'&&style.pointerEvents!=='none')return true;
+   }
+   return false;
+ }
  function refresh(){
    pending=false;
    var rect=form.getBoundingClientRect();
    var bottom=footer.getBoundingClientRect();
    var formVisible=rect.top<innerHeight*.92&&rect.bottom>85;
    var footerVisible=bottom.top<innerHeight;
-   bar.hidden=!(media.matches&&scrollY>Math.max(550,innerHeight*.8)&&!formVisible&&!footerVisible&&!(menu&&menu.open)&&!document.hidden);
+   var focus=document.activeElement;
+   var typing=focus&&/^(INPUT|TEXTAREA|SELECT)$/.test(focus.tagName);
+   var keyboard=window.visualViewport&&window.visualViewport.height<innerHeight-120;
+   var consent=document.querySelector('.mc-consent-overlay.is-open');
+   var allowed=media.matches&&scrollY>Math.max(550,innerHeight*.8)&&!formVisible&&!footerVisible&&!typing&&!keyboard&&!consent&&!(menu&&menu.open)&&!document.hidden;
+   bar.hidden=!(allowed&&!controlBehindDock());
  }
  function schedule(){
    if(pending)return;
@@ -1046,6 +1071,9 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
  addEventListener('scroll',schedule,{passive:true});
  addEventListener('resize',schedule);
  document.addEventListener('visibilitychange',schedule);
+ document.addEventListener('focusin',schedule);
+ document.addEventListener('focusout',schedule);
+ if(window.visualViewport)window.visualViewport.addEventListener('resize',schedule);
  if(menu)menu.addEventListener('toggle',schedule);
  bar.addEventListener('click',function(){bar.hidden=true;});
  refresh();
