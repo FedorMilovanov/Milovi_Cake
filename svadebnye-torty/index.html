@@ -292,6 +292,117 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 @media(max-width:768px){.lp-theme-toggle{margin-left:12px;width:40px;height:40px;min-width:40px}}
 
 
+/* Wedding 2026-11-17: restrained premium hover language, scoped to this landing.
+   No new assets, no scripts, no changes to the protected homepage. */
+.wed-wrap .lp-nav a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 0;
+  transition: color .28s ease;
+}
+.wed-wrap .lp-nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 1px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(201,147,74,.12), var(--gold), rgba(201,147,74,.12));
+  opacity: 0;
+  transform: scaleX(.06);
+  transform-origin: center;
+  transition: transform .4s cubic-bezier(.22,1,.36,1), opacity .25s ease;
+  pointer-events: none;
+}
+.wed-wrap .lp-nav a:focus-visible::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+.wed-wrap .lp-header .lp-logo {
+  transition: color .3s ease, text-shadow .3s ease;
+}
+.wed-wrap .wed-btn {
+  transform: translateY(0);
+  transition: border-color .28s ease, color .28s ease, background .28s ease,
+              transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s ease;
+}
+.wed-wrap .wed-btn span[aria-hidden="true"],
+.wed-wrap .wed-link span[aria-hidden="true"] {
+  display: inline-block;
+  transition: transform .34s cubic-bezier(.22,1,.36,1);
+}
+.wed-wrap .wed-collection-photo img,
+.wed-wrap #wedStyles .lp-card img {
+  transition: transform .7s cubic-bezier(.22,1,.36,1), filter .35s ease;
+}
+.wed-wrap .bridal-step::after {
+  content: "";
+  position: absolute;
+  left: 22px;
+  top: 0;
+  width: 42px;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0;
+  transform: scaleX(.3);
+  transform-origin: left;
+  transition: transform .45s cubic-bezier(.22,1,.36,1), opacity .25s ease;
+  pointer-events: none;
+}
+.wed-wrap .lp-faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  list-style: none;
+}
+.wed-wrap .lp-faq-item summary::-webkit-details-marker { display: none; }
+.wed-wrap .lp-faq-item summary::after {
+  content: "+";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 27px;
+  width: 27px;
+  height: 27px;
+  border: 1px solid rgba(201,147,74,.36);
+  border-radius: 50%;
+  color: var(--gold);
+  font: 400 20px/1 'Jost', sans-serif;
+  transition: transform .35s cubic-bezier(.22,1,.36,1), border-color .3s ease, background .3s ease;
+}
+.wed-wrap .lp-faq-item[open] summary::after {
+  transform: rotate(45deg);
+  border-color: var(--gold);
+  background: rgba(201,147,74,.08);
+}
+.wed-wrap .lp-faq-item summary:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+@media (hover:hover) and (pointer:fine) {
+  .wed-wrap .lp-nav a:hover::after { opacity: 1; transform: scaleX(1); }
+  .wed-wrap .lp-header .lp-logo:hover { color: var(--gold); text-shadow: 0 0 20px rgba(201,147,74,.13); }
+  .wed-wrap .wed-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(61,43,31,.12); }
+  .wed-wrap .wed-btn:hover span[aria-hidden="true"],
+  .wed-wrap .wed-link:hover span[aria-hidden="true"] { transform: translateX(5px); }
+  .wed-wrap .wed-collection-card:hover .wed-collection-photo img,
+  .wed-wrap .wed-collection-card:focus-within .wed-collection-photo img { transform: scale(1.035); }
+  .wed-wrap #wedStyles .lp-card:hover img { transform: scale(1.025); }
+  .wed-wrap .bridal-step:hover::after { opacity: .8; transform: scaleX(1); }
+}
+.wed-wrap .wed-btn:active { transform: translateY(0); }
+@media (prefers-reduced-motion:reduce) {
+  .wed-wrap .lp-nav a, .wed-wrap .lp-nav a::after, .wed-wrap .lp-header .lp-logo,
+  .wed-wrap .wed-btn, .wed-wrap .wed-btn span[aria-hidden="true"], .wed-wrap .wed-link span[aria-hidden="true"],
+  .wed-wrap .wed-collection-photo img, .wed-wrap #wedStyles .lp-card img,
+  .wed-wrap .bridal-step::after, .wed-wrap .lp-faq-item summary::after { transition: none !important; }
+  .wed-wrap .wed-btn:hover, .wed-wrap .wed-btn:active,
+  .wed-wrap .wed-collection-card:hover .wed-collection-photo img, .wed-wrap #wedStyles .lp-card:hover img,
+  .wed-wrap .wed-btn:hover span[aria-hidden="true"], .wed-wrap .wed-link:hover span[aria-hidden="true"] { transform: none; }
+}
+
 /* wed-contact-visual-r25: exact brand glyph scaling and label timing from
    local MILOVI desktop r25 candidate (agent-integration-v06-20261117).
    Base SVG paths: local r22 074ffcb0; NO visible rings or curved lettering.
