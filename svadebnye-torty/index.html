@@ -292,42 +292,49 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 @media(max-width:768px){.lp-theme-toggle{margin-left:12px;width:40px;height:40px;min-width:40px}}
 
 
-/* wed-contact-visual-r22: original brand SVGs from local Milovi r22 (074ffcb0).
-   Existing rising SVG-label hover behavior retained from local r21/r18.
-   Wedding only: do not alter protected home/suburb messenger implementations. */
-.wed-wrap .wed-messenger-contact{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:16px;max-width:100%}
+/* wed-contact-visual-r25: exact brand glyph scaling and label timing from
+   local MILOVI desktop r25 candidate (agent-integration-v06-20261117).
+   Base SVG paths: local r22 074ffcb0; NO visible rings or curved lettering.
+   Wedding-only isolation, protected main/suburban styles remain untouched. */
+.wed-wrap .wed-messenger-contact{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:16px;max-width:100%}
 .wed-wrap .wed-messenger-caption{font:600 10px/1.45 'Jost',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--wed-muted)}
-.wed-wrap .wed-contact-links{display:flex;align-items:center;gap:12px;flex-wrap:nowrap}
-.wed-wrap .wed-contact-links a.btn-hero-messenger{position:relative;display:inline-flex;align-items:center;justify-content:center;flex:0 0 48px;width:48px;height:48px;min-width:48px;min-height:48px;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;text-decoration:none;overflow:visible;outline-offset:5px;transition:none}
-.wed-wrap .wed-contact-links a.btn-hero-messenger:hover,.wed-wrap .wed-contact-links a.btn-hero-messenger:focus-visible{transform:none;filter:none}
+.wed-wrap .wed-contact-links{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;overflow:visible}
+.wed-wrap .wed-contact-links a.btn-hero-messenger{position:relative;display:flex;align-items:center;justify-content:center;flex:0 0 48px;width:48px;height:48px;min-height:48px;min-width:48px;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;text-decoration:none;overflow:visible;transform:none!important;filter:none!important;outline-offset:5px;transition:none}
 .wed-wrap .wed-contact-links .btn-hero-wa{color:#20c969}
 .wed-wrap .wed-contact-links .btn-hero-tg{color:#229ed9}
 .wed-wrap .wed-contact-links .btn-hero-max{color:#8e74ee}
-.wed-wrap .wed-contact-links svg{display:block;width:48px;height:48px;flex:none;overflow:visible;transform-origin:center;transition:transform .42s cubic-bezier(.16,1,.3,1)}
-.wed-wrap .wed-contact-links .hero-flat-text{opacity:0;fill:currentColor;font-size:9px;font-family:'Jost',sans-serif;font-weight:700;letter-spacing:.15px;pointer-events:none;transform-origin:24px 10px;transition:opacity .28s ease,transform .42s cubic-bezier(.16,1,.3,1)}
-.wed-wrap .wed-contact-links a:focus-visible{outline:2px solid currentColor;outline-offset:4px}
-.wed-wrap .wed-messenger-contact--final{justify-content:center;gap:18px;margin-top:22px}
+.wed-wrap .wed-contact-links a.btn-hero-messenger svg{display:block;width:48px;height:48px;min-width:48px;min-height:48px;overflow:visible;flex:none;transform:scale(1.18);transform-origin:center center;transition:transform .4s cubic-bezier(.22,.78,.25,1),filter .35s ease;filter:drop-shadow(0 1px 2px rgba(20,12,5,.08))}
+.wed-wrap .wed-contact-links .mc-brand-glyph{transform-box:fill-box;transform-origin:center center;transition:transform .43s cubic-bezier(.2,.85,.27,1)}
+.wed-wrap .wed-contact-links .mc-brand-glyph--wa{transform:scale(1.36)}
+.wed-wrap .wed-contact-links .mc-brand-glyph--tg,.wed-wrap .wed-contact-links .mc-brand-glyph--max{transform:scale(1.44)}
+.wed-wrap .wed-contact-links .hero-flat-text{fill:currentColor;font-family:'Jost',sans-serif;font-weight:500;letter-spacing:.34px;opacity:0;pointer-events:none;transform-origin:24px 10px;transition:opacity .3s ease,transform .42s cubic-bezier(.16,1,.3,1)}
+.wed-wrap .wed-contact-links a:focus-visible{outline:2px solid currentColor!important;outline-offset:5px}
+.wed-wrap .wed-messenger-contact--final{justify-content:center;gap:16px;margin-top:22px}
 .wed-wrap .wed-messenger-contact--final .wed-messenger-caption{color:var(--brown-light)}
 .wed-wrap .wed-collection-detail img{transition:transform .55s cubic-bezier(.2,.7,.35,1)}
 .wed-wrap .bridal-step{transition:border-color .3s ease,background .3s ease,box-shadow .3s ease}
 .wed-wrap .lp-faq-item summary{transition:color .22s ease}
 .wed-wrap .wed-btn:focus-visible,.wed-wrap .wed-link:focus-visible,.wed-wrap .lp-btn:focus-visible,.wed-wrap .lp-theme-toggle:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
 @media(hover:hover) and (pointer:fine){
-  .wed-wrap .wed-contact-links a:hover .hero-flat-text,
-  .wed-wrap .wed-contact-links a:focus-visible .hero-flat-text{opacity:1;transform:translateY(-13px) scale(1.06)}
+ .wed-wrap .wed-contact-links a:hover svg,.wed-wrap .wed-contact-links a:focus-visible svg{transform:scale(1.22);filter:drop-shadow(0 2px 5px rgba(20,12,5,.13))}
+ .wed-wrap .wed-contact-links a:hover .mc-brand-glyph--wa,.wed-wrap .wed-contact-links a:focus-visible .mc-brand-glyph--wa{transform:scale(1.41)}
+ .wed-wrap .wed-contact-links a:hover .mc-brand-glyph--tg,.wed-wrap .wed-contact-links a:focus-visible .mc-brand-glyph--tg,
+ .wed-wrap .wed-contact-links a:hover .mc-brand-glyph--max,.wed-wrap .wed-contact-links a:focus-visible .mc-brand-glyph--max{transform:scale(1.49)}
+ /* CSS fallback if the r25 animation controller cannot start. */
+ .wed-wrap .wed-contact-links a:not([data-mc-motion-init]):hover .hero-flat-text{opacity:1;transform:translateY(-13px) scale(1.06)}
 }
-.wed-wrap .wed-contact-links a:focus-visible .hero-flat-text{opacity:1;transform:translateY(-13px) scale(1.06)}
-@media(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
-  .wed-wrap .wed-collection-detail:hover img{transform:scale(1.025)}
-  .wed-wrap #wedStyles .lp-card:hover{border-color:rgba(201,147,74,.53);box-shadow:0 22px 55px rgba(61,43,31,.12)}
-  .wed-wrap #wedStyles .lp-card:hover img{filter:saturate(1.035)}
-  .wed-wrap .bridal-step:hover{border-color:rgba(201,147,74,.44);box-shadow:0 10px 24px rgba(61,43,31,.06)}
-  .wed-wrap .lp-faq-item summary:hover{color:var(--wed-accent)}
-}
-@media(max-width:370px){.wed-wrap .wed-messenger-contact,.wed-wrap .wed-contact-links{gap:10px}}
+.wed-wrap .wed-contact-links a:focus-visible .hero-flat-text{opacity:1}
+@media(max-width:370px){.wed-wrap .wed-messenger-contact{gap:8px}.wed-wrap .wed-contact-links{gap:6px}}
 @media(prefers-reduced-motion:reduce){
- .wed-wrap .wed-contact-links svg,.wed-wrap .wed-contact-links .hero-flat-text,.wed-wrap .wed-collection-detail img,
- .wed-wrap .bridal-step,.wed-wrap .lp-faq-item summary{transition:none}
+ .wed-wrap .wed-contact-links svg,.wed-wrap .wed-contact-links .mc-brand-glyph,.wed-wrap .wed-contact-links .hero-flat-text,
+ .wed-wrap .wed-collection-detail img,.wed-wrap .bridal-step,.wed-wrap .lp-faq-item summary{transition:none!important}
+}
+@media(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+ .wed-wrap .wed-collection-detail:hover img{transform:scale(1.025)}
+ .wed-wrap #wedStyles .lp-card:hover{border-color:rgba(201,147,74,.53);box-shadow:0 22px 55px rgba(61,43,31,.12)}
+ .wed-wrap #wedStyles .lp-card:hover img{filter:saturate(1.035)}
+ .wed-wrap .bridal-step:hover{border-color:rgba(201,147,74,.44);box-shadow:0 10px 24px rgba(61,43,31,.06)}
+ .wed-wrap .lp-faq-item summary:hover{color:var(--wed-accent)}
 }
 </style>
   <!-- [P100] Детерминированный пропуск offscreen-layout на первом кадре:
@@ -356,6 +363,28 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
       window.addEventListener('touchstart',rm,{once:true,passive:true,capture:true});
     })();
   </script>
+
+<style id="wed-clip-controls-r1">
+/* WEDDING: no native player bar, no letterboxing. Real 720×1282 footage. */
+.wed-wrap .wed-proof-video-frame{background:#332820 url('/img/gallery/video-12-wedding-heart-poster.webp') center/cover no-repeat;isolation:isolate}
+.wed-wrap .wed-proof-video-frame video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;background:transparent}
+.wed-wrap .wed-clip-controls{position:absolute;z-index:3;bottom:14px;left:14px;display:flex;gap:8px;align-items:center;pointer-events:none}
+.wed-wrap .wed-clip-controls[hidden]{display:none!important}
+.wed-wrap .wed-clip-control{position:relative;display:grid;place-items:center;width:44px;height:44px;min-width:44px;min-height:44px;flex:none;padding:0;cursor:pointer;pointer-events:auto;background:rgba(29,22,19,.68);color:#fff3e5;border:1px solid rgba(255,241,226,.48);border-radius:50%;box-shadow:0 3px 12px rgba(0,0,0,.13);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);touch-action:manipulation;transition:background .22s ease,border-color .22s ease,box-shadow .22s ease}
+.wed-wrap .wed-clip-control .wed-clip-svg{display:block;width:21px;height:21px}
+.wed-wrap .wed-clip-control .wed-clip-icon-pause,.wed-wrap .wed-clip-control .wed-clip-icon-sound{display:none}
+.wed-wrap .wed-proof-video-frame[data-playing="true"] .wed-clip-control .wed-clip-icon-play{display:none}
+.wed-wrap .wed-proof-video-frame[data-playing="true"] .wed-clip-control .wed-clip-icon-pause{display:block}
+.wed-wrap .wed-proof-video-frame[data-muted="false"] .wed-clip-control .wed-clip-icon-muted{display:none}
+.wed-wrap .wed-proof-video-frame[data-muted="false"] .wed-clip-control .wed-clip-icon-sound{display:block}
+.wed-wrap .wed-clip-control:focus-visible{outline:2px solid #f2c98c!important;outline-offset:3px}
+@media(hover:hover) and (pointer:fine){
+ .wed-wrap .wed-clip-control:hover{background:rgba(29,22,19,.87);border-color:rgba(255,241,226,.85);box-shadow:0 4px 16px rgba(0,0,0,.25)}
+}
+@media(max-width:370px){.wed-wrap .wed-clip-controls{left:10px;bottom:10px;gap:6px}}
+@media(prefers-reduced-motion:reduce){.wed-wrap .wed-clip-control{transition:none}}
+</style>
+
 </head>
 <body>
 <div class="lp-wrap wed-wrap">
@@ -440,16 +469,22 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
           </figure>
           <figure class="wed-proof-process">
             <div class="wed-proof-video-frame">
-              <video controls preload="none" loading="lazy" playsinline poster="/img/gallery/video-12-wedding-heart-poster.webp" width="720" height="1282" aria-label="Видео: Виктория завершает оформление свадебного торта малиной">
+              <video controls preload="none" loading="lazy" playsinline muted loop poster="/img/gallery/video-12-wedding-heart-poster.webp" width="720" height="1282" aria-label="Видео: Виктория завершает оформление свадебного торта малиной">
                 <source src="/img/gallery/videos/video-12-wedding-heart.webm" type="video/webm">
                 <source src="/img/gallery/videos/video-12-wedding-heart.mp4" type="video/mp4">
                 <track kind="captions" src="/svadebnye-torty/video-12-wedding-heart.ru.vtt" srclang="ru" label="Русский">
                 <a href="/img/gallery/videos/video-12-wedding-heart.mp4">Смотреть видео оформления торта</a>
               </video>
-              <button type="button" class="lp-media-play wed-proof-video-play" hidden>
-                <span class="wed-proof-play-icon" aria-hidden="true">▶</span>
-                <span>Смотреть процесс<small>10 секунд</small></span>
-              </button>
+              <div class="wed-clip-controls" role="group" aria-label="Управление видео" hidden>
+                <button type="button" class="wed-clip-control wed-clip-toggle" aria-label="Воспроизвести" aria-pressed="false" title="Воспроизвести">
+                  <svg class="wed-clip-svg wed-clip-icon-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5.5 19 12 8 18.5Z"/></svg>
+                  <svg class="wed-clip-svg wed-clip-icon-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg>
+                </button>
+                <button type="button" class="wed-clip-control wed-clip-sound" aria-label="Включить звук" aria-pressed="false" title="Включить звук">
+                  <svg class="wed-clip-svg wed-clip-icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5ZM16 9l5 6M21 9l-5 6"/></svg>
+                  <svg class="wed-clip-svg wed-clip-icon-sound" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5ZM15 9c1.7 1.4 1.7 4.6 0 6M18 6c3.2 2.8 3.2 9.2 0 12"/></svg>
+                </button>
+              </div>
             </div>
             <figcaption class="wed-proof-caption">
               <span class="wed-proof-number">02 / Реальный процесс</span>
@@ -669,28 +704,94 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 </div>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
   <script>
-    (function () {
-      'use strict';
-      var frame = document.querySelector('.wed-proof-video-frame');
-      if (!frame) return;
-      var video = frame.querySelector('video');
-      var button = frame.querySelector('.wed-proof-video-play');
-      if (!video.canPlayType('video/webm') && !video.canPlayType('video/mp4')) return;
-      // Native controls remain available if JavaScript is disabled.
-      video.controls = false;
-      button.hidden = false;
-      function playVideo() {
-        if (button.hidden) return;
-        video.controls = true;
-        video.tabIndex = 0;
-        button.hidden = true;
-        video.focus({ preventScroll: true });
-        var attempt = video.play();
-        if (attempt && attempt.catch) attempt.catch(function () {});
+  (function () {
+    'use strict';
+    var frame = document.querySelector('.wed-proof-video-frame');
+    if (!frame) return;
+    var video = frame.querySelector('video');
+    var panel = frame.querySelector('.wed-clip-controls');
+    if (!video || !panel || (!video.canPlayType('video/webm') && !video.canPlayType('video/mp4'))) return;
+    var playButton = panel.querySelector('.wed-clip-toggle');
+    var soundButton = panel.querySelector('.wed-clip-sound');
+    var reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    var inView = false;
+    var userPaused = false;
+    // Native controls are retained by HTML when scripts are disabled.
+    video.controls = false;
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+    panel.hidden = false;
+    frame.dataset.muted = 'true';
+    function sync() {
+      var playing = !video.paused && !video.ended;
+      frame.dataset.playing = String(playing);
+      frame.dataset.muted = String(video.muted);
+      playButton.setAttribute('aria-pressed', String(playing));
+      playButton.setAttribute('aria-label', playing ? 'Пауза' : 'Воспроизвести');
+      playButton.title = playing ? 'Пауза' : 'Воспроизвести';
+      soundButton.setAttribute('aria-pressed', String(!video.muted));
+      soundButton.setAttribute('aria-label', video.muted ? 'Включить звук' : 'Выключить звук');
+      soundButton.title = video.muted ? 'Включить звук' : 'Выключить звук';
+    }
+    function attemptPlay(manual) {
+      if (!manual && (userPaused || !inView || document.hidden || reduced.matches)) return;
+      var result = video.play();
+      if (result && typeof result.catch === 'function') result.catch(sync);
+      sync();
+    }
+    function togglePlay() {
+      if (video.paused) {
+        userPaused = false;
+        attemptPlay(true);
+      } else {
+        userPaused = true;
+        video.pause();
       }
-      button.addEventListener('click', playVideo);
-      video.addEventListener('click', playVideo);
-    })();
+      sync();
+    }
+    playButton.addEventListener('click', togglePlay);
+    // Clicking the footage also pauses/resumes; keyboard users have the real buttons.
+    video.addEventListener('click', togglePlay);
+    soundButton.addEventListener('click', function () {
+      video.muted = !video.muted;
+      if (!video.muted && video.paused) {
+        userPaused = false;
+        attemptPlay(true);  // user gesture permits unmuted playback
+      }
+      sync();
+    });
+    ['playing','play','pause','volumechange','ended'].forEach(function (name) {
+      video.addEventListener(name, sync);
+    });
+    video.addEventListener('error', function () {
+      video.controls = true; // codec failure: allow native fallback
+      panel.hidden = true;
+    });
+    function visibility() {
+      if (document.hidden) {
+        video.pause();
+        if (!video.muted) video.muted = true; // no unexpected audible resume
+      } else if (inView) attemptPlay(false);
+    }
+    document.addEventListener('visibilitychange', visibility);
+    if ('IntersectionObserver' in window) {
+      var observer = new IntersectionObserver(function (entries) {
+        inView = entries.some(function (entry) { return entry.isIntersecting && entry.intersectionRatio >= .25; });
+        if (inView) attemptPlay(false);
+        else if (!video.paused) video.pause();
+      }, {threshold:[0,.25,.55]});
+      observer.observe(frame);
+    } else {
+      inView = true;
+      attemptPlay(false);
+    }
+    reduced.addEventListener('change', function () {
+      if (reduced.matches && !video.paused) video.pause();
+      else if (inView) attemptPlay(false);
+    });
+    sync();
+  })();
   </script>
   <script>
     (function () {
@@ -753,5 +854,75 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     })();
   </script>
 <script defer src="/js/consent-analytics.js"></script>
+<script>
+/* MILOVI CAKE wedding messenger labels — scoped reuse of the local desktop
+   agent r25 controller: enter 370 ms, leave 560 ms, cubic smoothstep,
+   glyph scales 1.36 / 1.44 and label font 6.5 → 10.4.
+   No circular textPath, no duplicate listeners, no new brand graphics. */
+(function(){
+  'use strict';
+  var reduced=matchMedia('(prefers-reduced-motion:reduce)');
+  var groups=document.querySelectorAll('.wed-wrap .wed-contact-links');
+  if (!groups.length) return;
+  var keys=['wa','tg','max'];
+  var clamp=function(x,a,b){return Math.max(a,Math.min(b,x))};
+  var easeFlow=function(t){return t*t*(3-2*t)};
+  var round=function(v){return Number(v.toFixed(3))};
+  for (var g=0;g<groups.length;g++) {
+    for (var i=0;i<keys.length;i++) {
+      var key=keys[i],link=groups[g].querySelector('a.btn-hero-'+key);
+      if (!link || link.dataset.mcMotionInit==='1') continue;
+      var svg=link.querySelector('svg'),flat=svg && svg.querySelector('.hero-flat-text');
+      var mark=svg && Array.from(svg.children).find(function(el){return /^(g|path)$/i.test(el.tagName)});
+      if (!flat || !mark) continue;
+      var wrap=document.createElementNS('http://www.w3.org/2000/svg','g');
+      wrap.setAttribute('class','mc-brand-glyph mc-brand-glyph--'+key);
+      mark.before(wrap);wrap.appendChild(mark);
+      link.dataset.mcMotionInit='1';
+      flat.style.setProperty('transition','none','important');
+      var state={link:link,flat:flat,value:0,raf:0,pointer:false,focus:false};
+      (function(s){
+        function draw() {
+          var p=clamp(s.value,0,1);
+          var opacity=clamp((p-.04)/.86,0,1);
+          var y=8-9.1*p;
+          var size=6.5+3.9*p;
+          s.flat.setAttribute('y',round(y));
+          s.flat.setAttribute('opacity',round(opacity));
+          s.flat.setAttribute('font-size',round(size));
+          s.flat.style.setProperty('opacity',String(round(opacity)),'important');
+          s.flat.style.setProperty('font-size',round(size)+'px','important');
+          s.flat.style.setProperty('transform','none','important');
+          s.link.style.setProperty('--mc-hover-progress',String(round(p)));
+        }
+        function seek(to) {
+          var target=to?1:0,from=s.value;
+          if(s.raf){cancelAnimationFrame(s.raf);s.raf=0}
+          if(Math.abs(target-from)<.001 || reduced.matches){s.value=target;draw();return}
+          var duration=(target?370:560)*Math.max(.4,Math.abs(from-target));
+          var started=performance.now();
+          function step(now) {
+            var t=clamp((now-started)/duration,0,1);
+            s.value=from+(target-from)*easeFlow(t);
+            draw();
+            if(t<1)s.raf=requestAnimationFrame(step);
+            else{s.raf=0;s.value=target;draw()}
+          }
+          s.raf=requestAnimationFrame(step);
+        }
+        function update(){seek(s.pointer||s.focus)}
+        s.link.addEventListener('pointerenter',function(e){if(e.pointerType==='touch')return;s.pointer=true;update()},{passive:true});
+        s.link.addEventListener('pointerleave',function(e){if(e.pointerType==='touch')return;s.pointer=false;update()},{passive:true});
+        s.link.addEventListener('focusin',function(){s.focus=true;update()});
+        s.link.addEventListener('focusout',function(){s.focus=false;update()});
+        s.link.addEventListener('pointercancel',function(){s.pointer=false;update()});
+        reduced.addEventListener('change',function(){if(reduced.matches)seek(s.pointer||s.focus)});
+        draw();
+      })(state);
+    }
+  }
+})();
+</script>
+
 </body>
 </html>

@@ -241,10 +241,39 @@ test.describe('premium media blocks', () => {
       await expect.poll(() => label.evaluate(el => getComputedStyle(el).opacity)).toBe('1');
       const position=await desktop.evaluate(link => ({
         label:link.querySelector('.hero-flat-text').getBoundingClientRect().top,
-        icon:link.querySelector('svg > path').getBoundingClientRect().top
+        icon:link.querySelector('.mc-brand-glyph').getBoundingClientRect().top
       }));
       expect(position.label).toBeLessThan(position.icon);
     }
+  });
+
+  test('wedding icons match the latest local desktop glyph size, spacing and rising-label motion', async ({page}) => {
+    await page.setViewportSize({width:1440,height:900});
+    await page.goto('/svadebnye-torty/', {waitUntil:'domcontentloaded'});
+    for(const area of ['hero','final']){
+      const group=page.locator('.wed-messenger-contact--'+area+' .wed-contact-links');
+      await expect(group.locator('a')).toHaveCount(3);
+      const rects=await group.locator('a').evaluateAll(links=>links.map(a=>{
+        const r=a.getBoundingClientRect(),g=a.querySelector('.mc-brand-glyph').getBoundingClientRect();
+        return {cx:r.left+r.width/2,hit:Math.min(r.width,r.height),glyph:Math.max(g.width,g.height)};
+      }));
+      expect(rects.every(r=>r.hit>=44)).toBe(true);
+      expect(rects.every(r=>r.glyph>=28)).toBe(true);
+      expect(rects[1].cx-rects[0].cx).toBeLessThanOrEqual(58);
+      expect(rects[2].cx-rects[1].cx).toBeLessThanOrEqual(58);
+    }
+    const wa=page.locator('.wed-messenger-contact--hero a').first();
+    await wa.hover();
+    await expect.poll(()=>wa.locator('.hero-flat-text').evaluate(el=>Number(getComputedStyle(el).opacity)),{timeout:5000}).toBe(1);
+    const geometry=await wa.evaluate(el=>({
+      textSize:parseFloat(getComputedStyle(el.querySelector('.hero-flat-text')).fontSize),
+      labelTop:el.querySelector('.hero-flat-text').getBoundingClientRect().top,
+      glyphTop:el.querySelector('.mc-brand-glyph').getBoundingClientRect().top
+    }));
+    expect(geometry.textSize).toBeGreaterThanOrEqual(10.3);
+    expect(geometry.labelTop).toBeLessThan(geometry.glyphTop);
+    await page.locator('.wed-messenger-caption').first().hover();
+    await expect.poll(()=>wa.locator('.hero-flat-text').evaluate(el=>Number(getComputedStyle(el).opacity)),{timeout:5000}).toBe(0);
   });
 
   test('wedding messenger links fit mobile widths and reduced-motion remains static', async ({ page }) => {
@@ -374,55 +403,53 @@ test.describe('premium media blocks', () => {
     }
   });
 
-  test('wedding video poster matches the footage in portfolio, gallery and video metadata', async ({ page, request }) => {
-    const poster = '/img/gallery/video-12-wedding-heart-poster.webp';
-    const description = 'Кондитер оформляет белый торт свежей малиной';
-    const videoRequests = [];
-    // Chromium may negotiate either real source; the lazy-load contract applies to both.
-    page.on('request', (req) => {
-      if (/\/video-12-wedding-heart\.(webm|mp4)(?:\?|$)/.test(req.url())) videoRequests.push(req.url());
+  test('wedding video poster matches portfolio, gallery and metadata without native playback chrome', async ({page,request}) => {
+    const poster='/img/gallery/video-12-wedding-heart-poster.webp';
+    const description='Кондитер оформляет белый торт свежей малиной';
+    const videoRequests=[];
+    page.on('request',req=>{
+      if(/\/video-12-wedding-heart\.(webm|mp4)(?:\?|$)/.test(req.url()))videoRequests.push(req.url());
     });
-    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
-    const schemas = await page.locator('script[type="application/ld+json"]').allTextContents();
-    const reel = schemas.map(JSON.parse).flatMap((schema) => schema['@graph'] || [schema])
-      .find((item) => item['@type'] === 'VideoObject' && item.contentUrl?.includes('video-12-wedding-heart.webm'));
-    expect(reel.thumbnailUrl).toBe(`https://milovicake.ru${poster}`);
+    await page.goto('/svadebnye-torty/',{waitUntil:'domcontentloaded'});
+    const schemas=await page.locator('script[type="application/ld+json"]').allTextContents();
+    const reel=schemas.map(JSON.parse).flatMap(schema=>schema['@graph']||[schema])
+      .find(item=>item['@type']==='VideoObject' && item.contentUrl?.includes('video-12-wedding-heart.webm'));
+    expect(reel.thumbnailUrl).toBe('https://milovicake.ru'+poster);
     expect(reel.name).toContain('малиной');
     expect(reel.description).toBe(description);
-    await expect(page.locator('.lp-media-showcase video')).toHaveAttribute('preload', 'none');
-    await expect(page.locator('.lp-media-showcase video')).toHaveAttribute('loading', 'lazy');
-    const playButton = page.locator('.lp-media-showcase button.lp-media-play');
-    await playButton.focus();
-    await expect(playButton).toBeFocused();
+    const clip=page.locator('.wed-proof-video-frame');
+    const video=clip.locator('video');
+    await expect(video).toHaveAttribute('poster',poster);
+    await expect(video).toHaveAttribute('preload','none');
+    await expect(video).toHaveAttribute('loading','lazy');
+    await expect(clip.locator('.wed-clip-controls button')).toHaveCount(2);
     expect(videoRequests).toHaveLength(0);
-    await page.keyboard.press('Enter');
-    await expect.poll(() => videoRequests.length).toBeGreaterThan(0);
-    await expect(page.locator('.lp-media-showcase video')).toHaveAttribute('controls', '');
-    await expect(page.locator('.lp-media-showcase video')).toBeFocused();
-    await expect(playButton).toBeHidden();
-    const response = await request.get(poster);
+    await video.scrollIntoViewIfNeeded();
+    await expect.poll(()=>videoRequests.length,{timeout:15000}).toBeGreaterThan(0);
+    await expect.poll(()=>video.evaluate(el=>!el.paused),{timeout:15000}).toBe(true);
+    await expect(video).not.toHaveAttribute('controls','');
+    const response=await request.get(poster);
     expect(response.ok()).toBe(true);
     expect((await response.body()).length).toBeLessThan(22_000);
-    const frame = await page.evaluate((src) => new Promise((resolve, reject) => {
-      const image = new Image();
-      image.onload = () => resolve([image.naturalWidth, image.naturalHeight]);
-      image.onerror = reject;
-      image.src = src;
-    }), poster);
-    expect(frame).toEqual([720, 1282]);
-    const videoFit = await page.locator('.wed-proof-video-frame video').evaluate((el) => getComputedStyle(el).objectFit);
-    expect(videoFit).toBe('contain');
-    const sitemap = await (await request.get('/sitemap-videos.xml')).text();
-    expect(sitemap).toContain(`<video:thumbnail_loc>https://milovicake.ru${poster}</video:thumbnail_loc>`);
-    expect(sitemap).toContain(`<video:description>${description}</video:description>`);
-    const home = await (await request.get('/')).text();
-    expect(home).toContain(`{"v":"/img/gallery/videos/video-12-wedding-heart.webm","p":"${poster}","t":"Торт с малиной"}`);
-    await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
+    const dims=await page.evaluate(src=>new Promise((resolve,reject)=>{
+      const image=new Image();
+      image.onload=()=>resolve([image.naturalWidth,image.naturalHeight]);
+      image.onerror=reject;image.src=src;
+    }),poster);
+    expect(dims).toEqual([720,1282]);
+    const videoFit=await video.evaluate(el=>getComputedStyle(el).objectFit);
+    expect(videoFit).toBe('cover');
+    const sitemap=await(await request.get('/sitemap-videos.xml')).text();
+    expect(sitemap).toContain('<video:thumbnail_loc>https://milovicake.ru'+poster+'</video:thumbnail_loc>');
+    expect(sitemap).toContain('<video:description>'+description+'</video:description>');
+    const home=await(await request.get('/')).text();
+    expect(home).toContain('{"v":"/img/gallery/videos/video-12-wedding-heart.webm","p":"'+poster+'","t":"Торт с малиной"}');
+    await page.goto('/gallery/',{waitUntil:'domcontentloaded'});
     await page.locator('.gx-chip[data-filter="wedding"]').click();
-    await expect(page.locator('[data-id="v12"] video')).toHaveAttribute('poster', poster);
-    const galleryReel = await page.evaluate(async () => {
-      const { GALLERY_ITEMS } = await import('/js/gallery/data.js?v=20261026r01');
-      return GALLERY_ITEMS.find((item) => item.id === 'v12');
+    await expect(page.locator('[data-id="v12"] video')).toHaveAttribute('poster',poster);
+    const galleryReel=await page.evaluate(async()=>{
+      const {GALLERY_ITEMS}=await import('/js/gallery/data.js?v=20261026r01');
+      return GALLERY_ITEMS.find(item=>item.id==='v12');
     });
     expect(galleryReel.desc).toBe(description);
   });
@@ -446,43 +473,100 @@ test.describe('premium media blocks', () => {
     expect(videoRequests).toEqual([]);
   });
 
-  test.describe('wedding video format fallback', () => {
-    test.use({ serviceWorkers: 'block' });
+  test('wedding clip auto-plays muted in view, loops and has only two accessible controls', async ({ page }) => {
+    await page.goto('/svadebnye-torty/', {waitUntil:'domcontentloaded'});
+    const frame=page.locator('.wed-proof-video-frame');
+    const video=frame.locator('video');
+    const panel=frame.locator('.wed-clip-controls');
+    const play=panel.locator('.wed-clip-toggle');
+    const sound=panel.locator('.wed-clip-sound');
+    await expect(video).toHaveAttribute('preload','none');
+    await expect(video).toHaveAttribute('loop','');
+    await expect(video).toHaveAttribute('muted','');
+    await expect(video).toHaveAttribute('playsinline','');
+    await expect(video).not.toHaveAttribute('controls','');
+    await expect(panel).toBeVisible({timeout:10000});
+    await expect(panel.locator('button')).toHaveCount(2);
+    await panel.scrollIntoViewIfNeeded();
+    await expect.poll(() => video.evaluate(el => !el.paused && el.currentTime > .15), {timeout:15000}).toBe(true);
+    expect(await video.evaluate(el=>el.muted)).toBe(true);
+    await expect(play).toHaveAttribute('aria-label','Пауза');
+    await expect(sound).toHaveAttribute('aria-label','Включить звук');
+    await expect(panel.locator('.wed-clip-icon-play')).toHaveCSS('display','none');
+    await expect(panel.locator('.wed-clip-icon-pause')).toHaveCSS('display','block');
+    await expect(panel.locator('.wed-clip-icon-muted')).toHaveCSS('display','block');
+    await expect(panel.locator('.wed-clip-icon-sound')).toHaveCSS('display','none');
+    await expect(play).toHaveAttribute('aria-pressed','true');
+    await expect(sound).toHaveAttribute('aria-pressed','false');
+    await play.click();
+    await expect.poll(() => video.evaluate(el => el.paused)).toBe(true);
+    await expect(play).toHaveAttribute('aria-label','Воспроизвести');
+    await play.click();
+    await expect.poll(() => video.evaluate(el => !el.paused)).toBe(true);
+    await sound.click();
+    await expect.poll(() => video.evaluate(el => !el.muted)).toBe(true);
+    await expect(sound).toHaveAttribute('aria-label','Выключить звук');
+    await expect(panel.locator('.wed-clip-icon-muted')).toHaveCSS('display','none');
+    await expect(panel.locator('.wed-clip-icon-sound')).toHaveCSS('display','block');
+    await sound.click();
+    await expect.poll(() => video.evaluate(el => el.muted)).toBe(true);
+    await expect(video).not.toHaveAttribute('controls','');
+    await sound.focus();
+    await expect(sound).toBeFocused();
+    const geometry=await frame.evaluate(el=>({
+      videoFit:getComputedStyle(el.querySelector('video')).objectFit,
+      overflow:document.documentElement.scrollWidth-innerWidth,
+      minHit:Math.min(...[...el.querySelectorAll('.wed-clip-control')].map(b=>Math.min(b.getBoundingClientRect().width,b.getBoundingClientRect().height))),
+    }));
+    expect(geometry.videoFit).toBe('cover');
+    expect(geometry.overflow).toBeLessThanOrEqual(1);
+    expect(geometry.minHit).toBeGreaterThanOrEqual(44);
+  });
 
-    test('plays MP4 after WebM fails or is skipped, and fetches neither before the click', async ({ page }) => {
-      const requests = [];
-      await page.route('**/video-12-wedding-heart.webm', (route) => route.abort('failed'));
-      page.on('request', (request) => {
-        if (/video-12-wedding-heart\.(webm|mp4)$/.test(request.url())) requests.push(new URL(request.url()).pathname);
-      });
-      await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
-      const button = page.locator('.wed-proof-video-play');
-      await button.scrollIntoViewIfNeeded();
+  test('wedding video respects reduced motion until explicit play', async ({ page }) => {
+    await page.emulateMedia({reducedMotion:'reduce'});
+    await page.goto('/svadebnye-torty/', {waitUntil:'domcontentloaded'});
+    const frame=page.locator('.wed-proof-video-frame');
+    await frame.scrollIntoViewIfNeeded();
+    const video=frame.locator('video');
+    await page.waitForTimeout(350);
+    expect(await video.evaluate(el=>el.paused)).toBe(true);
+    await frame.locator('.wed-clip-toggle').click();
+    await expect.poll(() => video.evaluate(el=>!el.paused && el.currentTime>.1), {timeout:10000}).toBe(true);
+  });
+
+  test.describe('wedding video format fallback', () => {
+    test.use({ serviceWorkers:'block' });
+
+    test('plays MP4 on entering viewport if WebM fails, without exposing native player bar', async ({page}) => {
+      const requests=[];
+      await page.route('**/video-12-wedding-heart.webm', route => route.abort('failed'));
+      page.on('request', req => { if (/video-12-wedding-heart\.(webm|mp4)$/.test(req.url())) requests.push(new URL(req.url()).pathname); });
+      await page.goto('/svadebnye-torty/', {waitUntil:'domcontentloaded'});
+      const video=page.locator('.wed-proof-video-frame video');
+      // This is the lazy playback contract: no asset request before the viewer reaches the section.
       expect(requests).toEqual([]);
-      await button.click();
-      const video = page.locator('.wed-proof-video-frame video');
-      await expect.poll(() => video.evaluate((el) =>
-        el.currentSrc.endsWith('.mp4') && el.readyState >= 2 && el.currentTime > 0.2 && !el.paused
-      ), { timeout: 15_000 }).toBe(true);
-      // Some Chromium runners skip unsupported WebM without fetching it. If
-      // fetched, the route aborts it; in either case real MP4 must play.
+      await video.scrollIntoViewIfNeeded();
+      await expect.poll(() => video.evaluate(el =>
+        el.currentSrc.endsWith('.mp4') && el.readyState >= 2 && el.currentTime > .2 && !el.paused
+      ), {timeout:15000}).toBe(true);
       expect(requests).toContain('/img/gallery/videos/video-12-wedding-heart.mp4');
-      await expect(video).toHaveAttribute('controls', '');
+      await expect(video).not.toHaveAttribute('controls','');
     });
   });
 
   test.describe('wedding video without JavaScript', () => {
-    test.use({ javaScriptEnabled: false });
+    test.use({javaScriptEnabled:false});
 
-    test('keeps native controls and hides the script-only play button', async ({ page }) => {
-      await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
-      const video = page.locator('.wed-proof-video-frame video');
+    test('retains native controls as a progressive fallback', async ({page}) => {
+      await page.goto('/svadebnye-torty/', {waitUntil:'domcontentloaded'});
+      const video=page.locator('.wed-proof-video-frame video');
       await video.scrollIntoViewIfNeeded();
       await expect(video).toBeVisible();
-      await expect(video).toHaveAttribute('controls', '');
-      await expect(page.locator('.wed-proof-video-play')).toBeHidden();
+      await expect(video).toHaveAttribute('controls','');
+      await expect(page.locator('.wed-clip-controls')).toBeHidden();
       await expect(video.locator('source[type="video/mp4"]'))
-        .toHaveAttribute('src', '/img/gallery/videos/video-12-wedding-heart.mp4');
+        .toHaveAttribute('src','/img/gallery/videos/video-12-wedding-heart.mp4');
     });
   });
 
@@ -816,7 +900,7 @@ test.describe('premium media blocks', () => {
           const height = (selector) => document.querySelector(selector).getBoundingClientRect().height;
           return {
             background: header.backgroundColor, blur: header.backdropFilter,
-            slider: height('#wedGuests'), video: height('.lp-media-play'),
+            slider: height('#wedGuests'), video: height('.wed-clip-control'),
             detail: height('.wed-collection-detail a'), faq: height('.lp-faq-item summary'),
             detailFont: parseFloat(getComputedStyle(document.querySelector('.wed-collection-detail a')).fontSize),
             detailKicker: height('.wed-collection-detail .wed-collection-kicker'),
