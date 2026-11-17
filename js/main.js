@@ -23,8 +23,11 @@ window.toggleTheme = toggleTheme;
 
 // ── FILLS DATA ──
 const FILLS = {
-  biscuit: ['Микс ягод 🍓', 'Ванильная карамель с арахисом', 'Шоколадная карамель с арахисом', 'Шоколадный ореховый хруст', 'Воздушный поцелуй', 'Ванильная вишня', 'Ванильные тропики', 'Ванильные облака', 'Вишня в шоколаде', 'Шоколадный микс ягод', 'Красный бархат', 'Супер-Шоколад'],
-  bento: ['Микс ягод 🍓', 'Карамель с орехами', 'Карамель с вафлями', 'Малина', 'Вишня'],
+  /* [r33] Без эмодзи: калькулятор отдаёт «Микс ягод» (текст опции), и при
+     расхождении строк корзина показывала «— уточнить —» при уже выбранной
+     начинке, а выбор в корзине создавал второй ключ и эмодзи в WA-сообщении. */
+  biscuit: ['Микс ягод', 'Ванильная карамель с арахисом', 'Шоколадная карамель с арахисом', 'Шоколадный ореховый хруст', 'Воздушный поцелуй', 'Ванильная вишня', 'Ванильные тропики', 'Ванильные облака', 'Вишня в шоколаде', 'Шоколадный микс ягод', 'Красный бархат', 'Супер-Шоколад'],
+  bento: ['Микс ягод', 'Карамель с орехами', 'Карамель с вафлями', 'Малина', 'Вишня'],
   cake3d: ['Молочная девочка', 'Медовик', 'Молочная девочка + сливочный крем'],
 };
 
@@ -1497,9 +1500,8 @@ function initApp() {
     if (!panel || !text) return;
     const selected = document.querySelector('#calcFill .calc-opt.selected');
     if (!selected) return;
-    const tooltipEl = selected.querySelector('.fill-tooltip');
-    const desc = tooltipEl ? Array.from(tooltipEl.childNodes).filter(n => !(n.nodeName === 'STRONG')).map(n => n.textContent).join('').trim() : '';
-    if (desc) { text.textContent = desc; panel.style.opacity = '1'; }
+    const desc = fillDescOf(selected);
+    if (desc) { text.textContent = desc; panel.style.display = ''; panel.style.opacity = '1'; }
   })();
   (function initHeroOrbWillChange() {
     const hero = document.querySelector('.hero');
@@ -1806,7 +1808,10 @@ function selectCakeType(el, type) {
   }
   ['calcFillRow','calcFillBentoRow','calcFill3dRow'].forEach(id => { const row = document.getElementById(id); if (!row) return; setRowVisible(row, (row.dataset.for || '').includes(type)); });
   const activeGroup = document.getElementById(cfg.fillGroup);
-  if (activeGroup) { activeGroup.querySelectorAll('.calc-opt').forEach((o, i) => { o.classList.toggle('selected', i === 0); }); }
+  if (activeGroup) {
+    activeGroup.querySelectorAll('.calc-opt').forEach((o, i) => { o.classList.toggle('selected', i === 0); });
+    _syncFillDescPanel(activeGroup.querySelector('.calc-opt'));
+  }
   const decorRow = document.getElementById('calcDecor')?.closest('.calc-row');
   setRowVisible(decorRow, true);
   updateCalc();
@@ -1846,6 +1851,45 @@ function enforceSingleSelected(groupId) {
   selected.forEach((x, i) => i > 0 && x.classList.remove('selected'));
 }
 
+/* [r33] Описание состава живёт в .fill-tooltip, но initFillTooltips уносит
+   подсказки в <body> — иначе их режет overflow калькулятора. После переноса
+   opt.querySelector('.fill-tooltip') всегда null, поэтому «Состав начинки»,
+   мобильный поповер и live-region показывали текст первой начинки или ничего.
+   Читаем описание один раз (пока подсказка ещё внутри опции) и кэшируем. */
+function fillDescOf(opt) {
+  if (!opt) return '';
+  if (typeof opt._fillDesc === 'string') return opt._fillDesc;
+  const tip = opt.querySelector ? opt.querySelector('.fill-tooltip') : null;
+  let desc = '';
+  if (tip) {
+    const strong = tip.querySelector('strong');
+    desc = tip.textContent.replace(strong ? strong.textContent : '', '').replace(/\s+/g, ' ').trim();
+  } else if (opt.dataset && opt.dataset.desc) {
+    desc = String(opt.dataset.desc).trim();
+  }
+  opt._fillDesc = desc;
+  return desc;
+}
+
+/* [r33] Панель «Состав начинки» — единственное место, где состав произносится
+   словами. У бенто и 3D описаний нет вовсе (в опциях только .opt-label), и
+   панель продолжала показывать состав бисквитной начинки при выбранном
+   «Медовике». Пустой состав → панель убираем целиком: пустая рамка читается
+   как незаполненный блок. */
+function _syncFillDescPanel(opt) {
+  const panel = document.getElementById('fillDescPanel'), text = document.getElementById('fillDescText');
+  if (!panel || !text) return;
+  const desc = fillDescOf(opt);
+  if (desc) {
+    text.textContent = desc;
+    panel.style.display = '';
+    requestAnimationFrame(() => { panel.style.opacity = '1'; });
+  } else {
+    panel.style.opacity = '0';
+    panel.style.display = 'none';
+  }
+}
+
 function selectOpt(el, groupId) {
   const opt = el && el.closest ? el.closest('.calc-opt') : el;
   if (!opt) return;
@@ -1869,12 +1913,7 @@ function selectOpt(el, groupId) {
   if (label) { label.classList.remove('opt-label-shake'); void label.offsetWidth; label.classList.add('opt-label-shake'); label.addEventListener('animationend', () => label.classList.remove('opt-label-shake'), { once: true }); }
   if (groupId === 'calcType') { const _w = document.getElementById('calcWeightRow'); const _f = document.getElementById('calcFillRow'); if (_w) _w.style.display = 'block'; if (_f) _f.style.display = 'block'; }
   if (groupId === 'calcFill' || groupId === 'calcFillBento' || groupId === 'calcFill3d') {
-    const panel = document.getElementById('fillDescPanel'), text = document.getElementById('fillDescText');
-    if (panel && text) {
-      const tooltipEl = opt.querySelector('.fill-tooltip');
-      const desc = tooltipEl ? Array.from(tooltipEl.childNodes).filter(n => !(n.nodeName === 'STRONG')).map(n => n.textContent).join('').trim() : '';
-      if (desc) { text.textContent = desc; panel.style.opacity = '1'; } else { panel.style.opacity = '0'; }
-    }
+    _syncFillDescPanel(opt);
   }
   updateCalc();
 }
@@ -1988,8 +2027,7 @@ let _fillSheetPendingEl = null, _fillSheetPendingGroupId = null;
 function _fillPopupRender(optEl) {
   if (!optEl) return;
   const title = optEl.querySelector('.opt-label')?.textContent?.trim() || '';
-  const tooltipEl = optEl.querySelector('.fill-tooltip');
-  const desc = tooltipEl ? Array.from(tooltipEl.childNodes).filter(n => !(n.nodeName === 'STRONG')).map(n => n.textContent).join('').trim() : (optEl.dataset.desc || '');
+  const desc = fillDescOf(optEl) || (optEl.dataset.desc || '');
   const tagEls = optEl.querySelectorAll('.fill-tag');
   const tagsHTML = Array.from(tagEls).map(t => { const cls = t.classList.contains('hit') ? 'tag-hit' : t.classList.contains('nuts') ? 'tag-nuts' : ''; return `<span class="fill-sheet-tag ${cls}">${t.textContent.trim()}</span>`; }).join('');
   const _fillSheetTagsEl = document.getElementById('fillSheetTags'), _fillPopupTitleEl = document.getElementById('fillPopupTitle'), _fillPopupTextEl = document.getElementById('fillPopupText');
@@ -2057,12 +2095,7 @@ function showFillToast(optEl, groupId) {
   if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
   closeCalcPanel();
   const title = optEl.querySelector('.opt-label')?.textContent?.trim() || '';
-  const tooltipEl = optEl.querySelector('.fill-tooltip');
-  let desc = '';
-  if (tooltipEl) {
-    const strong = tooltipEl.querySelector('strong');
-    desc = tooltipEl.textContent.replace(strong ? strong.textContent : '', '').replace(/\s+/g, ' ').trim();
-  }
+  const desc = fillDescOf(optEl);
   const live = document.getElementById('fillToast');
   if (!live) return;
   live.textContent = title ? ('Выбрано: ' + title + (desc ? '. ' + desc : '')) : '';
@@ -2999,7 +3032,7 @@ if (typeof updateCalcCartBadge === 'function') {
      (замер: клик по «Авторский декор» попадал в подсказку «Базовый»). */
   function showTip(tip, opt) { if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; } if (activeTip && activeTip !== tip) { activeTip.style.opacity = '0'; activeTip.style.pointerEvents = 'none'; } activeTip = tip; const r = opt.getBoundingClientRect(); let left = r.left + r.width/2 - 110; let top = r.top - 14; left = Math.max(8, Math.min(left, window.innerWidth - 228)); tip.style.left = left+'px'; tip.style.top = top+'px'; tip.style.transform = 'translateY(-100%) translateY(-4px)'; tip.style.opacity = '1'; tip.style.pointerEvents = 'none'; }
   function hideTip(tip, delay) { hideTimer = setTimeout(() => { tip.style.opacity = '0'; tip.style.pointerEvents = 'none'; if (activeTip === tip) activeTip = null; hideTimer = null; }, delay || 120); }
-  function bindTooltips() { document.querySelectorAll('.calc-opt').forEach(opt => { if (opt._tooltipBound) return; opt._tooltipBound = true; const tip = opt.querySelector('.fill-tooltip'); if (!tip) return; if (opt.closest('#calcFillBento, #calcFill3d')) { tip.remove(); return; } if (!tip.querySelector('.fill-tooltip-arrow')) { tip.insertAdjacentHTML('beforeend', ARROW_SVG); } document.body.appendChild(tip); tip.style.opacity = '0'; tip.style.pointerEvents = 'none'; opt.addEventListener('mouseenter', () => showTip(tip, opt)); opt.addEventListener('mousemove', () => showTip(tip, opt)); opt.addEventListener('mouseleave', () => hideTip(tip, 120)); tip.addEventListener('mouseenter', () => { if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; } }); tip.addEventListener('mouseleave', () => hideTip(tip, 80)); }); }
+  function bindTooltips() { document.querySelectorAll('.calc-opt').forEach(opt => { if (opt._tooltipBound) return; opt._tooltipBound = true; const tip = opt.querySelector('.fill-tooltip'); if (!tip) return; if (opt.closest('#calcFillBento, #calcFill3d')) { tip.remove(); return; } if (!tip.querySelector('.fill-tooltip-arrow')) { tip.insertAdjacentHTML('beforeend', ARROW_SVG); } /* [r33] кэш описания, пока подсказка ещё внутри опции: после переноса в body opt.querySelector('.fill-tooltip') уже null */ var _tipStrong = tip.querySelector('strong'); opt._fillDesc = tip.textContent.replace(_tipStrong ? _tipStrong.textContent : '', '').replace(/\s+/g, ' ').trim(); document.body.appendChild(tip); tip.style.opacity = '0'; tip.style.pointerEvents = 'none'; opt.addEventListener('mouseenter', () => showTip(tip, opt)); opt.addEventListener('mousemove', () => showTip(tip, opt)); opt.addEventListener('mouseleave', () => hideTip(tip, 120)); tip.addEventListener('mouseenter', () => { if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; } }); tip.addEventListener('mouseleave', () => hideTip(tip, 80)); }); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindTooltips); else bindTooltips();
 })();
 

@@ -2125,3 +2125,12 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
 
 /* [r29] Раскрытая смета больше не переезжает к нижнему краю: бар остаётся на
    месте, панель растёт вверх из-под него — геометрия стабильна, прыжка нет. */
+
+/* [r33] Карточки каталога: у «Бенто» и «Павловой» подпись короче, и кнопка
+   вставала на 20–36 px выше соседей в том же ряду — ряд читался как «рваный».
+   Тянем .product-info на всю высоту карточки и прижимаем низ (цена + кнопка)
+   к общей базовой линии. На мобиле карточки идут в столбик и правило молчит. */
+.product-card { display: flex; flex-direction: column; }
+.product-card > .slider-wrap { flex: 0 0 auto; }
+.product-card > .product-info { flex: 1 1 auto; display: flex; flex-direction: column; }
+.product-card > .product-info > .product-footer { margin-top: auto; }
