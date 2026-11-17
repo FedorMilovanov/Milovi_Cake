@@ -216,3 +216,35 @@ Chromium: `video-posters` + `landing-smoke` + `contrast-regressions` — 233 pas
 Мерж в `main` с красным браузерным лейном не выполнялся: владелец просил сначала
 тщательную перепроверку, а «зелёный WebKit» — часть критерия. Нужен либо повторный
 прогон лейна (права `actions: write` у интеграции нет), либо решение владельца.
+
+## 11. Итог r37 на 2026-11-17 23:10 UTC (HEAD `34cfa97`)
+
+**Локально (Chromium, `/tmp/pw.qa.config.js`, `retries=0`).** Полный прогон на финальном
+дереве: **642 passed, 12 skipped, 0 failed (19.4 мин), EXIT 0**. Все 12 пропусков —
+прежние обоснованные условные (разбор в §5), `test.fixme` в дереве нет.
+`npm run audit:all` — PASSED (0 errors, 3 прежних warning), `npm run build:pages` — OK.
+
+**CI PR #168 на `34cfa97`.**
+
+| Проверка | Итог |
+| --- | --- |
+| `guard`, `qa` (20 мин), `Source, browser and Pages candidate audit`, `Repository hygiene`, `Deep polish audit`, `Cake Sanity` | ✅ |
+| `firefox resilient interactions`, `firefox reduced-motion ordering`, `webkit reduced-motion ordering` | ✅ |
+| `Inspect previous native investigation artifact`, `Inspect historical Lighthouse transfer changes` | ✅ |
+| **`WebKit native process investigation`** | ✅ (2.5 мин) — под нативным дебаггером те же сценарии проходят: подтверждает, что дело в нестабильности процесса WebKit, а не в assertion'ах |
+| `webkit resilient interactions` | ❌ 113 passed / 5 skipped / **2 failed** — оба варианта `cart-accessibility.spec.js:459` (отказ хранилища `SecurityError` и `QuotaExceededError`), падение процесса на клике «+» в корзине |
+| `Lighthouse artifact` | ❌ `total-byte-weight` домашней страницы 526 761 B против бюджета 438 272 B; лейн красный на **каждом** пуше ветки с утра (b4a36b5 → …), к r35 отношения не имеет |
+
+**Что дал r37 по существу.** Было: WebKit-лейн дважды подряд упирался в 40-минутный
+таймаут джобы с каскадом падений и «browser has been closed». Стало: тот же лейн
+доходит до конца за 13.6–18.5 мин, 113 тестов зелёные, падает ровно один сценарий
+инъекции отказа `localStorage`. Причина зависания (десятки мелких `backdrop-filter`,
+которые ветка вернула после осознанного удаления в `main` `25b9125`) устранена
+без изменения внешнего вида — снимки до/после в `_mockups/shots-r37-blur/`.
+
+**Почему не смержено.** Два красных лейна, оба не про вёрстку r35, но оба — реальные
+сигналы: (1) WebKit теряет процесс в сценарии, который на iOS Safari соответствует
+приватному режиму — так оставлять нельзя; (2) бюджет веса первого экрана превышен на
+88 KB. Ни один нельзя закрыть «поднятием бюджета» или ослаблением теста. Нужно решение
+владельца: либо отдельная задача на оба пункта и мерж с явной фиксацией риска, либо
+продолжение раскопок WebKit (нужны права на повторный запуск лейна: у интеграции их нет).
