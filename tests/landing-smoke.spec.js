@@ -231,7 +231,8 @@ test.describe('premium media blocks', () => {
         });
         expect(base.background).toBe('rgba(0, 0, 0, 0)');
         expect(base.border).toBe('0px');
-        expect(base.radius).toBe('0px');
+        // The hit target stays visually transparent, while keyboard focus is circular.
+        expect(base.radius).toBe('50%');
       }
     }
     const desktop=page.locator('.wed-messenger-contact--hero a').first();
