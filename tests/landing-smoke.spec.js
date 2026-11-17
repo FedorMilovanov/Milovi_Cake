@@ -1689,12 +1689,23 @@ test('wedding mobile dock never obscures content and remains reachable', async (
 
   // The optional dock shows only in genuinely free areas of a long editorial page.
   async function findSafeDock() {
-    for (const y of [3500, 3900, 4700, 6100, 7000, 7400, 8200, 8500, 9900]) {
-      await page.evaluate((top) => scrollTo(0, top), y);
-      await page.waitForTimeout(85);
-      if (await sticky.isVisible()) return;
+    // Editorial section heights change with viewport, fonts and responsive images.
+    // Discover a safe position rather than encoding one historic scroll coordinate.
+    const foundAt = await page.evaluate(async () => {
+      const dock = document.querySelector('.wed-mobile-sticky');
+      const limit = document.documentElement.scrollHeight - innerHeight;
+      for (let top = 1000; top < limit; top += 100) {
+        scrollTo(0, top);
+        await new Promise((resolve) =>
+          requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        if (!dock.hidden) return top;
+      }
+      return null;
+    });
+    if (foundAt === null) {
+      throw new Error('Wedding enquiry dock has no unobstructed position on the mobile page');
     }
-    throw new Error('Wedding enquiry dock is no longer reachable anywhere in its safe scroll areas');
+    await expect(sticky).toBeVisible();
   }
 
   await findSafeDock();
@@ -1715,7 +1726,8 @@ test('wedding mobile dock never obscures content and remains reachable', async (
   for (const selector of [
     '.wed-clip-toggle', '.wed-collection-card a', '.lp-faq-item summary',
     '.wed-collection-head h2', '.wed-collection-head > p',
-    '.wed-proof-cake-visual'
+    '.wed-proof-cake-visual', '.wed-collection-detail picture',
+    '#wedStyles .lp-card picture'
   ]) {
     await placeContentUnderDock(selector);
   }
