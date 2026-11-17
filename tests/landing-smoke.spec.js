@@ -1774,12 +1774,15 @@ test('wedding compact phones keep gallery, calculator and enquiry usable', async
   for (const width of [320, 360, 375, 390, 430]) {
     await page.setViewportSize({ width, height: 844 });
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('html')).not.toHaveClass(/mc-fast-init/, { timeout: 3500 });
 
     const layout = await page.evaluate(() => {
       const card = document.querySelector('.wed-collection-card').getBoundingClientRect();
       const calc = document.querySelector('.wed-calc').getBoundingClientRect();
       const grid = document.querySelector('.wed-collection-grid');
       const dock = document.querySelector('.wed-mobile-sticky');
+      const kicker = document.querySelector('.wed-proof-head .wed-collection-kicker');
+      const kickerStyle = getComputedStyle(kicker);
       const gridColumns = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
       // Measure the dock's true width without changing its normal visibility lifecycle.
       const wasHidden = dock.hidden;
@@ -1791,6 +1794,9 @@ test('wedding compact phones keep gallery, calculator and enquiry usable', async
         dockWidth: dockRect.width, dockLeft: dockRect.left, dockRight: dockRect.right,
         dockHeight: dockRect.height, scrollWidth: document.documentElement.scrollWidth,
         viewportWidth: innerWidth,
+        kickerHeight: kicker.getBoundingClientRect().height,
+        kickerLineHeight: parseFloat(kickerStyle.lineHeight),
+        kickerOverflow: kicker.scrollWidth - kicker.clientWidth,
       };
     });
 
@@ -1799,6 +1805,10 @@ test('wedding compact phones keep gallery, calculator and enquiry usable', async
     if (compact) {
       expect(layout.cardWidth).toBeGreaterThanOrEqual(width - 48);
       expect(layout.calcWidth).toBeGreaterThanOrEqual(width - 85);
+    }
+    if (width <= 370) {
+      expect(layout.kickerHeight).toBeLessThanOrEqual(layout.kickerLineHeight + 2);
+      expect(layout.kickerOverflow).toBeLessThanOrEqual(1);
     }
     expect(layout.dockWidth).toBeLessThanOrEqual(240);
     expect(layout.dockHeight).toBeGreaterThanOrEqual(44);
