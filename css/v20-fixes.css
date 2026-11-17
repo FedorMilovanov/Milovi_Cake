@@ -668,7 +668,9 @@ html[data-theme="dark"] #mcSheet .mc-row-privacy .mc-row-icon { background:linea
 .back-to-top .btt-ring{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
 .back-to-top .btt-ring path{fill:none;stroke-width:1.6;stroke-linejoin:round;stroke-linecap:butt;vector-effect:non-scaling-stroke}
 .back-to-top .btt-ring .btt-ring-track{stroke:rgba(240,211,166,0.16)}
-.back-to-top .btt-ring .btt-ring-fill{stroke:rgba(212,167,106,0.95);transition:stroke-dashoffset 0.18s linear}
-@media (prefers-reduced-motion: reduce){ .back-to-top .btt-ring .btt-ring-fill{transition:none} }
+.back-to-top .btt-ring .btt-ring-fill{stroke:rgba(212,167,106,0.95)}
+/* [r32] Сглаживание одно — rAF-запись dashoffset в main.js. CSS-transition
+   убрана: она догоняла уже посчитанное значение ещё 0.18 с, и кольцо
+   отставало от страницы на быстром скролле (двойное сглаживание). */
 /* Стрелка: тонкая шампань, без второй рамки вокруг. */
 .back-to-top svg{stroke-width:1.6}

@@ -104,6 +104,8 @@ DEV_TOOLING_JS = {
     "tests/contrast-regressions.spec.js",
     "tests/image-intrinsics.spec.js",
     "tests/fastinit-layout-skip.spec.js",
+    "tests/cart-pricing.spec.js",
+    "tests/back-to-top.spec.js",
     "scripts/lighthouse_tbt_window.js",
 }
 

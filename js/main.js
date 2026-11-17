@@ -362,6 +362,21 @@ function addSliderTouch(pid, total) {
 }
 
 // ── BENTO TAB ──
+/* [r32] Единственный источник правды о доплате за декор.
+   У типов с фиксированной ценой (Бенто, Макси Бенто) авторский декор в
+   предварительную стоимость НЕ входит — он «рассчитывается отдельно»
+   (коммерческое условие владельца, r30–r31). Раньше правило было записано
+   дважды: updateCalc() исключал доплату по `fixedPrice !== null`, а
+   addCalcToCart() — только для литерала 'bento'. Из-за расхождения Макси
+   Бенто показывал ~3 000 ₽ в калькуляторе и 4 000 ₽ в корзине и в сообщении.
+   Теперь обе точки спрашивают одну функцию. */
+function calcDecorSurcharge(type, decorEl) {
+  const cfg = CAKE_CONFIGS[type] || CAKE_CONFIGS.biscuit;
+  if (cfg.fixedPrice !== null) return 0;
+  const price = +(decorEl && decorEl.dataset ? decorEl.dataset.price : 0);
+  return Number.isFinite(price) && price > 0 ? Math.round(price) : 0;
+}
+
 const bentoModes = {};
 
 function switchBentoTab(pid, mode) {
@@ -1505,12 +1520,11 @@ const backToTopEl = document.getElementById('backToTop');
 // а поворот давал лишний композитный слой. Теперь один path по контуру
 // скруглённого квадрата: старт в верхней центральной точке, обход по часовой,
 // pathLength=100 — прогресс это dasharray/dashoffset, без пересчёта длины.
-// Контур идёт на 1 px внутри кнопки: визуально 44 px, hitbox остаётся 46 px.
-// [r31] Контур пересобран математически. Было: rect 42×44 с отступами
-// top/bottom 1 px и left/right 2 px, радиус 12 при border-radius кнопки 13 —
-// линия шла на 0.2 px от верхней кромки и на 1.2 px от боковой, углы не
-// концентричны. Стало: квадрат 41×41 по центру (отступ 2.5 px, stroke 1.6
-// лежит внутри), радиус 13 − 2.5 = 10.5 — контур концентричен скруглению.
+// [r31→r32] Геометрия контура (актуальные числа, не история): SVG 46×46 по
+// кнопке, вписанный квадрат 41×41 с отступом 2.5 px от кромки, радиус пути
+// 10.5 = 13 (border-radius кнопки) − 2.5, толщина 1.6. При stroke 1.6 линия
+// занимает 1.7…3.3 px от кромки, то есть целиком лежит внутри вьюпорта SVG
+// и концентрична скруглению; hitbox кнопки остаётся 46 px.
 const _bttRingPath = 'M23 2.5H33A10.5 10.5 0 0 1 43.5 13V33A10.5 10.5 0 0 1 33 43.5H13A10.5 10.5 0 0 1 2.5 33V13A10.5 10.5 0 0 1 13 2.5H23Z';
 let _bttFill = null;
 if (backToTopEl && !backToTopEl.querySelector('.btt-ring')) {
@@ -1528,29 +1542,120 @@ let _scrollTicking = false;
 // пишем лишь когда значение изменилось — иначе каждый кадр инвалидировал стиль.
 let _scrollTotalCache = 0;
 let _bttLastOffset = null;
+
+/* [r32] «Наверх» уступает интерактиву страницы.
+   На узких экранах кнопка (справа снизу) встаёт ровно на «+» вопроса FAQ:
+   замер до правки — 16 из 25 положений скролла перекрывали плюс, худший зазор
+   −57 px при требовании ≥ 12. Правило геометрическое и без скролл-хаков:
+   считаем зазор между рамкой кнопки и кликабельными строками FAQ; меньше
+   12 px — кнопка гаснет (класс btt-obstructed, pointer-events:none), и
+   возвращается только когда зазор снова больше 24 px. Разные пороги на вход
+   и выход дают гистерезис, поэтому на границе нет мерцания. */
+const BTT_AVOID_SELECTOR = '.cb-faq-item, .faq-item';
+const BTT_MIN_GAP = 12;        // минимальная безопасная дистанция, px
+const BTT_RESUME_GAP = 24;     // порог возврата (гистерезис), px
+let _bttObstructed = false;
+
+/* Строки FAQ кэшируем в координатах документа. Пересчёт — только когда
+   реально меняется раскладка (resize, смена высоты документа, раскрытие
+   аккордеона), а не каждый кадр скролла: rect-чтения в кадре заставляют
+   браузер синхронно пересобирать layout прямо посреди анимации. */
+let _bttAvoidRows = null;
+function _bttRowsInvalidate() { _bttAvoidRows = null; }
+function _bttRowsCached() {
+  if (_bttAvoidRows) return _bttAvoidRows;
+  const rows = [];
+  const nodes = document.querySelectorAll(BTT_AVOID_SELECTOR);
+  const sy = window.scrollY;
+  for (let i = 0; i < nodes.length; i++) {
+    const r = nodes[i].getBoundingClientRect();
+    if (!r.width || !r.height) continue;
+    rows.push({ top: r.top + sy, bottom: r.bottom + sy, left: r.left, right: r.right });
+  }
+  _bttAvoidRows = rows;
+  return rows;
+}
+
+/* Минимальный зазор от рамки кнопки до кликабельной строки FAQ.
+   Прямоугольники не пересекаются, если разведены хотя бы по одной оси. */
+function _bttGapToRows(rect) {
+  const rows = _bttRowsCached();
+  const sy = window.scrollY;
+  let worst = Infinity;
+  for (let i = 0; i < rows.length; i++) {
+    const r = rows[i];
+    const gap = Math.max(
+      r.left - rect.right,
+      rect.left - r.right,
+      (r.top - sy) - rect.bottom,
+      rect.top - (r.bottom - sy)
+    );
+    if (gap < worst) worst = gap;
+  }
+  return worst;
+}
+
+function _syncBttAvoidance() {
+  if (!backToTopEl) return;
+  if (!backToTopEl.classList.contains('visible') || backToTopEl.classList.contains('footer-clearance')) {
+    if (_bttObstructed) { _bttObstructed = false; backToTopEl.classList.remove('btt-obstructed'); }
+    return;
+  }
+  const gap = _bttGapToRows(backToTopEl.getBoundingClientRect());
+  const limit = _bttObstructed ? BTT_RESUME_GAP : BTT_MIN_GAP;
+  const obstructed = gap < limit;
+  if (obstructed !== _bttObstructed) {
+    _bttObstructed = obstructed;
+    backToTopEl.classList.toggle('btt-obstructed', obstructed);
+  }
+}
+
+function _syncScrollUi() {
+  /* Порядок важен: сначала все замеры (рамка кнопки), потом записи стилей —
+     иначе каждая запись инвалидирует layout и следующий замер тянет за собой
+     синхронную пересборку. */
+  if (backToTopEl) backToTopEl.classList.toggle('visible', window.scrollY > 600);
+  _syncBttAvoidance();
+  const y = window.scrollY;
+  const total = _scrollTotalCache;
+  const p = total > 0 ? Math.min(1, Math.max(0, y / total)) : 0;
+  if (_scrollEl) _scrollEl.style.width = (p * 100) + '%';
+  if (_bttFill) {
+    const off = ((1 - p) * 100).toFixed(2);
+    if (off !== _bttLastOffset) { _bttFill.style.strokeDashoffset = off; _bttLastOffset = off; }
+  }
+}
+
 function _syncScrollTotal() { _scrollTotalCache = Math.max(0, document.documentElement.scrollHeight - window.innerHeight); }
-function _onScroll() {
+
+/* Единственный вход: либо пересчитать высоту документа, либо нет.
+   Первая загрузка, pageshow/bfcache, поворот экрана и смена высоты документа
+   прогоняют полную синхронизацию (позиция, видимость, прогресс, уход от FAQ)
+   сразу — раньше до первого ручного скролла кольцо показывало старое значение. */
+function _syncScrollState(refreshTotal) {
+  if (refreshTotal) { _syncScrollTotal(); _bttRowsInvalidate(); }
   if (_scrollTicking) return;
   _scrollTicking = true;
-  requestAnimationFrame(() => {
-    const y = window.scrollY;
-    const total = _scrollTotalCache;
-    const p = total > 0 ? Math.min(1, Math.max(0, y / total)) : 0;
-    if (_scrollEl) _scrollEl.style.width = (p * 100) + '%';
-    if (backToTopEl) backToTopEl.classList.toggle('visible', y > 600);
-    if (_bttFill) {
-      const off = ((1 - p) * 100).toFixed(2);
-      if (off !== _bttLastOffset) { _bttFill.style.strokeDashoffset = off; _bttLastOffset = off; }
-    }
-    _scrollTicking = false;
-  });
+  requestAnimationFrame(() => { _syncScrollUi(); _scrollTicking = false; });
 }
-window.addEventListener('scroll', _onScroll, { passive: true });
-_syncScrollTotal();
-window.addEventListener('resize', _syncScrollTotal, { passive: true });
-window.addEventListener('load', _syncScrollTotal);
-window.addEventListener('pageshow', function (e) { if (e && e.persisted) _syncScrollTotal(); });
-if (typeof ResizeObserver === 'function') { try { new ResizeObserver(_syncScrollTotal).observe(document.documentElement); } catch (err) {} }
+
+/* Раскрытие аккордеона меняет высоту строки — кэш сбрасываем сразу и ещё раз
+   после анимации, иначе кнопка «увидит» старую геометрию вопроса. */
+document.addEventListener('click', function (e) {
+  if (e.target && e.target.closest && e.target.closest(BTT_AVOID_SELECTOR)) {
+    _bttRowsInvalidate();
+    setTimeout(function () { _bttRowsInvalidate(); _syncScrollState(false); }, 450);
+  }
+}, { passive: true, capture: true });
+
+window.addEventListener('scroll', function () { _syncScrollState(false); }, { passive: true });
+window.addEventListener('resize', function () { _syncScrollState(true); }, { passive: true });
+window.addEventListener('orientationchange', function () { setTimeout(function () { _syncScrollState(true); }, 220); }, { passive: true });
+window.addEventListener('load', function () { _syncScrollState(true); });
+window.addEventListener('pageshow', function () { _syncScrollState(true); });
+document.addEventListener('visibilitychange', function () { if (!document.hidden) _syncScrollState(true); });
+if (typeof ResizeObserver === 'function') { try { new ResizeObserver(function () { _syncScrollState(true); }).observe(document.documentElement); } catch (err) {} }
+_syncScrollState(true);
 
 // ── TOAST ──
 function showToast(msg) {
@@ -1779,7 +1884,7 @@ function updateCalc() {
   const fillEl = document.querySelector('#' + cfg.fillGroup + ' .selected');
   const decorEl = document.querySelector('#calcDecor .selected');
   const fillPrice  = +(fillEl?.dataset.price  || 0);
-  const decorPrice = (_cakeType === 'bento') ? 0 : +(decorEl?.dataset.price || 0);
+  const decorPrice = calcDecorSurcharge(_cakeType, decorEl);
   let total, noteText = 'Точная цена согласовывается при заказе';
   if (cfg.fixedPrice !== null) { total = cfg.fixedPrice * _calcQty + fillPrice; noteText = 'Декор рассчитывается отдельно'; }
   else {
@@ -2026,7 +2131,24 @@ document.addEventListener('keydown', e => {
 });
 
 // ── Динамический минимум даты ──
-(function() { const dateInput = document.getElementById('cdate'); if (dateInput) { const minDate = new Date(); minDate.setDate(minDate.getDate() + 2); dateInput.min = minDate.toISOString().split('T')[0]; } })();
+/* [r32] Минимум даты доставки — по петербургскому календарю.
+   Раньше: `new Date(); setDate(+2); toISOString()` — между 00:00 и 03:00 МСК
+   UTC ещё показывает вчерашний день, и минимум уезжал на сутки назад
+   (замер: 21.12 00:30 МСК → min 22.12 вместо 23.12). Считаем календарную
+   дату в Europe/Moscow и уже от неё отсчитываем два дня. */
+function spbDatePlusDays(days) {
+  try {
+    const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' })
+      .format(new Date()).split('-').map(Number);
+    if (parts.length === 3 && parts.every(Number.isFinite)) {
+      return new Date(Date.UTC(parts[0], parts[1] - 1, parts[2] + days)).toISOString().slice(0, 10);
+    }
+  } catch (e) { /* старые движки без Intl-таймзон — уходим в локальный фолбэк */ }
+  const fallback = new Date();
+  fallback.setDate(fallback.getDate() + days);
+  return fallback.toISOString().slice(0, 10);
+}
+(function() { const dateInput = document.getElementById('cdate'); if (dateInput) dateInput.min = spbDatePlusDays(2); })();
 
 // ── Mouse-tracking glow ──
 document.addEventListener('DOMContentLoaded', () => {
@@ -2561,7 +2683,7 @@ function addCalcToCart() {
   // иначе корзина и сообщение считают одну базовую цену, а калькулятор
   // показывает другую (см. updateCartUI/buildMessage).
   const decorPriceEl = document.querySelector('#calcDecor .selected');
-  const decorAdd = (_cakeType === 'bento') ? 0 : +(decorPriceEl?.dataset.price || 0);
+  const decorAdd = calcDecorSurcharge(_cakeType, decorPriceEl);
   cart[cartKey].decorAdd = Number.isFinite(decorAdd) && decorAdd > 0 ? decorAdd : 0;
   if (id === 2) cart[cartKey].biscuit = (window._calcBiscuit === 'choco') ? 'choco' : 'vanilla';
   updateCartUI();
@@ -2872,7 +2994,10 @@ if (typeof updateCalcCartBadge === 'function') {
 (function initFillTooltips() {
   const ARROW_SVG = '<svg class="fill-tooltip-arrow" width="18" height="10" viewBox="0 0 18 10" xmlns="http://www.w3.org/2000/svg"><polygon points="0,0 18,0 9,10" fill="#3d2b1f"/></svg>';
   let hideTimer = null, activeTip = null;
-  function showTip(tip, opt) { if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; } if (activeTip && activeTip !== tip) { activeTip.style.opacity = '0'; activeTip.style.pointerEvents = 'none'; } activeTip = tip; const r = opt.getBoundingClientRect(); let left = r.left + r.width/2 - 110; let top = r.top - 14; left = Math.max(8, Math.min(left, window.innerWidth - 228)); tip.style.left = left+'px'; tip.style.top = top+'px'; tip.style.transform = 'translateY(-100%) translateY(-4px)'; tip.style.opacity = '1'; tip.style.pointerEvents = 'all'; }
+  /* [r32] Подсказка начинки/декора — только информация: `pointer-events:none`.
+     Пока JS ставил `all`, панель 220px перехватывала клики по соседней опции
+     (замер: клик по «Авторский декор» попадал в подсказку «Базовый»). */
+  function showTip(tip, opt) { if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; } if (activeTip && activeTip !== tip) { activeTip.style.opacity = '0'; activeTip.style.pointerEvents = 'none'; } activeTip = tip; const r = opt.getBoundingClientRect(); let left = r.left + r.width/2 - 110; let top = r.top - 14; left = Math.max(8, Math.min(left, window.innerWidth - 228)); tip.style.left = left+'px'; tip.style.top = top+'px'; tip.style.transform = 'translateY(-100%) translateY(-4px)'; tip.style.opacity = '1'; tip.style.pointerEvents = 'none'; }
   function hideTip(tip, delay) { hideTimer = setTimeout(() => { tip.style.opacity = '0'; tip.style.pointerEvents = 'none'; if (activeTip === tip) activeTip = null; hideTimer = null; }, delay || 120); }
   function bindTooltips() { document.querySelectorAll('.calc-opt').forEach(opt => { if (opt._tooltipBound) return; opt._tooltipBound = true; const tip = opt.querySelector('.fill-tooltip'); if (!tip) return; if (opt.closest('#calcFillBento, #calcFill3d')) { tip.remove(); return; } if (!tip.querySelector('.fill-tooltip-arrow')) { tip.insertAdjacentHTML('beforeend', ARROW_SVG); } document.body.appendChild(tip); tip.style.opacity = '0'; tip.style.pointerEvents = 'none'; opt.addEventListener('mouseenter', () => showTip(tip, opt)); opt.addEventListener('mousemove', () => showTip(tip, opt)); opt.addEventListener('mouseleave', () => hideTip(tip, 120)); tip.addEventListener('mouseenter', () => { if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; } }); tip.addEventListener('mouseleave', () => hideTip(tip, 80)); }); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindTooltips); else bindTooltips();

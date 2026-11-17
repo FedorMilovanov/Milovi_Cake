@@ -575,9 +575,14 @@
   border-color: transparent !important;
   color: #f0d3a6 !important;
 }
-[data-theme="dark"] #backToTop:hover {
-  background: radial-gradient(circle at 32% 18%, rgba(255,244,218,0.42), transparent 48%), linear-gradient(160deg, #cfa362 0%, #ac7c3e 55%, #8f5f24 100%) !important;
-  color: #fffdf6 !important;
+@media (hover: hover) and (pointer: fine) {
+  [data-theme="dark"] #backToTop:hover {
+    /* [r32] Старый золотой градиент — остаток до-r30: единственная «блестящая»
+       кнопка на тёмной странице. Наведение теперь матовое, как и сама кнопка:
+       тот же бронзовый квадрат на полтона светлее, стрелка — на полтона ярче. */
+    background: #47301f !important;
+    color: #f7e2bb !important;
+  }
 }
 
 

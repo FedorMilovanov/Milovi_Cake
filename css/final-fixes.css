@@ -1979,6 +1979,22 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
   box-shadow: 0 6px 18px rgba(24,12,2,.30) !important;
 }
 
+/* [r32] Кнопка уступает интерактиву страницы. Пока рамка «наверх» ближе
+   12 px к кликабельной строке FAQ, кнопка гаснет и не ловит тапы; класс
+   btt-obstructed ставит main.js по замеру getBoundingClientRect (возврат —
+   на зазоре 24 px, чтобы не мерцать на границе). Приоритет над
+   .back-to-top.visible даёт специфичность трёх классов, без флагов. */
+.back-to-top.visible.btt-obstructed {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* [r32] На тач-экранах hover не залипает после тапа: кнопка возвращается
+   к своему матовому состоянию. Наведение включаем только там, где есть курсор. */
+@media (hover: none) {
+  .back-to-top:hover { background: #3b281d; color: #f0d3a6; }
+}
+
 @media (max-width: 560px) {
   /* Нижний бар перекрывает док — он и есть «дно», из-под которого тот выезжает. */
   #mcNav.mc-nav { z-index: 175; }
