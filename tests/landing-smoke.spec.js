@@ -1871,7 +1871,7 @@ test('wedding touch layout keeps navigation and gallery return action accessible
 
 test('wedding collection image sizes match compact one-column and regular two-column widths', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('milovi_analytics_consent_v1', 'granted'));
-  for (const width of [320, 360, 375, 390, 560, 768]) {
+  for (const width of [320, 360, 370, 371, 375, 376, 390, 560, 768]) {
     await page.setViewportSize({ width, height: 844 });
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('html')).not.toHaveClass(/mc-fast-init/, { timeout: 3500 });
@@ -1880,7 +1880,7 @@ test('wedding collection image sizes match compact one-column and regular two-co
         const image = picture.querySelector('img');
         const avif = picture.querySelector('source[type="image/avif"]');
         const cssWidth = image.getBoundingClientRect().width;
-        const expected = innerWidth <= 375 ? innerWidth - 40 : innerWidth / 2 - 30;
+        const expected = innerWidth <= 370 ? innerWidth - 40 : innerWidth <= 375 ? innerWidth - 48 : innerWidth / 2 - 30;
         return {
           cssWidth, expected,
           imageSizes: image.getAttribute('sizes'),
@@ -1891,7 +1891,8 @@ test('wedding collection image sizes match compact one-column and regular two-co
     expect(widths).toHaveLength(4);
     for (const image of widths) {
       expect(Math.abs(image.cssWidth - image.expected), `CSS width at ${width}px`).toBeLessThanOrEqual(1);
-      expect(image.imageSizes).toContain('(max-width: 375px) calc(100vw - 40px)');
+      expect(image.imageSizes).toContain('(max-width: 370px) calc(100vw - 40px)');
+      expect(image.imageSizes).toContain('(max-width: 375px) calc(100vw - 48px)');
       expect(image.avifSizes).toBe(image.imageSizes);
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
