@@ -364,11 +364,14 @@ for (const width of [360, 390, 414, 561, 600, 768, 900, 1024, 1536]) {
         await page.locator('.wed-collection-card img').evaluateAll((images) => {
           images.forEach((image) => { image.loading = 'eager'; });
         });
-        // Lazy AVIF source selection can change after DOMContentLoaded. Assert all
-        // images really load, without failing on a transient decode() cancellation.
+        // Exercise the real lazy-loading path by visiting the gallery before
+        // inspecting its images; do not demand offscreen bytes at DOMContentLoaded.
+        await page.locator('.wed-collection-grid').scrollIntoViewIfNeeded();
+        await page.locator('.wed-collection-card').last().scrollIntoViewIfNeeded();
+        // Failed images still fail: each must finish loading with nonzero dimensions.
         await expect.poll(() => page.locator('.wed-collection-card img').evaluateAll(
           (images) => images.every((image) => image.complete && image.naturalWidth > 0)
-        ), { timeout: 7000, intervals: [50, 150, 300] }).toBe(true);
+        ), { timeout: 10000, intervals: [50, 150, 300] }).toBe(true);
         const expectedColumns = width <= 375 ? 1 : width <= 860 ? 2 : 4;
         await expect.poll(() => page.evaluate(() =>
           getComputedStyle(document.querySelector('.wed-collection-grid'))
