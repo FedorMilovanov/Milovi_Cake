@@ -1643,6 +1643,42 @@ test('wedding navigation has a subtle gold hover line and accessible keyboard st
   expect(duration.split(',').every((value) => parseFloat(value) === 0)).toBe(true);
 });
 
+test('wedding mobile has reachable enquiry action without covering content', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('milovi_analytics_consent_v1', 'granted'));
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+
+  const firstAction = page.locator('.wed-mobile-first-action');
+  const sticky = page.locator('.wed-mobile-sticky');
+  const form = page.locator('#wedDateForm');
+  await expect(firstAction).toBeVisible();
+  const actionBox = await firstAction.boundingBox();
+  expect(actionBox.height).toBeGreaterThanOrEqual(44);
+  await expect(sticky).toBeHidden();
+
+  await page.locator('#wedCollection').scrollIntoViewIfNeeded();
+  await expect(sticky).toBeVisible();
+  const stickyBox = await sticky.boundingBox();
+  expect(stickyBox.x).toBeGreaterThanOrEqual(0);
+  expect(stickyBox.x + stickyBox.width).toBeLessThanOrEqual(390);
+  expect(stickyBox.y + stickyBox.height).toBeLessThanOrEqual(844);
+
+  await sticky.click();
+  await expect(form).toBeInViewport();
+  await expect(sticky).toBeHidden();
+
+  await page.locator('#wedCollection').scrollIntoViewIfNeeded();
+  await expect(sticky).toBeVisible();
+  const menu = page.locator('.wed-mobile-menu summary');
+  await menu.click();
+  await expect(sticky).toBeHidden();
+  await menu.click();
+
+  await page.locator('.landing-footer').scrollIntoViewIfNeeded();
+  await expect(sticky).toBeHidden();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+});
+
 const localFontPages = ['/o-konditere/', '/bento-torty/', '/svadebnye-torty/',
   '/zakazat-tort-spb/', '/dostavka-i-oplata/', '/otzyvy/'];
 
