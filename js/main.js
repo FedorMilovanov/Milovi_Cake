@@ -244,7 +244,7 @@ function renderCatalog() {
       <div class="product-info">
         ${titleHtml}
         <p class="desc" id="desc-${p.id}">${p.desc}</p>
-        <p class="min-order" id="min-${p.id}">${p.min || '\u00a0'}</p>
+        <p class="min-order${p.min ? '' : ' is-empty'}" id="min-${p.id}">${p.min || ''}</p>
         <div class="product-footer">
           <span class="price" id="price-${p.id}">${p.price}</span>
           <button type="button" class="btn-add" onclick="addToCart(${p.id}, event)">Добавить в корзину</button>
@@ -289,23 +289,76 @@ const CAKE_CONFIGS = {
 };
 
 // ── PRODUCT SLIDER TOUCH ──
+// [r25] Свайп по фото товара «тянется» за пальцем: кадр едет вместе с ним,
+// у края сопротивляется, при отпускании сдвиг/флик докручивает слайд.
 function addSliderTouch(pid, total) {
   const wrap = document.getElementById('slider-' + pid);
   if (!wrap) return;
-  // Rebind touch listeners on mode change.
+  // На телефоне каталог — нативная карусель (одна карточка в кадре): свайп по
+  // фото листает ТОВАРЫ, поэтому собственную смену кадров здесь не перехватываем.
+  const grid = document.getElementById('catalogGrid');
+  if (grid && grid.scrollWidth > grid.clientWidth + 4) return;
   if (wrap._touchAbort) wrap._touchAbort.abort();
   const _sig = (wrap._touchAbort = new AbortController()).signal;
-  let startX = 0;
-  wrap.addEventListener('touchstart', e => { startX = e.touches[0].clientX; wrap._wasSwiped = false; }, { passive: true, signal: _sig });
-  wrap.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - startX;
-    if (Math.abs(dx) < 40) return;
-    wrap._wasSwiped = true;
-    const cur = wrap._slidePending ?? sliderCurrentIdx[pid] ?? 0;
-    goSlide(pid, cur + (dx < 0 ? 1 : -1));
-    if (slideTimers[pid]) startProductSlider(pid, total);
-    setTimeout(() => { wrap._wasSwiped = false; }, 300);
+  let startX = 0, startY = 0, dx = 0, startT = 0;
+  let dragging = false, horizontal = false, activeEl = null;
+
+  const currentIdx = () => wrap._slidePending ?? sliderCurrentIdx[pid] ?? 0;
+
+  wrap.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1) return;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    startT = Date.now();
+    dx = 0; dragging = true; horizontal = false;
+    wrap._wasSwiped = false;
+    activeEl = wrap.querySelector('.slide-img.active');
   }, { passive: true, signal: _sig });
+
+  wrap.addEventListener('touchmove', (e) => {
+    if (!dragging || e.touches.length !== 1) return;
+    dx = e.touches[0].clientX - startX;
+    const dy = e.touches[0].clientY - startY;
+    if (!horizontal) {
+      if (Math.abs(dx) < 8) return;
+      if (Math.abs(dy) > Math.abs(dx) * 1.15) { dragging = false; return; } // это скролл страницы
+      horizontal = true;
+      wrap.classList.add('is-dragging');
+    }
+    if (e.cancelable) e.preventDefault();
+    const cur = currentIdx();
+    const atEdge = (dx < 0 && cur >= total - 1) || (dx > 0 && cur <= 0);
+    const shift = dx * (atEdge ? 0.22 : 0.85);
+    if (activeEl) {
+      activeEl.style.transition = 'none';
+      activeEl.style.transform = 'translate3d(' + shift + 'px,0,0) scale(' + (1 - Math.min(Math.abs(shift), 160) / 2400) + ')';
+      activeEl.style.opacity = String(atEdge ? Math.max(0.7, 1 - Math.abs(dx) / 720) : Math.max(0.6, 1 - Math.abs(dx) / 460));
+    }
+  }, { passive: false, signal: _sig });
+
+  function finishTouch() {
+    const wasHorizontal = horizontal;
+    const el = activeEl;
+    const cur = currentIdx();
+    const fastFlick = Math.abs(dx) > 26 && (Date.now() - startT) < 300;
+    const shouldStep = wasHorizontal && dragging && (Math.abs(dx) > 46 || fastFlick);
+    dragging = false; horizontal = false;
+    wrap.classList.remove('is-dragging');
+    if (el) {
+      el.style.transition = 'transform .32s cubic-bezier(.2,1.2,.3,1), opacity .3s ease';
+      el.style.transform = '';
+      el.style.opacity = '';
+    }
+    if (shouldStep) {
+      wrap._wasSwiped = true;
+      goSlide(pid, cur + (dx < 0 ? 1 : -1));
+      if (slideTimers[pid]) startProductSlider(pid, total);
+      setTimeout(() => { wrap._wasSwiped = false; }, 320);
+    }
+    dx = 0; activeEl = null;
+  }
+  wrap.addEventListener('touchend', finishTouch, { passive: true, signal: _sig });
+  wrap.addEventListener('touchcancel', finishTouch, { passive: true, signal: _sig });
 }
 
 // ── BENTO TAB ──
@@ -326,7 +379,10 @@ function switchBentoTab(pid, mode) {
   const minEl   = document.getElementById('min-' + pid);
   const priceEl = document.getElementById('price-' + pid);
   if (descEl)  descEl.textContent  = variant.desc;
-  if (minEl)   minEl.textContent   = variant.min || '\u00a0';
+  if (minEl) {
+    minEl.textContent = variant.min || '';
+    minEl.classList.toggle('is-empty', !variant.min);
+  }
   if (priceEl) priceEl.textContent = variant.price;
 
   const wrap = document.getElementById('slider-' + pid);
@@ -603,7 +659,7 @@ function updateCartUI() {
   const cartTotalEl = document.getElementById('cartTotal');
   if (cartTotalEl) cartTotalEl.textContent = totalFmt;
 
-  body.innerHTML += `<div id="cartStep1Footer" style="margin-top:16px;padding-top:14px;border-top:1px solid var(--cream-dark);"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:15px;color:var(--brown);">Итого (предварительно):</span><span class="cart-inline-total">${totalFmt}</span></div><p style="font-size:11px;color:var(--cart-muted);margin-bottom:14px;line-height:1.5;">Окончательная цена согласовывается после обсуждения декора — каждый торт индивидуален.</p><button type="button" onclick="goToFormStep()" style="width:100%;background:var(--gold);color:var(--cart-cta-ink);border:none;border-radius:50px;padding:14px 24px;font-size:15px;font-family:'Jost',sans-serif;font-weight:500;cursor:pointer;box-shadow:0 6px 20px rgba(201,147,74,0.35);">Далее →</button></div>`;
+  body.innerHTML += `<div id="cartStep1Footer" style="margin-top:16px;padding-top:14px;border-top:1px solid var(--cream-dark);"><div class="cart-total-row"><span class="cart-total-label">Итого<span class="cart-total-note"> (предварительно)</span>:</span><span class="cart-inline-total">${totalFmt}</span></div><p style="font-size:11px;color:var(--cart-muted);margin-bottom:14px;line-height:1.5;">Окончательная цена согласовывается после обсуждения декора — каждый торт индивидуален.</p><button type="button" onclick="goToFormStep()" style="width:100%;background:var(--gold);color:var(--cart-cta-ink);border:none;border-radius:50px;padding:14px 24px;font-size:15px;font-family:'Jost',sans-serif;font-weight:500;cursor:pointer;box-shadow:0 6px 20px rgba(201,147,74,0.35);">Далее →</button></div>`;
   footer.style.display = 'none';
 }
 
@@ -808,6 +864,18 @@ function _cartForceClose() {
     drawer.setAttribute('aria-hidden', 'true');
   }
 }
+
+// [r25] Пока дата не выбрана — подсказываем формат; после выбора убираем.
+document.addEventListener('change', function (e) {
+  var el = e.target;
+  if (!el || el.id !== 'cdate') return;
+  el.setAttribute('data-filled', el.value ? '1' : '0');
+});
+document.addEventListener('input', function (e) {
+  var el = e.target;
+  if (!el || el.id !== 'cdate') return;
+  el.setAttribute('data-filled', el.value ? '1' : '0');
+});
 
 function openCart() {
   var drawer  = document.getElementById('cartDrawer');

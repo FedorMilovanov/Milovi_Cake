@@ -407,13 +407,13 @@
     @media(max-width:768px){#catalogGrid{grid-template-columns:repeat(2,1fr);gap:16px;padding:0 16px 32px}}
     @media(max-width:560px){#catalogGrid{grid-template-columns:1fr;gap:20px;padding:0 16px 36px}}
   </style>
-<link rel="stylesheet" href="css/style.css?v=20261116r24" />
-  <link rel="stylesheet" href="css/mc-2026.css?v=20261116r23" />
+<link rel="stylesheet" href="css/style.css?v=20261116r25" />
+  <link rel="stylesheet" href="css/mc-2026.css?v=20261117r25" />
   <link rel="stylesheet" href="css/premium-overrides.css?v=20261116r22" />
   <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20261116r24">
 <!-- Необязательная аналитика и LCP-телеметрия управляются согласием пользователя. -->
 <link rel="stylesheet" href="/css/v20-fixes.css?v=20260728r27">
-  <link rel="stylesheet" href="/css/final-fixes.css?v=20261116r22" />
+  <link rel="stylesheet" href="/css/final-fixes.css?v=20261116r23" />
   <!-- [P100] Детерминированный пропуск offscreen-layout на первом кадре:
        content-visibility:auto для секций ниже сгиба работает только до 2 кадров
        после FCP (или до первого взаимодействия / жёсткого таймаута 1500 мс),
@@ -1468,7 +1468,7 @@
         <h4>Ваши данные</h4>
         <div class="form-group float-label"><input type="text" id="cname" placeholder=" " autocomplete="name" /><label for="cname">Как к Вам обращаться?</label></div>
         <div class="form-group float-label"><input type="tel" id="cphone" placeholder=" " required autocomplete="tel" inputmode="tel" /><label for="cphone">Телефон</label></div>
-        <div class="form-group float-label"><input type="date" id="cdate" class="cart-date-input" autocomplete="off" /><label for="cdate">Дата</label></div>
+        <div class="form-group float-label"><input type="date" id="cdate" class="cart-date-input" autocomplete="off" aria-describedby="cdateHint" /><label for="cdate">Дата</label><span class="form-hint" id="cdateHint">дд.мм.гггг</span></div>
         <div class="form-group float-label"><textarea id="ccomment" placeholder=" " style="min-height:52px;"></textarea><label for="ccomment">Вес, декор, доставка/самовывоз…</label></div>
       </form>
     </div>
@@ -1517,10 +1517,10 @@
 </script>
 
 <script>var IMG_BASE = 'img';</script>
-<script src="js/main.js?v=20261116r22" defer></script>
+<script src="js/main.js?v=20261117r26" defer></script>
 
 <script src="js/nav.js?v=20261116r17" defer></script>
-<script src="js/mc-2026.js?v=20261116r06" defer></script>
+<script src="js/mc-2026.js?v=20261117r25" defer></script>
 
 <script defer src="/js/v20-faq-fix.js?v=20260728r27"></script>
 

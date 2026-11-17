@@ -1915,3 +1915,29 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
     background:rgba(212,167,106,.75);
   }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   [r25] Свайп фото товара «за пальцем»: горизонталь забирает JS,
+   вертикальный скролл остаётся браузеру (touch-action:pan-y).
+   ══════════════════════════════════════════════════════════════ */
+.product-card .slider-wrap .slide-img{ will-change:transform; }
+.product-card .slider-wrap.is-dragging{ cursor:grabbing; }
+.product-card .slider-wrap.is-dragging .slide-img,
+.product-card .slider-wrap.is-dragging .slide-btn{ pointer-events:none; }
+
+/* ══════════════════════════════════════════════════════════════
+   [r25] Итог корзины больше не обрезается: строка переносится, значение
+   не сжимается, а на узких экранах уточнение «(предварительно)» уходит —
+   пояснение и так стоит строкой ниже.
+   ══════════════════════════════════════════════════════════════ */
+.cart-total-row{
+  display:flex; align-items:baseline; justify-content:space-between;
+  gap:2px 12px; flex-wrap:wrap; margin-bottom:6px;
+}
+.cart-total-label{ font-size:15px; color:var(--brown); min-width:0; }
+.cart-total-row .cart-inline-total{ flex:0 0 auto; white-space:nowrap; }
+@media (max-width:430px){
+  .cart-total-note{ display:none; }
+  .cart-total-label{ font-size:14px; }
+}
+.cart-total .total-val{ min-width:0; }
