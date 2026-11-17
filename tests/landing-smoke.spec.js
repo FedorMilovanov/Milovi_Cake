@@ -1610,6 +1610,39 @@ test('wedding messenger hit targets stay invisible at rest and round on keyboard
   }
 });
 
+test('wedding navigation has a subtle gold hover line and accessible keyboard state', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('milovi_analytics_consent_v1', 'granted'));
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+
+  const nav = page.locator('.wed-wrap .lp-nav a').first();
+  await expect(nav).toBeVisible();
+  const underlineOpacity = () => nav.evaluate((node) => Number(getComputedStyle(node, '::after').opacity));
+  const fineHover = await page.evaluate(() => matchMedia('(hover:hover) and (pointer:fine)').matches);
+  if (fineHover) {
+    await nav.hover();
+    await expect.poll(underlineOpacity).toBeGreaterThan(0.9);
+    await page.mouse.move(0, 0);
+    await expect.poll(underlineOpacity).toBeLessThan(0.1);
+  }
+
+  await page.keyboard.press('Tab');
+  await nav.focus();
+  await expect.poll(underlineOpacity).toBeGreaterThan(0.9);
+  expect(await nav.evaluate((node) => node.matches(':focus-visible'))).toBe(true);
+
+  const question = page.locator('.wed-wrap .lp-faq-item summary').first();
+  const details = page.locator('.wed-wrap details.lp-faq-item').first();
+  await question.scrollIntoViewIfNeeded();
+  await question.click();
+  await expect(details).toHaveAttribute('open', '');
+  expect(await question.evaluate((node) => getComputedStyle(node, '::after').content)).toBe('"+"');
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const duration = await nav.evaluate((node) => getComputedStyle(node, '::after').transitionDuration);
+  expect(duration.split(',').every((value) => parseFloat(value) === 0)).toBe(true);
+});
+
 const localFontPages = ['/o-konditere/', '/bento-torty/', '/svadebnye-torty/',
   '/zakazat-tort-spb/', '/dostavka-i-oplata/', '/otzyvy/'];
 
