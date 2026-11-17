@@ -564,6 +564,32 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
  .wed-wrap .wed-contact-links a.btn-hero-messenger svg {transition:none!important;}
 }
 
+/* Wedding mobile footer: reliable 44px targets without enlarging editorial text. */
+@media (max-width:700px) {
+  .wed-wrap .lp-related a {
+    display:inline-flex;align-items:center;justify-content:center;
+    box-sizing:border-box;min-height:44px;line-height:1.35;
+  }
+  .wed-wrap .landing-footer nav {gap:4px;}
+  .wed-wrap .landing-footer nav a {
+    box-sizing:border-box;min-height:44px;padding:8px 0;
+    border-bottom:1px solid var(--wed-divider);
+  }
+  .wed-wrap .landing-footer nav a:last-child {border-bottom:0;}
+  .wed-wrap .landing-footer address a {
+    display:inline-flex;align-items:center;box-sizing:border-box;
+    min-height:44px;padding:8px 0;
+  }
+  .wed-wrap .mc-consent-trigger {
+    display:inline-flex;align-items:center;box-sizing:border-box;
+    min-height:44px;padding:9px 0;
+  }
+  .wed-wrap .landing-footer a:focus-visible,
+  .wed-wrap .lp-related a:focus-visible,
+  .wed-wrap .mc-consent-trigger:focus-visible {
+    outline:2px solid var(--gold);outline-offset:3px;
+  }
+}
 /* Keep the editorial section label on one line on the smallest phones. */
 @media (max-width:370px) {
   .wed-wrap .wed-proof-head .wed-collection-kicker {
