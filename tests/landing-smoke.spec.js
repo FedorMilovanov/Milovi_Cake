@@ -294,7 +294,9 @@ test.describe('premium media blocks', () => {
         expect(dimensions.right).toBeLessThanOrEqual(width+1);
         expect(dimensions.minSize).toBeGreaterThanOrEqual(44);
       }
-      expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+      // Responsive content may settle across frames after a viewport change; fail if overflow persists.
+      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - innerWidth),
+        { timeout: 2500, intervals: [50, 100, 200] }).toBeLessThanOrEqual(1);
     }
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize({ width: 390, height: 844 });
