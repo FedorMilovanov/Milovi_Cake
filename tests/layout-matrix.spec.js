@@ -361,10 +361,19 @@ for (const width of [360, 390, 414, 561, 600, 768, 900, 1024, 1536]) {
         // Wait for the page's own two-frame offscreen-layout optimization to finish.
         // Geometry measured while mc-fast-init is present is intentionally provisional.
         await expect(page.locator('html')).not.toHaveClass(/mc-fast-init/, { timeout: 3500 });
-        await page.locator('.wed-collection-card img').evaluateAll(async (images) => {
+        await page.locator('.wed-collection-card img').evaluateAll((images) => {
           images.forEach((image) => { image.loading = 'eager'; });
-          await Promise.all(images.map((image) => image.decode()));
         });
+        // Lazy AVIF source selection can change after DOMContentLoaded. Assert all
+        // images really load, without failing on a transient decode() cancellation.
+        await expect.poll(() => page.locator('.wed-collection-card img').evaluateAll(
+          (images) => images.every((image) => image.complete && image.naturalWidth > 0)
+        ), { timeout: 7000, intervals: [50, 150, 300] }).toBe(true);
+        const expectedColumns = width <= 375 ? 1 : width <= 860 ? 2 : 4;
+        await expect.poll(() => page.evaluate(() =>
+          getComputedStyle(document.querySelector('.wed-collection-grid'))
+            .gridTemplateColumns.split(' ').length
+        ), { timeout: 3500, intervals: [50, 120, 240] }).toBe(expectedColumns);
         const view = await page.evaluate(() => {
           const element = (selector) => document.querySelector(selector);
           const rect = (node) => {
@@ -398,7 +407,7 @@ for (const width of [360, 390, 414, 561, 600, 768, 900, 1024, 1536]) {
         const channels = (color) => (color.match(/\d+/g) || []).slice(0, 3).map(Number);
         expect(view.theme).toBe(theme);
         expect(view.overflow).toBeLessThanOrEqual(1);
-        expect(view.columns).toBe(width <= 375 ? 1 : width <= 860 ? 2 : 4);
+        expect(view.columns).toBe(expectedColumns);
         expect(view.mobileMenu === 'none').toBe(width > 860);
         expect(parseFloat(view.motion)).toBeLessThanOrEqual(0.00002);
         expect(view.images.every(({ loaded, src }) => loaded && /wedding-style-.*\.avif$/.test(src))).toBe(true);
