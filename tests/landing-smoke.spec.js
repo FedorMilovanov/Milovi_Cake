@@ -629,7 +629,7 @@ test.describe('premium media blocks', () => {
       }));
       expect(layout.photos.every((height) => height <= 480 && Math.abs(height - layout.photos[0]) < 1)).toBe(true);
       expect(layout.labelSize).toBeGreaterThanOrEqual(10);
-      expect(layout.columns).toBe(width <= 860 ? 2 : 4);
+      expect(layout.columns).toBe(width <= 375 ? 1 : width <= 860 ? 2 : 4);
       expect(layout.overflow).toBeLessThanOrEqual(1);
     }
     await cards.nth(1).hover();
