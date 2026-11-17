@@ -605,8 +605,24 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 @media (prefers-reduced-motion:reduce) {
   .wed-wrap .wed-school-project-link {transition:none;}
 }
-/* Wedding mobile footer: reliable 44px targets without enlarging editorial text. */
-@media (max-width:700px) {
+/* Section return link is a distinct touch action, not a small inline underlined word. */
+@media (max-width:860px) {
+  .wed-wrap .wed-collection-note a.wed-collection-backlink {
+    display:inline-flex;align-items:center;gap:10px;box-sizing:border-box;
+    min-height:44px;margin-top:7px;padding:8px 0;
+    border-bottom:1px solid currentColor;
+    color:var(--wed-accent);font:600 11px/1.5 'Jost',sans-serif;
+    letter-spacing:.09em;text-transform:uppercase;text-decoration:none;
+  }
+  .wed-wrap .wed-collection-note a.wed-collection-backlink span {
+    font-size:16px;line-height:1;
+  }
+  .wed-wrap .wed-collection-note a.wed-collection-backlink:focus-visible {
+    outline:2px solid var(--gold);outline-offset:4px;
+  }
+}
+/* Wedding touch targets: footer becomes a touch-only layout below 860px. */
+@media (max-width:860px) {
   .wed-wrap .lp-related a {
     display:inline-flex;align-items:center;justify-content:center;
     box-sizing:border-box;min-height:44px;line-height:1.35;
@@ -829,7 +845,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
             </figcaption>
           </figure>
         </div>
-        <p class="wed-proof-note">На фото и в видео — разные торты. Ниже — <a href="#wedCollection">визуализации возможных стилей</a>, а не фотографии выполненных заказов.</p>
+        <p class="wed-proof-note">На фото и в видео — разные торты. Ниже — визуализации возможных стилей, а не фотографии выполненных заказов.</p>
       </div>
     </section>
 
@@ -873,7 +889,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
             </a>
           </article>
         </div>
-        <p class="wed-collection-note">Эти четыре образа — визуализации стиля, а не фотографии выполненных заказов. Нажмите на карточку, чтобы обсудить идею в WhatsApp. <a href="#mediaShowcaseTitle">Реальные работы и видео — выше ↑</a>.</p>
+        <p class="wed-collection-note">Эти четыре образа — визуализации стиля, а не фотографии выполненных заказов. Нажмите на карточку, чтобы обсудить идею в WhatsApp. <a class="wed-collection-backlink" href="#mediaShowcaseTitle">Смотреть реальные работы <span aria-hidden="true">↑</span></a></p>
         <div class="wed-collection-detail">
           <picture><source type="image/avif" srcset="/img/wedding-roulade-detail-sm.avif 800w, /img/wedding-roulade-detail.avif 1600w" sizes="(max-width: 500px) calc(100vw - 48px), (max-width: 860px) 50vw, 820px"><img src="/img/wedding-roulade-detail.webp" alt="Художественная визуализация двух меренговых рулетов с кремом, фисташкой и шоколадными украшениями на основе работ Milovi Cake" width="1600" height="900" loading="lazy" decoding="async"/></picture>
           <div class="wed-collection-detail-copy"><span class="wed-collection-kicker">Визуализация</span><h3>Десерты, которые дополняют праздник</h3><a href="#wedStyles">Посмотреть десерты <span aria-hidden="true">→</span></a></div>
