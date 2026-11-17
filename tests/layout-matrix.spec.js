@@ -358,6 +358,9 @@ for (const width of [360, 390, 414, 561, 600, 768, 900, 1024, 1536]) {
         const pageErrors = [];
         page.on('pageerror', (error) => pageErrors.push(error.message));
         await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+        // Wait for the page's own two-frame offscreen-layout optimization to finish.
+        // Geometry measured while mc-fast-init is present is intentionally provisional.
+        await expect(page.locator('html')).not.toHaveClass(/mc-fast-init/, { timeout: 3500 });
         await page.locator('.wed-collection-card img').evaluateAll(async (images) => {
           images.forEach((image) => { image.loading = 'eager'; });
           await Promise.all(images.map((image) => image.decode()));
