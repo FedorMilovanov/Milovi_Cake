@@ -395,16 +395,23 @@ for (const width of [360, 390, 414, 561, 600, 768, 900, 1024, 1536]) {
         const channels = (color) => (color.match(/\d+/g) || []).slice(0, 3).map(Number);
         expect(view.theme).toBe(theme);
         expect(view.overflow).toBeLessThanOrEqual(1);
-        expect(view.columns).toBe(width <= 860 ? 2 : 4);
+        expect(view.columns).toBe(width <= 375 ? 1 : width <= 860 ? 2 : 4);
         expect(view.mobileMenu === 'none').toBe(width > 860);
         expect(parseFloat(view.motion)).toBeLessThanOrEqual(0.00002);
         expect(view.images.every(({ loaded, src }) => loaded && /wedding-style-.*\.avif$/.test(src))).toBe(true);
         expect(Math.max(...view.titles)).toBeLessThanOrEqual(1);
         expect(view.section.top).toBeGreaterThanOrEqual(view.hero.bottom - 1);
         expect(view.photos[0].top - view.intro.bottom).toBeGreaterThanOrEqual(20);
-        expect(view.cards[0].top).toBeCloseTo(view.cards[1].top, 0);
-        if (width <= 860) expect(view.cards[2].top).toBeGreaterThanOrEqual(view.cards[0].bottom + 12);
-        else expect(view.cards[3].top).toBeCloseTo(view.cards[0].top, 0);
+        if (width <= 375) {
+          for (let i = 1; i < view.cards.length; i++) {
+            expect(view.cards[i].top).toBeGreaterThanOrEqual(view.cards[i - 1].bottom + 12);
+            expect(view.cards[i].width).toBeGreaterThanOrEqual(width - 48);
+          }
+        } else {
+          expect(view.cards[0].top).toBeCloseTo(view.cards[1].top, 0);
+          if (width <= 860) expect(view.cards[2].top).toBeGreaterThanOrEqual(view.cards[0].bottom + 12);
+          else expect(view.cards[3].top).toBeCloseTo(view.cards[0].top, 0);
+        }
         expect(view.note.top - view.cards[3].bottom).toBeGreaterThanOrEqual(20);
         expect(view.banner.top - view.note.bottom).toBeGreaterThanOrEqual(32);
         expect(view.bannerAction.bottom).toBeLessThanOrEqual(view.banner.bottom - 14);
