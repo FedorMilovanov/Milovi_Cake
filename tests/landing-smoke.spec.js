@@ -219,6 +219,7 @@ test.describe('premium media blocks', () => {
 
   test('wedding brand SVGs match local Milovi r22 with floating labels and no circular chrome', async ({ page }) => {
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    const expectedRadius = await page.evaluate(() => matchMedia('(max-width:700px)').matches ? '10px' : '50%');
     for (const area of ['hero', 'final']) {
       const group = page.locator('.wed-messenger-contact--' + area);
       await expect(group.locator('a')).toHaveCount(3);
@@ -231,8 +232,8 @@ test.describe('premium media blocks', () => {
         });
         expect(base.background).toBe('rgba(0, 0, 0, 0)');
         expect(base.border).toBe('0px');
-        // The hit target stays visually transparent, while keyboard focus is circular.
-        expect(base.radius).toBe('50%');
+        // Desktop uses a round hit area; mobile with a static name label uses a soft rectangle.
+        expect(base.radius).toBe(expectedRadius);
       }
     }
     const desktop=page.locator('.wed-messenger-contact--hero a').first();
@@ -1579,6 +1580,7 @@ test('wedding messenger hit targets stay invisible at rest and round on keyboard
 
   const icons = page.locator('.wed-wrap .wed-contact-links a.btn-hero-messenger');
   await expect(icons).toHaveCount(6);
+  const expectedRadius = await page.evaluate(() => matchMedia('(max-width:700px)').matches ? '10px' : '50%');
 
   for (let i = 0; i < 6; i++) {
     const icon = icons.nth(i);
@@ -1594,7 +1596,7 @@ test('wedding messenger hit targets stay invisible at rest and round on keyboard
     });
     expect(normal.background).toBe('rgba(0, 0, 0, 0)');
     expect(normal.shadow).toBe('none');
-    expect(normal.radius).toBe('50%');
+    expect(normal.radius).toBe(expectedRadius);
     expect(normal.width).toBeGreaterThanOrEqual(44);
     expect(normal.height).toBeGreaterThanOrEqual(44);
 
@@ -1605,7 +1607,7 @@ test('wedding messenger hit targets stay invisible at rest and round on keyboard
       radius: getComputedStyle(el).borderRadius,
       outline: getComputedStyle(el).outlineStyle,
     }));
-    expect(focused.radius).toBe('50%');
+    expect(focused.radius).toBe(expectedRadius);
     expect(focused.outline).not.toBe('none');
     await icon.evaluate((el) => el.blur());
   }
