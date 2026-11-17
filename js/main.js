@@ -1442,7 +1442,9 @@ if (document.readyState === 'loading') { document.addEventListener('DOMContentLo
 const _scrollEl = document.getElementById('scroll-progress');
 const backToTopEl = document.getElementById('backToTop');
 // Soft-premium scroll-progress ring inside the back-to-top control (owner round).
-const _bttRingR = 20.2;
+// [r26] Кольцо прогресса — самый внешний контур кнопки (46 px): r + stroke/2
+// доходит ровно до края, чтобы не читалось как вторая рамка внутри.
+const _bttRingR = 21.3;
 const _bttRingC = 2 * Math.PI * _bttRingR;
 let _bttFill = null;
 if (backToTopEl && !backToTopEl.querySelector('.btt-ring')) {

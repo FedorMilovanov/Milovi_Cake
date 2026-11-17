@@ -573,13 +573,15 @@ body.mc-consent-open { overflow:hidden; }
   #mcNav.mc-nav,
   .mc-nav {
     display:flex !important;
-    left:0 !important;
-    right:0 !important;
-    bottom:0 !important;
-    width:100% !important;
+    /* [r26] Бар — плавающая «пилюля» (одобренный владельцем макет), а не
+       плашка во всю ширину: 12 px воздуха по краям и от низа экрана. */
+    left:12px !important;
+    right:12px !important;
+    bottom:max(8px, env(safe-area-inset-bottom, 0px)) !important;
+    width:auto !important;
     max-width:none !important;
     margin:0 !important;
-    border-radius:0 !important;
+    border-radius:22px !important;
     transform:translateY(0) !important;
     opacity:1 !important;
     visibility:visible !important;

@@ -340,6 +340,10 @@
       el.addEventListener('click', function(e) {
         if (item.href.startsWith('#')) {
           e.preventDefault();
+          // [r26] Мгновенный отклик: выбранный пункт подсвечивается сразу,
+          // не дожидаясь, пока scroll spy догонит плавный скролл.
+          nav.querySelectorAll('.mc-btn').forEach(function(b) { b.classList.remove('mc-active'); });
+          el.classList.add('mc-active');
           var target = document.querySelector(item.href);
           if (target) target.scrollIntoView({ behavior: 'smooth' });
         }
@@ -356,7 +360,18 @@
     // [2026-11-16r14] Макет владельца (image-3): корзина — обычный пункт бара,
     // без золотой медали; блик и подсветку рисует CSS (final-fixes.css).
     orderBtn.innerHTML = icon('<path d="M3 4.2h2.1l2.3 9.8a1.9 1.9 0 0 0 1.85 1.45h7.9a1.9 1.9 0 0 0 1.85-1.45L21 7.1H6.2"/><circle cx="10" cy="19.3" r="1.45"/><circle cx="17.4" cy="19.3" r="1.45"/>', 22) +
+      '<span class="mc-btn-badge" data-cart-badge aria-hidden="true">0</span>' +
       '<span class="mc-btn-label">Корзина</span>';
+    // [r26] Счётчик в баре: updateCartUI() обновляет его через [data-cart-badge];
+    // здесь — только первичное состояние, если корзина уже была непустой.
+    (function () {
+      var badge = orderBtn.querySelector('[data-cart-badge]');
+      var count = 0;
+      try { count = (typeof cart !== 'undefined' && cart) ? Object.keys(cart).length : 0; } catch (e) { count = 0; }
+      if (!badge) return;
+      badge.textContent = count;
+      badge.classList.toggle('visible', count > 0);
+    })();
     if (typeof openCart === 'function') {
       orderBtn.addEventListener('click', function() {
         // [N-1 FIXED] If the sheet is open when user taps "Заказать", calling openCart()
@@ -546,6 +561,9 @@
       });
 
       if (sections.length > 0) {
+        // [r26] Раньше активным становился раздел, занявший 35% экрана — на
+        // длинных секциях подсветка почти никогда не появлялась. Теперь —
+        // секция, проходящая через центр экрана (полоса в 10% высоты).
         var io = new IntersectionObserver(function(entries) {
           entries.forEach(function(entry) {
             var match = sections.find(function(s) { return s.el === entry.target; });
@@ -554,7 +572,7 @@
               match.btn.classList.add('mc-active');
             }
           });
-        }, { threshold: 0.35 });
+        }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
         sections.forEach(function(s) { io.observe(s.el); });
       }
     }

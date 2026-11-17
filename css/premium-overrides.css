@@ -1757,22 +1757,26 @@ button[disabled] {
 
 @media (max-width: 560px) {
   .calc-right-col {
-    z-index: 160 !important; 
-    /* [r17] 14 px воздуха от краёв экрана — док читается как отдельная пилюля */
-    left: calc(14px + env(safe-area-inset-left, 0px)) !important;
-    right: calc(14px + env(safe-area-inset-right, 0px)) !important;
+    z-index: 160 !important;
+    /* [r26] Док — продолжение нижнего бара (владелец: «чтобы она такой доп
+       панелью от нижнего меню вылезала, из неё вытекала»): во всю ширину и
+       вплотную к бару, без просвета, через который просвечивал текст. */
+    left: 12px !important;
+    right: 12px !important;
     width: auto !important;
+    /* [r26] Стык в стык с баром: 8 px от низа + 56 px его высоты. */
+    bottom: calc(64px + env(safe-area-inset-bottom, 0px)) !important;
   }
   /* [r17] док цены — отдельная пилюля над баром, а не плашка во весь экран:
      скруглена со всех сторон, с волосяной золотой обводкой и мягкой тенью,
      чтобы между ним и нижним баром не просвечивал текст страницы. */
   .calc-right-col .calc-result {
-    border-radius: 24px !important;
+    /* [r26] Скруглены только верхние углы: низ уходит под бар, стык не виден. */
+    border-radius: 20px 20px 0 0 !important;
     max-height: calc(100dvh - 116px - env(safe-area-inset-top, 0px)) !important;
     background: linear-gradient(165deg, rgba(44,28,16,.992), rgba(20,12,6,.996)) !important;
     border: 1px solid rgba(232,184,122,.22) !important;
-    border-bottom: 1px solid rgba(232,184,122,.22) !important;
-    box-shadow: 0 16px 40px rgba(0,0,0,.44), 0 0 0 1px rgba(255,255,255,.04) inset !important;
+    box-shadow: 0 -14px 38px rgba(24,13,6,.30), 0 -1px 0 rgba(232,184,122,.32) inset !important;
   }
   .calc-result-collapsed {
     min-height: 52px !important;
@@ -1906,6 +1910,67 @@ button[disabled] {
     transform: translateY(-1px);
     filter: none;
   }
+  /* [r26] Активный пункт — мягкая золотая «подушка» под иконкой, вместо
+     простой смены цвета: читается как выбранный раздел, не спорит с текстом. */
+  #mcNav .mc-btn.mc-active::before,
+  .mc-nav .mc-btn.mc-active::before {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -56%);
+    width: 46px;
+    height: 30px;
+    border-radius: 12px;
+    background: linear-gradient(160deg, rgba(201,147,74,.18), rgba(201,147,74,.05));
+    box-shadow: 0 1px 0 rgba(255,255,255,.55) inset, 0 0 0 1px rgba(201,147,74,.15) inset;
+    pointer-events: none;
+    z-index: 0;
+  }
+  [data-theme="dark"] #mcNav .mc-btn.mc-active::before,
+  [data-theme="dark"] .mc-nav .mc-btn.mc-active::before {
+    background: linear-gradient(160deg, rgba(232,184,122,.16), rgba(232,184,122,.04));
+    box-shadow: 0 0 0 1px rgba(232,184,122,.20) inset;
+  }
+  #mcNav .mc-btn svg,
+  #mcNav .mc-btn-label,
+  .mc-nav .mc-btn svg,
+  .mc-nav .mc-btn-label { position: relative; z-index: 1; }
+
+  /* Счётчик в корзине: тихая золотая точка с числом, обновляет updateCartUI()
+     через [data-cart-badge]. */
+  #mcNav .mc-btn-badge,
+  .mc-nav .mc-btn-badge {
+    position: absolute;
+    top: 6px;
+    left: calc(50% + 5px);
+    min-width: 15px;
+    height: 15px;
+    padding: 0 4px;
+    border-radius: 9px;
+    background: linear-gradient(160deg, #d7ae74, #b07a3a);
+    color: #fffaf0;
+    font-family: Jost, sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    line-height: 15px;
+    text-align: center;
+    letter-spacing: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,.45), 0 0 0 1.5px rgba(23,14,7,.94);
+    opacity: 0;
+    transform: scale(.5);
+    transition: opacity .22s ease, transform .28s cubic-bezier(.34,1.56,.64,1);
+    pointer-events: none;
+    z-index: 2;
+  }
+  [data-theme="dark"] #mcNav .mc-btn-badge,
+  [data-theme="dark"] .mc-nav .mc-btn-badge {
+    box-shadow: 0 2px 6px rgba(0,0,0,.55), 0 0 0 1.5px rgba(21,13,7,.95);
+  }
+  #mcNav .mc-btn-badge.visible,
+  .mc-nav .mc-btn-badge.visible { opacity: 1; transform: scale(1); }
+
   #mcNav .mc-btn:active,
   .mc-nav .mc-btn:active,
   #mcNav .mc-btn.mc-press,
@@ -2136,7 +2201,9 @@ button[disabled] {
   
   [data-theme="dark"] #mcNav.mc-nav,
   [data-theme="dark"] .mc-nav {
-    background: linear-gradient(180deg, rgba(25,16,8,.90), rgba(13,8,4,.985)) !important;
+    /* [r26] Непрозрачность ≥ .96: текст страницы не должен просвечивать
+       сквозь бар (контракт tests/layout-matrix MIN_MOBILE_NAV_ALPHA). */
+    background: linear-gradient(180deg, rgba(25,16,8,.965), rgba(13,8,4,.99)) !important;
     border-top-color: rgba(232,184,122,.16) !important;
     box-shadow: 0 -18px 52px rgba(0,0,0,.52), 0 -1px 0 rgba(232,184,122,.05) inset !important;
   }
