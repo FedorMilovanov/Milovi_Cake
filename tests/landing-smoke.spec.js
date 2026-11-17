@@ -926,15 +926,27 @@ test.describe('premium media blocks', () => {
     }
   });
 
-  test('wedding date click sends consent-mediated lead handoff even with noopener', async ({ page }) => {
+  test('wedding date counts consent-mediated handoff only when WhatsApp tab opens', async ({ page }) => {
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
     await page.evaluate(() => {
       window.weddingAnalyticsCalls = [];
+      window.weddingOpenUrls = [];
       window.MiloviConsent = { leadHandoff: (...args) => window.weddingAnalyticsCalls.push(args) };
-      window.open = () => null;
+      window.open = (url) => { window.weddingOpenUrls.push(url); return null; };
+    });
+    await page.locator('#wedDate').evaluate((el) => el.form.requestSubmit());
+    await expect.poll(() => page.evaluate(() => window.weddingOpenUrls.length)).toBe(1);
+    expect(await page.evaluate(() => window.weddingAnalyticsCalls)).toEqual([]);
+
+    await page.evaluate(() => {
+      window.open = (url) => {
+        window.weddingOpenUrls.push(url);
+        return { opener: window };
+      };
     });
     await page.locator('#wedDate').evaluate((el) => el.form.requestSubmit());
     await expect.poll(() => page.evaluate(() => window.weddingAnalyticsCalls)).toEqual([['whatsapp', 'wedding_date']]);
+    expect(await page.evaluate(() => window.weddingOpenUrls.length)).toBe(2);
   });
 
   test('wedding date form still opens a prefilled WhatsApp brief after the mobile layout change', async ({ page }) => {
