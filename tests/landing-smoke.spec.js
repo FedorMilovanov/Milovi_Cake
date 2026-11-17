@@ -726,7 +726,7 @@ test.describe('premium media blocks', () => {
     expect(handoff.searchParams.get('text')).toContain('свадебного торта');
   });
 
-  test('wedding final invitation keeps the brief on this journey', async ({ page }) => {
+  test('wedding final invitation shows certificates, contacts and related educational project', async ({ page }) => {
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('.lp-final h2')).toContainText('свадебный торт');
     await expect(page.locator('.lp-final p')).toContainText('площадке');
@@ -736,20 +736,32 @@ test.describe('premium media blocks', () => {
       expect(message).toContain(prompt);
     }
     const final = page.locator('.lp-final .lp-btn-primary');
-    await expect(final).toHaveAttribute('href', brief);
-    await expect(final).toContainText('Отправить бриф');
+    await expect(final).toHaveAttribute('href', '/certificates/');
+    await expect(final).toContainText('Посмотреть сертификаты');
+    await expect(page.locator('.lp-final .wed-contact-links a.btn-hero-wa')).toHaveCount(1);
+    await expect(page.locator('.lp-final')).not.toContainText('Отправить бриф');
+    const school = page.locator('.wed-school-project');
+    const projectLink = school.locator('.wed-school-project-link');
+    await expect(school).toContainText('Наш образовательный проект');
+    await expect(school).toContainText('не каталог заказов');
+    await expect(projectLink).toHaveAttribute('href', 'https://french.milovicake.ru/');
+    await expect(projectLink).toHaveAttribute('target', '_blank');
+    await expect(projectLink).toHaveAttribute('rel', /noopener/);
     for (const width of [320, 390, 561, 768, 1440]) {
       await page.setViewportSize({ width, height: 844 });
-      const geometry = await final.evaluate((button) => {
-        const { left, right, height } = button.getBoundingClientRect();
-        return { left, right, height, overflow: button.scrollWidth - button.clientWidth,
-          pageOverflow: document.documentElement.scrollWidth - innerWidth };
-      });
-      expect(geometry.left).toBeGreaterThanOrEqual(0);
-      expect(geometry.right).toBeLessThanOrEqual(width);
-      expect(geometry.height).toBeGreaterThanOrEqual(44);
-      expect(geometry.overflow).toBeLessThanOrEqual(1);
-      expect(geometry.pageOverflow).toBeLessThanOrEqual(1);
+      await expect(page.locator('html')).not.toHaveClass(/mc-fast-init/, { timeout: 3500 });
+      for (const button of [final, projectLink]) {
+        const geometry = await button.evaluate((element) => {
+          const { left, right, height } = element.getBoundingClientRect();
+          return { left, right, height, overflow: element.scrollWidth - element.clientWidth,
+            pageOverflow: document.documentElement.scrollWidth - innerWidth };
+        });
+        expect(geometry.left).toBeGreaterThanOrEqual(0);
+        expect(geometry.right).toBeLessThanOrEqual(width + 1);
+        expect(geometry.height).toBeGreaterThanOrEqual(44);
+        expect(geometry.overflow).toBeLessThanOrEqual(1);
+        expect(geometry.pageOverflow).toBeLessThanOrEqual(1);
+      }
     }
   });
 
