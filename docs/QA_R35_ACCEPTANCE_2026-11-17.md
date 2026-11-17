@@ -105,3 +105,26 @@
 
 1. **W3 (контент)** — 8 состава Бенто/3D из §2: нужны утверждённые владельцем тексты. Механизм показа готов.
 2. **P2-наблюдения без правок** (не дефекты, но кандидаты на отдельную задачу): переключатель темы в шапке 32×32 и кнопка корзины 34×34 — ниже тач-минимума 44 px на планшетах с тачем; подпись «Начинки» в нижнем меню на 320 px имеет запас 1 px и может переноситься при других шрифтовых метриках; нативный `input[type=date]` показывает формат по локали браузера.
+
+## 8. GitHub CI для PR #168 (ветка `arena/c45041d2-milovi-cake`, HEAD `d306587`)
+
+| Джоб | Результат | Комментарий |
+| --- | --- | --- |
+| `guard` | ✅ success | |
+| `qa` | ✅ success (24 мин) | полный Playwright-прогон в CI |
+| `Deep polish audit` | ✅ success (23 мин) | |
+| `Source, browser and Pages candidate audit` | ✅ success | |
+| `firefox resilient interactions` | ✅ success (10 мин) | |
+| `firefox reduced-motion ordering` | ✅ success | |
+| `webkit reduced-motion ordering` | ✅ success | |
+| `Inspect previous native investigation artifact` | ✅ success | информационный |
+| `Inspect historical Lighthouse transfer changes` | ✅ success | информационный |
+| `webkit resilient interactions` | ⚠️ cancelled | **не провал теста**: шаг `Exercise desktop and narrow-screen fault contracts` шёл 19:41:37 → 20:20:56 и упёрся в `timeout-minutes: 40` джобы. В соседних прогонах той же ветки приёмки WebKit-лейн укладывается в 17–20 мин. |
+| `WebKit native process investigation` | ❌ failure | диагностический джоб запускается только при `failure`/`cancelled` соседа; упал на шаге «Compare unchanged gallery under native debugger» (тесты галереи, которых r35 не касается). На успешных прогонах он `skipped`. |
+
+Что это значит и чего это не значит:
+
+- Это **не падение теста r35**: ни один тест в WebKit-лейне не завершился с `failed`, шаг был снят по таймауту джобы. Полный локальный прогон (654 теста, Chromium) — 0 failed.
+- Воспроизвести/перезапустить лейн из песочницы нельзя: токен интеграции не имеет прав `actions: write` (`POST /actions/runs/{id}/rerun` → 403), логи джобов лежат на `*.blob.core.windows.net`, который песочнице недоступен. Поэтому перезапуск делается новым пушем в ветку.
+- `mergeStateStatus` PR — `BLOCKED`; прочитать `branches/main/protection` токен тоже не может (403), то есть набор обязательных проверок из песочницы не подтверждается.
+- Пока WebKit-лейн не отработал на точном HEAD, мерж не выполняется: висящий обязательный чек — единственный неразрешённый сигнал.
