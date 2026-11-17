@@ -1771,36 +1771,53 @@ button[disabled] {
      скруглена со всех сторон, с волосяной золотой обводкой и мягкой тенью,
      чтобы между ним и нижним баром не просвечивал текст страницы. */
   .calc-right-col .calc-result {
-    /* [r26] Скруглены только верхние углы: низ уходит под бар, стык не виден. */
-    border-radius: 20px 20px 0 0 !important;
+    /* [r27] Док по макету владельца (round G): эспрессо-панель с золотой
+       волосяной обводкой, тёплым отсветом сверху и мягким свечением.
+       Скруглены только верхние углы — низ уходит под нижний бар. */
+    border-radius: 26px 26px 0 0 !important;
     max-height: calc(100dvh - 116px - env(safe-area-inset-top, 0px)) !important;
-    background: linear-gradient(165deg, rgba(44,28,16,.992), rgba(20,12,6,.996)) !important;
-    border: 1px solid rgba(232,184,122,.22) !important;
-    box-shadow: 0 -14px 38px rgba(24,13,6,.30), 0 -1px 0 rgba(232,184,122,.32) inset !important;
+    background:
+      radial-gradient(120% 120% at 12% 0%, rgba(232,184,122,.12), transparent 62%),
+      linear-gradient(165deg, rgba(46,29,16,.995), rgba(20,12,6,.998)) !important;
+    border: 1px solid rgba(226,188,137,.40) !important;
+    box-shadow:
+      0 -16px 44px rgba(16,9,3,.44),
+      0 10px 28px rgba(16,9,3,.30),
+      0 1px 0 rgba(255,238,206,.14) inset !important;
   }
   .calc-result-collapsed {
-    min-height: 52px !important;
-    padding: 11px 14px 9px !important;
-    gap: 10px !important;
+    min-height: 70px !important;
+    padding: 17px 16px 13px !important;
+    gap: 12px !important;
   }
   .calc-result-collapsed-handle {
-    top: 5px !important;
-    width: 32px !important;
-    height: 3px !important;
-    background: rgba(232,184,122,.38) !important;
+    top: 8px !important;
+    width: 44px !important;
+    height: 5px !important;
+    border-radius: 3px !important;
+    background: linear-gradient(90deg, rgba(232,184,122,.18), rgba(246,214,160,.90), rgba(232,184,122,.18)) !important;
+    box-shadow: 0 0 12px rgba(232,184,122,.42) !important;
   }
   .calc-result-collapsed-label {
-    font-size: 8.5px !important;
-    letter-spacing: .14em !important;
+    font-size: 9px !important;
+    letter-spacing: .18em !important;
+    color: rgba(240,214,178,.80);
+    font-weight: 500;
   }
   .calc-result-collapsed-price {
-    font-size: clamp(19px, 5.4vw, 22px) !important;
+    font-size: clamp(24px, 7vw, 30px) !important;
+    color: #f5d9aa;
+    letter-spacing: .01em;
     white-space: nowrap;
   }
   .calc-result-collapsed-arrow {
-    width: 30px !important;
-    height: 30px !important;
-    min-width: 30px !important;
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    border: 1px solid rgba(232,184,122,.50);
+    background: radial-gradient(circle at 32% 26%, rgba(246,214,160,.22), rgba(232,184,122,.06));
+    color: #f5d9a8;
+    box-shadow: 0 6px 16px rgba(0,0,0,.38), 0 0 0 1px rgba(255,238,206,.10) inset;
   }
   .calc-right-col.calc-result-open .calc-result-expandable {
     max-height: min(58dvh, 430px) !important;

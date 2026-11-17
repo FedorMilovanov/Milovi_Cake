@@ -2520,10 +2520,17 @@ if (typeof updateCalcCartBadge === 'function') {
   var col = document.getElementById('calcRightCol');
   if (!col) return;
   var mq = window.matchMedia ? window.matchMedia('(max-width: 560px)') : null;
+  // [r27] Высота дока меняется от контента и ширины экрана. Пишем её в
+  // --mc-dock-h, чтобы кнопка «наверх» вставала ровно над панелью.
+  function syncDockHeight() {
+    var h = Math.round(col.getBoundingClientRect().height);
+    if (h > 0) document.body.style.setProperty('--mc-dock-h', h + 'px');
+  }
   function reveal() {
     if (!document.body.classList.contains('mc-dock-idle')) return;
     document.body.classList.remove('mc-dock-idle');
     document.body.classList.add('mc-dock-shown');
+    syncDockHeight();
   }
   function sync() {
     if (!mq) return;
@@ -2534,6 +2541,9 @@ if (typeof updateCalcCartBadge === 'function') {
     }
   }
   sync();
+  syncDockHeight();
+  window.addEventListener('resize', syncDockHeight, { passive: true });
+  window.addEventListener('orientationchange', function () { setTimeout(syncDockHeight, 250); }, { passive: true });
   if (mq) {
     if (mq.addEventListener) mq.addEventListener('change', sync);
     else if (mq.addListener) mq.addListener(sync);
