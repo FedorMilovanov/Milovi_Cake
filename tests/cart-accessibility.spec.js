@@ -710,6 +710,33 @@ test('cart rejects a quantity merge that would overflow safe prices without losi
   expect(await page.evaluate((key) => JSON.parse(localStorage.getItem('milovicake_cart'))[key].qty, cakeKey)).toBe(cakeMax);
 });
 
+// [r29] Док «примерная стоимость» — продолжение нижнего бара, а не отдельная
+// карточка над ним: та же полоса по ширине (--mc-nav-side), низ уходит под бар
+// на --mc-dock-overlap, бара это не двигает.
+async function expectDockGrownOutOfNav(page, label) {
+  const geometry = await page.evaluate(() => {
+    const dock = document.getElementById('calcRightCol').getBoundingClientRect();
+    const nav = document.getElementById('mcNav').getBoundingClientRect();
+    const root = getComputedStyle(document.documentElement);
+    return {
+      dock: { left: dock.left, right: dock.right, top: dock.top, bottom: dock.bottom },
+      nav: { left: nav.left, right: nav.right, top: nav.top, bottom: nav.bottom },
+      side: parseFloat(root.getPropertyValue('--mc-nav-side')) || 12,
+      overlap: parseFloat(root.getPropertyValue('--mc-dock-overlap')) || 22,
+      viewport: window.innerHeight,
+    };
+  });
+  expect(Math.abs(geometry.dock.left - geometry.nav.left), `${label}: dock and bar share the left edge`).toBeLessThanOrEqual(1);
+  expect(Math.abs(geometry.dock.right - geometry.nav.right), `${label}: dock and bar share the right edge`).toBeLessThanOrEqual(1);
+  expect(Math.abs(geometry.dock.left - geometry.side), `${label}: dock keeps --mc-nav-side air`).toBeLessThanOrEqual(1);
+  expect(
+    Math.abs((geometry.nav.top - geometry.dock.bottom) + geometry.overlap),
+    `${label}: dock tucks under the bar by --mc-dock-overlap`,
+  ).toBeLessThanOrEqual(1.5);
+  expect(geometry.dock.top, `${label}: dock body stays above the bar`).toBeLessThan(geometry.nav.top - geometry.overlap + 1);
+  return geometry;
+}
+
 async function traceCalculatorEvents(page) {
   await page.addInitScript(() => {
     window.__calcTrace = [];
@@ -793,11 +820,7 @@ test('mobile calculator panel stays reachable and restores keyboard focus', asyn
     await expect(region).toHaveAttribute('role', 'region');
     await expect(bar).toHaveAttribute('aria-expanded', 'false');
     await expect(add).toBeHidden();
-    const closed = await page.evaluate(() => ({
-      panel: document.getElementById('calcRightCol').getBoundingClientRect().bottom,
-      nav: document.getElementById('mcNav').getBoundingClientRect().top,
-    }));
-    expect(closed.panel, `${route} closed panel and navigation`).toBeLessThanOrEqual(closed.nav + 1);
+    await expectDockGrownOutOfNav(page, `${route} closed price dock`);
     await bar.focus();
     await page.keyboard.press('Enter');
     try { await expect(bar).toHaveAttribute('aria-expanded', 'true'); }
@@ -948,16 +971,30 @@ test('mobile calculator clears the navigation above a safe-area inset', async ({
       await expect(page.locator('#card-2 .btn-add')).toBeVisible();
       await page.locator('#fillings').scrollIntoViewIfNeeded();
       await page.locator('#calcType .calc-type-card.selected').click();
-      const closed = await page.evaluate(() => ({
-        panel: document.querySelector('#calcRightCol').getBoundingClientRect().bottom,
-        nav: document.querySelector('#mcNav').getBoundingClientRect().top,
-      }));
-      expect(closed.panel, route).toBeLessThanOrEqual(closed.nav);
+      await expectDockGrownOutOfNav(page, `${route} closed price dock with safe area`);
+      const navTopBefore = await page.locator('#mcNav').evaluate((nav) => nav.getBoundingClientRect().top);
       await page.locator('#calcCollapsedBar').click();
-      await page.locator('.calc-add-btn').click();
-      await expect.poll(() => page.locator('#mcNav').evaluate((nav) => nav.getBoundingClientRect().top)).toBeGreaterThanOrEqual(844);
-      const button = await page.locator('.calc-add-btn').boundingBox();
-      expect(button.y + button.height, route).toBeLessThanOrEqual(844 - 34);
+      await expect(page.locator('#calcCollapsedBar')).toHaveAttribute('aria-expanded', 'true');
+      // [r29] Бар — неподвижное основание сметы: он не уезжает за экран, а
+      // смета растёт из-под него. Кнопка заказа обязана остаться над баром.
+      await expect.poll(() => page.evaluate(() => {
+        const nav = document.getElementById('mcNav').getBoundingClientRect();
+        const add = document.querySelector('.calc-add-btn')?.getBoundingClientRect();
+        return add ? Math.round(nav.top - add.bottom) : -9999;
+      }), { message: `${route} open panel keeps the order button above the bar`, timeout: 5000 }).toBeGreaterThanOrEqual(0);
+      const opened = await page.evaluate(() => ({
+        navTop: document.getElementById('mcNav').getBoundingClientRect().top,
+        navBottom: document.getElementById('mcNav').getBoundingClientRect().bottom,
+        dockLeft: document.getElementById('calcRightCol').getBoundingClientRect().left,
+        dockRight: document.getElementById('calcRightCol').getBoundingClientRect().right,
+        addBottom: document.querySelector('.calc-add-btn').getBoundingClientRect().bottom,
+        viewport: window.innerHeight,
+      }));
+      expect(Math.abs(opened.navTop - navTopBefore), `${route}: the bar does not move when the panel opens`).toBeLessThanOrEqual(1);
+      expect(opened.navBottom, `${route}: the bar stays inside the viewport`).toBeLessThanOrEqual(opened.viewport);
+      await expectDockGrownOutOfNav(page, `${route} open price dock with safe area`);
+      expect(opened.addBottom, `${route}: order button clears the bar`).toBeLessThanOrEqual(opened.navTop - 0.5);
+      expect(opened.addBottom, `${route}: order button clears the home indicator`).toBeLessThanOrEqual(opened.viewport - 34);
     }
   } finally {
     await cdp.detach();

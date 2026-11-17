@@ -1758,20 +1758,15 @@ button[disabled] {
 @media (max-width: 560px) {
   .calc-right-col {
     z-index: 160 !important;
-    /* [r26] Док — продолжение нижнего бара (владелец: «чтобы она такой доп
-       панелью от нижнего меню вылезала, из неё вытекала»): во всю ширину и
-       вплотную к бару, без просвета, через который просвечивал текст. */
-    /* [r28] Во всю ширину, как сам бар: вертикальных боковых кромок у дока
-       нет («по краям будто отдельная панель» — владелец). Скруглены только
-       верхние углы, поэтому силуэт бара продолжается вверх без стыка. */
-    left: 0 !important;
-    right: 0 !important;
+    /* [r29] Одна геометрия с баром: панель занимает ровно ту же полосу по
+       ширине, что и бар (те же 12 px воздуха по краям), а её низ заходит под
+       бар на --mc-dock-overlap. Поэтому боковых кромок и нижнего края не
+       видно вообще — панель физически вырастает из бара, а не стоит над ним.
+       Все числа — из токенов style.css (:root), ни одного магического px. */
+    left: var(--mc-nav-side) !important;
+    right: var(--mc-nav-side) !important;
     width: auto !important;
-    /* [r28] Низ панели заходит под бар на 22 px (12 + 10 внутреннего
-       отступа): край, обводка и вырезы скруглённых верхних углов бара
-       скрыты, поэтому стык читается как одна поверхность, без «двух полос».
-       Верх панели при этом не двигается. */
-    bottom: calc(46px + env(safe-area-inset-bottom, 0px)) !important;
+    bottom: var(--mc-dock-bottom) !important;
   }
   /* [r17] док цены — отдельная пилюля над баром, а не плашка во весь экран:
      скруглена со всех сторон, с волосяной золотой обводкой и мягкой тенью,
@@ -1790,8 +1785,7 @@ button[disabled] {
     background:
       linear-gradient(180deg, rgba(48,30,17,.994) 0%, rgba(36,23,13,.988) 42%, rgba(36,23,13,.988) 100%) !important;
     border: 0 !important;
-    border-top: 1px solid rgba(226,188,137,.34) !important;
-    padding-bottom: 10px !important;
+    border-top: 1px solid rgba(226,188,137,.30) !important;
     box-shadow:
       0 -16px 44px rgba(16,9,3,.44),
       0 1px 0 rgba(255,238,206,.14) inset,
@@ -1874,19 +1868,10 @@ button[disabled] {
     -webkit-backdrop-filter: blur(4px);
   }
   
-  body:has(.calc-right-col.calc-result-open) #mcNav,
-  body:has(.calc-right-col.calc-result-open) .mc-nav {
-    transform: translateY(calc(110% + env(safe-area-inset-bottom, 0px))) !important;
-  }
 }
-@supports not selector(:has(*)) {
-  @media (max-width: 560px) {
-    body.calc-panel-open #mcNav,
-    body.calc-panel-open .mc-nav {
-      transform: translateY(calc(110% + env(safe-area-inset-bottom, 0px))) !important;
-    }
-  }
-}
+/* [r29] Бар больше не уезжает при раскрытии сметы: он — стабильное основание,
+   из-под которого растёт панель. Из-за этого уезда панель приходилось
+   прибивать к низу экрана (bottom:0) и она прыгала по высоте. */
 [data-theme="dark"] .calc-right-col .calc-result {
   /* [r28] Низ панели = верх бара в тёмной теме: стык без ступеньки тона. */
   background: linear-gradient(180deg, rgba(58,39,23,.994) 0%, rgba(46,31,17,.99) 42%, rgba(46,31,17,.99) 100%) !important;
@@ -1902,16 +1887,12 @@ button[disabled] {
 
 @media (max-width: 768px) {
   
+  /* [r29] Кремовая «стеклянная» оболочка бара, его высота и паддинги удалены:
+     с r27 бар — эспрессо, и единственный источник его вида и геометрии —
+     final-fixes.css через токены --mc-nav-* (style.css). Здесь оставался
+     мёртвый дубль, который перекрывался более поздним файлом. */
   #mcNav.mc-nav,
   .mc-nav {
-    height: calc(62px + env(safe-area-inset-bottom, 0px)) !important;
-    padding: 0 max(6px, env(safe-area-inset-left, 0px)) env(safe-area-inset-bottom, 0px) max(6px, env(safe-area-inset-right, 0px)) !important;
-    background:
-      linear-gradient(180deg, rgba(253,251,247,.985), rgba(248,242,232,.99)) !important;
-    border-top: 1px solid rgba(201,147,74,.16) !important;
-    box-shadow:
-      0 -18px 46px rgba(61,43,31,.10),
-      0 -1px 0 rgba(255,255,255,.72) inset !important;
     gap: 2px;
   }
   #mcNav .mc-btn,
@@ -1919,7 +1900,6 @@ button[disabled] {
     min-height: 60px !important;
     border-radius: 18px !important;
     margin: 0 !important;
-    color: rgba(133,108,84,.78) !important;
     transition:
       transform .22s cubic-bezier(.34,1.56,.64,1),
       color .22s ease,
@@ -1939,39 +1919,8 @@ button[disabled] {
     transform: translateY(0);
     transition: transform .22s ease, opacity .22s ease !important;
   }
-  #mcNav .mc-btn.mc-active,
-  .mc-nav .mc-btn.mc-active {
-    color: #a06a28 !important;
-    background: none !important;
-  }
-  #mcNav .mc-btn.mc-active svg,
-  .mc-nav .mc-btn.mc-active svg {
-    transform: translateY(-1px);
-    filter: none;
-  }
-  /* [r26] Активный пункт — мягкая золотая «подушка» под иконкой, вместо
-     простой смены цвета: читается как выбранный раздел, не спорит с текстом. */
-  #mcNav .mc-btn.mc-active::before,
-  .mc-nav .mc-btn.mc-active::before {
-    content: "";
-    display: block;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -56%);
-    width: 46px;
-    height: 30px;
-    border-radius: 12px;
-    background: linear-gradient(160deg, rgba(201,147,74,.18), rgba(201,147,74,.05));
-    box-shadow: 0 1px 0 rgba(255,255,255,.55) inset, 0 0 0 1px rgba(201,147,74,.15) inset;
-    pointer-events: none;
-    z-index: 0;
-  }
-  [data-theme="dark"] #mcNav .mc-btn.mc-active::before,
-  [data-theme="dark"] .mc-nav .mc-btn.mc-active::before {
-    background: linear-gradient(160deg, rgba(232,184,122,.16), rgba(232,184,122,.04));
-    box-shadow: 0 0 0 1px rgba(232,184,122,.20) inset;
-  }
+  /* [r29] Активный пункт: ни «подушки», ни капсулы, ни сдвига иконки —
+     только цвет SVG и подписи (см. final-fixes.css). */
   #mcNav .mc-btn svg,
   #mcNav .mc-btn-label,
   .mc-nav .mc-btn svg,
@@ -2246,12 +2195,13 @@ button[disabled] {
     border-top-color: rgba(232,184,122,.16) !important;
     box-shadow: 0 -18px 52px rgba(0,0,0,.52), 0 -1px 0 rgba(232,184,122,.05) inset !important;
   }
-  [data-theme="dark"] #mcNav .mc-btn,
-  [data-theme="dark"] .mc-nav .mc-btn { color: rgba(240,228,208,.66) !important; }
+  /* [r29] Паритет дня и ночи: в тёмной теме тот же тон чернил (.82), что и в
+     светлой, а у активного пункта — только золото, без фоновой плитки:
+     та же геометрия, та же читаемость, никаких «золотых подушек». */
   [data-theme="dark"] #mcNav .mc-btn.mc-active,
   [data-theme="dark"] .mc-nav .mc-btn.mc-active {
-    color: var(--gold-light,#e8b87a) !important;
-    background: rgba(232,184,122,.075) !important;
+    color: #f6d7a4 !important;
+    background: none !important;
   }
   [data-theme="dark"] #mcSheet.mc-sheet {
     background:

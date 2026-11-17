@@ -469,8 +469,12 @@ html[data-theme="dark"] #why .feature h3 { color:#f0e4d0; }
    Эспрессо-«пилюля» r24 убрана: её скруглённые торцы обрезались краями
    экрана, и бар читался как незаконченная плашка. */
 html body #mcNav.mc-nav {
-  height:60px !important;
-  padding:0 5px !important;
+  /* [r29] Высота и паддинг — из токенов: тело бара всегда --mc-nav-h, а
+     safe-area добавляется и в высоту, и в нижний паддинг. Раньше здесь стояли
+     жёсткие 60 px, из-за чего на iPhone с home-indicator контент бара
+     сжимался в 26 px (safe-area вычиталась из той же высоты). */
+  height:calc(var(--mc-nav-h) + var(--mc-safe-b)) !important;
+  padding:0 5px var(--mc-safe-b) !important;
   border:1px solid rgba(226,188,137,.40) !important;
   /* [r28] Верх бара — тот же тон, что низ дока: две поверхности читаются
      как одна. Отсвет сверху — inset-тень, а не слой фона: первый rgba()
@@ -482,8 +486,7 @@ html body #mcNav.mc-nav {
   /* Тень сдвинута вниз и поджата, чтобы она не выползала 1–2 px над верхней
      кромкой бара — иначе на стыке с доком видна тонкая тёмная линия. */
   box-shadow:
-    0 20px 30px -4px rgba(10,6,2,.55),
-    0 0 34px rgba(232,184,122,.11) !important;
+    0 18px 34px -10px rgba(10,6,2,.58) !important;
   overflow:visible;
   align-items:center;
   gap:0;
@@ -493,8 +496,7 @@ html[data-theme="dark"] body #mcNav.mc-nav {
   /* В тёмной теме бар чуть светлее страницы — иначе он растворяется. */
   background: linear-gradient(180deg,rgba(46,31,17,.985),rgba(20,13,7,.995)) !important;
   box-shadow:
-    0 18px 40px rgba(0,0,0,.62),
-    0 0 26px rgba(232,184,122,.06) !important;
+    0 18px 34px -10px rgba(0,0,0,.70) !important;
 }
 #mcNav .mc-btn {
   min-height:48px !important;
@@ -502,10 +504,10 @@ html[data-theme="dark"] body #mcNav.mc-nav {
   gap:5px;
   justify-content:center;
   background:none !important;
-  /* [r26] Контраст подписи на эспрессо: было .60 (≈4.0:1), стало .82 (≈7:1). */
-  color:rgba(240,228,208,.82) !important;
+  /* [r26] Контраст подписи на эспрессо: было .60 (≈4.0:1), стало .84 (≈7.4:1).
+     [r29] Один и тот же тон чернил в обеих темах — день и ночь равны. */
+  color:rgba(240,228,208,.84) !important;
 }
-html[data-theme="dark"] #mcNav .mc-btn { color:rgba(240,228,208,.84) !important; }
 #mcNav .mc-btn svg { width:19px; height:19px; stroke-width:1.55; }
 #mcNav .mc-btn-label {
   font-size:9.5px !important;
@@ -843,17 +845,52 @@ html #contacts .card.card--dark .contact-primary-icon {
    visit; body.mc-dock-idle (set by main.js) keeps it out of sight and
    out of reach until the calculator becomes relevant. Slide-in reveal. */
 @media (max-width:560px) {
-  /* [r27] Док выезжает мягче и целиком: пружина .55s + лёгкое масштабирование. */
+  /* [r29] Выезд без пружины и без scale: монотонная ease-out кривая, только
+     transform. Скрытое положение — ровно под баром: сдвиг на собственную
+     высоту + перекрытие + 2 px, поэтому ни верхняя кромка, ни боковины не
+     показываются в промежуточных кадрах (панель физически выходит из-под
+     бара, который её перекрывает). */
   .calc-right-col {
-    transition: transform .55s cubic-bezier(.16,1,.3,1);
+    transition: transform var(--mc-dock-dur) var(--mc-dock-ease);
     will-change: transform;
   }
-  body:not(.mc-dock-idle):not(.mc-dock-out):not(.calc-panel-open) .calc-right-col {
-    transform: translateY(0) scale(1);
+  body:not(.mc-dock-idle):not(.mc-dock-out) .calc-right-col {
+    transform: translateY(0);
   }
-  body.mc-dock-idle .calc-right-col {
+  body.mc-dock-idle .calc-right-col,
+  body.mc-dock-out .calc-right-col {
     pointer-events: none;
-    transform: translateY(calc(100% + 16px)) scale(.985);
+    transform: translateY(calc(100% + var(--mc-dock-overlap) + 2px));
+  }
+  /* [r29] Раскрытая смета растёт не «до низа экрана», а до бара: нижние
+     --mc-dock-overlap панели спрятаны за баром, поэтому контент (кнопка
+     «В корзину») получает этот отступ и всегда остаётся над баром. */
+  body.calc-panel-open .calc-right-col .calc-result {
+    padding-bottom: var(--mc-dock-overlap) !important;
+  }
+  /* Текст стоимости проявляется чуть позже поверхности и без скачка кегля. */
+  .calc-right-col .calc-result-collapsed-label,
+  .calc-right-col .calc-result-collapsed-price,
+  .calc-right-col .calc-result-collapsed-arrow,
+  .calc-right-col .calc-result-collapsed-handle {
+    transition: opacity .22s ease;
+  }
+  body.mc-dock-idle .calc-right-col .calc-result-collapsed-label,
+  body.mc-dock-idle .calc-right-col .calc-result-collapsed-price,
+  body.mc-dock-idle .calc-right-col .calc-result-collapsed-arrow,
+  body.mc-dock-idle .calc-right-col .calc-result-collapsed-handle,
+  body.mc-dock-out .calc-right-col .calc-result-collapsed-label,
+  body.mc-dock-out .calc-right-col .calc-result-collapsed-price,
+  body.mc-dock-out .calc-right-col .calc-result-collapsed-arrow,
+  body.mc-dock-out .calc-right-col .calc-result-collapsed-handle {
+    opacity: 0;
+  }
+  body:not(.mc-dock-idle):not(.mc-dock-out) .calc-right-col .calc-result-collapsed-label,
+  body:not(.mc-dock-idle):not(.mc-dock-out) .calc-right-col .calc-result-collapsed-price,
+  body:not(.mc-dock-idle):not(.mc-dock-out) .calc-right-col .calc-result-collapsed-arrow,
+  body:not(.mc-dock-idle):not(.mc-dock-out) .calc-right-col .calc-result-collapsed-handle {
+    opacity: 1;
+    transition-delay: .12s;
   }
 }
 @media (prefers-reduced-motion:reduce) {
@@ -1576,12 +1613,8 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
    прижималась к нижнему бару, между ними просвечивала строка страницы.
    Теперь это отдельная пилюля с отступами от краёв, а когда калькулятор
    уходит с экрана — она уезжает вместе с ним (см. body.mc-dock-out). */
-@media (max-width: 560px) {
-  body.mc-dock-out .calc-right-col {
-    transform: translateY(calc(100% + 16px)) scale(.985);
-    pointer-events: none;
-  }
-}
+/* [r29] Состояние «калькулятор ушёл с экрана» описано в одном месте —
+   блоке [r29] выше (mc-dock-idle / mc-dock-out). Дубль удалён. */
 
 /* ============ [2026-11-16r17] Hero-постер по новому референсу ============ */
 /* Торт с боке и ветками цветов живёт справа и мягко растворяется в креме,
@@ -1950,7 +1983,9 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
   /* Высота дока меняется (крупная цена, узкий экран) — берём её из
      --mc-dock-h, который пишет main.js, чтобы кнопка не садилась на панель. */
   body:not(.mc-dock-idle):not(.mc-dock-out) .back-to-top {
-    bottom: calc(74px + var(--mc-dock-h, 82px) + env(safe-area-inset-bottom, 0px)) !important;
+    /* [r29] Кнопка стоит над доком: низ дока (--mc-dock-bottom) + его высота
+       (--mc-dock-h, её пишет main.js, включая раскрытую панель) + воздух. */
+    bottom: calc(var(--mc-dock-bottom) + var(--mc-dock-h) - var(--mc-dock-overlap) + var(--mc-btt-gap)) !important;
   }
   /* Раскрытая панель расчёта занимает низ экрана — кнопке там нечего делать. */
   body.calc-panel-open .back-to-top {
@@ -1980,42 +2015,16 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
     background: linear-gradient(180deg, transparent, rgba(232,184,122,.34), transparent);
     pointer-events: none;
   }
-  #mcNav .mc-btn:first-child::before,
-  #mcNav .mc-btn.mc-active + .mc-btn::before { display: none; }
+  #mcNav .mc-btn:first-child::before { display: none; }
 
-  /* Выбранный пункт — капсула с золотой обводкой и мягким свечением. */
-  #mcNav .mc-btn.mc-active::before {
-    content: "";
-    display: block;
-    position: absolute;
-    left: 50%;
-    right: auto;
-    top: 50%;
-    bottom: auto;
-    transform: translate(-50%, -50%);
-    width: 70px;
-    height: 50px;
-    border-radius: 15px;
-    background: linear-gradient(180deg, rgba(232,184,122,.14), rgba(232,184,122,.03));
-    border: 1px solid rgba(232,184,122,.52);
-    box-shadow:
-      0 0 22px rgba(232,184,122,.20) inset,
-      0 2px 10px rgba(232,184,122,.22) inset,
-      0 10px 24px rgba(232,184,122,.20);
-    pointer-events: none;
-    z-index: 0;
-    animation: mcCapsuleIn .34s cubic-bezier(.22,1,.28,1) both;
+  /* [r29] Капсула выбранного пункта удалена (владелец: «без рамок, только
+     другой цвет/подсветка»). ::before снова принадлежит только сепаратору —
+     поэтому сепараторы теперь непрерывны, без выпадения у активного пункта. */
+  #mcNav .mc-btn.mc-active svg {
+    /* [r29] Единственный акцент помимо цвета — деликатный drop-shadow на самой
+       иконке; толщина линий, размер и позиция не меняются. */
+    filter: drop-shadow(0 0 5px rgba(240,201,138,.34));
   }
-  @keyframes mcCapsuleIn {
-    from { opacity: 0; transform: translate(-50%,-50%) scale(.92); }
-    to   { opacity: 1; transform: translate(-50%,-50%) scale(1); }
-  }
-  #mcNav .mc-btn.mc-active svg { filter: drop-shadow(0 0 6px rgba(240,201,138,.38)); }
-  #mcNav .mc-btn.mc-active .mc-btn-label { text-shadow: 0 0 10px rgba(240,201,138,.30); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  #mcNav .mc-btn.mc-active::before { animation: none; }
 }
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -2024,28 +2033,30 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
    подсветкой (владелец: «лучше, если выбрано без рамок»).
    ════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
-  body:not(.mc-dock-idle):not(.mc-dock-out) #mcNav.mc-nav {
-    border-top-color: transparent !important;
-  }
+  /* [r29] Правило border-top-color:transparent отсюда убрано: на телефоне у
+     бара вообще нет обводки (border:0 ниже), а на 561–768 px дока нет —
+     правило ничего не меняло, но занимало бюджет !important. */
+  /* [r29] Тень бара целиком задаётся выше и уже не затекает за верхнюю
+     кромку (offset 18 − blur/2 17 − spread 10 = −9 px), поэтому отдельного
+     «режима с доком» для неё не нужно. */
 
-  /* [r28] Выбранный пункт — без капсулы и без рамки (владелец: «просто она
-     приобретает другой интересный цвет, подсветку, без рамок»). Только
-     мягкое тёплое свечение за иконкой: оно гаснет до нуля внутри плитки,
-     поэтому никакой границы/ореола не читается. */
-  #mcNav .mc-btn.mc-active::before {
-    border: 0;
-    border-radius: 50%;
-    background:
-      radial-gradient(52% 50% at 50% 42%, rgba(247,216,163,.34), rgba(238,192,132,.13) 56%, rgba(238,192,132,0) 100%);
-    box-shadow: none;
+  /* [r29] Выбранный пункт = только золотая SVG и золотая подпись.
+     Ни плитки, ни «подушки», ни капсулы, ни фонового свечения вокруг кнопки,
+     ни заливки контурных иконок: меняются цвет, насыщенность подписи и
+     деликатный drop-shadow на самой иконке. Ширина, высота и позиция пунктов
+     не меняются, переход 220 мс. */
+  #mcNav .mc-btn.mc-active {
+    color: #f6d7a4 !important;
+    background: none !important;
   }
   #mcNav .mc-btn.mc-active .mc-btn-label {
     color: #f8ddb0;
-    text-shadow: 0 0 12px rgba(240,201,138,.42);
+    font-weight: 600;
+    text-shadow: none;
   }
   #mcNav .mc-btn.mc-active svg {
-    filter: drop-shadow(0 0 8px rgba(240,201,138,.50));
-    fill: rgba(240,201,138,.16);
+    fill: none !important;
+    filter: drop-shadow(0 0 5px rgba(240,201,138,.30));
   }
 }
 
@@ -2056,6 +2067,22 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
   #calcRightCol .calc-result-collapsed {
     background: transparent !important;
     border-top-color: transparent !important;
+    /* [r29] Низ полосы спрятан за баром (--mc-dock-overlap), поэтому нижний
+       отступ увеличен ровно на перекрытие: подпись и цена стоят по центру
+       видимой части и не заезжают под бар ни на пиксель. */
+    padding-bottom: calc(13px + var(--mc-dock-overlap)) !important;
+  }
+}
+
+/* [r29] 320–360 px: подпись и цена вдвоём в строку не влезают — цена уходила
+   под круглую кнопку. Здесь подпись встаёт над ценой, кнопка остаётся справа.
+   Правки только раскладки: размеры шрифтов и цвета не меняются. */
+@media (max-width: 360px) {
+  #calcRightCol .calc-result-collapsed-main {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 1px;
   }
 }
 
@@ -2067,10 +2094,5 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
   html body #mcNav.mc-nav { border: 0 !important; }
 }
 
-/* [r28] В раскрытом виде бар уезжает, и панель висела в 46 px над нижним
-   краем — под ней просвечивала страница. Теперь панель доходит до низа. */
-@media (max-width: 560px) {
-  body.calc-panel-open .calc-right-col {
-    bottom: env(safe-area-inset-bottom, 0px) !important;
-  }
-}
+/* [r29] Раскрытая смета больше не переезжает к нижнему краю: бар остаётся на
+   месте, панель растёт вверх из-под него — геометрия стабильна, прыжка нет. */

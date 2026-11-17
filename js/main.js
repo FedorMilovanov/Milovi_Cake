@@ -2524,7 +2524,10 @@ if (typeof updateCalcCartBadge === 'function') {
   // --mc-dock-h, чтобы кнопка «наверх» вставала ровно над панелью.
   function syncDockHeight() {
     var h = Math.round(col.getBoundingClientRect().height);
-    if (h > 0) document.body.style.setProperty('--mc-dock-h', h + 'px');
+    if (h > 0 && String(h) !== col._mcDockH) {
+      col._mcDockH = String(h);
+      document.body.style.setProperty('--mc-dock-h', h + 'px');
+    }
   }
   function reveal() {
     if (!document.body.classList.contains('mc-dock-idle')) return;
@@ -2544,6 +2547,16 @@ if (typeof updateCalcCartBadge === 'function') {
   syncDockHeight();
   window.addEventListener('resize', syncDockHeight, { passive: true });
   window.addEventListener('orientationchange', function () { setTimeout(syncDockHeight, 250); }, { passive: true });
+  // [r29] Высота дока меняется не только от ширины экрана: раскрытие сметы,
+  // подгрузка шрифта и смена текста цены тоже её двигают. Слушаем сам элемент
+  // (один наблюдатель, без scroll-обработчиков и замеров на каждом кадре).
+  if (typeof ResizeObserver === 'function') {
+    try { new ResizeObserver(syncDockHeight).observe(col); } catch (err) {}
+  }
+  // Возврат из bfcache: классы и высота могли устареть.
+  window.addEventListener('pageshow', function (e) {
+    if (e && e.persisted) { sync(); syncDockHeight(); }
+  });
   if (mq) {
     if (mq.addEventListener) mq.addEventListener('change', sync);
     else if (mq.addListener) mq.addListener(sync);
@@ -2551,12 +2564,17 @@ if (typeof updateCalcCartBadge === 'function') {
   // Reveal only when it is meaningful (owner: "5 600 before we chose
   // anything is noise"): the first real interaction with the calculator,
   // anything added to the cart, or keyboard focus reaching the dock.
+  // [r29] Ревеал — только осмысленное действие: выбор типа/веса/начинки/декора,
+  // степпер, добавление в корзину, клавиатура. Случайный клик по пустому месту
+  // калькулятора цену больше не показывает.
+  var HOT = '.calc-opt, .calc-type-card, .calc-biscuit-opt, .calc-stepper-btn, .calc-add-btn, .btn-add, #calcOpenCartBtn, #calcCollapsedBar';
   function engaged(e) {
-    return e.target && e.target.closest &&
-      e.target.closest('.calc-wrap, .btn-add, #calcOpenCartBtn');
+    return e.target && e.target.closest && e.target.closest(HOT);
   }
   document.addEventListener('click', function (e) { if (engaged(e)) reveal(); }, { passive: true, capture: true });
-  document.addEventListener('change', function (e) { if (engaged(e)) reveal(); }, { passive: true, capture: true });
+  document.addEventListener('change', function (e) {
+    if (e.target && e.target.closest && (e.target.closest(HOT) || e.target.closest('.calc-wrap'))) reveal();
+  }, { passive: true, capture: true });
   // …keyboard focus reaching the dock (a11y: never trap focus in limbo)…
   document.addEventListener('focusin', function (e) {
     if (e.target && e.target.closest && e.target.closest('#calcRightCol')) reveal();
