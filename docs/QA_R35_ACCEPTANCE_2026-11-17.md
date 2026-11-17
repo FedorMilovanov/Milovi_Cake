@@ -128,3 +128,56 @@
 - Воспроизвести/перезапустить лейн из песочницы нельзя: токен интеграции не имеет прав `actions: write` (`POST /actions/runs/{id}/rerun` → 403), логи джобов лежат на `*.blob.core.windows.net`, который песочнице недоступен. Поэтому перезапуск делается новым пушем в ветку.
 - `mergeStateStatus` PR — `BLOCKED`; прочитать `branches/main/protection` токен тоже не может (403), то есть набор обязательных проверок из песочницы не подтверждается.
 - Пока WebKit-лейн не отработал на точном HEAD, мерж не выполняется: висящий обязательный чек — единственный неразрешённый сигнал.
+
+## 9. r37 — WebKit-лейн: снят повторный `backdrop-filter` на мелких контролах
+
+**Наблюдение (2 прогона CI подряд, идентичная картина).** `webkit resilient interactions`
+не падает по assertion, а упирается в `timeout-minutes: 40` джобы. Check-run аннотации
+(единственный доступный канал: логи лежат на `*.blob.core.windows.net`, который песочнице
+закрыт) дают точку отказа:
+
+```
+1) [webkit-desktop] cart-accessibility.spec.js:139 › selected calculator decor retains contrast in both themes
+   Error: locator.evaluate: Test timeout of 90000ms exceeded.
+   > 156 |  await option.evaluate(async (el) => {
+   > 157 |    await new Promise(requestAnimationFrame);
+   > 158 |    await Promise.all(el.getAnimations(...).map((a) => a.finished));   ← rAF/`finished` не наступают
+3) [webkit-desktop] cart-accessibility.spec.js:459 › cart stays usable … storage throws
+   Error: locator.click: Target page, context or browser has been closed      ← процесс WebKit умер
+```
+
+То есть в WebKit глохнет кадр (rAF не тикает), следом умирает процесс, остальные тесты
+файла падают каскадом. На `main` (ветка приёмки свадебной страницы, прогон 44159990832)
+тот же лейн зелёный за 17.5 мин — значит дело не в «плохом раннере вообще».
+
+**Причина, подтверждённая историей репозитория.** В `main` коммитом `25b9125`
+(«Avoid repeated backdrop filters on small controls») снимали `backdrop-filter` именно
+у мелких повторяющихся элементов — плей-бейджа видео и чипа фильтра галереи, — потому что
+WebKit на них ломался. Наша ветка этот blur вернула и добавила свои:
+
+| Селектор | Сколько раз на странице | Было | Стало |
+| --- | --- | --- | --- |
+| `.product-card .slider-wrap > .slide-btn::before` | 2 × карточка (6 карточек → 12) | `blur(6px)` | без blur, фон `.74 → .88` |
+| `.product-card .slide-dots` | 1 × карточка | `blur(6px) saturate(130%)` | без blur, фон `.22 → .38` |
+| `.vtile-play` (≤768px) | по плитке ленты (десятки) | `blur(4px)` — возврат кода, снятого в `25b9125` | без blur, фон `.42 → .58` |
+
+Суммарно это десятки blur-слоёв, которые WebKit держит композитно; singletone-стекло
+(шапка, корзина, тосты, модалки) не тронуто — оно и в `main` живёт с blur и проходит CI.
+
+**Проверка внешнего вида.** `_mockups/qa_r37_blur_shots.mjs` (Chromium, DPR 2):
+снимки до/после в `_mockups/shots-r37-blur/{before,after}/` — `dots-*`, `arrow-*`,
+`vstrip-*` (день/ночь, 1440 и 390). Пиксельная разница на дорожке точек ≤ 29/255,
+на диске стрелки ≤ 10/255: «кремовое стекло» и золотая окантовка читаются как раньше,
+потому что фон стал чуть плотнее ровно на столько, сколько давал blur.
+
+**Гигиена релиза.** `final-fixes.css` r41 → r42, `mc-2026.css` r27 → r28 (19 HTML + SW
+PRECACHE + пины `scripts/lighthouse_regressions.py`), `CACHE_NAME` r167 → r168;
+`npm run audit:all` — PASSED, `!important` debt не вырос (mc-2026 190 ≤ 191).
+Chromium: `video-posters` + `landing-smoke` + `contrast-regressions` — 233 passed,
+2 failed по уже известному локальному флейку `queued grid observer …` (на чистом дереве
+без этих правок ведёт себя так же: 1 failed / 1 passed при `retries=1`), 3 skipped.
+
+**Чего это не доказывает.** Локального WebKit в песочнице нет (CDN браузеров закрыт),
+поэтому вывод «blur был причиной» проверяется только следующим прогоном CI. Если лейн
+снова упрётся в 40 минут — следующий подозреваемый: бесконечные анимации (`vstripMarquee`,
+`orbFloat`, `orderRingPulse`), которые WebKit держит на композиторе вместе с фильтрами.
