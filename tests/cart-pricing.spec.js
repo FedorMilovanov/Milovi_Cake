@@ -1,5 +1,15 @@
 const { test, expect } = require('@playwright/test');
 
+/* [r39] Нижний бар появляется после начала прокрутки: на первом экране его нет,
+   поэтому перед кликом по нему страницу надо прокрутить — как живой пользователь. */
+async function revealMobileAppBar(page) {
+  if (await page.evaluate(() => window.innerWidth > 768)) return;
+  if (!(await page.evaluate(() => document.body.classList.contains('mc-nav-veiled')))) return;
+  await page.evaluate(() => window.scrollTo(0, Math.max(520, Math.round(window.innerHeight * 0.8))));
+  await page.waitForFunction(() => !document.body.classList.contains('mc-nav-veiled'), null, { timeout: 15000 });
+}
+
+
 /* r32: сквозная проверка заказа — предварительная стоимость, корзина,
    сохранённые данные и сообщение мессенджера должны говорить одно и то же.
    Раньше правило «декор у фиксированных типов считается отдельно» было
@@ -103,6 +113,7 @@ async function openCart(page, testInfo) {
   // перехватил бы оверлей
   if (await drawer.getAttribute('aria-hidden') === 'false') return;
   const mobile = testInfo.project.name.endsWith('-mobile');
+  if (mobile) await revealMobileAppBar(page); // [r39] бар появляется после прокрутки
   const trigger = page.locator(mobile ? '#mcNav .mc-btn--order' : '#cartBtn');
   await trigger.click();
   await expect(drawer).toHaveAttribute('aria-hidden', 'false');

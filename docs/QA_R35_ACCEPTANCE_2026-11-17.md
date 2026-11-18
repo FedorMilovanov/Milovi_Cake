@@ -527,3 +527,58 @@ HEAD `585e18d`): `pageError` с пустым stack, `url=""`, `line=0`, `column=
 3. Пригороды: разница LHR из-за слайдеров в окне измерения (страница в бюджете с запасом
    >1 MB).
 4. Перенос `sheet-*.png` в `docs/` (сейчас они в корне, но уже не публикуются).
+
+---
+
+## 14. Слияние и приёмка production (2026-11-18)
+
+> Восстановлено 2026-11-18 после аудита: раздел был записан в ветку, которая уже была слита,
+> и не попал в `main`.
+
+### 14.1 Слияние
+
+- PR **#168** слит в `main` merge-коммитом **`128846dd7d491477130f742758533a188ca148af`**
+  (`2026-11-18T08:35:16Z`); обязательные проверки не обходились — на `88fb641` зелёными были
+  `guard`, `qa` (19m50s), `Source, browser and Pages candidate audit` (20m05s),
+  `webkit resilient interactions` (22m42s), `firefox resilient interactions` (9m18s) и обе
+  `reduced-motion` джобы.
+- Дерево слитого коммита совпадает с проверенным (`git diff 88fb641 128846d` — пусто).
+
+### 14.2 Pages deploy
+
+- `Deploy to GitHub Pages` run **44268290952** на `128846d` — **success**, включая
+  `Run complete source and browser QA`, `Build sanitized immutable Pages artifact`,
+  `Audit exact Pages artifact`, `Upload exact Pages artifact`.
+- Deployment **7878602484** (`github-pages`, sha `128846d`) — **success**,
+  `environment_url = https://milovicake.ru/`, 08:55:39Z.
+- Опубликованный payload: **336 файлов** (334 source + `.nojekyll` + `release.json`);
+  внутренних `sheet-*.png` — **0** (`/sheet-*.png` → 404, `/icon-192.png` → 200, `/sw.js` → 200).
+- После слияния лейны `Lighthouse` и `Lighthouse artifact` на `128846d` — **success**
+  (прежний failure относился к старому `03df41c`).
+
+### 14.3 Service Worker
+
+- Кэш `milovi-cake-v2026.11.18-r171-jshd5f1dd9439a8-csh5bc37d4a076a`.
+- На опубликованном payload: регистрация `activated`, страница под управлением SW,
+  один кэш с этим именем, offline-перезагрузка отдаёт главную (title + H1).
+
+### 14.4 Главная, корзина, оформление заказа
+
+(390×844, консент `denied`, `window.open` перехвачен)
+
+| Проверка | Результат |
+| --- | --- |
+| `pageerror` / сторонние запросы | 0 / 0 |
+| медиа до / после прокрутки | 2 / 13 |
+| preload героя | только десктопный `head_desktop.avif` (`min-width:769px`) |
+| `.hero-img` / `.hero-art` | lazy, 1440×960 / eager + `fetchpriority="high"`, 790×1087 |
+| корзина | бейдж 1, 1 шт. → 2 шт., итог 3 200 ₽ |
+| отправка | одна передача в `wa.me` с «2 шт.» и суммой; запросов к `wa.me` — 0, клиенту ничего не ушло |
+
+### 14.5 Остаточный риск после релиза
+
+1. Матрица **WebKit × SW × Storage** не выполнялась; `sw-diagnostics.yml` теперь в `main`,
+   запускается вручную (`workflow_dispatch`). SW подтверждён только в Chromium.
+2. LCP 2 558–2 612 мс — `warn`, не блокер.
+3. Восемь составов Бенто/3D без описаний — контентный HOLD.
+4. `sheet-*.png` (23 файла, 18 MB) остаются в корне репозитория, но исключены из артефакта.
