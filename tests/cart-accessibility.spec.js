@@ -548,28 +548,27 @@ for (const failure of ['QuotaExceededError', 'SecurityError']) {
   });
 }
 
-/* [r38] Ждём, пока контрол перестанет двигаться: drawer выезжает за .4 s,
-   и клик, начатый в середине въезда, на медленном движке (WebKit + 4×CPU)
-   может так и не получить подтверждение «стабилен». Это не повышение
-   таймаута: ожидание заканчивается, как только прямоугольник совпал на трёх
-   кадрах подряд, и ограничено 90 кадрами. */
+/* [r39] Measure geometry from Playwright, not a document.requestAnimationFrame
+   promise. Headless WebKit may stop frame callbacks while DOM controls remain
+   responsive, leaving the old promise pending until the test runner closes it.
+   Four identical geometric measurements are required; persistent movement is
+   a hard failure, never a silent success. */
 async function settleElement(page, selector) {
-  await page.evaluate((sel) => new Promise((resolve) => {
-    const element = document.querySelector(sel);
-    if (!element) return resolve();
-    let previous = null;
-    let stable = 0;
-    let frames = 0;
-    const tick = () => {
-      const box = element.getBoundingClientRect();
-      const key = [box.x, box.y, box.width, box.height].map((value) => Math.round(value * 10) / 10).join(',');
-      if (key === previous) stable += 1; else { previous = key; stable = 0; }
-      frames += 1;
-      if (stable >= 3 || frames > 90) resolve();
-      else requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  }), selector);
+  const target = page.locator(selector).first();
+  await expect(target).toBeVisible();
+  let previous = null;
+  let stable = 0;
+  for (let sample = 0; sample < 45; sample++) {
+    const box = await target.boundingBox();
+    if (!box) throw new Error('Element disappeared before settling: ' + selector);
+    const key = [box.x, box.y, box.width, box.height]
+      .map((value) => (Math.round(value * 10) / 10).toFixed(1)).join(',');
+    stable = key === previous ? stable + 1 : 0;
+    if (stable >= 3) return;
+    previous = key;
+    await page.waitForTimeout(50);
+  }
+  throw new Error('Element still moving after 45 geometry samples: ' + selector + ' (' + previous + ')');
 }
 
 async function openCartByUser(page, testInfo) {
