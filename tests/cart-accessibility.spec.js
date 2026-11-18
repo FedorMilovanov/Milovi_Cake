@@ -548,28 +548,36 @@ for (const failure of ['QuotaExceededError', 'SecurityError']) {
   });
 }
 
-/* [r38] Ждём, пока контрол перестанет двигаться: drawer выезжает за .4 s,
-   и клик, начатый в середине въезда, на медленном движке (WebKit + 4×CPU)
-   может так и не получить подтверждение «стабилен». Это не повышение
-   таймаута: ожидание заканчивается, как только прямоугольник совпал на трёх
-   кадрах подряд, и ограничено 90 кадрами. */
+/* Wait for cart control geometry without an unbounded RAF-only Promise.
+   Under stressed WebKit the animation frame queue can stop even while timers
+   continue; the old 90-frame cap was not a wall-clock deadline. */
 async function settleElement(page, selector) {
-  await page.evaluate((sel) => new Promise((resolve) => {
+  const result = await page.evaluate((sel) => new Promise((resolve) => {
     const element = document.querySelector(sel);
-    if (!element) return resolve();
+    if (!element) return resolve({ settled: false, reason: 'element missing' });
     let previous = null;
     let stable = 0;
-    let frames = 0;
-    const tick = () => {
+    let samples = 0;
+    const started = performance.now();
+    const interval = setInterval(() => {
+      if (!element.isConnected) {
+        clearInterval(interval);
+        resolve({ settled: false, reason: 'element detached', samples });
+        return;
+      }
       const box = element.getBoundingClientRect();
-      const key = [box.x, box.y, box.width, box.height].map((value) => Math.round(value * 10) / 10).join(',');
-      if (key === previous) stable += 1; else { previous = key; stable = 0; }
-      frames += 1;
-      if (stable >= 3 || frames > 90) resolve();
-      else requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
+      const key = [box.x, box.y, box.width, box.height]
+        .map((value) => Math.round(value * 10) / 10).join(',');
+      if (key === previous) stable += 1;
+      else { previous = key; stable = 0; }
+      samples += 1;
+      if (stable >= 3 || performance.now() - started >= 4500) {
+        clearInterval(interval);
+        resolve({ settled: stable >= 3, reason: stable >= 3 ? 'stable' : 'deadline', samples, lastBox: key });
+      }
+    }, 75);
   }), selector);
+  expect(result.settled, `cart control ${selector} did not stabilize: ${JSON.stringify(result)}`).toBe(true);
 }
 
 async function openCartByUser(page, testInfo) {
