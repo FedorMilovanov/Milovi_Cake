@@ -68,7 +68,7 @@ test('gallery defers grid video playback behind consent then restores it after c
   await expect(page.locator('body')).not.toHaveClass(/mc-consent-open/);
   const card = page.locator('#galleryGrid [data-id="v01"]');
   await card.scrollIntoViewIfNeeded();
-  await expect.poll(() => card.locator('video').getAttribute('src')).toContain('/img/gallery/videos/video-01-knigi.webm');
+  await expect.poll(() => card.locator('video').getAttribute('src')).toContain('/img/gallery/videos/video-01-knigi.mp4');
 
   await page.evaluate(() => window.MiloviConsent.open());
   await expect(page.locator('body')).toHaveClass(/mc-consent-open/);
@@ -173,7 +173,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       await page.waitForTimeout(2000);
       expect(await gridVideos.evaluateAll((videos) => videos.filter((video) => video.hasAttribute('src') || !video.paused).length)).toBe(0);
       await page.locator('#lbClose').click();
-      await expect(page.locator('#galleryGrid [data-id="v01"] video')).toHaveAttribute('src', /video-01-knigi\.webm/);
+      await expect(page.locator('#galleryGrid [data-id="v01"] video')).toHaveAttribute('src', /video-01-knigi\.mp4/);
       expect(errors).toEqual([]);
     } catch (error) {
       // Keep the assertion and the gated image unchanged. If it fails, capture
@@ -243,7 +243,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     });
     expect(await gridVideos.evaluateAll((videos) => videos.filter((video) => video.hasAttribute('src') || !video.paused).length)).toBe(0);
     await page.locator('#lbClose').click();
-    await expect(card.locator('video')).toHaveAttribute('src', /video-01-knigi\.webm/);
+    await expect(card.locator('video')).toHaveAttribute('src', /video-01-knigi\.mp4/);
     expect(errors).toEqual([]);
   });
 
@@ -287,7 +287,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       expect(await gridVideos.evaluateAll((videos) => videos.filter((video) => video.hasAttribute('src') || !video.paused).length)).toBe(0);
       await page.locator('#lbClose').click();
       const firstVideo = card.locator('video');
-      await expect(firstVideo).toHaveAttribute('src', /video-01-knigi\.webm/);
+      await expect(firstVideo).toHaveAttribute('src', /video-01-knigi\.mp4/);
       await expect.poll(() => firstVideo.evaluate((video) => !video.paused)).toBe(true);
 
       await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -372,7 +372,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       await page.waitForFunction(() => window.__motionObserverGate.appChanges.includes(true));
       await page.emulateMedia({ reducedMotion: 'no-preference' });
       await page.waitForFunction(() => window.__motionObserverGate.appChanges.includes(false));
-      await expect(firstVideo).toHaveAttribute('src', /video-01-knigi\.webm/);
+      await expect(firstVideo).toHaveAttribute('src', /video-01-knigi\.mp4/);
       await expect.poll(() => firstVideo.evaluate((video) => !video.paused)).toBe(true);
       expect(errors).toEqual([]);
     } catch (error) {
@@ -642,7 +642,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       await expect(page.locator('#lbCounter')).toHaveText('02 / 44');
       const video = page.locator('#lbWrapper .swiper-slide-active video');
       await expect(video).toBeVisible();
-      await expect(video).toHaveAttribute('src', /video-01-knigi\.webm/);
+      await expect(video).toHaveAttribute('src', /video-01-knigi\.mp4/);
       await expect.poll(() => video.evaluate((v) => v.readyState >= 2 || !!v.error)).toBe(true);
       diagnostic.beforeClose = await page.evaluate(() => {
         const describe = (v) => ({ source: v.getAttribute('src'), readyState: v.readyState,
@@ -936,14 +936,14 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     page.on('crash', () => { diagnostic.crashed = true; diagnostic.resources = browserCrashResources(); });
     try {
       await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
-      await page.route('**/*.webm', (route) => { diagnostic.blocked++; return route.abort(); });
+      await page.route('**/*.{webm,mp4}', (route) => { diagnostic.blocked++; return route.abort(); });
       await page.goto('/gallery/', { waitUntil: 'load' });
       const card = page.locator('#galleryGrid [data-id="p01"]');
       await card.click();
       await page.locator('#lbNext').click();
       const video = page.locator('#lbWrapper .swiper-slide-active video');
       await expect(video).toBeVisible();
-      await expect(video).toHaveAttribute('src', /video-01-knigi\.webm/);
+      await expect(video).toHaveAttribute('src', /video-01-knigi\.mp4/);
       await expect.poll(() => video.evaluate((v) => !!v.error)).toBe(true);
       expect(diagnostic.blocked).toBeGreaterThan(0);
       if (process.env.MILOVI_NATIVE_DIAGNOSTICS === '1') {
@@ -988,13 +988,13 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
         const file = path.resolve(root, `.${pathname}`);
         stats.assets++;
         if (/\.(?:webp|avif|png|jpe?g)$/i.test(pathname)) stats.images++;
-        if (/\.webm$/i.test(pathname)) stats.videos++;
+        if (/\.(?:webm|mp4)$/i.test(pathname)) stats.videos++;
         if (!file.startsWith(root + path.sep)) return res.writeHead(403).end();
         fs.stat(file, (error, stat) => {
           if (error || !stat.isFile()) { stats.missing++; return res.writeHead(404).end(); }
           const types = {
             '.js': 'application/javascript', '.css': 'text/css', '.html': 'text/html; charset=utf-8',
-            '.webp': 'image/webp', '.avif': 'image/avif', '.svg': 'image/svg+xml', '.webm': 'video/webm',
+            '.webp': 'image/webp', '.avif': 'image/avif', '.svg': 'image/svg+xml', '.webm': 'video/webm', '.mp4': 'video/mp4',
             '.png': 'image/png', '.jpg': 'image/jpeg', '.json': 'application/json',
           };
           let start = 0, end = stat.size - 1, status = 200;
@@ -1159,12 +1159,13 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
 
 test.describe('video strip fault handling', () => {
   test.use({ serviceWorkers: 'block' });
-  test('video strip ignores non-array JSON and malformed entries without breaking the page', async ({ page }) => {
+  test('video strip ignores non-array JSON and malformed entries without breaking the page', async ({ page }, testInfo) => {
     const fs = require('node:fs');
     const original = fs.readFileSync('index.html', 'utf8');
     expect(original.match(/data-videos='[\s\S]*?'/g)).toHaveLength(1);
     let data = 'null';
-    await page.route((url) => url.origin === 'http://127.0.0.1:4173' && url.pathname === '/', (route) =>
+    const localOrigin = new URL(testInfo.project.use.baseURL).origin;
+    await page.route((url) => url.origin === localOrigin && url.pathname === '/', (route) =>
       route.fulfill({ contentType: 'text/html; charset=utf-8', body: original.replace(/data-videos='[\s\S]*?'/, `data-videos='${data}'`) }));
     const errors = [];
     page.on('pageerror', (error) => errors.push(error.message));

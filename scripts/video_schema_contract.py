@@ -22,6 +22,7 @@ GALLERY_ENTRY_RE = re.compile(
     r"\{\s*id:\s*'v\d+',\s*type:\s*'video',\s*src:\s*'(?P<src>[^']+)',"
     r"\s*poster:\s*'(?P<poster>[^']+)',\s*title:\s*'(?P<title>[^']+)',"
     r"\s*desc:\s*'(?P<desc>[^']+)'"
+    r",\s*playback:\s*'(?P<playback>[^']+)'"
 )
 
 
@@ -71,6 +72,8 @@ def check_video_posters(gallery_text: str, published: dict[str, str]) -> dict[st
 
     posters: dict[str, str] = {}
     for src, item in entries.items():
+        if item['playback'] != src[:-5] + '.mp4':
+            fail(f"{src}: gallery MP4 playback mapping differs from published WebM source")
         expected = f"/img/gallery/{Path(src).stem}-poster.webp"
         poster = item['poster']
         if poster != expected:
@@ -92,6 +95,11 @@ def check_video_posters(gallery_text: str, published: dict[str, str]) -> dict[st
     strip = json.loads(unescape(match[1]))
     if {video.get('v'): video.get('p') for video in strip} != posters or len(strip) != len(posters):
         fail('homepage video strip must use the matching 16 frame posters')
+    for video in strip:
+        expected = video['v'][:-5] + '.mp4'
+        if video.get('m') != expected:
+            fail(f"{video['v']}: homepage MP4 playback URL must match published WebM")
+
 
     xml = ET.fromstring((ROOT / 'sitemap-videos.xml').read_text(encoding='utf-8'))
     ns = {'s': 'http://www.sitemaps.org/schemas/sitemap/0.9',
@@ -129,6 +137,19 @@ def main() -> None:
         if not isinstance(path, str) or not path.startswith("/img/gallery/videos/") or not path.endswith(".webm"):
             fail(f"manifest contains invalid self-hosted video path {path!r}")
         parse_aware_datetime(timestamp, f"manifest:{path}")
+        # Every published VP9/Opus source must also ship the matching Safari-
+        # compatible H.264/AAC MP4. The canonical WebM provenance, uploadDate,
+        # frame-poster identity and VideoObject URL remain unchanged.
+        companion = (ROOT / path.lstrip('/')).with_suffix('.mp4')
+        if not companion.is_file():
+            fail(f"{path}: required MP4 playback companion is missing: {companion.name}")
+        if not (4096 <= companion.stat().st_size <= 12_000_000):
+            fail(f"{path}: required MP4 has unexpected size: {companion.stat().st_size}")
+        with companion.open('rb') as stream:
+            header = stream.read(12)
+        if header[4:8] != b'ftyp':
+            fail(f"{path}: required MP4 companion has invalid ISO BMFF header")
+
 
     gallery_text = GALLERY_DATA.read_text(encoding="utf-8")
     gallery_videos = set(GALLERY_VIDEO_RE.findall(gallery_text))

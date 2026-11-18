@@ -269,6 +269,15 @@
   catch (e) { items = []; }
   if (!Array.isArray(items)) return;
   items = items.filter(function(it) { return it && typeof it.t === 'string' && typeof it.p === 'string' && typeof it.v === 'string'; });
+  // Canonical WebM paths remain in SEO/publication manifests; browser playback
+  // uses the matching H.264/AAC MP4. WebKit can report VP9 as 'probably' but
+  // leave its play() promise pending and render no video frames. MP4 also
+  // works in Chromium/Firefox and avoids user-agent sniffing.
+  function playbackUrl(it){
+    var expected = it.v.replace(/\.webm(?=\?|$)/i,'.mp4');
+    return typeof it.m === 'string' && it.m === expected ? it.m : it.v;
+  }
+
   if (!items.length) return;
 
   var PLAY_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
@@ -291,7 +300,7 @@
     var v = tile.querySelector('video');
     if (!v) {
       v = document.createElement('video');
-      v.src = it.v;
+      v.src = playbackUrl(it);
       v.muted = true; v.loop = true; v.playsInline = true;
       v.setAttribute('muted',''); v.setAttribute('playsinline','');
       v.preload = 'auto'; v.tabIndex = -1; v.setAttribute('aria-hidden','true');
@@ -338,7 +347,7 @@
     var it = currentItem();
     viewVideo.pause();
     viewVideo.poster = it.p || '';
-    viewVideo.src = it.v;
+    viewVideo.src = playbackUrl(it);
     viewVideo.setAttribute('aria-label', it.t);
     if (viewCap) viewCap.textContent = it.t;
     viewEl.setAttribute('aria-label', 'Видео работы: ' + it.t);
@@ -550,7 +559,15 @@
     var opener = viewOpener;
     var finished = false;
     var closeTimer = 0;
-    if (video) { try { video.pause(); } catch(e){} }
+    if (video) {
+      try {
+        video.pause();
+        // A detached video with an active source may continue buffering.
+        // End the media resource lifetime explicitly when the dialog closes.
+        video.removeAttribute('src');
+        video.load();
+      } catch(e){}
+    }
     function finish(){
       if (finished) return;
       finished = true;
@@ -587,7 +604,7 @@
     else if (e.key === 'ArrowLeft') { e.preventDefault(); changeView(-1); }
   }, true); // capture: other component handlers stop Escape before bubble phase
 
-    return {open:openView};
+    return {open:openView, close:function(){ closeView(true); }};
   })();
 
   /* [UI-2026-11-16 r25] Безрамочный «резиновый» просмотр работы.
@@ -611,7 +628,7 @@
     if (!viewVideo) return;
     var it = currentItem();
     viewVideo.poster = it.p || '';
-    viewVideo.src = it.v;
+    viewVideo.src = playbackUrl(it);
     if (viewCap) viewCap.textContent = it.t;
     var pr = viewVideo.play();
     if (pr && pr.catch) pr.catch(function(){});
@@ -793,6 +810,17 @@
     setTimeout(done, 380);
   }
 
+  // Changing the 768/769 breakpoint changes the viewer interaction model:
+  // release the current viewer, avoiding an orphaned desktop <dialog> on
+  // mobile or an obsolete mobile overlay on desktop after a resize/rotation.
+  var viewerBreakpoint = window.matchMedia('(min-width:769px)');
+  function onViewerBreakpointChange(){
+    premiumDesktopView.close();
+    closeView(true);
+  }
+  if (viewerBreakpoint.addEventListener) viewerBreakpoint.addEventListener('change', onViewerBreakpointChange);
+  else if (viewerBreakpoint.addListener) viewerBreakpoint.addListener(onViewerBreakpointChange);
+
   document.addEventListener('keydown', function(e){
     if (!viewEl) return;
     if (e.key === 'Escape' || e.keyCode === 27) { closeView(); }
@@ -803,7 +831,7 @@
   function makeTile(it){
     var d = document.createElement('a');
     d.className = 'vtile';
-    d.href = it.v;
+    d.href = playbackUrl(it);
     d.setAttribute('aria-label', it.t + ' — смотреть видео');
 
     var img = document.createElement('img');

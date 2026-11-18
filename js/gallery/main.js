@@ -1,4 +1,4 @@
-import { GALLERY_ITEMS } from './data.js?v=20261107r01';
+import { GALLERY_ITEMS } from './data.js?v=20261118r02';
 
 var _gLockY = 0; /* r31: gallery scroll lock state */
 const $ = (s, c = document) => c.querySelector(s);
@@ -74,7 +74,7 @@ function swapAvifSourceFor(img, newWebpSrc) {
 function normalizeItem(item) {
   const isVideo = item.type === 'video';
   const poster = isVideo ? (item.poster || item.full || item.src) : item.src;
-  return { id:item.id, type:item.type, size:SIZE_MAP[item.size] || item.size || '1x1', tags:item.tags || [], title:item.title || 'Работа Milovi Cake', desc:item.desc || '', src:poster, fullSrc:item.full || poster, videoSrc:isVideo ? item.src : null };
+  return { id:item.id, type:item.type, size:SIZE_MAP[item.size] || item.size || '1x1', tags:item.tags || [], title:item.title || 'Работа Milovi Cake', desc:item.desc || '', src:poster, fullSrc:item.full || poster, videoSrc:isVideo ? (item.playback || item.src) : null };
 }
 function buildInterleavedItems() {
   const all = GALLERY_ITEMS.map(normalizeItem);

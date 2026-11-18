@@ -60,6 +60,25 @@ test.describe('protected homepage interactions', () => {
     }
   });
 
+  test('home messenger hrefs, accessible labels and brand glyphs stay intact', async ({page}) => {
+    await page.goto('/', {waitUntil:'domcontentloaded'});
+    const endpoints = [
+      {cls:'wa', target:/^https:\/\/wa\.me\/79119038886\?/, name:/WhatsApp/i},
+      {cls:'tg', target:/^https:\/\/t\.me\/\+79119038886$/, name:/Telegram/i},
+      {cls:'max', target:/^https:\/\/max\.ru\/MiloviCake$/, name:/MAX/i},
+    ];
+    for (const endpoint of endpoints) {
+      const link=page.locator('.hero .btn-hero-'+endpoint.cls).first();
+      await expect(link).toBeVisible();
+      await expect(link).toHaveAttribute('href',endpoint.target);
+      await expect(link).toHaveAttribute('aria-label',endpoint.name);
+      await expect(link).toHaveAttribute('target','_blank');
+      await expect(link).toHaveAttribute('rel',/noopener/);
+      await expect(link.locator('svg path').first()).toHaveCount(1);
+    }
+    // This asserts configured destinations only. It does not verify MAX account ownership.
+  });
+
   test('premium review carousel arrows, typewriter area and review modal work', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.locator('#reviews').scrollIntoViewIfNeeded();
@@ -648,6 +667,53 @@ test('desktop premium video dialog plays audibly, navigates and restores marquee
   await expect(dialog).toHaveCount(0);
   await expect.poll(()=>page.locator('#mcVideoTrack').evaluate(e=>getComputedStyle(e).animationPlayState)).not.toBe('paused');
 });
+test('desktop video dialog closes on breakpoint crossing and releases video source', async ({page}, info) => {
+  if (info.project.name.includes('mobile')) test.skip();
+  await page.goto('/', {waitUntil:'domcontentloaded'});
+  const deny=page.locator('.mc-consent-button--deny');
+  if(await deny.isVisible()) await deny.click();
+  const tile=page.locator('#mcVideoTrack .vtile').nth(13);
+  await tile.evaluate(el=>el.click());
+  const modal=page.locator('dialog.vview');
+  await expect(modal).toBeVisible();
+  const source=await modal.locator('video').evaluate(v=>v.src);
+  expect(source).toMatch(/\.mp4/);
+  await page.setViewportSize({width:390,height:844});
+  await expect(modal).toHaveCount(0);
+  await expect(page.locator('body')).not.toHaveClass(/vview-open/);
+  await expect(tile).toBeFocused();
+  await page.locator('#mcVideoTrack .vtile').nth(13).evaluate(el=>el.click());
+  await expect(page.locator('div.vview')).toBeVisible();
+  await page.setViewportSize({width:1440,height:900});
+  await expect(page.locator('.vview')).toHaveCount(0);
+  await expect(page.locator('body')).not.toHaveClass(/vview-open/);
+});
+
+test('desktop viewer autoplay refusal exposes audible retry control', async ({page}, info) => {
+  if (info.project.name.includes('mobile')) test.skip();
+  await page.addInitScript(() => {
+    const original=HTMLMediaElement.prototype.play;
+    HTMLMediaElement.prototype.play=function(){
+      if(this.matches('dialog.vview video') && !window.__mcDeniedFirstPlay) {
+        window.__mcDeniedFirstPlay=true;
+        return Promise.reject(new DOMException('Gesture required','NotAllowedError'));
+      }
+      return original.call(this);
+    };
+  });
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  const deny=page.locator('.mc-consent-button--deny');
+  if(await deny.isVisible()) await deny.click();
+  await page.locator('#mcVideoTrack .vtile').nth(13).evaluate(el=>el.click());
+  const modal=page.locator('dialog.vview');
+  const retry=modal.locator('.vview-play-fallback');
+  await expect(retry).toBeVisible();
+  await retry.click();
+  await expect(retry).toBeHidden();
+  await expect.poll(()=>modal.locator('video').evaluate(v=>v.paused)).toBe(false);
+  await expect.poll(()=>modal.locator('video').evaluate(v=>v.currentTime)).toBeGreaterThan(.1);
+});
+
 test('mobile gallery remains legacy fullscreen and hero excludes injected desktop SVG labels', async ({page}, info) => {
   if (!info.project.name.includes('mobile')) test.skip();
   await page.goto('/', {waitUntil:'domcontentloaded'});
