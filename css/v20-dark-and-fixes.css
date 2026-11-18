@@ -211,6 +211,8 @@
   background: #251a0c !important;
   border-color: rgba(212,167,106,0.22) !important;
   color: var(--gold) !important;
+  /* [r24] были квадратные плашки внутри круглой пилюли — теперь круги */
+  border-radius: 50% !important;
 }
 
 [data-theme="dark"] .calc-stepper-btn:hover {
@@ -218,14 +220,21 @@
   color: var(--cream) !important;
 }
 
+/* [r24] «−» в disabled (мин. вес) на тёмной плашке был почти невидим */
+[data-theme="dark"] .calc-stepper-btn:disabled {
+  opacity: .48 !important;
+}
+
 [data-theme="dark"] #calcFixedWeightNote {
   color: #7aa8d4 !important; 
 }
 
 [data-theme="dark"] .calc-summary-chip {
-  background: rgba(212,167,106,0.09) !important;
-  border-color: rgba(212,167,106,0.22) !important;
-  color: var(--gold) !important;
+  /* [r30] Типографическая сводка: в ночной теме та же тихая шампань, что в
+     светлой — панель калькулятора эспрессо в обеих темах, фон не нужен. */
+  background: none !important;
+  border-color: transparent !important;
+  color: rgba(240,214,178,.70) !important;
 }
 
 [data-theme="dark"] .calc-add-btn {
@@ -417,13 +426,9 @@
 }
 
 
-[data-theme="dark"] .cart-step {
-  background: var(--card-bg) !important;
-  border-color: rgba(212,167,106,0.14) !important;
-}
-[data-theme="dark"] .cart-step.active {
-  border-color: rgba(212,167,106,0.55) !important;
-}
+/* [r35] У шагов корзины больше нет «карточек»: в тёмной теме каждый шаг
+   получал фон --card-bg и рамку, которых нет в светлой, и под точками
+   появлялись три посторонних прямоугольника. */
 [data-theme="dark"] .step-num {
   color: var(--text-muted) !important;
   background: var(--card-bg-hover) !important;
@@ -559,13 +564,21 @@
 
 
 [data-theme="dark"] #backToTop {
-  background: radial-gradient(circle at 32% 18%, rgba(255,240,208,0.32), transparent 48%), linear-gradient(160deg, #c49a5b 0%, #a2743a 55%, #865a22 100%) !important;
-  border-color: rgba(255,238,206,0.26) !important;
-  color: #fdf6e8 !important;
+  /* [r30] «Наверх» — матово-бронзовый квадрат в обеих темах, поэтому в ночной
+     теме больше нет золотого градиента: он делал кнопку единственным золотым
+     кругом на тёмной странице и расходился с дневной версией. */
+  background: #3b281d !important;
+  border-color: transparent !important;
+  color: #f0d3a6 !important;
 }
-[data-theme="dark"] #backToTop:hover {
-  background: radial-gradient(circle at 32% 18%, rgba(255,244,218,0.42), transparent 48%), linear-gradient(160deg, #cfa362 0%, #ac7c3e 55%, #8f5f24 100%) !important;
-  color: #fffdf6 !important;
+@media (hover: hover) and (pointer: fine) {
+  [data-theme="dark"] #backToTop:hover {
+    /* [r32] Старый золотой градиент — остаток до-r30: единственная «блестящая»
+       кнопка на тёмной странице. Наведение теперь матовое, как и сама кнопка:
+       тот же бронзовый квадрат на полтона светлее, стрелка — на полтона ярче. */
+    background: #47301f !important;
+    color: #f7e2bb !important;
+  }
 }
 
 
@@ -1272,8 +1285,8 @@ details.faq-item > div > p {
 
 
 .hero-actions .btn-hero-messenger svg {
-  width: 40px !important;
-  height: 40px !important;
+  width: 48px !important;
+  height: 48px !important;
   overflow: visible !important;
   display: block !important;
   flex-shrink: 0 !important;
@@ -1589,11 +1602,6 @@ details.faq-item[open] {
   }
 }
 
-.hero-actions .btn-hero-max svg > g {
-  transform: translate(6px, 3.2px) scale(.27) !important;
-  transform-origin: 0 0 !important;
-  transform-box: view-box !important;
-}
 
 .social-link.max svg,
 .messenger-bar-max svg,
@@ -1716,7 +1724,7 @@ details.faq-item[open] {
   font-size: 15px !important;
   line-height: 1.78 !important;
   font-weight: 300 !important;
-  color: var(--text-muted, #9a7a62) !important;
+  color: var(--brown-light, #6b4c38) !important;
 }
 html[data-theme="dark"] .delivery-faq .faq-item > .cb-faq-q,
 [data-theme="dark"] .delivery-faq .faq-item > .cb-faq-q,
@@ -1891,3 +1899,8 @@ html[data-theme="dark"] .cb-occ,
   box-shadow: 0 18px 46px rgba(0,0,0,.46), 0 0 0 1px rgba(232,184,122,.045) inset !important;
 }
 
+/* [r24] контраст мелкого текста в ночной теме: золото/коричневый из светлой
+   палитры на тёмном фоне не дотягивали до 4.5:1 */
+[data-theme="dark"] .catalog-nav-price { color: rgba(240, 222, 196, .78); }
+[data-theme="dark"] .catalog-nav-item.active .catalog-nav-price { color: var(--gold-light, #d4a76a); }
+[data-theme="dark"] .map-badge-rating { color: var(--gold-light, #d4a76a); }

@@ -119,10 +119,10 @@
 <link rel="stylesheet" href="/css/fonts.css?v=20261102r01" />
 
   <!-- noscript fonts -->
-  <link rel="stylesheet" href="../../css/style.css?v=20261116r06" />
-  <link rel="stylesheet" href="../../css/mc-2026.css?v=20261116r06" />
-  <link rel="stylesheet" href="../../css/premium-overrides.css?v=20261116r06" />
-  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20261116r06">
+  <link rel="stylesheet" href="../../css/style.css?v=20261118r29" />
+  <link rel="stylesheet" href="../../css/mc-2026.css?v=20261118r28" />
+  <link rel="stylesheet" href="../../css/premium-overrides.css?v=20261118r36" />
+  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20261118r27">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -134,8 +134,8 @@
     ]
   }
   </script>
-  <link rel="stylesheet" href="/css/v20-fixes.css?v=20260728r27">
-  <link rel="stylesheet" href="/css/final-fixes.css?v=20261116r06" />
+  <link rel="stylesheet" href="/css/v20-fixes.css?v=20261118r31">
+  <link rel="stylesheet" href="/css/final-fixes.css?v=20261118r42" />
   <style id="suburb-a11y-contrast">
     :root:not([data-theme="dark"]) .prigorody-page .calc-opt.selected{color:#2c1a10}
     :root:not([data-theme="dark"]) .prigorody-page .calc-stepper-val{color:#8a5723}
@@ -522,6 +522,14 @@
               <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')"><span class="opt-inner"><span class="opt-label">Красный бархат</span></span><div class="fill-tooltip"><strong>Красный бархат</strong>Бисквит красный бархат + нежный сырный крем.</div></div>
               <div class="calc-opt" data-price="0" onclick="selectOpt(this,'calcFill')"><span class="opt-inner"><span class="opt-label">Супер-Шоколад</span></span><div class="fill-tooltip"><strong>Супер-Шоколад</strong>Шоколадный бисквит + шоколадный крем-чиз.</div></div>
             </div>
+          </div>
+
+          <!-- [r34] Панель состава начинки — та же, что на главной: до этого на
+               пригородах состав читался только по hover-подсказке, а на телефоне
+               его нельзя было узнать вовсе. Блок общий для всех 14 страниц,
+               правки — только здесь + пересборка build.py. -->
+          <div class="fill-desc-panel" id="fillDescPanel" style="opacity:0">
+            <p class="fill-desc-text" id="fillDescText"></p>
           </div>
 
           <div class="calc-row calc-fill-section calc-row--hidden" id="calcFillBentoRow" data-for="bento bentomaxi">
@@ -918,9 +926,9 @@
 </section>
 
 <script>var IMG_BASE = '../../img';</script>
-<script src="../../js/main.js?v=20261116r06" defer></script>
-<script src="../../js/nav.js?v=20260728r27" defer></script>
-<script src="../../js/mc-2026.js?v=20261116r06" defer></script>
+<script src="../../js/main.js?v=20261118r37" defer></script>
+<script src="../../js/nav.js?v=20261118r21" defer></script>
+<script src="../../js/mc-2026.js?v=20261118r28" defer></script>
 
 <!-- ══════════ BOTTOM SHEET: Начинка ══════════ -->
 <div class="fill-mobile-overlay" id="fillOverlay"></div>
@@ -929,13 +937,8 @@
 </div>
 
 <!-- Fill toast snackbar -->
-<div class="fill-toast" id="fillToast" aria-live="polite">
-  <svg class="fill-toast-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-  <div class="fill-toast-body">
-    <span class="fill-toast-title"></span>
-    <span class="fill-toast-desc"></span>
-  </div>
-</div>
+<!-- [r31] Плашка-дубль убрана (см. index.html): остаётся объявление для скринридеров. -->
+<div class="visually-hidden" id="fillToast" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <!-- ══════════ COOKIE BANNER ══════════ -->
 
@@ -965,9 +968,7 @@
     <h3 id="cartDrawerTitle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true"><path d="M4 7h16l-1 14H5L4 7zM9 8V6a3 3 0 0 1 6 0v2"/></svg> Ваш заказ <span class="cart-count-badge" id="cartCountBadge">0</span></h3>
     <div class="cart-header-right">
       <button type="button" class="cart-clear-btn" id="cartClearBtn" onclick="clearCart()" title="Очистить корзину" aria-label="Очистить корзину" style="display:none">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
-        Очистить
-      </button>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg><span class="cart-clear-label">Очистить</span></button>
       <button type="button" class="cart-close" onclick="closeCart()" title="Закрыть корзину" aria-label="Закрыть корзину">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
 

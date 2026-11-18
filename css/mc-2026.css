@@ -331,28 +331,43 @@
 
 @media (max-width: 360px){
   
+  /* [r24] Владелец: начинки — не простыня в один столбец, а плотная сетка 2×N. */
   #calcFill.calc-options,
   #calcFillBento.calc-options,
-  #calcFill3d.calc-options,
+  #calcFill3d.calc-options{
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
   #calcDecor.calc-options{
-    grid-template-columns: 1fr !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
   }
   #calcFill .opt-label,
   #calcFillBento .opt-label,
   #calcFill3d .opt-label{
-    -webkit-line-clamp: unset !important;
-    line-clamp: unset !important;
-    overflow: visible !important;
-    white-space: normal !important;
-    font-size: 13px !important;
+    -webkit-line-clamp: unset;
+    line-clamp: unset;
+    overflow: visible;
+    white-space: normal;
+    font-size: 13px;
   }
   #calcFill .calc-opt,
   #calcFillBento .calc-opt,
   #calcFill3d .calc-opt{
-    height: auto !important;
-    min-height: 48px !important;
-    padding: 10px 12px !important;
+    height: auto;
+    min-height: 40px;
+    padding: 7px 9px;
+    border-radius: 12px;
   }
+  #calcFill .fill-tag,
+  #calcFillBento .fill-tag,
+  #calcFill3d .fill-tag{
+    font-size: 7.5px;
+    padding: 1px 4px;
+  }
+  #calcFill .opt-inner,
+  #calcFillBento .opt-inner,
+  #calcFill3d .opt-inner{ gap: 3px; }
 }
 
 
@@ -361,8 +376,35 @@
     #calcFill.calc-options,
     #calcFillBento.calc-options,
     #calcFill3d.calc-options{
-      grid-template-columns: 1fr;
+      /* [r24] плотная сетка вместо одноколоночной простыни */
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
     }
+    #calcFill .calc-opt,
+    #calcFillBento .calc-opt,
+    #calcFill3d .calc-opt{
+      height: auto;
+      min-height: 40px;
+      padding: 7px 9px;
+      border-radius: 12px;
+    }
+    #calcFill .opt-label,
+    #calcFillBento .opt-label,
+    #calcFill3d .opt-label{
+      font-size: 12px;
+      line-height: 1.22;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+    }
+    #calcFill .fill-tag,
+    #calcFillBento .fill-tag,
+    #calcFill3d .fill-tag{
+      font-size: 7.5px;
+      padding: 1px 4px;
+    }
+    #calcFill .opt-inner,
+    #calcFillBento .opt-inner,
+    #calcFill3d .opt-inner{ gap: 3px; }
   }
 }
 
@@ -689,29 +731,29 @@ input, textarea, select{
     flex: 1 !important;
     display: flex !important;
     flex-direction: column !important;
-    padding: 24px 22px !important;
+    padding: 16px 18px 18px !important;
   }
   
   .product-info h3 {
-    font-size: 24px !important;
+    font-size: 22px !important;
     font-weight: 500 !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 5px !important;
     line-height: 1.2 !important;
     color: var(--brown) !important;
     font-family: 'Cormorant Garamond', serif !important;
   }
   
   .product-info .desc {
-    font-size: 15px !important;
-    line-height: 1.5 !important;
-    margin-bottom: 12px !important;
+    font-size: 13.5px !important;
+    line-height: 1.42 !important;
+    margin-bottom: 8px !important;
     color: var(--catalog-secondary-copy) !important;
     font-weight: 300 !important;
   }
   
   .product-info .min-order {
-    font-size: 13px !important;
-    margin-bottom: 24px !important;
+    font-size: 12px !important;
+    margin-bottom: 10px !important;
     color: var(--catalog-order-copy) !important;
     font-weight: 400 !important;
     display: flex !important;
@@ -732,9 +774,11 @@ input, textarea, select{
     display: flex !important;
     flex-direction: column !important;
     align-items: stretch !important;
-    gap: 12px !important;
-    padding-top: 18px !important;
-    border-top: 1px solid rgba(201, 147, 74, 0.10) !important;
+    gap: 10px !important;
+    /* [r20] Владелец: «полоска не нужна» — горизонтальная линейка над ценой
+       убрана совсем, вместе с отступом под неё. */
+    padding-top: 0 !important;
+    border-top: 0 !important;
   }
   
   .price {
@@ -754,7 +798,7 @@ input, textarea, select{
     color: #fff !important;
     border: none !important;
     padding: 0 20px !important;
-    height: 48px !important;
+    height: 46px !important;
     border-radius: 50px !important;
     font-size: 14px !important;
     font-weight: 500 !important;
@@ -1084,9 +1128,23 @@ button:focus-visible, a:focus-visible {
 }
 
 @media (max-width:768px){
-  .vstrip-section{ --vstrip-h:60px; --vtile-w:82px; --vgap:8px; --vmagnet:2.3; padding:8px 0 4px; }
-  .vtile{ border-radius:10px; }
+  /* [r25] Плитки стали вертикальными под 9:16-видео: крупнее, красивее и
+     удобнее пальцем (тап-зона ~90×132), лента читается как витрина работ. */
+  .vstrip-section{ --vstrip-h:132px; --vtile-w:92px; --vgap:10px; --vmagnet:1.0; padding:10px 0 6px; }
+  .vtile{ border-radius:14px; }
   .vtile.is-magnet{ border-radius:14px; }
+  .vtile-cap{ font-size:10px; padding:4px 6px; }
+  .vstrip-track{ animation-duration:74s; }
+  /* Плей-бейдж по центру плитки: на телефоне «магнита» нет, значит подсказка
+     «это видео» должна читаться сразу. */
+  /* [r37] Возврат к решению main 25b9125: blur у плей-бейджа снят именно
+     из-за WebKit. Плиток в ленте десятки, и каждая была отдельным
+     blur-слоем. Плотность фона поднята .42 → .58, чтобы значок читался. */
+  .vtile-play{
+    top:50%; left:50%; transform:translate(-50%,-50%);
+    width:34px; height:34px; background:rgba(20,11,4,.58);
+  }
+  .vtile-play svg{ width:12px; height:12px; }
 }
 
 @media (prefers-reduced-motion:reduce){
@@ -1121,19 +1179,13 @@ button:focus-visible, a:focus-visible {
    No important-flags — uses higher specificity instead.
    ════════════════════════════════════════════════════════════════ */
 @media (hover:hover) and (pointer:fine){
-  /* F1 — refined hairline gold inset that tightens toward the edge on hover */
-  .catalog-grid .product-card::after{
-    inset:8px;
-    border:1px solid rgba(232,184,122,.0);
-    border-radius:calc(var(--radius) - 6px);
-    transition:inset .55s cubic-bezier(.22,1,.36,1), border-color .45s ease, opacity .45s ease;
-    opacity:0;
-    z-index:6;
-  }
+  /* [r22] Владелец: «полоска при наведении мышки до сих пор не убрана».
+     Золотой hairline внутри карточки снят полностью — на hover никакой рамки. */
+  .catalog-grid .product-card::after,
   .catalog-grid .product-card:hover::after{
-    inset:6px;
-    border-color:rgba(232,184,122,.55);
-    opacity:1;
+    content:none;
+    display:none;
+    border:0;
   }
   /* F3 — deeper, warmer glow ring + smooth lift (refines the base hover) */
   .catalog-grid .product-card{
@@ -1165,9 +1217,9 @@ button:focus-visible, a:focus-visible {
 
 /* ══════════════════════════════════════════════════════════════════════
    [UI-2026-11-16 #6] «Наши работы · в движении» — interaction 2.0
-   Click plays the FULL video inline in a springy modal (no navigation).
-   The gallery lives in a side slide-in chip — on the strip edge and in
-   the modal. Namespaced .vmodal and .vstrip-galchip classes, zero important-flags.
+   Click opens the work in a borderless, springy full-screen view; a second
+   tap on the frame goes to the gallery. The gallery also lives in a side
+   slide-in chip on the strip edge. `.vview` / `.vstrip-galchip`, no !important.
    ══════════════════════════════════════════════════════════════════════ */
 .vstrip-section{ position:relative; }
 .vstrip-galchip{
@@ -1187,34 +1239,128 @@ button:focus-visible, a:focus-visible {
 .vstrip-galchip:hover{ border-color:rgba(212,167,106,.85); color:#fff; }
 .vstrip-galchip svg{ width:12px; height:12px; fill:currentColor; flex:0 0 auto; }
 @media (hover:none){ .vstrip-galchip{ transform:translate(0,-50%); opacity:1; } }
+/* [r25] На телефоне чип «Вся галерея» не наезжает на плитки — он живёт под лентой. */
+@media (max-width:768px){
+  .vstrip-galchip{
+    position:static; margin:12px 16px 0 auto; transform:none; opacity:1;
+    padding:10px 16px; font-size:10.5px; letter-spacing:.14em;
+    display:flex; width:max-content;
+  }
+}
 
-.vmodal{ position:fixed; inset:0; z-index:220; display:flex; align-items:center; justify-content:center; }
-.vmodal-bd{ position:absolute; inset:0; background:rgba(12,7,2,.72); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); animation:vmBd .35s ease both; }
-@keyframes vmBd{ from{ opacity:0; } to{ opacity:1; } }
-.vmodal-box{ position:relative; width:min(880px,92vw); display:flex; flex-direction:column; gap:12px;
-  padding:18px; border-radius:18px; background:rgba(28,18,7,.96);
-  border:1px solid rgba(201,147,74,.35); box-shadow:0 40px 120px rgba(0,0,0,.55);
-  animation:vmIn .58s cubic-bezier(.22,1.35,.36,1) both; }
-@keyframes vmIn{ from{ opacity:0; transform:translateY(38px) scale(.93); } to{ opacity:1; transform:none; } }
-.vmodal-video{ width:100%; max-height:70vh; border-radius:12px; background:#000; display:block; }
-.vmodal-cap{ font-family:'Jost',sans-serif; color:#f5e6c8; font-size:13px; letter-spacing:.08em; text-transform:uppercase; padding:2px 4px; }
-.vmodal-close{ position:absolute; top:-14px; right:-14px; width:40px; height:40px; border-radius:50%;
-  background:rgba(28,18,7,.98); border:1px solid rgba(201,147,74,.5); color:#f5e6c8; cursor:pointer;
+/* [r25] Безрамочный просмотр работы: кадр упруго раскрывается из плитки на весь
+   экран. Никаких рамок, скруглений и панелей — только видео, тихая подпись сверху
+   и подсказка снизу. Второй тап по кадру ведёт в галерею. */
+.vview{ position:fixed; inset:0; z-index:230; background:#0b0703; overflow:hidden; touch-action:none; }
+.vview::after{
+  content:''; position:absolute; inset:0; pointer-events:none; z-index:1;
+  background:linear-gradient(to bottom, rgba(9,5,2,.66) 0%, rgba(9,5,2,0) 20%, rgba(9,5,2,0) 66%, rgba(9,5,2,.78) 100%);
+}
+.vview-video{
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:contain; background:transparent; display:block;
+  transform-origin:top left; will-change:transform, opacity;
+}
+@media (max-width:768px){ .vview-video{ object-fit:cover; } }
+.vview-top{
+  position:absolute; z-index:3; top:0; left:0; right:0;
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:calc(10px + env(safe-area-inset-top,0px)) 12px 10px;
+}
+.vview-cap{
+  font-family:'Jost',sans-serif; font-size:11.5px; letter-spacing:.16em; text-transform:uppercase;
+  color:#f4e5c9; text-shadow:0 1px 14px rgba(0,0,0,.65);
+  opacity:0; transform:translateY(7px);
+  transition:opacity .5s ease .2s, transform .5s cubic-bezier(.2,1.2,.3,1) .2s;
+}
+.vview.is-ready .vview-cap{ opacity:1; transform:none; }
+.vview-actions{ display:flex; gap:8px; flex:0 0 auto; }
+.vview-btn{
+  width:44px; height:44px; border-radius:50%; padding:0;
   display:flex; align-items:center; justify-content:center;
-  transition:transform .35s cubic-bezier(.34,1.56,.64,1), border-color .3s ease; }
-.vmodal-close:hover{ transform:rotate(90deg) scale(1.07); border-color:rgba(212,167,106,.9); }
-.vmodal-close svg{ width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2; }
-.vmodal-gal{ align-self:flex-end; display:inline-flex; align-items:center; gap:10px;
-  padding:11px 20px; border-radius:99px; text-decoration:none; cursor:pointer;
-  background:rgba(201,147,74,.14); border:1px solid rgba(201,147,74,.55); color:#f5e6c8;
-  font-family:'Jost',sans-serif; font-size:11px; letter-spacing:.18em; text-transform:uppercase;
-  animation:vgIn .75s cubic-bezier(.22,1.4,.36,1) .38s both;
-  transition:background .3s ease, border-color .3s ease; }
-@keyframes vgIn{ from{ opacity:0; transform:translateX(130%); } to{ opacity:1; transform:none; } }
-.vmodal-gal svg{ width:13px; height:13px; fill:currentColor; }
-.vmodal-gal:hover{ background:rgba(201,147,74,.28); border-color:rgba(212,167,106,.85); }
-body.vmodal-open{ overflow:hidden; }
+  background:rgba(20,12,5,.44); border:1px solid rgba(240,222,196,.22);
+  color:#f7ecd8; cursor:pointer;
+  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+  transition:background .25s ease, border-color .25s ease, transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.vview-btn:hover{ background:rgba(201,147,74,.34); border-color:rgba(240,205,150,.6); transform:scale(1.06); }
+.vview-btn svg{ width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:1.9; }
+.vview-hint{
+  position:absolute; z-index:3; left:0; right:0;
+  bottom:calc(14px + env(safe-area-inset-bottom,0px));
+  display:flex; align-items:center; justify-content:center; gap:9px;
+  font-family:'Jost',sans-serif; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase;
+  color:rgba(247,236,216,.85); pointer-events:none;
+  opacity:0; transform:translateY(8px);
+  transition:opacity .55s ease .32s, transform .55s cubic-bezier(.2,1.2,.3,1) .32s;
+}
+.vview.is-ready .vview-hint{ opacity:1; transform:none; }
+.vview-hint svg{ width:14px; height:14px; fill:currentColor; }
+body.vview-open{ overflow:hidden; }
 @media (prefers-reduced-motion:reduce){
-  .vmodal-box, .vmodal-bd, .vmodal-gal{ animation:none; }
+  .vview-cap, .vview-hint{ transition:none; opacity:1; transform:none; }
   .vstrip-galchip{ transition:none; }
+}
+
+/* [r25] Мобильная карусель товаров: ровно одна карточка в кадре, без тёмной
+   «полоски» следующего фото у края. Отступы живут на карточке, поэтому сосед
+   начинается точно за границей скролла. Специфичность выше, чем у базовых
+   правил сетки, чтобы не зависеть от порядка файлов. */
+@media (max-width: 768px){
+  body #catalogGrid{
+    gap: 0 !important;
+    padding: 0 0 34px !important;
+    overflow-y: hidden !important;
+    scrollbar-width: none;
+    scroll-padding-inline: 16px;
+  }
+  body #catalogGrid::-webkit-scrollbar{ width:0; height:0; display:none; }
+  body #catalogGrid > .product-card{
+    flex: 0 0 calc(100% - 32px) !important;
+    margin: 0 16px !important;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+}
+
+/* [r25] У карточек без «Заказа от N» не остаётся одинокого декора-звёздочки. */
+.min-order.is-empty{ display:none !important; }
+
+/* [r25] Карточка отзыва по высоте текста: короткая цитата больше не оставляет
+   пол-карточки пустоты на телефоне. Слайды-«призраки» абсолютные — не мешают. */
+@media (max-width: 768px){
+  .reviews-track{ height: auto !important; min-height: 168px; }
+  .reviews-track .review-slide{ position: absolute; }
+  .reviews-track .review-slide.active{ position: relative; }
+  .reviews-track .review-card{ height: auto; display: flex; flex-direction: column; justify-content: center; }
+}
+
+/* [r25] Эмодзи в отзывах не должны зависеть от основного шрифта —
+   системный emoji-стек подхватывает их на iOS/Android/Windows. */
+.review-text, .modal-review-text{
+  font-family: 'Cormorant Garamond', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', serif;
+}
+
+/* [r25] Подсказка формата даты: браузер печатает подсказку по своей локали
+   (в en-US это mm/dd/yyyy), поэтому рядом всегда виден привычный формат. */
+.form-hint{
+  display:block; margin-top:6px; padding-left:2px;
+  font-family:'Jost',sans-serif; font-size:11px; letter-spacing:.08em;
+  color:var(--text-muted);
+}
+.form-group:has(.cart-date-input[data-filled="1"]) .form-hint{ display:none; }
+
+/* [r26] «≈ N чел.» рядом со степпером веса вылезало за правый край экрана
+   (390 px). Теперь подсказка живёт под степпером, по центру, и не обрезается. */
+@media (max-width: 560px) {
+  .calc-left-col .calc-weight-stepper-wrap { flex-wrap: wrap; row-gap: 7px; }
+  .calc-left-col .calc-weight-hint {
+    position: static;
+    left: auto;
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: .14em;
+  }
 }

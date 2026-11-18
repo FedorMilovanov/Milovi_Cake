@@ -30,7 +30,9 @@
         label: 'Меренговый рулет',
         sublabel: '2 500 ₽ · 1 100 г',
         href: '/meringue-roll/',
-        icon: '<path d="M20 12a8 8 0 0 1-16 0 6.6 6.6 0 0 1 13.2 0 5.2 5.2 0 0 1-10.4 0 3.8 3.8 0 0 1 7.6 0 2.4 2.4 0 0 1-4.8 0 1.2 1.2 0 0 1 2.4 0"/>',
+        // [2026-11-16r17] Владелец: спираль читалась как леденец. Теперь это
+        // рулет — срез с завитком внутри, читается даже в 21 px (r20).
+        icon: '<circle cx="12" cy="12" r="7.4"/><path d="M12 4.6a7.4 7.4 0 1 0 7.4 7.4"/><path d="M15.6 12a3.6 3.6 0 1 0-3.6 3.6 2 2 0 1 0-2-2"/>',
         pages: ['main', 'prigorod', 'prigorody-list'],
       },
       {
@@ -64,7 +66,9 @@
         { label: 'Контакты', href: '#contacts', icon: '<path d="M8.4 3.6H5.6A2 2 0 0 0 3.6 5.8c.2 6.8 5.9 12.5 12.7 12.7a2 2 0 0 0 2.1-2v-2.7a2 2 0 0 0-1.6-2l-2-.3a2 2 0 0 0-1.8.8l-.8 1a12.4 12.4 0 0 1-5.1-5.1l1-.8a2 2 0 0 0 .8-1.8l-.3-2a2 2 0 0 0-2-1.6z"/>', section: 'contacts' },
       ],
       'prigorody-list': [
-        { label: 'Наверх', href: '#home', icon: '<path d="m6.2 14.6 5.8-5.8 5.8 5.8"/>' },
+        // [r31] На /prigorody/ нет #home (id живёт только на главной и в городах);
+        // верх страницы — реальный <main id="main">.
+        { label: 'Наверх', href: '#main', icon: '<path d="m6.2 14.6 5.8-5.8 5.8 5.8"/>' },
       ],
     },
   };
@@ -100,15 +104,15 @@
         'display:none;',
       '}',
       '@media(max-width:768px){',
+        /* [r29] Геометрия и вид бара — из CSS (токены --mc-nav-* в style.css),
+           здесь только структура: иначе инлайновый слой перебивал темовую
+           палитру и бар «мигал» кремовым в тёмной теме. */
         '.mc-nav{',
           'display:flex;',
-          'position:fixed;bottom:0;left:0;right:0;',
+          'position:fixed;',
+          'left:var(--mc-nav-side, 12px);right:var(--mc-nav-side, 12px);',
+          'bottom:var(--mc-nav-gap, 8px);',
           'z-index:105;',
-          'height:calc(60px + env(safe-area-inset-bottom));',
-          'padding-bottom:env(safe-area-inset-bottom);',
-          'background:rgba(252,250,246,0.98);',
-          'border-top:1px solid rgba(201,147,74,0.12);',
-          'box-shadow:0 -2px 20px rgba(61,43,31,0.06);',
           'align-items:stretch;',
           'transition:transform 0.28s cubic-bezier(.4,0,.2,1);',
         '}',
@@ -119,7 +123,7 @@
           'flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;',
           'gap:4px;padding:4px 4px 3px;',
           'background:none;border:none;cursor:pointer;',
-          'color:rgba(133,108,84,0.78);',
+          'color:inherit;',
           'font-size:9.5px;font-weight:500;letter-spacing:0.05em;',
           'font-family:Jost,sans-serif;',
           'text-decoration:none;',
@@ -136,12 +140,8 @@
           'fill:rgba(0,0,0,0);fill-opacity:0;',
           'transition:fill .3s ease,fill-opacity .3s ease,color .22s ease,transform .3s cubic-bezier(.34,1.56,.64,1);',
         '}',
-        '.mc-btn.mc-active{color:#a06a28;}',
-        '.mc-btn.mc-active svg{',
-          'fill:currentColor;fill-opacity:0.22;',
-          'transform:translateY(-1px);',
-        '}',
-        '.mc-btn.mc-active::before{display:none;}',
+        /* [r29] Активный пункт — только цвет SVG и подписи (см. final-fixes.css):
+           заливка контурных иконок и сдвиг на 1 px убраны. */
         '.mc-btn-label{font-size:9.5px;line-height:1;white-space:nowrap;}',
 
         /* Центральная кнопка «Заказать» — золотая рамка-контур (owner mockup) */
@@ -177,9 +177,6 @@
           'border-color:rgba(232,190,120,0.22);',
         '}',
         '.mc-btn--order:active .mc-btn-circle{transform:scale(0.94);filter:brightness(0.97);}',
-        '.mc-btn--order svg{color:#b07a3a;width:22px;height:22px;}',
-        'html[data-theme="dark"] .mc-btn--order svg{color:#d9b072;}',
-        '.mc-btn--order::before{display:none!important;}',
 
         /* Разделитель */
         '.mc-sep{width:1px;background:rgba(201,147,74,0.1);margin:14px 0;flex-shrink:0;}',
@@ -198,7 +195,7 @@
         '}',
         '.mc-sheet{',
           'position:fixed;',
-          'bottom:calc(60px + env(safe-area-inset-bottom));',
+          'bottom:var(--mc-nav-total);',
           'left:0;right:0;z-index:300;',
           'background:#fdfbf7;',
           'border-radius:24px 24px 0 0;',
@@ -323,8 +320,14 @@
     nav.className = 'mc-nav';
     nav.setAttribute('aria-label', 'Навигация');
 
+    // [2026-11-16f] Owner mockup: золотая медаль «Заказать» — центр бара,
+    // поэтому половина якорей идёт до неё, половина — после.
+    var barSplit = Math.ceil(barItems.length / 2);
+    var leadingItems = barItems.slice(0, barSplit);
+    var trailingItems = barItems.slice(barSplit);
+
     // Пункты якорей
-    barItems.forEach(function(item) {
+    function appendAnchorButton(item) {
       var el;
       el = document.createElement('a');
       el.href = item.href;
@@ -335,26 +338,48 @@
       el.addEventListener('click', function(e) {
         if (item.href.startsWith('#')) {
           e.preventDefault();
+          // [r26] Мгновенный отклик: выбранный пункт подсвечивается сразу,
+          // не дожидаясь, пока scroll spy догонит плавный скролл.
+          nav.querySelectorAll('.mc-btn').forEach(function(b) { b.classList.remove('mc-active'); });
+          el.classList.add('mc-active');
           var target = document.querySelector(item.href);
           if (target) target.scrollIntoView({ behavior: 'smooth' });
         }
       });
       nav.appendChild(el);
-    });
-
-    // Разделитель перед центральной кнопкой
-    if (barItems.length > 0) {
-      nav.appendChild(Object.assign(document.createElement('div'), { className: 'mc-sep' }));
     }
+
+    leadingItems.forEach(appendAnchorButton);
 
     // Центральная кнопка — заказать (WA) или открыть корзину
     var orderBtn = document.createElement('button'); orderBtn.type = 'button';
     orderBtn.className = 'mc-btn mc-btn--order';
-    orderBtn.setAttribute('aria-label', 'Заказать');
-    orderBtn.innerHTML = '<div class="mc-btn-circle">' +
-      icon('<path d="M6.6 9.4h10.8l-.6 9.6a2.1 2.1 0 0 1-2.1 1.9H9.3a2.1 2.1 0 0 1-2.1-1.9z"/><path d="M9.7 9.4V7.9a2.3 2.3 0 0 1 4.6 0v1.5"/>', 22) +
-      '</div><span class="mc-btn-label">Заказать</span>';
-    if (typeof openCart === 'function') {
+    // [r31] На страницах без корзины (меренговый рулет, хаб пригородов) кнопка
+    // называлась «Корзина», но открывала WhatsApp — покупатель ждал корзину.
+    // Теперь подпись честная: есть корзина → «Корзина», нет → «Заказать».
+    var hasCart = (typeof openCart === 'function') && !!document.getElementById('cartDrawer');
+    orderBtn.setAttribute('aria-label', hasCart ? 'Корзина' : 'Заказать');
+    // [2026-11-16r14] Макет владельца (image-3): корзина — обычный пункт бара,
+    // без золотой медали; блик и подсветку рисует CSS (final-fixes.css).
+    orderBtn.innerHTML = icon('<path d="M3 4.2h2.1l2.3 9.8a1.9 1.9 0 0 0 1.85 1.45h7.9a1.9 1.9 0 0 0 1.85-1.45L21 7.1H6.2"/><circle cx="10" cy="19.3" r="1.45"/><circle cx="17.4" cy="19.3" r="1.45"/>', 22) +
+      (hasCart ? '<span class="mc-btn-badge" data-cart-badge aria-hidden="true">0</span>' : '') +
+      '<span class="mc-btn-label">' + (hasCart ? 'Корзина' : 'Заказать') + '</span>';
+    // [r26] Счётчик в баре: updateCartUI() обновляет его через [data-cart-badge];
+    // здесь — только первичное состояние, если корзина уже была непустой.
+    (function () {
+      var badge = orderBtn.querySelector('[data-cart-badge]');
+      var count = 0;
+      // [r30] Первичное состояние — по общему контракту main.js (cartItemCount):
+      // количество изделий, а не число позиций.
+      try {
+        count = (typeof window.cartItemCount === 'function') ? window.cartItemCount()
+          : ((typeof cart !== 'undefined' && cart) ? Object.keys(cart).length : 0);
+      } catch (e) { count = 0; }
+      if (!badge) return;
+      badge.textContent = count;
+      badge.classList.toggle('visible', count > 0);
+    })();
+    if (typeof openCart === 'function' && hasCart) {
       orderBtn.addEventListener('click', function() {
         // [N-1 FIXED] If the sheet is open when user taps "Заказать", calling openCart()
         // immediately creates two simultaneous overlays + double lockBody() → scroll freeze.
@@ -373,7 +398,7 @@
     }
     nav.appendChild(orderBtn);
 
-    nav.appendChild(Object.assign(document.createElement('div'), { className: 'mc-sep' }));
+    trailingItems.forEach(appendAnchorButton);
 
     // Кнопка "Ещё" — открывает панель
     var moreBtn = document.createElement('button'); moreBtn.type = 'button';
@@ -543,6 +568,9 @@
       });
 
       if (sections.length > 0) {
+        // [r26] Раньше активным становился раздел, занявший 35% экрана — на
+        // длинных секциях подсветка почти никогда не появлялась. Теперь —
+        // секция, проходящая через центр экрана (полоса в 10% высоты).
         var io = new IntersectionObserver(function(entries) {
           entries.forEach(function(entry) {
             var match = sections.find(function(s) { return s.el === entry.target; });
@@ -551,7 +579,7 @@
               match.btn.classList.add('mc-active');
             }
           });
-        }, { threshold: 0.35 });
+        }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
         sections.forEach(function(s) { io.observe(s.el); });
       }
     }
@@ -625,7 +653,25 @@
   mo.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
   // ── Emergency cleanup: сброс если body застрял ──
+  // [r31] Что-то реально открыто сейчас? Тогда ничего не «аварийно» сбрасываем.
+  function isOverlayOpen() {
+    var b = document.body;
+    if (b.classList.contains('cart-open') || b.classList.contains('fill-open') || b.classList.contains('fill-open-ios') || b.classList.contains('menu-open')) return true;
+    var d = document.getElementById('cartDrawer');
+    if (d && d.classList.contains('open')) return true;
+    var p = document.getElementById('fillPopup');
+    if (p && p.classList.contains('open')) return true;
+    var lb = document.getElementById('lightbox');
+    if (lb && lb.classList.contains('open')) return true;
+    var rm = document.getElementById('reviewsModal');
+    if (rm && rm.classList.contains('open')) return true;
+    return false;
+  }
   function emergencyReset() {
+    // [r31] Возврат из фона / bfcache при ОТКРЫТОЙ корзине обнулял lockCount:
+    // страница разблокировалась под модалкой, а closeCart() уже не возвращал
+    // позицию скролла. Сбрасываем только по-настоящему застрявшее состояние.
+    if (isOverlayOpen()) return;
     if (document.body.dataset.mcSheetOpen) {
       document.body.style.overflow = '';
       document.documentElement.style.overflow = '';

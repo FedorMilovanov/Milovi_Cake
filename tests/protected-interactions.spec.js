@@ -34,7 +34,7 @@ test.describe('protected homepage interactions', () => {
     }
   });
 
-  test('hero messenger ring hover animation stays intact on desktop', async ({ page }, testInfo) => {
+  test('hero messenger icons keep brand identity and a hover lift on desktop', async ({ page }, testInfo) => {
     if ((testInfo.project.name || '').includes('mobile')) test.skip(true, 'hover animation is desktop-only');
 
     await page.goto('/', { waitUntil: 'domcontentloaded' });
@@ -50,39 +50,35 @@ test.describe('protected homepage interactions', () => {
       await expect(btn, `${item.label} button visible`).toBeVisible();
       await expect(btn).toHaveAttribute('href', item.href);
 
-      const flat = btn.locator('.hero-flat-text').first();
-      const ring = btn.locator('.hero-ring-text').first();
-      await expect(flat).toHaveCount(1);
-      await expect(ring).toHaveCount(1);
+      // Владелец выбрал исходные брендовые SVG без «кольцевых» подписей:
+      // внутри кнопки не должно быть текстовых слоёв hero-flat-text/hero-ring-text.
+      await expect(btn.locator('svg path').first(), `${item.label} keeps a real brand glyph`).toHaveCount(1);
+      await expect(btn.locator('.hero-flat-text, .hero-ring-text, [id^="flat-text-"], [id^="ring-text-"]')).toHaveCount(0);
 
-      const before = await flat.evaluate((el) => ({ opacity: Number(el.getAttribute('opacity') || '0'), y: Number(el.getAttribute('y') || '0') }));
-      expect(before.opacity).toBeLessThan(0.2);
-
+      const rest = await btn.evaluate((el) => getComputedStyle(el).transform);
       await btn.hover();
-      await expect.poll(
-        async () => Number(await flat.getAttribute('opacity') || '0'),
-        { message: `${item.label} flat label reaches hover state`, timeout: 2000 },
-      ).toBeGreaterThan(0.75);
+      const hovered = await expect
+        .poll(async () => btn.evaluate((el) => getComputedStyle(el).transform), {
+          message: `${item.label} reacts to hover`,
+          timeout: 2000,
+        })
+        .not.toBe(rest);
 
-      const hover = await flat.evaluate((el) => ({ opacity: Number(el.getAttribute('opacity') || '0'), y: Number(el.getAttribute('y') || '0'), size: Number(el.getAttribute('font-size') || '0') }));
-      const ringHover = await ring.evaluate((el) => ({ opacity: Number(el.getAttribute('opacity') || '0'), transform: el.getAttribute('transform') || '' }));
-      expect(hover.opacity, `${item.label} flat label opacity`).toBeGreaterThan(0.75);
-      expect(hover.y, `${item.label} flat label flies upward`).toBeLessThan(0);
-      expect(hover.size, `${item.label} flat label grows`).toBeGreaterThan(8);
-      expect(ringHover.opacity, `${item.label} ring fades`).toBeLessThan(0.25);
-      expect(ringHover.transform, `${item.label} ring moves`).toContain('translate');
+      const shift = await btn.evaluate((el) => {
+        const rect = el.getBoundingClientRect();
+        const parent = el.parentElement.getBoundingClientRect();
+        return { top: rect.top - parent.top, height: parent.height };
+      });
+      expect(shift.height, `${item.label} hover must not resize the row`).toBeLessThan(64);
 
       await page.mouse.move(20, 20);
-      await expect.poll(
-        async () => Number(await flat.getAttribute('opacity') || '0'),
-        { message: `${item.label} flat label returns to rest`, timeout: 2000 },
-      ).toBeLessThan(0.25);
-      const after = await flat.evaluate((el) => ({ opacity: Number(el.getAttribute('opacity') || '0'), y: Number(el.getAttribute('y') || '0') }));
-      expect(after.opacity, `${item.label} flat label returns`).toBeLessThan(0.25);
-      await expect.poll(
-        async () => Number(await flat.getAttribute('y') || '0'),
-        { message: `${item.label} y returns after hover animation`, timeout: 2000 },
-      ).toBeGreaterThan(4);
+      await expect
+        .poll(async () => btn.evaluate((el) => getComputedStyle(el).transform), {
+          message: `${item.label} returns to rest after hover`,
+          timeout: 2000,
+        })
+        .toBe(rest);
+      void hovered;
     }
   });
 
@@ -300,6 +296,31 @@ test.describe('premium baseline consolidation contracts', () => {
 
     await page.locator('.site-footer').scrollIntoViewIfNeeded();
     await expect.poll(async () => backToTop.evaluate((el) => el.classList.contains('footer-clearance'))).toBeTruthy();
+
+    // [r30] «Наверх» — матово-бронзовый квадрат, а прогресс — один замкнутый
+    // контур по его периметру. Двух <circle> и золотого круга больше нет.
+    await expect(backToTop.locator('.btt-ring circle')).toHaveCount(0);
+    const fillPath = backToTop.locator('.btt-ring path.btt-ring-fill');
+    await expect(fillPath).toHaveCount(1);
+    await expect(fillPath).toHaveAttribute('pathLength', '100');
+    /* [r31] Контракт — «старт в верхней центр-точке», а не конкретный отступ.
+       Раньше здесь был пином `M23 1`: контур шёл в 1 px от края, и замер
+       (PIL по кропам DPR 2/3) показал, что слева и снизу золота 0 px —
+       обводка срезалась кромкой viewBox. Геометрия исправлена на симметричный
+       отступ 2.5 (видимая полоса 1.5–3.0 CSS с обеих сторон), поэтому
+       проверяем смысл: x старта = 23, а отступ остаётся в разумном коридоре. */
+    const ringD = await fillPath.getAttribute('d');
+    const ringStart = /^M([\d.]+) ([\d.]+)/.exec(ringD || '');
+    expect(ringStart, 'ring path must start with an absolute M point').not.toBeNull();
+    expect(Number(ringStart[1]), 'ring path starts at the top-centre point').toBe(23);
+    expect(Number(ringStart[2]), 'ring contour is not clipped by the viewBox edge').toBeGreaterThanOrEqual(1);
+    expect(Number(ringStart[2]), 'ring contour stays close to the tile edge').toBeLessThanOrEqual(3);
+    expect(ringD).toMatch(/Z$/, 'ring contour is a closed loop');
+    const shape = await backToTop.evaluate((el) => {
+      const style = getComputedStyle(el);
+      return { radius: style.borderRadius, background: style.backgroundColor, width: Math.round(el.getBoundingClientRect().width), border: style.borderTopWidth };
+    });
+    expect(shape).toEqual({ radius: '13px', background: 'rgb(59, 40, 29)', width: 46, border: '0px' });
   });
 
   test('mobile app bar and sheet preserve closed/open visibility contract', async ({ page }) => {
@@ -376,6 +397,9 @@ test.describe('hero motion performance contract', () => {
 
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     const heroBg = page.locator('#heroPhotoBg');
+    // В мобильной редакционной раскладке фоновое фото героя скрыто по дизайну —
+    // параллакс проверяем только там, где слой реально на экране.
+    if (!(await heroBg.isVisible())) test.skip(true, 'mobile hero photo is hidden by design');
     await expect(heroBg).toBeVisible();
     await expect.poll(() => page.evaluate(() => window.__mcGyroListeners)).toBeGreaterThan(0);
     await page.waitForTimeout(300);

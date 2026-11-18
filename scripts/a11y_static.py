@@ -7,7 +7,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-EXCLUDED = {'.git', 'node_modules', '_site', 'playwright-report', 'test-results', 'audit'}
+# _mockups/: dev-only prototypes (gitignored, not deployed) — same convention as scripts/audit.py
+EXCLUDED = {'.git', 'node_modules', '_site', '_mockups', 'playwright-report', 'test-results', 'audit'}
 
 
 class GuardParser(html.parser.HTMLParser):

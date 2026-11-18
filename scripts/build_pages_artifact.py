@@ -28,6 +28,11 @@ ROOT_SUFFIXES = {
     '.html', '.txt', '.xml', '.svg', '.png', '.ico', '.jpg', '.jpeg',
     '.webp', '.avif', '.webmanifest',
 }
+# [r38] Внутренние листы «до → после» по раундам лежат в корне репозитория для
+# docs/MOBILE_AUDIT_2026-11-16.md, но ни одна страница на них не ссылается, а
+# суммарно это ~18 MB. Публиковать их в Pages незачем: artifact несёт только
+# рантайм. Исключение точечное, по имени файла, и не трогает иконки PWA.
+ARTIFACT_EXCLUDE = re.compile(r'^sheet-[0-9a-z-]*\.png$')
 RUNTIME_DIRS = {
     'css',
     'js',
@@ -97,6 +102,8 @@ def main() -> int:
     copied = 0
     for source in sorted(ROOT.iterdir()):
         if not source.is_file():
+            continue
+        if ARTIFACT_EXCLUDE.match(source.name):
             continue
         if source.name in ROOT_EXACT or source.suffix.lower() in ROOT_SUFFIXES:
             copy_file(source, OUT / source.name)
