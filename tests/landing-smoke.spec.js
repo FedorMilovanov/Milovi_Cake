@@ -775,8 +775,13 @@ test.describe('premium media blocks', () => {
 
   test('wedding detail keeps its image and readable call to action on narrow phones', async ({ page }) => {
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('html')).not.toHaveClass(/mc-fast-init/, { timeout: 3500 });
     for (const width of [320, 393, 440, 500, 501, 561, 1024]) {
       await page.setViewportSize({ width, height: 860 });
+      // Viewport transitions can defer the offscreen detail grid's layout.
+      await page.locator('.wed-collection-detail').scrollIntoViewIfNeeded();
+      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - innerWidth),
+        { timeout: 3000, intervals: [50, 150, 300] }).toBeLessThanOrEqual(1);
       const layout = await page.locator('.wed-collection-detail').evaluate((section) => {
         const box = (selector) => {
           const { left, right, top, bottom, width } = section.querySelector(selector).getBoundingClientRect();
@@ -898,6 +903,7 @@ test.describe('premium media blocks', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.addInitScript(() => localStorage.setItem('mc_theme', 'light'));
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('html')).not.toHaveClass(/mc-fast-init/, { timeout: 3500 });
     const menu = page.locator('.wed-mobile-menu');
     await expect(menu.locator('summary')).toBeVisible();
     await menu.locator('summary').click();
