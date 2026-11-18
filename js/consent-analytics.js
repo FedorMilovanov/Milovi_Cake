@@ -474,8 +474,12 @@
     document.body.classList.add('mc-consent-open');
     requestAnimationFrame(function () {
       overlay.classList.add('is-open');
-      var focusTarget = overlay.querySelector('.mc-consent-close');
-      if (focusTarget) focusTarget.focus({ preventScroll: true });
+      // Let visibility:hidden -> visible settle before moving focus into the modal.
+      // Focusing in the same frame silently fails in Chromium on a cold visit.
+      requestAnimationFrame(function () {
+        var focusTarget = overlay.querySelector('.mc-consent-close');
+        if (focusTarget && !overlay.hidden && overlay.classList.contains('is-open')) focusTarget.focus({ preventScroll: true });
+      });
     });
   }
 

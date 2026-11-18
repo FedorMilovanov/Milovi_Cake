@@ -15,7 +15,10 @@ concurrency:
 jobs:
   qa:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    # Full QA now takes >25 minutes in CI; previous attempts were cancelled
+    # by the old job cap after 682–711 successful tests, not test assertions.
+    # Keep every test, Pages build and artifact audit as required checks.
+    timeout-minutes: 40
     env:
       RELEASE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:

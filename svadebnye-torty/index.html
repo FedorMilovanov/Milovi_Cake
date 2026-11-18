@@ -35,6 +35,23 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/jost-cyrillic-wght-normal.woff2" />
 <link rel="stylesheet" href="/css/fonts.css?v=20261102r01" />
 <link rel="stylesheet" href="/css/style.css?v=20261118r29" />
+  <style>
+    /* A blocked popup must expose an actionable, keyboard-accessible handoff. */
+    .wed-wrap #wedDateFallback[hidden] { display:none!important }
+    .wed-wrap #wedDateFallback:not([hidden]) {
+      display:inline-flex;align-items:center;gap:12px;box-sizing:border-box;
+      min-height:44px;margin-top:8px;padding:9px 0;
+      color:var(--wed-accent);font:600 12px/1.5 'Jost',sans-serif;
+      text-decoration:underline;text-underline-offset:4px;
+    }
+    .wed-wrap #wedDateFallback:focus-visible { outline:2px solid var(--gold);outline-offset:3px }
+  </style>
+  <!-- A usable contact path must remain when JavaScript cannot submit the date. -->
+  <noscript><style>
+    .wed-wrap #wedDateForm .wed-date-row,
+    .wed-wrap #wedDateHint { display:none!important }
+    .wed-wrap #wedDateForm .wed-date-nojs-link { display:inline-flex;min-height:50px;text-align:center }
+  </style></noscript>
   <script type="application/ld+json">
   {
   "@context": "https://schema.org",
@@ -95,9 +112,9 @@
           "position": 2,
           "item": {
             "@type": "Product",
-            "name": "Многоярусный торт",
-            "description": "Визуализация стиля: праздничная композиция с несколькими ярусами, цветами и фактурой. Стоимость рассчитывается индивидуально.",
-            "image": "https://milovicake.ru/img/wedding-style-golden-atelier.webp",
+            "name": "Многоярусный торт с характером",
+            "description": "Реальный двухъярусный авторский торт с фотографиями пары в супергеройских костюмах. Свадебный фон на изображении — художественная визуализация. Стоимость рассчитывается индивидуально.",
+            "image": "https://milovicake.ru/img/wedding-superhero-couple.webp",
             "brand": {
               "@type": "Brand",
               "name": "Milovi Cake"
@@ -110,8 +127,8 @@
           "item": {
             "@type": "Product",
             "name": "Десерты к свадьбе",
-            "description": "Визуализация стиля: капкейки и пирожные Павлова как дополнение к основному торту. От 350 ₽/шт.; минимальный заказ — 2 пирожных или 6 капкейков одного вкуса.",
-            "image": "https://milovicake.ru/img/wedding-table.webp",
+            "description": "Художественная визуализация свадебного оформления капкейков по мотивам работ Milovi Cake. В ассортименте также меренговые рулеты и пирожные Павлова. Минимальный заказ: 6 капкейков одного вкуса или 2 пирожных Павлова. Оформление согласуется индивидуально.",
+            "image": "https://milovicake.ru/img/wedding-cupcakes-styled.webp",
             "brand": {
               "@type": "Brand",
               "name": "Milovi Cake"
@@ -290,6 +307,401 @@
 html:not([data-theme="dark"]) .lp-theme-toggle .lp-ti-moon{display:block}
 html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 @media(max-width:768px){.lp-theme-toggle{margin-left:12px;width:40px;height:40px;min-width:40px}}
+
+
+/* Wedding 2026-11-17: restrained premium hover language, scoped to this landing.
+   No new assets, no scripts, no changes to the protected homepage. */
+.wed-wrap .lp-nav a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 0;
+  transition: color .28s ease;
+}
+.wed-wrap .lp-nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 1px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(201,147,74,.12), var(--gold), rgba(201,147,74,.12));
+  opacity: 0;
+  transform: scaleX(.06);
+  transform-origin: center;
+  transition: transform .4s cubic-bezier(.22,1,.36,1), opacity .25s ease;
+  pointer-events: none;
+}
+.wed-wrap .lp-nav a:focus-visible::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+.wed-wrap .lp-header .lp-logo {
+  transition: color .3s ease, text-shadow .3s ease;
+}
+.wed-wrap .wed-btn {
+  transform: translateY(0);
+  transition: border-color .28s ease, color .28s ease, background .28s ease,
+              transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s ease;
+}
+.wed-wrap .wed-btn span[aria-hidden="true"],
+.wed-wrap .wed-link span[aria-hidden="true"] {
+  display: inline-block;
+  transition: transform .34s cubic-bezier(.22,1,.36,1);
+}
+.wed-wrap .wed-collection-photo img,
+.wed-wrap #wedStyles .lp-card img {
+  transition: transform .7s cubic-bezier(.22,1,.36,1), filter .35s ease;
+}
+.wed-wrap .bridal-step::after {
+  content: "";
+  position: absolute;
+  left: 22px;
+  top: 0;
+  width: 42px;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0;
+  transform: scaleX(.3);
+  transform-origin: left;
+  transition: transform .45s cubic-bezier(.22,1,.36,1), opacity .25s ease;
+  pointer-events: none;
+}
+.wed-wrap .lp-faq-item summary {
+  display: list-item;
+  position: relative;
+  min-height: 44px;
+  padding: 8px 40px 8px 0;
+  list-style: none;
+}
+.wed-wrap .lp-faq-item summary::-webkit-details-marker { display: none; }
+.wed-wrap .lp-faq-item summary::after {
+  content: "+";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 27px;
+  height: 27px;
+  transform: translateY(-50%);
+  border: 1px solid rgba(201,147,74,.36);
+  border-radius: 50%;
+  color: var(--gold);
+  font: 400 20px/1 'Jost', sans-serif;
+  transition: transform .35s cubic-bezier(.22,1,.36,1), border-color .3s ease, background .3s ease;
+}
+.wed-wrap .lp-faq-item[open] summary::after {
+  transform: translateY(-50%) rotate(45deg);
+  border-color: var(--gold);
+  background: rgba(201,147,74,.08);
+}
+.wed-wrap .lp-faq-item summary:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+@media (hover:hover) and (pointer:fine) {
+  .wed-wrap .lp-nav a:hover::after { opacity: 1; transform: scaleX(1); }
+  .wed-wrap .lp-header .lp-logo:hover { color: var(--gold); text-shadow: 0 0 20px rgba(201,147,74,.13); }
+  .wed-wrap .wed-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(61,43,31,.12); }
+  .wed-wrap .wed-btn:hover span[aria-hidden="true"],
+  .wed-wrap .wed-link:hover span[aria-hidden="true"] { transform: translateX(5px); }
+  .wed-wrap .wed-collection-card:hover .wed-collection-photo img,
+  .wed-wrap .wed-collection-card:focus-within .wed-collection-photo img { transform: scale(1.035); }
+  .wed-wrap #wedStyles .lp-card:hover img { transform: scale(1.025); }
+  .wed-wrap .bridal-step:hover::after { opacity: .8; transform: scaleX(1); }
+}
+.wed-wrap .wed-btn:active { transform: translateY(0); }
+@media (prefers-reduced-motion:reduce) {
+  .wed-wrap .lp-nav a, .wed-wrap .lp-nav a::after, .wed-wrap .lp-header .lp-logo,
+  .wed-wrap .wed-btn, .wed-wrap .wed-btn span[aria-hidden="true"], .wed-wrap .wed-link span[aria-hidden="true"],
+  .wed-wrap .wed-collection-photo img, .wed-wrap #wedStyles .lp-card img,
+  .wed-wrap .bridal-step::after, .wed-wrap .lp-faq-item summary::after { transition: none !important; }
+  .wed-wrap .wed-btn:hover, .wed-wrap .wed-btn:active,
+  .wed-wrap .wed-collection-card:hover .wed-collection-photo img, .wed-wrap #wedStyles .lp-card:hover img,
+  .wed-wrap .wed-btn:hover span[aria-hidden="true"], .wed-wrap .wed-link:hover span[aria-hidden="true"] { transform: none; }
+}
+
+/* Keep the visual wordmark size, but make its touch target accessible. */
+.wed-wrap .wed-header .lp-logo {display:inline-flex;align-items:center;min-height:44px;}
+/* Direct date links must clear the fixed header on desktop as well as mobile. */
+.wed-wrap #wedDateForm { scroll-margin-top:calc(94px + env(safe-area-inset-top,0px)); }
+/* Mobile-first wedding conversion and touch quality. Scoped to wedding; no global assets. */
+@media (max-width:900px) {
+ .wed-wrap .wed-mobile-first-action {
+   display:inline-flex; align-items:center; justify-content:space-between; gap:26px;
+   min-height:46px; width:max-content; max-width:100%; margin-top:17px;
+   padding:0 1px; border-bottom:1px solid var(--wed-accent);
+   color:var(--wed-ink); font:600 10.5px/1.3 'Jost',sans-serif;
+   letter-spacing:.17em; text-transform:uppercase; text-decoration:none;
+   transition:color .25s ease, gap .3s cubic-bezier(.22,1,.36,1);
+ }
+ .wed-wrap .wed-mobile-first-action span {font-size:18px;font-weight:400;line-height:1;}
+ .wed-wrap .wed-mobile-first-action:focus-visible { outline:2px solid var(--gold);outline-offset:4px; }
+ .wed-wrap .wed-hero-details > .wed-link {min-height:44px;align-items:center;margin-top:12px;}
+ .wed-wrap .wed-collection-card a:focus-visible { outline:2px solid var(--gold);outline-offset:4px; }
+}
+@media (min-width:901px) { .wed-wrap .wed-mobile-first-action {display:none;} }
+.wed-wrap .wed-mobile-sticky[hidden] {display:none!important}
+@media (max-width:600px) {
+ .wed-wrap .wed-mobile-sticky {
+   position:fixed;z-index:35;bottom:calc(12px + env(safe-area-inset-bottom,0px));
+   left:17px;right:17px;min-height:55px;display:flex;align-items:center;
+   justify-content:space-between;gap:12px;padding:8px 18px;
+   border:1px solid rgba(212,167,106,.75);border-radius:15px;
+   background:#261b14;color:#f6e9d7;text-decoration:none;
+   box-shadow:0 12px 34px rgba(33,21,12,.25);
+   animation:wedMobileStickyIn .24s ease both;
+ }
+ .wed-wrap .wed-mobile-sticky > span {
+   display:block;max-width:94px;font:500 9px/1.45 'Jost',sans-serif;
+   letter-spacing:.11em;text-transform:uppercase;color:#ddbd8f;
+ }
+ .wed-wrap .wed-mobile-sticky strong {
+   display:flex;align-items:center;gap:10px;white-space:nowrap;
+   font:500 12px/1.4 'Jost',sans-serif;letter-spacing:.04em;
+ }
+ .wed-wrap .wed-mobile-sticky strong span {font-size:20px;color:#e5bb79;line-height:1;}
+ .wed-wrap .wed-mobile-sticky:focus-visible {outline:2px solid #e5bb79;outline-offset:3px;}
+ .wed-wrap .wed-collection-card a:active .wed-collection-photo img {transform:scale(1.018);}
+}
+@keyframes wedMobileStickyIn {from {opacity:0;transform:translateY(12px);}to {opacity:1;transform:translateY(0);}}
+@media (min-width:601px) {.wed-wrap .wed-mobile-sticky {display:none!important;}}
+@media (prefers-reduced-motion:reduce) {
+ .wed-wrap .wed-mobile-first-action,.wed-wrap .wed-mobile-sticky {transition:none!important;animation:none!important;}
+ .wed-wrap .wed-collection-card a:active .wed-collection-photo img {transform:none!important;}
+}
+
+/* wed-contact-visual-r25: exact brand glyph scaling and label timing from
+   local MILOVI desktop r25 candidate (agent-integration-v06-20261117).
+   Base SVG paths: local r22 074ffcb0; NO visible rings or curved lettering.
+   Wedding-only isolation, protected main/suburban styles remain untouched. */
+.wed-wrap .wed-messenger-contact{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:16px;max-width:100%}
+.wed-wrap .wed-messenger-caption{font:600 10px/1.45 'Jost',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--wed-muted)}
+.wed-wrap .wed-contact-links{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;overflow:visible}
+.wed-wrap .wed-contact-links a.btn-hero-messenger{position:relative;display:flex;align-items:center;justify-content:center;flex:0 0 48px;width:48px;height:48px;min-height:48px;min-width:48px;padding:0;border:0;border-radius:50%;background:transparent;box-shadow:none!important;text-decoration:none;overflow:visible;transform:none!important;filter:none!important;outline-offset:5px;transition:none}
+.wed-wrap .wed-contact-links .btn-hero-wa{color:#20c969}
+.wed-wrap .wed-contact-links .btn-hero-tg{color:#229ed9}
+.wed-wrap .wed-contact-links .btn-hero-max{color:#8e74ee}
+.wed-wrap .wed-contact-links a.btn-hero-messenger svg{display:block;width:48px;height:48px;min-width:48px;min-height:48px;overflow:visible;flex:none;transform:scale(1.18);transform-origin:center center;transition:transform .4s cubic-bezier(.22,.78,.25,1),filter .35s ease;filter:drop-shadow(0 1px 2px rgba(20,12,5,.08))}
+.wed-wrap .wed-contact-links .mc-brand-glyph{transform-box:fill-box;transform-origin:center center;transition:transform .43s cubic-bezier(.2,.85,.27,1)}
+.wed-wrap .wed-contact-links .mc-brand-glyph--wa{transform:scale(1.36)}
+.wed-wrap .wed-contact-links .mc-brand-glyph--tg,.wed-wrap .wed-contact-links .mc-brand-glyph--max{transform:scale(1.44)}
+.wed-wrap .wed-contact-links .hero-flat-text{fill:currentColor;font-family:'Jost',sans-serif;font-weight:500;letter-spacing:.34px;opacity:0;pointer-events:none;transform-origin:24px 10px;transition:opacity .3s ease,transform .42s cubic-bezier(.16,1,.3,1)}
+.wed-wrap .wed-contact-links a:focus-visible{outline:2px solid currentColor!important;outline-offset:5px}
+.wed-wrap .wed-messenger-contact--final{justify-content:center;gap:16px;margin-top:22px}
+.wed-wrap .wed-messenger-contact--final .wed-messenger-caption{color:var(--brown-light)}
+.wed-wrap .wed-collection-detail img{transition:transform .55s cubic-bezier(.2,.7,.35,1)}
+.wed-wrap .bridal-step{transition:border-color .3s ease,background .3s ease,box-shadow .3s ease}
+.wed-wrap .lp-faq-item summary{transition:color .22s ease}
+.wed-wrap .wed-btn:focus-visible,.wed-wrap .wed-link:focus-visible,.wed-wrap .lp-btn:focus-visible,.wed-wrap .lp-theme-toggle:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+@media(hover:hover) and (pointer:fine){
+ .wed-wrap .wed-contact-links a:hover svg,.wed-wrap .wed-contact-links a:focus-visible svg{transform:scale(1.22);filter:drop-shadow(0 2px 5px rgba(20,12,5,.13))}
+ .wed-wrap .wed-contact-links a:hover .mc-brand-glyph--wa,.wed-wrap .wed-contact-links a:focus-visible .mc-brand-glyph--wa{transform:scale(1.41)}
+ .wed-wrap .wed-contact-links a:hover .mc-brand-glyph--tg,.wed-wrap .wed-contact-links a:focus-visible .mc-brand-glyph--tg,
+ .wed-wrap .wed-contact-links a:hover .mc-brand-glyph--max,.wed-wrap .wed-contact-links a:focus-visible .mc-brand-glyph--max{transform:scale(1.49)}
+ /* CSS fallback if the r25 animation controller cannot start. */
+ .wed-wrap .wed-contact-links a:not([data-mc-motion-init]):hover .hero-flat-text{opacity:1;transform:translateY(-13px) scale(1.06)}
+}
+.wed-wrap .wed-contact-links a:focus-visible .hero-flat-text{opacity:1}
+@media(max-width:370px){.wed-wrap .wed-messenger-contact{gap:8px}.wed-wrap .wed-contact-links{gap:6px}}
+@media(prefers-reduced-motion:reduce){
+ .wed-wrap .wed-contact-links svg,.wed-wrap .wed-contact-links .mc-brand-glyph,.wed-wrap .wed-contact-links .hero-flat-text,
+ .wed-wrap .wed-collection-detail img,.wed-wrap .bridal-step,.wed-wrap .lp-faq-item summary{transition:none!important}
+}
+@media(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+ .wed-wrap .wed-collection-detail:hover img{transform:scale(1.025)}
+ .wed-wrap #wedStyles .lp-card:hover{border-color:rgba(201,147,74,.53);box-shadow:0 22px 55px rgba(61,43,31,.12)}
+ .wed-wrap #wedStyles .lp-card:hover img{filter:saturate(1.035)}
+ .wed-wrap .bridal-step:hover{border-color:rgba(201,147,74,.44);box-shadow:0 10px 24px rgba(61,43,31,.06)}
+ .wed-wrap .lp-faq-item summary:hover{color:var(--wed-accent)}
+}
+
+/* Wedding editorial mobile: align adjacent media and give brand contacts a visual rhythm. */
+@media (max-width:700px) {
+  .wed-wrap .wed-proof-grid .wed-proof-cake,
+  .wed-wrap .wed-proof-grid .wed-proof-process {
+    width:100%;min-width:0;max-width:none;margin-left:0;margin-right:0;
+  }
+  /* Outrank the generic .wed-proof-grid figure {margin:0} rule. */
+  .wed-wrap .wed-proof-grid figure.wed-proof-process {margin-top:clamp(26px,4.5vw,38px);}
+  .wed-wrap .wed-proof-grid .wed-proof-cake-visual,
+  .wed-wrap .wed-proof-grid .wed-proof-video-frame {
+    display:block;width:100%;max-width:none;margin-left:0;margin-right:0;
+  }
+  .wed-wrap .wed-proof-grid .wed-proof-video-frame video {
+    display:block;width:100%;height:100%;object-fit:cover;object-position:center;
+  }
+  .wed-wrap .wed-messenger-contact,
+  .wed-wrap .wed-messenger-contact--final {
+    display:flex;flex-direction:column;align-items:stretch;justify-content:center;
+    box-sizing:border-box;gap:10px;width:100%;max-width:360px;
+    margin:20px auto 0;padding:16px 0 13px;
+    border-top:1px solid var(--wed-divider);
+    border-bottom:1px solid var(--wed-divider);
+  }
+  .wed-wrap .wed-messenger-contact--final {margin-left:auto;margin-right:auto;}
+  .wed-wrap .wed-messenger-caption,
+  .wed-wrap .wed-messenger-contact--final .wed-messenger-caption {
+    display:block;width:100%;margin:0;text-align:center;color:var(--wed-muted);
+    font:600 10px/1.5 'Jost',sans-serif;letter-spacing:.18em;text-transform:uppercase;
+  }
+  .wed-wrap .wed-contact-links {
+    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+    width:100%;gap:6px;align-items:stretch;justify-content:center;overflow:visible;
+  }
+  .wed-wrap .wed-contact-links a.btn-hero-messenger {
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:1px;box-sizing:border-box;flex:1 1 auto;width:100%;min-width:0;
+    height:76px;min-height:76px;min-width:44px!important;width:100%!important;
+    flex:1 1 auto!important;justify-self:stretch;padding:1px 4px 4px;
+    border:0;border-radius:10px;background:transparent;
+    box-shadow:none!important;filter:none!important;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .wed-wrap .wed-contact-links a.btn-hero-messenger svg {
+    width:45px;height:45px;min-width:45px;min-height:45px;
+    transform:none!important;filter:none!important;opacity:.86;
+  }
+  .wed-wrap .wed-contact-links svg .hero-flat-text {display:none!important;}
+  .wed-wrap .wed-contact-brand-name {
+    display:block;font:500 10px/1.35 'Jost',sans-serif;letter-spacing:.025em;
+    color:var(--wed-muted);white-space:nowrap;pointer-events:none;
+  }
+  .wed-wrap .wed-contact-links a.btn-hero-messenger:focus-visible {
+    outline:2px solid var(--gold)!important;outline-offset:2px;border-radius:10px;
+  }
+  .wed-wrap .wed-contact-links a.btn-hero-messenger:active {
+    background:rgba(201,147,74,.07);transform:none!important;
+  }
+}
+@media (min-width:701px) { .wed-wrap .wed-contact-brand-name {display:none;} }
+@media (prefers-reduced-motion:reduce) {
+ .wed-wrap .wed-contact-links a.btn-hero-messenger,
+ .wed-wrap .wed-contact-links a.btn-hero-messenger svg {transition:none!important;}
+}
+
+/* Related educational project: contextual link, separated from wedding ordering. */
+.wed-wrap .wed-school-project {
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+  margin:18px 0 0;padding:18px 22px;border:1px solid var(--wed-divider);
+  border-radius:18px;background:rgba(201,147,74,.045);
+}
+.wed-wrap .wed-school-project-copy {flex:1;min-width:0;}
+.wed-wrap .wed-school-project-kicker {
+  display:block;margin-bottom:7px;color:var(--wed-accent);
+  font:600 10px/1.4 'Jost',sans-serif;letter-spacing:.14em;text-transform:uppercase;
+}
+.wed-wrap .wed-school-project-copy p {
+  margin:0;max-width:58ch;color:var(--wed-muted);font:400 12px/1.6 'Jost',sans-serif;
+}
+.wed-wrap .wed-school-project-link {
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  flex:0 0 auto;min-height:48px;padding:7px 14px;border:1px solid var(--wed-divider);
+  border-radius:12px;color:var(--brown);text-decoration:none;
+  background:rgba(255,255,255,.065);
+  font:500 14px/1.4 'Jost',sans-serif;letter-spacing:.015em;
+  transition:border-color .2s ease,background .2s ease,color .2s ease;
+}
+.wed-wrap .wed-school-project-link small {
+  display:block;margin-top:2px;font-size:11px;font-weight:400;color:var(--wed-muted);
+}
+.wed-wrap .wed-school-project-link > span:last-child {color:var(--wed-accent);font-size:20px;}
+@media (hover:hover) and (pointer:fine) {
+  .wed-wrap .wed-school-project-link:hover {
+    border-color:var(--gold);background:rgba(201,147,74,.095);color:var(--gold);
+  }
+}
+.wed-wrap .wed-school-project-link:focus-visible {
+  outline:2px solid var(--gold);outline-offset:3px;
+}
+@media (max-width:700px) {
+  .wed-wrap .wed-school-project {flex-direction:column;align-items:stretch;gap:14px;padding:18px 16px;}
+  .wed-wrap .wed-school-project-link {width:100%;box-sizing:border-box;}
+}
+@media (prefers-reduced-motion:reduce) {
+  .wed-wrap .wed-school-project-link {transition:none;}
+}
+/* Section return link is a distinct touch action, not a small inline underlined word. */
+@media (max-width:860px) {
+  .wed-wrap .wed-collection-note a.wed-collection-backlink {
+    display:flex;align-items:center;gap:10px;box-sizing:border-box;
+    width:max-content;max-width:100%;min-height:44px;margin-top:12px;padding:8px 0;
+    border-bottom:1px solid currentColor;
+    color:var(--wed-accent);font:600 11px/1.5 'Jost',sans-serif;
+    letter-spacing:.09em;text-transform:uppercase;text-decoration:none;
+  }
+  .wed-wrap .wed-collection-note a.wed-collection-backlink span {
+    font-size:16px;line-height:1;
+  }
+  .wed-wrap .wed-collection-note a.wed-collection-backlink:focus-visible {
+    outline:2px solid var(--gold);outline-offset:4px;
+  }
+}
+/* Wedding touch targets: footer becomes a touch-only layout below 860px. */
+@media (max-width:860px) {
+  .wed-wrap .lp-related a {
+    display:inline-flex;align-items:center;justify-content:center;
+    box-sizing:border-box;min-height:44px;line-height:1.35;
+  }
+  .wed-wrap .landing-footer nav {gap:4px;}
+  .wed-wrap .landing-footer nav a {
+    box-sizing:border-box;min-height:44px;padding:8px 0;
+    border-bottom:1px solid var(--wed-divider);
+  }
+  .wed-wrap .landing-footer nav a:last-child {border-bottom:0;}
+  .wed-wrap .landing-footer address a {
+    display:inline-flex;align-items:center;box-sizing:border-box;
+    min-height:44px;padding:8px 0;
+  }
+  .wed-wrap .mc-consent-trigger {
+    display:inline-flex;align-items:center;box-sizing:border-box;
+    min-height:44px;padding:9px 0;
+  }
+  .wed-wrap .landing-footer a:focus-visible,
+  .wed-wrap .lp-related a:focus-visible,
+  .wed-wrap .mc-consent-trigger:focus-visible {
+    outline:2px solid var(--gold);outline-offset:3px;
+  }
+}
+/* Keep the editorial section label on one line on the smallest phones. */
+@media (max-width:370px) {
+  .wed-wrap .wed-proof-head .wed-collection-kicker {
+    white-space:nowrap;
+    font-size:9px;
+    letter-spacing:.1em;
+    gap:7px;
+  }
+  .wed-wrap .wed-proof-head .wed-collection-kicker::after {width:16px;}
+}
+/* Wedding compact-width refinement: premium readable editorial rhythm at 320–375 px. */
+@media (max-width:375px) {
+  .wed-wrap .wed-collection-grid {
+    grid-template-columns:minmax(0,1fr);
+    gap:28px;
+  }
+  .wed-wrap .wed-collection-photo {aspect-ratio:4/5;}
+  .wed-wrap .wed-collection-index {margin-top:11px;}
+  .wed-wrap .wed-collection-title {font-size:clamp(24px,7vw,29px);line-height:1.2;}
+  .wed-wrap .wed-collection-desc {font-size:13px;line-height:1.55;}
+  .wed-wrap .bridal-panel {padding:24px 16px 28px;border-radius:24px;}
+  .wed-wrap .bridal-panel::before {inset:9px;border-radius:18px;}
+  .wed-wrap .bridal-mini {min-height:0;padding:16px;}
+}
+@media (max-width:600px) {
+  /* Small floating action instead of a full-width bar covering the editorial column. */
+  .wed-wrap .wed-mobile-sticky {
+    left:auto;
+    right:calc(14px + env(safe-area-inset-right,0px));
+    width:max-content;max-width:calc(100vw - 28px);
+    min-height:48px;padding:10px 17px;gap:0;
+    border-radius:999px;
+    box-shadow:0 7px 24px rgba(33,21,12,.22);
+  }
+  .wed-wrap .wed-mobile-sticky > span {display:none;}
+  .wed-wrap .wed-mobile-sticky strong {gap:9px;font-size:12px;}
+}
 </style>
   <!-- [P100] Детерминированный пропуск offscreen-layout на первом кадре:
        content-visibility:auto для секций ниже сгиба работает только до 2 кадров
@@ -317,15 +729,217 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
       window.addEventListener('touchstart',rm,{once:true,passive:true,capture:true});
     })();
   </script>
+
+<style id="wed-clip-controls-r1">
+/* WEDDING: no native player bar, no letterboxing. Real 720×1282 footage. */
+.wed-wrap .wed-proof-video-frame{background:#332820 url('/img/gallery/video-12-wedding-heart-poster.webp') center/cover no-repeat;isolation:isolate}
+.wed-wrap .wed-proof-video-frame video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;background:transparent}
+.wed-wrap .wed-clip-controls{position:absolute;z-index:3;bottom:14px;left:14px;display:flex;gap:8px;align-items:center;pointer-events:none}
+.wed-wrap .wed-clip-controls[hidden]{display:none!important}
+.wed-wrap .wed-clip-control{position:relative;display:grid;place-items:center;width:44px;height:44px;min-width:44px;min-height:44px;flex:none;padding:0;cursor:pointer;pointer-events:auto;background:rgba(29,22,19,.68);color:#fff3e5;border:1px solid rgba(255,241,226,.48);border-radius:50%;box-shadow:0 3px 12px rgba(0,0,0,.13);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);touch-action:manipulation;transition:background .22s ease,border-color .22s ease,box-shadow .22s ease}
+.wed-wrap .wed-clip-control .wed-clip-svg{display:block;width:21px;height:21px}
+.wed-wrap .wed-clip-control .wed-clip-icon-pause,.wed-wrap .wed-clip-control .wed-clip-icon-sound{display:none}
+.wed-wrap .wed-proof-video-frame[data-playing="true"] .wed-clip-control .wed-clip-icon-play{display:none}
+.wed-wrap .wed-proof-video-frame[data-playing="true"] .wed-clip-control .wed-clip-icon-pause{display:block}
+.wed-wrap .wed-proof-video-frame[data-muted="false"] .wed-clip-control .wed-clip-icon-muted{display:none}
+.wed-wrap .wed-proof-video-frame[data-muted="false"] .wed-clip-control .wed-clip-icon-sound{display:block}
+.wed-wrap .wed-clip-control:focus-visible{outline:2px solid #f2c98c!important;outline-offset:3px}
+@media(hover:hover) and (pointer:fine){
+ .wed-wrap .wed-clip-control:hover{background:rgba(29,22,19,.87);border-color:rgba(255,241,226,.85);box-shadow:0 4px 16px rgba(0,0,0,.25)}
+}
+@media(max-width:370px){.wed-wrap .wed-clip-controls{left:10px;bottom:10px;gap:6px}}
+@media(prefers-reduced-motion:reduce){.wed-wrap .wed-clip-control{transition:none}}
+</style>
+
+
+<style id="wed-premium-editorial-20261118">
+/* Consolidated editorial rhythm, scoped to wedding; no global UI overrides. */
+.wed-wrap .wed-header-actions{display:flex;align-items:center;justify-content:flex-end;gap:9px;margin-left:auto;flex:0 0 auto}
+.wed-wrap .wed-header-actions .lp-theme-toggle{margin:0;flex:0 0 44px;width:44px;height:44px;min-width:44px}
+.wed-wrap .wed-header-actions .wed-mobile-menu{margin:0;flex:0 0 44px}
+.wed-wrap .wed-header-actions .wed-mobile-menu summary{min-width:44px;min-height:44px}
+.wed-wrap .wed-header .lp-logo{margin-right:0}
+@media (min-width:861px){
+ .wed-wrap .wed-header-actions{margin-left:22px}
+ .wed-wrap .wed-header-actions .lp-theme-toggle{flex-basis:38px;width:38px;height:38px;min-width:38px}
+ .wed-wrap .wed-header .lp-logo{margin-right:auto}
+}
+@media (max-width:860px){
+ .wed-wrap .wed-header{justify-content:space-between}
+ .wed-wrap .wed-header-actions{gap:9px}
+ .wed-wrap .wed-header .lp-logo{flex-shrink:1;min-width:0}
+}
+@media (max-width:349px){
+ .wed-wrap .wed-header-actions{gap:5px}
+ .wed-wrap .wed-header .lp-logo{font-size:clamp(12px,4.2vw,16px)}
+}
+/* Remove nested border noise: the contact panel is one object, not four rules. */
+.wed-wrap .wed-hero-details > .wed-link{
+ display:inline-flex;align-items:center;gap:12px;
+ min-height:44px;border:0!important;padding:0;margin-top:12px;
+ font-weight:600;letter-spacing:.14em
+}
+.wed-wrap .wed-hero-details > .wed-link span{font-size:18px}
+.wed-wrap .wed-messenger-contact--hero{
+ display:flex;align-items:center;justify-content:center;flex-direction:column;
+ border:1px solid rgba(150,110,66,.14);border-radius:20px;
+ background:rgba(198,158,109,.055);padding:18px 20px 16px;
+ gap:11px;margin:20px 0 0;box-sizing:border-box;max-width:100%
+}
+.wed-wrap .wed-messenger-contact--hero .wed-messenger-caption{
+ font-size:10px;letter-spacing:.17em;text-align:center
+}
+.wed-wrap .wed-messenger-contact--hero .wed-contact-links{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;
+ align-items:stretch;width:100%;max-width:430px
+}
+.wed-wrap .wed-messenger-contact--hero .wed-contact-links a.btn-hero-messenger{
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ width:100%!important;min-width:0!important;height:80px;min-height:80px;
+ flex:none!important;gap:1px;padding:5px 2px;border-radius:13px;
+ border:1px solid rgba(150,110,66,.12);
+ background:rgba(255,255,255,.12);box-sizing:border-box
+}
+.wed-wrap .wed-messenger-contact--hero .wed-contact-links a.btn-hero-messenger:focus-visible{
+ outline:2px solid var(--gold)!important;outline-offset:2px;border-radius:13px
+}
+.wed-wrap .wed-messenger-contact--hero .wed-contact-brand-name{display:block;color:var(--wed-muted);font:500 10px/1.4 'Jost',sans-serif}
+.wed-wrap .wed-messenger-contact--hero .wed-contact-links svg{width:44px;height:44px;min-width:44px;min-height:44px;transform:none!important;filter:none!important}
+.wed-wrap .wed-messenger-contact--hero .hero-flat-text{display:none!important}
+.wed-wrap .wed-meta{border-top:0!important;padding:14px 2px 0!important;margin:0!important;line-height:1.8;letter-spacing:.12em;opacity:.87}
+@media (max-width:700px){
+ .wed-wrap .wed-messenger-contact--hero{width:100%;max-width:none;margin:17px 0 0;padding:15px 12px 14px}
+ .wed-wrap .wed-messenger-contact--hero .wed-contact-links{gap:7px}
+ .wed-wrap .wed-messenger-contact--hero .wed-contact-links a.btn-hero-messenger{height:76px;min-height:76px}
+ .wed-wrap .wed-meta{border:0!important;padding:16px 0 0!important}
+}
+/* Compact, editorial tasting: no redundant funnel button. */
+.wed-wrap .wed-tasting-editorial{padding-bottom:0}
+.wed-wrap .wed-tasting-editorial .lp-section-head{max-width:680px;margin:0 auto;text-align:center}
+.wed-wrap .wed-tasting-editorial .lp-section-head > p{max-width:55ch;margin-left:auto;margin-right:auto}
+.wed-wrap .wed-brief-overline{display:block;margin:0 0 13px;font:600 10px/1.5 'Jost',sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--wed-accent)}
+.wed-wrap .wed-tasting-link{
+ display:inline-flex;align-items:center;justify-content:center;gap:12px;
+ min-height:46px;margin:16px auto 0;padding:9px 6px;
+ color:var(--wed-accent);font:600 10px/1.4 'Jost',sans-serif;
+ letter-spacing:.14em;text-transform:uppercase;text-decoration:none;
+ border:0;border-bottom:1px solid rgba(174,125,65,.35)
+}
+.wed-wrap .wed-tasting-link span{font-size:16px;font-weight:400}
+.wed-wrap .wed-tasting-link:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.wed-wrap #wedBrief{scroll-margin-top:calc(94px + env(safe-area-inset-top,0px))}
+.wed-wrap .bridal-callout{margin-top:clamp(20px,3.5vw,44px)}
+.wed-wrap .bridal-callout .bridal-callout-inner{max-width:760px;margin:0 auto}
+.wed-wrap .bridal-callout .wed-brief-overline{color:#e3bd8e;margin:0 0 12px}
+.wed-wrap .wed-brief-fields{
+ max-width:620px!important;margin:19px auto 0!important;
+ font:500 11px/1.85 'Jost',sans-serif!important;letter-spacing:.105em;
+ color:#e4c8a6!important
+}
+.wed-wrap .wed-selected-style{
+ max-width:620px;margin:15px auto 0!important;
+ color:#fff2dc!important;font:500 12px/1.7 'Jost',sans-serif!important
+}
+.wed-wrap .wed-selected-style[hidden]{display:none!important}
+.wed-wrap .wed-brief-helper{
+ max-width:520px;margin:15px auto 0!important;
+ color:#e2cab1!important;font:400 12px/1.7 'Jost',sans-serif!important
+}
+.wed-wrap .wed-brief-contact.wed-messenger-contact{
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:13px;width:100%;max-width:560px;margin:24px auto 0;padding:0;
+ border:0;background:none
+}
+.wed-wrap .wed-brief-contact .wed-messenger-caption{
+ display:block;width:100%;text-align:center;margin:0;
+ color:#f0d4b4!important;letter-spacing:.16em
+}
+.wed-wrap .wed-brief-contact .wed-contact-links{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:11px;width:100%;max-width:500px;align-items:stretch
+}
+.wed-wrap .wed-brief-contact .wed-contact-links a.btn-hero-messenger{
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:2px;box-sizing:border-box;flex:none!important;
+ width:100%!important;min-width:0!important;height:92px;min-height:92px;
+ padding:8px 5px;border-radius:14px;
+ border:1px solid rgba(248,223,190,.2);
+ background:rgba(255,248,239,.065);box-shadow:none!important;
+ color:inherit!important;transition:border-color .22s,background .22s,transform .22s
+}
+.wed-wrap .wed-brief-contact .wed-contact-links .btn-hero-wa svg{color:#31d475}
+.wed-wrap .wed-brief-contact .wed-contact-links .btn-hero-tg svg{color:#4fbbeb}
+.wed-wrap .wed-brief-contact .wed-contact-links .btn-hero-max svg{color:#aa90ff}
+.wed-wrap .wed-brief-contact .wed-contact-links a.btn-hero-messenger svg{
+ width:46px;height:46px;min-width:46px;min-height:46px;transform:none!important;filter:none!important;opacity:1
+}
+.wed-wrap .wed-brief-contact .wed-contact-brand-name{
+ display:block;color:#f7e6d1;font:500 11px/1.5 'Jost',sans-serif;letter-spacing:.03em
+}
+.wed-wrap .wed-brief-contact .hero-flat-text{display:none!important}
+.wed-wrap .wed-brief-contact .wed-contact-links a.btn-hero-messenger:focus-visible{
+ outline:2px solid #f0cd99!important;outline-offset:3px;border-radius:14px
+}
+@media (hover:hover) and (pointer:fine){
+ .wed-wrap .wed-brief-contact .wed-contact-links a.btn-hero-messenger:hover{
+ border-color:rgba(244,206,151,.66);background:rgba(255,249,239,.11);transform:translateY(-2px)!important
+ }
+ .wed-wrap .wed-messenger-contact--hero .wed-contact-links a.btn-hero-messenger:hover{
+ border-color:rgba(179,133,77,.36);background:rgba(201,147,74,.095)
+ }
+}
+@media (max-width:480px){
+ .wed-wrap .wed-brief-contact.wed-messenger-contact{margin-top:21px}
+ .wed-wrap .wed-brief-contact .wed-contact-links{gap:7px}
+ .wed-wrap .wed-brief-contact .wed-contact-links a.btn-hero-messenger{height:79px;min-height:79px;padding:4px 2px}
+ .wed-wrap .wed-brief-contact .wed-contact-links a.btn-hero-messenger svg{width:42px;height:42px;min-width:42px;min-height:42px}
+ .wed-wrap .wed-brief-fields{font-size:10px!important;letter-spacing:.04em}
+}
+@media (prefers-reduced-motion:reduce){
+ .wed-wrap .wed-brief-contact .wed-contact-links a.btn-hero-messenger{transition:none!important}
+ .wed-wrap .wed-brief-contact .wed-contact-links a.btn-hero-messenger:hover{transform:none!important}
+}
+
+/* Wedding consultation handoff: one quiet, accessible copy surface for TG/MAX. */
+.wed-wrap .wed-brief-export{
+  box-sizing:border-box;max-width:520px;width:100%;margin:21px auto 0;padding:18px 20px;
+  border:1px solid rgba(245,222,190,.26);border-radius:16px;
+  background:rgba(255,249,241,.055);text-align:left
+}
+.wed-wrap .wed-brief-export[hidden]{display:none}
+.wed-wrap .wed-brief-export h3{margin:0 0 7px;color:#fff0dc;font:500 20px/1.3 'Cormorant Garamond',Georgia,serif}
+.wed-wrap .wed-brief-export-intro{margin:0 0 13px;color:#e8d2ba;font:400 13px/1.5 'Jost',sans-serif}
+.wed-wrap .wed-brief-export label{display:block;margin:0 0 6px;color:#ebcfab;font:500 11px/1.5 'Jost',sans-serif;letter-spacing:.08em}
+.wed-wrap .wed-brief-export textarea{
+  box-sizing:border-box;display:block;width:100%;max-width:100%;min-height:135px;resize:vertical;
+  padding:12px;border:1px solid rgba(245,222,190,.35);border-radius:10px;
+  background:rgba(25,13,8,.48);color:#fff3e1;font:400 13px/1.55 'Jost',sans-serif
+}
+.wed-wrap .wed-brief-export-actions{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 0}
+.wed-wrap .wed-brief-export-actions button,.wed-wrap .wed-brief-export-actions a{
+  box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;
+  min-height:44px;min-width:44px;flex:1 1 155px;padding:10px 12px;border-radius:10px;
+  border:1px solid rgba(245,222,190,.42);background:rgba(255,249,241,.12);
+  color:#fff0dc;font:500 12px/1.4 'Jost',sans-serif;letter-spacing:.02em;text-align:center;
+  text-decoration:none;cursor:pointer
+}
+.wed-wrap .wed-brief-export-actions :is(a,button):focus-visible,.wed-wrap .wed-brief-export textarea:focus-visible{
+  outline:2px solid #f0cd99;outline-offset:3px
+}
+.wed-wrap .wed-brief-export-status{min-height:1.2em;margin:9px 0 0;color:#f4d8ae;font:400 12px/1.55 'Jost',sans-serif}
+@media(min-width:901px){.wed-wrap .wed-header .lp-theme-toggle{min-width:44px;min-height:44px}}
+@media(max-width:380px){.wed-wrap .wed-brief-export{padding:14px}}
+</style>
 </head>
 <body>
 <div class="lp-wrap wed-wrap">
-  <header class="lp-header wed-header"><a class="lp-logo" href="/">Milovi Cake</a><nav class="lp-nav" aria-label="Навигация"><a href="/gallery/">Галерея</a><a href="/zakazat-tort-spb/">Заказать</a><a href="/prigorody/">Доставка</a><a href="/#contacts">Контакты</a></nav><button type="button" class="lp-theme-toggle" aria-label="Переключить тему" title="Светлая / тёмная тема" onclick="(function(){var d=document.documentElement,n=d.getAttribute('data-theme')==='dark'?'light':'dark';d.setAttribute('data-theme',n);try{localStorage.setItem('mc_theme',n)}catch(e){}})()"><svg class="lp-ti lp-ti-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><svg class="lp-ti lp-ti-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></button>
+  <header class="lp-header wed-header"><a class="lp-logo" href="/">Milovi Cake</a><nav class="lp-nav" aria-label="Навигация"><a href="/gallery/">Галерея</a><a href="/zakazat-tort-spb/">Заказать</a><a href="/prigorody/">Доставка</a><a href="/#contacts">Контакты</a></nav><div class="wed-header-actions"><button type="button" class="lp-theme-toggle" aria-label="Переключить тему" title="Светлая / тёмная тема" onclick="(function(){var d=document.documentElement,n=d.getAttribute('data-theme')==='dark'?'light':'dark';d.setAttribute('data-theme',n);try{localStorage.setItem('mc_theme',n)}catch(e){}})()"><svg class="lp-ti lp-ti-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><svg class="lp-ti lp-ti-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></button>
     <details class="wed-mobile-menu">
       <summary aria-label="Меню"><span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span></summary>
       <nav aria-label="Мобильная навигация"><a href="/gallery/">Галерея</a><a href="/zakazat-tort-spb/">Заказать</a><a href="/prigorody/">Доставка</a><a href="/#contacts">Контакты</a></nav>
-    </details>
+    </details></div>
   </header>
+  <a class="wed-mobile-sticky" href="#wedDateForm" hidden><span>Свадебный заказ</span><strong>Уточнить дату <span aria-hidden="true">↗</span></strong></a>
   <main>
     <section class="wed-hero" aria-labelledby="wedHeroTitle">
       <div class="wed-hero-visual">
@@ -336,16 +950,48 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
         <div class="wed-hero-intro">
           <div class="wed-kicker">Свадебные торты · Санкт-Петербург</div>
           <h1 id="wedHeroTitle">Свадебные торты, которые станут частью вашей истории</h1>
-          <p class="wed-lead">Авторские свадебные торты ручной работы в Санкт-Петербурге.</p>
+          <p class="wed-lead">Авторские свадебные торты ручной работы в Санкт-Петербурге.</p><a class="wed-mobile-first-action" href="#wedDateForm">Уточнить дату свадьбы <span aria-hidden="true">↗</span></a>
         </div>
         <div class="wed-hero-details">
-          <p class="wed-date-intro">Укажите дату свадьбы — проверим, свободна ли она, и предложим торт под ваш зал, палитру и число гостей.</p>
-          <form class="wed-date-form">
+          <p class="wed-date-intro">Укажите дату свадьбы — уточним возможность заказа и предложим оформление под ваш зал, палитру и число гостей.</p>
+          <form class="wed-date-form" id="wedDateForm">
             <label class="wed-date-label" for="wedDate">Дата вашей свадьбы</label>
-            <div class="wed-date-row"><input type="date" id="wedDate" name="weddingDate" aria-label="Дата свадьбы" aria-describedby="wedDateHint"><button class="wed-btn" type="submit">Проверить дату <span aria-hidden="true">→</span></button></div>
-            <p class="wed-note" id="wedDateHint">Откроется WhatsApp. Дату подставим, если выберете; площадку и число гостей укажете в сообщении.</p>
+            <div class="wed-date-row"><input type="date" id="wedDate" name="weddingDate" aria-label="Дата свадьбы" aria-describedby="wedDateHint"><button class="wed-btn" type="submit">Уточнить дату <span aria-hidden="true">→</span></button></div>
+            <p class="wed-note" id="wedDateHint" aria-live="polite">Откроется WhatsApp. Дату подставим, если выберете; площадку и число гостей укажете в сообщении.</p>
+            <a id="wedDateFallback" class="wed-date-popup-fallback" href="https://wa.me/79119038886" target="_blank" rel="noopener noreferrer" hidden>Открыть WhatsApp вручную <span aria-hidden="true">→</span></a>
+            <noscript>
+              <a class="wed-btn wed-date-nojs-link" href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BE%D0%B1%D1%81%D1%83%D0%B4%D0%B8%D1%82%D1%8C%20%D1%81%D0%B2%D0%B0%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D0%B9%20%D1%82%D0%BE%D1%80%D1%82%20Milovi%20Cake.%20%D0%94%D0%B0%D1%82%D0%B0%20%D1%81%D0%B2%D0%B0%D0%B4%D1%8C%D0%B1%D1%8B%3A%20___%3B%20%D0%BF%D0%BB%D0%BE%D1%89%D0%B0%D0%B4%D0%BA%D0%B0%3A%20___%3B%20%D0%B3%D0%BE%D1%81%D1%82%D0%B5%D0%B9%3A%20___." target="_blank" rel="noopener noreferrer">Написать о дате в WhatsApp <span aria-hidden="true">→</span></a>
+              <p class="wed-note">Если JavaScript отключён, укажите дату и число гостей непосредственно в сообщении WhatsApp.</p>
+            </noscript>
           </form>
-          <a class="wed-link" href="#wedCollection">Выбрать торт <span aria-hidden="true">→</span></a>
+          <a class="wed-link" href="#wedCollection">Смотреть стили <span aria-hidden="true">→</span></a>
+
+          <div class="wed-messenger-contact wed-messenger-contact--hero" role="group" aria-label="Связаться с Milovi Cake">
+            <span class="wed-messenger-caption">Выберите удобный способ связи</span>
+            <div class="wed-contact-links">
+<a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BE%D0%B1%D1%81%D1%83%D0%B4%D0%B8%D1%82%D1%8C%20%D1%81%D0%B2%D0%B0%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D0%B9%20%D1%82%D0%BE%D1%80%D1%82%20MILOVI%20CAKE.%20%D0%94%D0%B0%D1%82%D0%B0%3A%20___%3B%20%D0%BF%D0%BB%D0%BE%D1%89%D0%B0%D0%B4%D0%BA%D0%B0%3A%20___%3B%20%D0%B3%D0%BE%D1%81%D1%82%D0%B5%D0%B9%3A%20___." target="_blank" rel="noopener noreferrer" class="btn-hero-messenger btn-hero-wa btn-hero-ring" aria-label="Написать в WhatsApp">
+            <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible" aria-hidden="true">
+              <path transform="translate(14,14) scale(0.833)" fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              <text class="hero-flat-text" font-family="Jost,sans-serif" font-size="9" fill="currentColor" opacity="0" text-anchor="middle" x="24" y="9.5" letter-spacing="0.5" font-weight="500">WhatsApp</text>
+            </svg>
+            <span class="wed-contact-brand-name" aria-hidden="true">WhatsApp</span>
+          </a>
+<a href="https://t.me/+79119038886" target="_blank" rel="noopener noreferrer" class="btn-hero-messenger btn-hero-tg btn-hero-ring" aria-label="Написать в Telegram">
+            <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible" aria-hidden="true">
+              <path transform="translate(14,14) scale(0.833)" fill="currentColor" d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+              <text class="hero-flat-text" font-family="Jost,sans-serif" font-size="9" fill="currentColor" opacity="0" text-anchor="middle" x="24" y="9.5" letter-spacing="0.5" font-weight="500">Telegram</text>
+            </svg>
+            <span class="wed-contact-brand-name" aria-hidden="true">Telegram</span>
+          </a>
+<a href="https://max.ru/MiloviCake" target="_blank" rel="noopener noreferrer" class="btn-hero-messenger btn-hero-max btn-hero-ring" aria-label="Написать в MAX">
+            <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible" aria-hidden="true">
+              <g transform="translate(24 24) scale(0.834) translate(-24.7 -24.1) translate(6 3.5) scale(0.27)"><g transform="translate(0,151) scale(0.1,-0.1)" fill="currentColor"><path d="M635 1183 c-113 -15 -227 -81 -295 -172 -94 -125 -112 -270 -61 -487 17 -72 31 -147 31 -166 0 -19 5 -39 12 -46 26 -26 111 -7 161 36 15 14 22 13 70 -14 48 -27 60 -29 153 -29 96 0 103 2 177 38 183 90 282 277 249 468 -42 244 -255 404 -497 372z m126 -225 c52 -15 117 -73 140 -122 11 -24 19 -64 19 -96 0 -154 -164 -262 -310 -204 -38 15 -42 15 -60 -1 -53 -48 -84 20 -78 170 3 77 9 109 25 140 54 103 155 146 264 113z"/></g></g>
+              <text class="hero-flat-text" font-family="Jost,sans-serif" font-size="9" fill="currentColor" opacity="0" text-anchor="middle" x="24" y="9.5" letter-spacing="0.5" font-weight="500">MAX</text>
+            </svg>
+            <span class="wed-contact-brand-name" aria-hidden="true">MAX</span>
+          </a>
+</div>
+          </div>
           <div class="wed-meta">Санкт-Петербург и область · Доставка к площадке · От&nbsp;3&nbsp;000&nbsp;₽/кг</div>
         </div>
       </div></div>
@@ -377,16 +1023,22 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
           </figure>
           <figure class="wed-proof-process">
             <div class="wed-proof-video-frame">
-              <video controls preload="none" loading="lazy" playsinline poster="/img/gallery/video-12-wedding-heart-poster.webp" width="720" height="1282" aria-label="Видео: Виктория завершает оформление свадебного торта малиной">
-                <source src="/img/gallery/videos/video-12-wedding-heart.webm" type="video/webm">
+              <video controls preload="none" loading="lazy" playsinline muted loop poster="/img/gallery/video-12-wedding-heart-poster.webp" width="720" height="1282" aria-label="Видео: Виктория завершает оформление свадебного торта малиной">
                 <source src="/img/gallery/videos/video-12-wedding-heart.mp4" type="video/mp4">
+                <source src="/img/gallery/videos/video-12-wedding-heart.webm" type="video/webm">
                 <track kind="captions" src="/svadebnye-torty/video-12-wedding-heart.ru.vtt" srclang="ru" label="Русский">
                 <a href="/img/gallery/videos/video-12-wedding-heart.mp4">Смотреть видео оформления торта</a>
               </video>
-              <button type="button" class="lp-media-play wed-proof-video-play" hidden>
-                <span class="wed-proof-play-icon" aria-hidden="true">▶</span>
-                <span>Смотреть процесс<small>10 секунд</small></span>
-              </button>
+              <div class="wed-clip-controls" role="group" aria-label="Управление видео" hidden>
+                <button type="button" class="wed-clip-control wed-clip-toggle" aria-label="Воспроизвести" aria-pressed="false" title="Воспроизвести">
+                  <svg class="wed-clip-svg wed-clip-icon-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5.5 19 12 8 18.5Z"/></svg>
+                  <svg class="wed-clip-svg wed-clip-icon-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg>
+                </button>
+                <button type="button" class="wed-clip-control wed-clip-sound" aria-label="Включить звук" aria-pressed="false" title="Включить звук">
+                  <svg class="wed-clip-svg wed-clip-icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5ZM16 9l5 6M21 9l-5 6"/></svg>
+                  <svg class="wed-clip-svg wed-clip-icon-sound" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5ZM15 9c1.7 1.4 1.7 4.6 0 6M18 6c3.2 2.8 3.2 9.2 0 12"/></svg>
+                </button>
+              </div>
             </div>
             <figcaption class="wed-proof-caption">
               <span class="wed-proof-number">02 / Реальный процесс</span>
@@ -395,7 +1047,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
             </figcaption>
           </figure>
         </div>
-        <p class="wed-proof-note">На фото и в видео — разные торты. Ниже — <a href="#wedCollection">визуализации возможных стилей</a>, а не фотографии выполненных заказов.</p>
+        <p class="wed-proof-note">На фото и в видео — разные торты. Ниже — визуализации возможных стилей, а не фотографии выполненных заказов.</p>
       </div>
     </section>
 
@@ -407,42 +1059,42 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
         </div>
         <div class="wed-collection-grid">
           <article class="wed-collection-card">
-            <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BE%D0%B1%D1%81%D1%83%D0%B4%D0%B8%D1%82%D1%8C%20%D1%81%D0%B2%D0%B0%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D0%B9%20%D1%82%D0%BE%D1%80%D1%82%20%D0%B2%20%D1%81%D1%82%D0%B8%D0%BB%D0%B5%20Pure%20Ivory.%20%D0%94%D0%B0%D1%82%D0%B0%3A%20___%2C%20%D0%B3%D0%BE%D1%81%D1%82%D0%B5%D0%B9%3A%20___.">
-              <span class="wed-collection-photo"><picture><source type="image/avif" srcset="/img/wedding-style-pure-ivory-sm.avif 480w, /img/wedding-style-pure-ivory.avif 720w" sizes="(max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px"><img src="/img/wedding-style-pure-ivory.webp" srcset="/img/wedding-style-pure-ivory-sm.webp 480w, /img/wedding-style-pure-ivory.webp 720w" sizes="(max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px" alt="Визуализация стиля: камерный айвори торт с цветком" width="720" height="964" loading="lazy" decoding="async" fetchpriority="low"/></picture></span>
+            <a href="#wedBrief" data-wed-style="Pure Ivory">
+              <span class="wed-collection-photo"><picture><source type="image/avif" srcset="/img/wedding-style-pure-ivory-sm.avif 480w, /img/wedding-style-pure-ivory.avif 720w" sizes="(max-width: 370px) calc(100vw - 40px), (max-width: 375px) calc(100vw - 48px), (max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px"><img src="/img/wedding-style-pure-ivory.webp" srcset="/img/wedding-style-pure-ivory-sm.webp 480w, /img/wedding-style-pure-ivory.webp 720w" sizes="(max-width: 370px) calc(100vw - 40px), (max-width: 375px) calc(100vw - 48px), (max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px" alt="Визуализация стиля: камерный айвори торт с цветком" width="720" height="964" loading="lazy" decoding="async" fetchpriority="low"/></picture></span>
               <span class="wed-collection-index">01 · визуализация стиля</span>
               <h3 class="wed-collection-title">Pure Ivory<span aria-hidden="true">↗</span></h3>
               <span class="wed-collection-desc">Лаконичная элегантность в чистых формах.</span>
             </a>
           </article>
           <article class="wed-collection-card">
-            <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BE%D0%B1%D1%81%D1%83%D0%B4%D0%B8%D1%82%D1%8C%20%D1%81%D0%B2%D0%B0%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D0%B9%20%D1%82%D0%BE%D1%80%D1%82%20%D0%B2%20%D1%81%D1%82%D0%B8%D0%BB%D0%B5%20Botanical%20Romance.%20%D0%94%D0%B0%D1%82%D0%B0%3A%20___%2C%20%D0%B3%D0%BE%D1%81%D1%82%D0%B5%D0%B9%3A%20___.">
-              <span class="wed-collection-photo"><picture><source type="image/avif" srcset="/img/wedding-style-botanical-romance-sm.avif 480w, /img/wedding-style-botanical-romance.avif 720w" sizes="(max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px"><img src="/img/wedding-style-botanical-romance.webp" srcset="/img/wedding-style-botanical-romance-sm.webp 480w, /img/wedding-style-botanical-romance.webp 720w" sizes="(max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px" alt="Визуализация стиля: двухъярусный торт с цветами и розой" width="720" height="964" loading="lazy" decoding="async" fetchpriority="low"/></picture></span>
+            <a href="#wedBrief" data-wed-style="Botanical Romance">
+              <span class="wed-collection-photo"><picture><source type="image/avif" srcset="/img/wedding-style-botanical-romance-sm.avif 480w, /img/wedding-style-botanical-romance.avif 720w" sizes="(max-width: 370px) calc(100vw - 40px), (max-width: 375px) calc(100vw - 48px), (max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px"><img src="/img/wedding-style-botanical-romance.webp" srcset="/img/wedding-style-botanical-romance-sm.webp 480w, /img/wedding-style-botanical-romance.webp 720w" sizes="(max-width: 370px) calc(100vw - 40px), (max-width: 375px) calc(100vw - 48px), (max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px" alt="Визуализация стиля: двухъярусный торт с цветами и розой" width="720" height="964" loading="lazy" decoding="async" fetchpriority="low"/></picture></span>
               <span class="wed-collection-index">02 · визуализация стиля</span>
               <h3 class="wed-collection-title">Botanical Romance<span aria-hidden="true">↗</span></h3>
               <span class="wed-collection-desc">Цветочная композиция, вдохновлённая природой.</span>
             </a>
           </article>
           <article class="wed-collection-card">
-            <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BE%D0%B1%D1%81%D1%83%D0%B4%D0%B8%D1%82%D1%8C%20%D1%81%D0%B2%D0%B0%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D0%B9%20%D1%82%D0%BE%D1%80%D1%82%20%D0%B2%20%D1%81%D1%82%D0%B8%D0%BB%D0%B5%20Modern%20Sculptural.%20%D0%94%D0%B0%D1%82%D0%B0%3A%20___%2C%20%D0%B3%D0%BE%D1%81%D1%82%D0%B5%D0%B9%3A%20___.">
-              <span class="wed-collection-photo"><picture><source type="image/avif" srcset="/img/wedding-style-modern-sculptural-sm.avif 480w, /img/wedding-style-modern-sculptural.avif 720w" sizes="(max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px"><img src="/img/wedding-style-modern-sculptural.webp" srcset="/img/wedding-style-modern-sculptural-sm.webp 480w, /img/wedding-style-modern-sculptural.webp 720w" sizes="(max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px" alt="Визуализация стиля: двухъярусный торт с рельефной фактурой" width="720" height="964" loading="lazy" decoding="async" fetchpriority="low"/></picture></span>
+            <a href="#wedBrief" data-wed-style="Modern Sculptural">
+              <span class="wed-collection-photo"><picture><source type="image/avif" srcset="/img/wedding-style-modern-sculptural-sm.avif 480w, /img/wedding-style-modern-sculptural.avif 720w" sizes="(max-width: 370px) calc(100vw - 40px), (max-width: 375px) calc(100vw - 48px), (max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px"><img src="/img/wedding-style-modern-sculptural.webp" srcset="/img/wedding-style-modern-sculptural-sm.webp 480w, /img/wedding-style-modern-sculptural.webp 720w" sizes="(max-width: 370px) calc(100vw - 40px), (max-width: 375px) calc(100vw - 48px), (max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px" alt="Визуализация стиля: двухъярусный торт с рельефной фактурой" width="720" height="964" loading="lazy" decoding="async" fetchpriority="low"/></picture></span>
               <span class="wed-collection-index">03 · визуализация стиля</span>
               <h3 class="wed-collection-title">Modern Sculptural<span aria-hidden="true">↗</span></h3>
               <span class="wed-collection-desc">Архитектурный силуэт и выразительная фактура.</span>
             </a>
           </article>
           <article class="wed-collection-card">
-            <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BE%D0%B1%D1%81%D1%83%D0%B4%D0%B8%D1%82%D1%8C%20%D1%81%D0%B2%D0%B0%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D0%B9%20%D1%82%D0%BE%D1%80%D1%82%20%D0%B2%20%D1%81%D1%82%D0%B8%D0%BB%D0%B5%20Golden%20Atelier.%20%D0%94%D0%B0%D1%82%D0%B0%3A%20___%2C%20%D0%B3%D0%BE%D1%81%D1%82%D0%B5%D0%B9%3A%20___.">
-              <span class="wed-collection-photo"><picture><source type="image/avif" srcset="/img/wedding-style-golden-atelier-sm.avif 480w, /img/wedding-style-golden-atelier.avif 720w" sizes="(max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px"><img src="/img/wedding-style-golden-atelier.webp" srcset="/img/wedding-style-golden-atelier-sm.webp 480w, /img/wedding-style-golden-atelier.webp 720w" sizes="(max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px" alt="Визуализация стиля: свадебный торт с золотыми линиями и белыми цветами" width="720" height="964" loading="lazy" decoding="async" fetchpriority="low"/></picture></span>
+            <a href="#wedBrief" data-wed-style="Golden Atelier">
+              <span class="wed-collection-photo"><picture><source type="image/avif" srcset="/img/wedding-style-golden-atelier-sm.avif 480w, /img/wedding-style-golden-atelier.avif 720w" sizes="(max-width: 370px) calc(100vw - 40px), (max-width: 375px) calc(100vw - 48px), (max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px"><img src="/img/wedding-style-golden-atelier.webp" srcset="/img/wedding-style-golden-atelier-sm.webp 480w, /img/wedding-style-golden-atelier.webp 720w" sizes="(max-width: 370px) calc(100vw - 40px), (max-width: 375px) calc(100vw - 48px), (max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px" alt="Визуализация стиля: свадебный торт с золотыми линиями и белыми цветами" width="720" height="964" loading="lazy" decoding="async" fetchpriority="low"/></picture></span>
               <span class="wed-collection-index">04 · визуализация стиля</span>
               <h3 class="wed-collection-title">Golden Atelier<span aria-hidden="true">↗</span></h3>
               <span class="wed-collection-desc">Благородные акценты и авторский декор.</span>
             </a>
           </article>
         </div>
-        <p class="wed-collection-note">Эти четыре образа — визуализации стиля, а не фотографии выполненных заказов. Нажмите на карточку, чтобы обсудить идею в WhatsApp. <a href="#mediaShowcaseTitle">Реальные работы и видео — выше ↑</a>.</p>
+        <p class="wed-collection-note">Эти четыре образа — визуализации стиля, а не фотографии выполненных заказов. Нажмите на понравившийся стиль — сохраним его для вашего брифа. <a class="wed-collection-backlink" href="#mediaShowcaseTitle">Смотреть реальные работы <span aria-hidden="true">↑</span></a></p>
         <div class="wed-collection-detail">
-          <picture><source type="image/avif" srcset="/img/wedding-style-pure-ivory-sm.avif 480w, /img/wedding-style-pure-ivory.avif 720w" sizes="(max-width: 370px) calc(100vw - 40px), (max-width: 500px) calc(100vw - 48px), (max-width: 860px) calc(50vw - 24px), (max-width: 1600px) calc(55vw - 60px), 760px"><img src="/img/wedding-style-pure-ivory.webp" srcset="/img/wedding-style-pure-ivory-sm.webp 480w, /img/wedding-style-pure-ivory.webp 720w" sizes="(max-width: 370px) calc(100vw - 40px), (max-width: 500px) calc(100vw - 48px), (max-width: 860px) calc(50vw - 24px), (max-width: 1600px) calc(55vw - 60px), 760px" alt="" width="720" height="964" loading="lazy" decoding="async"/></picture>
-          <div class="wed-collection-detail-copy"><span class="wed-collection-kicker">Внимание к деталям</span><h3>Детали, которые создают эмоции</h3><a href="#bridalRouteTitle">Как мы работаем <span aria-hidden="true">→</span></a></div>
+          <picture><source type="image/avif" srcset="/img/wedding-roulade-detail-sm.avif 800w, /img/wedding-roulade-detail.avif 1600w" sizes="(max-width: 500px) calc(100vw - 48px), (max-width: 860px) 50vw, 820px"><img src="/img/wedding-roulade-detail.webp" alt="Художественная визуализация двух меренговых рулетов с кремом, фисташкой и шоколадными украшениями на основе работ Milovi Cake" width="1600" height="900" loading="lazy" decoding="async"/></picture>
+          <div class="wed-collection-detail-copy"><span class="wed-collection-kicker">Визуализация</span><h3>Десерты, которые дополняют праздник</h3><a href="#wedStyles">Посмотреть десерты <span aria-hidden="true">→</span></a></div>
         </div>
       </div>
     </section>
@@ -464,18 +1116,59 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     <div class="bridal-step"><h3>Доставка</h3><p>Заранее обсуждаем время, адрес, условия приёмки и безопасную транспортировку торта.</p></div>
   </div>
 </section>
-<section class="lp-section" id="wedTasting" aria-labelledby="wedTastingTitle">
+<section class="lp-section wed-tasting-editorial" id="wedTasting" aria-labelledby="wedTastingTitle">
   <div class="lp-section-head">
-    <h2 id="wedTastingTitle">Дегустационный сет начинок</h2>
-    <p>Дегустационный сет начинок для свадебного торта можно обсудить по запросу. Состав, стоимость, сроки и возможность изготовления согласуем индивидуально. Сообщите об аллергии или пищевых ограничениях при обращении.</p>
-    <div class="lp-actions" style="justify-content:center"><a class="lp-btn lp-btn-primary" aria-label="Обсудить в WhatsApp: дегустация" href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BE%D0%B1%D1%81%D1%83%D0%B4%D0%B8%D1%82%D1%8C%20%D0%B4%D0%B5%D0%B3%D1%83%D1%81%D1%82%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%81%D0%B5%D1%82%20%D0%BD%D0%B0%D1%87%D0%B8%D0%BD%D0%BE%D0%BA%20%D0%B4%D0%BB%D1%8F%20%D1%81%D0%B2%D0%B0%D0%B4%D0%B5%D0%B1%D0%BD%D0%BE%D0%B3%D0%BE%20%D1%82%D0%BE%D1%80%D1%82%D0%B0.%20%D0%9F%D0%BE%D0%B4%D1%81%D0%BA%D0%B0%D0%B6%D0%B8%D1%82%D0%B5%2C%20%D0%BF%D0%BE%D0%B6%D0%B0%D0%BB%D1%83%D0%B9%D1%81%D1%82%D0%B0%2C%20%D0%B2%D0%B0%D1%80%D0%B8%D0%B0%D0%BD%D1%82%D1%8B%2C%20%D1%81%D1%82%D0%BE%D0%B8%D0%BC%D0%BE%D1%81%D1%82%D1%8C%20%D0%B8%20%D1%81%D1%80%D0%BE%D0%BA%D0%B8.%20%D0%94%D0%B0%D1%82%D0%B0%20%D1%81%D0%B2%D0%B0%D0%B4%D1%8C%D0%B1%D1%8B%3A%20___.">Обсудить в WhatsApp</a></div>
+    <span class="wed-brief-overline">Дополнительно к заказу</span>
+    <h2 id="wedTastingTitle">Дегустация начинок</h2>
+    <p>Дегустационный сет доступен по запросу: состав, стоимость, сроки и возможность изготовления согласуем индивидуально. Если хотите попробовать начинки перед свадьбой, сообщите об этом при обращении и заранее укажите аллергии и пищевые ограничения.</p>
+    <a class="wed-tasting-link" href="#wedBrief">Указать дегустацию в брифе <span aria-hidden="true">↗</span></a>
   </div>
 </section>
-<section class="bridal-callout" aria-label="Свадебная консультация">
+<section class="bridal-callout" id="wedBrief" aria-labelledby="wedBriefTitle">
   <div class="bridal-callout-inner">
-    <h2>Для свадебного торта нужен короткий бриф</h2>
-    <p>Напишите дату свадьбы, площадку, количество гостей, желаемую палитру и 2–3 референса. Покажем реальные работы и отдельно — визуализации стиля, чтобы вместе подобрать оформление для вашего торжества.</p>
-    <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BE%D0%B1%D1%81%D1%83%D0%B4%D0%B8%D1%82%D1%8C%20%D1%81%D0%B2%D0%B0%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D0%B9%20%D1%82%D0%BE%D1%80%D1%82.%0A%D0%94%D0%B0%D1%82%D0%B0%20%D1%81%D0%B2%D0%B0%D0%B4%D1%8C%D0%B1%D1%8B%3A%20___%0A%D0%9F%D0%BB%D0%BE%D1%89%D0%B0%D0%B4%D0%BA%D0%B0%3A%20___%0A%D0%93%D0%BE%D1%81%D1%82%D0%B5%D0%B9%3A%20___%0A%D0%9F%D0%B0%D0%BB%D0%B8%D1%82%D1%80%D0%B0%3A%20___%0A%D0%A0%D0%B5%D1%84%D0%B5%D1%80%D0%B5%D0%BD%D1%81%D1%8B%3A%20___">Отправить свадебный бриф</a>
+    <p class="wed-brief-overline">Личная консультация · Milovi Cake</p>
+    <h2 id="wedBriefTitle">Начнём с вашей истории</h2>
+    <p>Один короткий бриф поможет подобрать оформление, вес и начинку. Напишите нам дату свадьбы и площадку, примерное число гостей, палитру и 2–3 понравившихся примера.</p>
+    <p class="wed-brief-fields">Дата · Площадка · Гости · Палитра · Референсы</p>
+    <p class="wed-selected-style" id="wedSelectedStyle" role="status" aria-live="polite" hidden></p>
+    <div class="wed-messenger-contact wed-messenger-contact--final wed-brief-contact" role="group" aria-label="Связаться с Milovi Cake">
+            <span class="wed-messenger-caption">Выберите мессенджер</span>
+            <div class="wed-contact-links">
+<a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BE%D0%B1%D1%81%D1%83%D0%B4%D0%B8%D1%82%D1%8C%20%D1%81%D0%B2%D0%B0%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D0%B9%20%D1%82%D0%BE%D1%80%D1%82.%0A%D0%94%D0%B0%D1%82%D0%B0%20%D1%81%D0%B2%D0%B0%D0%B4%D1%8C%D0%B1%D1%8B%3A%20___%0A%D0%9F%D0%BB%D0%BE%D1%89%D0%B0%D0%B4%D0%BA%D0%B0%3A%20___%0A%D0%93%D0%BE%D1%81%D1%82%D0%B5%D0%B9%3A%20___%0A%D0%9F%D0%B0%D0%BB%D0%B8%D1%82%D1%80%D0%B0%3A%20___%0A%D0%A0%D0%B5%D1%84%D0%B5%D1%80%D0%B5%D0%BD%D1%81%D1%8B%3A%20___" target="_blank" rel="noopener noreferrer" class="btn-hero-messenger btn-hero-wa btn-hero-ring" aria-label="Написать в WhatsApp">
+            <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible" aria-hidden="true">
+              <path transform="translate(14,14) scale(0.833)" fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              <text class="hero-flat-text" font-family="Jost,sans-serif" font-size="9" fill="currentColor" opacity="0" text-anchor="middle" x="24" y="9.5" letter-spacing="0.5" font-weight="500">WhatsApp</text>
+            </svg>
+            <span class="wed-contact-brand-name" aria-hidden="true">WhatsApp</span>
+          </a>
+<a href="https://t.me/+79119038886" target="_blank" rel="noopener noreferrer" class="btn-hero-messenger btn-hero-tg btn-hero-ring" aria-label="Написать в Telegram">
+            <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible" aria-hidden="true">
+              <path transform="translate(14,14) scale(0.833)" fill="currentColor" d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+              <text class="hero-flat-text" font-family="Jost,sans-serif" font-size="9" fill="currentColor" opacity="0" text-anchor="middle" x="24" y="9.5" letter-spacing="0.5" font-weight="500">Telegram</text>
+            </svg>
+            <span class="wed-contact-brand-name" aria-hidden="true">Telegram</span>
+          </a>
+<a href="https://max.ru/MiloviCake" target="_blank" rel="noopener noreferrer" class="btn-hero-messenger btn-hero-max btn-hero-ring" aria-label="Написать в MAX">
+            <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible" aria-hidden="true">
+              <g transform="translate(24 24) scale(0.834) translate(-24.7 -24.1) translate(6 3.5) scale(0.27)"><g transform="translate(0,151) scale(0.1,-0.1)" fill="currentColor"><path d="M635 1183 c-113 -15 -227 -81 -295 -172 -94 -125 -112 -270 -61 -487 17 -72 31 -147 31 -166 0 -19 5 -39 12 -46 26 -26 111 -7 161 36 15 14 22 13 70 -14 48 -27 60 -29 153 -29 96 0 103 2 177 38 183 90 282 277 249 468 -42 244 -255 404 -497 372z m126 -225 c52 -15 117 -73 140 -122 11 -24 19 -64 19 -96 0 -154 -164 -262 -310 -204 -38 15 -42 15 -60 -1 -53 -48 -84 20 -78 170 3 77 9 109 25 140 54 103 155 146 264 113z"/></g></g>
+              <text class="hero-flat-text" font-family="Jost,sans-serif" font-size="9" fill="currentColor" opacity="0" text-anchor="middle" x="24" y="9.5" letter-spacing="0.5" font-weight="500">MAX</text>
+            </svg>
+            <span class="wed-contact-brand-name" aria-hidden="true">MAX</span>
+          </a>
+</div>
+          </div>
+    <div class="wed-brief-export" id="wedBriefExport" hidden aria-labelledby="wedBriefExportTitle">
+  <h3 id="wedBriefExportTitle">Заявка для мессенджера</h3>
+  <p class="wed-brief-export-intro">Сохраните выбранные детали: скопируйте текст заявки и затем откройте нужный чат.</p>
+  <label for="wedBriefExportText">Текст заявки</label>
+  <textarea id="wedBriefExportText" readonly rows="7"></textarea>
+  <div class="wed-brief-export-actions">
+    <button type="button" id="wedBriefCopy">Скопировать текст</button>
+    <a id="wedBriefOpen" href="https://t.me/+79119038886" target="_blank" rel="noopener noreferrer">Открыть Telegram</a>
+  </div>
+  <p id="wedBriefCopyStatus" class="wed-brief-export-status" role="status" aria-live="polite"></p>
+</div>
+<p class="wed-brief-helper">Нужна дегустация? Упомяните это в сообщении — обсудим возможность отдельно.</p>
   </div>
 </section>
 
@@ -490,20 +1183,26 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
           </div>
         </article>
         <article class="lp-card">
-          <picture><source type="image/avif" srcset="/img/wedding-style-golden-atelier.avif"><img src="/img/wedding-style-golden-atelier.webp" alt="Визуализация стиля: многоярусный свадебный торт с золотыми линиями" width="720" height="964" loading="lazy" decoding="async"/></picture>
+          <picture>
+            <source type="image/avif" srcset="/img/wedding-superhero-couple-sm.avif 480w, /img/wedding-superhero-couple.avif 720w" sizes="(max-width: 700px) calc(100vw - 48px), (max-width: 1100px) 33vw, 352px">
+            <img src="/img/wedding-superhero-couple.webp" alt="Двухъярусный сине-золотой торт с фотографиями пары в супергеройских костюмах на художественном свадебном фоне" width="720" height="960" loading="lazy" decoding="async"/>
+          </picture>
           <div class="lp-card-body">
-            <span class="wed-collection-kicker">Визуализация стиля</span>
-            <h3>Многоярусный торт</h3>
-            <p>Праздничная композиция с несколькими ярусами, цветами и фактурой.</p>
+            <span class="wed-collection-kicker">По фото реального торта</span>
+            <h3>Многоярусный торт с характером</h3>
+            <p>Даже супергерои могут устроить свадьбу с юмором. Торт настоящий, свадебный фон на фото — художественная визуализация.</p>
             <strong>индивидуальный расчёт</strong>
           </div>
         </article>
         <article class="lp-card">
-          <picture><source type="image/avif" srcset="/img/wedding-table.avif"><img src="/img/wedding-table.webp" alt="Визуализация стиля: десерты к свадьбе" width="640" height="480" loading="lazy" decoding="async"/></picture>
+          <picture>
+            <source type="image/avif" srcset="/img/wedding-cupcakes-styled-sm.avif 480w, /img/wedding-cupcakes-styled.avif 720w" sizes="(max-width: 700px) calc(100vw - 48px), (max-width: 1100px) 33vw, 352px">
+            <img src="/img/wedding-cupcakes-styled.webp" alt="Художественная свадебная визуализация коробки с капкейками в розовых, бордовых и кремовых оттенках" width="720" height="960" loading="lazy" decoding="async"/>
+          </picture>
           <div class="lp-card-body">
-            <span class="wed-collection-kicker">Визуализация стиля</span>
+            <span class="wed-collection-kicker">Визуализация оформления</span>
             <h3>Десерты к свадьбе</h3>
-            <p>Капкейки и пирожные Павлова как дополнение к основному торту. Минимальный заказ — 2 пирожных или 6 капкейков одного вкуса.</p>
+            <p>Капкейки (от 6 шт. одного вкуса), пирожные «Павлова» (от 2 шт.) и меренговые рулеты (2 500 ₽). На изображении — художественный вариант свадебной подачи капкейков.</p>
             <strong>от 350 ₽/шт.</strong>
           </div>
         </article></div></section>
@@ -526,7 +1225,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
         <div class="lp-note"><h3>Доставка к площадке</h3><p>Доставку в ресторан или банкетный зал Санкт-Петербурга и пригородов обсуждаем с учётом адреса и времени торжества.</p></div>
       </div>
     </section>
-    <div class="lp-related" aria-label="Связанные разделы"><a href="/zakazat-tort-spb/">Заказать торт СПб</a><a href="/tort-na-den-rozhdeniya/">День рождения</a><a href="/tort-s-dostavkoy/">Торт с доставкой</a><a href="/bento-torty/">Бенто-торты</a><a href="/detskie-torty/">Детские торты</a><a href="/meringue-roll/">Меренговый рулет</a><a href="/gallery/">Галерея работ</a><a href="/prigorody/">Доставка в пригороды</a></div>
+    <div class="lp-related" role="navigation" aria-label="Связанные разделы"><a href="/zakazat-tort-spb/">Заказать торт СПб</a><a href="/tort-na-den-rozhdeniya/">День рождения</a><a href="/tort-s-dostavkoy/">Торт с доставкой</a><a href="/bento-torty/">Бенто-торты</a><a href="/detskie-torty/">Детские торты</a><a href="/meringue-roll/">Меренговый рулет</a><a href="/gallery/">Галерея работ</a><a href="/prigorody/">Доставка в пригороды</a></div>
     <section class="lp-section"><div class="lp-section-head"><h2>Частые вопросы</h2><p>Ответы на вопросы, которые чаще всего задают перед заказом.</p></div><div class="lp-faq">
         <details class="lp-faq-item">
           <summary>За сколько времени заказывать свадебный торт?</summary>
@@ -552,8 +1251,10 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
           <summary>Что нужно прислать для расчёта свадебного торта?</summary>
           <p>Нужны дата свадьбы, площадка, примерное количество гостей, палитра и 2–3 референса. По ним можно подобрать вес, стиль, начинку и доставку.</p>
         </details></div></section>
-    <section class="lp-final"><h2>Обсудим ваш свадебный торт?</h2><p>Расскажите о дате свадьбы, площадке и числе гостей. Подскажем вес и начинку, подготовим индивидуальный расчёт.</p><div class="lp-actions" style="justify-content:center"><a class="lp-btn lp-btn-primary" href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BE%D0%B1%D1%81%D1%83%D0%B4%D0%B8%D1%82%D1%8C%20%D1%81%D0%B2%D0%B0%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D0%B9%20%D1%82%D0%BE%D1%80%D1%82.%0A%D0%94%D0%B0%D1%82%D0%B0%20%D1%81%D0%B2%D0%B0%D0%B4%D1%8C%D0%B1%D1%8B%3A%20___%0A%D0%9F%D0%BB%D0%BE%D1%89%D0%B0%D0%B4%D0%BA%D0%B0%3A%20___%0A%D0%93%D0%BE%D1%81%D1%82%D0%B5%D0%B9%3A%20___%0A%D0%9F%D0%B0%D0%BB%D0%B8%D1%82%D1%80%D0%B0%3A%20___%0A%D0%A0%D0%B5%D1%84%D0%B5%D1%80%D0%B5%D0%BD%D1%81%D1%8B%3A%20___">Отправить бриф</a><a class="lp-btn lp-btn-ghost" href="tel:+79119038886">Позвонить</a></div></section>
+    <section class="lp-final"><h2>Создаём торты с вниманием к деталям</h2><p>Посмотрите документы об обучении кондитера, изучите другие работы и выберите удобное время для разговора о заказе.</p><div class="lp-actions" style="justify-content:center"><a class="lp-btn lp-btn-primary" href="/certificates/">Посмотреть сертификаты</a><a class="lp-btn lp-btn-ghost" href="tel:+79119038886">Позвонить</a></div>
+          </section>
 
+    </main>
     <footer class="landing-footer" aria-label="Контакты Milovi Cake">
       <div class="landing-footer-grid">
         <div>
@@ -572,33 +1273,114 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
           <a href="/certificates/">Сертификаты</a>
         </nav>
       </div>
+      <aside class="wed-school-project" aria-label="Образовательный проект Milovi Cake">
+        <div class="wed-school-project-copy">
+          <span class="wed-school-project-kicker">Наш образовательный проект</span>
+          <p>Milovi School — бесплатная библиотека о французском кондитерском искусстве: техники, рецепты и разборы работ известных шефов. Это отдельный информационный проект, не каталог заказов.</p>
+        </div>
+        <a class="wed-school-project-link" href="https://french.milovicake.ru/" target="_blank" rel="noopener noreferrer" aria-label="Milovi School — Pâtisserie Russe, образовательная библиотека (откроется в новой вкладке)">
+          <span>Milovi School <small>Pâtisserie Russe</small></span>
+          <span aria-hidden="true">↗</span>
+        </a>
+      </aside>
     </footer>
-  </main>
 </div>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
   <script>
-    (function () {
-      'use strict';
-      var frame = document.querySelector('.wed-proof-video-frame');
-      if (!frame) return;
-      var video = frame.querySelector('video');
-      var button = frame.querySelector('.wed-proof-video-play');
-      if (!video.canPlayType('video/webm') && !video.canPlayType('video/mp4')) return;
-      // Native controls remain available if JavaScript is disabled.
-      video.controls = false;
-      button.hidden = false;
-      function playVideo() {
-        if (button.hidden) return;
-        video.controls = true;
-        video.tabIndex = 0;
-        button.hidden = true;
-        video.focus({ preventScroll: true });
-        var attempt = video.play();
-        if (attempt && attempt.catch) attempt.catch(function () {});
+  (function () {
+    'use strict';
+    var frame = document.querySelector('.wed-proof-video-frame');
+    if (!frame) return;
+    var video = frame.querySelector('video');
+    var panel = frame.querySelector('.wed-clip-controls');
+    if (!video || !panel || (!video.canPlayType('video/webm') && !video.canPlayType('video/mp4'))) return;
+    var playButton = panel.querySelector('.wed-clip-toggle');
+    var soundButton = panel.querySelector('.wed-clip-sound');
+    var reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    var inView = false;
+    var userPaused = false;
+    // Native controls are retained by HTML when scripts are disabled.
+    video.controls = false;
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+    panel.hidden = false;
+    frame.dataset.muted = 'true';
+    function sync() {
+      var playing = !video.paused && !video.ended;
+      frame.dataset.playing = String(playing);
+      frame.dataset.muted = String(video.muted);
+      playButton.setAttribute('aria-pressed', String(playing));
+      playButton.setAttribute('aria-label', playing ? 'Пауза' : 'Воспроизвести');
+      playButton.title = playing ? 'Пауза' : 'Воспроизвести';
+      soundButton.setAttribute('aria-pressed', String(!video.muted));
+      soundButton.setAttribute('aria-label', video.muted ? 'Включить звук' : 'Выключить звук');
+      soundButton.title = video.muted ? 'Включить звук' : 'Выключить звук';
+    }
+    function attemptPlay(manual) {
+      if (!manual && (userPaused || !inView || document.hidden || reduced.matches)) return;
+      var result = video.play();
+      if (result && typeof result.catch === 'function') result.catch(sync);
+      sync();
+    }
+    function togglePlay() {
+      if (video.paused) {
+        userPaused = false;
+        attemptPlay(true);
+      } else {
+        userPaused = true;
+        video.pause();
       }
-      button.addEventListener('click', playVideo);
-      video.addEventListener('click', playVideo);
-    })();
+      sync();
+    }
+    playButton.addEventListener('click', togglePlay);
+    // Clicking the footage also pauses/resumes; keyboard users have the real buttons.
+    video.addEventListener('click', togglePlay);
+    soundButton.addEventListener('click', function () {
+      video.muted = !video.muted;
+      if (!video.muted && video.paused) {
+        userPaused = false;
+        attemptPlay(true);  // user gesture permits unmuted playback
+      }
+      sync();
+    });
+    ['playing','play','pause','volumechange','ended'].forEach(function (name) {
+      video.addEventListener(name, sync);
+    });
+    video.addEventListener('error', function () {
+      video.controls = true; // codec failure: allow native fallback
+      panel.hidden = true;
+    });
+    function visibility() {
+      if (document.hidden) {
+        video.pause();
+        if (!video.muted) video.muted = true; // no unexpected audible resume
+      } else if (inView) attemptPlay(false);
+    }
+    document.addEventListener('visibilitychange', visibility);
+    if ('IntersectionObserver' in window) {
+      var observer = new IntersectionObserver(function (entries) {
+        inView = entries.some(function (entry) { return entry.isIntersecting && entry.intersectionRatio >= .25; });
+        if (inView) attemptPlay(false);
+        else {
+          // Never restart audible playback merely because the user scrolls back.
+          if (!video.paused) video.pause();
+          if (!video.muted) video.muted = true;
+        }
+      }, {threshold:[0,.25,.55]});
+      observer.observe(frame);
+    } else {
+      inView = true;
+      attemptPlay(false);
+    }
+    reduced.addEventListener('change', function () {
+      if (reduced.matches) {
+        if (!video.paused) video.pause();
+        if (!video.muted) video.muted = true;
+      } else if (inView) attemptPlay(false);
+    });
+    sync();
+  })();
   </script>
   <script>
     (function () {
@@ -625,8 +1407,33 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
         }) : 'дата пока не выбрана';
         var text = 'Здравствуйте! Хочу проверить дату свадьбы в Санкт-Петербурге. Дата свадьбы: ' + label +
           '. Площадка: ___, гостей: ___. Подскажите, свободна ли дата и какой формат торта подойдёт?';
-        var handoff = window.open('https://wa.me/79119038886?text=' + encodeURIComponent(text), '_blank', 'noopener,noreferrer');
-        if (handoff && window.MiloviConsent) window.MiloviConsent.leadHandoff('whatsapp', 'wedding_date');
+        if (window.MiloviWeddingBrief && typeof window.MiloviWeddingBrief.message === 'function') {
+          text = window.MiloviWeddingBrief.message('date');
+        }
+        // A popup can be blocked. Count a lead only when a browsing context opened.
+        // Sever window.opener synchronously before the external page can load.
+        var url = 'https://wa.me/79119038886?text=' + encodeURIComponent(text);
+        var fallback = document.getElementById('wedDateFallback');
+        var hint = document.getElementById('wedDateHint');
+        var popup = null;
+        try { popup = window.open(url, '_blank'); } catch (_) {}
+        if (popup) {
+          try { popup.opener = null; } catch (_) {}
+          if (fallback) fallback.hidden = true;
+          if (hint) hint.textContent = 'Откроется WhatsApp. Дату подставим, если выберете; площадку и число гостей укажете в сообщении.';
+          if (window.MiloviConsent && typeof window.MiloviConsent.leadHandoff === 'function') {
+            window.MiloviConsent.leadHandoff('whatsapp', 'wedding_date');
+          }
+        } else {
+          if (fallback) { fallback.href = url; fallback.hidden = false; }
+          if (hint) hint.textContent = 'Браузер заблокировал открытие WhatsApp. Нажмите ссылку ниже, чтобы продолжить.';
+        }
+      });
+      input.addEventListener('change', function () {
+        var fallback = document.getElementById('wedDateFallback');
+        var hint = document.getElementById('wedDateHint');
+        if (fallback) fallback.hidden = true;
+        if (hint) hint.textContent = 'Откроется WhatsApp. Дату подставим, если выберете; площадку и число гостей укажете в сообщении.';
       });
       input.addEventListener('focus', refreshMinDate);
       document.addEventListener('visibilitychange', function () {
@@ -657,6 +1464,291 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
       update();
     })();
   </script>
+<script>
+/* Mobile wedding enquiry: unobtrusive CTA, only on long-page scroll. */
+(function(){
+ 'use strict';
+ var bar=document.querySelector('.wed-mobile-sticky');
+ var form=document.getElementById('wedDateForm');
+ var footer=document.querySelector('.landing-footer');
+ var menu=document.querySelector('.wed-mobile-menu');
+ if(!bar||!form||!footer)return;
+ var media=window.matchMedia('(max-width:600px)');
+ var controls=document.querySelectorAll(
+   '.wed-wrap main a, .wed-wrap main button, .wed-wrap main input, .wed-wrap main select, '+
+   '.wed-wrap main textarea, .wed-wrap main summary, .wed-wrap main h1, .wed-wrap main h2, '+
+   '.wed-wrap main h3, .wed-wrap main p, .wed-wrap main figcaption, '+
+   '.wed-wrap main .wed-proof-cake-visual, .wed-wrap main .wed-proof-video-frame, '+
+   '.wed-wrap main .wed-collection-photo, .wed-wrap main .bridal-step, .wed-wrap main .bridal-mini, '+
+   '.wed-wrap main picture, .wed-wrap main img, .wed-wrap main video'
+ );
+ var pending=false;
+ function controlBehindDock(){
+   // Keep this optional dock off controls, all photographed media and editorial text.
+   // Estimate the dock's hit rectangle even while [hidden] keeps it display:none.
+   var bottomOffset=parseFloat(getComputedStyle(bar).bottom)||12;
+   var dockHeight=Math.max(55,parseFloat(getComputedStyle(bar).height)||55);
+   var top=innerHeight-bottomOffset-dockHeight-6;
+   var bottomEdge=innerHeight-bottomOffset+6;
+   for(var i=0;i<controls.length;i++){
+     var el=controls[i];
+     if(el===bar||bar.contains(el)||el.disabled)continue;
+     var r=el.getBoundingClientRect();
+     if(r.bottom<=top||r.top>=bottomEdge||r.right<=17||r.left>=innerWidth-17)continue;
+     var style=getComputedStyle(el);
+     if(style.display!=='none'&&style.visibility!=='hidden'&&style.pointerEvents!=='none')return true;
+   }
+   return false;
+ }
+ function refresh(){
+   pending=false;
+   var rect=form.getBoundingClientRect();
+   var bottom=footer.getBoundingClientRect();
+   var formVisible=rect.top<innerHeight*.92&&rect.bottom>85;
+   var footerVisible=bottom.top<innerHeight;
+   var focus=document.activeElement;
+   var typing=focus&&/^(INPUT|TEXTAREA|SELECT)$/.test(focus.tagName);
+   var keyboard=window.visualViewport&&window.visualViewport.height<innerHeight-120;
+   var consent=document.querySelector('.mc-consent-overlay.is-open');
+   var allowed=media.matches&&scrollY>Math.max(550,innerHeight*.8)&&!formVisible&&!footerVisible&&!typing&&!keyboard&&!consent&&!(menu&&menu.open)&&!document.hidden;
+   bar.hidden=!(allowed&&!controlBehindDock());
+ }
+ function schedule(){
+   if(pending)return;
+   pending=true;
+   requestAnimationFrame(refresh);
+ }
+ addEventListener('scroll',schedule,{passive:true});
+ addEventListener('resize',schedule);
+ document.addEventListener('visibilitychange',schedule);
+ document.addEventListener('focusin',schedule);
+ document.addEventListener('focusout',schedule);
+ if(window.visualViewport)window.visualViewport.addEventListener('resize',schedule);
+ if(menu)menu.addEventListener('toggle',schedule);
+ bar.addEventListener('click',function(){bar.hidden=true;});
+ refresh();
+})();
+</script>
 <script defer src="/js/consent-analytics.js"></script>
+<script>
+/* MILOVI CAKE wedding messenger labels — scoped reuse of the local desktop
+   agent r25 controller: enter 370 ms, leave 560 ms, cubic smoothstep,
+   glyph scales 1.36 / 1.44 and label font 6.5 → 10.4.
+   No circular textPath, no duplicate listeners, no new brand graphics. */
+(function(){
+  'use strict';
+  var reduced=matchMedia('(prefers-reduced-motion:reduce)');
+  var groups=document.querySelectorAll('.wed-wrap .wed-contact-links');
+  if (!groups.length) return;
+  var keys=['wa','tg','max'];
+  var clamp=function(x,a,b){return Math.max(a,Math.min(b,x))};
+  var easeFlow=function(t){return t*t*(3-2*t)};
+  var round=function(v){return Number(v.toFixed(3))};
+  for (var g=0;g<groups.length;g++) {
+    for (var i=0;i<keys.length;i++) {
+      var key=keys[i],link=groups[g].querySelector('a.btn-hero-'+key);
+      if (!link || link.dataset.mcMotionInit==='1') continue;
+      var svg=link.querySelector('svg'),flat=svg && svg.querySelector('.hero-flat-text');
+      var mark=svg && Array.from(svg.children).find(function(el){return /^(g|path)$/i.test(el.tagName)});
+      if (!flat || !mark) continue;
+      var wrap=document.createElementNS('http://www.w3.org/2000/svg','g');
+      wrap.setAttribute('class','mc-brand-glyph mc-brand-glyph--'+key);
+      mark.before(wrap);wrap.appendChild(mark);
+      link.dataset.mcMotionInit='1';
+      flat.style.setProperty('transition','none','important');
+      var state={link:link,flat:flat,value:0,raf:0,pointer:false,focus:false};
+      (function(s){
+        function draw() {
+          var p=clamp(s.value,0,1);
+          var opacity=clamp((p-.04)/.86,0,1);
+          var y=8-9.1*p;
+          var size=6.5+3.9*p;
+          s.flat.setAttribute('y',round(y));
+          s.flat.setAttribute('opacity',round(opacity));
+          s.flat.setAttribute('font-size',round(size));
+          s.flat.style.setProperty('opacity',String(round(opacity)),'important');
+          s.flat.style.setProperty('font-size',round(size)+'px','important');
+          s.flat.style.setProperty('transform','none','important');
+          s.link.style.setProperty('--mc-hover-progress',String(round(p)));
+        }
+        function seek(to) {
+          var target=to?1:0,from=s.value;
+          if(s.raf){cancelAnimationFrame(s.raf);s.raf=0}
+          if(Math.abs(target-from)<.001 || reduced.matches){s.value=target;draw();return}
+          var duration=(target?370:560)*Math.max(.4,Math.abs(from-target));
+          var started=performance.now();
+          function step(now) {
+            var t=clamp((now-started)/duration,0,1);
+            s.value=from+(target-from)*easeFlow(t);
+            draw();
+            if(t<1)s.raf=requestAnimationFrame(step);
+            else{s.raf=0;s.value=target;draw()}
+          }
+          s.raf=requestAnimationFrame(step);
+        }
+        function update(){seek(s.pointer||s.focus)}
+        s.link.addEventListener('pointerenter',function(e){if(e.pointerType==='touch')return;s.pointer=true;update()},{passive:true});
+        s.link.addEventListener('pointerleave',function(e){if(e.pointerType==='touch')return;s.pointer=false;update()},{passive:true});
+        s.link.addEventListener('focusin',function(){s.focus=true;update()});
+        s.link.addEventListener('focusout',function(){s.focus=false;update()});
+        s.link.addEventListener('pointercancel',function(){s.pointer=false;update()});
+        reduced.addEventListener('change',function(){if(reduced.matches)seek(s.pointer||s.focus)});
+        draw();
+      })(state);
+    }
+  }
+})();
+</script>
+
+
+<script id="wed-brief-style-selection">
+(function () {
+  'use strict';
+  var state = document.getElementById('wedSelectedStyle');
+  var channels = document.querySelector('.wed-brief-contact');
+  if (!state || !channels) return;
+  var whatsapp = channels.querySelector('a.btn-hero-wa');
+  var base = whatsapp ? new URL(whatsapp.href) : null;
+  var baseMessage = base ? (base.searchParams.get('text') || '') : '';
+  var tastingLink = document.querySelector('.wed-tasting-link');
+  var tastingHelp = document.querySelector('#wedBrief .wed-brief-helper');
+  var exportPanel = document.getElementById('wedBriefExport');
+  var exportTitle = document.getElementById('wedBriefExportTitle');
+  var exportText = document.getElementById('wedBriefExportText');
+  var copyButton = document.getElementById('wedBriefCopy');
+  var copyStatus = document.getElementById('wedBriefCopyStatus');
+  var openLink = document.getElementById('wedBriefOpen');
+  var selectedStyle = '';
+  var tastingRequested = false;
+  var destination = '';
+  var dateInput = document.getElementById('wedDate');
+  var currentMessage = '';
+  var generation = 0;
+  var copyAttempt = 0;
+  var copyInFlight = false;
+
+  function formattedDate() {
+    if (!dateInput || !dateInput.value || !dateInput.checkValidity()) return '';
+    return new Date(dateInput.value + 'T12:00:00').toLocaleDateString('ru-RU', {
+      day: 'numeric', month: 'long', year: 'numeric', weekday: 'long'
+    });
+  }
+
+  function message(purpose) {
+    var date = formattedDate();
+    var text = purpose === 'date'
+      ? 'Здравствуйте! Хочу проверить дату свадьбы в Санкт-Петербурге. Дата свадьбы: ' +
+        (date || 'дата пока не выбрана') +
+        '. Площадка: ___, гостей: ___. Подскажите, свободна ли дата и какой формат торта подойдёт?'
+      : baseMessage.replace('Дата свадьбы: ___', 'Дата свадьбы: ' + (date || '___'));
+    if (selectedStyle) text += '\nПредпочтительный стиль: ' + selectedStyle + '.';
+    if (tastingRequested) text += '\nИнтересует дегустационный сет начинок: да.';
+    return text;
+  }
+
+  function updateBrief() {
+    if (selectedStyle) {
+      state.hidden = false;
+      state.textContent = 'Выбранное оформление: ' + selectedStyle + '.';
+    }
+    if (tastingRequested && tastingHelp) {
+      tastingHelp.textContent = 'Интерес к дегустации добавлен в сообщение. Возможность, сроки и стоимость согласуем отдельно.';
+    }
+    var text = message();
+    if (text !== currentMessage) {
+      if (currentMessage && exportPanel && !exportPanel.hidden && copyStatus) {
+        copyStatus.textContent = 'Заявка изменена — скопируйте обновлённый текст перед переходом.';
+      }
+      currentMessage = text;
+      generation += 1;
+    }
+    if (exportText) exportText.value = text;
+    if (!base) return;
+    var next = new URL(base.href);
+    next.searchParams.set('text', text);
+    whatsapp.href = next.href;
+  }
+
+  document.querySelectorAll('.wed-collection-card a[data-wed-style]').forEach(function (card) {
+    card.addEventListener('click', function () {
+      var selected = card.getAttribute('data-wed-style');
+      if (!selected) return;
+      selectedStyle = selected;
+      updateBrief();
+    });
+  });
+
+  if (tastingLink) tastingLink.addEventListener('click', function () {
+    tastingRequested = true;
+    updateBrief();
+  });
+
+  if (dateInput) {
+    dateInput.addEventListener('input', updateBrief);
+    dateInput.addEventListener('change', updateBrief);
+  }
+  window.MiloviWeddingBrief = {message: message, update: updateBrief};
+
+  // A Telegram/MAX chat link does not reliably preserve a custom draft. Do not
+  // claim copy success without a completed clipboard write or invent prefill URLs.
+  ['tg','max'].forEach(function (channel) {
+    var link = channels.querySelector('a.btn-hero-' + channel);
+    if (!link || !exportPanel || !exportText || !openLink) return;
+    link.addEventListener('click', function (event) {
+      if (!selectedStyle && !tastingRequested && !formattedDate()) return;
+      event.preventDefault();
+      destination = channel === 'tg' ? 'Telegram' : 'MAX';
+      exportTitle.textContent = 'Заявка для ' + destination;
+      openLink.href = link.href;
+      openLink.textContent = 'Открыть ' + destination;
+      exportPanel.hidden = false;
+      copyStatus.textContent = '';
+      updateBrief();
+      exportPanel.scrollIntoView({block:'nearest',behavior:'instant'});
+      copyButton.focus({preventScroll:true});
+    });
+  });
+
+  if (copyButton && exportText && copyStatus) copyButton.addEventListener('click', async function () {
+    // Clipboard writes are not cancellable. Do not run competing writes whose
+    // completions could reorder the actual clipboard content.
+    if (copyInFlight) {
+      copyStatus.textContent = 'Копирование ещё выполняется. Повторите после завершения.';
+      return;
+    }
+    copyInFlight = true;
+    var text = exportText.value;
+    var copyVersion = generation;
+    var thisAttempt = ++copyAttempt;
+    var copyDestination = destination;
+    try {
+      if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
+        throw new Error('clipboard unavailable');
+      }
+      await navigator.clipboard.writeText(text);
+      if (thisAttempt !== copyAttempt) return;
+      if (copyVersion !== generation || text !== exportText.value) {
+        copyStatus.textContent = 'Заявка изменилась во время копирования — скопируйте обновлённый текст.';
+        return;
+      }
+      copyStatus.textContent = 'Текст скопирован. Теперь откройте ' + (copyDestination || 'мессенджер') + '.';
+    } catch (error) {
+      if (thisAttempt !== copyAttempt) return;
+      if (copyVersion !== generation || text !== exportText.value) {
+        copyStatus.textContent = 'Заявка изменилась — скопируйте обновлённый текст.';
+        return;
+      }
+      copyStatus.textContent = 'Автоматическое копирование недоступно. Выделите текст и скопируйте вручную перед переходом.';
+      exportText.focus();
+      exportText.select();
+    } finally {
+      if (thisAttempt === copyAttempt) copyInFlight = false;
+    }
+  });
+
+  updateBrief();
+})();
+</script>
+
 </body>
 </html>
