@@ -1566,19 +1566,42 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
   var whatsapp = channels.querySelector('a.btn-hero-wa');
   var base = whatsapp ? new URL(whatsapp.href) : null;
   var baseMessage = base ? (base.searchParams.get('text') || '') : '';
+  var tastingLink = document.querySelector('.wed-tasting-link');
+  var tastingHelp = document.querySelector('#wedBrief .wed-brief-helper');
+  var selectedStyle = '';
+  var tastingRequested = false;
+
+  function updateBrief() {
+    if (selectedStyle) {
+      state.hidden = false;
+      state.textContent = 'Выбранное оформление: ' + selectedStyle + '.';
+    }
+    if (tastingRequested && tastingHelp) {
+      tastingHelp.textContent = 'Интерес к дегустации добавлен в сообщение. Возможность, сроки и стоимость согласуем отдельно.';
+    }
+    if (!base) return;
+    var text = baseMessage;
+    if (selectedStyle) text += '\nПредпочтительный стиль: ' + selectedStyle + '.';
+    if (tastingRequested) text += '\nИнтересует дегустационный сет начинок: да.';
+    var next = new URL(base.href);
+    next.searchParams.set('text', text);
+    whatsapp.href = next.href;
+  }
+
   document.querySelectorAll('.wed-collection-card a[data-wed-style]').forEach(function (card) {
     card.addEventListener('click', function () {
       var selected = card.getAttribute('data-wed-style');
       if (!selected) return;
-      state.hidden = false;
-      state.textContent = 'Выбранное оформление: ' + selected + '.';
-      if (base) {
-        var next = new URL(base.href);
-        next.searchParams.set('text', baseMessage + '\nПредпочтительный стиль: ' + selected + '.');
-        whatsapp.href = next.href;
-      }
+      selectedStyle = selected;
+      updateBrief();
     });
   });
+  if (tastingLink) {
+    tastingLink.addEventListener('click', function () {
+      tastingRequested = true;
+      updateBrief();
+    });
+  }
 })();
 </script>
 

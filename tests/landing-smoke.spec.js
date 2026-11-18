@@ -744,8 +744,9 @@ test.describe('premium media blocks', () => {
     await expect(page).toHaveURL(/#wedBrief$/);
     const brief=page.locator('#wedBrief');
     await expect(brief.locator('.wed-brief-contact a')).toHaveCount(3);
-    await expect(brief.locator('.wed-brief-helper')).toContainText('дегустация');
+    await expect(brief.locator('.wed-brief-helper')).toContainText('дегустации добавлен');
     const wa=new URL(await brief.locator('.btn-hero-wa').getAttribute('href'));
+    expect(wa.searchParams.get('text')).toContain('Интересует дегустационный сет начинок: да.');
     for(const term of ['Дата свадьбы:','Площадка:','Гостей:','Палитра:','Референсы:']){
       expect(wa.searchParams.get('text')).toContain(term);
     }
@@ -2122,6 +2123,15 @@ test('wedding consultation preserves selection and offers equal messenger choice
   const updated=new URL(await page.locator('#wedBrief .btn-hero-wa').getAttribute('href'));
   expect(updated.searchParams.get('text')).toContain('Предпочтительный стиль: Pure Ivory.');
   expect(updated.searchParams.get('text')).not.toContain('Modern Sculptural');
+  await page.locator('.wed-tasting-link').click();
+  const withTasting=new URL(await page.locator('#wedBrief .btn-hero-wa').getAttribute('href'));
+  expect(withTasting.searchParams.get('text')).toContain('Предпочтительный стиль: Pure Ivory.');
+  expect(withTasting.searchParams.get('text')).toContain('Интересует дегустационный сет начинок: да.');
+  await cards.nth(1).click();
+  const changedStyle=new URL(await page.locator('#wedBrief .btn-hero-wa').getAttribute('href'));
+  expect(changedStyle.searchParams.get('text')).toContain('Предпочтительный стиль: Botanical Romance.');
+  expect(changedStyle.searchParams.get('text')).not.toContain('Pure Ivory');
+  expect(changedStyle.searchParams.get('text').match(/Интересует дегустационный сет начинок: да\./g)).toHaveLength(1);
   await expect(page.locator('#wedBrief .wed-contact-links a')).toHaveCount(3);
   await expect(page.locator('#wedTasting .lp-btn-primary')).toHaveCount(0);
   await expect(page.locator('.lp-final .wed-contact-links')).toHaveCount(0);
