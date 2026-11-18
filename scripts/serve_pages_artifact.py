@@ -100,6 +100,12 @@ class ArtifactHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # noqa: N802 — имя задано базовым классом
         target = self._resolve()
         if target is None:
+            # Match the real Pages response: the themed 404.html is delivered
+            # with a genuine HTTP 404 status (never an index.html rewrite).
+            page404 = (self.root / '404.html').resolve()
+            if page404.is_relative_to(self.root) and page404.is_file():
+                return self._send(page404.read_bytes(), 'text/html; charset=utf-8',
+                                  404)
             return self._send(b'not found', 'text/plain; charset=utf-8',
                               404, compress=False)
         suffix = target.suffix.lower()
