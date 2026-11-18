@@ -3,7 +3,11 @@ const { test, expect } = require('@playwright/test');
 // is created before media-heavy/cart stress tests. This keeps Firefox's real
 // disabled-JavaScript test, with no skips or weakened assertions.
 // Use native Playwright context fixtures, not nested browser.newContext().
-test.use({ javaScriptEnabled: false, serviceWorkers: 'block' });
+// A real no-JavaScript session has no analytics storage to restore. Firefox
+// can deadlock the context or fail teardown if Playwright restores inherited
+// localStorage while recording a video from this static no-JS session.
+// Keep screenshot/trace diagnostics and all actual content/layout assertions.
+test.use({ javaScriptEnabled: false, serviceWorkers: 'block', video: 'off', storageState: { cookies: [], origins: [] } });
 
 test('catalog remains actionable with JavaScript disabled and real source prices', async ({ page }) => {
   // The no-JS fallback is visible from HTML before stylesheets finish loading.
