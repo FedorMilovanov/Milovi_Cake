@@ -519,7 +519,14 @@
     d.setAttribute('aria-label', it.t + ' — смотреть видео');
 
     var img = document.createElement('img');
-    img.src = it.p; img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
+    /* [r38] Постер не запрашивается, пока лента далеко от вьюпорта.
+       Нативный `loading="lazy"` в Chrome тянет картинку за ~1250 px до экрана,
+       и здесь это давало 90+ KB на первом экране главной (полоса начинается на
+       2246–3185 px). Атрибут остаётся для браузеров без IntersectionObserver,
+       а адрес переезжает в data-poster и подставляется наблюдателем. */
+    img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
+    if ('IntersectionObserver' in window) img.setAttribute('data-poster', it.p);
+    else img.src = it.p;
     d.appendChild(img);
 
     var play = document.createElement('span');
@@ -551,6 +558,24 @@
   for (i = 0; i < items.length; i++) frag.appendChild(makeTile(items[i]));
   for (i = 0; i < items.length; i++) frag.appendChild(makeTile(items[i]));
   track.appendChild(frag);
+
+  /* [r38] Постеры подгружаются, когда плитка подходит к экрану (запас 300 px,
+     чтобы к моменту показа картинка уже была). Разметка плиток от этого не
+     меняется: <img> в каждой плитке на месте с самого начала. */
+  if ('IntersectionObserver' in window) {
+    var posterObserver = new IntersectionObserver(function(entries){
+      for (var n = 0; n < entries.length; n++) {
+        var entry = entries[n];
+        if (!entry.isIntersecting) continue;
+        var poster = entry.target.getAttribute('data-poster');
+        if (poster) entry.target.setAttribute('src', poster);
+        entry.target.removeAttribute('data-poster');
+        posterObserver.unobserve(entry.target);
+      }
+    }, { rootMargin: '300px 0px' });
+    var deferred = track.querySelectorAll('img[data-poster]');
+    for (i = 0; i < deferred.length; i++) posterObserver.observe(deferred[i]);
+  }
 
   // [UI-2026-11-16 #6] Side slide-in chip — the stylish way to the gallery.
   // Lives on the section (outside the strip mask); slides in from the right

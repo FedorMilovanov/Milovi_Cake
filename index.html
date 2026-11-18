@@ -51,7 +51,13 @@
   <link rel="dns-prefetch" href="https://t.me" />
   <link rel="dns-prefetch" href="https://yandex.ru" />
   <link rel="preload" as="image" type="image/avif" href="img/head_desktop.avif" media="(min-width:769px)" fetchpriority="high" />
-  <link rel="preload" as="image" type="image/avif" href="img/head_mobile-640.avif" media="(max-width:768px)" fetchpriority="high" />
+  <!-- [r38] Мобильного preload'а для героя здесь больше нет.
+       На ≤768 px .hero-photo-bg скрыт (display:none), и раньше этот preload
+       тянул img/head_mobile-640.avif — 18 KB картинки, которую мобильный
+       браузер вообще не показывает. Взамен не предзагружаем и видимый постер:
+       он лежит в самом HTML выше линии сгиба с fetchpriority="high", а
+       замер LCP показал, что лишний image-preload только отбирает полосу у
+       render-blocking CSS (LCP-медиана 2.56 s без него против 2.93 s с ним). -->
   <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/cormorant-garamond-cyrillic-wght-normal.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/jost-cyrillic-wght-normal.woff2" />
 <link rel="stylesheet" href="/css/fonts.css?v=20261102r01" />
@@ -586,7 +592,7 @@
       <source type="image/avif" media="(min-width: 769px)" srcset="img/head_desktop.avif" />
       <source type="image/webp" media="(max-width: 768px)" srcset="img/head_mobile.webp" />
       <source type="image/webp" media="(min-width: 769px)" srcset="img/head_desktop.webp" />
-      <img class="hero-img" src="img/head_desktop.webp" alt="Авторский торт ручной работы — Milovi Cake, Санкт-Петербург" fetchpriority="high" decoding="async" width="1440" height="960" />
+      <img class="hero-img" src="img/head_desktop.webp" alt="Авторский торт ручной работы — Milovi Cake, Санкт-Петербург" loading="lazy" fetchpriority="high" decoding="async" width="1440" height="960" />
     </picture>
   </div>
   <!-- [2026-11-16r17] Арт нового референса: торт с боке и цветами справа,
@@ -594,6 +600,10 @@
   <div class="hero-art" aria-hidden="true">
     <picture>
       <source type="image/webp" srcset="img/hero-poster-cake.webp?v=20261116r22" />
+      <!-- [r38] Постер остаётся eager с fetchpriority="high": это LCP главной
+           на телефоне. Проба с loading="lazy" ради десктопной экономии
+           откладывала мобильный LCP на ~400 мс (2.93 s против 2.56 s), поэтому
+           ленивость здесь не используется. -->
       <img src="img/hero-poster-cake.jpg?v=20261116r22" alt="" width="790" height="1087" fetchpriority="high" decoding="async" />
     </picture>
   </div>
@@ -1517,7 +1527,7 @@
 <script src="js/main.js?v=20261118r37" defer></script>
 
 <script src="js/nav.js?v=20261118r21" defer></script>
-<script src="js/mc-2026.js?v=20261118r26" defer></script>
+<script src="js/mc-2026.js?v=20261118r27" defer></script>
 
 <script defer src="/js/v20-faq-fix.js?v=20260728r27"></script>
 

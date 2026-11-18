@@ -124,8 +124,13 @@ require(
     and "d.setAttribute('role', 'listitem')" not in mc_js,
     'homepage video strip regained incompatible synthetic list semantics',
 )
+# [r38] Постер ленты подгружается отложенно: адрес живёт в data-poster, пока
+# плитка далеко от экрана. Контракт по-прежнему требует, чтобы постер был
+# ДЕКОРАТИВНЫМ (пустой alt) и его адрес действительно назначался кодом —
+# проверяем обе половины отдельно, не привязываясь к форме одной строки.
 require(
-    "img.src = it.p; img.alt = '';" in mc_js,
+    "img.alt = '';" in mc_js
+    and ("img.setAttribute('data-poster', it.p)" in mc_js or "img.src = it.p;" in mc_js),
     'homepage video-strip poster is no longer decorative inside its labelled link',
 )
 require(
@@ -368,7 +373,7 @@ for public_html in public_html_files():
     refs = re.findall(r'js/main\.js\?v=([0-9a-z]+)', html)
     require(all(ref == '20261118r37' for ref in refs), f'{public_html} shared main.js revision drifted')
 
-require("const CACHE_NAME = 'milovi-cake-v2026.11.18-r169';" in sw, 'service-worker cache generation drifted')
+require("const CACHE_NAME = 'milovi-cake-v2026.11.18-r170';" in sw, 'service-worker cache generation drifted')
 require("'/css/gallery/gallery-2026.css?v=20261116r06'," in sw, 'gallery CSS service-worker revision drifted')
 require(style_ref != '/css/style.css?v=20261023r01', 'service-worker precache still points at stale shared CSS revision')
 require("'/js/main.js?v=20261118r37'," in sw, 'service-worker precache still points at stale shared main.js revision')
@@ -417,11 +422,23 @@ require(
 require('Prove exact live release before Lighthouse' in workflow, 'pre-audit exact release proof missing')
 require('Re-prove exact live release after Lighthouse' in workflow, 'post-audit exact release proof missing')
 
-# Homepage must preload only the preferred AVIF hero candidate. The WebP source remains
-# a real picture fallback, but preloading both formats wastes critical-path bandwidth.
+# [r38] Главная на ≤768 px показывает не .hero-photo-bg (он там display:none),
+# а мобильный арт .hero-art → img/hero-poster-cake.webp. Контракт по-прежнему
+# требует ровно один предзагружаемый герой-кандидат на брейкпоинт, но теперь
+# сверяет его с тем, что реально рендерится: предзагрузка скрытой картинки и
+# была источником лишних 18 KB и потери приоритета у настоящего LCP.
 require(
-    '<link rel="preload" as="image" type="image/avif" href="img/head_mobile-640.avif" media="(max-width:768px)" fetchpriority="high" />' in home,
-    'homepage preferred mobile AVIF hero preload missing',
+    '<link rel="preload" as="image" type="image/avif" href="img/head_mobile-640.avif" media="(max-width:768px)"' not in home,
+    'homepage preloads a mobile hero that CSS hides on mobile',
+)
+require(
+    '<link rel="preload" as="image" type="image/webp" href="img/hero-poster-cake.webp' not in home,
+    'homepage re-added a mobile poster preload that measurably delayed the LCP',
+)
+require(
+    '<source type="image/webp" srcset="img/hero-poster-cake.webp' in home
+    and 'width="790" height="1087" fetchpriority="high"' in home,
+    'homepage mobile LCP poster lost its eager high-priority markup',
 )
 require(
     '<link rel="preload" as="image" type="image/webp" href="img/head_mobile.webp"' not in home,

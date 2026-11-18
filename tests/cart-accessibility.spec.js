@@ -1,5 +1,14 @@
 const { test, expect } = require('@playwright/test');
 
+/* [r38] Корзина проверяется с выключенной регистрацией Service Worker.
+   Эти тесты много раз перезагружают страницу и имитируют отказы Storage;
+   в этом режиме WebKit иногда сообщает об прерванной на навигации загрузке
+   /sw.js как о pageerror («... due to access control checks»), и контракт
+   «в корзине нет ошибок страницы» падает не по своей вине. Доставку SW
+   проверяет отдельный интеграционный тест tests/service-worker.spec.js,
+   поэтому здесь мы не ослабляем проверку, а убираем чужой источник шума. */
+test.use({ serviceWorkers: 'block' });
+
 function luminance(rgb) {
   const match = rgb.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
   if (!match) throw new Error(`Cannot measure color: ${rgb}`);
