@@ -56,8 +56,13 @@ for (const width of WIDTHS) {
         const mcNav = page.locator('#mcNav');
         await expect(mcNav).toBeVisible();
         const alpha = await mcNav.evaluate((el) => {
-          const bg = getComputedStyle(el).backgroundColor;
-          const match = bg.match(/rgba?\(([^)]+)\)/i);
+          const style = getComputedStyle(el);
+          // Поверхность нижнего бара может быть нарисована градиентом
+          // (background-image), тогда backgroundColor прозрачный.
+          const canvas = /gradient\(/i.test(style.backgroundImage)
+            ? style.backgroundImage
+            : style.backgroundColor;
+          const match = canvas.match(/rgba?\(([^)]+)\)/i);
           if (!match) return 1;
           const parts = match[1].split(',').map((part) => part.trim());
           return parts.length < 4 ? 1 : Number(parts[3]);

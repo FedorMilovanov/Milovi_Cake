@@ -56,18 +56,43 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero,
 }
 
 
-:root:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
-html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
-[data-theme="dark"] .hero .btn-primary.btn-primary--hero:hover,
-.hero .btn-primary.btn-primary--hero:hover {
-  background: var(--gold-light, #d4a76a) !important;
-  color: var(--btn-primary-hover-ink, #3d2b1f) !important;
-  transform: translateY(-2px) !important;
-  border: 0 !important;
-  outline: 0 !important;
-  box-shadow:
-    0 16px 36px rgba(201,147,74,.30),
-    0 5px 14px rgba(61,43,31,.12) !important;
+/* [2026-11-16r16] Владелец: при наведении не должно быть никаких прямоугольных
+   рамок — реагирует только сам текст и стрелка. Раньше hover давал
+   box-shadow на элементе с radius:0, и он читался как серая рамка вокруг CTA. */
+/* 7.1 Телефон: CTA плоский — на hover меняется только текст и стрелка. */
+@media (max-width: 768px) {
+  /* [r17-fix] hover НЕ убирает фон пилюли: раньше кнопка становилась прозрачной
+     и текст «исчезал». Реагирует только сам текст и стрелка. */
+  :root:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
+  html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
+  [data-theme="dark"] .hero .btn-primary.btn-primary--hero:hover,
+  .hero .btn-primary.btn-primary--hero:hover {
+    transform: none !important;
+    border: 0 !important;
+    outline: 0 !important;
+    filter: brightness(1.06);
+  }
+}
+/* 7.2 Десктоп: кнопка залитая — hover не рисует коробку, только мягкая тень. */
+@media (min-width: 769px) {
+  .hero .btn-primary.btn-primary--hero:hover,
+  :root:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
+  [data-theme="dark"] .hero .btn-primary.btn-primary--hero:hover {
+    transform: none;
+    border: 0;
+    outline: 0;
+    box-shadow: 0 10px 26px rgba(201, 147, 74, .26);
+    filter: brightness(.96);
+  }
+}
+.hero .btn-primary.btn-primary--hero .btn-hero-arrow {
+  transition: transform .45s cubic-bezier(.16,1,.3,1), opacity .3s ease;
+}
+.hero .btn-primary.btn-primary--hero:hover .btn-hero-arrow {
+  transform: translateX(10px);
+}
+.hero .btn-primary.btn-primary--hero .btn-hero-arrow::after {
+  transition: opacity .35s ease, transform .45s cubic-bezier(.16,1,.3,1);
 }
 
 .hero .btn-primary.btn-primary--hero:focus:not(:focus-visible),
@@ -113,11 +138,6 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
 }
 
 
-.hero-actions .btn-hero-max > svg > g {
-  transform: translate(6px, 3.5px) scale(0.27) !important;
-  transform-origin: 0 0 !important;
-  transform-box: view-box !important;
-}
 
 
 #preloader.hidden {
@@ -443,46 +463,75 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:hover,
 #why .feature h3 { font-size:18px; color:var(--brown); margin-bottom:8px; }
 html[data-theme="dark"] #why .feature h3 { color:#f0e4d0; }
 
-/* Floating, visually lighter mobile app bar — theme-aware and clear of edges. */
-@media (max-width:768px) {
-  #mcNav.mc-nav,
-  html body #mcNav.mc-nav {
-    left:12px !important;
-    right:12px !important;
-    bottom:max(10px,env(safe-area-inset-bottom,0px)) !important;
-    width:auto !important;
-    height:66px !important;
-    max-width:none !important;
-    padding:0 5px !important;
-    border:1px solid rgba(112,78,48,.13) !important;
-    border-radius:22px !important;
-    background:rgba(250,249,246,.94) !important;
-    -webkit-backdrop-filter:blur(22px) saturate(145%) !important;
-    backdrop-filter:blur(22px) saturate(145%) !important;
-    box-shadow:0 16px 44px rgba(45,28,17,.18),inset 0 1px 0 rgba(255,255,255,.82) !important;
-    overflow:visible !important;
-  }
-  html[data-theme="dark"] #mcNav.mc-nav {
-    border-color:rgba(226,188,137,.16) !important;
-    background:rgba(23,15,10,.94) !important;
-    box-shadow:0 18px 46px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.035) !important;
-  }
-  #mcNav .mc-btn { min-height:64px !important; color:rgba(133,108,84,.78) !important; }
-  html[data-theme="dark"] #mcNav .mc-btn { color:rgba(232,210,180,.62) !important; }
-  #mcNav .mc-btn.mc-active { color:#a06a28 !important; }
-  html[data-theme="dark"] #mcNav .mc-btn.mc-active { color:#e0ae6d !important; }
-  #mcNav .mc-sep { display:none !important; }
-  #mcNav .mc-btn--order .mc-btn-circle {
-    width:44px !important;
-    height:44px !important;
-    margin-top:0 !important;
-    background:var(--fab-matte-bg,linear-gradient(160deg,rgba(255,248,232,.20),rgba(201,147,74,.06))) !important;
-    box-shadow:0 6px 16px rgba(120,78,30,.16),0 0 0 1px rgba(255,252,244,.18) inset !important;
-  }
-  html[data-theme="dark"] #mcNav .mc-btn--order .mc-btn-circle {
-    --fab-matte-bg:linear-gradient(160deg,rgba(255,244,214,.10),rgba(212,167,106,.04));
-    box-shadow:0 8px 18px rgba(0,0,0,.35),0 0 0 1px rgba(255,244,218,.10) inset !important;
-  }
+/* Mobile bottom bar — [r26] владелец: «само меню снизу … проработай и улучши».
+   Геометрию задаёт premium-overrides (во всю ширину, 62 px, кремовое стекло
+   с золотой волосяной линией сверху), здесь — только то, чего нет там.
+   Эспрессо-«пилюля» r24 убрана: её скруглённые торцы обрезались краями
+   экрана, и бар читался как незаконченная плашка. */
+html body #mcNav.mc-nav {
+  /* [r29] Высота и паддинг — из токенов: тело бара всегда --mc-nav-h, а
+     safe-area добавляется и в высоту, и в нижний паддинг. Раньше здесь стояли
+     жёсткие 60 px, из-за чего на iPhone с home-indicator контент бара
+     сжимался в 26 px (safe-area вычиталась из той же высоты). */
+  height:calc(var(--mc-nav-h) + var(--mc-safe-b)) !important;
+  padding:0 5px var(--mc-safe-b) !important;
+  border:1px solid rgba(226,188,137,.40) !important;
+  /* [r28] Верх бара — тот же тон, что низ дока: две поверхности читаются
+     как одна. Отсвет сверху — inset-тень, а не слой фона: первый rgba()
+     в background-image должен остаться непрозрачным (контракт
+     tests/layout-matrix MIN_MOBILE_NAV_ALPHA). */
+  background: linear-gradient(180deg,rgba(36,23,13,.986),rgba(17,10,5,.991)) !important;
+  /* [r28] Без верхней inset-подсветки и без тени вверх: они меняли тон
+     верхней кромки, и на стыке с доком проступала вторая линия. */
+  /* Тень сдвинута вниз и поджата, чтобы она не выползала 1–2 px над верхней
+     кромкой бара — иначе на стыке с доком видна тонкая тёмная линия. */
+  /* [r30] Тень стала мягче (.58 → .44): в 8-пиксельной щели под баром она
+     читалась тёмной полосой-рамкой, хотя это воздух над краем экрана. */
+  box-shadow:
+    0 18px 34px -10px rgba(10,6,2,.44) !important;
+  overflow:visible;
+  align-items:center;
+  gap:0;
+}
+html[data-theme="dark"] body #mcNav.mc-nav {
+  border-color:rgba(226,188,137,.46) !important;
+  /* В тёмной теме бар чуть светлее страницы — иначе он растворяется. */
+  background: linear-gradient(180deg,rgba(46,31,17,.985),rgba(20,13,7,.995)) !important;
+  box-shadow:
+    0 18px 34px -10px rgba(0,0,0,.52) !important;
+}
+#mcNav .mc-btn {
+  min-height:48px !important;
+  padding:0;
+  gap:5px;
+  justify-content:center;
+  background:none !important;
+  /* [r26] Контраст подписи на эспрессо: было .60 (≈4.0:1), стало .84 (≈7.4:1).
+     [r29] Один и тот же тон чернил в обеих темах — день и ночь равны. */
+  color:rgba(240,228,208,.84) !important;
+}
+#mcNav .mc-btn svg { width:20px; height:20px; stroke-width:1.5; }
+#mcNav .mc-btn-label {
+  /* [r30] Кегль подписи — из premium-overrides (10.5 px); здесь только
+     начертание и регистр, чтобы не плодить второй источник размера. */
+  font-size:clamp(10px, 2.9vw, 10.5px) !important;
+  letter-spacing:.055em !important;
+  font-weight:500;
+  line-height:1;
+  text-transform:uppercase;
+}
+#mcNav .mc-btn.mc-active { color:#f0c98a !important; }
+#mcNav .mc-sep { display:none !important; }
+/* [r27] Блик и золотая линия под «Корзиной» из r24 убраны: в макете владельца
+   (round G) пункты разделены волосяными сепараторами, а выбранный — капсулой. */
+#mcNav .mc-btn--order svg { width:20px; height:20px; }
+
+/* [r26] Восстановлена потерянная в r24 шапка @media: правила 547–567 (отступы
+   под нижний бар, «наверх» на телефоне, две колонки преимуществ) задумывались
+   мобильными, а после потерянной строки применялись на всех ширинах. */
+@media (max-width: 768px) {
+  /* Тёплые бары бургера поверх тёмного hero (в скролле остаются коричневыми). */
+  .site-header:not(.scrolled) .burger-btn span { background:rgba(248,232,198,.90); }
   body.has-mc-nav { padding-bottom:calc(88px + env(safe-area-inset-bottom,0px)) !important; }
   body.has-mc-nav .site-footer,
   body.has-mc-nav footer.site-footer { padding-bottom:34px !important; }
@@ -492,7 +541,8 @@ html[data-theme="dark"] #why .feature h3 { color:#f0e4d0; }
     width:46px !important;
     height:46px !important;
   }
-  .back-to-top.footer-clearance { opacity:0 !important; pointer-events:none !important; transform:translateY(10px) scale(.9) !important; }
+  /* [r30] Уход кнопки у футера — только прозрачность и сдвиг, без масштаба. */
+  .back-to-top.footer-clearance { opacity:0 !important; pointer-events:none !important; transform:translateY(8px) !important; }
 
 
   #why .features-grid {
@@ -800,13 +850,1337 @@ html #contacts .card.card--dark .contact-primary-icon {
    visit; body.mc-dock-idle (set by main.js) keeps it out of sight and
    out of reach until the calculator becomes relevant. Slide-in reveal. */
 @media (max-width:560px) {
-  .calc-right-col { transition: opacity .38s ease, transform .38s cubic-bezier(.16,1,.3,1); }
-  body.mc-dock-idle .calc-right-col {
-    opacity: 0;
+  /* [r29] Выезд без пружины и без scale: монотонная ease-out кривая, только
+     transform. Скрытое положение — ровно под баром: сдвиг на собственную
+     высоту + перекрытие + 2 px, поэтому ни верхняя кромка, ни боковины не
+     показываются в промежуточных кадрах (панель физически выходит из-под
+     бара, который её перекрывает). */
+  .calc-right-col {
+    transition: transform var(--mc-dock-dur) var(--mc-dock-ease);
+    will-change: transform;
+  }
+  body:not(.mc-dock-idle):not(.mc-dock-out) .calc-right-col {
+    transform: translateY(0);
+  }
+  body.mc-dock-idle .calc-right-col,
+  body.mc-dock-out .calc-right-col {
     pointer-events: none;
-    transform: translateY(24px);
+    transform: translateY(calc(100% + var(--mc-dock-overlap) + 2px));
+  }
+  /* [r29] Раскрытая смета растёт не «до низа экрана», а до бара: нижние
+     --mc-dock-overlap панели спрятаны за баром, поэтому контент (кнопка
+     «В корзину») получает этот отступ и всегда остаётся над баром. */
+  body.calc-panel-open .calc-right-col .calc-result {
+    padding-bottom: var(--mc-dock-overlap) !important;
+  }
+  /* Текст стоимости проявляется чуть позже поверхности и без скачка кегля. */
+  .calc-right-col .calc-result-collapsed-label,
+  .calc-right-col .calc-result-collapsed-price,
+  .calc-right-col .calc-result-collapsed-arrow,
+  .calc-right-col .calc-result-collapsed-handle {
+    transition: opacity .22s ease;
+  }
+  body.mc-dock-idle .calc-right-col .calc-result-collapsed-label,
+  body.mc-dock-idle .calc-right-col .calc-result-collapsed-price,
+  body.mc-dock-idle .calc-right-col .calc-result-collapsed-arrow,
+  body.mc-dock-idle .calc-right-col .calc-result-collapsed-handle,
+  body.mc-dock-out .calc-right-col .calc-result-collapsed-label,
+  body.mc-dock-out .calc-right-col .calc-result-collapsed-price,
+  body.mc-dock-out .calc-right-col .calc-result-collapsed-arrow,
+  body.mc-dock-out .calc-right-col .calc-result-collapsed-handle {
+    opacity: 0;
+  }
+  body:not(.mc-dock-idle):not(.mc-dock-out) .calc-right-col .calc-result-collapsed-label,
+  body:not(.mc-dock-idle):not(.mc-dock-out) .calc-right-col .calc-result-collapsed-price,
+  body:not(.mc-dock-idle):not(.mc-dock-out) .calc-right-col .calc-result-collapsed-arrow,
+  body:not(.mc-dock-idle):not(.mc-dock-out) .calc-right-col .calc-result-collapsed-handle {
+    opacity: 1;
+    transition-delay: .12s;
   }
 }
 @media (prefers-reduced-motion:reduce) {
   .calc-right-col { transition: none; }
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE HERO — EDITORIAL «ЖУРНАЛЬНЫЙ» LAYOUT (light cream, photo as picture)
+   Owner reference: _mockups/reference-owner-mockup-2026-11-16g.png
+   Scope: home page only (body.mc-home) and ≤768px — desktop hero is untouched.
+   Palette is token-driven (var(--cream)/--brown/--gold), so the dark theme
+   keeps the same rhythm on espresso instead of cream.
+   ═════════════════════════════════════════════════════════════════════════ */
+
+.btn-hero-arrow { display: none; }
+
+@media (max-width: 768px) {
+  /* 1 · Photo plate: our own cake shot, melting into the paper below */
+  body.mc-home .hero { background: var(--cream); }
+  body.mc-home .hero-photo-bg {
+    height: min(62vw, 360px);
+    min-height: 0;
+    max-height: none;
+  }
+  body.mc-home .hero-photo-bg img { object-position: 48% center; }
+  body.mc-home .hero-photo-bg::after {
+    background:
+      linear-gradient(to bottom, rgba(22, 13, 5, .46) 0%, rgba(22, 13, 5, 0) 26%),
+      linear-gradient(to bottom, rgba(22, 13, 5, 0) 58%, var(--cream) 100%) !important;
+  }
+
+  /* 2 · Content plate becomes paper: no espresso block, no hairline */
+  body.mc-home .hero .hero-content {
+    /* [r17] прозрачный слой: под текстом лежит арт с тортом */
+    background: transparent !important;
+    border-top: 0 !important;
+    padding: 92px clamp(22px, 5vw, 54px) 58px !important;
+  }
+  body.mc-home .hero-text { display: contents; }
+
+  /* 3 · Masthead: the h1 becomes the small letterspaced line above the headline */
+  body.mc-home .hero-title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    clip-path: inset(50%);
+    font-size: 1px;
+    color: var(--brown);
+    text-shadow: none;
+  }
+  body.mc-home .hero-title .hero-title-brand {
+    display: block;
+    background: none;
+    -webkit-text-fill-color: currentColor;
+    color: var(--brown);
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    letter-spacing: .22em;
+    text-shadow: none;
+  }
+  body.mc-home .hero-title .hero-title-seo {
+    display: block;
+    margin-top: 5px;
+    font-family: 'Jost', sans-serif;
+    font-size: 9.5px;
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    opacity: 1;
+    color: #8d6222;
+  }
+  [data-theme="dark"] body.mc-home .hero-title .hero-title-seo { color: var(--gold); }
+
+  /* 4 · Headline: big two-tone serif + italic accent, from the subtitle */
+  body.mc-home .hero-subtitle {
+    order: 2;
+    display: block;
+    max-width: none;
+    margin: 0 0 12px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(33px, 10.4vw, 62px) !important;
+    font-weight: 500;
+    line-height: 1.03 !important;
+    letter-spacing: -.004em !important;
+    color: var(--brown) !important;
+    text-shadow: none !important;
+    opacity: 1;
+  }
+  body.mc-home .hero-subtitle .hero-sub-1,
+  body.mc-home .hero-subtitle .hero-sub-2 { display: block; }
+  body.mc-home .hero-subtitle .hero-sub-3 {
+    display: block;
+    margin-top: .08em;
+    font-size: .60em;
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: .01em;
+    color: var(--brown-light);
+  }
+  body.mc-home .hero-subtitle .hero-sub-4 {
+    display: block;
+    margin-top: 14px;
+    padding-left: 14px;
+    border-left: 2px solid var(--gold);
+    font-size: clamp(15px, 1.9vw, 18px);
+    font-weight: 400;
+    line-height: 1.38;
+    letter-spacing: .01em;
+    color: var(--brown-light);
+  }
+
+  /* 5 · Two/three icon rows in gold outline, serif labels */
+  body.mc-home .hero-features {
+    order: 3;
+    gap: 10px;
+    margin: 0 0 14px;
+  }
+  body.mc-home .hero-features .hero-feature-item { gap: 14px; }
+  body.mc-home .hero-features .hero-feature-item svg {
+    width: 22px;
+    height: 22px;
+    stroke: #b98a4c;
+    stroke-width: 1.4;
+    transform: none;
+    filter: none;
+  }
+  [data-theme="dark"] body.mc-home .hero-features .hero-feature-item svg { stroke: #d4a76a; }
+  body.mc-home .hero-features .hero-feature-item span {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(16px, 2vw, 18px);
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: .01em;
+    color: var(--brown);
+  }
+
+  /* 6 · Ratings: «Я 4.8 ★★★★★ / G 4.7 ★★★★★» on one line, caption below */
+  body.mc-home .hero-trust {
+    order: 4;
+    gap: 2px 10px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  body.mc-home .hero-trust .hero-trust-badge {
+    gap: 6px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    color: var(--brown);
+    font-size: 13px;
+  }
+  body.mc-home .hero-trust .hero-trust-badge + .hero-trust-badge::before {
+    content: '/';
+    order: 0;
+    margin-right: 1px;
+    color: rgba(201, 147, 74, .55);
+    font-family: 'Jost', sans-serif;
+    font-size: 15px;
+    line-height: 1;
+  }
+  body.mc-home .hero-trust .hero-trust-icon--yandex { width: 18px; height: 18px; font-size: 11px; }
+  body.mc-home .hero-trust .hero-trust-rating { order: 2; font-size: 14px; font-weight: 500; color: var(--brown); }
+  body.mc-home .hero-trust .hero-trust-stars { order: 3; color: #d3a04f; font-size: 10px; letter-spacing: -.5px; }
+  body.mc-home .hero-trust .hero-trust-count {
+    width: 100%;
+    margin-top: 6px;
+    padding: 0;
+    text-align: left;
+    font-family: 'Jost', sans-serif;
+    font-size: 9.5px;
+    font-weight: 400;
+    letter-spacing: .26em;
+    text-transform: uppercase;
+    color: var(--brown-light);
+  }
+
+  /* 7 · Action stack: messengers first, then the big serif «ЗАКАЗАТЬ» + arrow */
+  body.mc-home .hero-actions {
+    order: 5;
+    gap: 16px;
+    margin-top: 20px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  body.mc-home .hero-actions .messenger-group {
+    order: 1;
+    justify-content: flex-start;
+    margin-bottom: 15px;
+  }
+  body.mc-home .hero-actions .btn-hero-tg { margin: 0 18px; }
+  body.mc-home .hero-actions .btn-hero-max { margin-right: 18px; }
+  body.mc-home .hero-actions .btn-hero-messenger { position: relative; }
+  body.mc-home .hero-actions .btn-hero-messenger::after {
+    position: absolute;
+    left: 50%;
+    bottom: -13px;
+    transform: translateX(-50%);
+    font-family: 'Jost', sans-serif;
+    font-size: 8.5px;
+    font-weight: 400;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--brown-light);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  body.mc-home .hero-actions .btn-hero-wa::after { content: 'WhatsApp'; }
+  body.mc-home .hero-actions .btn-hero-tg::after { content: 'Telegram'; }
+  body.mc-home .hero-actions .btn-hero-max::after { content: 'MAX'; }
+  /* [2026-11-16r17] CTA как в новом референсе: эспрессо-пилюля с золотой
+     обводкой, сумкой, разделителем, надписью в капители и стрелкой. */
+  body.mc-home .hero .hero-actions .btn-primary.btn-primary--hero {
+    order: 2;
+    width: 100%;
+    height: auto;
+    min-height: 60px;
+    padding: 0 18px;
+    flex-wrap: nowrap;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #3b2413 0%, #271608 100%) !important;
+    color: #e8c79b !important;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 13px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(17px, 4.7vw, 22px);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    box-shadow:
+      inset 0 0 0 1px rgba(226, 172, 102, .82),
+      inset 0 1px 0 rgba(255, 231, 190, .22),
+      0 0 26px rgba(201, 147, 74, .18),
+      0 14px 30px rgba(43, 26, 12, .26) !important;
+  }
+  body.mc-home .hero-actions .btn-hero-bag {
+    display: inline-flex;
+    color: #d9b072;
+    flex: 0 0 auto;
+  }
+  body.mc-home .hero-actions .btn-hero-divider {
+    width: 1px;
+    height: 26px;
+    background: rgba(226, 172, 102, .5);
+    flex: 0 0 auto;
+  }
+  body.mc-home .hero-actions .btn-hero-label {
+    flex: 0 1 auto;
+    white-space: nowrap;
+  }
+  body.mc-home .hero-actions .btn-hero-go {
+    display: inline-flex;
+    align-items: center;
+    color: #d9b072;
+    flex: 0 0 auto;
+    margin-left: auto;
+    transition: transform .42s cubic-bezier(.16,1,.3,1);
+  }
+  body.mc-home .hero-actions .btn-primary--hero:hover .btn-hero-go { transform: translateX(4px); }
+  /* [r17-fix] при наведении фон пилюли сохраняется — раньше кнопка
+     становилась прозрачной и надпись «исчезала» на фото. */
+  body.mc-home .hero .hero-actions .btn-primary.btn-primary--hero:hover,
+  body.mc-home .hero .hero-actions .btn-primary.btn-primary--hero:focus,
+  body.mc-home .hero .hero-actions .btn-primary.btn-primary--hero:active {
+    transform: none !important;
+  }
+  /* наведение: сам текст уходит в глубокий золотистый тон, рамки нет */
+  html:not([data-theme="dark"]) body.mc-home .hero .hero-actions .btn-primary.btn-primary--hero:hover {
+    color: #f7dfb8 !important;
+    filter: brightness(1.06);
+  }
+  [data-theme="dark"] body.mc-home .hero .hero-actions .btn-primary.btn-primary--hero:hover {
+    color: #f7dfb8 !important;
+    filter: brightness(1.1);
+  }
+  body.mc-home .hero-actions .btn-price-hint {
+    order: 3;
+    margin-top: 4px;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    opacity: .75;
+    color: var(--brown);
+  }
+  body.mc-home .hero-actions .btn-hero-arrow {
+    display: block;
+    order: 2;
+    position: relative;
+    width: 100%;
+    height: 11px;
+    margin-top: 10px;
+  }
+  body.mc-home .hero-actions .btn-hero-arrow::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 11px;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(201, 147, 74, .08) 0%, rgba(201, 147, 74, .55) 18%, rgba(201, 147, 74, .9) 100%);
+  }
+  body.mc-home .hero-actions .btn-hero-arrow::after {
+    content: '';
+    position: absolute;
+    top: calc(50% - 3.5px);
+    right: 4px;
+    width: 7px;
+    height: 7px;
+    border-top: 1px solid rgba(201, 147, 74, .92);
+    border-right: 1px solid rgba(201, 147, 74, .92);
+    transform: rotate(45deg);
+  }
+
+  /* wide phones / small tablets: the photo plate must not push the CTA down */
+  @media (min-width: 520px) {
+    body.mc-home .hero-photo-bg { height: min(48vw, 320px); }
+  }
+
+  /* short phones (<=820px tall): tighter rhythm so the CTA clears the bar */
+  @media (max-height: 820px) {
+    body.mc-home .hero-photo-bg { height: min(58vw, 300px); }
+    body.mc-home .hero-features { gap: 8px; margin-bottom: 10px; }
+    body.mc-home .hero-actions { margin-top: 14px; gap: 12px; }
+    body.mc-home .hero-trust .hero-trust-count { margin-top: 4px; }
+    body.mc-home .hero-actions .btn-hero-arrow { margin-top: 8px; }
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BUGFIX — city pages header had no side gutter
+   `.site-header:has(.header-crumb-strip) .hdr-main-row{padding:0}` in style.css
+   outranked `.hdr-main-row{padding:0 60px}` (mc-2026.css), so on all 15
+   /prigorody/ pages the wordmark and the cart button sat flush against the
+   screen edges. Restore the gutter the row was designed with.
+   ═════════════════════════════════════════════════════════════════════════ */
+.site-header:has(.header-crumb-strip) .hdr-main-row {
+  padding-left: 60px;
+  padding-right: 60px;
+}
+@media (max-width: 900px) {
+  .site-header:has(.header-crumb-strip) .hdr-main-row {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BUGFIX — calculator type tiles were 4-across on 381…480px phones
+   The 2×2 fallback only existed at ≤380px (style.css) and ≤360px
+   (premium-overrides.css), so on 390/393/414/430 "Бисквитный" overflowed its
+   63px tile and prices were clipped. Two columns from 480px down.
+   ═════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .calc-type-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .calc-type-card .opt-label { white-space: normal; }
+}
+
+/* ══ BUGFIX 2026-11-16 (r10) · пустая корзина: эмодзи 🧁 → линейная иконка ══
+   В WebKit/Chromium без цветного emoji-шрифта 🧁 рисовался «тофу»-квадратом,
+   а цветной emoji спорил с линейным языком иконок сайта. Теперь сумка-иконка
+   в золотом круге, как в шапке и в карточках «Как заказать». */
+#cartBody .cart-empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  color: var(--gold);
+  background: rgba(201, 147, 74, 0.08);
+  border: 1px solid rgba(201, 147, 74, 0.24);
+}
+#cartBody .cart-empty-icon svg {
+  width: 36px;
+  height: 36px;
+  display: block;
+}
+[data-theme="dark"] #cartBody .cart-empty-icon {
+  background: rgba(212, 167, 106, 0.10);
+  border-color: rgba(212, 167, 106, 0.26);
+}
+
+/* ══ BUGFIX 2026-11-16 (r10) · контраст текста ниже нормы (WCAG AA) ══ */
+
+/* 1. Ответы в FAQ на главной. В style.css класс объявлен дважды, и позднее
+   правило перебивало задуманный --brown-light приглушённым --text-muted:
+   #9a7a62 на #ede5d5 = 3.14:1 при нужных 4.5:1 для 14px. */
+.cb-faq-a-inner {
+  color: var(--brown-light, #6b4c38);
+}
+
+/* 2. Меренговый рулет: золото на кремовой подложке почти не читалось.
+   #c9934a на #f1e8d7 = 2.23:1, --gold2 (#e8b87a) = 1.49:1, --gold3 = 1.29:1.
+   Тёмное золото #855a1f даёт 4.7:1 и остаётся в брендовой гамме.
+   Скоуп по body:has(.hero-tag) — эти классы есть только на этой странице,
+   и правило не должно задевать «гостевые» кнопки на других LP. */
+html:not([data-theme="dark"]) body:has(.hero-tag) .hero-title em,
+html:not([data-theme="dark"]) body:has(.hero-tag) .spb-tag,
+html:not([data-theme="dark"]) body:has(.hero-tag) .hero-tag,
+html:not([data-theme="dark"]) body:has(.hero-tag) .btn-ghost,
+html:not([data-theme="dark"]) body:has(.hero-tag) .sec-label {
+  color: #855a1f;
+}
+html:not([data-theme="dark"]) body:has(.hero-tag) .hero-price-portions {
+  color: #855a1f;
+  opacity: 1;
+}
+
+/* ── Меренговый рулет, светлая тема: ценовая карточка и «шиммер» ──
+   .pct («На заказ · 6–8 порций · В холодильнике») набирался --gold2 = 1.49:1
+   и к тому же ломался по словам в узких пилюлях («На / заказ»). Шиммер
+   .ht-em — градиент по тексту, поэтому color его не берёт, нужен background. */
+html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-label,
+html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-num,
+html:not([data-theme="dark"]) body:has(.hero-tag) .pct,
+html:not([data-theme="dark"]) body:has(.hero-tag) .brand-premium {
+  color: #855a1f;
+}
+html:not([data-theme="dark"]) body:has(.hero-tag) .ht-em {
+  background-image: linear-gradient(90deg, #855a1f 0%, #a2742c 38%, #b8832e 52%, #a2742c 65%, #855a1f 100%);
+}
+body:has(.hero-tag) .price-card-tags {
+  flex-wrap: wrap;
+  justify-content: center;
+  row-gap: 8px;
+}
+body:has(.hero-tag) .pct {
+  white-space: nowrap;
+}
+/* Рубль в цене был почти одного роста с цифрами (40px при 60px) и «прилипал»
+   к числу — уменьшаем до аккуратного надстрочного знака. */
+body:has(.hero-tag) .price-card-num {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.05em;
+}
+body:has(.hero-tag) .price-card-rub {
+  font-size: 24px;
+  line-height: 1;
+  vertical-align: baseline;
+  margin-top: 11px;
+}
+/* Надзаголовок «MILOVI CAKE · САНКТ-ПЕТЕРБУРГ» — 10px золотом на кремовом
+   (#c9934a на #f1e8d7 = 2.23:1); в H1 .ht-word трогать нельзя, поэтому
+   правим только .hero-eyebrow. */
+html:not([data-theme="dark"]) body:has(.hero-tag) .hero-eyebrow .ht-word {
+  color: #855a1f;
+}
+/* Подпись состава под ценой была 62% прозрачности — поднимаем до 78%. */
+html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
+  color: rgba(61, 43, 31, 0.78);
+}
+
+/* ══ BUGFIX 2026-11-16 (r11) · телефон в карточке контактов рвался по цифрам ══
+   «+7 911 903 88 86» переносился как «… 88 / 86»: 17px не влезали в 138px.
+   Теперь номер не переносится и забирает нужную ширину у флекса (карточка
+   на 390 даёт 166px), а на самых узких экранах шрифт чуть меньше. */
+.contact-primary-value {
+  white-space: nowrap;
+}
+@media (max-width: 380px) {
+  .card.card--dark .contact-primary-value {
+    font-size: 15px;
+  }
+}
+/* На 320px даже 15px не влезают в строку — там разрешаем перенос,
+   чтобы номер не выезжал за карточку. */
+@media (max-width: 339px) {
+  .contact-primary-value {
+    white-space: normal;
+  }
+}
+
+/* ══ FIX 2026-11-16 (r13) · «ВЫБРАТЬ ТОРТ» ведёт к самим тортам ══
+   Раньше кнопка вела на #catalog — за 400px до первой карточки: на экран
+   попадали заголовок и чипы, а фото торта оставалось под нижним баром.
+   Теперь якорь — сетка товаров (#catalogGrid), с отступом под fixed-шапку. */
+#catalogGrid {
+  scroll-margin-top: 92px;
+}
+/* ============ [2026-11-16r16] Калькулятор: бенто-сегменты и вес ============ */
+/* 1. «~350 гр / шт» больше не наезжает на соседнюю плитку «3D Торт»:
+      подпись живёт внутри своей плитки, а не absolute поверх сетки. */
+.calc-type-card .calc-weight-tooltip,
+.calc-type-card.selected .calc-weight-tooltip {
+  position: static;
+  top: auto;
+  left: auto;
+  transform: none;
+  margin-top: 5px;
+  min-height: 14px;
+  line-height: 1.25;
+  font-size: 10.5px;
+  letter-spacing: .02em;
+  white-space: normal;
+  text-align: center;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: rgba(107, 76, 56, .60);
+  pointer-events: none;
+}
+
+/* 2. Шаг «Бисквит» на мобиле: подпись сверху, две равные пилюли в ряд —
+      раньше подпись стояла сбоку и ряд читался как кривой. */
+@media (max-width: 768px) {
+  .calc-biscuit-col {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0; /* отступ подписи задаёт её собственный margin-bottom */
+    padding-right: 0;
+    width: 100%;
+  }
+  .calc-biscuit-seg {
+    flex-direction: row;
+    gap: 8px !important;
+    width: 100%;
+    flex: 1 1 auto;
+  }
+  .calc-biscuit-opt {
+    flex: 1 1 0;
+    min-width: 0;
+    text-align: center;
+  }
+  .calc-label--biscuit {
+    text-align: left;
+    font-size: 11px;
+    letter-spacing: .14em;
+    color: rgba(107, 76, 56, .62);
+  }
+}
+
+/* 3. Пилюли бисквита в палитре сайта (был холодный жёлтый / серо-лиловый). */
+.calc-biscuit-opt {
+  border-radius: 999px;
+  border: 1px solid rgba(201, 147, 74, .26);
+  background: rgba(255, 252, 246, .72);
+  color: #6b4a22;
+  transition: background .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease;
+}
+.calc-biscuit-vanilla,
+.calc-biscuit-choco {
+  background: rgba(255, 252, 246, .72);
+  border-color: rgba(201, 147, 74, .26);
+  color: #6b4a22;
+}
+.calc-biscuit-vanilla:hover,
+.calc-biscuit-choco:hover {
+  background: rgba(201, 147, 74, .10);
+  border-color: rgba(201, 147, 74, .42);
+}
+.calc-biscuit-vanilla.active,
+.calc-biscuit-choco.active {
+  background: rgba(201, 147, 74, .16);
+  border-color: #c9934a;
+  color: #3d2b1f;
+  box-shadow: 0 6px 16px rgba(201, 147, 74, .16);
+}
+[data-theme="dark"] .calc-biscuit-opt,
+[data-theme="dark"] .calc-biscuit-vanilla,
+[data-theme="dark"] .calc-biscuit-choco {
+  background: rgba(255, 246, 232, .06);
+  border-color: rgba(226, 188, 137, .26);
+  color: #e8d3b4;
+}
+[data-theme="dark"] .calc-biscuit-vanilla.active,
+[data-theme="dark"] .calc-biscuit-choco.active {
+  background: rgba(226, 188, 137, .20);
+  border-color: #d9b072;
+  color: #fdf6ea;
+}
+/* на выбранной (тёмной) плитке подпись светлая, иначе не читается */
+.calc-type-card.selected .calc-weight-tooltip {
+  color: rgba(255, 246, 232, .72);
+}
+[data-theme="dark"] .calc-type-card .calc-weight-tooltip {
+  color: rgba(240, 228, 208, .55);
+}
+[data-theme="dark"] .calc-type-card.selected .calc-weight-tooltip {
+  color: rgba(255, 246, 232, .72);
+}
+
+/* 4. Описание начинки: не «прилипает» к чипам бисквита — тихая заметка
+      без рамки, с маленькой подписью-капиталью. */
+.fill-desc-panel {
+  width: auto;
+  max-width: 100%;
+  margin: 14px 0 18px;
+  padding: 12px 14px 13px;
+  border: 0;
+  border-radius: 14px;
+  background: rgba(201, 147, 74, .07);
+  box-shadow: none;
+  text-align: left;
+}
+.fill-desc-panel::before {
+  content: "Состав начинки";
+  display: block;
+  margin-bottom: 5px;
+  font-size: 9.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: rgba(154, 106, 54, .78);
+}
+.fill-desc-panel .fill-desc-text {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: #5a4130;
+  margin: 0;
+  text-align: left;
+}
+[data-theme="dark"] .fill-desc-panel {
+  background: rgba(226, 188, 137, .08);
+}
+[data-theme="dark"] .fill-desc-panel::before { color: rgba(217, 176, 114, .80); }
+[data-theme="dark"] .fill-desc-panel .fill-desc-text { color: #e6d6c0; }
+
+/* ============ [2026-11-16r16] Панель товаров: свайп, точки, без рамок ============ */
+/* 5. Никаких тонких рамок вокруг блоков с фото: у карточки товара
+      был золотой hairline-ободок (0 0 0 1px), он и читался как «панель». */
+/* специфичность как у :root:not([data-theme="dark"]) .product-card в v20-dark,
+   иначе золотой ободок 0 0 0 1px остаётся и читается как тонкая рамка */
+:root:not([data-theme="dark"]) .product-card,
+:root[data-theme="dark"] .product-card,
+.product-card {
+  box-shadow: 0 10px 40px rgba(61, 43, 31, .055) !important;
+}
+:root:not([data-theme="dark"]) .product-card:hover,
+:root[data-theme="dark"] .product-card:hover {
+  box-shadow: 0 16px 44px rgba(61, 43, 31, .10) !important;
+}
+.product-card .slider-wrap {
+  border: 0;
+  box-shadow: none;
+}
+
+/* 6. Точки-индикаторы фото: были белыми кружками, приклеенными к верхнему
+      левому углу (контейнер без позиционирования). Теперь — аккуратная
+      дорожка по центру снизу, активная точка вытянута в золотую пилюлю. */
+.product-card .slide-dots {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  width: max-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  /* стеклянная дорожка: точки остаются видны и на светлых фото.
+     [r37] Без размытия подложки: WebKit вешает композитор на множестве
+     мелких blur-слоёв (см. main 25b9125 — там так же убрали blur у
+     плей-бейджа видео и чипа фильтра галереи). Непрозрачность поднята
+     так, чтобы дорожка читалась на светлом фото и без размытия. */
+  background: rgba(24, 16, 10, .38);
+  z-index: 3;
+  pointer-events: none;
+}
+.product-card .slide-dots .dot {
+  pointer-events: auto;
+  width: 6px;
+  height: 6px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .62);
+  box-shadow: 0 1px 4px rgba(20, 12, 6, .45);
+  transition: width .38s cubic-bezier(.16, 1, .3, 1), background .3s ease, box-shadow .3s ease;
+}
+.product-card .slide-dots .dot.active {
+  width: 20px;
+  background: #f3d9b0;
+  box-shadow: 0 1px 5px rgba(20, 12, 6, .42), 0 0 0 1px rgba(201, 147, 74, .5);
+}
+
+/* 7. Мобильная панель товаров листается влево-вправо: одна карточка в кадре
+      с мягкой доводкой. Верхние чипы ведут панель, а не страницу. */
+@media (max-width: 768px) {
+  #catalogGrid {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+    align-items: flex-start;
+  }
+  #catalogGrid::-webkit-scrollbar { display: none; }
+  #catalogGrid > .product-card {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    margin: 0;
+  }
+}
+
+/* ============ [2026-11-16r17] Док «примерная стоимость» ============ */
+/* Владелец: тёмная плашка во весь экран налезала на тексты разделов и
+   прижималась к нижнему бару, между ними просвечивала строка страницы.
+   Теперь это отдельная пилюля с отступами от краёв, а когда калькулятор
+   уходит с экрана — она уезжает вместе с ним (см. body.mc-dock-out). */
+/* [r29] Состояние «калькулятор ушёл с экрана» описано в одном месте —
+   блоке [r29] выше (mc-dock-idle / mc-dock-out). Дубль удалён. */
+
+/* ============ [2026-11-16r17] Hero-постер по новому референсу ============ */
+/* Торт с боке и ветками цветов живёт справа и мягко растворяется в креме,
+   текст остаётся слева на чистом фоне. Только мобильный постер. */
+.hero-art { display: none; }
+
+@media (max-width: 768px) {
+  body.mc-home .hero {
+    background: linear-gradient(180deg, #f8f1e5 0%, var(--cream) 44%, var(--cream) 100%);
+    overflow: hidden;
+  }
+  body.mc-home .hero-photo-bg { display: none; }
+  body.mc-home .hero .hero-content {
+    position: relative;
+    z-index: 2;
+  }
+  body.mc-home .hero-art {
+    display: block;
+    position: absolute;
+    inset: 0 0 auto 0;
+    width: 100%;
+    height: auto;
+    z-index: 0;
+    pointer-events: none;
+  }
+  /* [r17-b] Арт живёт на всей площади героя, как на постере-референсе:
+     остаются и солнце на стене, и цветы, и лён внизу. Края не режем
+     прямоугольником, только мягкие световые переходы. */
+  body.mc-home .hero-art::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      linear-gradient(100deg, rgba(250, 245, 236, .5) 0%, rgba(250, 245, 236, .3) 22%, rgba(250, 245, 236, .06) 42%, rgba(250, 245, 236, 0) 54%),
+      radial-gradient(128% 46% at 6% 44%, rgba(250, 245, 236, .78) 0%, rgba(250, 245, 236, .46) 46%, rgba(250, 245, 236, 0) 74%),
+      linear-gradient(180deg, rgba(250, 245, 236, .3) 0%, rgba(250, 245, 236, 0) 14%);
+    pointer-events: none;
+  }
+  body.mc-home .hero-art::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: linear-gradient(180deg, rgba(247, 241, 232, 0) 46%, rgba(247, 241, 232, .34) 62%, rgba(247, 241, 232, .78) 80%, var(--cream) 94%);
+    pointer-events: none;
+  }
+  body.mc-home .hero-art img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  [data-theme="dark"] body.mc-home .hero-art img {
+    filter: saturate(.9) brightness(.74) contrast(1.05);
+  }
+  [data-theme="dark"] body.mc-home .hero-art::before {
+    background:
+      linear-gradient(100deg, rgba(16, 10, 6, .68) 0%, rgba(16, 10, 6, .44) 24%, rgba(16, 10, 6, .1) 44%, rgba(16, 10, 6, 0) 56%),
+      radial-gradient(120% 42% at 4% 46%, rgba(16, 10, 6, .78) 0%, rgba(16, 10, 6, .44) 46%, rgba(16, 10, 6, 0) 72%),
+      linear-gradient(180deg, rgba(16, 10, 6, .34) 0%, rgba(16, 10, 6, 0) 14%);
+  }
+  [data-theme="dark"] body.mc-home .hero-art::after {
+    background: linear-gradient(180deg, rgba(8, 5, 3, 0) 40%, rgba(8, 5, 3, .4) 58%, rgba(8, 5, 3, .82) 74%, #080503 88%);
+  }
+  /* кнопка на постере держит нижнюю линию, как в референсе */
+  body.mc-home .hero .hero-actions { margin-top: 22px; }
+}
+
+@media (max-width: 768px) {
+  /* текст держится левее торта, как на постере: длинные строки переносятся */
+  body.mc-home .hero-subtitle .hero-sub-4 { max-width: 100%; }
+  body.mc-home .hero-features { max-width: 62%; }
+  /* Подписи фич живут в две строки, как на постере: длинная третья строка
+     уходила на торт. */
+  body.mc-home .hero-features .hero-feature-item span { white-space: normal; max-width: 156px; }
+}
+
+/* [r17] Шапка на мобиле больше не лежит на тёмном фото — фон героя кремовый,
+   поэтому непрокрученная шапка перекрашивается в тёплый тёмный тон. */
+@media (max-width: 768px) {
+  body.mc-home .site-header:not(.scrolled) .header-logo {
+    color: var(--brown);
+    -webkit-text-fill-color: currentColor;
+    background: none;
+    text-shadow: none;
+  }
+  body.mc-home .site-header:not(.scrolled) .header-logo-sub { color: rgba(107, 76, 56, .72); }
+  body.mc-home .site-header:not(.scrolled) .header-nav a { color: var(--brown); }
+  body.mc-home .site-header:not(.scrolled) .header-nav a.header-order { color: #fff; }
+  body.mc-home .site-header:not(.scrolled) .theme-toggle,
+  body.mc-home .site-header:not(.scrolled) .header-cart-btn,
+  body.mc-home .site-header:not(.scrolled) .header-burger { color: var(--brown); }
+}
+@media (max-width: 768px) {
+  [data-theme="dark"] body.mc-home .site-header:not(.scrolled) .header-logo {
+    color: #f4e7d3;
+    -webkit-text-fill-color: #f4e7d3;
+    background: none;
+    text-shadow: none;
+  }
+  [data-theme="dark"] body.mc-home .site-header:not(.scrolled) .header-logo-sub { color: rgba(240, 228, 208, .6); }
+  [data-theme="dark"] body.mc-home .site-header:not(.scrolled) .header-nav a { color: #f4e7d3; }
+  [data-theme="dark"] body.mc-home .site-header:not(.scrolled) .theme-toggle,
+  [data-theme="dark"] body.mc-home .site-header:not(.scrolled) .header-cart-btn,
+  [data-theme="dark"] body.mc-home .site-header:not(.scrolled) .header-burger { color: #f4e7d3; }
+}
+
+/* [r17] На десктопе CTA — тоже одна строка: сумка · надпись · стрелка.
+   Цвет кнопки не трогаем (золотая пилюля как была). */
+@media (min-width: 769px) {
+  .hero .btn-primary.btn-primary--hero {
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 9px;
+  }
+  .hero .btn-primary.btn-primary--hero .btn-hero-bag { display: inline-flex; align-items: center; color: currentColor; }
+  .hero .btn-primary.btn-primary--hero .btn-hero-divider { display: none; }
+  .hero .btn-primary.btn-primary--hero .btn-hero-label { white-space: nowrap; }
+  .hero .btn-primary.btn-primary--hero .btn-hero-go { display: inline-flex; align-items: center; color: currentColor; margin-left: 2px; transition: transform .42s cubic-bezier(.16,1,.3,1); }
+  .hero .btn-primary.btn-primary--hero .btn-hero-go svg { width: 15px; height: 15px; }
+  .hero .btn-primary.btn-primary--hero:hover .btn-hero-go { transform: translateX(4px); }
+}
+
+/* [r17] Значки в шторке «Ещё» чуть крупнее — мелкие глифы читались как пятно. */
+@media (max-width: 768px) {
+  .mc-sheet .mc-row-icon svg { width: 21px; height: 21px; }
+}
+
+/* [r17-fix] Степпер количества растягивался на всю строку и «2 ШТ» уезжало
+   влево от центра (для «Бенто»/«Макси Бенто»). Раскладываем по краям. */
+.calc-weight-stepper { justify-content: space-between; }
+
+/* [r17-b] Мессенджеры в герое — по центру, как на постере-референсе. */
+@media (max-width: 768px) {
+  body.mc-home .hero-actions .messenger-group--ring {
+    align-self: center;
+    justify-content: center;
+    gap: clamp(20px, 7vw, 34px);
+  }
+}
+
+@media (max-width: 768px) {
+  /* [r17-b] нижние строки героя уходят под торт: рейтинги, подпись, мессенджеры
+     и CTA стоят на чистом свете, как на постере-референсе. */
+  body.mc-home .hero-trust { margin-top: 16px; }
+  body.mc-home .hero-trust .hero-trust-badge { font-size: 12.5px; }
+  body.mc-home .hero-trust .hero-trust-icon--yandex { width: 16px; height: 16px; font-size: 10px; }
+  body.mc-home .hero-trust .hero-trust-rating { font-size: 13px; }
+  body.mc-home .hero-trust .hero-trust-stars { font-size: 9px; letter-spacing: -.6px; }
+}
+
+/* ═══════════ [r19] Мессенджеры в герое как на постере: только иконки,
+   волосяные разделители и лучи по краям, подпись под ними. ═══════════ */
+@media (max-width: 768px) {
+  body.mc-home .hero-actions .btn-hero-wa::after,
+  body.mc-home .hero-actions .btn-hero-tg::after,
+  body.mc-home .hero-actions .btn-hero-max::after { content: none; }
+
+  body.mc-home .hero-actions .messenger-group--ring {
+    align-self: center;
+    justify-content: center;
+    gap: 22px;
+    margin-bottom: 0;
+  }
+  body.mc-home .hero-actions .btn-hero-tg,
+  body.mc-home .hero-actions .btn-hero-max { margin: 0; }
+
+  /* вертикальные волоски между иконками */
+  body.mc-home .hero-actions .btn-hero-tg::before,
+  body.mc-home .hero-actions .btn-hero-max::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    /* [r22] волосок ровно посередине между значками (было -13px — лип к левому) */
+    left: -6px;
+    width: 1px;
+    height: 22px;
+    margin-top: -11px;
+    background: rgba(201, 147, 74, .42);
+    pointer-events: none;
+  }
+  /* короткие лучи по краям группы */
+  body.mc-home .hero-actions .btn-hero-wa::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: calc(100% + 17px);
+    width: 34px;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(201, 147, 74, 0), rgba(201, 147, 74, .5));
+    pointer-events: none;
+  }
+  body.mc-home .hero-actions .btn-hero-max::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 17px);
+    width: 34px;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(201, 147, 74, .5), rgba(201, 147, 74, 0));
+    pointer-events: none;
+  }
+
+  /* подпись под иконками */
+  /* [r22] Подпись снова ПОД иконками, но вплотную — не «висит» внизу. */
+  body.mc-home .hero-actions .hero-msg-caption {
+    display: block;
+    order: 2;
+    align-self: center;
+    margin-top: -6px;
+    margin-bottom: 0;
+    font-family: 'Jost', sans-serif;
+    font-size: 9.5px;
+    font-weight: 400;
+    letter-spacing: .26em;
+    text-transform: uppercase;
+    color: var(--brown-light);
+    text-align: center;
+  }
+  /* CTA и подсказка съезжают на шаг, чтобы подпись встала между ними */
+  body.mc-home .hero .hero-actions .btn-primary.btn-primary--hero { order: 3; }
+  body.mc-home .hero-actions .btn-price-hint { order: 4; }
+  /* прежняя подпись под рейтингами больше не нужна */
+  body.mc-home .hero-trust .hero-trust-count { display: none; }
+
+  /* заголовок держится левее торта — три строки, как на референсе */
+  body.mc-home .hero-subtitle { max-width: 56%; }
+  body.mc-home .hero-subtitle .hero-sub-1 { display: block; }
+}
+
+/* [r19] подпись под мессенджерами живёт только в мобильном постере */
+.hero-msg-caption { display: none; }
+
+
+
+/* ════════════════════════════════════════════
+   [r20] Card photo arrows — the owner asked for the lighter, jewel-like
+   reference style instead of the heavy dark discs: frosted cream glass,
+   hairline gold rim, warm brown chevron. Dark theme keeps a smoky glass.
+   ════════════════════════════════════════════ */
+.product-card .slider-wrap > .slide-btn{
+  width:34px;
+  height:34px;
+  background:rgba(255,251,244,.74);
+  border:1px solid rgba(201,147,74,.42);
+  color:#8a5a28;
+  font:500 22px/1 'Jost',sans-serif;
+  box-shadow:0 4px 14px rgba(60,36,16,.18), inset 0 1px 0 rgba(255,255,255,.72);
+  -webkit-backdrop-filter:blur(6px);
+  backdrop-filter:blur(6px);
+}
+.product-card .slider-wrap > .slide-prev{ left:10px; }
+.product-card .slider-wrap > .slide-next{ right:10px; }
+[data-theme="dark"] .product-card .slider-wrap > .slide-btn{
+  background:rgba(26,18,9,.80);
+  border-color:rgba(212,167,106,.46);
+  color:var(--gold-light);
+  box-shadow:0 4px 14px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+/* ════════════════════════════════════════════
+   [r20-b] Торт на постере уезжает правее: владелец — «слишком заезжает на
+   надписи, подвинь правее, за край чуть». Сдвиг + лёгкое увеличение от
+   правого края, чтобы левый край арта остался закрытым (без полосы фона).
+   ════════════════════════════════════════════ */
+/* Сдвиг торта вправо запечён в сам постер (img/hero-poster-cake.jpg|webp):
+   торт уходит за правый край, надписи остаются на чистом свете. */
+
+
+/* ══════════════════════════════════════════════════════════════
+   [r24] Стрелки карусели: тап-зона 44×44 при прежнем «камешке» 34 px.
+   Владельцу нравился лёгкий стеклянный диск — сохраняем его на ::before,
+   а сама кнопка становится полноразмерной целью для пальца (WCAG 2.5.5).
+   ══════════════════════════════════════════════════════════════ */
+.product-card .slider-wrap > .slide-btn{
+  width:44px;
+  height:44px;
+  background:none;
+  border:0;
+  box-shadow:none;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+}
+.product-card .slider-wrap > .slide-btn::before{
+  content:'';
+  position:absolute;
+  z-index:-1;
+  inset:5px;
+  border-radius:50%;
+  /* [r37] Без размытия подложки — по той же причине, что и у точек:
+     на каждой карточке два таких диска, и WebKit копит blur-слои.
+     .74 → .88 держит «кремовое стекло» на фото без размытия. */
+  background:rgba(255,251,244,.88);
+  border:1px solid rgba(201,147,74,.42);
+  box-shadow:0 4px 14px rgba(60,36,16,.18), inset 0 1px 0 rgba(255,255,255,.72);
+  transition:background-color .18s ease, border-color .18s ease;
+}
+@media (hover: hover) and (pointer: fine){
+  .product-card .slider-wrap > .slide-btn:hover{ background:none; border-color:transparent; }
+  .product-card .slider-wrap > .slide-btn:hover::before{
+    background:rgba(201,147,74,.90);
+    border-color:rgba(255,255,255,.64);
+  }
+}
+[data-theme="dark"] .product-card .slider-wrap > .slide-btn{
+  background:none !important;
+  border-color:transparent !important;
+  box-shadow:none !important;
+}
+[data-theme="dark"] .product-card .slider-wrap > .slide-btn::before{
+  background:rgba(26,18,9,.66);
+  border-color:rgba(212,167,106,.46);
+  box-shadow:0 4px 14px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08);
+}
+@media (hover: hover) and (pointer: fine){
+  [data-theme="dark"] .product-card .slider-wrap > .slide-btn:hover::before{
+    background:rgba(212,167,106,.75);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   [r25] Свайп фото товара «за пальцем»: горизонталь забирает JS,
+   вертикальный скролл остаётся браузеру (touch-action:pan-y).
+   ══════════════════════════════════════════════════════════════ */
+.product-card .slider-wrap .slide-img{ will-change:transform; }
+.product-card .slider-wrap.is-dragging{ cursor:grabbing; }
+.product-card .slider-wrap.is-dragging .slide-img,
+.product-card .slider-wrap.is-dragging .slide-btn{ pointer-events:none; }
+
+/* ══════════════════════════════════════════════════════════════
+   [r25] Итог корзины больше не обрезается: строка переносится, значение
+   не сжимается, а на узких экранах уточнение «(предварительно)» уходит —
+   пояснение и так стоит строкой ниже.
+   ══════════════════════════════════════════════════════════════ */
+.cart-total-row{
+  display:flex; align-items:baseline; justify-content:space-between;
+  gap:2px 12px; flex-wrap:wrap; margin-bottom:6px;
+}
+.cart-total-label{ font-size:15px; color:var(--brown); min-width:0; }
+.cart-total-row .cart-inline-total{ flex:0 0 auto; white-space:nowrap; }
+@media (max-width:430px){
+  .cart-total-note{ display:none; }
+  .cart-total-label{ font-size:14px; }
+}
+.cart-total .total-val{ min-width:0; }
+
+/* ════════════════════════════════════════════════════════════════════════
+   [r26] Владелец: у «наверх» не должно быть второй рамки — круг один, и это
+   контур с прогрессом. Плюс бар выше дока, чтобы док выезжал из-под него.
+   ════════════════════════════════════════════════════════════════════════ */
+.back-to-top,
+.back-to-top:hover {
+  /* [r30] У кнопки нет рамки; тень одна и мягкая — квадрат стоит на странице,
+     а не «висит» в золотом ореоле. */
+  border: 0 !important;
+  box-shadow: 0 6px 18px rgba(24,12,2,.30) !important;
+}
+
+/* [r32] Кнопка уступает интерактиву страницы. Пока рамка «наверх» ближе
+   12 px к кликабельной строке FAQ, кнопка гаснет и не ловит тапы; класс
+   btt-obstructed ставит main.js по замеру getBoundingClientRect (возврат —
+   на зазоре 24 px, чтобы не мерцать на границе). Приоритет над
+   .back-to-top.visible даёт специфичность трёх классов, без флагов. */
+.back-to-top.visible.btt-obstructed {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* [r32] На тач-экранах hover не залипает после тапа: кнопка возвращается
+   к своему матовому состоянию. Наведение включаем только там, где есть курсор. */
+@media (hover: none) {
+  .back-to-top:hover { background: #3b281d; color: #f0d3a6; }
+}
+
+@media (max-width: 560px) {
+  /* Нижний бар перекрывает док — он и есть «дно», из-под которого тот выезжает. */
+  #mcNav.mc-nav { z-index: 175; }
+  /* Пока док на экране, «наверх» не садится на него. */
+  /* Высота дока меняется (крупная цена, узкий экран) — берём её из
+     --mc-dock-h, который пишет main.js, чтобы кнопка не садилась на панель. */
+  body:not(.mc-dock-idle):not(.mc-dock-out) .back-to-top {
+    /* [r31] Формула давала НАЛОЖЕНИЕ 12 px: вычитание --mc-dock-overlap
+       опускало кнопку внутрь панели (замер: btt 669…715, док 703…798).
+       Верх видимого дока от низа экрана = --mc-dock-bottom + --mc-dock-h
+       (её пишет ResizeObserver в main.js), воздух — --mc-btt-gap.
+       Кнопка всегда целиком над доком, зазор 10–14 px. */
+    bottom: calc(var(--mc-dock-bottom) + var(--mc-dock-h) + var(--mc-btt-gap)) !important;
+  }
+  /* Раскрытая панель расчёта занимает низ экрана — кнопке там нечего делать. */
+  body.calc-panel-open .back-to-top {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   [r27] Нижний бар по макету владельца (round G): пункты разделены
+   волосяными сепараторами, выбранный — золотой капсулой с тёплым свечением.
+   ════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  #mcNav .mc-btn { position: relative; }
+
+  /* Сепаратор между пунктами — тонкая вертикаль, гаснущая к краям.
+     Живёт на ::before (у ::after уже есть подсветка нажатия из
+     premium-overrides), у выбранного пункта ::before занят капсулой. */
+  #mcNav .mc-btn::before {
+    content: "";
+    position: absolute;
+    left: -1px;
+    /* [r30] Сепараторы были ярче неактивных подписей и читались как сетка.
+       Теперь это волосяная тень между пунктами: 18 px высотой, .16 в центре. */
+    top: 21px;
+    bottom: 21px;
+    width: 1px;
+    opacity: 1;
+    background: linear-gradient(180deg, transparent, rgba(232,184,122,.16), transparent);
+    pointer-events: none;
+  }
+  #mcNav .mc-btn:first-child::before { display: none; }
+
+  /* [r29] Капсула выбранного пункта удалена (владелец: «без рамок, только
+     другой цвет/подсветка»). ::before снова принадлежит только сепаратору —
+     поэтому сепараторы теперь непрерывны, без выпадения у активного пункта. */
+  #mcNav .mc-btn.mc-active svg {
+    /* [r29] Единственный акцент помимо цвета — деликатный drop-shadow на самой
+       иконке; толщина линий, размер и позиция не меняются. */
+    filter: drop-shadow(0 0 5px rgba(240,201,138,.34));
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   [r28] Пока док на экране, верхняя золотая обводка бара не нужна: она
+   давала вторую линию на стыке. И выбранный пункт — без рамки, тёплой
+   подсветкой (владелец: «лучше, если выбрано без рамок»).
+   ════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* [r29] Правило border-top-color:transparent отсюда убрано: на телефоне у
+     бара вообще нет обводки (border:0 ниже), а на 561–768 px дока нет —
+     правило ничего не меняло, но занимало бюджет !important. */
+  /* [r29] Тень бара целиком задаётся выше и уже не затекает за верхнюю
+     кромку (offset 18 − blur/2 17 − spread 10 = −9 px), поэтому отдельного
+     «режима с доком» для неё не нужно. */
+
+  /* [r29] Выбранный пункт = только золотая SVG и золотая подпись.
+     Ни плитки, ни «подушки», ни капсулы, ни фонового свечения вокруг кнопки,
+     ни заливки контурных иконок: меняются цвет, насыщенность подписи и
+     деликатный drop-shadow на самой иконке. Ширина, высота и позиция пунктов
+     не меняются, переход 220 мс. */
+  #mcNav .mc-btn.mc-active {
+    color: #f6d7a4 !important;
+    background: none !important;
+  }
+  #mcNav .mc-btn.mc-active .mc-btn-label {
+    color: #f8ddb0;
+    font-weight: 600;
+    text-shadow: none;
+  }
+  #mcNav .mc-btn.mc-active svg {
+    fill: none !important;
+    filter: drop-shadow(0 0 5px rgba(240,201,138,.30));
+  }
+}
+
+@media (max-width: 560px) {
+  /* [r28] Внутренняя полоса «примерная стоимость» была залита card-bg и
+     перекрывала градиент панели — отсюда «отдельная панель» на стыке с баром.
+     Теперь поверхность одна: градиент .calc-result, полоса прозрачная. */
+  #calcRightCol .calc-result-collapsed {
+    background: transparent !important;
+    border-top-color: transparent !important;
+    /* [r29] Низ полосы спрятан за баром (--mc-dock-overlap), поэтому нижний
+       отступ увеличен ровно на перекрытие: подпись и цена стоят по центру
+       видимой части и не заезжают под бар ни на пиксель. */
+    padding-bottom: calc(13px + var(--mc-dock-overlap)) !important;
+  }
+  /* [r30] Базовый .calc-result (style.css) несёт margin-top: 8px. На телефоне
+     эта щель была видна над доком: в неё просвечивала страница и ложилась тень
+     — читалось как прямоугольная подложка под панелью. Док и бар — одна
+     конструкция, поэтому щели нет. */
+  #calcRightCol .calc-result { margin-top: 0; }
+}
+
+/* [r29] 320–360 px: подпись и цена вдвоём в строку не влезают — цена уходила
+   под круглую кнопку. Здесь подпись встаёт над ценой, кнопка остаётся справа.
+   Правки только раскладки: размеры шрифтов и цвета не меняются. */
+@media (max-width: 360px) {
+  #calcRightCol .calc-result-collapsed-main {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 1px;
+  }
+}
+
+/* [r28] Бар и док — одна поверхность: на телефоне у бара вообще нет верхней
+   обводки (даже прозрачной: она всё равно давала полоску на стыке). */
+@media (max-width: 560px) {
+  /* [r28] У бара на телефоне обводки нет вовсе: золотые боковые линии
+     заворачивались по скруглению и рисовали на стыке дугу — «вторую полосу». */
+  html body #mcNav.mc-nav { border: 0 !important; }
+}
+
+/* [r29] Раскрытая смета больше не переезжает к нижнему краю: бар остаётся на
+   месте, панель растёт вверх из-под него — геометрия стабильна, прыжка нет. */
+
+/* [r33] Карточки каталога: у «Бенто» и «Павловой» подпись короче, и кнопка
+   вставала на 20–36 px выше соседей в том же ряду — ряд читался как «рваный».
+   Тянем .product-info на всю высоту карточки и прижимаем низ (цена + кнопка)
+   к общей базовой линии. На мобиле карточки идут в столбик и правило молчит. */
+.product-card { display: flex; flex-direction: column; }
+.product-card > .slider-wrap { flex: 0 0 auto; }
+.product-card > .product-info { flex: 1 1 auto; display: flex; flex-direction: column; }
+.product-card > .product-info > .product-footer { margin-top: auto; }
+
+/* ═══ [r35] Планшетная шапка: 769–1149 px ═══
+   Выше 768 px шапка включает полное меню, но строка «логотип + сертификаты +
+   шесть ссылок + Заказать + тема + корзина» при текущей типографике занимает
+   ~1150 px. На 769–1149 она вылезала за правый край: «Заказать», переключатель
+   темы и корзина оказывались за вьюпортом, а логотип сжимался в четыре строки.
+   Здесь только раскладка: узкая типографика, меньше отступы, у чипа сертификатов
+   скрывается подпись (сама ссылка-медальон остаётся, дубль есть в футере). */
+@media (min-width: 769px) and (max-width: 1149px) {
+  .site-header { padding: 0 24px; }
+  .header-logo { flex: 0 0 auto; white-space: nowrap; }
+  .header-logo-sub { white-space: nowrap; }
+  /* Медальон сертификатов уступает место меню: ссылка на /certificates/
+     остаётся в футере, поэтому доступ к странице не теряется. */
+  .header-trust { display: none; }
+  .header-nav { gap: 8px; min-width: 0; }
+  /* Ссылки не сжимаются: иначе «Заказать» обрезался до «ЗА» внутри пилюли. */
+  .header-nav a { flex: 0 0 auto; font-size: 12px; letter-spacing: 0.02em; white-space: nowrap; }
+  .header-nav a.header-order { padding: 8px 14px; }
+  .header-nav .theme-toggle,
+  .header-nav .header-cart-btn { flex: 0 0 auto; }
+}
+
+/* ═══ [r35] Шаги корзины: цифры на кружках ═══
+   В тёмной теме завершённый шаг получал фон var(--brown) (#f0e4d0 — светлый)
+   и белый текст: цифра «1» пропадала. Пара «фон --brown + текст --cream»
+   работает в обеих темах: в светлой это прежние #3d2b1f/#f5f0e8, в тёмной —
+   светлый кружок с тёмной цифрой. Активный шаг: на золоте читается тёмная
+   цифра (в светлой теме --cream почти белый, вид не меняется). */
+.cart-step.done .cart-step-dot { color: var(--cream); }
+.cart-step.active .cart-step-dot { color: var(--cart-cta-ink); }
+
+/* ═══ [r35] Заголовок корзины на 320 px ═══
+   «Ваш заказ» вместе с бейджем, «Очистить» и крестиком не влезал в одну
+   строку и переносился на две — шапка становилась 93 px вместо 85. */
+@media (max-width: 360px) {
+  /* Освобождаем строку заголовка: у «Очистить» остаётся иконка и aria-label,
+     а «Ваш заказ» перестаёт переноситься на две строки. */
+  .cart-clear-label { display: none; }
+  #cartClearBtn { padding: 0 9px; }
+  #cartDrawerTitle { font-size: 19px; gap: 6px; white-space: nowrap; }
+}
+
+/* ═══ [r35] Пустой состав в шторке начинки ═══
+   У бенто и 3D описаний нет (см. отчёт, контентный HOLD). Раньше шторка
+   показывала пустой блок с отступами — теперь он не занимает места. */
+#fillPopupText:empty { display: none; }

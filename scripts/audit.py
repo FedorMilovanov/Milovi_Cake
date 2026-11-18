@@ -104,6 +104,14 @@ DEV_TOOLING_JS = {
     "tests/contrast-regressions.spec.js",
     "tests/image-intrinsics.spec.js",
     "tests/fastinit-layout-skip.spec.js",
+    "tests/cart-pricing.spec.js",
+    "tests/back-to-top.spec.js",
+    "tests/fillings-composition.spec.js",
+    "tests/cart-biscuit-key.spec.js",
+    "tests/tablet-header.spec.js",
+    "tests/service-worker.spec.js",
+    "tests/diagnostics/sw-https.spec.js",
+    "tests/diagnostics/webkit-sw-diagnostics.spec.js",
     "scripts/lighthouse_tbt_window.js",
 }
 
@@ -115,7 +123,7 @@ IMPORTANT_BUDGET = {
     "css/v20-dark-and-fixes.css": 600,
     "css/mc-2026.css": 191,
     "css/style.css": 124,
-    "css/final-fixes.css": 297,
+    "css/final-fixes.css": 308,  # +11: mobile editorial hero (paper plate, photo fade, flat CTA, headline size/colour/leading)
     "css/gallery/gallery-2026.css": 27,  # dark-theme active-chip override baseline
     "css/v20-fixes.css": 272,
 }
@@ -1041,8 +1049,11 @@ with R.section("10. Forbidden Patterns"):
     # Hero messengers: round SVG ring icons with flat label hover must remain intact.
     for needle in ("messenger-group--ring", "btn-hero-ring", "btn-hero-wa", "btn-hero-tg", "btn-hero-max"):
         require_contains("index.html", needle)
-    require_count("index.html", "hero-ring-text", 3, "hero ring text SVG labels")
-    require_count("index.html", "hero-flat-text", 3, "hero flat text SVG labels")
+    # [r20] Владелец: подписи WhatsApp/Telegram/MAX внутри кольца убраны.
+    # Теперь это круглые кольца с чистым глифом без текста, поэтому
+    # контракт требует три кольца-иконки, а не три текстовых подписи.
+    require_count("index.html", "btn-hero-ring", 3, "hero ring messenger icons")
+    require_count('index.html', 'viewBox="0 0 24 24"', 3, "hero messenger glyph viewBox")
     require_contains("css/premium-overrides.css", "AI DO NOT TOUCH — R10 PROTECTED BLOCK", "R10 protected CSS marker")
     require_contains("css/premium-overrides.css", "PATCH R9", "R9/R10 protected CSS marker")
     require_contains("css/final-fixes.css", ".hero-actions .btn-hero-messenger:hover .hero-flat-text", "final hero messenger hover override")

@@ -59,6 +59,36 @@ async function effectiveBg(locator) {
   });
 }
 
+// [r29] Нижний бар — самостоятельная «пилюля» с равным воздухом по краям.
+// Числа не зашиты в тест: ожидания читаются из токенов --mc-nav-side и
+// --mc-nav-gap (css/style.css), то есть тест проверяет контракт геометрии,
+// а не конкретную реализацию.
+async function mobileAppShellMetrics(page) {
+  return page.evaluate(() => {
+    const nav = document.getElementById('mcNav');
+    const rect = nav.getBoundingClientRect();
+    const style = getComputedStyle(nav);
+    const root = getComputedStyle(document.documentElement);
+    const side = parseFloat(root.getPropertyValue('--mc-nav-side')) || 12;
+    const gap = parseFloat(root.getPropertyValue('--mc-nav-gap')) || 8;
+    return {
+      left: rect.left,
+      rightGap: window.innerWidth - rect.right,
+      bottomGap: window.innerHeight - rect.bottom,
+      width: rect.width,
+      height: rect.height,
+      viewport: window.innerWidth,
+      side,
+      gap,
+      radius: parseFloat(style.borderTopLeftRadius) || 0,
+      position: style.position,
+      display: style.display,
+      visibility: style.visibility,
+      pointerEvents: style.pointerEvents,
+    };
+  });
+}
+
 async function waitForMobileAppShell(page) {
   await page.waitForFunction(() => {
     if (window.innerWidth > 768) return true;
@@ -66,16 +96,20 @@ async function waitForMobileAppShell(page) {
     if (!nav) return false;
     const style = getComputedStyle(nav);
     const rect = nav.getBoundingClientRect();
+    const root = getComputedStyle(document.documentElement);
+    const side = parseFloat(root.getPropertyValue('--mc-nav-side')) || 12;
+    const gap = parseFloat(root.getPropertyValue('--mc-nav-gap')) || 8;
     const rightGap = window.innerWidth - rect.right;
     const bottomGap = window.innerHeight - rect.bottom;
     return style.position === 'fixed' &&
       style.display !== 'none' &&
       style.visibility === 'visible' &&
-      rect.left >= 8 && rect.left <= 16 &&
-      rightGap >= 8 && rightGap <= 16 &&
-      bottomGap >= 8 && bottomGap <= 16 &&
-      rect.width >= window.innerWidth - 32 &&
-      rect.width <= window.innerWidth - 16;
+      Math.abs(rect.left - side) <= 1 &&
+      Math.abs(rightGap - side) <= 1 &&
+      Math.abs(bottomGap - gap) <= 1 &&
+      Math.abs(rect.width - (window.innerWidth - 2 * side)) <= 1 &&
+      rect.height >= 56 &&
+      parseFloat(style.borderTopLeftRadius) >= 18;
   });
 }
 
@@ -260,53 +294,38 @@ test.describe('contact, privacy and mobile application contracts', () => {
     await waitForMobileAppShell(page);
 
     const nav = page.locator('#mcNav');
-    await expect(nav.locator('.mc-btn-label')).toHaveText(['Каталог', 'Начинки', 'Отзывы', 'Заказать', 'Ещё']);
+    await expect(nav.locator('.mc-btn-label')).toHaveText(['Каталог', 'Начинки', 'Корзина', 'Отзывы', 'Ещё']);
 
-    const initial = await page.evaluate(() => {
-      const visibleNavs = ['mcNav', 'bottomNav', 'mrBottomNav']
-        .map((id) => document.getElementById(id))
-        .filter(Boolean)
-        .filter((element) => {
-          const style = getComputedStyle(element);
-          const rect = element.getBoundingClientRect();
-          return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
-        })
-        .map((element) => element.id);
-      const rect = document.getElementById('mcNav').getBoundingClientRect();
-      return {
-        visibleNavs,
-        left: rect.left,
-        rightGap: window.innerWidth - rect.right,
-        bottomGap: window.innerHeight - rect.bottom,
-        width: rect.width,
-        viewport: window.innerWidth,
-      };
-    });
-    expect(initial.visibleNavs).toEqual(['mcNav']);
-    expect(initial.left).toBeGreaterThanOrEqual(8);
-    expect(initial.left).toBeLessThanOrEqual(16);
-    expect(initial.rightGap).toBeGreaterThanOrEqual(8);
-    expect(initial.rightGap).toBeLessThanOrEqual(16);
-    expect(initial.bottomGap).toBeGreaterThanOrEqual(8);
-    expect(initial.bottomGap).toBeLessThanOrEqual(16);
-    expect(initial.width).toBeGreaterThanOrEqual(initial.viewport - 32);
-    expect(initial.width).toBeLessThanOrEqual(initial.viewport - 16);
+    const visibleNavs = await page.evaluate(() => ['mcNav', 'bottomNav', 'mrBottomNav']
+      .map((id) => document.getElementById(id))
+      .filter(Boolean)
+      .filter((element) => {
+        const style = getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+      })
+      .map((element) => element.id));
+    expect(visibleNavs).toEqual(['mcNav']);
+
+    const initial = await mobileAppShellMetrics(page);
+    expect(initial.position).toBe('fixed');
+    // [r29] Пилюля: одинаковый воздух слева и справа (--mc-nav-side), подъём
+    // над краем экрана (--mc-nav-gap), ширина = вьюпорт минус два отступа и
+    // скругление корпуса — геометрия сверяется с токенами, а не с магией.
+    expect(Math.abs(initial.left - initial.side)).toBeLessThanOrEqual(1);
+    expect(Math.abs(initial.rightGap - initial.side)).toBeLessThanOrEqual(1);
+    expect(Math.abs(initial.bottomGap - initial.gap)).toBeLessThanOrEqual(1);
+    expect(Math.abs(initial.width - (initial.viewport - 2 * initial.side))).toBeLessThanOrEqual(1);
+    expect(initial.height).toBeGreaterThanOrEqual(56);
+    expect(initial.radius).toBeGreaterThanOrEqual(18);
 
     await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight * 0.65, behavior: 'instant' }));
     await page.waitForTimeout(250);
     await expect(nav).toBeVisible();
-    const afterScroll = await nav.evaluate((element) => {
-      const rect = element.getBoundingClientRect();
-      const style = getComputedStyle(element);
-      return {
-        bottomGap: window.innerHeight - rect.bottom,
-        display: style.display,
-        visibility: style.visibility,
-        pointerEvents: style.pointerEvents,
-      };
-    });
-    expect(afterScroll.bottomGap).toBeGreaterThanOrEqual(8);
-    expect(afterScroll.bottomGap).toBeLessThanOrEqual(16);
+    const afterScroll = await mobileAppShellMetrics(page);
+    expect(Math.abs(afterScroll.bottomGap - afterScroll.gap)).toBeLessThanOrEqual(1);
+    expect(Math.abs(afterScroll.left - afterScroll.side)).toBeLessThanOrEqual(1);
+    expect(Math.abs(afterScroll.rightGap - afterScroll.side)).toBeLessThanOrEqual(1);
     expect(afterScroll.display).not.toBe('none');
     expect(afterScroll.visibility).toBe('visible');
     expect(afterScroll.pointerEvents).not.toBe('none');
@@ -325,6 +344,144 @@ test.describe('contact, privacy and mobile application contracts', () => {
     await page.locator('#mcMoreBtn').click();
     await expect(page.locator('#mcPrivacyRow')).toBeVisible();
     await expect(page.locator('.site-footer .mc-consent-trigger')).toHaveCount(0);
+  });
+
+  // [r29] Док «примерная стоимость» — не отдельная карточка над баром, а та же
+  // поверхность, из-под которой он вытекает: одна полоса по ширине, один тон
+  // на стыке и выбранный пункт без плиток/капсул/рамок.
+  test('mobile price dock grows out of the app bar as one surface', async ({ page }, testInfo) => {
+    test.skip(!testInfo.project.name.includes('mobile'), 'mobile-only contract');
+    await applyTheme(page, 'dark');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await waitForMobileAppShell(page);
+
+    const nav = page.locator('#mcNav');
+    await expect(nav.locator('.mc-btn')).toHaveCount(5);
+
+    // До первого выбора док полностью спрятан под баром.
+    await page.locator('#fillings').scrollIntoViewIfNeeded();
+    await expect(page.locator('body')).toHaveClass(/mc-dock-idle/);
+    const hidden = await page.evaluate(() => {
+      const dock = document.getElementById('calcRightCol').getBoundingClientRect();
+      const bar = document.getElementById('mcNav').getBoundingClientRect();
+      return { dockTop: dock.top, navTop: bar.top };
+    });
+    expect(hidden.dockTop).toBeGreaterThanOrEqual(hidden.navTop - 1);
+
+    await page.locator('#calcType .calc-type-card.selected').click();
+    await expect(page.locator('body')).toHaveClass(/mc-dock-shown/);
+    // Ждём завершения перехода (--mc-dock-dur = 460 мс) — без «сонных» пауз.
+    await expect.poll(() => page.locator('#calcRightCol').evaluate((el) => {
+      const matrix = getComputedStyle(el).transform.match(/matrix\(([^)]+)\)/);
+      return matrix ? Math.abs(Number(matrix[1].split(',')[5])) : 0;
+    }), { timeout: 3000 }).toBeLessThanOrEqual(0.5);
+
+    const metrics = await page.evaluate(() => {
+      const dock = document.getElementById('calcRightCol');
+      const bar = document.getElementById('mcNav');
+      const dockRect = dock.getBoundingClientRect();
+      const barRect = bar.getBoundingClientRect();
+      const dockStyle = getComputedStyle(dock);
+      const dockBox = getComputedStyle(document.getElementById('calcResultBox'));
+      const barStyle = getComputedStyle(bar);
+      const root = getComputedStyle(document.documentElement);
+      const matrix = dockStyle.transform.match(/matrix\(([^)]+)\)/);
+      return {
+        side: parseFloat(root.getPropertyValue('--mc-nav-side')) || 12,
+        overlap: parseFloat(root.getPropertyValue('--mc-dock-overlap')) || 22,
+        dock: { left: dockRect.left, right: dockRect.right, bottom: dockRect.bottom, top: dockRect.top },
+        bar: { left: barRect.left, right: barRect.right, top: barRect.top, bottom: barRect.bottom },
+        dockRadius: parseFloat(dockBox.borderTopLeftRadius) || 0,
+        dockBorderBottom: dockBox.borderBottomWidth,
+        dockTransition: {
+          property: dockStyle.transitionProperty,
+          duration: dockStyle.transitionDuration,
+          timing: dockStyle.transitionTimingFunction,
+        },
+        scale: matrix ? [Number(matrix[1].split(',')[0]), Number(matrix[1].split(',')[3])] : null,
+        barRadius: parseFloat(barStyle.borderTopLeftRadius) || 0,
+        barZ: Number(barStyle.zIndex) || 0,
+        dockZ: Number(dockStyle.zIndex) || 0,
+      };
+    });
+
+    // Одна полоса: док стоит ровно по краям бара (те же --mc-nav-side).
+    expect(Math.abs(metrics.dock.left - metrics.bar.left)).toBeLessThanOrEqual(1);
+    expect(Math.abs(metrics.dock.right - metrics.bar.right)).toBeLessThanOrEqual(1);
+    // Низ дока заходит под бар на --mc-dock-overlap: стык перекрыт баром.
+    expect(Math.abs((metrics.bar.top - metrics.dock.bottom) + metrics.overlap)).toBeLessThanOrEqual(1.5);
+    // Док всегда под баром — иначе кайма/тень дали бы «вторую полосу».
+    expect(metrics.dockZ).toBeLessThan(metrics.barZ);
+    expect(metrics.dockBorderBottom).toBe('0px');
+    // Стык скруглений: радиус дока = радиусу бара, поверхность продолжается.
+    expect(Math.abs(metrics.dockRadius - metrics.barRadius)).toBeLessThanOrEqual(1);
+    // Анимация — только transform, 460 мс, без пружины и без scale.
+    expect(metrics.dockTransition.property).toBe('transform');
+    expect(metrics.dockTransition.duration).toBe('0.46s');
+    expect(metrics.dockTransition.timing).toBe('cubic-bezier(0.22, 0.61, 0.36, 1)');
+    expect(metrics.scale).toEqual([1, 1]);
+
+    // Выбранный пункт: только золото на SVG и подписи, без фона, рамок и каймы.
+    const active = await page.evaluate(() => {
+      const buttons = Array.from(document.querySelectorAll('#mcNav .mc-btn'));
+      const current = buttons.find((button) => button.classList.contains('mc-active'));
+      if (!current) return null;
+      const other = buttons.find((button) => !button.classList.contains('mc-active'));
+      const style = getComputedStyle(current);
+      const before = getComputedStyle(current, '::before');
+      const svg = getComputedStyle(current.querySelector('svg'));
+      return {
+        background: style.backgroundColor,
+        backgroundImage: style.backgroundImage,
+        boxShadow: style.boxShadow,
+        decorWidth: parseFloat(before.width) || 0,
+        svgFill: svg.fill,
+        labelColor: getComputedStyle(current.querySelector('.mc-btn-label')).color,
+        svgColor: svg.color,
+        otherLabelColor: other ? getComputedStyle(other.querySelector('.mc-btn-label')).color : null,
+        otherSvgColor: other ? getComputedStyle(other.querySelector('svg')).color : null,
+      };
+    });
+    expect(active, 'one app bar item is marked as current').not.toBeNull();
+    expect(active.background).toBe('rgba(0, 0, 0, 0)');
+    expect(active.backgroundImage).toBe('none');
+    expect(active.boxShadow).toBe('none');
+    // На ::before живёт только волосяной сепаратор (1 px), никаких капсул/плиток.
+    expect(active.decorWidth).toBeLessThanOrEqual(2);
+    expect(active.svgFill).toBe('none');
+    expect(active.labelColor).not.toBe(active.otherLabelColor);
+    expect(active.svgColor).not.toBe(active.otherSvgColor);
+
+    // Раскрытая смета растёт из-под бара, а сам бар остаётся на месте.
+    const barTopBefore = await nav.evaluate((el) => el.getBoundingClientRect().top);
+    await page.locator('#calcCollapsedBar').click();
+    await expect(page.locator('#calcCollapsedBar')).toHaveAttribute('aria-expanded', 'true');
+    // Смета раскрывается 460 мс; ждём контракт, а не «сон»: кнопка заказа
+    // обязана оказаться над баром (иначе её не нажать).
+    await expect.poll(() => page.evaluate(() => {
+      const bar = document.getElementById('mcNav').getBoundingClientRect();
+      const add = document.querySelector('.calc-add-btn')?.getBoundingClientRect();
+      return add ? Math.round(bar.top - add.bottom) : -9999;
+    }), { timeout: 5000 }).toBeGreaterThanOrEqual(0);
+    const opened = await page.evaluate(() => {
+      const bar = document.getElementById('mcNav').getBoundingClientRect();
+      const dock = document.getElementById('calcRightCol').getBoundingClientRect();
+      const add = document.querySelector('.calc-add-btn')?.getBoundingClientRect();
+      return {
+        barTop: bar.top,
+        dockLeft: dock.left,
+        dockRight: dock.right,
+        addBottom: add ? add.bottom : null,
+        viewport: window.innerHeight,
+      };
+    });
+    expect(Math.abs(opened.barTop - barTopBefore)).toBeLessThanOrEqual(1);
+    expect(Math.abs(opened.dockLeft - metrics.bar.left)).toBeLessThanOrEqual(1);
+    expect(Math.abs(opened.dockRight - metrics.bar.right)).toBeLessThanOrEqual(1);
+    expect(opened.addBottom).not.toBeNull();
+    // Кнопка «Добавить в корзину» полностью над баром — её нельзя спрятать под ним.
+    expect(opened.addBottom).toBeLessThanOrEqual(opened.barTop - 0.5);
+    await page.screenshot({ path: proofPath(testInfo, 'mobile-price-dock'), fullPage: false });
   });
 });
 

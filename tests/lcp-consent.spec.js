@@ -151,7 +151,11 @@ test('prerendered pages do not misreport pre-activation time as visible LCP', as
   await prepare(page, 'granted');
   await page.goto('/', { waitUntil: 'load' });
   await expect.poll(() => page.evaluate(() => window.__rawLcp.length)).toBeGreaterThan(0);
-  await page.locator('.hero-img').click({ force: true });
+  // Фото героя на телефоне скрыто редакционной раскладкой, поэтому доверенный
+  // клик делаем по заголовку героя — он виден на всех ширинах.
+  const heroTarget = page.locator('.hero-img');
+  if (await heroTarget.isVisible()) await heroTarget.click({ force: true });
+  else await page.locator('.hero-msg-caption').first().click();
   await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
   expect(await vitalEvents(page)).toEqual([]);
 });
@@ -166,7 +170,11 @@ test('returning opt-in homepage sends a single LCP when interaction ends it', as
   });
   await page.waitForTimeout(100); // The former pointerdown reporter finalized on a 0-ms timer.
   expect(await vitalEvents(page)).toEqual([]);
-  await page.locator('.hero-img').click({ force: true });
+  // Фото героя на телефоне скрыто редакционной раскладкой, поэтому доверенный
+  // клик делаем по заголовку героя — он виден на всех ширинах.
+  const heroTarget = page.locator('.hero-img');
+  if (await heroTarget.isVisible()) await heroTarget.click({ force: true });
+  else await page.locator('.hero-msg-caption').first().click();
   await expect.poll(async () => (await vitalEvents(page)).length).toBe(1);
   const [[, , metric]] = await vitalEvents(page);
   expect(metric.lcp_page).toBe('home');

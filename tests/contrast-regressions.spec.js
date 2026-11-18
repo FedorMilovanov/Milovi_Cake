@@ -39,7 +39,13 @@ async function assertContrast(page, selector, minimum = 4.5) {
       const layers = [];
       let node = element;
       while (node) {
-        const color = parse(getComputedStyle(node).backgroundColor);
+        const style = getComputedStyle(node);
+        let color = parse(style.backgroundColor);
+        // Фон может быть нарисован градиентом (background-image) при прозрачном
+        // background-color — тогда берём первый цветовой стоп.
+        if (color[3] === 0 && /gradient\(/i.test(style.backgroundImage)) {
+          color = parse(style.backgroundImage);
+        }
         if (color[3] > 0) layers.push(color);
         if (color[3] >= 0.999) break;
         node = node.parentElement;
@@ -149,5 +155,60 @@ test.describe('catalog secondary-copy contrast across themes and widths', () => 
         });
       }
     }
+  }
+});
+
+/* r35: в тёмной теме завершённый шаг корзины получал светлый фон и белый текст —
+   цифра исчезала (1.0:1). Плюс активный шаг был белым на золоте (2.6:1).
+   Держим оба состояния читаемыми в обеих темах. */
+test.describe('cart step indicator contrast', () => {
+  for (const theme of ['light', 'dark']) {
+    test(theme + ': completed and active cart steps stay readable', async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 900 });
+      await page.addInitScript((preferredTheme) => {
+        localStorage.setItem('mc_theme', preferredTheme);
+        localStorage.setItem('milovicake_cart', JSON.stringify({
+          '1:regular:Микс ягод:Базовый декор': { qty: 2, mode: 'regular', fill: 'Микс ягод', decor: 'Базовый декор', decorAdd: 0 },
+        }));
+      }, theme);
+      await page.goto('/');
+      await page.evaluate(() => { if (typeof openCart === 'function') openCart(); });
+      await expect(page.locator('#cartDrawer .cart-item').first()).toBeVisible();
+      await page.evaluate(() => window.navigateToStep(2));
+      await expect(page.locator('.cart-step.active .cart-step-dot')).toHaveText('2');
+      // У кружка есть transition на цвет: сразу после смены шага computed color
+      // ещё интерполируется, и замер ловит середину перехода.
+      await expect.poll(async () => page.evaluate(() => {
+        const el = document.querySelector('.cart-step.active .cart-step-dot');
+        const cs = getComputedStyle(el);
+        return cs.color + '|' + cs.backgroundColor;
+      })).toMatch(/\)\|rgb/);
+      await page.waitForTimeout(450);
+      await assertContrast(page, '.cart-step.done .cart-step-dot', 4.5);
+      await assertContrast(page, '.cart-step.active .cart-step-dot', 4.5);
+    });
+  }
+});
+
+/* r35: в тёмной теме каждый шаг корзины получал карточку (--card-bg + рамка),
+   которых нет в светлой, и под точками появлялись три посторонних блока.
+   Шаги должны быть одной и той же «плоской» конструкцией в обеих темах. */
+test.describe('cart steps stay flat in both themes', () => {
+  for (const theme of ['light', 'dark']) {
+    test(theme + ': cart steps have no card background', async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 900 });
+      await page.addInitScript((preferredTheme) => {
+        localStorage.setItem('mc_theme', preferredTheme);
+        localStorage.setItem('milovicake_cart', JSON.stringify({
+          '1:regular:Микс ягод:Базовый декор': { qty: 2, mode: 'regular', fill: 'Микс ягод', decor: 'Базовый декор', decorAdd: 0 },
+        }));
+      }, theme);
+      await page.goto('/');
+      await page.evaluate(() => { if (typeof openCart === 'function') openCart(); });
+      await expect(page.locator('#cartDrawer .cart-item').first()).toBeVisible();
+      const backgrounds = await page.locator('.cart-step').evaluateAll((elements) => elements.map((el) => getComputedStyle(el).backgroundColor));
+      expect(backgrounds.length).toBe(3);
+      for (const bg of backgrounds) expect(bg).toBe('rgba(0, 0, 0, 0)');
+    });
   }
 });

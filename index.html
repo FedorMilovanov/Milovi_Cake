@@ -51,7 +51,13 @@
   <link rel="dns-prefetch" href="https://t.me" />
   <link rel="dns-prefetch" href="https://yandex.ru" />
   <link rel="preload" as="image" type="image/avif" href="img/head_desktop.avif" media="(min-width:769px)" fetchpriority="high" />
-  <link rel="preload" as="image" type="image/avif" href="img/head_mobile-640.avif" media="(max-width:768px)" fetchpriority="high" />
+  <!-- [r38] Мобильного preload'а для героя здесь больше нет.
+       На ≤768 px .hero-photo-bg скрыт (display:none), и раньше этот preload
+       тянул img/head_mobile-640.avif — 18 KB картинки, которую мобильный
+       браузер вообще не показывает. Взамен не предзагружаем и видимый постер:
+       он лежит в самом HTML выше линии сгиба с fetchpriority="high", а
+       замер LCP показал, что лишний image-preload только отбирает полосу у
+       render-blocking CSS (LCP-медиана 2.56 s без него против 2.93 s с ним). -->
   <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/cormorant-garamond-cyrillic-wght-normal.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/jost-cyrillic-wght-normal.woff2" />
 <link rel="stylesheet" href="/css/fonts.css?v=20261102r01" />
@@ -407,13 +413,13 @@
     @media(max-width:768px){#catalogGrid{grid-template-columns:repeat(2,1fr);gap:16px;padding:0 16px 32px}}
     @media(max-width:560px){#catalogGrid{grid-template-columns:1fr;gap:20px;padding:0 16px 36px}}
   </style>
-<link rel="stylesheet" href="css/style.css?v=20261116r06" />
-  <link rel="stylesheet" href="css/mc-2026.css?v=20261116r06" />
-  <link rel="stylesheet" href="css/premium-overrides.css?v=20261116r06" />
-  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20261116r06">
+<link rel="stylesheet" href="css/style.css?v=20261118r29" />
+  <link rel="stylesheet" href="css/mc-2026.css?v=20261118r28" />
+  <link rel="stylesheet" href="css/premium-overrides.css?v=20261118r36" />
+  <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20261118r27">
 <!-- Необязательная аналитика и LCP-телеметрия управляются согласием пользователя. -->
-<link rel="stylesheet" href="/css/v20-fixes.css?v=20260728r27">
-  <link rel="stylesheet" href="/css/final-fixes.css?v=20261116r06" />
+<link rel="stylesheet" href="/css/v20-fixes.css?v=20261118r31">
+  <link rel="stylesheet" href="/css/final-fixes.css?v=20261118r42" />
   <!-- [P100] Детерминированный пропуск offscreen-layout на первом кадре:
        content-visibility:auto для секций ниже сгиба работает только до 2 кадров
        после FCP (или до первого взаимодействия / жёсткого таймаута 1500 мс),
@@ -442,7 +448,7 @@
   </script>
 </head>
 
-<body>
+<body class="mc-home">
 
 <!-- SKIP LINK -->
 <a href="#main-content" class="skip-link">Перейти к содержимому</a>
@@ -586,7 +592,19 @@
       <source type="image/avif" media="(min-width: 769px)" srcset="img/head_desktop.avif" />
       <source type="image/webp" media="(max-width: 768px)" srcset="img/head_mobile.webp" />
       <source type="image/webp" media="(min-width: 769px)" srcset="img/head_desktop.webp" />
-      <img class="hero-img" src="img/head_desktop.webp" alt="Авторский торт ручной работы — Milovi Cake, Санкт-Петербург" fetchpriority="high" decoding="async" width="1440" height="960" />
+      <img class="hero-img" src="img/head_desktop.webp" alt="Авторский торт ручной работы — Milovi Cake, Санкт-Петербург" loading="lazy" fetchpriority="high" decoding="async" width="1440" height="960" />
+    </picture>
+  </div>
+  <!-- [2026-11-16r17] Арт нового референса: торт с боке и цветами справа,
+       текст лежит на чистом свете стены слева. Только для мобильного постера. -->
+  <div class="hero-art" aria-hidden="true">
+    <picture>
+      <source type="image/webp" srcset="img/hero-poster-cake.webp?v=20261116r22" />
+      <!-- [r38] Постер остаётся eager с fetchpriority="high": это LCP главной
+           на телефоне. Проба с loading="lazy" ради десктопной экономии
+           откладывала мобильный LCP на ~400 мс (2.93 s против 2.56 s), поэтому
+           ленивость здесь не используется. -->
+      <img src="img/hero-poster-cake.jpg?v=20261116r22" alt="" width="790" height="1087" fetchpriority="high" decoding="async" />
     </picture>
   </div>
   <div class="hero-content">
@@ -595,7 +613,7 @@
         <span class="hero-title-brand" id="heroTitleBrand">Milovi Cake</span>
         <span class="hero-title-seo"> — частный кондитер в СПб</span>
       </h1>
-      <p class="hero-subtitle wave-text">Авторские торты и десерты ручной работы с доставкой по Санкт-Петербургу и Ленобласти</p>
+      <p class="hero-subtitle wave-text"><span class="hero-sub-1">Авторские торты</span> <span class="hero-sub-2">и десерты</span> <span class="hero-sub-3">ручной работы</span> <span class="hero-sub-4">с доставкой по Санкт‑Петербургу и Ленобласти</span></p>
       <div class="hero-features">
         <div class="hero-feature-item">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,220,150,0.85)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -611,40 +629,26 @@
         </div>
       </div>
       <div class="hero-actions">
-        <a href="#catalog" class="btn-primary btn-primary--hero">Выбрать торт<span class="btn-price-hint">от 1 600 ₽</span></a>
+        <a href="#catalogGrid" class="btn-primary btn-primary--hero"><span class="btn-hero-bag" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"><path d="M4.7 8.5h14.6l-1.05 10.9a1.8 1.8 0 0 1-1.8 1.6H7.55a1.8 1.8 0 0 1-1.8-1.6z"/><path d="M8.7 8.5V6.7a3.3 3.3 0 0 1 6.6 0v1.8"/></svg></span><span class="btn-hero-divider" aria-hidden="true"></span><span class="btn-hero-label">Заказать</span><span class="btn-hero-go" aria-hidden="true"><svg width="26" height="12" viewBox="0 0 26 12" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"><path d="M1.2 6h22"/><path d="m19 1.9 4.2 4.1-4.2 4.1"/></svg></span></a>
         <!-- AI DO NOT TOUCH R10: hero messengers must stay circular inline-SVG ring icons with brand colors: WA #25D366, TG #229ED9, MAX purple. Hover must lift the flat label upward. -->
         <div class="messenger-group messenger-group--ring" style="display:flex;gap:12px;align-items:center;">
           <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D1%8C%20%D1%82%D0%BE%D1%80%D1%82" target="_blank" rel="noopener noreferrer" class="btn-hero-messenger btn-hero-wa btn-hero-ring" aria-label="Написать в WhatsApp">
             <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible" aria-hidden="true">
-              <defs><path id="ring-path-wa-main" d="M7,24 a17,17 0 1,1 0,0.01"/></defs>
-              <text class="hero-ring-text" font-family="Jost,sans-serif" font-size="6.5" fill="currentColor" opacity="0.5">
-                <textPath href="#ring-path-wa-main" startOffset="25%" text-anchor="middle" letter-spacing="0.4">WhatsApp</textPath>
-              </text>
-              <text class="hero-flat-text" font-family="Jost,sans-serif" font-size="9" fill="currentColor" opacity="0" text-anchor="middle" x="24" y="9.5" letter-spacing="0.5" font-weight="500">WhatsApp</text>
               <path transform="translate(14,14) scale(0.833)" fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-            </svg>
+              </svg>
           </a>
           <a href="https://t.me/+79119038886" target="_blank" rel="noopener noreferrer" class="btn-hero-messenger btn-hero-tg btn-hero-ring" aria-label="Написать в Telegram">
             <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible" aria-hidden="true">
-              <defs><path id="ring-path-tg-main" d="M7,24 a17,17 0 1,1 0,0.01"/></defs>
-              <text class="hero-ring-text" font-family="Jost,sans-serif" font-size="6.5" fill="currentColor" opacity="0.5">
-                <textPath href="#ring-path-tg-main" startOffset="25%" text-anchor="middle" letter-spacing="0.4">Telegram</textPath>
-              </text>
-              <text class="hero-flat-text" font-family="Jost,sans-serif" font-size="9" fill="currentColor" opacity="0" text-anchor="middle" x="24" y="9.5" letter-spacing="0.5" font-weight="500">Telegram</text>
               <path transform="translate(14,14) scale(0.833)" fill="currentColor" d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-            </svg>
+              </svg>
           </a>
           <a href="https://max.ru/MiloviCake" target="_blank" rel="noopener noreferrer" class="btn-hero-messenger btn-hero-max btn-hero-ring" aria-label="Написать в MAX">
             <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible" aria-hidden="true">
-              <defs><path id="ring-path-max-main" d="M7,24 a17,17 0 1,1 0,0.01"/></defs>
-              <text class="hero-ring-text" font-family="Jost,sans-serif" font-size="6.5" fill="currentColor" opacity="0.5">
-                <textPath href="#ring-path-max-main" startOffset="25%" text-anchor="middle" letter-spacing="6">MAX</textPath>
-              </text>
-              <text class="hero-flat-text" font-family="Jost,sans-serif" font-size="9" fill="currentColor" opacity="0" text-anchor="middle" x="24" y="9.5" letter-spacing="0.5" font-weight="500">MAX</text>
-              <g transform="translate(6,3.5) scale(0.27)"><g transform="translate(0,151) scale(0.1,-0.1)" fill="currentColor"><path d="M635 1183 c-113 -15 -227 -81 -295 -172 -94 -125 -112 -270 -61 -487 17 -72 31 -147 31 -166 0 -19 5 -39 12 -46 26 -26 111 -7 161 36 15 14 22 13 70 -14 48 -27 60 -29 153 -29 96 0 103 2 177 38 183 90 282 277 249 468 -42 244 -255 404 -497 372z m126 -225 c52 -15 117 -73 140 -122 11 -24 19 -64 19 -96 0 -154 -164 -262 -310 -204 -38 15 -42 15 -60 -1 -53 -48 -84 20 -78 170 3 77 9 109 25 140 54 103 155 146 264 113z"/></g></g>
-            </svg>
+              <g transform="translate(24 24) scale(0.834) translate(-24.7 -24.1) translate(6 3.5) scale(0.27)"><g transform="translate(0,151) scale(0.1,-0.1)" fill="currentColor"><path d="M635 1183 c-113 -15 -227 -81 -295 -172 -94 -125 -112 -270 -61 -487 17 -72 31 -147 31 -166 0 -19 5 -39 12 -46 26 -26 111 -7 161 36 15 14 22 13 70 -14 48 -27 60 -29 153 -29 96 0 103 2 177 38 183 90 282 277 249 468 -42 244 -255 404 -497 372z m126 -225 c52 -15 117 -73 140 -122 11 -24 19 -64 19 -96 0 -154 -164 -262 -310 -204 -38 15 -42 15 -60 -1 -53 -48 -84 20 -78 170 3 77 9 109 25 140 54 103 155 146 264 113z"/></g></g>
+              </svg>
           </a>
         </div>
+        <span class="hero-msg-caption">Индивидуальный подход</span>
     </div>
     <div class="hero-trust" style="display:flex;align-items:center;gap:10px;margin-top:14px;">
       <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/reviews/" target="_blank" rel="noopener noreferrer" class="hero-trust-badge" aria-label="Яндекс Карты: рейтинг 4.8 из 5">
@@ -1425,14 +1429,11 @@
   </div>
 </div>
 
-<!-- Fill toast snackbar -->
-<div class="fill-toast" id="fillToast" aria-live="polite">
-  <svg class="fill-toast-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-  <div class="fill-toast-body">
-    <span class="fill-toast-title"></span>
-    <span class="fill-toast-desc"></span>
-  </div>
-</div>
+<!-- [r31] Плавающая плашка «выбрана начинка» убрана: она дублировала уже
+     подсвеченный вариант и ложилась на панель стоимости (пересечение
+     8 177 px² по getBoundingClientRect). Осталось объявление для
+     скринридеров — визуально выбор показывают золотая подсветка и состав. -->
+<div class="visually-hidden" id="fillToast" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <!-- [C-6 FIXED] bentoWeightToast was missing from HTML — showBentoWeightToast() silently failed -->
 <div class="bento-weight-toast" id="bentoWeightToast" role="status" aria-live="polite"></div>
@@ -1450,7 +1451,7 @@
   <div class="cart-header">
     <h3 id="cartDrawerTitle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true"><path d="M4 7h16l-1 14H5L4 7zM9 8V6a3 3 0 0 1 6 0v2"/></svg> Ваш заказ <span class="cart-count-badge" id="cartCountBadge">0</span></h3>
     <div class="cart-header-right">
-      <button type="button" class="cart-clear-btn" id="cartClearBtn" onclick="clearCart()" aria-label="Очистить корзину" style="display:none"><svg class="ui-ico-inline" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15"/><path d="M8 7V5.2A1.2 1.2 0 0 1 9.2 4h5.6A1.2 1.2 0 0 1 16 5.2V7"/><path d="M6.5 7l1 12.2A1.8 1.8 0 0 0 9.3 21h5.4a1.8 1.8 0 0 0 1.8-1.8L17.5 7"/><path d="M10 11v6"/><path d="M14 11v6"/></svg> Очистить</button>
+      <button type="button" class="cart-clear-btn" id="cartClearBtn" onclick="clearCart()" aria-label="Очистить корзину" style="display:none"><svg class="ui-ico-inline" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15"/><path d="M8 7V5.2A1.2 1.2 0 0 1 9.2 4h5.6A1.2 1.2 0 0 1 16 5.2V7"/><path d="M6.5 7l1 12.2A1.8 1.8 0 0 0 9.3 21h5.4a1.8 1.8 0 0 0 1.8-1.8L17.5 7"/><path d="M10 11v6"/><path d="M14 11v6"/></svg><span class="cart-clear-label">Очистить</span></button>
       <button type="button" class="cart-close" onclick="closeCart()" aria-label="Закрыть корзину">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
@@ -1474,7 +1475,7 @@
         <h4>Ваши данные</h4>
         <div class="form-group float-label"><input type="text" id="cname" placeholder=" " autocomplete="name" /><label for="cname">Как к Вам обращаться?</label></div>
         <div class="form-group float-label"><input type="tel" id="cphone" placeholder=" " required autocomplete="tel" inputmode="tel" /><label for="cphone">Телефон</label></div>
-        <div class="form-group float-label"><input type="date" id="cdate" class="cart-date-input" autocomplete="off" /><label for="cdate">Дата</label></div>
+        <div class="form-group float-label"><input type="date" id="cdate" class="cart-date-input" autocomplete="off" aria-describedby="cdateHint" /><label for="cdate">Дата</label><span class="form-hint" id="cdateHint">дд.мм.гггг</span></div>
         <div class="form-group float-label"><textarea id="ccomment" placeholder=" " style="min-height:52px;"></textarea><label for="ccomment">Вес, декор, доставка/самовывоз…</label></div>
       </form>
     </div>
@@ -1523,10 +1524,10 @@
 </script>
 
 <script>var IMG_BASE = 'img';</script>
-<script src="js/main.js?v=20261116r06" defer></script>
+<script src="js/main.js?v=20261118r37" defer></script>
 
-<script src="js/nav.js?v=20260728r27" defer></script>
-<script src="js/mc-2026.js?v=20261116r06" defer></script>
+<script src="js/nav.js?v=20261118r21" defer></script>
+<script src="js/mc-2026.js?v=20261118r28" defer></script>
 
 <script defer src="/js/v20-faq-fix.js?v=20260728r27"></script>
 

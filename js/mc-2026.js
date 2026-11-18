@@ -302,57 +302,214 @@
     else tile.classList.add('is-playing');
   }
 
-  /* [UI-2026-11-16 #6] Inline video modal — clicking a tile plays the full
-     work right here (never navigates). The gallery lives in the side chip. */
+  /* [UI-2026-11-16 r25] Безрамочный «резиновый» просмотр работы.
+     Тап по плитке → видео упруго раскрывается из её прямоугольника на весь
+     экран (без рамки, скруглений и подписей-панелей). Второй тап по кадру —
+     переход в галерею. Свайп ←/→ — соседняя работа, свайп ↓ или Esc — закрыть. */
   var CLOSE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>';
   var ARROW_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h12.2l-4.6-4.6L14 6l7 6-7 6-1.4-1.4 4.6-4.6H5z"/></svg>';
-  var modalEl = null, modalOpener = null;
+  var MUTE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.6h3.2L12 5.6v12.8L7.2 14.4H4z"/><path d="M16.4 8.6a4.6 4.6 0 0 1 0 6.8"/></svg>';
+  var SOUND_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.6h3.2L12 5.6v12.8L7.2 14.4H4z"/><path d="M16.4 8.6a4.6 4.6 0 0 1 0 6.8"/><path d="M19 6.2a8 8 0 0 1 0 11.6"/></svg>';
 
-  function closeModal(){
-    if (!modalEl) return;
-    var v = modalEl.querySelector('video');
-    if (v) { try { v.pause(); } catch (e) {} }
-    if (modalEl.parentNode) modalEl.parentNode.removeChild(modalEl);
-    modalEl = null;
-    document.body.classList.remove('vmodal-open');
-    if (modalOpener && modalOpener.focus) { try { modalOpener.focus(); } catch (e) {} }
-    modalOpener = null;
+  var viewEl = null, viewOpener = null, viewVideo = null, viewCap = null, viewIndex = 0;
+  var viewBusy = false, viewSoundBtn = null;
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function galleryHref(){ return '/gallery/'; }
+
+  function currentItem(){ return items[viewIndex % items.length]; }
+
+  function playCurrent(){
+    if (!viewVideo) return;
+    var it = currentItem();
+    viewVideo.poster = it.p || '';
+    viewVideo.src = it.v;
+    if (viewCap) viewCap.textContent = it.t;
+    var pr = viewVideo.play();
+    if (pr && pr.catch) pr.catch(function(){});
+    if (viewEl) viewEl.setAttribute('aria-label', it.t);
   }
 
-  function openVideoModal(it, opener){
-    if (modalEl) closeModal();
-    modalOpener = opener || null;
+  function setViewTransform(from){
+    if (!viewVideo) return;
+    if (!from) { viewVideo.style.transform = 'none'; viewVideo.style.opacity = '1'; return; }
+    var vw = window.innerWidth || 1, vh = window.innerHeight || 1;
+    var sx = Math.max(from.width / vw, 0.02), sy = Math.max(from.height / vh, 0.02);
+    viewVideo.style.transform = 'translate(' + from.left + 'px,' + from.top + 'px) scale(' + sx + ',' + sy + ')';
+    viewVideo.style.opacity = '0.55';
+  }
+
+  function openView(it, opener){
+    closeView(true);
+    viewIndex = Math.max(0, items.indexOf(it));
+    viewOpener = opener || null;
+
     var ov = document.createElement('div');
-    ov.className = 'vmodal';
+    ov.className = 'vview';
     ov.setAttribute('role', 'dialog');
     ov.setAttribute('aria-modal', 'true');
     ov.setAttribute('aria-label', it.t);
     ov.innerHTML =
-      '<div class="vmodal-bd"></div>' +
-      '<div class="vmodal-box">' +
-        '<button class="vmodal-close" type="button" aria-label="Закрыть видео">' + CLOSE_SVG + '</button>' +
-        '<video class="vmodal-video" controls autoplay playsinline preload="auto"></video>' +
-        '<div class="vmodal-cap"></div>' +
-        '<a class="vmodal-gal" href="/gallery/"><span>Вся галерея работ</span>' + ARROW_SVG + '</a>' +
-      '</div>';
-    var vid = ov.querySelector('video');
-    vid.src = it.v;
-    vid.setAttribute('playsinline', '');
-    if (it.p) vid.poster = it.p;
-    ov.querySelector('.vmodal-cap').textContent = it.t;
-    ov.querySelector('.vmodal-bd').addEventListener('click', closeModal);
-    ov.querySelector('.vmodal-close').addEventListener('click', closeModal);
+      '<video class="vview-video" muted loop playsinline preload="auto" aria-hidden="true"></video>' +
+      '<div class="vview-top">' +
+        '<div class="vview-cap"></div>' +
+        '<div class="vview-actions">' +
+          '<button class="vview-btn vview-sound" type="button" aria-label="Включить звук" aria-pressed="false">' + SOUND_SVG + '</button>' +
+          '<button class="vview-btn vview-close" type="button" aria-label="Закрыть видео">' + CLOSE_SVG + '</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="vview-hint"><span>Нажмите кадр — вся галерея</span>' + ARROW_SVG + '</div>';
+
     document.body.appendChild(ov);
-    document.body.classList.add('vmodal-open');
-    modalEl = ov;
-    var closeBtn = ov.querySelector('.vmodal-close');
-    if (closeBtn && closeBtn.focus) { try { closeBtn.focus(); } catch (e) {} }
-    var pr = vid.play();
-    if (pr && pr.catch) pr.catch(function(){});
+    document.body.classList.add('vview-open');
+    viewEl = ov;
+    viewVideo = ov.querySelector('.vview-video');
+    viewCap = ov.querySelector('.vview-cap');
+    viewSoundBtn = ov.querySelector('.vview-sound');
+
+    // FLIP: стартуем ровно с прямоугольника плитки и упруго раскрываемся.
+    var from = opener && opener.getBoundingClientRect ? opener.getBoundingClientRect() : null;
+    if (from && !reduceMotion) {
+      setViewTransform(from);
+      playCurrent();
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){
+          if (!viewVideo) return;
+          viewVideo.style.transition = 'transform .66s cubic-bezier(.2,1.28,.3,1), opacity .34s ease';
+          setViewTransform(null);
+        });
+      });
+      setTimeout(function(){ if (viewEl) viewEl.classList.add('is-ready'); }, 220);
+    } else {
+      playCurrent();
+      viewEl.classList.add('is-ready');
+    }
+
+    ov.querySelector('.vview-close').addEventListener('click', function(e){ e.stopPropagation(); closeView(); });
+
+    if (viewSoundBtn) {
+      viewSoundBtn.addEventListener('click', function(e){
+        e.stopPropagation();
+        viewVideo.muted = !viewVideo.muted;
+        viewSoundBtn.innerHTML = viewVideo.muted ? SOUND_SVG : MUTE_SVG;
+        viewSoundBtn.setAttribute('aria-pressed', viewVideo.muted ? 'false' : 'true');
+        viewSoundBtn.setAttribute('aria-label', viewVideo.muted ? 'Включить звук' : 'Выключить звук');
+        if (!viewVideo.muted) { var pr = viewVideo.play(); if (pr && pr.catch) pr.catch(function(){}); }
+      });
+    }
+
+    // Второй тап по кадру — галерея. Перетаскивание мышью/пальцем клик не
+    // засчитывает: сравниваем точку нажатия и отпускания.
+    var downX = 0, downY = 0;
+    ov.addEventListener('pointerdown', function(e){ downX = e.clientX; downY = e.clientY; }, { passive: true });
+    ov.addEventListener('click', function(e){
+      if (viewBusy) return;
+      if (e.target && e.target.closest && e.target.closest('.vview-btn')) return;
+      if (Math.abs(e.clientX - downX) > 14 || Math.abs(e.clientY - downY) > 14) return;
+      window.location.href = galleryHref();
+    });
+
+    bindViewGestures(ov);
+
+    var closeBtn = ov.querySelector('.vview-close');
+    if (closeBtn && closeBtn.focus) { try { closeBtn.focus({ preventScroll: true }); } catch (err) {} }
+  }
+
+  function bindViewGestures(ov){
+    var sx = 0, sy = 0, dx = 0, dy = 0, active = false, horizontal = false;
+
+    ov.addEventListener('touchstart', function(e){
+      if (e.touches.length !== 1) return;
+      active = true; horizontal = false;
+      sx = e.touches[0].clientX; sy = e.touches[0].clientY; dx = 0; dy = 0;
+    }, { passive: true });
+
+    ov.addEventListener('touchmove', function(e){
+      if (!active || e.touches.length !== 1) return;
+      dx = e.touches[0].clientX - sx;
+      dy = e.touches[0].clientY - sy;
+      if (!horizontal && Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) * 1.15) horizontal = true;
+      if (horizontal && viewVideo) {
+        if (e.cancelable) e.preventDefault();
+        viewVideo.style.transition = 'none';
+        viewVideo.style.transform = 'translateX(' + (dx * 0.42) + 'px)';
+      } else if (!horizontal && dy > 0 && dy > 12 && viewVideo) {
+        if (e.cancelable) e.preventDefault();
+        viewVideo.style.transition = 'none';
+        viewVideo.style.transform = 'translateY(' + (dy * 0.5) + 'px) scale(' + (1 - Math.min(dy, 260) / 1600) + ')';
+        viewVideo.style.opacity = String(Math.max(0.35, 1 - dy / 520));
+        if (viewEl) viewEl.style.background = 'rgba(11,7,3,' + Math.max(0.1, 1 - dy / 420) + ')';
+      }
+    }, { passive: false });
+
+    function endGesture(){
+      if (!active) return;
+      active = false;
+      if (horizontal) {
+        horizontal = false;
+        var dir = dx < 0 ? 1 : -1;   // фиксируем направление до сброса dx
+        if (Math.abs(dx) > 48 && !viewBusy) {
+          if (viewVideo) { viewVideo.style.transition = 'transform .22s ease, opacity .22s ease'; viewVideo.style.transform = 'translateX(' + (dir > 0 ? -1 : 1) * window.innerWidth * 0.55 + 'px)'; viewVideo.style.opacity = '0'; }
+          viewBusy = true;
+          setTimeout(function(){
+            viewIndex = (viewIndex + dir + items.length) % items.length;
+            if (viewVideo) { viewVideo.style.transition = 'none'; viewVideo.style.transform = 'translateX(' + (dir > 0 ? 34 : -34) + 'px)'; viewVideo.style.opacity = '0'; }
+            playCurrent();
+            requestAnimationFrame(function(){
+              requestAnimationFrame(function(){
+                if (!viewVideo) { viewBusy = false; return; }
+                viewVideo.style.transition = 'transform .34s cubic-bezier(.2,1.1,.3,1), opacity .3s ease';
+                viewVideo.style.transform = 'none'; viewVideo.style.opacity = '1';
+                viewBusy = false;
+              });
+            });
+          }, 200);
+        } else if (viewVideo) {
+          viewVideo.style.transition = 'transform .32s cubic-bezier(.2,1.3,.3,1)';
+          viewVideo.style.transform = 'none';
+        }
+      } else if (dy > 90) {
+        closeView();
+      } else if (viewVideo) {
+        viewVideo.style.transition = 'transform .32s cubic-bezier(.2,1.3,.3,1), opacity .3s ease';
+        viewVideo.style.transform = 'none';
+        viewVideo.style.opacity = '1';
+        if (viewEl) viewEl.style.background = '';
+      }
+      dx = 0; dy = 0;
+    }
+    ov.addEventListener('touchend', endGesture, { passive: true });
+    ov.addEventListener('touchcancel', endGesture, { passive: true });
+  }
+
+  function closeView(instant){
+    if (!viewEl) return;
+    var ov = viewEl;
+    var v = ov.querySelector('video');
+    if (v) { try { v.pause(); } catch (e) {} }
+    document.body.classList.remove('vview-open');
+    viewEl = null; viewVideo = null; viewCap = null; viewSoundBtn = null;
+    var done = function(){
+      if (ov.parentNode) ov.parentNode.removeChild(ov);
+      if (viewOpener && viewOpener.focus) { try { viewOpener.focus({ preventScroll: true }); } catch (e) {} }
+      viewOpener = null;
+    };
+    var from = viewOpener && viewOpener.getBoundingClientRect ? viewOpener.getBoundingClientRect() : null;
+    if (instant || reduceMotion || !v || !from || !from.width) { done(); return; }
+    v.style.transition = 'transform .42s cubic-bezier(.4,0,.7,.2), opacity .3s ease';
+    v.style.transformOrigin = 'top left';
+    var vw = window.innerWidth || 1, vh = window.innerHeight || 1;
+    v.style.transform = 'translate(' + from.left + 'px,' + from.top + 'px) scale(' + (from.width / vw) + ',' + (from.height / vh) + ')';
+    v.style.opacity = '0.4';
+    if (ov.classList) ov.classList.remove('is-ready');
+    setTimeout(done, 380);
   }
 
   document.addEventListener('keydown', function(e){
-    if (e.key === 'Escape' || e.keyCode === 27) closeModal();
+    if (!viewEl) return;
+    if (e.key === 'Escape' || e.keyCode === 27) { closeView(); }
+    else if (e.key === 'ArrowRight') { viewIndex = (viewIndex + 1) % items.length; playCurrent(); }
+    else if (e.key === 'ArrowLeft') { viewIndex = (viewIndex - 1 + items.length) % items.length; playCurrent(); }
   });
 
   function makeTile(it){
@@ -362,7 +519,15 @@
     d.setAttribute('aria-label', it.t + ' — смотреть видео');
 
     var img = document.createElement('img');
-    img.src = it.p; img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
+    /* [r38] Постер не запрашивается, пока лента далеко от вьюпорта.
+       Нативный `loading="lazy"` в Chrome тянет картинку за ~1250 px до экрана,
+       и здесь это давало 90+ KB на первом экране главной (полоса начинается на
+       2363 px при вьюпорте 915). Атрибут остаётся для браузеров без
+       IntersectionObserver, а адрес переезжает в data-poster и подставляется
+       одним наблюдателем за секцией. */
+    img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
+    if ('IntersectionObserver' in window) img.setAttribute('data-poster', it.p);
+    else img.src = it.p;
     d.appendChild(img);
 
     var play = document.createElement('span');
@@ -383,7 +548,7 @@
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || (typeof e.button === 'number' && e.button > 0)) return;
       e.preventDefault();
       clearMagnet(d);
-      openVideoModal(it, d);
+      openView(it, d);
     });
     return d;
   }
@@ -394,6 +559,37 @@
   for (i = 0; i < items.length; i++) frag.appendChild(makeTile(items[i]));
   for (i = 0; i < items.length; i++) frag.appendChild(makeTile(items[i]));
   track.appendChild(frag);
+
+  /* [r38] Одно наблюдение за самой секцией, а не 32 наблюдателя за плитками:
+     как только лента подходит к экрану (600 px запаса — плитка 132 px, столько
+     нужно, чтобы картинка успела доехать до показа), постеры получают src, и
+     наблюдатель отключается. Разметка плиток не меняется: <img alt=""> в каждой
+     из 32 плиток на месте с самого начала, ленивая подстановка касается только
+     адреса картинки. Клик, hover, клавиатура и открытие видео работают и без
+     постера — на них отвечает <a class="vtile">, а не картинка. */
+  if ('IntersectionObserver' in window) {
+    var loadPosters = function(){
+      var deferred = track.querySelectorAll('img[data-poster]');
+      for (var n = 0; n < deferred.length; n++) {
+        var poster = deferred[n].getAttribute('data-poster');
+        deferred[n].setAttribute('src', poster);
+        deferred[n].removeAttribute('data-poster');
+      }
+    };
+    if (strip) {
+      var stripObserver = new IntersectionObserver(function(entries){
+        for (var n = 0; n < entries.length; n++) {
+          if (!entries[n].isIntersecting) continue;
+          loadPosters();
+          stripObserver.disconnect();
+          return;
+        }
+      }, { rootMargin: '600px 0px' });
+      stripObserver.observe(strip);
+    } else {
+      loadPosters();
+    }
+  }
 
   // [UI-2026-11-16 #6] Side slide-in chip — the stylish way to the gallery.
   // Lives on the section (outside the strip mask); slides in from the right
@@ -434,6 +630,7 @@
 
   ready(function () {
     var topButton = document.getElementById('backToTop');
+    var runId = 0;
     if (topButton) {
       topButton.removeAttribute('onclick');
       topButton.addEventListener('click', function (event) {
@@ -446,7 +643,16 @@
         var start = window.scrollY || document.documentElement.scrollTop || 0;
         var started = performance.now();
         var duration = Math.min(720, Math.max(360, start * 0.09));
+        // [r30] Один прогон за раз: повторный клик или ручная прокрутка
+        // отменяют предыдущий кадр-цикл, иначе два requestAnimationFrame
+        // борются за scrollY и картинка дёргается.
+        runId += 1;
+        var myRun = runId;
+        function stopRun() { runId += 1; }
+        window.addEventListener('wheel', stopRun, { passive: true, once: true });
+        window.addEventListener('touchstart', stopRun, { passive: true, once: true });
         function frame(now) {
+          if (myRun !== runId) return;
           var progress = Math.min((now - started) / duration, 1);
           var eased = 1 - Math.pow(1 - progress, 4);
           window.scrollTo(0, Math.round(start * (1 - eased)));
