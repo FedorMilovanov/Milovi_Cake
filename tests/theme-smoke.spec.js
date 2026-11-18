@@ -89,7 +89,17 @@ async function mobileAppShellMetrics(page) {
   });
 }
 
+/* [r39] Нижний бар появляется после начала прокрутки: на первом экране его
+   нет (иначе он занимает низ ещё до каталога). Поэтому перед проверкой
+   геометрии бара страницу надо прокрутить — как это делает живой пользователь. */
+async function revealMobileAppBar(page) {
+  if (await page.evaluate(() => window.innerWidth > 768)) return;
+  await page.evaluate(() => window.scrollTo(0, Math.max(520, Math.round(window.innerHeight * 0.8))));
+  await page.waitForFunction(() => !document.body.classList.contains('mc-nav-veiled'), null, { timeout: 15000 });
+}
+
 async function waitForMobileAppShell(page) {
+  await revealMobileAppBar(page);
   await page.waitForFunction(() => {
     if (window.innerWidth > 768) return true;
     const nav = document.getElementById('mcNav');
@@ -291,9 +301,24 @@ test.describe('contact, privacy and mobile application contracts', () => {
     test.skip(!testInfo.project.name.includes('mobile'), 'mobile-only contract');
     await applyTheme(page, 'dark');
     await page.goto('/', { waitUntil: 'domcontentloaded' });
-    await waitForMobileAppShell(page);
 
+    /* [r39] Контракт первого экрана: бара нет — он вне вьюпорта и не ловит Tab. */
     const nav = page.locator('#mcNav');
+    await expect(page.locator('body')).toHaveClass(/mc-nav-veiled/);
+    const veiled = await nav.evaluate((el) => {
+      const rect = el.getBoundingClientRect();
+      return {
+        offscreen: rect.top >= window.innerHeight - 1,
+        inert: el.hasAttribute('inert'),
+        ariaHidden: el.getAttribute('aria-hidden'),
+      };
+    });
+    expect(veiled).toEqual({ offscreen: true, inert: true, ariaHidden: 'true' });
+
+    /* Прокрутка — и бар встаёт на место с полной интерактивностью. */
+    await waitForMobileAppShell(page);
+    await expect(page.locator('body')).not.toHaveClass(/mc-nav-veiled/);
+    expect(await nav.evaluate((el) => el.hasAttribute('inert') || el.hasAttribute('aria-hidden'))).toBe(false);
     await expect(nav.locator('.mc-btn-label')).toHaveText(['Каталог', 'Начинки', 'Корзина', 'Отзывы', 'Ещё']);
 
     const visibleNavs = await page.evaluate(() => ['mcNav', 'bottomNav', 'mrBottomNav']
