@@ -54,7 +54,8 @@ test.describe('new SEO landing pages', () => {
       await expect(page.locator('.landing-footer')).toContainText('Пн–Сб, 10:00–21:00');
       await expect(page.locator('body')).not.toContainText('Пн–Вс');
 
-      const wa = page.locator('a[href*="wa.me"]').first();
+      // The page may contain a deliberately hidden popup-block recovery link.
+      const wa = page.locator('a[href*="wa.me"]:visible').first();
       await expect(wa).toBeVisible();
       await expect(wa).toHaveAttribute('href', /wa\.me\/79119038886/);
 
