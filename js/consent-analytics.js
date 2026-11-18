@@ -478,7 +478,7 @@
       // Focusing in the same frame silently fails in Chromium on a cold visit.
       requestAnimationFrame(function () {
         var focusTarget = overlay.querySelector('.mc-consent-close');
-        if (focusTarget && !overlay.hidden) focusTarget.focus({ preventScroll: true });
+        if (focusTarget && !overlay.hidden && overlay.classList.contains('is-open')) focusTarget.focus({ preventScroll: true });
       });
     });
   }
