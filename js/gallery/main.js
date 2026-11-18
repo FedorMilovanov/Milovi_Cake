@@ -21,6 +21,15 @@ const state = { filter:'all', items:[], visible:[], swiper:null, lbIndex:0, obse
 
 function esc(s=''){ return String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
 
+/* Shared gallery URLs may contain malformed percent escapes; never let
+   decodeURIComponent throw during initialization or lightbox navigation. */
+function safeGalleryHash() {
+  const raw = location.hash.replace(/^#/, '');
+  if (!raw) return '';
+  try { return decodeURIComponent(raw); }
+  catch (_) { return ''; }
+}
+
 function phoneCardAvifFor(item) {
   if (!item || !PHONE_CARD_IDS.has(item.id) || !/\.webp(\?|$)/i.test(item.src || '')) return '';
   return item.src.replace(/\.webp(\?|$)/i, '-card.avif$1');
@@ -539,7 +548,7 @@ function updateLightbox(index, immediate=false){
   $('#lbWantMax')?.setAttribute('href', buildContactUrl('max', item, url)); 
   $$('#lbRoot [data-copy-msg]').forEach(a=>{ a.dataset.msg = wishText; }); 
   
-  if (decodeURIComponent(location.hash.replace('#','')) !== item.id) {
+  if (safeGalleryHash() !== item.id) {
     history.replaceState(null,'',`#${item.id}`); 
   }
 }
@@ -743,7 +752,7 @@ function boot(){
   renderGrid(); 
   $('#resetFilter')?.addEventListener('click',()=>{state.filter='all'; renderFilters(); renderGrid();}); 
 
-  const hash=decodeURIComponent(location.hash.replace('#','')); 
+  const hash=safeGalleryHash(); 
   if(hash){ 
     const idx=state.visible.findIndex(item=>item.id===hash); 
     if(idx>=0) setTimeout(()=>openLightbox(idx),350); 
