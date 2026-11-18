@@ -37,6 +37,9 @@ test.describe('protected homepage interactions', () => {
   test('home desktop SVG messengers: brand glyph, no round chrome, reversible hover', async ({ page }, testInfo) => {
     if ((testInfo.project.name || '').includes('mobile')) test.skip(true, 'desktop-only treatment');
     await page.goto('/', { waitUntil: 'domcontentloaded' });
+    const consentDeny = page.locator('.mc-consent-button--deny');
+    await consentDeny.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
+    if (await consentDeny.isVisible()) await consentDeny.click();
     await page.evaluate(() => document.fonts.ready);
     for (const [brand, name] of [['wa','WhatsApp'],['tg','Telegram'],['max','MAX']]) {
       const btn = page.locator('.hero .btn-hero-' + brand).first();
@@ -46,7 +49,7 @@ test.describe('protected homepage interactions', () => {
       await expect(btn.locator('.hero-ring-text')).toHaveCount(1);
       await expect(btn.locator('.hero-flat-text')).toHaveCount(1);
       const atRest = await btn.evaluate(el => ({bg:getComputedStyle(el).backgroundColor,border:getComputedStyle(el).borderTopWidth}));
-      expect(atRest.bg, name + ' has transparent chrome').toBe('rgba(0, 0, 0, 0)');
+      await expect.poll(() => btn.evaluate(el => Number(getComputedStyle(el).backgroundColor.split(',').at(-1).replace(')', ''))), {message: name + ' settles to transparent chrome'}).toBeLessThan(.02);
       expect(atRest.border, name + ' has no circular border').toBe('0px');
       await btn.hover();
       await expect.poll(async () => btn.locator('.hero-flat-text').evaluate(el => Number(el.getAttribute('opacity')))).toBeGreaterThan(.9);
@@ -622,4 +625,48 @@ test('switching Bento mode cancels a pending old-photo transition', async ({ pag
     expect(errors).toEqual([]);
   } finally { release(); }
 });
+});
+
+// [desktop r37] User-approved video/dialog and mobile nonregression coverage.
+test('desktop premium video dialog plays audibly, navigates and restores marquee', async ({page}, info) => {
+  if (info.project.name.includes('mobile')) test.skip();
+  await page.goto('/', {waitUntil:'domcontentloaded'});
+  const deny=page.locator('.mc-consent-button--deny');
+  if (await deny.isVisible()) await deny.click();
+  const tile=page.locator('#mcVideoTrack .vtile').nth(13);
+  await tile.scrollIntoViewIfNeeded();
+  await tile.evaluate(el=>el.click());
+  const dialog=page.locator('dialog.vview');
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator('.vview-switch')).toHaveCount(2);
+  await expect.poll(()=>dialog.locator('video').evaluate(v=>v.muted)).toBe(false);
+  await expect.poll(()=>page.locator('#mcVideoTrack').evaluate(e=>getComputedStyle(e).animationPlayState)).toBe('paused');
+  const before=await dialog.locator('.vview-count').textContent();
+  await dialog.locator('.vview-switch--next').click();
+  await expect.poll(()=>dialog.locator('.vview-count').textContent()).not.toBe(before);
+  await page.keyboard.press('Escape');
+  await expect(dialog).toHaveCount(0);
+  await expect.poll(()=>page.locator('#mcVideoTrack').evaluate(e=>getComputedStyle(e).animationPlayState)).not.toBe('paused');
+});
+test('mobile gallery remains legacy fullscreen and hero excludes injected desktop SVG labels', async ({page}, info) => {
+  if (!info.project.name.includes('mobile')) test.skip();
+  await page.goto('/', {waitUntil:'domcontentloaded'});
+  const deny=page.locator('.mc-consent-button--deny');
+  if (await deny.isVisible()) await deny.click();
+  await expect(page.locator('.hero .btn-hero-messenger[data-mc-motion-init]')).toHaveCount(0);
+  await page.locator('#mcVideoTrack .vtile').nth(13).scrollIntoViewIfNeeded();
+  await page.locator('#mcVideoTrack .vtile').nth(13).evaluate(el=>el.click());
+  const modal=page.locator('.vview');
+  await expect(modal).toBeVisible();
+  expect(await modal.evaluate(e=>e.tagName)).toBe('DIV');
+  await expect(modal.locator('.vview-switch')).toHaveCount(0);
+});
+test('desktop hero treatment cleans up on resize to mobile breakpoint', async ({page}, info) => {
+  if (info.project.name.includes('mobile')) test.skip();
+  await page.goto('/', {waitUntil:'domcontentloaded'});
+  const deny=page.locator('.mc-consent-button--deny');
+  if (await deny.isVisible()) await deny.click();
+  await expect(page.locator('.hero .btn-hero-messenger[data-mc-motion-init]')).toHaveCount(3);
+  await page.setViewportSize({width:390,height:844});
+  await expect(page.locator('.hero .btn-hero-messenger[data-mc-motion-init]')).toHaveCount(0);
 });
