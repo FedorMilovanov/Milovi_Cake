@@ -1407,6 +1407,9 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
         }) : 'дата пока не выбрана';
         var text = 'Здравствуйте! Хочу проверить дату свадьбы в Санкт-Петербурге. Дата свадьбы: ' + label +
           '. Площадка: ___, гостей: ___. Подскажите, свободна ли дата и какой формат торта подойдёт?';
+        if (window.MiloviWeddingBrief && typeof window.MiloviWeddingBrief.message === 'function') {
+          text = window.MiloviWeddingBrief.message('date');
+        }
         // A popup can be blocked. Count a lead only when a browsing context opened.
         // Sever window.opener synchronously before the external page can load.
         var url = 'https://wa.me/79119038886?text=' + encodeURIComponent(text);
@@ -1618,9 +1621,26 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
   var selectedStyle = '';
   var tastingRequested = false;
   var destination = '';
+  var dateInput = document.getElementById('wedDate');
+  var currentMessage = '';
+  var generation = 0;
+  var copyAttempt = 0;
+  var copyInFlight = false;
 
-  function message() {
-    var text = baseMessage;
+  function formattedDate() {
+    if (!dateInput || !dateInput.value || !dateInput.checkValidity()) return '';
+    return new Date(dateInput.value + 'T12:00:00').toLocaleDateString('ru-RU', {
+      day: 'numeric', month: 'long', year: 'numeric', weekday: 'long'
+    });
+  }
+
+  function message(purpose) {
+    var date = formattedDate();
+    var text = purpose === 'date'
+      ? 'Здравствуйте! Хочу проверить дату свадьбы в Санкт-Петербурге. Дата свадьбы: ' +
+        (date || 'дата пока не выбрана') +
+        '. Площадка: ___, гостей: ___. Подскажите, свободна ли дата и какой формат торта подойдёт?'
+      : baseMessage.replace('Дата свадьбы: ___', 'Дата свадьбы: ' + (date || '___'));
     if (selectedStyle) text += '\nПредпочтительный стиль: ' + selectedStyle + '.';
     if (tastingRequested) text += '\nИнтересует дегустационный сет начинок: да.';
     return text;
@@ -1635,6 +1655,13 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
       tastingHelp.textContent = 'Интерес к дегустации добавлен в сообщение. Возможность, сроки и стоимость согласуем отдельно.';
     }
     var text = message();
+    if (text !== currentMessage) {
+      if (currentMessage && exportPanel && !exportPanel.hidden && copyStatus) {
+        copyStatus.textContent = 'Заявка изменена — скопируйте обновлённый текст перед переходом.';
+      }
+      currentMessage = text;
+      generation += 1;
+    }
     if (exportText) exportText.value = text;
     if (!base) return;
     var next = new URL(base.href);
@@ -1656,13 +1683,19 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     updateBrief();
   });
 
+  if (dateInput) {
+    dateInput.addEventListener('input', updateBrief);
+    dateInput.addEventListener('change', updateBrief);
+  }
+  window.MiloviWeddingBrief = {message: message, update: updateBrief};
+
   // A Telegram/MAX chat link does not reliably preserve a custom draft. Do not
   // claim copy success without a completed clipboard write or invent prefill URLs.
   ['tg','max'].forEach(function (channel) {
     var link = channels.querySelector('a.btn-hero-' + channel);
     if (!link || !exportPanel || !exportText || !openLink) return;
     link.addEventListener('click', function (event) {
-      if (!selectedStyle && !tastingRequested) return;
+      if (!selectedStyle && !tastingRequested && !formattedDate()) return;
       event.preventDefault();
       destination = channel === 'tg' ? 'Telegram' : 'MAX';
       exportTitle.textContent = 'Заявка для ' + destination;
@@ -1677,17 +1710,39 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
   });
 
   if (copyButton && exportText && copyStatus) copyButton.addEventListener('click', async function () {
+    // Clipboard writes are not cancellable. Do not run competing writes whose
+    // completions could reorder the actual clipboard content.
+    if (copyInFlight) {
+      copyStatus.textContent = 'Копирование ещё выполняется. Повторите после завершения.';
+      return;
+    }
+    copyInFlight = true;
     var text = exportText.value;
+    var copyVersion = generation;
+    var thisAttempt = ++copyAttempt;
+    var copyDestination = destination;
     try {
       if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
         throw new Error('clipboard unavailable');
       }
       await navigator.clipboard.writeText(text);
-      copyStatus.textContent = 'Текст скопирован. Теперь откройте ' + (destination || 'мессенджер') + '.';
+      if (thisAttempt !== copyAttempt) return;
+      if (copyVersion !== generation || text !== exportText.value) {
+        copyStatus.textContent = 'Заявка изменилась во время копирования — скопируйте обновлённый текст.';
+        return;
+      }
+      copyStatus.textContent = 'Текст скопирован. Теперь откройте ' + (copyDestination || 'мессенджер') + '.';
     } catch (error) {
+      if (thisAttempt !== copyAttempt) return;
+      if (copyVersion !== generation || text !== exportText.value) {
+        copyStatus.textContent = 'Заявка изменилась — скопируйте обновлённый текст.';
+        return;
+      }
       copyStatus.textContent = 'Автоматическое копирование недоступно. Выделите текст и скопируйте вручную перед переходом.';
       exportText.focus();
       exportText.select();
+    } finally {
+      if (thisAttempt === copyAttempt) copyInFlight = false;
     }
   });
 

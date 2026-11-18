@@ -2250,3 +2250,99 @@ test('wedding WebKit decodes real moving frames from MP4-first sources', async (
   expect(first).not.toBeNull();
   await expect.poll(capture,{timeout:12000,intervals:[500,750,1000]}).not.toBe(first);
 });
+
+for (const order of ['date-first', 'style-first']) {
+  test('wedding unified enquiry preserves date style and tasting (' + order + ')', async ({page}) => {
+    await page.addInitScript(() => {
+      localStorage.setItem('milovi_analytics_consent_v1','denied');
+      window.open = url => {window.__datePopup = url; return {opener:null};};
+    });
+    await page.setViewportSize({width:390,height:850});
+    await page.goto('/svadebnye-torty/',{waitUntil:'domcontentloaded'});
+    const input=page.locator('#wedDate');
+    const minimum=await input.getAttribute('min');
+    const chosen=await page.evaluate(min=>{
+      const date=new Date(min+'T12:00:00');
+      date.setDate(date.getDate()+7);
+      return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
+    },minimum);
+    const chooseStyle=async()=>{
+      await page.locator('.wed-collection-card a[data-wed-style]').nth(1).click();
+      await page.locator('.wed-tasting-link').click();
+    };
+    if (order==='date-first') {await input.fill(chosen);await chooseStyle();}
+    else {await chooseStyle();await input.fill(chosen);}
+    await page.locator('#wedBrief .btn-hero-tg').click();
+    const draft=page.locator('#wedBriefExportText');
+    await expect(draft).toBeVisible();
+    const text=await draft.inputValue();
+    expect(text).toContain(chosen.slice(0,4));
+    expect(text).toContain('Botanical Romance');
+    expect(text).toContain('дегустационный сет');
+    expect(text).not.toContain('Дата свадьбы: ___');
+    const wa=new URL(await page.locator('#wedBrief .btn-hero-wa').getAttribute('href'));
+    expect(wa.searchParams.get('text')).toBe(text);
+    await page.locator('#wedBrief .btn-hero-max').click();
+    await expect(draft).toHaveValue(text);
+    await expect(page.locator('#wedBriefOpen')).toHaveAttribute('href','https://max.ru/MiloviCake');
+    await input.evaluate(el=>el.form.requestSubmit());
+    const popup=await page.evaluate(()=>window.__datePopup);
+    expect(popup).toBeTruthy();
+    const submitted=new URL(popup).searchParams.get('text');
+    expect(submitted).toContain(chosen.slice(0,4));
+    expect(submitted).toContain('Botanical Romance');
+    expect(submitted).toContain('дегустационный сет');
+    await input.fill('');
+    const cleared=await draft.inputValue();
+    expect(cleared).toContain('Дата свадьбы: ___');
+    expect(cleared).not.toBe(text);
+    expect((cleared.match(/Предпочтительный стиль: /g)||[])).toHaveLength(1);
+    await expect(page.locator('#wedBriefCopyStatus')).toContainText('Заявка изменена');
+    await page.locator('#wedBrief .btn-hero-tg').click();
+    await expect(draft).toHaveValue(cleared);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
+  });
+}
+
+test('wedding clipboard success invalidates after change and in-flight copy cannot lie', async ({page}) => {
+  await page.addInitScript(()=>{
+    localStorage.setItem('milovi_analytics_consent_v1','denied');
+    window.__copyWrites=[];
+    window.__copyPending=[];
+    Object.defineProperty(navigator,'clipboard',{configurable:true,value:{
+      writeText:(text)=>new Promise(resolve=>{
+        window.__copyWrites.push(text);
+        window.__copyPending.push(resolve);
+      })
+    }});
+  });
+  await page.goto('/svadebnye-torty/',{waitUntil:'domcontentloaded'});
+  await page.locator('.wed-collection-card a[data-wed-style]').nth(1).click();
+  await page.locator('#wedBrief .btn-hero-tg').click();
+  const field=page.locator('#wedBriefExportText'), copy=page.locator('#wedBriefCopy');
+  const original=await field.inputValue();
+  await copy.click();
+  await copy.click(); // a second gesture must not issue a competing write
+  expect(await page.evaluate(()=>window.__copyPending.length)).toBe(1);
+  await expect(page.locator('#wedBriefCopyStatus')).toContainText('Копирование ещё выполняется');
+  await page.evaluate(()=>window.__copyPending.shift()());
+  await expect(page.locator('#wedBriefCopyStatus')).toContainText('Текст скопирован');
+  await page.locator('.wed-collection-card a[data-wed-style]').nth(0).click();
+  const updated=await field.inputValue();
+  expect(updated).not.toBe(original);
+  await expect(page.locator('#wedBriefCopyStatus')).toContainText('Заявка изменена');
+  expect(await page.evaluate(()=>window.__copyWrites.at(-1))).toBe(original);
+
+  await copy.click();
+  await page.locator('.wed-collection-card a[data-wed-style]').nth(1).click();
+  await page.evaluate(()=>window.__copyPending.shift()());
+  await expect(page.locator('#wedBriefCopyStatus')).toContainText('Заявка изменилась');
+  await expect(page.locator('#wedBriefCopyStatus')).not.toContainText('Текст скопирован');
+
+  const latest=await field.inputValue();
+  await copy.click();
+  await page.evaluate(()=>window.__copyPending.shift()());
+  await expect(page.locator('#wedBriefCopyStatus')).toContainText('Текст скопирован');
+  expect(await page.evaluate(()=>window.__copyWrites.at(-1))).toBe(latest);
+  expect((await page.evaluate(()=>window.__copyWrites)).length).toBe(3);
+});
