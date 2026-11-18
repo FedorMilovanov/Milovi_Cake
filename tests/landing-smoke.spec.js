@@ -397,7 +397,11 @@ test.describe('premium media blocks', () => {
     for (const width of [320, 390, 861, 1536]) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
-      await page.locator('.wed-collection-note a').click();
+      // The first-paint content-visibility placeholder is not the final gallery layout.
+      await expect(page.locator('html')).not.toHaveClass(/mc-fast-init/, { timeout: 3500 });
+      const portfolioLink = page.locator('.wed-collection-note a');
+      await portfolioLink.scrollIntoViewIfNeeded();
+      await portfolioLink.click();
       await expect(page).toHaveURL(/#mediaShowcaseTitle$/);
       await page.waitForFunction(() => Math.abs(document.querySelector('#mediaShowcaseTitle').getBoundingClientRect().top - 88) < 2);
       const offset = await page.evaluate(() => ({
