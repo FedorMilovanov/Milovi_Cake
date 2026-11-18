@@ -210,7 +210,7 @@ require('media="(max-width: 768px)" srcset="/img/head_mobile.avif"' in order, 'o
 gallery = read('gallery/index.html')
 require('id="preloader"' not in gallery, 'gallery blocking preloader returned')
 require('/img/gallery/gallery-01.avif" fetchpriority="high"' in gallery, 'gallery LCP preload missing')
-require('/js/gallery/main.js?v=20261107r01' in gallery, 'gallery runtime revision drift')
+require('/js/gallery/main.js?v=20261118r03' in gallery, 'gallery runtime revision drift')
 require("./data.js?v=20261107r01" in read('js/gallery/main.js'), 'gallery data import revision drift')
 require('#galleryGrid[data-hydrating="true"] { min-height: 100svh; }' in gallery, 'gallery hydration reserve missing')
 require('#galleryGrid[data-static-lcp-root="true"] { animation: none; }' in gallery, 'gallery grid animation gates initial LCP again')
@@ -261,7 +261,7 @@ for event in ['pointerdown', 'focusin', 'click']:
 require('script.async = true;' in gallery, 'gallery Swiper interaction load is not asynchronous')
 require("script.addEventListener('error'" in gallery and 'loading = false;' in gallery, 'gallery Swiper loader cannot retry after CDN failure')
 require('/css/gallery/gallery-2026.css?v=20261116r06" />' in gallery, 'gallery critical local CSS became deferred or changed revision')
-require('/css/final-fixes.css?v=20261118r42" />' in gallery, 'gallery final critical CSS became deferred')
+require('/css/final-fixes.css?v=20261118r44" />' in gallery, 'gallery final critical CSS became deferred')
 require('id="gallery-lcp-media-fastpath"' in gallery, 'gallery eager-media LCP fast path missing')
 require(
     '#galleryGrid .card:has(img.card-media[loading="eager"]) .card-skeleton { display: none; }' in gallery,
@@ -371,13 +371,13 @@ for asset in ('style.css', 'mc-2026.css', 'premium-overrides.css', 'v20-dark-and
 for public_html in public_html_files():
     html = read(public_html)
     refs = re.findall(r'js/main\.js\?v=([0-9a-z]+)', html)
-    require(all(ref == '20261118r37' for ref in refs), f'{public_html} shared main.js revision drifted')
+    require(all(ref == '20261118r39' for ref in refs), f'{public_html} shared main.js revision drifted')
 
-require("const CACHE_NAME = 'milovi-cake-v2026.11.18-r171';" in sw, 'service-worker cache generation drifted')
+require("const CACHE_NAME = 'milovi-cake-v2026.11.18-r177';" in sw, 'service-worker cache generation drifted')
 require("'/css/gallery/gallery-2026.css?v=20261116r06'," in sw, 'gallery CSS service-worker revision drifted')
 require(style_ref != '/css/style.css?v=20261023r01', 'service-worker precache still points at stale shared CSS revision')
-require("'/js/main.js?v=20261118r37'," in sw, 'service-worker precache still points at stale shared main.js revision')
-require("'/js/gallery/main.js?v=20261107r01'," in sw, 'service-worker precache still points at stale gallery runtime revision')
+require("'/js/main.js?v=20261118r39'," in sw, 'service-worker precache still points at stale shared main.js revision')
+require("'/js/gallery/main.js?v=20261118r03'," in sw, 'service-worker precache still points at stale gallery runtime revision')
 require("'/js/gallery/data.js?v=20261107r01'," in sw, 'service-worker precache still points at stale gallery data revision')
 
 cfg = json.loads(read('.github/lighthouse-config.json'))
