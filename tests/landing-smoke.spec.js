@@ -2010,6 +2010,24 @@ test.describe('wedding contact without JavaScript', () => {
   });
 });
 
+test('wedding first-visit privacy modal receives focus and traps keyboard within its buttons', async ({ page }) => {
+  await page.addInitScript(() => localStorage.removeItem('milovi_analytics_consent_v1'));
+  await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+  const modal = page.getByRole('dialog', { name: 'Настройки аналитики' });
+  await expect(modal).toBeVisible();
+  await expect(modal).toHaveAttribute('aria-modal', 'true');
+  const close = modal.getByRole('button', { name: 'Закрыть настройки конфиденциальности' });
+  await expect.poll(() => page.evaluate(() =>
+    document.activeElement?.classList.contains('mc-consent-close') || false
+  ), { timeout: 5000 }).toBe(true);
+  for (let i = 0; i < 8; i += 1) {
+    await page.keyboard.press('Tab');
+    expect(await page.evaluate(() => !!document.activeElement?.closest('.mc-consent-dialog'))).toBe(true);
+  }
+  await close.click();
+  await expect(modal).toBeHidden({ timeout: 3000 });
+});
+
 test('wedding contacts have valid named groups and blocked popup is announced', async ({ page }) => {
   await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('group', { name: 'Связаться с Milovi Cake' })).toHaveCount(2);
