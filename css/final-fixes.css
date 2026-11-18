@@ -1599,6 +1599,10 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
   box-shadow: 0 1px 4px rgba(20, 12, 6, .45);
   transition: width .38s cubic-bezier(.16, 1, .3, 1), background .3s ease, box-shadow .3s ease;
 }
+.product-card .slide-dots .dot.active {
+  /* The base .dot.active scales the entire 24px hit box; only scale its paint. */
+  transform: none;
+}
 .product-card .slide-dots .dot.active::after {
   width: 20px;
   background: #f3d9b0;
