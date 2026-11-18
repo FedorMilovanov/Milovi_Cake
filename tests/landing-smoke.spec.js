@@ -576,9 +576,9 @@ test.describe('premium media blocks', () => {
   test.describe('wedding video format fallback', () => {
     test.use({ serviceWorkers:'block' });
 
-    test('prefers MP4 on entering viewport even when WebM is blocked, without native player chrome', async ({page}) => {
+    test('falls back to WebM if preferred MP4 request fails, without native player chrome', async ({page}) => {
       const requests=[];
-      await page.route('**/video-12-wedding-heart.webm', route => route.abort('failed'));
+      await page.route('**/video-12-wedding-heart.mp4', route => route.abort('failed'));
       page.on('request', req => { if (/video-12-wedding-heart\.(webm|mp4)$/.test(req.url())) requests.push(new URL(req.url()).pathname); });
       await page.goto('/svadebnye-torty/', {waitUntil:'domcontentloaded'});
       const video=page.locator('.wed-proof-video-frame video');
@@ -587,10 +587,22 @@ test.describe('premium media blocks', () => {
       // This is the lazy playback contract: no asset request before the viewer reaches the section.
       expect(requests).toEqual([]);
       await video.scrollIntoViewIfNeeded();
-      await expect.poll(() => video.evaluate(el =>
-        el.currentSrc.endsWith('.mp4') && el.readyState >= 2 && el.currentTime > .2 && !el.paused
-      ), {timeout:15000}).toBe(true);
+      // Simulate a broken preferred MP4 and verify the alternative WebM is
+      // genuinely decoded. Separate tests strictly cover muted autoplay
+      // and Safari's MP4-first real-frame playback.
+      await expect.poll(() => video.evaluate(el => el.currentSrc), {timeout:12000})
+        .toContain('/video-12-wedding-heart.webm');
+      await expect.poll(() => video.evaluate(el => el.readyState), {timeout:15000})
+        .toBeGreaterThanOrEqual(2);
+      const startTime = await video.evaluate(el => el.currentTime);
+      // User gesture covers environments where autoplay is policy-blocked;
+      // it does not replace the separate automatic-play contract.
+      if (await video.evaluate(el => el.paused))
+        await page.locator('.wed-proof-video-frame .wed-clip-toggle').click();
+      await expect.poll(() => video.evaluate(el => el.currentTime), {timeout:15000})
+        .toBeGreaterThan(startTime + .2);
       expect(requests).toContain('/img/gallery/videos/video-12-wedding-heart.mp4');
+      expect(requests).toContain('/img/gallery/videos/video-12-wedding-heart.webm');
       await expect(video).not.toHaveAttribute('controls','');
     });
   });
