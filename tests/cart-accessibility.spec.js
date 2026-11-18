@@ -399,14 +399,24 @@ test('cart restoration rejects corrupt entries and preserves valid quantities', 
     if (!quantities.length) await expect(page.locator('#cartDrawer .cart-empty')).toBeVisible();
     await expect(page.locator('#cartDrawer')).not.toContainText(/NaN|не число/);
   }
-  // A valid quantity above the stepper limit can be created by repeated adds.
+  // Legacy persisted quantities above the new maximum must remain recoverable
+  // without permitting further increase. This regression verifies that we do
+  // not silently lose existing order data and that the customer sees the cap.
   await reloadCart(JSON.stringify({ '2:regular': { qty: 21 } }), 'stepper');
   await page.evaluate(() => openCart());
   const item = page.locator('#cartDrawer .cart-item');
-  await item.locator('.qty-btn:last-child').click();
   await expect(item.locator('.qty-val')).toHaveText('21 шт.');
+  await expect(item.locator('.cart-qty-limit')).toContainText('Максимум: 20 шт.');
+  await expect(item.locator('.qty-btn:last-child')).toHaveAttribute('aria-disabled', 'true');
   await item.locator('.qty-btn:first-child').click();
   await expect(item.locator('.qty-val')).toHaveText('20 шт.');
+  await expect(item.locator('.qty-btn:last-child')).toHaveAttribute('aria-disabled', 'true');
+  // The actual state transition must still be bounded, even if invoked from JS.
+  await page.evaluate(() => changeQty('2:regular', 1));
+  await expect(item.locator('.qty-val')).toHaveText('20 шт.');
+  await item.locator('.qty-btn:first-child').click();
+  await expect(item.locator('.qty-val')).toHaveText('19 шт.');
+  await expect(item.locator('.qty-btn:last-child')).toHaveAttribute('aria-disabled','false');
   expect(errors).toEqual([]);
 });
 

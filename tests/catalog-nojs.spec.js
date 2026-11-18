@@ -4,7 +4,14 @@ const { test, expect } = require('@playwright/test');
 test.use({ javaScriptEnabled: false, serviceWorkers: 'block' });
 
 test('catalog remains actionable with JavaScript disabled and real source prices', async ({ page }) => {
-  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  // The no-JS fallback is visible from HTML before stylesheets finish loading.
+  // DOMContentLoaded alone can see the intrinsic 1440px hero-image width on
+  // slower Linux WebKit runners. Assess final, fully-styled responsive layout.
+  await page.goto('/', { waitUntil: 'load' });
+  await expect.poll(() => page.evaluate(() =>
+    !!document.querySelector('link[href*="css/final-fixes.css"]')?.sheet &&
+    !!document.querySelector('link[href*="css/style.css"]')?.sheet
+  ), { timeout: 10000 }).toBe(true);
   const fallback = page.locator('.catalog-nojs');
   for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: 900 });
