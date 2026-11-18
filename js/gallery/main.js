@@ -584,7 +584,7 @@ function buildContactUrl(channel, item, url = currentWorkUrl(item)) {
   // prefill message text for ordinary user chats opened via t.me/username.
   if (channel === 'tg') return `https://t.me/${TELEGRAM_USERNAME}`;
   // MAX still relies on clipboard copy because not all clients support prefilled text.
-  if (channel === 'max') return `https://max.ru/MiloviCake`;
+  if (channel === 'max') return `https://max.ru/u/f9LHodD0cOIzRY9VJX8MoyR41H64ULjndbose2aPPrzXJDLW8QEiyKTpqxs`;
   return url;
 }
 // FIX r24: Accept btn param — the element clicked — to animate the correct button.

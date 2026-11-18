@@ -1256,7 +1256,7 @@ for (const mode of ['allowed','denied','unavailable']) {
       expect(await draft.evaluate(e=>document.activeElement===e&&e.selectionStart===0&&e.selectionEnd===e.value.length)).toBe(true);
     }
     await root.locator('#lbWantMax').click();
-    await expect(root.locator('#lbDraftOpen')).toHaveAttribute('href','https://max.ru/MiloviCake');
+    await expect(root.locator('#lbDraftOpen')).toHaveAttribute('href','https://max.ru/u/f9LHodD0cOIzRY9VJX8MoyR41H64ULjndbose2aPPrzXJDLW8QEiyKTpqxs');
     await expect(draft).toHaveValue(text);
     // This test targets draft invalidation, not pointer hit-testing: WebKit
     // continuously animates the active slide and Playwright's stable-target

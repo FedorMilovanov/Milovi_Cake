@@ -28,7 +28,7 @@ class WeddingContentContractTest(unittest.TestCase):
         self.assertIn('дегустация', panel.lower())
         self.assertEqual(len(re.findall(r'class="btn-hero-messenger', panel)), 3)
         self.assertIn('https://t.me/+79119038886', panel)
-        self.assertIn('https://max.ru/MiloviCake', panel)
+        self.assertIn('https://max.ru/u/f9LHodD0cOIzRY9VJX8MoyR41H64ULjndbose2aPPrzXJDLW8QEiyKTpqxs', panel)
         wa = re.search(r'<a href="(https://wa\.me/[^"]+)"[^>]*class="btn-hero-messenger btn-hero-wa', panel)
         self.assertIsNotNone(wa)
         url = urlsplit(html.unescape(wa.group(1)))

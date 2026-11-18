@@ -203,7 +203,7 @@ test.describe('premium media blocks', () => {
       const links = group.locator('a');
       await expect(links.nth(0)).toHaveAttribute('href', /^https:\/\/wa\.me\/79119038886\?text=/);
       await expect(links.nth(1)).toHaveAttribute('href', 'https://t.me/+79119038886');
-      await expect(links.nth(2)).toHaveAttribute('href', 'https://max.ru/MiloviCake');
+      await expect(links.nth(2)).toHaveAttribute('href', 'https://max.ru/u/f9LHodD0cOIzRY9VJX8MoyR41H64ULjndbose2aPPrzXJDLW8QEiyKTpqxs');
       for (const [i, label] of ['Написать в WhatsApp','Написать в Telegram','Написать в MAX'].entries()) {
         await expect(links.nth(i)).toHaveAttribute('aria-label', label);
         await expect(links.nth(i)).toHaveAttribute('rel', /noopener/);
@@ -2204,7 +2204,7 @@ for (const availability of ['available', 'denied']) {
     }
     await page.locator('#wedBrief .btn-hero-max').click();
     await expect(page.locator('#wedBriefExportTitle')).toContainText('MAX');
-    await expect(page.locator('#wedBriefOpen')).toHaveAttribute('href','https://max.ru/MiloviCake');
+    await expect(page.locator('#wedBriefOpen')).toHaveAttribute('href','https://max.ru/u/f9LHodD0cOIzRY9VJX8MoyR41H64ULjndbose2aPPrzXJDLW8QEiyKTpqxs');
     await expect(field).toHaveValue(message);
     await page.locator('.wed-collection-card a[data-wed-style]').nth(0).click();
     const updated=await field.inputValue();
@@ -2284,7 +2284,7 @@ for (const order of ['date-first', 'style-first']) {
     expect(wa.searchParams.get('text')).toBe(text);
     await page.locator('#wedBrief .btn-hero-max').click();
     await expect(draft).toHaveValue(text);
-    await expect(page.locator('#wedBriefOpen')).toHaveAttribute('href','https://max.ru/MiloviCake');
+    await expect(page.locator('#wedBriefOpen')).toHaveAttribute('href','https://max.ru/u/f9LHodD0cOIzRY9VJX8MoyR41H64ULjndbose2aPPrzXJDLW8QEiyKTpqxs');
     await input.evaluate(el=>el.form.requestSubmit());
     const popup=await page.evaluate(()=>window.__datePopup);
     expect(popup).toBeTruthy();
