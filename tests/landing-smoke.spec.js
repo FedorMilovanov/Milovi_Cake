@@ -393,6 +393,26 @@ test.describe('premium media blocks', () => {
     }
   });
 
+  test('wedding direct date links keep the form label below the desktop and mobile header', async ({ page }) => {
+    for (const width of [320, 390, 900, 901, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto('/svadebnye-torty/#wedDateForm', { waitUntil: 'domcontentloaded' });
+      await expect(page.locator('html')).not.toHaveClass(/mc-fast-init/, { timeout: 3500 });
+      await expect.poll(() => page.evaluate(() => {
+        const label = document.querySelector('#wedDateForm label').getBoundingClientRect();
+        const header = document.querySelector('.lp-header').getBoundingClientRect();
+        return label.top - header.bottom;
+      }), { timeout: 4000 }).toBeGreaterThanOrEqual(12);
+      const result = await page.evaluate(() => ({
+        date: document.querySelector('#wedDate').getBoundingClientRect().top,
+        headerBottom: document.querySelector('.lp-header').getBoundingClientRect().bottom,
+        overflow: document.documentElement.scrollWidth - innerWidth,
+      }));
+      expect(result.date).toBeGreaterThan(result.headerBottom);
+      expect(result.overflow).toBeLessThanOrEqual(1);
+    }
+  });
+
   test('wedding portfolio link lands below the fixed header at every layout breakpoint', async ({ page }) => {
     for (const width of [320, 390, 861, 1536]) {
       await page.setViewportSize({ width, height: 900 });
