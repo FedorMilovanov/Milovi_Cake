@@ -1954,6 +1954,22 @@ test.describe('wedding contact without JavaScript', () => {
   });
 });
 
+test('wedding document exposes main and footer as separate accessible landmarks', async ({ page }) => {
+  await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('main')).toHaveCount(1);
+  await expect(page.getByRole('contentinfo')).toHaveCount(1);
+  const footer = page.locator('footer.landing-footer');
+  await expect(footer).toBeVisible();
+  expect(await footer.evaluate((el) => el.closest('main'))).toBeNull();
+  await expect(footer.locator('.wed-school-project-link'))
+    .toHaveAttribute('href', 'https://french.milovicake.ru/');
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 844 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth))
+      .toBeLessThanOrEqual(1);
+  }
+});
+
 const localFontPages = ['/o-konditere/', '/bento-torty/', '/svadebnye-torty/',
   '/zakazat-tort-spb/', '/dostavka-i-oplata/', '/otzyvy/'];
 
