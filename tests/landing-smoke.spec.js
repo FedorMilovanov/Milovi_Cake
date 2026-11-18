@@ -576,12 +576,14 @@ test.describe('premium media blocks', () => {
   test.describe('wedding video format fallback', () => {
     test.use({ serviceWorkers:'block' });
 
-    test('plays MP4 on entering viewport if WebM fails, without exposing native player bar', async ({page}) => {
+    test('prefers MP4 on entering viewport even when WebM is blocked, without native player chrome', async ({page}) => {
       const requests=[];
       await page.route('**/video-12-wedding-heart.webm', route => route.abort('failed'));
       page.on('request', req => { if (/video-12-wedding-heart\.(webm|mp4)$/.test(req.url())) requests.push(new URL(req.url()).pathname); });
       await page.goto('/svadebnye-torty/', {waitUntil:'domcontentloaded'});
       const video=page.locator('.wed-proof-video-frame video');
+      await expect(video.locator('source').first()).toHaveAttribute('type','video/mp4');
+      await expect(video.locator('source').nth(1)).toHaveAttribute('type','video/webm');
       // This is the lazy playback contract: no asset request before the viewer reaches the section.
       expect(requests).toEqual([]);
       await video.scrollIntoViewIfNeeded();
@@ -2149,4 +2151,40 @@ test('wedding consultation preserves selection and offers equal messenger choice
   await expect(page.locator('#wedBrief .wed-contact-links a')).toHaveCount(3);
   await expect(page.locator('#wedTasting .lp-btn-primary')).toHaveCount(0);
   await expect(page.locator('.lp-final .wed-contact-links')).toHaveCount(0);
+});
+
+test('wedding WebKit decodes real moving frames from MP4-first sources', async ({page,browserName}) => {
+  test.skip(browserName !== 'webkit', 'Safari-specific real-decoding contract');
+  await page.goto('/svadebnye-torty/', {waitUntil:'domcontentloaded'});
+  const video=page.locator('.wed-proof-video-frame video');
+  const sources=video.locator('source');
+  await expect(sources).toHaveCount(2);
+  await expect(sources.nth(0)).toHaveAttribute('type','video/mp4');
+  await expect(sources.nth(0)).toHaveAttribute('src','/img/gallery/videos/video-12-wedding-heart.mp4');
+  await expect(sources.nth(1)).toHaveAttribute('type','video/webm');
+  await expect(video).toHaveAttribute('preload','none');
+  await expect(video).toHaveAttribute('poster','/img/gallery/video-12-wedding-heart-poster.webp');
+  await video.scrollIntoViewIfNeeded();
+  const frame=page.locator('.wed-proof-video-frame');
+  await expect(frame.locator('.wed-clip-controls')).toBeVisible();
+  // Explicit play remains available when autoplay is disallowed by the host.
+  if (await video.evaluate(v=>v.paused)) await frame.locator('.wed-clip-toggle').click();
+  await expect.poll(()=>video.evaluate(v=>v.readyState),{timeout:16000,intervals:[250,500,1000]}).toBeGreaterThanOrEqual(2);
+  await expect.poll(()=>video.evaluate(v=>v.currentSrc),{timeout:10000}).toContain('video-12-wedding-heart.mp4');
+  await expect.poll(()=>video.evaluate(v=>v.currentTime),{timeout:12000}).toBeGreaterThan(0.25);
+  const capture=()=>video.evaluate(v=>{
+    if(v.readyState < 2) return null;
+    const canvas=document.createElement('canvas');
+    canvas.width=40;canvas.height=72;
+    const ctx=canvas.getContext('2d',{willReadFrequently:true});
+    if(!ctx) throw new Error('Canvas 2D unavailable for decoding check');
+    ctx.drawImage(v,0,0,40,72);
+    const pixels=ctx.getImageData(0,0,40,72).data;
+    let checksum=2166136261;
+    for(let i=0;i<pixels.length;i+=5)checksum=Math.imul(checksum ^ pixels[i],16777619);
+    return checksum>>>0;
+  });
+  const first=await capture();
+  expect(first).not.toBeNull();
+  await expect.poll(capture,{timeout:12000,intervals:[500,750,1000]}).not.toBe(first);
 });
