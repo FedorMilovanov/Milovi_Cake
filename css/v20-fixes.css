@@ -439,7 +439,8 @@ html[data-theme="dark"] .site-footer .footer-bottom {
   border:0;
   border-bottom:1px solid rgba(222,190,148,.30);
   border-radius:0;
-  padding:3px 0;
+  padding:4px 0;
+  min-height:24px;
   background:transparent;
   color:rgba(246,229,204,.52);
   font:400 12px/1.35 'Jost',system-ui,sans-serif;

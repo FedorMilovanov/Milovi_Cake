@@ -1061,7 +1061,7 @@ button:focus-visible, a:focus-visible {
 }
 .vstrip-label span{
   font-family:'Jost',sans-serif; font-size:11px; letter-spacing:.22em;
-  text-transform:uppercase; color:var(--gold); white-space:nowrap;
+  text-transform:uppercase; color:var(--gold-ink); white-space:nowrap;
 }
 
 .vstrip{

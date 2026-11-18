@@ -573,7 +573,7 @@ html[data-theme="dark"] body #mcNav.mc-nav {
 
 /* Settings dialog appears only on deliberate request; keep it compact and clear. */
 .mc-consent-dialog { border-radius:24px !important; }
-.mc-consent-trigger { white-space:nowrap; }
+.mc-consent-trigger { white-space:nowrap; min-height:24px; }
 
 @media (prefers-reduced-motion:reduce) {
   #contacts .card:not(.card--dark) .form-group.float-label::before { transition:none !important; }
