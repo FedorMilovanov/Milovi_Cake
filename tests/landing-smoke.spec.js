@@ -194,7 +194,7 @@ test.describe('premium media blocks', () => {
   });
 
 
-  test('wedding contacts have three official messenger links in hero and final, with accessible hover and focus', async ({ page }) => {
+  test('wedding contacts use two intentional three-channel panels with branded labels', async ({ page }) => {
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
     for (const place of ['hero', 'final']) {
       const group = page.locator('.wed-messenger-contact--' + place);
@@ -207,20 +207,21 @@ test.describe('premium media blocks', () => {
       for (const [i, label] of ['Написать в WhatsApp','Написать в Telegram','Написать в MAX'].entries()) {
         await expect(links.nth(i)).toHaveAttribute('aria-label', label);
         await expect(links.nth(i)).toHaveAttribute('rel', /noopener/);
+        await expect(links.nth(i).locator('.wed-contact-brand-name')).toBeVisible();
       }
       const ids = await group.locator('path[id]').evaluateAll(nodes => nodes.map(node => node.id));
       expect(new Set(ids).size).toBe(ids.length);
     }
+    await expect(page.locator('.lp-final .wed-contact-links')).toHaveCount(0);
+    await expect(page.locator('#wedBrief .wed-brief-contact')).toHaveCount(1);
     const desktop = page.locator('.wed-messenger-contact--hero a').first();
     await desktop.focus();
     await expect(desktop).toBeFocused();
     expect(await desktop.evaluate(el => getComputedStyle(el).outlineStyle)).not.toBe('none');
   });
 
-
-  test('wedding brand SVGs match local Milovi r22 with floating labels and no circular chrome', async ({ page }) => {
+  test('wedding brand glyphs are authentic and cards use a restrained premium treatment', async ({ page }) => {
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
-    const expectedRadius = await page.evaluate(() => matchMedia('(max-width:700px)').matches ? '10px' : '50%');
     for (const area of ['hero', 'final']) {
       const group = page.locator('.wed-messenger-contact--' + area);
       await expect(group.locator('a')).toHaveCount(3);
@@ -229,54 +230,45 @@ test.describe('premium media blocks', () => {
       for (const link of await group.locator('a').all()) {
         const base = await link.evaluate(el => {
           const style=getComputedStyle(el);
-          return {background: style.backgroundColor, border: style.borderTopWidth, radius: style.borderTopLeftRadius};
+          return {background:style.backgroundColor,border:parseFloat(style.borderTopWidth),
+            radius:parseFloat(style.borderTopLeftRadius),w:el.getBoundingClientRect().width};
         });
-        expect(base.background).toBe('rgba(0, 0, 0, 0)');
-        expect(base.border).toBe('0px');
-        // Desktop uses a round hit area; mobile with a static name label uses a soft rectangle.
-        expect(base.radius).toBe(expectedRadius);
+        expect(base.background).not.toBe('rgba(0, 0, 0, 0)');
+        expect(base.border).toBeGreaterThan(0);
+        expect(base.radius).toBeGreaterThanOrEqual(12);
+        expect(base.radius).toBeLessThanOrEqual(16);
+        expect(base.w).toBeGreaterThanOrEqual(44);
       }
     }
-    const desktop=page.locator('.wed-messenger-contact--hero a').first();
-    if (await page.evaluate(() => matchMedia('(hover: hover)').matches)) {
-      await desktop.hover();
-      const label=desktop.locator('.hero-flat-text');
-      await expect.poll(() => label.evaluate(el => getComputedStyle(el).opacity)).toBe('1');
-      const position=await desktop.evaluate(link => ({
-        label:link.querySelector('.hero-flat-text').getBoundingClientRect().top,
-        icon:link.querySelector('.mc-brand-glyph').getBoundingClientRect().top
-      }));
-      expect(position.label).toBeLessThan(position.icon);
-    }
+    const whatsapp=page.locator('.wed-messenger-contact--hero a').first();
+    await whatsapp.focus();
+    await expect(whatsapp.locator('.wed-contact-brand-name')).toBeVisible();
+    await expect(whatsapp).toBeFocused();
   });
 
-  test('wedding icons match the latest local desktop glyph size, spacing and rising-label motion', async ({page}) => {
+  test('wedding three-channel cards use consistent and spacious geometry without duplicate CTA strips', async ({page}) => {
     await page.setViewportSize({width:1440,height:900});
     await page.goto('/svadebnye-torty/', {waitUntil:'domcontentloaded'});
     for(const area of ['hero','final']){
       const group=page.locator('.wed-messenger-contact--'+area+' .wed-contact-links');
       await expect(group.locator('a')).toHaveCount(3);
       const rects=await group.locator('a').evaluateAll(links=>links.map(a=>{
-        const r=a.getBoundingClientRect(),g=a.querySelector('.mc-brand-glyph').getBoundingClientRect();
-        return {cx:r.left+r.width/2,hit:Math.min(r.width,r.height),glyph:Math.max(g.width,g.height)};
+        const r=a.getBoundingClientRect(),g=a.querySelector('svg').getBoundingClientRect();
+        return {left:r.left,right:r.right,hit:Math.min(r.width,r.height),glyph:Math.max(g.width,g.height)};
       }));
-      expect(rects.every(r=>r.hit>=44)).toBe(true);
-      expect(rects.every(r=>r.glyph>=28)).toBe(true);
-      expect(rects[1].cx-rects[0].cx).toBeLessThanOrEqual(58);
-      expect(rects[2].cx-rects[1].cx).toBeLessThanOrEqual(58);
+      expect(rects.every(r=>r.hit>=44&&r.glyph>=38)).toBe(true);
+      expect(Math.abs((rects[1].left-rects[0].right)-(rects[2].left-rects[1].right))).toBeLessThanOrEqual(2);
+      expect(rects[1].left-rects[0].right).toBeGreaterThanOrEqual(5);
     }
-    const wa=page.locator('.wed-messenger-contact--hero a').first();
-    await wa.hover();
-    await expect.poll(()=>wa.locator('.hero-flat-text').evaluate(el=>Number(getComputedStyle(el).opacity)),{timeout:5000}).toBe(1);
-    const geometry=await wa.evaluate(el=>({
-      textSize:parseFloat(getComputedStyle(el.querySelector('.hero-flat-text')).fontSize),
-      labelTop:el.querySelector('.hero-flat-text').getBoundingClientRect().top,
-      glyphTop:el.querySelector('.mc-brand-glyph').getBoundingClientRect().top
-    }));
-    expect(geometry.textSize).toBeGreaterThanOrEqual(10.3);
-    expect(geometry.labelTop).toBeLessThan(geometry.glyphTop);
-    await page.locator('.wed-messenger-caption').first().hover();
-    await expect.poll(()=>wa.locator('.hero-flat-text').evaluate(el=>Number(getComputedStyle(el).opacity)),{timeout:5000}).toBe(0);
+    await expect(page.locator('.wed-messenger-contact')).toHaveCount(2);
+    const mobilePage=page;
+    await mobilePage.setViewportSize({width:390,height:844});
+    const groups=mobilePage.locator('.wed-messenger-contact');
+    await expect(groups).toHaveCount(2);
+    for(const group of await groups.all()){
+      const positions=await group.locator('a').evaluateAll(els=>els.map(el=>({width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height})));
+      expect(positions.every(p=>p.width>=44&&p.height>=44)).toBe(true);
+    }
   });
 
   test('wedding messenger links fit mobile widths and reduced-motion remains static', async ({ page }) => {
@@ -626,9 +618,12 @@ test.describe('premium media blocks', () => {
       await image.scrollIntoViewIfNeeded();
       await expect.poll(() => image.evaluate((img) => img.naturalWidth)).toBeGreaterThan(0);
       await expect.poll(() => image.evaluate((img) => img.currentSrc)).toContain(`wedding-style-${['pure-ivory', 'botanical-romance', 'modern-sculptural', 'golden-atelier'][index]}-sm.avif`);
-      const handoff = new URL(await card.locator('a').getAttribute('href'));
-      expect(handoff.host).toBe('wa.me');
-      expect(handoff.searchParams.get('text')).toContain(name);
+      await expect(card.locator('a')).toHaveAttribute('href', '#wedBrief');
+      await expect(card.locator('a')).toHaveAttribute('data-wed-style', name);
+      await card.locator('a').click();
+      await expect(page.locator('#wedSelectedStyle')).toContainText(name);
+      const wa = new URL(await page.locator('#wedBrief .btn-hero-wa').getAttribute('href'));
+      expect(wa.searchParams.get('text')).toContain('Предпочтительный стиль: ' + name);
     }
   });
 
@@ -726,39 +721,41 @@ test.describe('premium media blocks', () => {
     await expect(page.locator('#wedGuests')).toHaveCSS('outline-width', '2px');
   });
 
-  test('wedding tasting request states individual terms and hands off to WhatsApp', async ({ page }) => {
+  test('wedding tasting is informative and shares one contact funnel with the wedding brief', async ({ page }) => {
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
-    const section = page.locator('#wedTasting');
-    // Имя ссылки начинается с видимого текста («Обсудить в WhatsApp»),
-    // иначе нарушается WCAG 2.5.3 label-in-name. Дегустация — в конце.
-    const link = section.getByRole('link', { name: /обсудить в whatsapp: дегустация/i });
-    await expect(section).toContainText(/по запросу/i);
-    await expect(section).toContainText('стоимость, сроки и возможность изготовления');
-    for (const theme of ['light', 'dark']) {
-      await page.locator('html').evaluate((root, value) => root.setAttribute('data-theme', value), theme);
-      for (const width of [320, 360, 390, 414, 561, 600, 768, 900, 1024, 1440]) {
-        await page.setViewportSize({ width, height: 900 });
+    const section=page.locator('#wedTasting');
+    const link=section.getByRole('link',{name:/указать дегустацию в брифе/i});
+    await expect(section).toContainText(/по запросу|при обращении/i);
+    await expect(section).toContainText('стоимость');
+    await expect(section).toContainText('сроки');
+    await expect(link).toHaveAttribute('href','#wedBrief');
+    for(const theme of ['light','dark']){
+      await page.locator('html').evaluate((root,value)=>root.setAttribute('data-theme',value),theme);
+      for(const width of [320,360,390,414,561,600,768,900,1024,1440]){
+        await page.setViewportSize({width,height:900});
         await link.scrollIntoViewIfNeeded();
         await expect(link).toBeVisible();
-        const box = await link.boundingBox();
+        const box=await link.boundingBox();
         expect(box.x).toBeGreaterThanOrEqual(0);
-        expect(box.x + box.width).toBeLessThanOrEqual(width + 1);
-        expect(await link.evaluate((node) => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
+        expect(box.x+box.width).toBeLessThanOrEqual(width+1);
       }
     }
-    await page.route('https://wa.me/**', (route) => route.abort());
-    const request = page.waitForRequest((req) => req.url().startsWith('https://wa.me/79119038886?'));
     await link.click();
-    const handoff = new URL((await request).url());
-    expect(handoff.searchParams.get('text')).toContain('дегустационный сет начинок');
-    expect(handoff.searchParams.get('text')).toContain('свадебного торта');
+    await expect(page).toHaveURL(/#wedBrief$/);
+    const brief=page.locator('#wedBrief');
+    await expect(brief.locator('.wed-brief-contact a')).toHaveCount(3);
+    await expect(brief.locator('.wed-brief-helper')).toContainText('дегустация');
+    const wa=new URL(await brief.locator('.btn-hero-wa').getAttribute('href'));
+    for(const term of ['Дата свадьбы:','Площадка:','Гостей:','Палитра:','Референсы:']){
+      expect(wa.searchParams.get('text')).toContain(term);
+    }
   });
 
   test('wedding final invitation shows certificates, contacts and related educational project', async ({ page }) => {
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
-    await expect(page.locator('.lp-final h2')).toContainText('свадебный торт');
-    await expect(page.locator('.lp-final p')).toContainText('площадке');
-    const brief = await page.locator('.bridal-callout a').getAttribute('href');
+    await expect(page.locator('.lp-final h2')).toContainText('вниманием к деталям');
+    await expect(page.locator('.lp-final p')).toContainText('обучении');
+    const brief = await page.locator('#wedBrief .btn-hero-wa').getAttribute('href');
     const message = new URL(brief).searchParams.get('text');
     for (const prompt of ['Дата свадьбы:', 'Площадка:', 'Гостей:', 'Палитра:', 'Референсы:']) {
       expect(message).toContain(prompt);
@@ -766,7 +763,7 @@ test.describe('premium media blocks', () => {
     const final = page.locator('.lp-final .lp-btn-primary');
     await expect(final).toHaveAttribute('href', '/certificates/');
     await expect(final).toContainText('Посмотреть сертификаты');
-    await expect(page.locator('.lp-final .wed-contact-links a.btn-hero-wa')).toHaveCount(1);
+    await expect(page.locator('.lp-final .wed-contact-links')).toHaveCount(0);
     await expect(page.locator('.lp-final')).not.toContainText('Отправить бриф');
     const school = page.locator('.wed-school-project');
     const projectLink = school.locator('.wed-school-project-link');
@@ -1664,41 +1661,26 @@ test.describe('suburb links and page-specific resilience', () => {
   });
 });
 
-test('wedding messenger hit targets stay invisible at rest and round on keyboard focus', async ({ page }) => {
-  await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
-
-  const icons = page.locator('.wed-wrap .wed-contact-links a.btn-hero-messenger');
+test('wedding messenger cards have accessible keyboard focus with no redundant rings', async ({ page }) => {
+  await page.goto('/svadebnye-torty/', {waitUntil:'domcontentloaded'});
+  const icons=page.locator('.wed-wrap .wed-contact-links a.btn-hero-messenger');
   await expect(icons).toHaveCount(6);
-  const expectedRadius = await page.evaluate(() => matchMedia('(max-width:700px)').matches ? '10px' : '50%');
-
-  for (let i = 0; i < 6; i++) {
-    const icon = icons.nth(i);
-    const normal = await icon.evaluate((el) => {
-      const s = getComputedStyle(el);
-      return {
-        background: s.backgroundColor,
-        shadow: s.boxShadow,
-        radius: s.borderRadius,
-        width: el.getBoundingClientRect().width,
-        height: el.getBoundingClientRect().height,
-      };
+  for(let i=0;i<6;i++){
+    const icon=icons.nth(i);
+    const normal=await icon.evaluate(el=>{
+      const s=getComputedStyle(el),r=el.getBoundingClientRect();
+      return {background:s.backgroundColor,border:parseFloat(s.borderTopWidth),
+        radius:parseFloat(s.borderTopLeftRadius),width:r.width,height:r.height};
     });
-    expect(normal.background).toBe('rgba(0, 0, 0, 0)');
-    expect(normal.shadow).toBe('none');
-    expect(normal.radius).toBe(expectedRadius);
+    expect(normal.background).not.toBe('rgba(0, 0, 0, 0)');
+    expect(normal.border).toBeGreaterThan(0);
+    expect(normal.radius).toBeGreaterThanOrEqual(12);
     expect(normal.width).toBeGreaterThanOrEqual(44);
     expect(normal.height).toBeGreaterThanOrEqual(44);
-
-    await page.keyboard.press('Tab');
     await icon.focus();
-    await expect.poll(() => icon.evaluate((el) => el.matches(':focus-visible'))).toBe(true);
-    const focused = await icon.evaluate((el) => ({
-      radius: getComputedStyle(el).borderRadius,
-      outline: getComputedStyle(el).outlineStyle,
-    }));
-    expect(focused.radius).toBe(expectedRadius);
-    expect(focused.outline).not.toBe('none');
-    await icon.evaluate((el) => el.blur());
+    await expect.poll(()=>icon.evaluate(el=>el.matches(':focus-visible'))).toBe(true);
+    expect(await icon.evaluate(el=>getComputedStyle(el).outlineStyle)).not.toBe('none');
+    await icon.evaluate(el=>el.blur());
   }
 });
 
@@ -2094,4 +2076,53 @@ test('landing content remains usable when local fonts fail', async ({ page }) =>
   const before = await page.locator('html').getAttribute('data-theme');
   await themeButton.click();
   await expect(page.locator('html')).not.toHaveAttribute('data-theme', before || '');
+});
+
+test('wedding editorial header and direct-contact panel keep one balanced visual hierarchy', async ({page}) => {
+  await page.addInitScript(()=>localStorage.setItem('milovi_analytics_consent_v1','denied'));
+  for(const width of [320,360,390,430,600,768]){
+    await page.setViewportSize({width,height:850});
+    await page.goto('/svadebnye-torty/',{waitUntil:'domcontentloaded'});
+    const g=await page.evaluate(()=>{
+      const r=s=>document.querySelector(s).getBoundingClientRect();
+      const border=s=>parseFloat(getComputedStyle(document.querySelector(s)).borderTopWidth);
+      const logo=r('.wed-header .lp-logo'),theme=r('.wed-header .lp-theme-toggle'),menu=r('.wed-mobile-menu summary');
+      return {
+        view:innerWidth,overflow:document.documentElement.scrollWidth-innerWidth,
+        logoRight:logo.right,themeLeft:theme.left,themeRight:theme.right,
+        menuLeft:menu.left,menuRight:menu.right,
+        heroLinkUnderline:parseFloat(getComputedStyle(document.querySelector('.wed-hero-details > .wed-link')).borderBottomWidth),
+        metaRule:border('.wed-meta'),
+        contactGroup:document.querySelectorAll('.wed-messenger-contact').length,
+        footerContact:document.querySelectorAll('.lp-final .wed-contact-links').length,
+      };
+    });
+    expect(g.overflow).toBeLessThanOrEqual(1);
+    expect(g.logoRight).toBeLessThanOrEqual(g.themeLeft-5);
+    expect(g.menuLeft-g.themeRight).toBeGreaterThanOrEqual(4);
+    expect(g.menuLeft-g.themeRight).toBeLessThanOrEqual(16);
+    expect(g.menuRight).toBeLessThanOrEqual(g.view+1);
+    expect(g.heroLinkUnderline).toBe(0);
+    expect(g.metaRule).toBe(0);
+    expect(g.contactGroup).toBe(2);
+    expect(g.footerContact).toBe(0);
+  }
+});
+
+test('wedding consultation preserves selection and offers equal messenger choice without repeated buttons', async ({page}) => {
+  await page.goto('/svadebnye-torty/',{waitUntil:'domcontentloaded'});
+  const cards=page.locator('.wed-collection-card a');
+  await expect(cards).toHaveCount(4);
+  await cards.nth(2).click();
+  await expect(page).toHaveURL(/#wedBrief$/);
+  await expect(page.locator('#wedSelectedStyle')).toContainText('Modern Sculptural');
+  const wa=new URL(await page.locator('#wedBrief .btn-hero-wa').getAttribute('href'));
+  expect(wa.searchParams.get('text')).toContain('Предпочтительный стиль: Modern Sculptural.');
+  await cards.nth(0).click();
+  const updated=new URL(await page.locator('#wedBrief .btn-hero-wa').getAttribute('href'));
+  expect(updated.searchParams.get('text')).toContain('Предпочтительный стиль: Pure Ivory.');
+  expect(updated.searchParams.get('text')).not.toContain('Modern Sculptural');
+  await expect(page.locator('#wedBrief .wed-contact-links a')).toHaveCount(3);
+  await expect(page.locator('#wedTasting .lp-btn-primary')).toHaveCount(0);
+  await expect(page.locator('.lp-final .wed-contact-links')).toHaveCount(0);
 });

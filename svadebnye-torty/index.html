@@ -751,14 +751,163 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 @media(prefers-reduced-motion:reduce){.wed-wrap .wed-clip-control{transition:none}}
 </style>
 
+
+<style id="wed-premium-editorial-20261118">
+/* Consolidated editorial rhythm, scoped to wedding; no global UI overrides. */
+.wed-wrap .wed-header-actions{display:flex;align-items:center;justify-content:flex-end;gap:9px;margin-left:auto;flex:0 0 auto}
+.wed-wrap .wed-header-actions .lp-theme-toggle{margin:0;flex:0 0 44px;width:44px;height:44px;min-width:44px}
+.wed-wrap .wed-header-actions .wed-mobile-menu{margin:0;flex:0 0 44px}
+.wed-wrap .wed-header-actions .wed-mobile-menu summary{min-width:44px;min-height:44px}
+.wed-wrap .wed-header .lp-logo{margin-right:0}
+@media (min-width:861px){
+ .wed-wrap .wed-header-actions{margin-left:22px}
+ .wed-wrap .wed-header-actions .lp-theme-toggle{flex-basis:38px;width:38px;height:38px;min-width:38px}
+ .wed-wrap .wed-header .lp-logo{margin-right:auto}
+}
+@media (max-width:860px){
+ .wed-wrap .wed-header{justify-content:space-between}
+ .wed-wrap .wed-header-actions{gap:9px}
+ .wed-wrap .wed-header .lp-logo{flex-shrink:1;min-width:0}
+}
+@media (max-width:349px){
+ .wed-wrap .wed-header-actions{gap:5px}
+ .wed-wrap .wed-header .lp-logo{font-size:clamp(12px,4.2vw,16px)}
+}
+/* Remove nested border noise: the contact panel is one object, not four rules. */
+.wed-wrap .wed-hero-details > .wed-link{
+ display:inline-flex;align-items:center;gap:12px;
+ min-height:44px;border:0!important;padding:0;margin-top:12px;
+ font-weight:600;letter-spacing:.14em
+}
+.wed-wrap .wed-hero-details > .wed-link span{font-size:18px}
+.wed-wrap .wed-messenger-contact--hero{
+ display:flex;align-items:center;justify-content:center;flex-direction:column;
+ border:1px solid rgba(150,110,66,.14);border-radius:20px;
+ background:rgba(198,158,109,.055);padding:18px 20px 16px;
+ gap:11px;margin:20px 0 0;box-sizing:border-box;max-width:100%
+}
+.wed-wrap .wed-messenger-contact--hero .wed-messenger-caption{
+ font-size:10px;letter-spacing:.17em;text-align:center
+}
+.wed-wrap .wed-messenger-contact--hero .wed-contact-links{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;
+ align-items:stretch;width:100%;max-width:430px
+}
+.wed-wrap .wed-messenger-contact--hero .wed-contact-links a.btn-hero-messenger{
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ width:100%!important;min-width:0!important;height:80px;min-height:80px;
+ flex:none!important;gap:1px;padding:5px 2px;border-radius:13px;
+ border:1px solid rgba(150,110,66,.12);
+ background:rgba(255,255,255,.12);box-sizing:border-box
+}
+.wed-wrap .wed-messenger-contact--hero .wed-contact-links a.btn-hero-messenger:focus-visible{
+ outline:2px solid var(--gold)!important;outline-offset:2px;border-radius:13px
+}
+.wed-wrap .wed-messenger-contact--hero .wed-contact-brand-name{display:block;color:var(--wed-muted);font:500 10px/1.4 'Jost',sans-serif}
+.wed-wrap .wed-messenger-contact--hero .wed-contact-links svg{width:44px;height:44px;min-width:44px;min-height:44px;transform:none!important;filter:none!important}
+.wed-wrap .wed-messenger-contact--hero .hero-flat-text{display:none!important}
+.wed-wrap .wed-meta{border-top:0!important;padding:14px 2px 0!important;margin:0!important;line-height:1.8;letter-spacing:.12em;opacity:.87}
+@media (max-width:700px){
+ .wed-wrap .wed-messenger-contact--hero{width:100%;max-width:none;margin:17px 0 0;padding:15px 12px 14px}
+ .wed-wrap .wed-messenger-contact--hero .wed-contact-links{gap:7px}
+ .wed-wrap .wed-messenger-contact--hero .wed-contact-links a.btn-hero-messenger{height:76px;min-height:76px}
+ .wed-wrap .wed-meta{border:0!important;padding:16px 0 0!important}
+}
+/* Compact, editorial tasting: no redundant funnel button. */
+.wed-wrap .wed-tasting-editorial{padding-bottom:0}
+.wed-wrap .wed-tasting-editorial .lp-section-head{max-width:680px;margin:0 auto;text-align:center}
+.wed-wrap .wed-tasting-editorial .lp-section-head > p{max-width:55ch;margin-left:auto;margin-right:auto}
+.wed-wrap .wed-brief-overline{display:block;margin:0 0 13px;font:600 10px/1.5 'Jost',sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--wed-accent)}
+.wed-wrap .wed-tasting-link{
+ display:inline-flex;align-items:center;justify-content:center;gap:12px;
+ min-height:46px;margin:16px auto 0;padding:9px 6px;
+ color:var(--wed-accent);font:600 10px/1.4 'Jost',sans-serif;
+ letter-spacing:.14em;text-transform:uppercase;text-decoration:none;
+ border:0;border-bottom:1px solid rgba(174,125,65,.35)
+}
+.wed-wrap .wed-tasting-link span{font-size:16px;font-weight:400}
+.wed-wrap .wed-tasting-link:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.wed-wrap #wedBrief{scroll-margin-top:calc(94px + env(safe-area-inset-top,0px))}
+.wed-wrap .bridal-callout{margin-top:clamp(20px,3.5vw,44px)}
+.wed-wrap .bridal-callout .bridal-callout-inner{max-width:760px;margin:0 auto}
+.wed-wrap .bridal-callout .wed-brief-overline{color:#e3bd8e;margin:0 0 12px}
+.wed-wrap .wed-brief-fields{
+ max-width:620px!important;margin:19px auto 0!important;
+ font:500 11px/1.85 'Jost',sans-serif!important;letter-spacing:.105em;
+ color:#e4c8a6!important
+}
+.wed-wrap .wed-selected-style{
+ max-width:620px;margin:15px auto 0!important;
+ color:#fff2dc!important;font:500 12px/1.7 'Jost',sans-serif!important
+}
+.wed-wrap .wed-selected-style[hidden]{display:none!important}
+.wed-wrap .wed-brief-helper{
+ max-width:520px;margin:15px auto 0!important;
+ color:#e2cab1!important;font:400 12px/1.7 'Jost',sans-serif!important
+}
+.wed-wrap .wed-brief-contact.wed-messenger-contact{
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:13px;width:100%;max-width:560px;margin:24px auto 0;padding:0;
+ border:0;background:none
+}
+.wed-wrap .wed-brief-contact .wed-messenger-caption{
+ display:block;width:100%;text-align:center;margin:0;
+ color:#f0d4b4!important;letter-spacing:.16em
+}
+.wed-wrap .wed-brief-contact .wed-contact-links{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:11px;width:100%;max-width:500px;align-items:stretch
+}
+.wed-wrap .wed-brief-contact .wed-contact-links a.btn-hero-messenger{
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:2px;box-sizing:border-box;flex:none!important;
+ width:100%!important;min-width:0!important;height:92px;min-height:92px;
+ padding:8px 5px;border-radius:14px;
+ border:1px solid rgba(248,223,190,.2);
+ background:rgba(255,248,239,.065);box-shadow:none!important;
+ color:inherit!important;transition:border-color .22s,background .22s,transform .22s
+}
+.wed-wrap .wed-brief-contact .wed-contact-links .btn-hero-wa svg{color:#31d475}
+.wed-wrap .wed-brief-contact .wed-contact-links .btn-hero-tg svg{color:#4fbbeb}
+.wed-wrap .wed-brief-contact .wed-contact-links .btn-hero-max svg{color:#aa90ff}
+.wed-wrap .wed-brief-contact .wed-contact-links a.btn-hero-messenger svg{
+ width:46px;height:46px;min-width:46px;min-height:46px;transform:none!important;filter:none!important;opacity:1
+}
+.wed-wrap .wed-brief-contact .wed-contact-brand-name{
+ display:block;color:#f7e6d1;font:500 11px/1.5 'Jost',sans-serif;letter-spacing:.03em
+}
+.wed-wrap .wed-brief-contact .hero-flat-text{display:none!important}
+.wed-wrap .wed-brief-contact .wed-contact-links a.btn-hero-messenger:focus-visible{
+ outline:2px solid #f0cd99!important;outline-offset:3px;border-radius:14px
+}
+@media (hover:hover) and (pointer:fine){
+ .wed-wrap .wed-brief-contact .wed-contact-links a.btn-hero-messenger:hover{
+ border-color:rgba(244,206,151,.66);background:rgba(255,249,239,.11);transform:translateY(-2px)!important
+ }
+ .wed-wrap .wed-messenger-contact--hero .wed-contact-links a.btn-hero-messenger:hover{
+ border-color:rgba(179,133,77,.36);background:rgba(201,147,74,.095)
+ }
+}
+@media (max-width:480px){
+ .wed-wrap .wed-brief-contact.wed-messenger-contact{margin-top:21px}
+ .wed-wrap .wed-brief-contact .wed-contact-links{gap:7px}
+ .wed-wrap .wed-brief-contact .wed-contact-links a.btn-hero-messenger{height:79px;min-height:79px;padding:4px 2px}
+ .wed-wrap .wed-brief-contact .wed-contact-links a.btn-hero-messenger svg{width:42px;height:42px;min-width:42px;min-height:42px}
+ .wed-wrap .wed-brief-fields{font-size:10px!important;letter-spacing:.04em}
+}
+@media (prefers-reduced-motion:reduce){
+ .wed-wrap .wed-brief-contact .wed-contact-links a.btn-hero-messenger{transition:none!important}
+ .wed-wrap .wed-brief-contact .wed-contact-links a.btn-hero-messenger:hover{transform:none!important}
+}
+</style>
 </head>
 <body>
 <div class="lp-wrap wed-wrap">
-  <header class="lp-header wed-header"><a class="lp-logo" href="/">Milovi Cake</a><nav class="lp-nav" aria-label="Навигация"><a href="/gallery/">Галерея</a><a href="/zakazat-tort-spb/">Заказать</a><a href="/prigorody/">Доставка</a><a href="/#contacts">Контакты</a></nav><button type="button" class="lp-theme-toggle" aria-label="Переключить тему" title="Светлая / тёмная тема" onclick="(function(){var d=document.documentElement,n=d.getAttribute('data-theme')==='dark'?'light':'dark';d.setAttribute('data-theme',n);try{localStorage.setItem('mc_theme',n)}catch(e){}})()"><svg class="lp-ti lp-ti-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><svg class="lp-ti lp-ti-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></button>
+  <header class="lp-header wed-header"><a class="lp-logo" href="/">Milovi Cake</a><nav class="lp-nav" aria-label="Навигация"><a href="/gallery/">Галерея</a><a href="/zakazat-tort-spb/">Заказать</a><a href="/prigorody/">Доставка</a><a href="/#contacts">Контакты</a></nav><div class="wed-header-actions"><button type="button" class="lp-theme-toggle" aria-label="Переключить тему" title="Светлая / тёмная тема" onclick="(function(){var d=document.documentElement,n=d.getAttribute('data-theme')==='dark'?'light':'dark';d.setAttribute('data-theme',n);try{localStorage.setItem('mc_theme',n)}catch(e){}})()"><svg class="lp-ti lp-ti-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><svg class="lp-ti lp-ti-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></button>
     <details class="wed-mobile-menu">
       <summary aria-label="Меню"><span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span></summary>
       <nav aria-label="Мобильная навигация"><a href="/gallery/">Галерея</a><a href="/zakazat-tort-spb/">Заказать</a><a href="/prigorody/">Доставка</a><a href="/#contacts">Контакты</a></nav>
-    </details>
+    </details></div>
   </header>
   <a class="wed-mobile-sticky" href="#wedDateForm" hidden><span>Свадебный заказ</span><strong>Уточнить дату <span aria-hidden="true">↗</span></strong></a>
   <main>
@@ -774,10 +923,10 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
           <p class="wed-lead">Авторские свадебные торты ручной работы в Санкт-Петербурге.</p><a class="wed-mobile-first-action" href="#wedDateForm">Уточнить дату свадьбы <span aria-hidden="true">↗</span></a>
         </div>
         <div class="wed-hero-details">
-          <p class="wed-date-intro">Укажите дату свадьбы — проверим, свободна ли она, и предложим торт под ваш зал, палитру и число гостей.</p>
+          <p class="wed-date-intro">Укажите дату свадьбы — уточним возможность заказа и предложим оформление под ваш зал, палитру и число гостей.</p>
           <form class="wed-date-form" id="wedDateForm">
             <label class="wed-date-label" for="wedDate">Дата вашей свадьбы</label>
-            <div class="wed-date-row"><input type="date" id="wedDate" name="weddingDate" aria-label="Дата свадьбы" aria-describedby="wedDateHint"><button class="wed-btn" type="submit">Проверить дату <span aria-hidden="true">→</span></button></div>
+            <div class="wed-date-row"><input type="date" id="wedDate" name="weddingDate" aria-label="Дата свадьбы" aria-describedby="wedDateHint"><button class="wed-btn" type="submit">Уточнить дату <span aria-hidden="true">→</span></button></div>
             <p class="wed-note" id="wedDateHint" aria-live="polite">Откроется WhatsApp. Дату подставим, если выберете; площадку и число гостей укажете в сообщении.</p>
             <a id="wedDateFallback" class="wed-date-popup-fallback" href="https://wa.me/79119038886" target="_blank" rel="noopener noreferrer" hidden>Открыть WhatsApp вручную <span aria-hidden="true">→</span></a>
             <noscript>
@@ -785,10 +934,10 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
               <p class="wed-note">Если JavaScript отключён, укажите дату и число гостей непосредственно в сообщении WhatsApp.</p>
             </noscript>
           </form>
-          <a class="wed-link" href="#wedCollection">Выбрать торт <span aria-hidden="true">→</span></a>
+          <a class="wed-link" href="#wedCollection">Смотреть стили <span aria-hidden="true">→</span></a>
 
           <div class="wed-messenger-contact wed-messenger-contact--hero" role="group" aria-label="Связаться с Milovi Cake">
-            <span class="wed-messenger-caption">Или напишите нам</span>
+            <span class="wed-messenger-caption">Выберите удобный способ связи</span>
             <div class="wed-contact-links">
 <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BE%D0%B1%D1%81%D1%83%D0%B4%D0%B8%D1%82%D1%8C%20%D1%81%D0%B2%D0%B0%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D0%B9%20%D1%82%D0%BE%D1%80%D1%82%20MILOVI%20CAKE.%20%D0%94%D0%B0%D1%82%D0%B0%3A%20___%3B%20%D0%BF%D0%BB%D0%BE%D1%89%D0%B0%D0%B4%D0%BA%D0%B0%3A%20___%3B%20%D0%B3%D0%BE%D1%81%D1%82%D0%B5%D0%B9%3A%20___." target="_blank" rel="noopener noreferrer" class="btn-hero-messenger btn-hero-wa btn-hero-ring" aria-label="Написать в WhatsApp">
             <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible" aria-hidden="true">
@@ -880,7 +1029,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
         </div>
         <div class="wed-collection-grid">
           <article class="wed-collection-card">
-            <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BE%D0%B1%D1%81%D1%83%D0%B4%D0%B8%D1%82%D1%8C%20%D1%81%D0%B2%D0%B0%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D0%B9%20%D1%82%D0%BE%D1%80%D1%82%20%D0%B2%20%D1%81%D1%82%D0%B8%D0%BB%D0%B5%20Pure%20Ivory.%20%D0%94%D0%B0%D1%82%D0%B0%3A%20___%2C%20%D0%B3%D0%BE%D1%81%D1%82%D0%B5%D0%B9%3A%20___.">
+            <a href="#wedBrief" data-wed-style="Pure Ivory">
               <span class="wed-collection-photo"><picture><source type="image/avif" srcset="/img/wedding-style-pure-ivory-sm.avif 480w, /img/wedding-style-pure-ivory.avif 720w" sizes="(max-width: 370px) calc(100vw - 40px), (max-width: 375px) calc(100vw - 48px), (max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px"><img src="/img/wedding-style-pure-ivory.webp" srcset="/img/wedding-style-pure-ivory-sm.webp 480w, /img/wedding-style-pure-ivory.webp 720w" sizes="(max-width: 370px) calc(100vw - 40px), (max-width: 375px) calc(100vw - 48px), (max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px" alt="Визуализация стиля: камерный айвори торт с цветком" width="720" height="964" loading="lazy" decoding="async" fetchpriority="low"/></picture></span>
               <span class="wed-collection-index">01 · визуализация стиля</span>
               <h3 class="wed-collection-title">Pure Ivory<span aria-hidden="true">↗</span></h3>
@@ -888,7 +1037,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
             </a>
           </article>
           <article class="wed-collection-card">
-            <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BE%D0%B1%D1%81%D1%83%D0%B4%D0%B8%D1%82%D1%8C%20%D1%81%D0%B2%D0%B0%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D0%B9%20%D1%82%D0%BE%D1%80%D1%82%20%D0%B2%20%D1%81%D1%82%D0%B8%D0%BB%D0%B5%20Botanical%20Romance.%20%D0%94%D0%B0%D1%82%D0%B0%3A%20___%2C%20%D0%B3%D0%BE%D1%81%D1%82%D0%B5%D0%B9%3A%20___.">
+            <a href="#wedBrief" data-wed-style="Botanical Romance">
               <span class="wed-collection-photo"><picture><source type="image/avif" srcset="/img/wedding-style-botanical-romance-sm.avif 480w, /img/wedding-style-botanical-romance.avif 720w" sizes="(max-width: 370px) calc(100vw - 40px), (max-width: 375px) calc(100vw - 48px), (max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px"><img src="/img/wedding-style-botanical-romance.webp" srcset="/img/wedding-style-botanical-romance-sm.webp 480w, /img/wedding-style-botanical-romance.webp 720w" sizes="(max-width: 370px) calc(100vw - 40px), (max-width: 375px) calc(100vw - 48px), (max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px" alt="Визуализация стиля: двухъярусный торт с цветами и розой" width="720" height="964" loading="lazy" decoding="async" fetchpriority="low"/></picture></span>
               <span class="wed-collection-index">02 · визуализация стиля</span>
               <h3 class="wed-collection-title">Botanical Romance<span aria-hidden="true">↗</span></h3>
@@ -896,7 +1045,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
             </a>
           </article>
           <article class="wed-collection-card">
-            <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BE%D0%B1%D1%81%D1%83%D0%B4%D0%B8%D1%82%D1%8C%20%D1%81%D0%B2%D0%B0%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D0%B9%20%D1%82%D0%BE%D1%80%D1%82%20%D0%B2%20%D1%81%D1%82%D0%B8%D0%BB%D0%B5%20Modern%20Sculptural.%20%D0%94%D0%B0%D1%82%D0%B0%3A%20___%2C%20%D0%B3%D0%BE%D1%81%D1%82%D0%B5%D0%B9%3A%20___.">
+            <a href="#wedBrief" data-wed-style="Modern Sculptural">
               <span class="wed-collection-photo"><picture><source type="image/avif" srcset="/img/wedding-style-modern-sculptural-sm.avif 480w, /img/wedding-style-modern-sculptural.avif 720w" sizes="(max-width: 370px) calc(100vw - 40px), (max-width: 375px) calc(100vw - 48px), (max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px"><img src="/img/wedding-style-modern-sculptural.webp" srcset="/img/wedding-style-modern-sculptural-sm.webp 480w, /img/wedding-style-modern-sculptural.webp 720w" sizes="(max-width: 370px) calc(100vw - 40px), (max-width: 375px) calc(100vw - 48px), (max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px" alt="Визуализация стиля: двухъярусный торт с рельефной фактурой" width="720" height="964" loading="lazy" decoding="async" fetchpriority="low"/></picture></span>
               <span class="wed-collection-index">03 · визуализация стиля</span>
               <h3 class="wed-collection-title">Modern Sculptural<span aria-hidden="true">↗</span></h3>
@@ -904,7 +1053,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
             </a>
           </article>
           <article class="wed-collection-card">
-            <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BE%D0%B1%D1%81%D1%83%D0%B4%D0%B8%D1%82%D1%8C%20%D1%81%D0%B2%D0%B0%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D0%B9%20%D1%82%D0%BE%D1%80%D1%82%20%D0%B2%20%D1%81%D1%82%D0%B8%D0%BB%D0%B5%20Golden%20Atelier.%20%D0%94%D0%B0%D1%82%D0%B0%3A%20___%2C%20%D0%B3%D0%BE%D1%81%D1%82%D0%B5%D0%B9%3A%20___.">
+            <a href="#wedBrief" data-wed-style="Golden Atelier">
               <span class="wed-collection-photo"><picture><source type="image/avif" srcset="/img/wedding-style-golden-atelier-sm.avif 480w, /img/wedding-style-golden-atelier.avif 720w" sizes="(max-width: 370px) calc(100vw - 40px), (max-width: 375px) calc(100vw - 48px), (max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px"><img src="/img/wedding-style-golden-atelier.webp" srcset="/img/wedding-style-golden-atelier-sm.webp 480w, /img/wedding-style-golden-atelier.webp 720w" sizes="(max-width: 370px) calc(100vw - 40px), (max-width: 375px) calc(100vw - 48px), (max-width: 860px) calc(50vw - 30px), (max-width: 1600px) calc(25vw - 30px), 370px" alt="Визуализация стиля: свадебный торт с золотыми линиями и белыми цветами" width="720" height="964" loading="lazy" decoding="async" fetchpriority="low"/></picture></span>
               <span class="wed-collection-index">04 · визуализация стиля</span>
               <h3 class="wed-collection-title">Golden Atelier<span aria-hidden="true">↗</span></h3>
@@ -912,7 +1061,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
             </a>
           </article>
         </div>
-        <p class="wed-collection-note">Эти четыре образа — визуализации стиля, а не фотографии выполненных заказов. Нажмите на карточку, чтобы обсудить идею в WhatsApp. <a class="wed-collection-backlink" href="#mediaShowcaseTitle">Смотреть реальные работы <span aria-hidden="true">↑</span></a></p>
+        <p class="wed-collection-note">Эти четыре образа — визуализации стиля, а не фотографии выполненных заказов. Нажмите на понравившийся стиль — сохраним его для вашего брифа. <a class="wed-collection-backlink" href="#mediaShowcaseTitle">Смотреть реальные работы <span aria-hidden="true">↑</span></a></p>
         <div class="wed-collection-detail">
           <picture><source type="image/avif" srcset="/img/wedding-roulade-detail-sm.avif 800w, /img/wedding-roulade-detail.avif 1600w" sizes="(max-width: 500px) calc(100vw - 48px), (max-width: 860px) 50vw, 820px"><img src="/img/wedding-roulade-detail.webp" alt="Художественная визуализация двух меренговых рулетов с кремом, фисташкой и шоколадными украшениями на основе работ Milovi Cake" width="1600" height="900" loading="lazy" decoding="async"/></picture>
           <div class="wed-collection-detail-copy"><span class="wed-collection-kicker">Визуализация</span><h3>Десерты, которые дополняют праздник</h3><a href="#wedStyles">Посмотреть десерты <span aria-hidden="true">→</span></a></div>
@@ -937,18 +1086,48 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     <div class="bridal-step"><h3>Доставка</h3><p>Заранее обсуждаем время, адрес, условия приёмки и безопасную транспортировку торта.</p></div>
   </div>
 </section>
-<section class="lp-section" id="wedTasting" aria-labelledby="wedTastingTitle">
+<section class="lp-section wed-tasting-editorial" id="wedTasting" aria-labelledby="wedTastingTitle">
   <div class="lp-section-head">
-    <h2 id="wedTastingTitle">Дегустационный сет начинок</h2>
-    <p>Дегустационный сет начинок для свадебного торта можно обсудить по запросу. Состав, стоимость, сроки и возможность изготовления согласуем индивидуально. Сообщите об аллергии или пищевых ограничениях при обращении.</p>
-    <div class="lp-actions" style="justify-content:center"><a class="lp-btn lp-btn-primary" aria-label="Обсудить в WhatsApp: дегустация" href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BE%D0%B1%D1%81%D1%83%D0%B4%D0%B8%D1%82%D1%8C%20%D0%B4%D0%B5%D0%B3%D1%83%D1%81%D1%82%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%81%D0%B5%D1%82%20%D0%BD%D0%B0%D1%87%D0%B8%D0%BD%D0%BE%D0%BA%20%D0%B4%D0%BB%D1%8F%20%D1%81%D0%B2%D0%B0%D0%B4%D0%B5%D0%B1%D0%BD%D0%BE%D0%B3%D0%BE%20%D1%82%D0%BE%D1%80%D1%82%D0%B0.%20%D0%9F%D0%BE%D0%B4%D1%81%D0%BA%D0%B0%D0%B6%D0%B8%D1%82%D0%B5%2C%20%D0%BF%D0%BE%D0%B6%D0%B0%D0%BB%D1%83%D0%B9%D1%81%D1%82%D0%B0%2C%20%D0%B2%D0%B0%D1%80%D0%B8%D0%B0%D0%BD%D1%82%D1%8B%2C%20%D1%81%D1%82%D0%BE%D0%B8%D0%BC%D0%BE%D1%81%D1%82%D1%8C%20%D0%B8%20%D1%81%D1%80%D0%BE%D0%BA%D0%B8.%20%D0%94%D0%B0%D1%82%D0%B0%20%D1%81%D0%B2%D0%B0%D0%B4%D1%8C%D0%B1%D1%8B%3A%20___.">Обсудить в WhatsApp</a></div>
+    <span class="wed-brief-overline">Дополнительно к заказу</span>
+    <h2 id="wedTastingTitle">Дегустация начинок</h2>
+    <p>Дегустационный сет доступен по запросу: состав, стоимость, сроки и возможность изготовления согласуем индивидуально. Если хотите попробовать начинки перед свадьбой, сообщите об этом при обращении и заранее укажите аллергии и пищевые ограничения.</p>
+    <a class="wed-tasting-link" href="#wedBrief">Указать дегустацию в брифе <span aria-hidden="true">↗</span></a>
   </div>
 </section>
-<section class="bridal-callout" aria-label="Свадебная консультация">
+<section class="bridal-callout" id="wedBrief" aria-labelledby="wedBriefTitle">
   <div class="bridal-callout-inner">
-    <h2>Для свадебного торта нужен короткий бриф</h2>
-    <p>Напишите дату свадьбы, площадку, количество гостей, желаемую палитру и 2–3 референса. Покажем реальные работы и отдельно — визуализации стиля, чтобы вместе подобрать оформление для вашего торжества.</p>
-    <a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BE%D0%B1%D1%81%D1%83%D0%B4%D0%B8%D1%82%D1%8C%20%D1%81%D0%B2%D0%B0%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D0%B9%20%D1%82%D0%BE%D1%80%D1%82.%0A%D0%94%D0%B0%D1%82%D0%B0%20%D1%81%D0%B2%D0%B0%D0%B4%D1%8C%D0%B1%D1%8B%3A%20___%0A%D0%9F%D0%BB%D0%BE%D1%89%D0%B0%D0%B4%D0%BA%D0%B0%3A%20___%0A%D0%93%D0%BE%D1%81%D1%82%D0%B5%D0%B9%3A%20___%0A%D0%9F%D0%B0%D0%BB%D0%B8%D1%82%D1%80%D0%B0%3A%20___%0A%D0%A0%D0%B5%D1%84%D0%B5%D1%80%D0%B5%D0%BD%D1%81%D1%8B%3A%20___">Отправить свадебный бриф</a>
+    <p class="wed-brief-overline">Личная консультация · Milovi Cake</p>
+    <h2 id="wedBriefTitle">Начнём с вашей истории</h2>
+    <p>Один короткий бриф поможет подобрать оформление, вес и начинку. Напишите нам дату свадьбы и площадку, примерное число гостей, палитру и 2–3 понравившихся примера.</p>
+    <p class="wed-brief-fields">Дата · Площадка · Гости · Палитра · Референсы</p>
+    <p class="wed-selected-style" id="wedSelectedStyle" role="status" aria-live="polite" hidden></p>
+    <div class="wed-messenger-contact wed-messenger-contact--final wed-brief-contact" role="group" aria-label="Связаться с Milovi Cake">
+            <span class="wed-messenger-caption">Выберите мессенджер</span>
+            <div class="wed-contact-links">
+<a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BE%D0%B1%D1%81%D1%83%D0%B4%D0%B8%D1%82%D1%8C%20%D1%81%D0%B2%D0%B0%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D0%B9%20%D1%82%D0%BE%D1%80%D1%82.%0A%D0%94%D0%B0%D1%82%D0%B0%20%D1%81%D0%B2%D0%B0%D0%B4%D1%8C%D0%B1%D1%8B%3A%20___%0A%D0%9F%D0%BB%D0%BE%D1%89%D0%B0%D0%B4%D0%BA%D0%B0%3A%20___%0A%D0%93%D0%BE%D1%81%D1%82%D0%B5%D0%B9%3A%20___%0A%D0%9F%D0%B0%D0%BB%D0%B8%D1%82%D1%80%D0%B0%3A%20___%0A%D0%A0%D0%B5%D1%84%D0%B5%D1%80%D0%B5%D0%BD%D1%81%D1%8B%3A%20___" target="_blank" rel="noopener noreferrer" class="btn-hero-messenger btn-hero-wa btn-hero-ring" aria-label="Написать в WhatsApp">
+            <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible" aria-hidden="true">
+              <path transform="translate(14,14) scale(0.833)" fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              <text class="hero-flat-text" font-family="Jost,sans-serif" font-size="9" fill="currentColor" opacity="0" text-anchor="middle" x="24" y="9.5" letter-spacing="0.5" font-weight="500">WhatsApp</text>
+            </svg>
+            <span class="wed-contact-brand-name" aria-hidden="true">WhatsApp</span>
+          </a>
+<a href="https://t.me/+79119038886" target="_blank" rel="noopener noreferrer" class="btn-hero-messenger btn-hero-tg btn-hero-ring" aria-label="Написать в Telegram">
+            <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible" aria-hidden="true">
+              <path transform="translate(14,14) scale(0.833)" fill="currentColor" d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+              <text class="hero-flat-text" font-family="Jost,sans-serif" font-size="9" fill="currentColor" opacity="0" text-anchor="middle" x="24" y="9.5" letter-spacing="0.5" font-weight="500">Telegram</text>
+            </svg>
+            <span class="wed-contact-brand-name" aria-hidden="true">Telegram</span>
+          </a>
+<a href="https://max.ru/MiloviCake" target="_blank" rel="noopener noreferrer" class="btn-hero-messenger btn-hero-max btn-hero-ring" aria-label="Написать в MAX">
+            <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible" aria-hidden="true">
+              <g transform="translate(24 24) scale(0.834) translate(-24.7 -24.1) translate(6 3.5) scale(0.27)"><g transform="translate(0,151) scale(0.1,-0.1)" fill="currentColor"><path d="M635 1183 c-113 -15 -227 -81 -295 -172 -94 -125 -112 -270 -61 -487 17 -72 31 -147 31 -166 0 -19 5 -39 12 -46 26 -26 111 -7 161 36 15 14 22 13 70 -14 48 -27 60 -29 153 -29 96 0 103 2 177 38 183 90 282 277 249 468 -42 244 -255 404 -497 372z m126 -225 c52 -15 117 -73 140 -122 11 -24 19 -64 19 -96 0 -154 -164 -262 -310 -204 -38 15 -42 15 -60 -1 -53 -48 -84 20 -78 170 3 77 9 109 25 140 54 103 155 146 264 113z"/></g></g>
+              <text class="hero-flat-text" font-family="Jost,sans-serif" font-size="9" fill="currentColor" opacity="0" text-anchor="middle" x="24" y="9.5" letter-spacing="0.5" font-weight="500">MAX</text>
+            </svg>
+            <span class="wed-contact-brand-name" aria-hidden="true">MAX</span>
+          </a>
+</div>
+          </div>
+    <p class="wed-brief-helper">Нужна дегустация? Упомяните это в сообщении — обсудим возможность отдельно.</p>
   </div>
 </section>
 
@@ -1031,33 +1210,8 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
           <summary>Что нужно прислать для расчёта свадебного торта?</summary>
           <p>Нужны дата свадьбы, площадка, примерное количество гостей, палитра и 2–3 референса. По ним можно подобрать вес, стиль, начинку и доставку.</p>
         </details></div></section>
-    <section class="lp-final"><h2>Обсудим ваш свадебный торт?</h2><p>Посмотрите сертификаты обучения кондитера или расскажите о дате, площадке и числе гостей в удобном мессенджере. Поможем подобрать вес и оформление.</p><div class="lp-actions" style="justify-content:center"><a class="lp-btn lp-btn-primary" href="/certificates/">Посмотреть сертификаты</a><a class="lp-btn lp-btn-ghost" href="tel:+79119038886">Позвонить</a></div>
-          <div class="wed-messenger-contact wed-messenger-contact--final" role="group" aria-label="Связаться с Milovi Cake">
-            <span class="wed-messenger-caption">Удобнее в мессенджере?</span>
-            <div class="wed-contact-links">
-<a href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BE%D0%B1%D1%81%D1%83%D0%B4%D0%B8%D1%82%D1%8C%20%D1%81%D0%B2%D0%B0%D0%B4%D0%B5%D0%B1%D0%BD%D1%8B%D0%B9%20%D1%82%D0%BE%D1%80%D1%82%20MILOVI%20CAKE.%20%D0%94%D0%B0%D1%82%D0%B0%3A%20___%3B%20%D0%BF%D0%BB%D0%BE%D1%89%D0%B0%D0%B4%D0%BA%D0%B0%3A%20___%3B%20%D0%B3%D0%BE%D1%81%D1%82%D0%B5%D0%B9%3A%20___." target="_blank" rel="noopener noreferrer" class="btn-hero-messenger btn-hero-wa btn-hero-ring" aria-label="Написать в WhatsApp">
-            <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible" aria-hidden="true">
-              <path transform="translate(14,14) scale(0.833)" fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-              <text class="hero-flat-text" font-family="Jost,sans-serif" font-size="9" fill="currentColor" opacity="0" text-anchor="middle" x="24" y="9.5" letter-spacing="0.5" font-weight="500">WhatsApp</text>
-            </svg>
-            <span class="wed-contact-brand-name" aria-hidden="true">WhatsApp</span>
-          </a>
-<a href="https://t.me/+79119038886" target="_blank" rel="noopener noreferrer" class="btn-hero-messenger btn-hero-tg btn-hero-ring" aria-label="Написать в Telegram">
-            <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible" aria-hidden="true">
-              <path transform="translate(14,14) scale(0.833)" fill="currentColor" d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-              <text class="hero-flat-text" font-family="Jost,sans-serif" font-size="9" fill="currentColor" opacity="0" text-anchor="middle" x="24" y="9.5" letter-spacing="0.5" font-weight="500">Telegram</text>
-            </svg>
-            <span class="wed-contact-brand-name" aria-hidden="true">Telegram</span>
-          </a>
-<a href="https://max.ru/MiloviCake" target="_blank" rel="noopener noreferrer" class="btn-hero-messenger btn-hero-max btn-hero-ring" aria-label="Написать в MAX">
-            <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible" aria-hidden="true">
-              <g transform="translate(24 24) scale(0.834) translate(-24.7 -24.1) translate(6 3.5) scale(0.27)"><g transform="translate(0,151) scale(0.1,-0.1)" fill="currentColor"><path d="M635 1183 c-113 -15 -227 -81 -295 -172 -94 -125 -112 -270 -61 -487 17 -72 31 -147 31 -166 0 -19 5 -39 12 -46 26 -26 111 -7 161 36 15 14 22 13 70 -14 48 -27 60 -29 153 -29 96 0 103 2 177 38 183 90 282 277 249 468 -42 244 -255 404 -497 372z m126 -225 c52 -15 117 -73 140 -122 11 -24 19 -64 19 -96 0 -154 -164 -262 -310 -204 -38 15 -42 15 -60 -1 -53 -48 -84 20 -78 170 3 77 9 109 25 140 54 103 155 146 264 113z"/></g></g>
-              <text class="hero-flat-text" font-family="Jost,sans-serif" font-size="9" fill="currentColor" opacity="0" text-anchor="middle" x="24" y="9.5" letter-spacing="0.5" font-weight="500">MAX</text>
-            </svg>
-            <span class="wed-contact-brand-name" aria-hidden="true">MAX</span>
-          </a>
-</div>
-          </div></section>
+    <section class="lp-final"><h2>Создаём торты с вниманием к деталям</h2><p>Посмотрите документы об обучении кондитера, изучите другие работы и выберите удобное время для разговора о заказе.</p><div class="lp-actions" style="justify-content:center"><a class="lp-btn lp-btn-primary" href="/certificates/">Посмотреть сертификаты</a><a class="lp-btn lp-btn-ghost" href="tel:+79119038886">Позвонить</a></div>
+          </section>
 
     </main>
     <footer class="landing-footer" aria-label="Контакты Milovi Cake">
@@ -1399,6 +1553,32 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
       })(state);
     }
   }
+})();
+</script>
+
+
+<script id="wed-brief-style-selection">
+(function () {
+  'use strict';
+  var state = document.getElementById('wedSelectedStyle');
+  var channels = document.querySelector('.wed-brief-contact');
+  if (!state || !channels) return;
+  var whatsapp = channels.querySelector('a.btn-hero-wa');
+  var base = whatsapp ? new URL(whatsapp.href) : null;
+  var baseMessage = base ? (base.searchParams.get('text') || '') : '';
+  document.querySelectorAll('.wed-collection-card a[data-wed-style]').forEach(function (card) {
+    card.addEventListener('click', function () {
+      var selected = card.getAttribute('data-wed-style');
+      if (!selected) return;
+      state.hidden = false;
+      state.textContent = 'Выбранное оформление: ' + selected + '.';
+      if (base) {
+        var next = new URL(base.href);
+        next.searchParams.set('text', baseMessage + '\nПредпочтительный стиль: ' + selected + '.');
+        whatsapp.href = next.href;
+      }
+    });
+  });
 })();
 </script>
 
