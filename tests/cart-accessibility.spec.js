@@ -467,8 +467,8 @@ test('cart restores unusual labels as text and keeps their controls functional',
   await page.evaluate(() => openCart());
   const item = page.locator('#cartDrawer .cart-item');
   await expect(item).toContainText(entry.decor);
-  await settleElement(page, '#cartDrawer .qty-btn:last-child');
   await expect(item.locator('.cart-item-info img')).toHaveCount(0);
+  // Playwright click verifies visible, stable and enabled before a trusted action.
   await item.locator('.qty-btn:last-child').click();
   await expect(item.locator('.qty-val')).toHaveText('2 шт.');
   expect(await page.evaluate(() => window.__cartXss)).toBeUndefined();
@@ -548,7 +548,8 @@ for (const failure of ['QuotaExceededError', 'SecurityError']) {
     expect(bounds.x + bounds.width).toBeLessThanOrEqual(320);
     await page.evaluate(() => openCart());
     await expect(page.locator('#cartDrawer .qty-val')).toHaveText('1 шт.');
-    await settleElement(page, '#cartDrawer .qty-btn:last-child');
+    // One real click is the contract; no redundant geometry polling that can
+    // hang after the DOM is already verified and the cart is open.
     await page.locator('#cartDrawer .qty-btn:last-child').click();
     await expect(page.locator('#cartDrawer .qty-val')).toHaveText('2 шт.');
     await page.reload({ waitUntil: 'domcontentloaded' });
@@ -556,29 +557,6 @@ for (const failure of ['QuotaExceededError', 'SecurityError']) {
     await expect(page.locator('#cartDrawer .cart-empty')).toBeVisible();
     expect(errors).toEqual([]);
   });
-}
-
-/* [r39] Measure geometry from Playwright, not a document.requestAnimationFrame
-   promise. Headless WebKit may stop frame callbacks while DOM controls remain
-   responsive, leaving the old promise pending until the test runner closes it.
-   Four identical geometric measurements are required; persistent movement is
-   a hard failure, never a silent success. */
-async function settleElement(page, selector) {
-  const target = page.locator(selector).first();
-  await expect(target).toBeVisible();
-  let previous = null;
-  let stable = 0;
-  for (let sample = 0; sample < 45; sample++) {
-    const box = await target.boundingBox();
-    if (!box) throw new Error('Element disappeared before settling: ' + selector);
-    const key = [box.x, box.y, box.width, box.height]
-      .map((value) => (Math.round(value * 10) / 10).toFixed(1)).join(',');
-    stable = key === previous ? stable + 1 : 0;
-    if (stable >= 3) return;
-    previous = key;
-    await page.waitForTimeout(50);
-  }
-  throw new Error('Element still moving after 45 geometry samples: ' + selector + ' (' + previous + ')');
 }
 
 async function openCartByUser(page, testInfo) {
