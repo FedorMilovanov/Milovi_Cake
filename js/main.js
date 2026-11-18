@@ -655,12 +655,37 @@ function changeQty(cartKey, delta) {
   if (p.hasMaxi && entry.mode === 'maxi') p = { ...p, ...p.maxiVariant };
   const step = p.unit === 'кг' ? 0.5 : 1;
   const minQty = p.minQty || (p.unit === 'кг' ? (p.minKg || 1) : 1);
-  var maxQty = p.unit === 'кг' ? (p.maxiVariant ? 5 : 20) : 20;
+  const maxQty = p.unit === 'кг' ? (p.maxiVariant ? 5 : 20) : 20;
   const nextQty = Math.round((entry.qty + delta * step) * 10) / 10;
-  entry.qty = delta > 0 ? Math.min(nextQty, Math.max(maxQty, entry.qty)) : nextQty;
+  const limit = Math.max(maxQty, entry.qty);
+  if (delta > 0 && nextQty > limit) {
+    showToast('Максимум для этой позиции: ' + limit + ' ' + p.unit);
+    return; // No fake update or focus loss at the quantity limit.
+  }
+
+  // updateCartUI() recreates every cart row; restore keyboard focus by key,
+  // never by a position-sensitive query selector or an outdated DOM node.
+  const active = document.activeElement;
+  const focusQty = active && active.matches('.qty-ctrl .qty-btn')
+    && active.closest('.cart-item')?.dataset.cartId === cartKey;
+  const rowsBefore = Array.from(document.querySelectorAll('#cartDrawer .cart-item'));
+  const previousIndex = rowsBefore.findIndex(row => row.dataset.cartId === cartKey);
+
+  entry.qty = delta > 0 ? Math.min(nextQty, limit) : nextQty;
   if (entry.qty < minQty) delete cart[cartKey];
   updateCartUI();
   saveCartToStorage();
+
+  if (focusQty) {
+    const rows = Array.from(document.querySelectorAll('#cartDrawer .cart-item'));
+    const same = rows.find(row => row.dataset.cartId === cartKey);
+    // If decrement removed the row, focus the next/previous row or empty CTA.
+    const destination = same || rows[Math.min(previousIndex, rows.length - 1)];
+    const control = destination?.querySelector(delta > 0
+      ? '.qty-btn:last-child' : '.qty-btn:first-child')
+      || document.querySelector('#cartDrawer .cart-empty-cta');
+    if (control) control.focus({ preventScroll: true });
+  }
 }
 
 function setCartStep(step) {
@@ -760,7 +785,7 @@ function updateCartUI() {
       return `<label style="display:flex;align-items:center;gap:6px;margin-top:6px;min-width:0;"><span style="font-size:11px;color:var(--cart-muted);letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;">Начинка:</span><select onchange="setCartItemFill(${keyArg}, this.value, this)" style="font-size:12px;font-family:'Jost',sans-serif;padding:3px 8px;border-radius:12px;border:1px solid var(--cream-dark);background:transparent;color:var(--text);cursor:pointer;flex:1;max-width:180px;"><option value="">— уточнить —</option>${opts}</select></label>`;
     })()}</div>`;
 
-    return `<div class="cart-item" data-cart-id="${keyAttr}"><div class="cart-item-info"><h4>${p.name}</h4><div class="item-price">${p.price}</div>${p.min && !entry.fill ? `<div class="item-min">${p.min}</div>` : ''}${entry.decor ? `<div class="item-min" style="opacity:0.7">🎨 ${escapeCartHtml(entry.decor)}${decorAdd > 0 ? ` · +${decorAdd.toLocaleString('ru')} ₽` : ''}</div>` : ''}${entry.biscuit ? `<div class="item-min" style="opacity:0.7">🧁 бисквит: ${entry.biscuit === 'choco' ? 'шоколадный' : 'ванильный'}</div>` : ''}${dessertToggle}</div><div class="qty-ctrl"><button type="button" class="qty-btn" onclick="changeQty(${keyArg}, -1)" ${atMin ? 'title="Минимальный заказ"' : ''}>−</button><span class="qty-val">${qtyLabel}</span><button type="button" class="qty-btn" onclick="changeQty(${keyArg}, 1)">+</button></div><div class="cart-item-right"><div class="cart-line-total">${lineTotalFmt}</div><button type="button" class="del-btn" onclick="removeFromCart(${keyArg})" aria-label="Удалить"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true"><path d="M4 7h16M10 4h4M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></button></div></div>`;
+    return `<div class="cart-item" data-cart-id="${keyAttr}"><div class="cart-item-info"><h4>${p.name}</h4><div class="item-price">${p.price}</div>${p.min && !entry.fill ? `<div class="item-min">${p.min}</div>` : ''}${entry.decor ? `<div class="item-min" style="opacity:0.7">🎨 ${escapeCartHtml(entry.decor)}${decorAdd > 0 ? ` · +${decorAdd.toLocaleString('ru')} ₽` : ''}</div>` : ''}${entry.biscuit ? `<div class="item-min" style="opacity:0.7">🧁 бисквит: ${entry.biscuit === 'choco' ? 'шоколадный' : 'ванильный'}</div>` : ''}${dessertToggle}</div><div class="qty-ctrl"><button type="button" class="qty-btn" onclick="changeQty(${keyArg}, -1)" ${atMin ? 'title="Минимальный заказ"' : ''}>−</button><span class="qty-val">${qtyLabel}</span><button type="button" class="qty-btn" onclick="changeQty(${keyArg}, 1)" ${qty >= (isKg ? (p.maxiVariant ? 5 : 20) : 20) ? `aria-disabled="true" title="Максимум: ${isKg ? (p.maxiVariant ? 5 : 20) : 20} ${p.unit}"` : ''}>+</button></div><div class="cart-item-right"><div class="cart-line-total">${lineTotalFmt}</div><button type="button" class="del-btn" onclick="removeFromCart(${keyArg})" aria-label="Удалить"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true"><path d="M4 7h16M10 4h4M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></button></div></div>`;
   }).join('');
 
   const totalFmt = cartTotalText(total);
