@@ -425,9 +425,10 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 
 /* Keep the visual wordmark size, but make its touch target accessible. */
 .wed-wrap .wed-header .lp-logo {display:inline-flex;align-items:center;min-height:44px;}
+/* Direct date links must clear the fixed header on desktop as well as mobile. */
+.wed-wrap #wedDateForm { scroll-margin-top:calc(94px + env(safe-area-inset-top,0px)); }
 /* Mobile-first wedding conversion and touch quality. Scoped to wedding; no global assets. */
 @media (max-width:900px) {
- .wed-wrap #wedDateForm { scroll-margin-top:calc(94px + env(safe-area-inset-top,0px)); }
  .wed-wrap .wed-mobile-first-action {
    display:inline-flex; align-items:center; justify-content:space-between; gap:26px;
    min-height:46px; width:max-content; max-width:100%; margin-top:17px;
