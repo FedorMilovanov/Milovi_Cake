@@ -951,6 +951,10 @@ test.describe('premium media blocks', () => {
     await page.locator('#wedDate').evaluate((el) => el.form.requestSubmit());
     await expect.poll(() => page.evaluate(() => window.weddingOpenUrls.length)).toBe(1);
     expect(await page.evaluate(() => window.weddingAnalyticsCalls)).toEqual([]);
+    const fallback = page.locator('#wedDateFallback');
+    await expect(fallback).toBeVisible();
+    await expect(fallback).toHaveAttribute('href', /^https:\/\/wa\.me\/79119038886\?text=/);
+    await expect(page.locator('#wedDateHint')).toContainText('заблокировал');
 
     await page.evaluate(() => {
       window.open = (url) => {
@@ -961,9 +965,27 @@ test.describe('premium media blocks', () => {
     await page.locator('#wedDate').evaluate((el) => el.form.requestSubmit());
     await expect.poll(() => page.evaluate(() => window.weddingAnalyticsCalls)).toEqual([['whatsapp', 'wedding_date']]);
     expect(await page.evaluate(() => window.weddingOpenUrls.length)).toBe(2);
+    await expect(fallback).toBeHidden();
+    await expect(page.locator('#wedDateHint')).toContainText('Откроется WhatsApp');
   });
 
-  test('wedding date form still opens a prefilled WhatsApp brief after the mobile layout change', async ({ page }) => {
+  test('wedding date recovers from popup API exceptions and resets fallback after editing', async ({ page }) => {
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    await page.evaluate(() => {
+      window.open = () => { throw new Error('popup denied by browser'); };
+    });
+    await page.locator('#wedDate').evaluate((el) => el.form.requestSubmit());
+    const fallback = page.locator('#wedDateFallback');
+    await expect(fallback).toBeVisible();
+    expect(new URL(await fallback.getAttribute('href')).searchParams.get('text'))
+      .toContain('дата пока не выбрана');
+    const date = await page.locator('#wedDate').getAttribute('min');
+    await page.locator('#wedDate').fill(date);
+    await expect(fallback).toBeHidden();
+    await expect(page.locator('#wedDateHint')).toContainText('Откроется WhatsApp');
+  });
+
+    test('wedding date form still opens a prefilled WhatsApp brief after the mobile layout change', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
     await page.evaluate(() => {
