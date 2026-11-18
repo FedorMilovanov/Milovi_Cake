@@ -99,6 +99,10 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero,
 .hero-actions .btn-primary.btn-primary--hero:focus:not(:focus-visible) {
   outline: 0 !important;
 }
+/* Keyboard focus must outrank the light-theme and mobile-hover outline resets. */
+:root:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:focus-visible,
+html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:focus-visible,
+[data-theme="dark"] .hero .btn-primary.btn-primary--hero:focus-visible,
 .hero .btn-primary.btn-primary--hero:focus-visible {
   outline: 2px solid var(--gold-light, #e8b87a) !important;
   outline-offset: 5px !important;
@@ -1562,30 +1566,40 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
+  gap: 0;
+  padding: 6px 8px;
   border-radius: 999px;
-  /* стеклянная дорожка: точки остаются видны и на светлых фото.
-     [r37] Без размытия подложки: WebKit вешает композитор на множестве
-     мелких blur-слоёв (см. main 25b9125 — там так же убрали blur у
-     плей-бейджа видео и чипа фильтра галереи). Непрозрачность поднята
-     так, чтобы дорожка читалась на светлом фото и без размытия. */
+  /* Keep the compact glass track and painted dots; enlarge only hit targets. */
   background: rgba(24, 16, 10, .38);
   z-index: 3;
   pointer-events: none;
 }
 .product-card .slide-dots .dot {
+  position: relative;
+  display: grid;
+  place-items: center;
   pointer-events: auto;
-  width: 6px;
-  height: 6px;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
   padding: 0;
   border: 0;
+  border-radius: 999px;
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+}
+.product-card .slide-dots .dot::after {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 6px;
   border-radius: 999px;
   background: rgba(255, 255, 255, .62);
   box-shadow: 0 1px 4px rgba(20, 12, 6, .45);
   transition: width .38s cubic-bezier(.16, 1, .3, 1), background .3s ease, box-shadow .3s ease;
 }
-.product-card .slide-dots .dot.active {
+.product-card .slide-dots .dot.active::after {
   width: 20px;
   background: #f3d9b0;
   box-shadow: 0 1px 5px rgba(20, 12, 6, .42), 0 0 0 1px rgba(201, 147, 74, .5);
