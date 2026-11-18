@@ -705,6 +705,37 @@
       <div class="skeleton-card" aria-hidden="true"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
       <div class="skeleton-card" aria-hidden="true"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
       <div class="skeleton-card" aria-hidden="true"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+      <noscript>
+        <style>
+          #catalogGrid .skeleton-card { display: none; }
+          #catalogGrid { display: block; }
+          #catalogGrid .catalog-nojs { max-width: 920px; margin: 0 auto 24px; padding: clamp(20px, 4vw, 36px); border: 1px solid var(--cream-dark, #d9c9b4); border-radius: 20px; background: var(--white, #fffaf4); color: var(--text, #2e241b); }
+          #catalogGrid .catalog-nojs h3 { margin: 0 0 10px; font: 600 clamp(28px, 3.5vw, 40px)/1.15 'Cormorant Garamond', Georgia, serif; }
+          #catalogGrid .catalog-nojs p { max-width: 680px; line-height: 1.6; }
+          #catalogGrid .catalog-nojs ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; list-style: none; padding: 0; margin: 20px 0; }
+          #catalogGrid .catalog-nojs li { padding: 13px 15px; border: 1px solid var(--cream-dark, #d9c9b4); border-radius: 12px; }
+          #catalogGrid .catalog-nojs li strong, #catalogGrid .catalog-nojs li span { display: block; }
+          #catalogGrid .catalog-nojs li span { margin-top: 4px; font-size: 14px; }
+          #catalogGrid .catalog-nojs a { color: inherit; text-underline-offset: 3px; }
+          #catalogGrid .catalog-nojs a:focus-visible { outline: 2px solid var(--gold, #c9934a); outline-offset: 4px; }
+          @media (max-width: 560px) { #catalogGrid .catalog-nojs ul { grid-template-columns: minmax(0, 1fr); } }
+        </style>
+        <div class="catalog-nojs" role="region" aria-label="Каталог десертов без JavaScript">
+          <h3>Наши десерты</h3>
+          <p>Каталог доступен даже без JavaScript. Окончательная стоимость, начинка и дата изготовления согласовываются индивидуально.</p>
+          <ul>
+            <li><strong>Бисквитный торт</strong><span>От 2 800 ₽/кг · заказ от 2 кг</span></li>
+            <li><strong>Бенто-торт</strong><span>От 1 600 ₽ · около 350 г</span></li>
+            <li><strong>Макси-бенто</strong><span>От 3 000 ₽ · около 1 100 г</span></li>
+            <li><strong>3D-торт</strong><span>От 5 000 ₽/кг · заказ от 3 кг</span></li>
+            <li><strong>Свадебный торт</strong><span>От 3 000 ₽/кг</span></li>
+            <li><strong>Меренговый рулет</strong><span>2 500 ₽ · 1 100 г</span></li>
+            <li><strong>Пирожное «Павлова»</strong><span>От 350 ₽/шт. · заказ от 2 шт.</span></li>
+            <li><strong>Капкейки</strong><span>От 350 ₽/шт. · от 6 шт. одного вкуса</span></li>
+          </ul>
+          <p>Можно <a href="/gallery/">посмотреть реальные работы</a>, <a href="https://wa.me/79119038886" target="_blank" rel="noopener noreferrer">обсудить заказ в WhatsApp</a> или позвонить по телефону <a href="tel:+79119038886">+7 911 903-88-86</a>.</p>
+        </div>
+      </noscript>
     </div>
   </div>
 </section>
