@@ -464,7 +464,21 @@ test.describe('premium media blocks', () => {
     expect(sitemap).toContain('<video:thumbnail_loc>https://milovicake.ru'+poster+'</video:thumbnail_loc>');
     expect(sitemap).toContain('<video:description>'+description+'</video:description>');
     const home=await(await request.get('/')).text();
-    expect(home).toContain('{"v":"/img/gallery/videos/video-12-wedding-heart.webm","p":"'+poster+'","t":"Торт с малиной"}');
+    const embeddedVideos = home.match(/data-videos='([\s\S]*?)'/);
+    expect(embeddedVideos).not.toBeNull();
+    const manifestVideos = JSON.parse(embeddedVideos[1]);
+    const source = manifestVideos.find(item => item.v === '/img/gallery/videos/video-12-wedding-heart.webm');
+    expect(source).toBeDefined();
+    expect(source.p).toBe(poster);
+    expect(source.t).toBe('Торт с малиной');
+    // Desktop MP4 companion is optional on the standalone wedding PR;
+    // if present, validate the exact playback path and downloadable media.
+    if (Object.prototype.hasOwnProperty.call(source, 'm')) {
+      expect(source.m).toBe('/img/gallery/videos/video-12-wedding-heart.mp4');
+      const companion = await request.head(source.m);
+      expect(companion.ok()).toBe(true);
+      expect(companion.headers()['content-type']).toContain('video/mp4');
+    }
     await page.goto('/gallery/',{waitUntil:'domcontentloaded'});
     await page.locator('.gx-chip[data-filter="wedding"]').click();
     await expect(page.locator('[data-id="v12"] video')).toHaveAttribute('poster',poster);
