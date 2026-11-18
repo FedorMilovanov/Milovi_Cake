@@ -1,0 +1,43 @@
+const { test, expect } = require('@playwright/test');
+test('desktop premium video dialog plays audibly, navigates and restores marquee', async ({page}, info) => {
+  if (info.project.name.includes('mobile')) test.skip();
+  await page.goto('/', {waitUntil:'domcontentloaded'});
+  const deny=page.locator('.mc-consent-button--deny');
+  if (await deny.isVisible()) await deny.click();
+  const tile=page.locator('#mcVideoTrack .vtile').nth(13);
+  await tile.scrollIntoViewIfNeeded();
+  await tile.evaluate(el=>el.click());
+  const dialog=page.locator('dialog.vview');
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator('.vview-switch')).toHaveCount(2);
+  await expect.poll(()=>dialog.locator('video').evaluate(v=>v.muted)).toBe(false);
+  await expect.poll(()=>page.locator('#mcVideoTrack').evaluate(e=>getComputedStyle(e).animationPlayState)).toBe('paused');
+  const before=await dialog.locator('.vview-count').textContent();
+  await dialog.locator('.vview-switch--next').click();
+  await expect.poll(()=>dialog.locator('.vview-count').textContent()).not.toBe(before);
+  await page.keyboard.press('Escape');
+  await expect(dialog).toHaveCount(0);
+  await expect.poll(()=>page.locator('#mcVideoTrack').evaluate(e=>getComputedStyle(e).animationPlayState)).not.toBe('paused');
+});
+test('mobile gallery remains legacy fullscreen and hero excludes injected desktop SVG labels', async ({page}, info) => {
+  if (!info.project.name.includes('mobile')) test.skip();
+  await page.goto('/', {waitUntil:'domcontentloaded'});
+  const deny=page.locator('.mc-consent-button--deny');
+  if (await deny.isVisible()) await deny.click();
+  await expect(page.locator('.hero .btn-hero-messenger[data-mc-motion-init]')).toHaveCount(0);
+  await page.locator('#mcVideoTrack .vtile').nth(13).scrollIntoViewIfNeeded();
+  await page.locator('#mcVideoTrack .vtile').nth(13).evaluate(el=>el.click());
+  const modal=page.locator('.vview');
+  await expect(modal).toBeVisible();
+  expect(await modal.evaluate(e=>e.tagName)).toBe('DIV');
+  await expect(modal.locator('.vview-switch')).toHaveCount(0);
+});
+test('desktop hero treatment cleans up on resize to mobile breakpoint', async ({page}, info) => {
+  if (info.project.name.includes('mobile')) test.skip();
+  await page.goto('/', {waitUntil:'domcontentloaded'});
+  const deny=page.locator('.mc-consent-button--deny');
+  if (await deny.isVisible()) await deny.click();
+  await expect(page.locator('.hero .btn-hero-messenger[data-mc-motion-init]')).toHaveCount(3);
+  await page.setViewportSize({width:390,height:844});
+  await expect(page.locator('.hero .btn-hero-messenger[data-mc-motion-init]')).toHaveCount(0);
+});

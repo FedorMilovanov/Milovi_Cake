@@ -1364,3 +1364,201 @@ body.vview-open{ overflow:hidden; }
     letter-spacing: .14em;
   }
 }
+
+/* [desktop r37] Native portrait viewer, mouse navigation, readable metadata.
+   Desktop only: mobile r35 remains on its original full-bleed viewer. */
+@media (min-width:769px) {
+  .vview::after { content:none; }
+  body.vview-open #mcVideoTrack { animation-play-state:paused; }
+/* Gallery video strip — video-sized native dialog; local premium prototype.
+   The video image defines the window. No black side mattes, outer panel or crop. */
+.vview{
+  --vview-ratio:.5625;
+  position:fixed;inset:0;
+  width:100vw;max-width:none;
+  height:100vh;height:100dvh;max-height:none;
+  margin:0;padding:0;border:0;border-radius:0;
+  background:transparent;color:#f7e9d5;
+  overflow:hidden;box-shadow:none;
+  z-index:230;
+}
+.vview:not([open]){display:none}
+.vview[open]{display:grid;place-items:center}
+.vview::backdrop{
+  background:rgba(14,10,8,.47);
+  -webkit-backdrop-filter:blur(16px) saturate(.79);
+  backdrop-filter:blur(16px) saturate(.79);
+  /* Keep blur constant: animate only opacity, avoiding full-screen repaint work. */
+  animation:vview-backdrop-appear .26s ease-out both;
+}
+.vview.is-closing::backdrop{animation:vview-backdrop-dismiss .225s ease-in both}
+@keyframes vview-backdrop-appear{from{opacity:0}to{opacity:1}}
+@keyframes vview-backdrop-dismiss{from{opacity:1}to{opacity:0}}
+.vview-content{
+  position:relative;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:13px;
+  max-width:calc(100vw - 24px);
+  padding:6px 0;
+  isolation:isolate;
+}
+.vview-media{
+  width:min(calc(66dvh * var(--vview-ratio)), calc(100vw - 36px), 920px);
+  aspect-ratio:var(--vview-ratio);
+  position:relative;
+  flex:0 0 auto;
+  max-height:66dvh;
+  padding:0;
+  overflow:visible;
+  background:transparent;
+  border:0;border-radius:0;
+  box-shadow:0 22px 64px rgba(14,9,6,.19);
+  transform-origin:center;
+}
+.vview-switch-cover{
+  position:absolute;inset:0;z-index:2;display:block;
+  width:100%;height:100%;object-fit:cover;
+  pointer-events:none;opacity:0;overflow:hidden;
+}
+.vview-switch-cover[hidden]{display:none}
+.vview-switch-cover.is-visible{opacity:1}
+.vview-video{
+  display:block;
+  position:relative;inset:auto;
+  width:100%;height:100%;
+  padding:0; margin:0;
+  aspect-ratio:var(--vview-ratio);
+  object-fit:contain;
+  background:transparent;
+  border:0;border-radius:0;
+  box-shadow:none;
+  transform:none;
+  -webkit-tap-highlight-color:transparent;
+}
+/* Audible autoplay recovery: show only if the first play attempt is rejected. */
+.vview-play-fallback{
+  position:absolute;inset:0;z-index:3;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  width:100%;height:100%;padding:15px;border:0;
+  background:rgba(18,12,8,.42);color:#fbe5c1;cursor:pointer;
+  font:500 12px/1.4 'Jost',sans-serif;letter-spacing:.04em;
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+}
+.vview-play-fallback[hidden]{display:none}
+.vview-play-fallback:focus-visible{outline:2px solid #ebbd83;outline-offset:-5px}
+/* Desktop-only mouse navigation. Hit area is generous; visible icon stays refined. */
+.vview-switch{
+  position:absolute;
+  top:calc(50% - 50px);
+  width:48px;height:64px;
+  padding:0;
+  display:grid;place-items:center;
+  background:transparent;
+  color:#e9d3b3;
+  border:0;border-radius:14px;
+  opacity:.77;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  transition:opacity .24s ease,background-color .24s ease,transform .28s cubic-bezier(.2,.8,.3,1);
+}
+.vview-switch--prev{left:-69px}
+.vview-switch--next{right:-69px}
+.vview-switch svg{width:25px;height:25px;display:block}
+.vview-switch:hover{
+  opacity:1;background:rgba(49,32,21,.22);
+}
+.vview-switch--prev:hover{transform:translateX(-3px)}
+.vview-switch--next:hover{transform:translateX(3px)}
+.vview-switch:active{transform:scale(.96)}
+.vview-switch:focus-visible{outline:2px solid #e5b875;outline-offset:2px;opacity:1}
+.vview-count{
+  color:rgba(249,222,187,.7);
+  font:500 10px/1.2 'Jost',sans-serif;
+  letter-spacing:.22em;
+  font-variant-numeric:tabular-nums;
+  text-align:center;
+}
+.vview-close{
+  position:absolute;z-index:4;
+  top:-4px;right:-54px;
+  width:44px;height:44px;
+  display:grid;place-items:center;
+  color:#fff4df;
+  background:rgba(26,18,12,.37);
+  border:1px solid rgba(239,214,175,.3);
+  border-radius:50%;cursor:pointer;
+  -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);
+  transition:background .24s ease,border-color .24s ease,transform .25s cubic-bezier(.2,.84,.27,1);
+}
+.vview-close svg{width:18px;height:18px;stroke:currentColor;stroke-width:1.7;fill:none}
+.vview-close:hover{background:rgba(58,36,20,.65);border-color:rgba(239,214,175,.6);transform:rotate(90deg)}
+.vview-close:focus-visible,.vview-gallery:focus-visible{
+  outline:2px solid #E5B875;
+  outline-offset:4px;
+}
+.vview-meta{
+  min-width:0;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  gap:11px;
+  animation:vview-meta-arrive .48s .15s both cubic-bezier(.2,.9,.3,1);
+}
+.vview-cap{
+  color:#f4e1c5;
+  font:600 12.5px/1.4 'Jost',sans-serif;
+  letter-spacing:.12em;text-transform:uppercase;text-align:center;
+  max-width:min(86vw,50ch);
+  text-shadow:0 1px 12px rgba(0,0,0,.27);
+  opacity:1;transform:none;transition:none;
+}
+.vview-gallery{
+  display:inline-flex;align-items:center;justify-content:center;gap:11px;
+  min-height:44px;
+  padding:10px 18px;
+  font:500 11px/1.2 'Jost',sans-serif;
+  letter-spacing:.13em;text-transform:uppercase;white-space:nowrap;
+  text-decoration:none;
+  color:#efc98f;
+  border:1px solid rgba(231,181,107,.48);
+  border-radius:999px;
+  background:rgba(35,24,17,.34);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  transition:transform .28s cubic-bezier(.2,.85,.26,1),border-color .25s ease,
+    background .25s ease,color .25s ease,box-shadow .28s ease;
+}
+.vview-gallery svg{height:17px;width:17px;flex:0 0 auto;stroke:currentColor;fill:none}
+.vview-gallery svg:last-child{height:15px;width:15px;stroke:none;fill:currentColor;transition:transform .28s ease}
+.vview-gallery:hover{
+  transform:translateY(-2px);
+  color:#fff3dc;
+  border-color:rgba(235,192,132,.78);
+  background:rgba(61,38,23,.56);
+  box-shadow:0 8px 25px rgba(17,9,5,.14);
+}
+.vview-gallery:hover svg:last-child{transform:translateX(3px)}
+@keyframes vview-meta-arrive {
+ from{opacity:0;transform:translateY(9px)}
+ to{opacity:1;transform:none}
+}
+body.vview-open{overflow:hidden}
+@media (min-width:769px){
+  .vview-media{max-width:calc(100vw - 164px)}
+}
+@media(max-width:768px){
+ .vview-switch,.vview-count{display:none}
+ .vview-media{width:min(calc(69dvh * var(--vview-ratio)),calc(100vw - 26px));max-height:69dvh}
+ .vview-close{top:8px;right:8px;background:rgba(24,17,12,.5)}
+ .vview-content{gap:12px}
+ .vview-gallery{max-width:calc(100vw - 28px);letter-spacing:.1em}
+ .vview::backdrop{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+}
+@media (max-height:520px) and (min-width:769px){
+ .vview-media{width:min(calc(58dvh * var(--vview-ratio)),calc(100vw - 36px),920px)}
+}
+@media (prefers-reduced-motion:reduce){
+ .vview::backdrop,.vview-meta{animation:none}
+ .vview-close,.vview-gallery,.vview-gallery svg,.vview-switch{transition:none}
+ .vview-gallery:hover,.vview-switch:hover{transform:none}
+}
+
+
+}

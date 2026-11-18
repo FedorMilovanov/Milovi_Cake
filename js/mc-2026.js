@@ -302,6 +302,294 @@
     else tile.classList.add('is-playing');
   }
 
+  /* [desktop r37] Isolated premium viewer. The r35 mobile viewer below is unchanged. */
+  var premiumDesktopView = (function(){
+  var CLOSE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>';
+  var ARROW_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h12.2l-4.6-4.6L14 6l7 6-7 6-1.4-1.4 4.6-4.6H5z"/></svg>';
+  var PREV_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.75 8.25 12l6.25 6.25" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var NEXT_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 5.75 15.75 12 9.5 18.25" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var GALLERY_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.1"/></svg>';
+
+  var viewEl = null, viewOpener = null, viewVideo = null, viewCap = null, viewIndex = 0;
+  var viewBusy = false, viewClosing = false;
+  var viewSwitchToken = 0, viewPlayToken = 0;
+  var viewNavEvents = null, viewNavWatchdog = 0;
+  function clearNavWait(){
+    if (viewNavEvents) { viewNavEvents.abort(); viewNavEvents=null; }
+    if (viewNavWatchdog) {clearTimeout(viewNavWatchdog);viewNavWatchdog=0;}
+  }
+  function galleryHref(){ return '/gallery/'; }
+  function currentItem(){ return items[(viewIndex + items.length) % items.length]; }
+  function reduceMotion(){ return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
+  function setVideoRatio(){
+    if (!viewVideo || !viewEl) return;
+    var w = viewVideo.videoWidth, h = viewVideo.videoHeight;
+    // Intrinsic dimensions include pixel aspect ratio / rotation applied by the UA.
+    if (w > 0 && h > 0) {
+      var value = Math.max(0.35, Math.min(w / h, 3.2));
+      // All shipped videos are 720x1278/1282; ignore subpixel ratio drift.
+      // Genuine landscape items still get their native proportions.
+      var current = parseFloat(viewEl.style.getPropertyValue('--vview-ratio')) || .5625;
+      if (Math.abs(value-current) > .02) viewEl.style.setProperty('--vview-ratio', String(value));
+    }
+  }
+  function playCurrent(){
+    if (!viewVideo || !viewEl) return;
+    var it = currentItem();
+    viewVideo.pause();
+    viewVideo.poster = it.p || '';
+    viewVideo.src = it.v;
+    viewVideo.setAttribute('aria-label', it.t);
+    if (viewCap) viewCap.textContent = it.t;
+    viewEl.setAttribute('aria-label', 'Видео работы: ' + it.t);
+    viewVideo.load();
+    var activeVideo = viewVideo;
+    var activePlayToken = ++viewPlayToken;
+    var fallback = viewEl.querySelector('.vview-play-fallback');
+    if (fallback) fallback.hidden = true;
+    // Called from the tile's trusted click: request audio immediately.
+    // A browser may still reject audible autoplay; expose a second explicit gesture.
+    var pending = viewVideo.play();
+    if (pending && pending.catch) pending.catch(function(){
+      if (viewVideo === activeVideo && activePlayToken === viewPlayToken && viewEl && viewEl.open && fallback) fallback.hidden = false;
+    });
+  }
+  function animateOpen(opener, content){
+    if (reduceMotion() || !content || !content.animate) return;
+    // The entire content stays together. The old opener-to-media translation
+    // displaced video while title/arrows stayed still, briefly overlapping them.
+    var mobile = window.matchMedia('(max-width:768px)').matches;
+    content.animate([
+      {transform:mobile?'none':'translate3d(0,12px,0) scale(.975)',opacity:mobile?.58:.40},
+      {transform:'none',opacity:1}
+    ], {id:'vview-opener-zoom',duration:mobile?190:330,
+        easing:'cubic-bezier(.18,.78,.28,1)',fill:'none'});
+  }
+  function openView(it, opener){
+    if (viewEl) closeView(true);
+    viewIndex = Math.max(0, items.indexOf(it));
+    viewOpener = opener || null;
+    viewClosing = false;
+    viewBusy = false;
+
+    var dialog = document.createElement('dialog');
+    dialog.className = 'vview';
+    dialog.setAttribute('tabindex','-1');
+    dialog.setAttribute('aria-label', 'Видео работы: ' + it.t);
+    dialog.innerHTML =
+      '<div class="vview-content">' +
+        '<div class="vview-media">' +
+          '<video class="vview-video" controls loop playsinline preload="metadata"></video>' +
+          '<img class="vview-switch-cover" alt="" aria-hidden="true" hidden />' +
+          '<button class="vview-play-fallback" type="button" hidden aria-label="Запустить видео со звуком">▶ <span>Воспроизвести со звуком</span></button><button class="vview-close" type="button" aria-label="Закрыть видео">' + CLOSE_SVG + '</button>' +
+        '</div>' +
+        '<button class="vview-switch vview-switch--prev" type="button" aria-label="Предыдущая работа" title="Предыдущая работа (←)">' + PREV_SVG + '</button>' +
+        '<button class="vview-switch vview-switch--next" type="button" aria-label="Следующая работа" title="Следующая работа (→)">' + NEXT_SVG + '</button>' +
+        '<div class="vview-meta">' +
+          '<div class="vview-cap"></div>' +
+          '<div class="vview-count" aria-hidden="true"></div>' +
+          '<a class="vview-gallery" href="' + galleryHref() + '" aria-label="Перейти во всю галерею работ">' +
+            GALLERY_SVG + '<span>Вся галерея работ</span>' + ARROW_SVG +
+          '</a>' +
+        '</div>' +
+      '</div>';
+
+    document.body.appendChild(dialog);
+    viewEl = dialog;
+    viewVideo = dialog.querySelector('.vview-video');
+    viewCap = dialog.querySelector('.vview-cap');
+    var media = dialog.querySelector('.vview-media');
+    var close = dialog.querySelector('.vview-close');
+    dialog.querySelector('.vview-switch--prev').addEventListener('click', function(){ changeView(-1); });
+    dialog.querySelector('.vview-switch--next').addEventListener('click', function(){ changeView(1); });
+    viewVideo.addEventListener('loadedmetadata', setVideoRatio);
+    viewVideo.muted = false;
+    viewVideo.volume = 1;
+    var fallback = dialog.querySelector('.vview-play-fallback');
+    fallback.addEventListener('click', function(){
+      if (!viewVideo || viewEl !== dialog) return;
+      viewVideo.muted = false;
+      viewVideo.volume = 1;
+      var pending = viewVideo.play();
+      if (pending && pending.then) pending.then(function(){
+        fallback.hidden = true;
+        var cover = dialog.querySelector('.vview-switch-cover');
+        if (cover) {cover.classList.remove('is-visible');cover.hidden=true;}
+      }, function(){fallback.hidden=false;});
+      else fallback.hidden = true;
+    });
+    // The top-layer native modal constrains Tab, handles focus and isolates the page.
+    dialog.showModal();
+    document.body.classList.add('vview-open'); // Freeze marquee under the native modal
+
+    playCurrent();
+    updateViewCount();
+    animateOpen(opener, dialog.querySelector('.vview-content'));
+    dialog.classList.add('is-ready');
+
+    close.addEventListener('click', function(e){ e.stopPropagation(); closeView(); });
+    dialog.addEventListener('cancel', function(e){ e.preventDefault(); closeView(); });
+    dialog.addEventListener('click', function(e){
+      if (e.target === dialog) closeView();
+    });
+    bindViewGestures(media);
+    try { dialog.focus({ preventScroll: true }); } catch (err) { dialog.focus(); }
+  }
+  function updateViewCount(){
+    if (!viewEl) return;
+    var count = viewEl.querySelector('.vview-count');
+    if (count) count.textContent = String(viewIndex + 1).padStart(2,'0') + ' / ' + String(items.length).padStart(2,'0');
+  }
+  function changeView(direction){
+    if (!viewEl || viewClosing || viewBusy) return;
+    var dialog = viewEl, video = viewVideo;
+    var cover = dialog.querySelector('.vview-switch-cover');
+    var nextIndex = (viewIndex + direction + items.length) % items.length;
+    var upcoming = items[nextIndex];
+    var token = ++viewSwitchToken;
+    clearNavWait();
+    viewBusy = true;
+    dialog.classList.add('is-switching');
+    video.pause(); // keep last painted frame visible while the next poster decodes
+
+    // Predecode the upcoming poster; the old video remains visible until ready.
+    var preview = new Image();
+    preview.src = upcoming.p;
+    function begin(){
+      if (dialog !== viewEl || viewClosing || token !== viewSwitchToken) return;
+      cover.src = upcoming.p;
+      cover.hidden = false;
+      var revealStarted = false;
+      function finish(){
+        if (token !== viewSwitchToken || dialog !== viewEl) return;
+        cover.classList.remove('is-visible');
+        cover.hidden = true;
+        clearNavWait();
+        viewBusy = false;
+        dialog.classList.remove('is-switching');
+      }
+      function unveil(){
+        if (revealStarted || token !== viewSwitchToken || dialog !== viewEl) return;
+        revealStarted = true;
+        if (reduceMotion() || !cover.animate) { finish(); return; }
+        var fade = cover.animate([{opacity:1},{opacity:0}],{
+          duration:200,easing:'cubic-bezier(.25,.68,.35,1)',fill:'both'
+        });
+        fade.finished.then(function(){finish();fade.cancel();},function(){finish();});
+      }
+      function swapSource(){
+        if (token !== viewSwitchToken || dialog !== viewEl) return;
+        cover.classList.add('is-visible');
+        viewIndex = nextIndex;
+        updateViewCount();
+        // Ensure cover remains up until a decoded video frame exists.
+        viewNavEvents = new AbortController();
+        video.addEventListener('loadeddata', unveil, {once:true, signal:viewNavEvents.signal});
+        video.addEventListener('playing', unveil, {once:true, signal:viewNavEvents.signal});
+        playCurrent();
+        if (video.readyState >= 2) unveil();
+        // Avoid trapping navigation on unsupported or slow media formats.
+        viewNavWatchdog = window.setTimeout(function(){
+          if (token !== viewSwitchToken || dialog !== viewEl || !viewBusy) return;
+          if (video.readyState >= 2) unveil();
+          else {
+            clearNavWait();
+            viewBusy = false;
+            dialog.classList.remove('is-switching');
+            var fallback = dialog.querySelector('.vview-play-fallback');
+            if (fallback) fallback.hidden = false;
+          }
+        },3500);
+      }
+      if (reduceMotion() || !cover.animate) {swapSource();return;}
+      // Compositor-only opacity. Avoid animating filters or layout dimensions.
+      var fade = cover.animate([{opacity:0},{opacity:1}],{
+        duration:145,easing:'cubic-bezier(.25,.7,.35,1)',fill:'both'
+      });
+      fade.finished.then(function(){
+        fade.cancel();
+        swapSource();
+      },swapSource);
+    }
+    if (preview.decode) preview.decode().then(begin,function(){begin();});
+    else if (preview.complete) begin();
+    else {
+      preview.addEventListener('load',begin,{once:true});
+      preview.addEventListener('error',begin,{once:true});
+    }
+  }
+  function bindViewGestures(media){
+    var sx = 0, sy = 0, started = false;
+    media.addEventListener('touchstart', function(e){
+      if (e.touches.length !== 1 || viewBusy) return;
+      // The bottom region belongs to the native seek/volume controls.
+      if (e.touches[0].clientY >= media.getBoundingClientRect().bottom - 68) return;
+      // Swipe is only interpreted after a substantial move; taps keep native controls.
+      sx = e.touches[0].clientX; sy = e.touches[0].clientY; started = true;
+    }, { passive:true });
+    media.addEventListener('touchend', function(e){
+      if (!started || e.changedTouches.length !== 1) return;
+      started = false;
+      var dx = e.changedTouches[0].clientX - sx;
+      var dy = e.changedTouches[0].clientY - sy;
+      if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.3) changeView(dx < 0 ? 1 : -1);
+      else if (dy > 110 && dy > Math.abs(dx) * 1.4) closeView();
+    }, { passive:true });
+    media.addEventListener('touchcancel', function(){ started = false; }, { passive:true });
+  }
+  function closeView(instant){
+    if (!viewEl) return;
+    if (viewClosing) {
+      if (instant && viewEl._finishClose) viewEl._finishClose();
+      return;
+    }
+    viewClosing = true;
+    viewSwitchToken++; viewPlayToken++; // invalidate queued decode/play callbacks
+    clearNavWait(); // release per-transition listeners and watchdog
+    var dialog = viewEl, video = viewVideo;
+    var opener = viewOpener;
+    var finished = false;
+    var closeTimer = 0;
+    if (video) { try { video.pause(); } catch(e){} }
+    function finish(){
+      if (finished) return;
+      finished = true;
+      if (closeTimer) clearTimeout(closeTimer);
+      if (dialog.open) dialog.close();
+      if (dialog.parentNode) dialog.remove();
+      if (viewEl === dialog) {
+        viewEl = null; viewVideo = null; viewCap = null; viewOpener = null;
+        viewBusy = false; viewClosing = false;
+        document.body.classList.remove('vview-open');
+      }
+      if (opener && opener.isConnected) {
+        try { opener.focus({ preventScroll:true }); } catch(e) { opener.focus(); }
+      }
+    }
+    dialog._finishClose = finish;
+    var content = dialog.querySelector('.vview-content');
+    if (instant || reduceMotion() || !content || !content.animate) { finish(); return; }
+    dialog.classList.add('is-closing');
+    var anim = content.animate([
+      {transform:'none',opacity:1},
+      {transform:'translateY(9px) scale(.974)',opacity:0}
+    ], { duration:225, easing:'cubic-bezier(.42,0,.8,1)' });
+    closeTimer = window.setTimeout(finish,340);
+    anim.finished.then(finish,finish);
+  }
+  document.addEventListener('keydown', function(e){
+    if (!viewEl || viewClosing) return;
+    // Escape always closes, including while videos are switching and controls focused.
+    if (e.key === 'Escape') { e.preventDefault(); closeView(); return; }
+    // Native video controls own arrow keys when the video element has focus.
+    if (e.target && /^(VIDEO|INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+    if (e.key === 'ArrowRight') { e.preventDefault(); changeView(1); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); changeView(-1); }
+  }, true); // capture: other component handlers stop Escape before bubble phase
+
+    return {open:openView};
+  })();
+
   /* [UI-2026-11-16 r25] Безрамочный «резиновый» просмотр работы.
      Тап по плитке → видео упруго раскрывается из её прямоугольника на весь
      экран (без рамки, скруглений и подписей-панелей). Второй тап по кадру —
@@ -548,7 +836,8 @@
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || (typeof e.button === 'number' && e.button > 0)) return;
       e.preventDefault();
       clearMagnet(d);
-      openView(it, d);
+      if (window.matchMedia('(min-width:769px)').matches) premiumDesktopView.open(it, d);
+      else openView(it, d);
     });
     return d;
   }

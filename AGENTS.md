@@ -128,6 +128,8 @@
 - Удалять CSS-блок `AI DO NOT TOUCH — R10 PROTECTED BLOCK` в `premium-overrides.css`
 - Удалять CSS-блок `PATCH R9/R10`
 
+**Уточнение владельца, 18.11.2026 (home desktop от 769 px):** на главной разрешён облегчённый вариант без фоновых кругов и видимой рамки. Три фирменных inline-SVG сохраняются; названия строятся SVG textPath и плавно переходят в подпись при hover/focus. Отдельный обработчик работает только на десктопе и при уходе на mobile восстанавливает исходные inline-стили; пригороды и мобильные кнопки остаются в прежней системе. См. функцию desktop hero messenger motion в js/main.js и protected-тест.
+
 ### 3.2 Lightbox в пригородах (`prigorody/_template.html`)
 
 ```html

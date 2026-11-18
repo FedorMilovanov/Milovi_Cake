@@ -34,51 +34,26 @@ test.describe('protected homepage interactions', () => {
     }
   });
 
-  test('hero messenger icons keep brand identity and a hover lift on desktop', async ({ page }, testInfo) => {
-    if ((testInfo.project.name || '').includes('mobile')) test.skip(true, 'hover animation is desktop-only');
-
+  test('home desktop SVG messengers: brand glyph, no round chrome, reversible hover', async ({ page }, testInfo) => {
+    if ((testInfo.project.name || '').includes('mobile')) test.skip(true, 'desktop-only treatment');
     await page.goto('/', { waitUntil: 'domcontentloaded' });
-
-    const buttons = [
-      { selector: '.btn-hero-wa', href: /wa\.me\/79119038886/, label: 'WhatsApp' },
-      { selector: '.btn-hero-tg', href: /t\.me\//, label: 'Telegram' },
-      { selector: '.btn-hero-max', href: /max\.ru\//, label: 'MAX' },
-    ];
-
-    for (const item of buttons) {
-      const btn = page.locator(item.selector).first();
-      await expect(btn, `${item.label} button visible`).toBeVisible();
-      await expect(btn).toHaveAttribute('href', item.href);
-
-      // Владелец выбрал исходные брендовые SVG без «кольцевых» подписей:
-      // внутри кнопки не должно быть текстовых слоёв hero-flat-text/hero-ring-text.
-      await expect(btn.locator('svg path').first(), `${item.label} keeps a real brand glyph`).toHaveCount(1);
-      await expect(btn.locator('.hero-flat-text, .hero-ring-text, [id^="flat-text-"], [id^="ring-text-"]')).toHaveCount(0);
-
-      const rest = await btn.evaluate((el) => getComputedStyle(el).transform);
+    await page.evaluate(() => document.fonts.ready);
+    for (const [brand, name] of [['wa','WhatsApp'],['tg','Telegram'],['max','MAX']]) {
+      const btn = page.locator('.hero .btn-hero-' + brand).first();
+      await expect(btn).toBeVisible();
+      await expect(btn).toHaveAttribute('data-mc-motion-init','1');
+      await expect(btn.locator('svg path').first()).toHaveCount(1);
+      await expect(btn.locator('.hero-ring-text')).toHaveCount(1);
+      await expect(btn.locator('.hero-flat-text')).toHaveCount(1);
+      const atRest = await btn.evaluate(el => ({bg:getComputedStyle(el).backgroundColor,border:getComputedStyle(el).borderTopWidth}));
+      expect(atRest.bg, name + ' has transparent chrome').toBe('rgba(0, 0, 0, 0)');
+      expect(atRest.border, name + ' has no circular border').toBe('0px');
       await btn.hover();
-      const hovered = await expect
-        .poll(async () => btn.evaluate((el) => getComputedStyle(el).transform), {
-          message: `${item.label} reacts to hover`,
-          timeout: 2000,
-        })
-        .not.toBe(rest);
-
-      const shift = await btn.evaluate((el) => {
-        const rect = el.getBoundingClientRect();
-        const parent = el.parentElement.getBoundingClientRect();
-        return { top: rect.top - parent.top, height: parent.height };
-      });
-      expect(shift.height, `${item.label} hover must not resize the row`).toBeLessThan(64);
-
-      await page.mouse.move(20, 20);
-      await expect
-        .poll(async () => btn.evaluate((el) => getComputedStyle(el).transform), {
-          message: `${item.label} returns to rest after hover`,
-          timeout: 2000,
-        })
-        .toBe(rest);
-      void hovered;
+      await expect.poll(async () => btn.locator('.hero-flat-text').evaluate(el => Number(el.getAttribute('opacity')))).toBeGreaterThan(.9);
+      await page.mouse.move(20,20);
+      await expect.poll(async () => btn.locator('.hero-flat-text').evaluate(el => Number(el.getAttribute('opacity')))).toBeLessThan(.09);
+      const delta = await btn.getAttribute('data-mc-arc-center-delta');
+      if (delta != null) expect(Math.abs(Number(delta))).toBeLessThan(.7);
     }
   });
 

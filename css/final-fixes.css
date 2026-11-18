@@ -2184,3 +2184,55 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
    У бенто и 3D описаний нет (см. отчёт, контентный HOLD). Раньше шторка
    показывала пустой блок с отступами — теперь он не занимает места. */
 #fillPopupText:empty { display: none; }
+
+/* r27 approved messenger design — home desktop only. Original protected ring lettering and
+ * brand SVG remain; circular button chrome is visually removed on home. */
+@media (min-width:769px) {
+ body.mc-home .hero-actions .messenger-group--ring { gap:18px; }
+ body.mc-home .hero-actions a.btn-hero-messenger.btn-hero-ring {
+  background:transparent;
+  border:0;
+  box-shadow:none;
+ }
+ body.mc-home .hero-actions a.btn-hero-messenger.btn-hero-ring:hover {
+  transform:none;
+ }
+ body.mc-home .hero-actions a.btn-hero-messenger.btn-hero-ring:focus-visible {
+  outline:2px solid currentColor;
+  outline-offset:5px;
+ }
+ body.mc-home .hero-actions a.btn-hero-messenger.btn-hero-ring svg {
+  transform:scale(1.18);
+  transform-origin:center;
+  transition:transform .4s cubic-bezier(.22,.78,.25,1),filter .35s ease;
+  filter:drop-shadow(0 1px 2px rgba(20,12,5,.08));
+  overflow:visible;
+ }
+ body.mc-home .hero-actions a.btn-hero-messenger.btn-hero-ring:hover svg,
+ body.mc-home .hero-actions a.btn-hero-messenger.btn-hero-ring:focus-visible svg {
+  transform:scale(1.22);
+  filter:drop-shadow(0 2px 5px rgba(20,12,5,.13));
+ }
+ body.mc-home .hero-actions .mc-brand-glyph {
+  transform-box:fill-box;
+  transform-origin:center;
+  transition:transform .43s cubic-bezier(.2,.85,.27,1);
+ }
+ body.mc-home .hero-actions .mc-brand-glyph--wa {transform:scale(1.36)}
+ body.mc-home .hero-actions .mc-brand-glyph--tg,
+ body.mc-home .hero-actions .mc-brand-glyph--max {transform:scale(1.44)}
+ body.mc-home .hero-actions .btn-hero-ring:hover .mc-brand-glyph--wa,
+ body.mc-home .hero-actions .btn-hero-ring:focus-visible .mc-brand-glyph--wa {transform:scale(1.41)}
+ body.mc-home .hero-actions .btn-hero-ring:hover .mc-brand-glyph--tg,
+ body.mc-home .hero-actions .btn-hero-ring:focus-visible .mc-brand-glyph--tg,
+ body.mc-home .hero-actions .btn-hero-ring:hover .mc-brand-glyph--max,
+ body.mc-home .hero-actions .btn-hero-ring:focus-visible .mc-brand-glyph--max {transform:scale(1.49)}
+ body.mc-home .hero-actions .mc-hover-grain {
+  position:absolute;pointer-events:none;z-index:5;
+  border-radius:50%;background:currentColor;opacity:0;
+ }
+}
+@media (min-width:769px) and (prefers-reduced-motion:reduce) {
+ body.mc-home .hero-actions .mc-brand-glyph,
+ body.mc-home .hero-actions a.btn-hero-messenger.btn-hero-ring svg {transition:none}
+}
