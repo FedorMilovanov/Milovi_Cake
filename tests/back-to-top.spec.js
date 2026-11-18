@@ -10,6 +10,29 @@ async function jumpTo(page, y) {
   await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
 }
 
+/* [r38] Высота документа на главной растёт после первого скролла: каталог и
+   соседние секции гидрируются по видимости, плюс scroll anchoring сдвигает
+   позицию на ту же величину. Из-за этого замер «до/после перезагрузки» ловил
+   разное состояние загрузки и сравнивал проценты от разных высот. Ждём, пока
+   высота перестанет меняться, — это делает замер детерминированным, но не
+   ослабляет проверку прогресса. */
+async function settleLayout(page) {
+  await page.evaluate(() => new Promise((resolve) => {
+    let last = -1;
+    let stable = 0;
+    let frames = 0;
+    const tick = () => {
+      const height = document.documentElement.scrollHeight;
+      if (height === last) stable += 1;
+      else { last = height; stable = 0; }
+      frames += 1;
+      if (stable >= 4 || frames > 60) resolve();
+      else requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }));
+}
+
 async function openHome(page, width, height, theme) {
   await page.setViewportSize({ width, height });
   if (theme) {
@@ -64,6 +87,7 @@ test('back-to-top restores progress and visibility without any scroll', async ({
   await jumpTo(page, await page.evaluate(() => Math.round(document.documentElement.scrollHeight * 0.5)));
   await expect(page.locator('#backToTop')).toHaveClass(/visible/);
   await page.waitForTimeout(300);
+  await settleLayout(page);
 
   const read = () => page.evaluate(() => {
     const fill = document.querySelector('.btt-ring-fill');
@@ -79,6 +103,7 @@ test('back-to-top restores progress and visibility without any scroll', async ({
   const before = await read();
   await page.reload({ waitUntil: 'load' });
   await page.waitForTimeout(500);
+  await settleLayout(page);
   const after = await read();
 
   // После перезагрузки браузер восстанавливает позицию: до первого скролла

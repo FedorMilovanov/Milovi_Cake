@@ -110,6 +110,8 @@ DEV_TOOLING_JS = {
     "tests/cart-biscuit-key.spec.js",
     "tests/tablet-header.spec.js",
     "tests/service-worker.spec.js",
+    "tests/diagnostics/sw-https.spec.js",
+    "tests/diagnostics/webkit-sw-diagnostics.spec.js",
     "scripts/lighthouse_tbt_window.js",
 }
 

@@ -522,8 +522,9 @@
     /* [r38] Постер не запрашивается, пока лента далеко от вьюпорта.
        Нативный `loading="lazy"` в Chrome тянет картинку за ~1250 px до экрана,
        и здесь это давало 90+ KB на первом экране главной (полоса начинается на
-       2246–3185 px). Атрибут остаётся для браузеров без IntersectionObserver,
-       а адрес переезжает в data-poster и подставляется наблюдателем. */
+       2363 px при вьюпорте 915). Атрибут остаётся для браузеров без
+       IntersectionObserver, а адрес переезжает в data-poster и подставляется
+       одним наблюдателем за секцией. */
     img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
     if ('IntersectionObserver' in window) img.setAttribute('data-poster', it.p);
     else img.src = it.p;
@@ -559,22 +560,35 @@
   for (i = 0; i < items.length; i++) frag.appendChild(makeTile(items[i]));
   track.appendChild(frag);
 
-  /* [r38] Постеры подгружаются, когда плитка подходит к экрану (запас 300 px,
-     чтобы к моменту показа картинка уже была). Разметка плиток от этого не
-     меняется: <img> в каждой плитке на месте с самого начала. */
+  /* [r38] Одно наблюдение за самой секцией, а не 32 наблюдателя за плитками:
+     как только лента подходит к экрану (600 px запаса — плитка 132 px, столько
+     нужно, чтобы картинка успела доехать до показа), постеры получают src, и
+     наблюдатель отключается. Разметка плиток не меняется: <img alt=""> в каждой
+     из 32 плиток на месте с самого начала, ленивая подстановка касается только
+     адреса картинки. Клик, hover, клавиатура и открытие видео работают и без
+     постера — на них отвечает <a class="vtile">, а не картинка. */
   if ('IntersectionObserver' in window) {
-    var posterObserver = new IntersectionObserver(function(entries){
-      for (var n = 0; n < entries.length; n++) {
-        var entry = entries[n];
-        if (!entry.isIntersecting) continue;
-        var poster = entry.target.getAttribute('data-poster');
-        if (poster) entry.target.setAttribute('src', poster);
-        entry.target.removeAttribute('data-poster');
-        posterObserver.unobserve(entry.target);
+    var loadPosters = function(){
+      var deferred = track.querySelectorAll('img[data-poster]');
+      for (var n = 0; n < deferred.length; n++) {
+        var poster = deferred[n].getAttribute('data-poster');
+        deferred[n].setAttribute('src', poster);
+        deferred[n].removeAttribute('data-poster');
       }
-    }, { rootMargin: '300px 0px' });
-    var deferred = track.querySelectorAll('img[data-poster]');
-    for (i = 0; i < deferred.length; i++) posterObserver.observe(deferred[i]);
+    };
+    if (strip) {
+      var stripObserver = new IntersectionObserver(function(entries){
+        for (var n = 0; n < entries.length; n++) {
+          if (!entries[n].isIntersecting) continue;
+          loadPosters();
+          stripObserver.disconnect();
+          return;
+        }
+      }, { rootMargin: '600px 0px' });
+      stripObserver.observe(strip);
+    } else {
+      loadPosters();
+    }
   }
 
   // [UI-2026-11-16 #6] Side slide-in chip — the stylish way to the gallery.

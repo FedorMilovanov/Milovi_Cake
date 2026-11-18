@@ -457,6 +457,7 @@ test('cart restores unusual labels as text and keeps their controls functional',
   await page.evaluate(() => openCart());
   const item = page.locator('#cartDrawer .cart-item');
   await expect(item).toContainText(entry.decor);
+  await settleElement(page, '#cartDrawer .qty-btn:last-child');
   await expect(item.locator('.cart-item-info img')).toHaveCount(0);
   await item.locator('.qty-btn:last-child').click();
   await expect(item.locator('.qty-val')).toHaveText('2 шт.');
@@ -483,7 +484,15 @@ for (const failure of ['QuotaExceededError', 'SecurityError']) {
             const rect = element.getBoundingClientRect();
             return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
           };
-          const pointerBoundary = type === 'pointerdown' || type === 'pointerup';
+          /* [r38] Геометрию карточки замеряем только на её собственных pointer-
+             событиях. Раньше getBoundingClientRect/getComputedStyle вызывались
+             на pointerdown/up и для кликов внутри открытой корзины: это
+             принудительный layout каталога с бегущей лентой в момент, когда
+             drawer анимируется. На WebKit такая комбинация совпадала с
+             «элемент не стабилен» на #cartDrawer .qty-btn и 20-секундным
+             ожиданием. Само событие по-прежнему логируется целиком. */
+          const pointerBoundary = (type === 'pointerdown' || type === 'pointerup')
+            && !!(event.target.closest && event.target.closest('#card-2'));
           window.__cartFaultEvents.push({
             type, time: Math.round(performance.now()), trusted: event.isTrusted,
             target: event.target?.id || event.target?.className || event.target?.nodeName,
@@ -529,6 +538,7 @@ for (const failure of ['QuotaExceededError', 'SecurityError']) {
     expect(bounds.x + bounds.width).toBeLessThanOrEqual(320);
     await page.evaluate(() => openCart());
     await expect(page.locator('#cartDrawer .qty-val')).toHaveText('1 шт.');
+    await settleElement(page, '#cartDrawer .qty-btn:last-child');
     await page.locator('#cartDrawer .qty-btn:last-child').click();
     await expect(page.locator('#cartDrawer .qty-val')).toHaveText('2 шт.');
     await page.reload({ waitUntil: 'domcontentloaded' });
@@ -536,6 +546,30 @@ for (const failure of ['QuotaExceededError', 'SecurityError']) {
     await expect(page.locator('#cartDrawer .cart-empty')).toBeVisible();
     expect(errors).toEqual([]);
   });
+}
+
+/* [r38] Ждём, пока контрол перестанет двигаться: drawer выезжает за .4 s,
+   и клик, начатый в середине въезда, на медленном движке (WebKit + 4×CPU)
+   может так и не получить подтверждение «стабилен». Это не повышение
+   таймаута: ожидание заканчивается, как только прямоугольник совпал на трёх
+   кадрах подряд, и ограничено 90 кадрами. */
+async function settleElement(page, selector) {
+  await page.evaluate((sel) => new Promise((resolve) => {
+    const element = document.querySelector(sel);
+    if (!element) return resolve();
+    let previous = null;
+    let stable = 0;
+    let frames = 0;
+    const tick = () => {
+      const box = element.getBoundingClientRect();
+      const key = [box.x, box.y, box.width, box.height].map((value) => Math.round(value * 10) / 10).join(',');
+      if (key === previous) stable += 1; else { previous = key; stable = 0; }
+      frames += 1;
+      if (stable >= 3 || frames > 90) resolve();
+      else requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }), selector);
 }
 
 async function openCartByUser(page, testInfo) {
