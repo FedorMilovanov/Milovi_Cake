@@ -2010,6 +2010,17 @@ test.describe('wedding contact without JavaScript', () => {
   });
 });
 
+test('wedding contacts have valid named groups and blocked popup is announced', async ({ page }) => {
+  await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('group', { name: 'Связаться с Milovi Cake' })).toHaveCount(2);
+  await expect(page.getByRole('navigation', { name: 'Связанные разделы' })).toHaveCount(1);
+  await expect(page.locator('#wedDateHint')).toHaveAttribute('aria-live', 'polite');
+  await page.evaluate(() => { window.open = () => null; });
+  await page.locator('#wedDate').evaluate((input) => input.form.requestSubmit());
+  await expect(page.locator('#wedDateHint')).toContainText('заблокировал');
+  await expect(page.locator('#wedDateFallback')).toBeVisible();
+});
+
 test('wedding document exposes main and footer as separate accessible landmarks', async ({ page }) => {
   await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('main')).toHaveCount(1);
