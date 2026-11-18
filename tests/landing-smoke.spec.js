@@ -1911,6 +1911,49 @@ test('wedding collection image sizes match compact one-column and regular two-co
   }
 });
 
+test('wedding video mutes when it leaves view and never resumes sound automatically', async ({ page }) => {
+  await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+  const frame = page.locator('.wed-proof-video-frame');
+  const video = frame.locator('video');
+  const sound = frame.locator('.wed-clip-sound');
+  await frame.scrollIntoViewIfNeeded();
+  await expect.poll(() => video.evaluate((element) => !element.paused), { timeout: 15000 }).toBe(true);
+  await sound.click();
+  await expect.poll(() => video.evaluate((element) => !element.muted)).toBe(true);
+  await page.locator('.lp-final').scrollIntoViewIfNeeded();
+  await expect.poll(() => video.evaluate((element) => element.paused && element.muted)).toBe(true);
+  await frame.scrollIntoViewIfNeeded();
+  await expect.poll(() => video.evaluate((element) => !element.paused && element.muted),
+    { timeout: 15000 }).toBe(true);
+  await expect(sound).toHaveAttribute('aria-label', 'Включить звук');
+});
+
+test.describe('wedding contact without JavaScript', () => {
+  test.use({ javaScriptEnabled: false });
+
+  test('replaces the inert date submit with a direct WhatsApp contact', async ({ page }) => {
+    for (const width of [320, 390, 768]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+      const form = page.locator('#wedDateForm');
+      await expect(form.locator('.wed-date-row')).toBeHidden();
+      await expect(page.locator('#wedDateHint')).toBeHidden();
+      const fallback = form.locator('.wed-date-nojs-link');
+      await expect(fallback).toBeVisible();
+      await expect(fallback).toHaveAttribute('target', '_blank');
+      await expect(fallback).toHaveAttribute('rel', /noopener/);
+      const address = new URL(await fallback.getAttribute('href'));
+      expect(address.origin).toBe('https://wa.me');
+      expect(address.pathname).toBe('/79119038886');
+      expect(address.searchParams.get('text')).toContain('Дата свадьбы: ___');
+      const bounds = await fallback.boundingBox();
+      expect(bounds.height).toBeGreaterThanOrEqual(44);
+      expect(bounds.x).toBeGreaterThanOrEqual(0);
+      expect(bounds.x + bounds.width).toBeLessThanOrEqual(width + 1);
+    }
+  });
+});
+
 const localFontPages = ['/o-konditere/', '/bento-torty/', '/svadebnye-torty/',
   '/zakazat-tort-spb/', '/dostavka-i-oplata/', '/otzyvy/'];
 
