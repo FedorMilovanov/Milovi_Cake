@@ -899,6 +899,36 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
  .wed-wrap .wed-brief-contact .wed-contact-links a.btn-hero-messenger{transition:none!important}
  .wed-wrap .wed-brief-contact .wed-contact-links a.btn-hero-messenger:hover{transform:none!important}
 }
+
+/* Wedding consultation handoff: one quiet, accessible copy surface for TG/MAX. */
+.wed-wrap .wed-brief-export{
+  box-sizing:border-box;max-width:520px;width:100%;margin:21px auto 0;padding:18px 20px;
+  border:1px solid rgba(245,222,190,.26);border-radius:16px;
+  background:rgba(255,249,241,.055);text-align:left
+}
+.wed-wrap .wed-brief-export[hidden]{display:none}
+.wed-wrap .wed-brief-export h3{margin:0 0 7px;color:#fff0dc;font:500 20px/1.3 'Cormorant Garamond',Georgia,serif}
+.wed-wrap .wed-brief-export-intro{margin:0 0 13px;color:#e8d2ba;font:400 13px/1.5 'Jost',sans-serif}
+.wed-wrap .wed-brief-export label{display:block;margin:0 0 6px;color:#ebcfab;font:500 11px/1.5 'Jost',sans-serif;letter-spacing:.08em}
+.wed-wrap .wed-brief-export textarea{
+  box-sizing:border-box;display:block;width:100%;max-width:100%;min-height:135px;resize:vertical;
+  padding:12px;border:1px solid rgba(245,222,190,.35);border-radius:10px;
+  background:rgba(25,13,8,.48);color:#fff3e1;font:400 13px/1.55 'Jost',sans-serif
+}
+.wed-wrap .wed-brief-export-actions{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 0}
+.wed-wrap .wed-brief-export-actions button,.wed-wrap .wed-brief-export-actions a{
+  box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;
+  min-height:44px;min-width:44px;flex:1 1 155px;padding:10px 12px;border-radius:10px;
+  border:1px solid rgba(245,222,190,.42);background:rgba(255,249,241,.12);
+  color:#fff0dc;font:500 12px/1.4 'Jost',sans-serif;letter-spacing:.02em;text-align:center;
+  text-decoration:none;cursor:pointer
+}
+.wed-wrap .wed-brief-export-actions :is(a,button):focus-visible,.wed-wrap .wed-brief-export textarea:focus-visible{
+  outline:2px solid #f0cd99;outline-offset:3px
+}
+.wed-wrap .wed-brief-export-status{min-height:1.2em;margin:9px 0 0;color:#f4d8ae;font:400 12px/1.55 'Jost',sans-serif}
+@media(min-width:901px){.wed-wrap .wed-header .lp-theme-toggle{min-width:44px;min-height:44px}}
+@media(max-width:380px){.wed-wrap .wed-brief-export{padding:14px}}
 </style>
 </head>
 <body>
@@ -1127,7 +1157,18 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
           </a>
 </div>
           </div>
-    <p class="wed-brief-helper">Нужна дегустация? Упомяните это в сообщении — обсудим возможность отдельно.</p>
+    <div class="wed-brief-export" id="wedBriefExport" hidden aria-labelledby="wedBriefExportTitle">
+  <h3 id="wedBriefExportTitle">Заявка для мессенджера</h3>
+  <p class="wed-brief-export-intro">Сохраните выбранные детали: скопируйте текст заявки и затем откройте нужный чат.</p>
+  <label for="wedBriefExportText">Текст заявки</label>
+  <textarea id="wedBriefExportText" readonly rows="7"></textarea>
+  <div class="wed-brief-export-actions">
+    <button type="button" id="wedBriefCopy">Скопировать текст</button>
+    <a id="wedBriefOpen" href="https://t.me/+79119038886" target="_blank" rel="noopener noreferrer">Открыть Telegram</a>
+  </div>
+  <p id="wedBriefCopyStatus" class="wed-brief-export-status" role="status" aria-live="polite"></p>
+</div>
+<p class="wed-brief-helper">Нужна дегустация? Упомяните это в сообщении — обсудим возможность отдельно.</p>
   </div>
 </section>
 
@@ -1568,8 +1609,22 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
   var baseMessage = base ? (base.searchParams.get('text') || '') : '';
   var tastingLink = document.querySelector('.wed-tasting-link');
   var tastingHelp = document.querySelector('#wedBrief .wed-brief-helper');
+  var exportPanel = document.getElementById('wedBriefExport');
+  var exportTitle = document.getElementById('wedBriefExportTitle');
+  var exportText = document.getElementById('wedBriefExportText');
+  var copyButton = document.getElementById('wedBriefCopy');
+  var copyStatus = document.getElementById('wedBriefCopyStatus');
+  var openLink = document.getElementById('wedBriefOpen');
   var selectedStyle = '';
   var tastingRequested = false;
+  var destination = '';
+
+  function message() {
+    var text = baseMessage;
+    if (selectedStyle) text += '\nПредпочтительный стиль: ' + selectedStyle + '.';
+    if (tastingRequested) text += '\nИнтересует дегустационный сет начинок: да.';
+    return text;
+  }
 
   function updateBrief() {
     if (selectedStyle) {
@@ -1579,10 +1634,9 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     if (tastingRequested && tastingHelp) {
       tastingHelp.textContent = 'Интерес к дегустации добавлен в сообщение. Возможность, сроки и стоимость согласуем отдельно.';
     }
+    var text = message();
+    if (exportText) exportText.value = text;
     if (!base) return;
-    var text = baseMessage;
-    if (selectedStyle) text += '\nПредпочтительный стиль: ' + selectedStyle + '.';
-    if (tastingRequested) text += '\nИнтересует дегустационный сет начинок: да.';
     var next = new URL(base.href);
     next.searchParams.set('text', text);
     whatsapp.href = next.href;
@@ -1596,12 +1650,48 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
       updateBrief();
     });
   });
-  if (tastingLink) {
-    tastingLink.addEventListener('click', function () {
-      tastingRequested = true;
+
+  if (tastingLink) tastingLink.addEventListener('click', function () {
+    tastingRequested = true;
+    updateBrief();
+  });
+
+  // A Telegram/MAX chat link does not reliably preserve a custom draft. Do not
+  // claim copy success without a completed clipboard write or invent prefill URLs.
+  ['tg','max'].forEach(function (channel) {
+    var link = channels.querySelector('a.btn-hero-' + channel);
+    if (!link || !exportPanel || !exportText || !openLink) return;
+    link.addEventListener('click', function (event) {
+      if (!selectedStyle && !tastingRequested) return;
+      event.preventDefault();
+      destination = channel === 'tg' ? 'Telegram' : 'MAX';
+      exportTitle.textContent = 'Заявка для ' + destination;
+      openLink.href = link.href;
+      openLink.textContent = 'Открыть ' + destination;
+      exportPanel.hidden = false;
+      copyStatus.textContent = '';
       updateBrief();
+      exportPanel.scrollIntoView({block:'nearest',behavior:'instant'});
+      copyButton.focus({preventScroll:true});
     });
-  }
+  });
+
+  if (copyButton && exportText && copyStatus) copyButton.addEventListener('click', async function () {
+    var text = exportText.value;
+    try {
+      if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
+        throw new Error('clipboard unavailable');
+      }
+      await navigator.clipboard.writeText(text);
+      copyStatus.textContent = 'Текст скопирован. Теперь откройте ' + (destination || 'мессенджер') + '.';
+    } catch (error) {
+      copyStatus.textContent = 'Автоматическое копирование недоступно. Выделите текст и скопируйте вручную перед переходом.';
+      exportText.focus();
+      exportText.select();
+    }
+  });
+
+  updateBrief();
 })();
 </script>
 

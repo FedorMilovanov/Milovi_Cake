@@ -601,7 +601,8 @@ test.describe('premium media blocks', () => {
         await page.locator('.wed-proof-video-frame .wed-clip-toggle').click();
       await expect.poll(() => video.evaluate(el => el.currentTime), {timeout:15000})
         .toBeGreaterThan(startTime + .2);
-      expect(requests).toContain('/img/gallery/videos/video-12-wedding-heart.mp4');
+      // Chromium may choose WebM without requesting intentionally blocked MP4.
+      // Decode and playback above plus WebM network request below are the fallback contract.
       expect(requests).toContain('/img/gallery/videos/video-12-wedding-heart.webm');
       await expect(video).not.toHaveAttribute('controls','');
     });
@@ -2164,6 +2165,55 @@ test('wedding consultation preserves selection and offers equal messenger choice
   await expect(page.locator('#wedTasting .lp-btn-primary')).toHaveCount(0);
   await expect(page.locator('.lp-final .wed-contact-links')).toHaveCount(0);
 });
+
+
+for (const availability of ['available', 'denied']) {
+  test('wedding cross-channel draft preserves style, tasting and honest copy status (' + availability + ')', async ({page}) => {
+    await page.addInitScript(mode => {
+      Object.defineProperty(navigator, 'clipboard', {
+        configurable: true,
+        value: { writeText: async text => {
+          window.__weddingClipboardWrites = (window.__weddingClipboardWrites || []).concat([text]);
+          if (mode === 'denied') throw new Error('NotAllowedError');
+        } }
+      });
+    }, availability);
+    await page.setViewportSize({width:320,height:850});
+    await page.goto('/svadebnye-torty/', {waitUntil:'domcontentloaded'});
+    await page.locator('.wed-collection-card a[data-wed-style]').nth(1).click();
+    await page.locator('.wed-tasting-link').click();
+    await page.locator('#wedBrief .btn-hero-tg').click();
+    const panel=page.locator('#wedBriefExport');
+    const field=page.locator('#wedBriefExportText');
+    await expect(panel).toBeVisible();
+    await expect(page.locator('#wedBriefCopy')).toBeFocused();
+    await expect(page.locator('#wedBriefOpen')).toHaveAttribute('href','https://t.me/+79119038886');
+    await expect(page.locator('#wedBriefOpen')).toHaveAttribute('rel',/noopener/);
+    await expect(field).toHaveValue(/Botanical Romance/);
+    await expect(field).toHaveValue(/дегустационный сет/);
+    const message=await field.inputValue();
+    const wa=new URL(await page.locator('#wedBrief .btn-hero-wa').getAttribute('href'));
+    expect(wa.searchParams.get('text')).toBe(message);
+    await page.locator('#wedBriefCopy').click();
+    if (availability === 'available') {
+      await expect(page.locator('#wedBriefCopyStatus')).toContainText('Текст скопирован');
+      expect(await page.evaluate(() => window.__weddingClipboardWrites)).toEqual([message]);
+    } else {
+      await expect(page.locator('#wedBriefCopyStatus')).toContainText('недоступно');
+      expect(await field.evaluate(el => document.activeElement === el && el.selectionStart === 0 && el.selectionEnd === el.value.length)).toBe(true);
+    }
+    await page.locator('#wedBrief .btn-hero-max').click();
+    await expect(page.locator('#wedBriefExportTitle')).toContainText('MAX');
+    await expect(page.locator('#wedBriefOpen')).toHaveAttribute('href','https://max.ru/MiloviCake');
+    await expect(field).toHaveValue(message);
+    await page.locator('.wed-collection-card a[data-wed-style]').nth(0).click();
+    const updated=await field.inputValue();
+    expect(updated).toContain('Pure Ivory');
+    expect(updated).not.toContain('Botanical Romance');
+    expect((updated.match(/Интересует дегустационный сет начинок: да\./g)||[])).toHaveLength(1);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
+  });
+}
 
 test('wedding WebKit decodes real moving frames from MP4-first sources', async ({page,browserName}) => {
   test.skip(browserName !== 'webkit', 'Safari-specific real-decoding contract');
