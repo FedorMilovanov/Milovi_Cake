@@ -736,3 +736,255 @@ test('desktop hero treatment cleans up on resize to mobile breakpoint', async ({
   await page.setViewportSize({width:390,height:844});
   await expect(page.locator('.hero .btn-hero-messenger[data-mc-motion-init]')).toHaveCount(0);
 });
+
+test('desktop poster decode stall releases navigation and keeps video playable', async ({page}, info) => {
+  if (info.project.name.includes('mobile')) test.skip();
+  await page.addInitScript(() => {
+    const decode = Image.prototype.decode;
+    Image.prototype.decode = function() {
+      if (this.src.includes('/img/gallery/video-')) {
+        window.__heldPosterDecode = (window.__heldPosterDecode || 0) + 1;
+        return new Promise(() => {});
+      }
+      return decode.call(this);
+    };
+  });
+  await page.goto('/', {waitUntil:'domcontentloaded'});
+  const deny=page.locator('.mc-consent-button--deny');
+  if (await deny.isVisible()) await deny.click();
+  // This test isolates the decode watchdog; trusted pointer activation is
+  // covered by the separate viewer interaction checks.
+  await page.locator('#mcVideoTrack .vtile').nth(13).evaluate(el=>el.click());
+  const dialog=page.locator('dialog.vview');
+  await expect(dialog).toBeVisible();
+  const before=await dialog.locator('.vview-count').innerText();
+  await dialog.locator('.vview-switch--next').click();
+  await expect.poll(()=>dialog.locator('.vview-count').innerText(),
+    {timeout:6500}).not.toBe(before);
+  expect(await page.evaluate(()=>window.__heldPosterDecode||0)).toBeGreaterThanOrEqual(1);
+  await expect.poll(()=>dialog.locator('video').evaluate(v=>v.currentTime),
+    {timeout:10000}).toBeGreaterThan(0.1);
+  await expect(dialog).not.toHaveClass(/is-switching/,{timeout:7000});
+  await dialog.locator('.vview-switch--prev').click();
+  await page.keyboard.press('Escape');
+  await expect(dialog).toHaveCount(0);
+  await expect(page.locator('body')).not.toHaveClass(/vview-open/);
+});
+
+test('mobile viewer traps focus and cancels stale swipe after reopen', async ({page}) => {
+  await page.addInitScript(()=>localStorage.setItem('milovi_analytics_consent_v1','denied'));
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('/', {waitUntil:'domcontentloaded'});
+  const tiles=page.locator('#mcVideoTrack .vtile');
+  const baselineInert=await page.evaluate(()=>[...document.body.children].filter(e=>e.inert)
+    .map(e=>({tag:e.tagName,id:e.id,cls:String(e.className).slice(0,80)})));
+  await tiles.nth(13).evaluate(el=>el.click());
+  const viewer=page.locator('div.vview[aria-modal="true"]:not([inert])');
+  await expect(viewer).toBeVisible();
+  const close=viewer.locator('.vview-close'), sound=viewer.locator('.vview-sound');
+  await expect(close).toBeFocused();
+  const backgroundInert=await page.evaluate(()=>
+    [...document.body.children].filter(e=>e.className!=='vview'&&e.tagName!=='SCRIPT')
+      .some(e=>e.inert));
+  expect(backgroundInert).toBe(true);
+  await page.keyboard.press('Tab');
+  await expect(sound).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(viewer.locator('a.vview-gallery')).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(sound).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(close).toBeFocused();
+  // A pending swipe callback must be invalidated when the original viewer closes.
+  await viewer.evaluate(ov=>{
+    // Firefox desktop has no TouchEvent and WebKit can refuse a Touch
+    // constructor outside a trusted touch stream. Dispatch a compatible
+    // touch-shaped Event to exercise the same gesture transition handler.
+    const fire=(name,x,y,isEnd=false)=>{
+      const event=new Event(name,{bubbles:true,cancelable:true});
+      const current={clientX:x,clientY:y};
+      Object.defineProperty(event,'touches',{value:isEnd?[]:[current]});
+      Object.defineProperty(event,'targetTouches',{value:isEnd?[]:[current]});
+      Object.defineProperty(event,'changedTouches',{value:[current]});
+      ov.dispatchEvent(event);
+    };
+    fire('touchstart',300,250);
+    fire('touchmove',90,251);
+    fire('touchend',90,251,true);
+  });
+  await close.click();
+  await tiles.nth(11).evaluate(el=>el.click());
+  const newest=await viewer.getAttribute('aria-label');
+  await page.waitForTimeout(550); // beyond both stale 200ms swipe and 380ms close callbacks
+  await expect(viewer).toBeVisible();
+  await expect(viewer).toHaveAttribute('aria-label',newest);
+  await expect(viewer.locator('.vview-close')).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(viewer).toHaveCount(0,{timeout:3500});
+  const inertAfter=await page.evaluate(()=>[...document.body.children].filter(e=>e.inert)
+    .map(e=>({tag:e.tagName,id:e.id,cls:String(e.className).slice(0,80)})));
+  expect(inertAfter).toEqual(baselineInert);
+});
+
+test('desktop late MP4 releases poster cover and resumes video', async ({page}) => {
+  test.skip(page.viewportSize().width <= 768, 'Desktop-only native dialog; mobile viewer has its own transition regression.');
+  await page.addInitScript(()=>localStorage.setItem('milovi_analytics_consent_v1','denied'));
+  await page.route('**/video-15-basketball.mp4', async route => {
+    await new Promise(resolve=>setTimeout(resolve,8000));
+    try { await route.continue(); } catch (e) {} // dialog may close while delayed
+  });
+  await page.goto('/', {waitUntil:'domcontentloaded'});
+  await page.locator('#mcVideoTrack .vtile').nth(13).evaluate(el=>el.click());
+  const dialog=page.locator('dialog.vview');
+  await expect(dialog).toBeVisible();
+  await dialog.locator('.vview-switch--next').click();
+  await expect.poll(()=>dialog.locator('.vview-count').innerText(),{timeout:6000}).toContain('15 / 16');
+  // The old watchdog aborted callbacks, left the cover opaque and never hid it.
+  await expect(dialog).not.toHaveClass(/is-switching/,{timeout:9500});
+  await expect(dialog.locator('.vview-switch-cover')).toBeHidden();
+  const video=dialog.locator('video');
+  await expect.poll(()=>video.evaluate(v=>v.readyState),{timeout:15000}).toBeGreaterThanOrEqual(2);
+  await expect.poll(()=>video.evaluate(v=>v.currentTime),{timeout:13000}).toBeGreaterThan(.12);
+  await page.keyboard.press('Escape');
+  await expect(dialog).toHaveCount(0);
+});
+
+test('desktop MP4 media failure is not an autoplay denial and can retry WebM', async ({page,browserName}, info) => {
+  test.skip(info.project.name.includes('mobile') || browserName==='webkit',
+    'MP4 route-abort interception is verified in Chromium/Firefox; WebKit uses native MP4');
+  await page.addInitScript(()=>localStorage.setItem('milovi_analytics_consent_v1','denied'));
+  await page.route('**/video-14-blue-balloons.mp4',r=>r.abort('failed'));
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  await page.locator('#mcVideoTrack .vtile').nth(13).evaluate(el=>el.click());
+  const dialog=page.locator('dialog.vview');
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator('.vview-media-error')).toBeVisible({timeout:9000});
+  await expect(dialog.locator('.vview-play-fallback')).toBeHidden();
+  await expect(dialog.locator('.vview-original-webm'))
+    .toHaveAttribute('href','/img/gallery/videos/video-14-blue-balloons.webm');
+  await dialog.locator('.vview-try-webm').click();
+  await expect.poll(()=>dialog.locator('video').evaluate(v=>v.currentSrc),{timeout:8000})
+    .toContain('video-14-blue-balloons.webm');
+  await expect.poll(()=>dialog.locator('video').evaluate(v=>v.currentTime),{timeout:11000})
+    .toBeGreaterThan(.2);
+  await expect(dialog.locator('.vview-media-error')).toBeHidden();
+  await page.keyboard.press('Escape');
+  await expect(dialog).toHaveCount(0);
+});
+
+test('hero keyboard focus ring survives hover, theme and high contrast', async ({page}) => {
+  await page.addInitScript(()=>localStorage.setItem('milovi_analytics_consent_v1','denied'));
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  const hero=page.locator('.hero .btn-primary.btn-primary--hero').first();
+  for(const width of [320,390,768,769,1440]){
+    await page.setViewportSize({width,height:900});
+    for(const theme of ['light','dark']){
+      await page.locator('html').evaluate((el,t)=>el.setAttribute('data-theme',t),theme);
+      await page.keyboard.press('Tab');
+      await hero.focus();
+      await hero.hover();
+      const focus=await hero.evaluate(el=>{
+        const cs=getComputedStyle(el);
+        return {visible:el.matches(':focus-visible'),style:cs.outlineStyle,width:parseFloat(cs.outlineWidth)};
+      });
+      expect(focus.visible,'keyboard pseudo-state at '+width+' '+theme).toBe(true);
+      expect(focus.style).toBe('solid');
+      expect(focus.width).toBeGreaterThanOrEqual(2);
+      await page.emulateMedia({contrast:'more'});
+      const contrast=await hero.evaluate(el=>getComputedStyle(el).outlineWidth);
+      expect(parseFloat(contrast)).toBeGreaterThanOrEqual(3);
+      await page.emulateMedia({contrast:'no-preference'});
+    }
+  }
+});
+
+test('catalog slider dots retain 24px hit boxes and activate their chosen slide', async ({page}) => {
+  await page.addInitScript(()=>localStorage.setItem('milovi_analytics_consent_v1','denied'));
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  const card=page.locator('#catalogGrid .product-card').first();
+  const dots=card.locator('.slide-dots .dot');
+  for(const width of [320,390,768,769,1440]){
+    await page.setViewportSize({width,height:900});
+    await expect(dots.nth(1)).toBeVisible();
+    const rect=await dots.nth(1).boundingBox();
+    expect(rect.width).toBeGreaterThanOrEqual(24);
+    expect(rect.height).toBeGreaterThanOrEqual(24);
+    const paint=await dots.nth(1).evaluate(e=>getComputedStyle(e,'::before').height);
+    expect(parseFloat(paint)).toBe(6);
+    await dots.nth(1).click();
+    await expect(dots.nth(1)).toHaveAttribute('aria-current','true',{timeout:7000});
+    await dots.nth(0).click();
+    await expect(dots.nth(0)).toHaveAttribute('aria-current','true',{timeout:7000});
+  }
+});
+
+
+
+for(const failure of ['NotAllowedError','NotSupportedError']) {
+  test('mobile viewer shows truthful playback retry on '+failure, async ({page}) => {
+    await page.addInitScript(errorType=>{
+      localStorage.setItem('milovi_analytics_consent_v1','denied');
+      const actual=HTMLMediaElement.prototype.play;
+      HTMLMediaElement.prototype.play=function(){
+        if(this.classList.contains('vview-video'))
+          return Promise.reject(new DOMException('Media denied',errorType));
+        return actual.call(this);
+      };
+    },failure);
+    await page.setViewportSize({width:390,height:844});
+    await page.goto('/',{waitUntil:'domcontentloaded'});
+    await page.locator('#mcVideoTrack .vtile').nth(0).evaluate(e=>e.click());
+    const viewer=page.locator('div.vview[role="dialog"]');
+    await expect(viewer).toBeVisible();
+    const sound=viewer.locator('.vview-sound');
+    const retry=viewer.locator('.vview-retry');
+    await expect(retry).toBeVisible();
+    await expect(viewer.locator('.vview-poster')).toBeVisible();
+    await expect(viewer.locator('.vview-play-status')).toContainText('Видео не запустилось');
+    await expect(sound).toHaveAttribute('aria-pressed','false');
+    await sound.click();
+    await expect(sound).toHaveAttribute('aria-pressed','false');
+    await expect(retry).toBeVisible();
+    await retry.click();
+    await expect(retry).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(viewer).toHaveCount(0);
+  });
+}
+test('mobile viewer keyboard gallery link opens actual gallery', async ({page}) => {
+  await page.addInitScript(()=>localStorage.setItem('milovi_analytics_consent_v1','denied'));
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  await page.locator('#mcVideoTrack .vtile').first().evaluate(e=>e.click());
+  const viewer=page.locator('div.vview[role="dialog"]');
+  await expect(viewer).toBeVisible();
+  await expect(viewer.locator('.vview-close')).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(viewer.locator('.vview-sound')).toBeFocused();
+  await page.keyboard.press('Tab');
+  const link=viewer.locator('a.vview-gallery');
+  await expect(link).toBeFocused();
+  await expect(link).toHaveAttribute('href','/gallery/');
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/\/gallery\/$/);
+});
+test('mobile viewer pending play has accessible recovery instead of claiming sound', async ({page}) => {
+  await page.addInitScript(()=>{
+    localStorage.setItem('milovi_analytics_consent_v1','denied');
+    const real=HTMLMediaElement.prototype.play;
+    HTMLMediaElement.prototype.play=function(){
+      if(this.classList.contains('vview-video')) return new Promise(()=>{});
+      return real.call(this);
+    };
+  });
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  await page.locator('#mcVideoTrack .vtile').first().evaluate(e=>e.click());
+  const viewer=page.locator('div.vview[role="dialog"]');
+  await expect(viewer).toBeVisible();
+  await expect(viewer.locator('.vview-sound')).toHaveAttribute('aria-pressed','false');
+  await expect(viewer.locator('.vview-play-status')).toContainText('загружается слишком долго',{timeout:9000});
+  await expect(viewer.locator('.vview-retry')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(viewer).toHaveCount(0);
+});

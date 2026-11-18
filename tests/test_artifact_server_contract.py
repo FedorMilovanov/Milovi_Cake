@@ -20,6 +20,10 @@ class ArtifactServerContractTest(unittest.TestCase):
         self.root.mkdir()
         self.html = b'<!doctype html><html>' + b'unchanged text ' * 100 + b'</html>'
         (self.root / 'index.html').write_bytes(self.html)
+        self.error_html = (b'<!doctype html><html data-theme="light">'
+                           b'<title>404 - MILOVI CAKE</title><a href="/">Home</a>'
+                           + b'Not found. ' * 80 + b'</html>')
+        (self.root / '404.html').write_bytes(self.error_html)
         (self.root / 'clip.webm').write_bytes(b'webm fixture')
         (self.root / 'clip.mp4').write_bytes(b'\x00\x00\x00\x18ftypisom' + b'video bytes' * 40)
         sibling = parent / 'site-neighbor'
@@ -73,6 +77,28 @@ class ArtifactServerContractTest(unittest.TestCase):
             urllib.request.urlopen(req)
         self.assertEqual(caught.exception.code, 416)
         self.assertEqual(caught.exception.headers['Content-Range'], 'bytes */12')
+
+    def test_unknown_page_serves_packaged_404_and_head_gzip_parity(self):
+        url = self.url + '/no-such-dessert/'
+        for method in ('GET', 'HEAD'):
+            req = urllib.request.Request(url, method=method, headers={'Accept-Encoding': 'gzip'})
+            with self.assertRaises(urllib.error.HTTPError) as caught:
+                urllib.request.urlopen(req)
+            response = caught.exception
+            self.assertEqual(response.code, 404)
+            self.assertEqual(response.headers.get_content_type(), 'text/html')
+            self.assertEqual(response.headers.get('Cache-Control'), 'no-cache')
+            self.assertEqual(response.headers.get('Content-Encoding'), 'gzip')
+            self.assertEqual(response.headers.get('Vary'), 'Accept-Encoding')
+            body = response.read()
+            if method == 'HEAD':
+                self.assertEqual(body, b'')
+            else:
+                self.assertEqual(gzip.decompress(body), self.error_html)
+                self.assertIn(b'<title>404 - MILOVI CAKE</title>', self.error_html)
+                self.assertIn(b'href="/"', self.error_html)
+            self.assertEqual(int(response.headers['Content-Length']),
+                             len(gzip.compress(self.error_html,6)))
 
     def test_shared_path_prefix_does_not_allow_a_sibling_directory(self):
         with self.assertRaises(urllib.error.HTTPError) as caught:

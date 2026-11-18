@@ -414,12 +414,12 @@
     @media(max-width:560px){#catalogGrid{grid-template-columns:1fr;gap:20px;padding:0 16px 36px}}
   </style>
 <link rel="stylesheet" href="css/style.css?v=20261118r29" />
-  <link rel="stylesheet" href="css/mc-2026.css?v=20261118r39" />
+  <link rel="stylesheet" href="css/mc-2026.css?v=20261118r41" />
   <link rel="stylesheet" href="css/premium-overrides.css?v=20261118r36" />
   <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20261118r27">
 <!-- Необязательная аналитика и LCP-телеметрия управляются согласием пользователя. -->
 <link rel="stylesheet" href="/css/v20-fixes.css?v=20261118r31">
-  <link rel="stylesheet" href="/css/final-fixes.css?v=20261118r43" />
+  <link rel="stylesheet" href="/css/final-fixes.css?v=20261118r44" />
   <!-- [P100] Детерминированный пропуск offscreen-layout на первом кадре:
        content-visibility:auto для секций ниже сгиба работает только до 2 кадров
        после FCP (или до первого взаимодействия / жёсткого таймаута 1500 мс),
@@ -705,6 +705,40 @@
       <div class="skeleton-card" aria-hidden="true"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
       <div class="skeleton-card" aria-hidden="true"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
       <div class="skeleton-card" aria-hidden="true"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+      <noscript>
+        <style>
+          #catalogGrid{display:block!important;overflow:visible!important}
+          #catalogGrid>.skeleton-card{display:none!important}
+          #catalogGrid .catalog-nojs{margin:0 auto;padding:22px 24px;max-width:1100px;
+            border:1px solid rgba(163,119,67,.28);border-radius:16px;
+            background:#f8f0e6;color:#322216;font-family:inherit}
+          #catalogGrid .catalog-nojs h3{margin:0 0 8px;font-size:24px;line-height:1.3}
+          #catalogGrid .catalog-nojs p{line-height:1.6;margin:0 0 15px}
+          #catalogGrid .catalog-nojs ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+            gap:10px 22px;list-style:none;padding:0;margin:0 0 18px}
+          #catalogGrid .catalog-nojs li{padding:10px 0;border-top:1px solid rgba(163,119,67,.25)}
+          #catalogGrid .catalog-nojs li strong{display:block;font-size:15px}
+          #catalogGrid .catalog-nojs li span{font-size:14px}
+          #catalogGrid .catalog-nojs a{display:inline-flex;min-height:44px;align-items:center;
+            padding:10px 17px;border-radius:8px;background:#ac7836;color:#fff9ee;
+            text-decoration:none;font-weight:600}
+          @media(max-width:600px){#catalogGrid .catalog-nojs{padding:16px}
+            #catalogGrid .catalog-nojs ul{grid-template-columns:1fr}}
+        </style>
+        <section class="catalog-nojs" aria-labelledby="catalogNoJsTitle">
+          <h3 id="catalogNoJsTitle">Торты и десерты на заказ</h3>
+          <p>Каталог доступен в упрощённом виде без JavaScript. Цены и минимальные заказы приведены по актуальным позициям; детали оформления обсуждаются индивидуально.</p>
+          <ul>
+            <li><strong>Бисквитный торт</strong><span>от 2 800 ₽/кг · заказ от 2 кг</span></li>
+            <li><strong>Бенто-торт</strong><span>1 600 ₽/шт.</span></li>
+            <li><strong>3D-торт</strong><span>5 000 ₽/кг · заказ от 3 кг</span></li>
+            <li><strong>Меренговый рулет</strong><span>2 500 ₽/шт.</span></li>
+            <li><strong>Павлова</strong><span>350 ₽/шт. · заказ от 2 шт.</span></li>
+            <li><strong>Капкейки</strong><span>350 ₽/шт. · заказ от 6 шт.</span></li>
+          </ul>
+          <a href="/zakazat-tort-spb/">Уточнить заказ и наличие</a>
+        </section>
+      </noscript>
     </div>
   </div>
 </section>
@@ -1524,10 +1558,10 @@
 </script>
 
 <script>var IMG_BASE = 'img';</script>
-<script src="js/main.js?v=20261118r38" defer></script>
+<script src="js/main.js?v=20261118r39" defer></script>
 
 <script src="js/nav.js?v=20261118r21" defer></script>
-<script src="js/mc-2026.js?v=20261118r40" defer></script>
+<script src="js/mc-2026.js?v=20261118r42" defer></script>
 
 <script defer src="/js/v20-faq-fix.js?v=20260728r27"></script>
 

@@ -4,6 +4,10 @@ var _gLockY = 0; /* r31: gallery scroll lock state */
 const $ = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
 const SIZE_MAP = { tall: '1x2', wide: '2x1', big: '2x2', m: '1x1' };
+function galleryHashId() {
+  try { return decodeURIComponent(location.hash.replace(/^#/, '')); }
+  catch (error) { return ''; } // Invalid shared fragments must not abort boot.
+}
 const PHONE_CARD_MEDIA = '(max-width: 430px) and (max-resolution: 1.75dppx)';
 const PHONE_CARD_IDS = new Set(['p05', 'p06', 'p09', 'p12', 'p18']);
 const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
@@ -333,6 +337,17 @@ function lightboxTemplate(){
           </div>
           <button type="button" class="lb-action" id="lbCopy">Копировать ссылку</button>
         </div>
+        <div class="lb-draft-panel" id="lbDraftPanel" hidden aria-labelledby="lbDraftTitle">
+          <h3 id="lbDraftTitle">Заявка для мессенджера</h3>
+          <p>Скопируйте выбранный торт и ссылку, затем откройте нужный чат.</p>
+          <label for="lbDraftMessage">Текст заявки</label>
+          <textarea id="lbDraftMessage" rows="4" readonly></textarea>
+          <div class="lb-draft-actions">
+            <button type="button" id="lbDraftCopy">Скопировать текст</button>
+            <a id="lbDraftOpen" href="https://t.me/milovi_cake" target="_blank" rel="noopener noreferrer">Открыть Telegram</a>
+          </div>
+          <p id="lbDraftStatus" role="status" aria-live="polite"></p>
+        </div>
         <p class="lb-disclaimer">Это референс, детали обсуждаются индивидуально</p>
       </div>
     </div>
@@ -415,10 +430,11 @@ function openLightbox(index){
   // can be treated as a popup and blocked. Telegram opens the personal @milovi_cake chat, never the old channel preview.
   $$('#lbRoot [data-copy-msg]').forEach(a => a.addEventListener('click', e => {
     e.preventDefault();
-    copyWishText(a.dataset.msg || '', a);
-    const href = a.getAttribute('href');
-    if (href) window.open(href, '_blank', 'noopener,noreferrer');
-  })); 
+    showWishHandoff(a);
+  }));
+  $('#lbDraftCopy')?.addEventListener('click', () => {
+    copyWishText($('#lbDraftMessage')?.value || '', $('#lbDraftCopy'));
+  });
   
   // Keep the lightbox usable when either Swiper asset is unavailable.
   let touchStart;
@@ -443,9 +459,18 @@ function openLightbox(index){
   $('#lbClose').focus();
 }
 
-function onPopState() {
-  if ($('#lbRoot')) closeLightbox(false);
+function syncGalleryFragment() {
+  const hash=galleryHashId();
+  const index=state.visible.findIndex(item=>item.id===hash);
+  const modal=$('#lbRoot');
+  if(index>=0) {
+    if(!modal) openLightbox(index);
+    else if(state.lbIndex!==index) showLightboxSlide(index);
+  } else if(modal) {
+    closeLightbox(false);
+  }
 }
+function onPopState() { syncGalleryFragment(); }
 
 function showLightboxSlide(index, immediate=false){
   index=Math.max(0,Math.min(index,state.visible.length-1));
@@ -537,9 +562,11 @@ function updateLightbox(index, immediate=false){
   $('#lbWantWa')?.setAttribute('href', buildContactUrl('wa', item, url)); 
   $('#lbWantTg')?.setAttribute('href', buildContactUrl('tg', item, url)); 
   $('#lbWantMax')?.setAttribute('href', buildContactUrl('max', item, url)); 
-  $$('#lbRoot [data-copy-msg]').forEach(a=>{ a.dataset.msg = wishText; }); 
+  $$('#lbRoot [data-copy-msg]').forEach(a=>{ a.dataset.msg = wishText; });
+  const oldDraft=$('#lbDraftPanel');
+  if (oldDraft) oldDraft.hidden=true; // never export a previous slide's work
   
-  if (decodeURIComponent(location.hash.replace('#','')) !== item.id) {
+  if (galleryHashId() !== item.id) {
     history.replaceState(null,'',`#${item.id}`); 
   }
 }
@@ -562,16 +589,41 @@ function buildContactUrl(channel, item, url = currentWorkUrl(item)) {
 }
 // FIX r24: Accept btn param — the element clicked — to animate the correct button.
 // Previously always animated #lbWantTg even when MAX was clicked.
+function showWishHandoff(link) {
+  const panel=$('#lbDraftPanel'), field=$('#lbDraftMessage');
+  const copy=$('#lbDraftCopy'), open=$('#lbDraftOpen');
+  if (!panel || !field || !copy || !open) return;
+  const channel=link.id === 'lbWantMax' ? 'MAX' : 'Telegram';
+  field.value=link.dataset.msg || '';
+  $('#lbDraftTitle').textContent='Заявка для ' + channel;
+  open.href=link.href;
+  open.textContent='Открыть ' + channel;
+  $('#lbDraftStatus').textContent='';
+  panel.hidden=false;
+  panel.scrollIntoView({block:'nearest'});
+  copy.focus({preventScroll:true});
+}
+// Never report clipboard success unless the browser actually completed writing.
+// A denied/absent API retains a visible selectable draft instead of losing a wish.
 async function copyWishText(text, btn) {
-  if (!text) return;
-  try { 
-    await navigator.clipboard?.writeText(text); 
-    const target = btn || $('#lbWantTg');
-    if (!target) return; // null-guard: lightbox may close during async clipboard write
+  const target=btn || $('#lbWantTg');
+  const status=$('#lbDraftStatus'), field=$('#lbDraftMessage');
+  if (!text) return false;
+  try {
+    if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
+      throw new Error('clipboard unavailable');
+    }
+    await navigator.clipboard.writeText(text);
+    if (!target || !target.isConnected) return false;
     target.classList.add('copy-success');
-    setTimeout(() => target.classList.remove('copy-success'), 1500);
+    setTimeout(() => {if (target.isConnected) target.classList.remove('copy-success');},1500);
+    if (status) status.textContent='Текст скопирован. Теперь можно открыть чат.';
+    return true;
+  } catch(e) {
+    if (status) status.textContent='Копирование недоступно. Выделите текст и скопируйте вручную перед переходом.';
+    if (field && field.isConnected) {field.focus();field.select();}
+    return false;
   }
-  catch(e) {}
 }
 async function shareCurrentWork() {
   const item = currentWork(); if (!item) return;
@@ -680,9 +732,13 @@ function onLightboxResize() {
 }
 
 function onLightboxKey(e){ 
-  if(e.key==='Escape') closeLightbox(); 
-  if(e.key==='ArrowLeft') showLightboxSlide(state.lbIndex-1);
-  if(e.key==='ArrowRight') showLightboxSlide(state.lbIndex+1);
+  if(e.key==='Escape') { e.preventDefault(); closeLightbox(); return; }
+  // Native video controls and editable fields own arrow keys for seeking,
+  // caret movement and text selection. Do not navigate the gallery instead.
+  if (e.target && (e.target.isContentEditable ||
+    /^(VIDEO|INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName))) return;
+  if(e.key==='ArrowLeft') { e.preventDefault(); showLightboxSlide(state.lbIndex-1); }
+  if(e.key==='ArrowRight') { e.preventDefault(); showLightboxSlide(state.lbIndex+1); }
   if(e.key==='Tab') {
     const focusables = $$('button, a', $('#lbRoot'));
     const first = focusables[0];
@@ -740,10 +796,13 @@ function boot(){
   if(seal) seal.innerHTML=luxeSeal(); 
   state.items=buildInterleavedItems(); 
   renderFilters(); 
-  renderGrid(); 
+  renderGrid();
+  // Same-document navigation to /gallery/#id must open the corresponding work
+  // and malformed/unknown fragments must leave the grid usable.
+  window.addEventListener('hashchange', syncGalleryFragment);
   $('#resetFilter')?.addEventListener('click',()=>{state.filter='all'; renderFilters(); renderGrid();}); 
 
-  const hash=decodeURIComponent(location.hash.replace('#','')); 
+  const hash=galleryHashId();
   if(hash){ 
     const idx=state.visible.findIndex(item=>item.id===hash); 
     if(idx>=0) setTimeout(()=>openLightbox(idx),350); 

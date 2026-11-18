@@ -322,10 +322,22 @@
   var viewEl = null, viewOpener = null, viewVideo = null, viewCap = null, viewIndex = 0;
   var viewBusy = false, viewClosing = false;
   var viewSwitchToken = 0, viewPlayToken = 0;
+  var viewMediaRetryTimer = 0;
+  function clearMediaRetryTimer(){
+    if (viewMediaRetryTimer) {clearTimeout(viewMediaRetryTimer);viewMediaRetryTimer=0;}
+  }
   var viewNavEvents = null, viewNavWatchdog = 0;
+  var viewPosterWatchdog = 0, viewPendingPoster = null;
   function clearNavWait(){
     if (viewNavEvents) { viewNavEvents.abort(); viewNavEvents=null; }
     if (viewNavWatchdog) {clearTimeout(viewNavWatchdog);viewNavWatchdog=0;}
+    if (viewPosterWatchdog) {clearTimeout(viewPosterWatchdog);viewPosterWatchdog=0;}
+    if (viewPendingPoster) {
+      viewPendingPoster.onload = null;
+      viewPendingPoster.onerror = null;
+      viewPendingPoster.src = '';
+      viewPendingPoster = null;
+    }
   }
   function galleryHref(){ return '/gallery/'; }
   function currentItem(){ return items[(viewIndex + items.length) % items.length]; }
@@ -344,23 +356,65 @@
   }
   function playCurrent(){
     if (!viewVideo || !viewEl) return;
-    var it = currentItem();
-    viewVideo.pause();
-    viewVideo.poster = it.p || '';
-    viewVideo.src = playbackUrl(it);
-    viewVideo.setAttribute('aria-label', it.t);
-    if (viewCap) viewCap.textContent = it.t;
-    viewEl.setAttribute('aria-label', 'Видео работы: ' + it.t);
-    viewVideo.load();
-    var activeVideo = viewVideo;
-    var activePlayToken = ++viewPlayToken;
-    var fallback = viewEl.querySelector('.vview-play-fallback');
-    if (fallback) fallback.hidden = true;
-    // Called from the tile's trusted click: request audio immediately.
-    // A browser may still reject audible autoplay; expose a second explicit gesture.
-    var pending = viewVideo.play();
-    if (pending && pending.catch) pending.catch(function(){
-      if (viewVideo === activeVideo && activePlayToken === viewPlayToken && viewEl && viewEl.open && fallback) fallback.hidden = false;
+    var it=currentItem(), dialog=viewEl, activeVideo=viewVideo;
+    clearMediaRetryTimer();
+    activeVideo.pause();
+    activeVideo.poster=it.p || '';
+    activeVideo.setAttribute('aria-label',it.t);
+    if (viewCap) viewCap.textContent=it.t;
+    dialog.setAttribute('aria-label','Ролик галереи: '+it.t);
+    var activeToken=++viewPlayToken;
+    var fallback=dialog.querySelector('.vview-play-fallback');
+    var errorPanel=dialog.querySelector('.vview-media-error');
+    var alternate=errorPanel && errorPanel.querySelector('.vview-try-webm');
+    var original=errorPanel && errorPanel.querySelector('.vview-original-webm');
+    if(fallback) fallback.hidden=true;
+    if(errorPanel) errorPanel.hidden=true;
+    if(original) original.href=it.v;
+    function stillActive(){
+      return viewVideo===activeVideo && viewPlayToken===activeToken &&
+        viewEl===dialog && dialog.open;
+    }
+    function showMediaError(){
+      if(!stillActive()) return;
+      if(fallback) fallback.hidden=true;
+      if(errorPanel) errorPanel.hidden=false;
+    }
+    activeVideo.onerror=showMediaError;
+    activeVideo.onloadeddata=function(){
+      if(!stillActive()) return;
+      clearMediaRetryTimer();
+      if(errorPanel) errorPanel.hidden=true;
+    };
+    if(alternate) alternate.onclick=function(){
+      if(!stillActive()) return;
+      if(fallback) fallback.hidden=true;
+      if(errorPanel) errorPanel.hidden=true;
+      activeVideo.src=it.v;
+      activeVideo.load();
+      var retry=activeVideo.play();
+      if(retry && retry.catch) retry.catch(function(){
+        if(stillActive() && activeVideo.error) showMediaError();
+      });
+      // Some WebKit versions claim WebM/VP9 support without decoding frames.
+      viewMediaRetryTimer=window.setTimeout(function(){
+        viewMediaRetryTimer=0;
+        if(stillActive() && activeVideo.readyState < 2) showMediaError();
+      },4500);
+    };
+    activeVideo.src=playbackUrl(it);
+    activeVideo.load();
+    // An aborted MP4 may leave Safari with readyState 0 and a pending play()
+    // promise forever; a real-time watchdog keeps the original accessible.
+    viewMediaRetryTimer=window.setTimeout(function(){
+      viewMediaRetryTimer=0;
+      if(stillActive() && activeVideo.readyState < 2) showMediaError();
+    },4500);
+    var pending=activeVideo.play();
+    if(pending && pending.catch) pending.catch(function(){
+      if(!stillActive()) return;
+      if(activeVideo.error) showMediaError();
+      else if(fallback) fallback.hidden=false;
     });
   }
   function animateOpen(opener, content){
@@ -390,7 +444,12 @@
         '<div class="vview-media">' +
           '<video class="vview-video" controls loop playsinline preload="metadata"></video>' +
           '<img class="vview-switch-cover" alt="" aria-hidden="true" hidden />' +
-          '<button class="vview-play-fallback" type="button" hidden aria-label="Запустить видео со звуком">▶ <span>Воспроизвести со звуком</span></button><button class="vview-close" type="button" aria-label="Закрыть видео">' + CLOSE_SVG + '</button>' +
+          '<button class="vview-play-fallback" type="button" hidden aria-label="Запустить видео со звуком">▶ <span>Воспроизвести со звуком</span></button>' +
+           '<div class="vview-media-error" role="status" aria-live="polite" hidden>' +
+             '<p>Не удалось воспроизвести видео.</p>' +
+             '<button class="vview-try-webm" type="button">Попробовать WebM</button>' +
+             '<a class="vview-original-webm" href="#" target="_blank" rel="noopener noreferrer">Открыть оригинал</a>' +
+           '</div><button class="vview-close" type="button" aria-label="Закрыть видео">' + CLOSE_SVG + '</button>' +
         '</div>' +
         '<button class="vview-switch vview-switch--prev" type="button" aria-label="Предыдущая работа" title="Предыдущая работа (←)">' + PREV_SVG + '</button>' +
         '<button class="vview-switch vview-switch--next" type="button" aria-label="Следующая работа" title="Следующая работа (→)">' + NEXT_SVG + '</button>' +
@@ -463,6 +522,7 @@
 
     // Predecode the upcoming poster; the old video remains visible until ready.
     var preview = new Image();
+    viewPendingPoster = preview;
     preview.src = upcoming.p;
     function begin(){
       if (dialog !== viewEl || viewClosing || token !== viewSwitchToken) return;
@@ -502,11 +562,13 @@
           if (token !== viewSwitchToken || dialog !== viewEl || !viewBusy) return;
           if (video.readyState >= 2) unveil();
           else {
-            clearNavWait();
-            viewBusy = false;
-            dialog.classList.remove('is-switching');
+            // A slow media response is not an autoplay refusal. The old code
+            // removed event listeners but left an opaque poster over late video.
+            // Always release the cover and navigation; the pending media play()
+            // can still become ready when the delayed MP4 finishes loading.
+            finish();
             var fallback = dialog.querySelector('.vview-play-fallback');
-            if (fallback) fallback.hidden = false;
+            if (fallback && video.error) fallback.hidden = false;
           }
         },3500);
       }
@@ -520,11 +582,26 @@
         swapSource();
       },swapSource);
     }
-    if (preview.decode) preview.decode().then(begin,function(){begin();});
-    else if (preview.complete) begin();
+    // Do not freeze navigation behind a poster decode that never settles.
+    // Token checks in begin() and clearNavWait() cancel stale close/resize work.
+    var posterSettled = false;
+    function settlePoster(){
+      if (posterSettled) return;
+      posterSettled = true;
+      if (viewPosterWatchdog) {clearTimeout(viewPosterWatchdog);viewPosterWatchdog=0;}
+      if (viewPendingPoster === preview) viewPendingPoster = null;
+      preview.onload = null;
+      preview.onerror = null;
+      begin();
+    }
+    viewPosterWatchdog = window.setTimeout(settlePoster, 2200);
+    if (preview.decode) {
+      try { preview.decode().then(settlePoster,settlePoster); }
+      catch(e) { settlePoster(); }
+    } else if (preview.complete) settlePoster();
     else {
-      preview.addEventListener('load',begin,{once:true});
-      preview.addEventListener('error',begin,{once:true});
+      preview.addEventListener('load',settlePoster,{once:true});
+      preview.addEventListener('error',settlePoster,{once:true});
     }
   }
   function bindViewGestures(media){
@@ -555,6 +632,7 @@
     viewClosing = true;
     viewSwitchToken++; viewPlayToken++; // invalidate queued decode/play callbacks
     clearNavWait(); // release per-transition listeners and watchdog
+    clearMediaRetryTimer();
     var dialog = viewEl, video = viewVideo;
     var opener = viewOpener;
     var finished = false;
@@ -617,7 +695,71 @@
   var SOUND_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.6h3.2L12 5.6v12.8L7.2 14.4H4z"/><path d="M16.4 8.6a4.6 4.6 0 0 1 0 6.8"/><path d="M19 6.2a8 8 0 0 1 0 11.6"/></svg>';
 
   var viewEl = null, viewOpener = null, viewVideo = null, viewCap = null, viewIndex = 0;
-  var viewBusy = false, viewSoundBtn = null;
+  var viewBusy = false, viewSoundBtn = null, viewRetryBtn = null, viewPlaybackStatus = null, viewPoster = null;
+  var viewPlayTicket = 0, viewPlayTimeout = 0;
+  function cancelMobilePlayWatch(){
+    if(viewPlayTimeout) { clearTimeout(viewPlayTimeout); viewPlayTimeout=0; }
+  }
+  function syncMobileSound(){
+    if (!viewSoundBtn || !viewVideo) return;
+    var audible = !viewVideo.muted && !viewVideo.paused;
+    viewSoundBtn.innerHTML = viewVideo.muted ? SOUND_SVG : MUTE_SVG;
+    viewSoundBtn.setAttribute('aria-pressed', audible ? 'true' : 'false');
+    viewSoundBtn.setAttribute('aria-label', audible ? 'Выключить звук' :
+      (viewVideo.muted ? 'Включить звук' : 'Запускается видео'));
+  }
+  function playbackFailed(overlay, ticket, reason){
+    if (viewEl !== overlay || ticket !== viewPlayTicket || !viewVideo) return;
+    cancelMobilePlayWatch();
+    viewVideo.muted = true;
+    syncMobileSound();
+    if(viewPoster) viewPoster.hidden=false;
+    if(viewRetryBtn) viewRetryBtn.hidden=false;
+    if(viewPlaybackStatus) viewPlaybackStatus.textContent=reason || 'Видео не запустилось. Нажмите «Повторить».';
+  }
+  function attemptMobilePlayback(){
+    if (!viewEl || !viewVideo) return;
+    var overlay=viewEl, video=viewVideo, ticket=++viewPlayTicket;
+    cancelMobilePlayWatch();
+    if(viewRetryBtn) viewRetryBtn.hidden=true;
+    if(viewPlaybackStatus) viewPlaybackStatus.textContent='';
+    // Do not claim sound is active until the play promise resolves.
+    if(viewSoundBtn){
+      viewSoundBtn.setAttribute('aria-pressed','false');
+      if(!video.muted) viewSoundBtn.setAttribute('aria-label','Запускается видео');
+    }
+    var pending;
+    try {pending=video.play();} catch(e) {
+      playbackFailed(overlay,ticket); return;
+    }
+    if (!pending || typeof pending.then !== 'function') {
+      syncMobileSound(); return;
+    }
+    viewPlayTimeout=setTimeout(function(){
+      playbackFailed(overlay,ticket,'Видео загружается слишком долго. Повторите запуск.');
+    },4500);
+    Promise.resolve(pending).then(function(){
+      if (viewEl !== overlay || ticket !== viewPlayTicket || viewVideo !== video) return;
+      cancelMobilePlayWatch();
+      if(viewRetryBtn) viewRetryBtn.hidden=true;
+      if(viewPoster) viewPoster.hidden=true;
+      if(viewPlaybackStatus) viewPlaybackStatus.textContent='';
+      syncMobileSound();
+    },function(){ playbackFailed(overlay,ticket); });
+  }
+  var viewSwipeTimer = 0, mobileInertNodes = [];
+  function isolateMobileBackground(overlay) {
+    releaseMobileBackground();
+    Array.from(document.body.children).forEach(function(node) {
+      if (node === overlay || node.tagName === 'SCRIPT' || node.inert) return;
+      node.inert = true;
+      mobileInertNodes.push(node);
+    });
+  }
+  function releaseMobileBackground() {
+    mobileInertNodes.forEach(function(node){ node.inert=false; });
+    mobileInertNodes = [];
+  }
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function galleryHref(){ return '/gallery/'; }
@@ -628,10 +770,13 @@
     if (!viewVideo) return;
     var it = currentItem();
     viewVideo.poster = it.p || '';
+    if(viewPoster){
+      viewPoster.style.backgroundImage = it.p ? 'url(' + JSON.stringify(it.p) + ')' : '';
+      viewPoster.hidden = !it.p;
+    }
     viewVideo.src = playbackUrl(it);
     if (viewCap) viewCap.textContent = it.t;
-    var pr = viewVideo.play();
-    if (pr && pr.catch) pr.catch(function(){});
+    attemptMobilePlayback();
     if (viewEl) viewEl.setAttribute('aria-label', it.t);
   }
 
@@ -646,6 +791,7 @@
 
   function openView(it, opener){
     closeView(true);
+    viewBusy = false;
     viewIndex = Math.max(0, items.indexOf(it));
     viewOpener = opener || null;
 
@@ -656,21 +802,31 @@
     ov.setAttribute('aria-label', it.t);
     ov.innerHTML =
       '<video class="vview-video" muted loop playsinline preload="auto" aria-hidden="true"></video>' +
+      '<div class="vview-poster" aria-hidden="true" hidden></div>' +
       '<div class="vview-top">' +
         '<div class="vview-cap"></div>' +
         '<div class="vview-actions">' +
           '<button class="vview-btn vview-sound" type="button" aria-label="Включить звук" aria-pressed="false">' + SOUND_SVG + '</button>' +
+          '<button class="vview-btn vview-retry" type="button" aria-label="Повторить воспроизведение" hidden>▶</button>' +
           '<button class="vview-btn vview-close" type="button" aria-label="Закрыть видео">' + CLOSE_SVG + '</button>' +
         '</div>' +
       '</div>' +
-      '<div class="vview-hint"><span>Нажмите кадр — вся галерея</span>' + ARROW_SVG + '</div>';
+      '<div class="vview-hint"><a class="vview-gallery" href="/gallery/" aria-label="Открыть всю галерею"><span>Вся галерея</span>' + ARROW_SVG + '</a></div>' +
+      '<p class="vview-play-status" role="status" aria-live="polite"></p>';
 
     document.body.appendChild(ov);
+    isolateMobileBackground(ov);
     document.body.classList.add('vview-open');
     viewEl = ov;
     viewVideo = ov.querySelector('.vview-video');
     viewCap = ov.querySelector('.vview-cap');
     viewSoundBtn = ov.querySelector('.vview-sound');
+    viewRetryBtn = ov.querySelector('.vview-retry');
+    viewPlaybackStatus = ov.querySelector('.vview-play-status');
+    viewPoster = ov.querySelector('.vview-poster');
+    viewVideo.addEventListener('error',function(){
+      playbackFailed(ov,viewPlayTicket);
+    });
 
     // FLIP: стартуем ровно с прямоугольника плитки и упруго раскрываемся.
     var from = opener && opener.getBoundingClientRect ? opener.getBoundingClientRect() : null;
@@ -678,13 +834,14 @@
       setViewTransform(from);
       playCurrent();
       requestAnimationFrame(function(){
+        if (viewEl !== ov) return;
         requestAnimationFrame(function(){
-          if (!viewVideo) return;
+          if (viewEl !== ov || !viewVideo) return;
           viewVideo.style.transition = 'transform .66s cubic-bezier(.2,1.28,.3,1), opacity .34s ease';
           setViewTransform(null);
         });
       });
-      setTimeout(function(){ if (viewEl) viewEl.classList.add('is-ready'); }, 220);
+      setTimeout(function(){ if (viewEl === ov) ov.classList.add('is-ready'); }, 220);
     } else {
       playCurrent();
       viewEl.classList.add('is-ready');
@@ -695,13 +852,18 @@
     if (viewSoundBtn) {
       viewSoundBtn.addEventListener('click', function(e){
         e.stopPropagation();
+        if(!viewVideo) return;
         viewVideo.muted = !viewVideo.muted;
-        viewSoundBtn.innerHTML = viewVideo.muted ? SOUND_SVG : MUTE_SVG;
-        viewSoundBtn.setAttribute('aria-pressed', viewVideo.muted ? 'false' : 'true');
-        viewSoundBtn.setAttribute('aria-label', viewVideo.muted ? 'Включить звук' : 'Выключить звук');
-        if (!viewVideo.muted) { var pr = viewVideo.play(); if (pr && pr.catch) pr.catch(function(){}); }
+        if(viewVideo.muted) { syncMobileSound(); return; }
+        attemptMobilePlayback();
       });
     }
+    if (viewRetryBtn) viewRetryBtn.addEventListener('click',function(e){
+      e.stopPropagation();
+      if(!viewVideo) return;
+      viewVideo.muted=true; // retry safely, audio can be enabled after playback
+      attemptMobilePlayback();
+    });
 
     // Второй тап по кадру — галерея. Перетаскивание мышью/пальцем клик не
     // засчитывает: сравниваем точку нажатия и отпускания.
@@ -709,7 +871,7 @@
     ov.addEventListener('pointerdown', function(e){ downX = e.clientX; downY = e.clientY; }, { passive: true });
     ov.addEventListener('click', function(e){
       if (viewBusy) return;
-      if (e.target && e.target.closest && e.target.closest('.vview-btn')) return;
+      if (e.target && e.target.closest && e.target.closest('.vview-btn, .vview-gallery')) return;
       if (Math.abs(e.clientX - downX) > 14 || Math.abs(e.clientY - downY) > 14) return;
       window.location.href = galleryHref();
     });
@@ -756,13 +918,17 @@
         if (Math.abs(dx) > 48 && !viewBusy) {
           if (viewVideo) { viewVideo.style.transition = 'transform .22s ease, opacity .22s ease'; viewVideo.style.transform = 'translateX(' + (dir > 0 ? -1 : 1) * window.innerWidth * 0.55 + 'px)'; viewVideo.style.opacity = '0'; }
           viewBusy = true;
-          setTimeout(function(){
+          if (viewSwipeTimer) clearTimeout(viewSwipeTimer);
+          viewSwipeTimer = setTimeout(function(){
+            viewSwipeTimer = 0;
+            if (viewEl !== ov) return; // closed/reopened while the swipe was pending
             viewIndex = (viewIndex + dir + items.length) % items.length;
             if (viewVideo) { viewVideo.style.transition = 'none'; viewVideo.style.transform = 'translateX(' + (dir > 0 ? 34 : -34) + 'px)'; viewVideo.style.opacity = '0'; }
             playCurrent();
             requestAnimationFrame(function(){
+              if (viewEl !== ov) return;
               requestAnimationFrame(function(){
-                if (!viewVideo) { viewBusy = false; return; }
+                if (viewEl !== ov || !viewVideo) return;
                 viewVideo.style.transition = 'transform .34s cubic-bezier(.2,1.1,.3,1), opacity .3s ease';
                 viewVideo.style.transform = 'none'; viewVideo.style.opacity = '1';
                 viewBusy = false;
@@ -790,16 +956,23 @@
   function closeView(instant){
     if (!viewEl) return;
     var ov = viewEl;
+    var opener = viewOpener; // capture instance; old delayed close must not alter new opener
     var v = ov.querySelector('video');
-    if (v) { try { v.pause(); } catch (e) {} }
+    if (viewSwipeTimer) {clearTimeout(viewSwipeTimer);viewSwipeTimer=0;}
+    ++viewPlayTicket; cancelMobilePlayWatch();
+    if (v) { try { v.pause(); v.removeAttribute('src'); v.load(); } catch (e) {} }
     document.body.classList.remove('vview-open');
+    releaseMobileBackground();
     viewEl = null; viewVideo = null; viewCap = null; viewSoundBtn = null;
+    viewRetryBtn=null; viewPlaybackStatus=null; viewPoster=null;
+    viewOpener = null; viewBusy = false;
     var done = function(){
       if (ov.parentNode) ov.parentNode.removeChild(ov);
-      if (viewOpener && viewOpener.focus) { try { viewOpener.focus({ preventScroll: true }); } catch (e) {} }
-      viewOpener = null;
+      if (!viewEl && opener && opener.isConnected && opener.focus) {
+        try { opener.focus({ preventScroll: true }); } catch (e) { opener.focus(); }
+      }
     };
-    var from = viewOpener && viewOpener.getBoundingClientRect ? viewOpener.getBoundingClientRect() : null;
+    var from = opener && opener.getBoundingClientRect ? opener.getBoundingClientRect() : null;
     if (instant || reduceMotion || !v || !from || !from.width) { done(); return; }
     v.style.transition = 'transform .42s cubic-bezier(.4,0,.7,.2), opacity .3s ease';
     v.style.transformOrigin = 'top left';
@@ -823,9 +996,18 @@
 
   document.addEventListener('keydown', function(e){
     if (!viewEl) return;
-    if (e.key === 'Escape' || e.keyCode === 27) { closeView(); }
-    else if (e.key === 'ArrowRight') { viewIndex = (viewIndex + 1) % items.length; playCurrent(); }
-    else if (e.key === 'ArrowLeft') { viewIndex = (viewIndex - 1 + items.length) % items.length; playCurrent(); }
+    if (e.key === 'Tab') {
+      var buttons = ['.vview-close','.vview-sound','.vview-retry:not([hidden])','.vview-gallery']
+        .map(function(sel){ return viewEl.querySelector(sel); }).filter(Boolean);
+      if (!buttons.length) {e.preventDefault(); return;}
+      var current=buttons.indexOf(document.activeElement);
+      var next=(current + (e.shiftKey?-1:1) + buttons.length) % buttons.length;
+      e.preventDefault(); buttons[next].focus();
+      return;
+    }
+    if (e.key === 'Escape' || e.keyCode === 27) {e.preventDefault();closeView(); }
+    else if (e.key === 'ArrowRight') {e.preventDefault();viewIndex = (viewIndex + 1) % items.length; playCurrent(); }
+    else if (e.key === 'ArrowLeft') {e.preventDefault();viewIndex = (viewIndex - 1 + items.length) % items.length; playCurrent(); }
   });
 
   function makeTile(it){

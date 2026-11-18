@@ -1215,3 +1215,94 @@ test.describe('catalog image fallback', () => {
     expect(errors).toEqual([]);
   });
 });
+
+for (const mode of ['allowed','denied','unavailable']) {
+  test('gallery wish-copy handoff preserves selected work and honest clipboard status ('+mode+')', async ({page}) => {
+    await page.addInitScript(mode => {
+      localStorage.setItem('milovi_analytics_consent_v1','denied');
+      if (mode === 'unavailable') {
+        Object.defineProperty(navigator,'clipboard',{configurable:true,value:undefined});
+      } else {
+        Object.defineProperty(navigator,'clipboard',{configurable:true,value:{
+          writeText: async text => {
+            window.__wroteWish=(window.__wroteWish||[]).concat(text);
+            if (mode==='denied') throw new DOMException('Copy denied','NotAllowedError');
+          }
+        }});
+      }
+    },mode);
+    await page.goto('/gallery/',{waitUntil:'domcontentloaded'});
+    const deny=page.locator('.mc-consent-button--deny');
+    if (await deny.isVisible()) await deny.click();
+    const card=page.locator('#galleryGrid [data-id="p01"]');
+    await card.click();
+    const root=page.locator('#lbRoot');
+    await expect(root).toBeVisible();
+    await root.locator('#lbWantTg').click();
+    const panel=root.locator('#lbDraftPanel');
+    const draft=root.locator('#lbDraftMessage');
+    await expect(panel).toBeVisible();
+    await expect(root.locator('#lbDraftCopy')).toBeFocused();
+    await expect(root.locator('#lbDraftOpen')).toHaveAttribute('href','https://t.me/milovi_cake');
+    await expect(draft).toHaveValue(/http/);
+    const text=await draft.inputValue();
+    expect(text).toContain('#p01');
+    await root.locator('#lbDraftCopy').click();
+    if (mode==='allowed') {
+      await expect(root.locator('#lbDraftStatus')).toContainText('Текст скопирован');
+      expect(await page.evaluate(()=>window.__wroteWish)).toEqual([text]);
+    } else {
+      await expect(root.locator('#lbDraftStatus')).toContainText('Копирование недоступно');
+      expect(await draft.evaluate(e=>document.activeElement===e&&e.selectionStart===0&&e.selectionEnd===e.value.length)).toBe(true);
+    }
+    await root.locator('#lbWantMax').click();
+    await expect(root.locator('#lbDraftOpen')).toHaveAttribute('href','https://max.ru/MiloviCake');
+    await expect(draft).toHaveValue(text);
+    // This test targets draft invalidation, not pointer hit-testing: WebKit
+    // continuously animates the active slide and Playwright's stable-target
+    // prerequisite can outlast the user-facing handler. Activation still
+    // exercises the real click listener and state updates.
+    await root.locator('#lbNext').evaluate(el=>el.click());
+    await expect(panel).toBeHidden();
+  });
+}
+
+test('gallery malformed fragment keeps card navigation functional', async ({page}) => {
+  await page.addInitScript(()=>localStorage.setItem('milovi_analytics_consent_v1','denied'));
+  const errors=[];
+  page.on('pageerror',e=>errors.push(String(e)));
+  for(const hash of ['#%','#%E0%A4%A']) {
+    await page.goto('/gallery/'+hash,{waitUntil:'domcontentloaded'});
+    await expect(page.locator('#galleryGrid [data-id="p01"]')).toBeVisible();
+    await expect(page.locator('#lbRoot')).toHaveCount(0);
+    await page.locator('#galleryGrid [data-id="p01"]').click();
+    await expect(page.locator('#lbRoot')).toBeVisible();
+    await expect(page).toHaveURL(/#p01$/);
+    // Close handler itself is verified here; other suites assert trusted
+    // pointer access. Avoid waiting for a continuously moving Swiper region.
+    await page.locator('#lbClose').evaluate(el=>el.click());
+  }
+  await page.goto('/gallery/#p01',{waitUntil:'domcontentloaded'});
+  await expect(page.locator('#lbRoot')).toBeVisible({timeout:5000});
+  await page.goBack({waitUntil:'domcontentloaded'});
+  expect(errors).toEqual([]);
+});
+
+test('gallery native video keyboard arrows do not navigate slides', async ({page}) => {
+  await page.addInitScript(()=>localStorage.setItem('milovi_analytics_consent_v1','denied'));
+  await page.goto('/gallery/',{waitUntil:'domcontentloaded'});
+  const item=page.locator('#galleryGrid [data-id^="v"]').first();
+  await expect(item).toBeVisible();
+  await item.click();
+  const root=page.locator('#lbRoot');
+  await expect(root).toBeVisible();
+  const before=await root.locator('#lbTitle').innerText();
+  const video=root.locator('.swiper-slide-active video.lb-media');
+  await expect(video).toHaveCount(1);
+  await video.focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(root.locator('#lbTitle')).toHaveText(before);
+  await root.locator('#lbNext').focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(root.locator('#lbTitle')).not.toHaveText(before);
+});

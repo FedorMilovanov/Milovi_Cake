@@ -647,6 +647,10 @@ function clearCart() {
   };
 }
 
+function cartQuantityMax(product){
+  // Keep current business caps, rather than inventing new ones in the UI.
+  return product.unit === 'кг' ? (product.maxiVariant ? 5 : 20) : 20;
+}
 function changeQty(cartKey, delta) {
   const parsed = parseCartKey(cartKey);
   let p = products.find(x => x.id === parsed.numId);
@@ -655,12 +659,23 @@ function changeQty(cartKey, delta) {
   if (p.hasMaxi && entry.mode === 'maxi') p = { ...p, ...p.maxiVariant };
   const step = p.unit === 'кг' ? 0.5 : 1;
   const minQty = p.minQty || (p.unit === 'кг' ? (p.minKg || 1) : 1);
-  var maxQty = p.unit === 'кг' ? (p.maxiVariant ? 5 : 20) : 20;
+  const maxQty = cartQuantityMax(p);
+  const focusedControl = document.activeElement;
+  const restoreQtyFocus = focusedControl?.classList?.contains('qty-btn') &&
+    focusedControl.closest('.cart-item')?.dataset.cartId === cartKey;
   const nextQty = Math.round((entry.qty + delta * step) * 10) / 10;
   entry.qty = delta > 0 ? Math.min(nextQty, Math.max(maxQty, entry.qty)) : nextQty;
   if (entry.qty < minQty) delete cart[cartKey];
   updateCartUI();
   saveCartToStorage();
+  if (restoreQtyFocus) {
+    const item = Array.from(document.querySelectorAll('#cartBody .cart-item'))
+      .find(el => el.dataset.cartId === cartKey);
+    const controls = item?.querySelectorAll('.qty-ctrl .qty-btn');
+    const target = (controls && controls[delta > 0 ? 1 : 0]) ||
+      document.querySelector('#cartBody .qty-btn, #cartBody .cart-empty-cta');
+    if (target) target.focus({ preventScroll: true });
+  }
 }
 
 function setCartStep(step) {
@@ -747,6 +762,10 @@ function updateCartUI() {
     const lineTotalFmt = lineTotal.toLocaleString('ru') + ' ₽';
     const minQty = isKg ? (p.minKg || 1) : (p.minQty || 1);
     const atMin = qty <= minQty;
+    const maxQty = cartQuantityMax(p);
+    const atMax = qty >= maxQty;
+    const limitText = 'Максимум: ' + maxQty + (isKg ? ' кг' : ' шт.');
+    const limitHint = atMax ? '<div class="cart-qty-limit" role="status">' + limitText + '</div>' : '';
     const dessertType = entry.dessertType || 'base';
     const isBase = dessertType !== 'author';
     const keyAttr = escapeCartHtml(cartKey);
@@ -760,7 +779,7 @@ function updateCartUI() {
       return `<label style="display:flex;align-items:center;gap:6px;margin-top:6px;min-width:0;"><span style="font-size:11px;color:var(--cart-muted);letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;">Начинка:</span><select onchange="setCartItemFill(${keyArg}, this.value, this)" style="font-size:12px;font-family:'Jost',sans-serif;padding:3px 8px;border-radius:12px;border:1px solid var(--cream-dark);background:transparent;color:var(--text);cursor:pointer;flex:1;max-width:180px;"><option value="">— уточнить —</option>${opts}</select></label>`;
     })()}</div>`;
 
-    return `<div class="cart-item" data-cart-id="${keyAttr}"><div class="cart-item-info"><h4>${p.name}</h4><div class="item-price">${p.price}</div>${p.min && !entry.fill ? `<div class="item-min">${p.min}</div>` : ''}${entry.decor ? `<div class="item-min" style="opacity:0.7">🎨 ${escapeCartHtml(entry.decor)}${decorAdd > 0 ? ` · +${decorAdd.toLocaleString('ru')} ₽` : ''}</div>` : ''}${entry.biscuit ? `<div class="item-min" style="opacity:0.7">🧁 бисквит: ${entry.biscuit === 'choco' ? 'шоколадный' : 'ванильный'}</div>` : ''}${dessertToggle}</div><div class="qty-ctrl"><button type="button" class="qty-btn" onclick="changeQty(${keyArg}, -1)" ${atMin ? 'title="Минимальный заказ"' : ''}>−</button><span class="qty-val">${qtyLabel}</span><button type="button" class="qty-btn" onclick="changeQty(${keyArg}, 1)">+</button></div><div class="cart-item-right"><div class="cart-line-total">${lineTotalFmt}</div><button type="button" class="del-btn" onclick="removeFromCart(${keyArg})" aria-label="Удалить"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true"><path d="M4 7h16M10 4h4M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></button></div></div>`;
+    return `<div class="cart-item" data-cart-id="${keyAttr}"><div class="cart-item-info"><h4>${p.name}</h4><div class="item-price">${p.price}</div>${p.min && !entry.fill ? `<div class="item-min">${p.min}</div>` : ''}${entry.decor ? `<div class="item-min" style="opacity:0.7">🎨 ${escapeCartHtml(entry.decor)}${decorAdd > 0 ? ` · +${decorAdd.toLocaleString('ru')} ₽` : ''}</div>` : ''}${entry.biscuit ? `<div class="item-min" style="opacity:0.7">🧁 бисквит: ${entry.biscuit === 'choco' ? 'шоколадный' : 'ванильный'}</div>` : ''}${dessertToggle}${limitHint}</div><div class="qty-ctrl"><button type="button" class="qty-btn" onclick="changeQty(${keyArg}, -1)" ${atMin ? 'title="Минимальный заказ"' : ''}>−</button><span class="qty-val">${qtyLabel}</span><button type="button" class="qty-btn" onclick="changeQty(${keyArg}, 1)" aria-disabled="${atMax ? "true" : "false"}" aria-label="${atMax ? limitText : "Увеличить количество"}" title="${atMax ? limitText : "Увеличить количество"}">+</button></div><div class="cart-item-right"><div class="cart-line-total">${lineTotalFmt}</div><button type="button" class="del-btn" onclick="removeFromCart(${keyArg})" aria-label="Удалить"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true"><path d="M4 7h16M10 4h4M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></button></div></div>`;
   }).join('');
 
   const totalFmt = cartTotalText(total);

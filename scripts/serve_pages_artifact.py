@@ -150,6 +150,12 @@ class ArtifactHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # noqa: N802 — имя задано базовым классом
         target = self._resolve()
         if target is None:
+            # GitHub Pages serves packaged 404.html, retaining HTTP 404.
+            # Path traversal remains denied by _resolve(), never a 200 fallback.
+            error_page = self.root / '404.html'
+            if error_page.is_file():
+                return self._send(error_page.read_bytes(),
+                                  'text/html; charset=utf-8', 404)
             return self._send(b'not found', 'text/plain; charset=utf-8',
                               404, compress=False)
         suffix = target.suffix.lower()
