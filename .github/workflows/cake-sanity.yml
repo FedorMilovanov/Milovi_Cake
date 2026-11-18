@@ -15,7 +15,9 @@ concurrency:
 jobs:
   qa:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    # Full npm run qa takes ~24.4 min by itself on hosted CI; allow setup,
+    # Pages build and artifact audit to complete without cancelling valid tests.
+    timeout-minutes: 35
     env:
       RELEASE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
