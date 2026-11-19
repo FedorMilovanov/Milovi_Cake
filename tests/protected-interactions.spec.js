@@ -386,7 +386,9 @@ test.describe('mobile app bar hides under overlays', () => {
   const OVERLAYS = {
     cart: {
       root: '#cartDrawer',
-      open: 'window.openCart()',
+      // Как живой пользователь: открытие кнопкой бара запоминает её как
+      // триггер, и после закрытия фокус обязан вернуться именно на неё.
+      click: '#mcNav .mc-btn--order',
       close: 'window.closeCart()',
       visible: '#cartDrawer:not([aria-hidden="true"])',
       trapped: true,
@@ -424,7 +426,8 @@ test.describe('mobile app bar hides under overlays', () => {
         expect(await barState(page), 'bar is on screen before any overlay').toMatchObject({ offscreen: false, opacity: 1, inert: false, ariaHidden: null });
 
         for (const [name, overlay] of Object.entries(OVERLAYS)) {
-          await page.evaluate(overlay.open);
+          if (overlay.click) await page.locator(overlay.click).click();
+          else await page.evaluate(overlay.open);
           await expect(page.locator(overlay.visible), `${name} opens`).toHaveCount(1);
           await expect(page.locator('body')).toHaveClass(/mc-nav-hidden/);
 
