@@ -116,7 +116,6 @@
           'align-items:stretch;',
           'transition:transform 0.28s cubic-bezier(.4,0,.2,1),opacity 0.2s ease;',
         '}',
-        '.mc-nav.mc-nav--hidden{transform:translateY(100%);}',
         /* [r39] Бар не занимает низ на первом экране. Правила ниже обязаны
            перебивать !important-блок «app shell» из v20-fixes.css, поэтому
            и специфичность (id + 3 класса), и !important. */
@@ -632,8 +631,17 @@
              body.style.position === 'fixed';
     }
     var ticking = false;
+    /* [r40] Корзина, лайтбокс отзывов и модалка отзывов просят скрыть бар
+       классом mc-nav-hidden на body. Раньше эта просьба была пустой: в
+       css/v20-fixes.css стояло `.mc-nav.mc-nav--hidden{transform:translateY(0)!important}`,
+       то есть бар принудительно возвращался на место. Теперь тот же флаг ведёт
+       наше собственное состояние — один источник правды, без лишних !important. */
+    function overlayHidesNav() {
+      return document.body.classList.contains('mc-nav-hidden');
+    }
     function syncNavVisibility() {
-      if (!isUiLocked()) setVeiled(window.scrollY < revealThreshold());
+      if (overlayHidesNav()) setVeiled(true);
+      else if (!isUiLocked()) setVeiled(window.scrollY < revealThreshold());
       ticking = false;
     }
     function scheduleNavSync() {
@@ -647,7 +655,13 @@
     /* Корзина и меню меняют блокировку body классом/инлайновым стилем —
        пересчитываем видимость сразу после снятия, не дожидаясь скролла. */
     try {
-      new MutationObserver(scheduleNavSync).observe(document.body, { attributes: true, attributeFilter: ['class', 'style'] });
+      new MutationObserver(function () {
+        /* Синхронно: класс mc-nav-hidden снимается в том же вызове, который
+           закрывает корзину, и сразу после него main.js возвращает фокус на
+           кнопку бара. Если снять inert только на следующем кадре, focus()
+           молча не сработает. */
+        syncNavVisibility();
+      }).observe(document.body, { attributes: true, attributeFilter: ['class', 'style'] });
     } catch (e) { /* старые движки без MutationObserver — хватит scroll/resize */ }
 
     // ── CSS для mc-sheet-open (только overflow, без position:fixed) ──

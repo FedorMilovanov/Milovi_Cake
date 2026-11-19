@@ -367,6 +367,102 @@ test.describe('premium baseline consolidation contracts', () => {
   });
 });
 
+/* [r40] Бар обязан уезжать под любым оверлеем, который просит его скрыть
+   (корзина, лайтбокс отзывов, модалка отзывов), и возвращаться после закрытия.
+   До r40 просьба игнорировалась: в css/v20-fixes.css стояло
+   `.mc-nav.mc-nav--hidden{transform:translateY(0)!important}`. */
+test.describe('mobile app bar hides under overlays', () => {
+  const barState = (page) => page.locator('#mcNav').evaluate((el) => {
+    const rect = el.getBoundingClientRect();
+    const css = getComputedStyle(el);
+    return {
+      offscreen: rect.top >= window.innerHeight - 1,
+      opacity: Number(css.opacity),
+      inert: el.hasAttribute('inert'),
+      ariaHidden: el.getAttribute('aria-hidden'),
+    };
+  });
+
+  const OVERLAYS = {
+    cart: {
+      root: '#cartDrawer',
+      open: 'window.openCart()',
+      close: 'window.closeCart()',
+      visible: '#cartDrawer:not([aria-hidden="true"])',
+      trapped: true,
+    },
+    'review lightbox': {
+      root: '#lbOverlay',
+      open: 'window.openChatLightbox(0)',
+      close: "document.getElementById('lbX').click()",
+      visible: '#lbOverlay.active',
+      trapped: true,
+    },
+    'reviews modal': {
+      // У модалки отзывов своего focus-trap нет (см. §35 аудита) — здесь
+      // проверяем только контракт бара: Tab не должен попадать в него.
+      root: '#reviewsModal',
+      open: "window.openReviewsModal('yandex')",
+      close: 'window.closeReviewsModal()',
+      visible: '#reviewsModal.open',
+      trapped: false,
+    },
+  };
+
+  for (const theme of ['light', 'dark']) {
+    for (const width of [320, 390, 768]) {
+      test(`${width}px ${theme}: cart, lightbox and reviews hide the bar and give it back`, async ({ page }, testInfo) => {
+        test.skip(!testInfo.project.name.includes('mobile'), 'mobile-only contract');
+        await page.setViewportSize({ width, height: 760 });
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        await page.addInitScript((mode) => { localStorage.setItem('mc_theme', mode); }, theme);
+        await page.goto('/', { waitUntil: 'domcontentloaded' });
+        await revealMobileAppBar(page);
+        await page.evaluate(() => addToCart(2));
+
+        const nav = page.locator('#mcNav');
+        expect(await barState(page), 'bar is on screen before any overlay').toMatchObject({ offscreen: false, opacity: 1, inert: false, ariaHidden: null });
+
+        for (const [name, overlay] of Object.entries(OVERLAYS)) {
+          await page.evaluate(overlay.open);
+          await expect(page.locator(overlay.visible), `${name} opens`).toHaveCount(1);
+          await expect(page.locator('body')).toHaveClass(/mc-nav-hidden/);
+
+          await expect.poll(() => barState(page), { message: `${name}: bar leaves the screen` })
+            .toEqual({ offscreen: true, opacity: 0, inert: true, ariaHidden: 'true' });
+
+          // Tab не должен попадать в невидимый бар (он inert) — и там, где у
+          // оверлея есть свой trap, фокус вообще не выходит за его пределы.
+          for (let i = 0; i < 6; i += 1) {
+            await page.keyboard.press('Tab');
+            const focus = await page.evaluate((sel) => {
+              const root = document.querySelector(sel);
+              return {
+                inBar: !!document.querySelector('#mcNav')?.contains(document.activeElement),
+                inRoot: !!root && root.contains(document.activeElement),
+                id: document.activeElement?.id || document.activeElement?.tagName,
+              };
+            }, overlay.root);
+            expect(focus.inBar, `${name}: Tab #${i + 1} never lands in the hidden bar`).toBe(false);
+            if (overlay.trapped) {
+              expect(focus.inRoot, `${name}: Tab #${i + 1} stays inside the overlay (focused ${focus.id})`).toBe(true);
+            }
+          }
+
+          await page.evaluate(overlay.close);
+          await expect(page.locator('body')).not.toHaveClass(/mc-nav-hidden/);
+          await expect.poll(() => barState(page), { message: `${name}: bar comes back` })
+            .toEqual({ offscreen: false, opacity: 1, inert: false, ariaHidden: null });
+
+          if (name === 'cart') {
+            await expect(page.locator('#mcNav .mc-btn--order'), 'focus returns to the cart button').toBeFocused();
+          }
+        }
+      });
+    }
+  }
+});
+
 test.describe('hero motion performance contract', () => {
   test.beforeEach(async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'no-preference' });

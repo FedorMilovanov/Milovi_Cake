@@ -993,9 +993,21 @@ function _cartReturnFocus(drawer) {
   if (!drawer.contains(document.activeElement)) return;
   var trigger = previous && previous.isConnected && typeof previous.focus === 'function'
     ? previous : document.querySelector('#cartBtn, .cart-btn, .header-cart-btn');
-  if (trigger) trigger.focus({ preventScroll: true });
-  // A programmatic open may have no focusable trigger; never hide focused content.
-  if (drawer.contains(document.activeElement)) document.activeElement.blur();
+  if (!trigger) {
+    // A programmatic open may have no focusable trigger; never hide focused content.
+    if (drawer.contains(document.activeElement)) document.activeElement.blur();
+    return;
+  }
+  trigger.focus({ preventScroll: true });
+  if (document.activeElement === trigger) return;
+  /* [r40] Кнопка бара в момент закрытия ещё может быть inert: бар снимает
+     атрибуты в микрозадаче после снятия body.mc-nav-hidden. Один повтор на
+     следующем кадре — иначе фокус молча остаётся в закрытой корзине. */
+  requestAnimationFrame(function () {
+    if (!trigger.isConnected) return;
+    try { trigger.focus({ preventScroll: true }); } catch (e) {}
+    if (drawer.contains(document.activeElement)) document.activeElement.blur();
+  });
 }
 
 function _cartForceClose() {
