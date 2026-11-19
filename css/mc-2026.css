@@ -1924,7 +1924,6 @@ body.vview-open{overflow:hidden}
     gap: 10px;
     padding-top: 6px;
   }
-  .mm-privacy-host { flex: 1 1 auto; min-width: 0; }
   .mm-theme {
     display: inline-flex;
     flex: 0 0 auto;

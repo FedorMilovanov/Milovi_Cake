@@ -127,6 +127,29 @@ function measure() {
       await context.close();
     }
   }
+  // Вторая историческая разметка жила в пригородах — снимаем её отдельно,
+  // чтобы «было/стало» было видно и там, а не только на главной.
+  for (const theme of THEMES) {
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, locale: 'ru-RU' });
+    await context.addInitScript((themeValue) => {
+      try {
+        localStorage.setItem('mc_theme', themeValue);
+        localStorage.setItem('milovi_analytics_consent_v1', 'denied');
+      } catch (e) {}
+      document.documentElement.setAttribute('data-theme', themeValue);
+    }, theme);
+    const page = await context.newPage();
+    await page.goto(`${BASE}/prigorody/pushkin/`, { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(900);
+    const opened = await openMenu(page);
+    await page.screenshot({ path: path.join(OUT, `${PREFIX}-390x844-${theme}-suburb.png`), fullPage: false });
+    if (opened) {
+      const stats = await page.evaluate(measure);
+      report.push({ viewport: { width: 390, height: 844 }, theme, page: '/prigorody/pushkin/', ...stats });
+    }
+    await context.close();
+  }
+
   await browser.close();
   fs.writeFileSync(path.join(OUT, `${PREFIX}-report.json`), JSON.stringify(report, null, 2));
   for (const row of report) {

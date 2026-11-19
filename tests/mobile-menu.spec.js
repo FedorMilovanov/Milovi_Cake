@@ -18,7 +18,7 @@ function proofPath(testInfo, name) {
 
 const OWNER_MAX_URL = 'https://max.ru/u/f9LHodD0cOIzRY9VJX8MoyR41H64ULjndbose2aPPrzXJDLW8QEiyKTpqxs';
 
-async function openMenu(page, theme = 'light') {
+async function openMenu(page, theme = 'light', url = '/') {
   await page.addInitScript((value) => {
     try {
       localStorage.setItem('mc_theme', value);
@@ -26,7 +26,7 @@ async function openMenu(page, theme = 'light') {
     } catch (e) {}
     document.documentElement.setAttribute('data-theme', value);
   }, theme);
-  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.goto(url, { waitUntil: 'domcontentloaded' });
   await page.locator('#burgerBtn').click();
   await expect(page.locator('#mobileMenu')).toHaveClass(/open/);
   await page.waitForTimeout(280);
@@ -99,6 +99,34 @@ test.describe('mobile menu @menu', () => {
     // Группы подписаны — навигация читается как структура, а не список.
     const labels = await page.locator('#mobileMenu .mobile-menu-section-label').allTextContents();
     expect(labels.map((text) => text.trim())).toEqual(['Заказать', 'Форматы']);
+  });
+
+  test('главная и пригород отдают одну и ту же разметку меню', async ({ page }) => {
+    // До r44 у пригородов была отдельная (старая) версия меню — фиксируем паритет.
+    const collect = async (url) => {
+      await openMenu(page, 'light', url);
+      const state = await page.evaluate(() => {
+        const menu = document.getElementById('mobileMenu');
+        return {
+          links: Array.from(menu.querySelectorAll('a[href]')).map((a) => a.getAttribute('href')),
+          groups: Array.from(menu.querySelectorAll('.mobile-menu-section-label')).map((n) => n.textContent.trim()),
+          hasBrand: !!menu.querySelector('.mobile-menu-brand-name'),
+          hasTheme: menu.querySelectorAll('[data-theme-set]').length,
+          messengers: Array.from(menu.querySelectorAll('.mm-msg')).map((n) => n.textContent.trim()),
+        };
+      });
+      await page.keyboard.press('Escape');
+      await expect(page.locator('#mobileMenu')).not.toHaveClass(/open/);
+      return state;
+    };
+
+    const home = await collect('/');
+    const suburb = await collect('/prigorody/pushkin/');
+    expect(suburb.links).toEqual(home.links);
+    expect(suburb.groups).toEqual(home.groups);
+    expect(suburb.messengers).toEqual(home.messengers);
+    expect(suburb.hasBrand).toBe(true);
+    expect(suburb.hasTheme).toBe(2);
   });
 
   test('мессенджеры используют фирменные знаки и правильные адреса', async ({ page }) => {
