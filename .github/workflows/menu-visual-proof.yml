@@ -1,10 +1,11 @@
 name: Menu visual proof
 
 # Dev-only lane: renders the mobile menu at the widths required by the visual
-# acceptance protocol and commits the real screenshots to _review_screens/
-# (git-ignored locally, force-added here) so a PR can show before/after pixels
-# without downloading artifacts. It never runs for deploy and touches no
-# runtime asset.
+# acceptance protocol (AGENTS.md §11), captures the *published* site as "before"
+# and the working tree as "after", uploads them as an artifact and — only for
+# PRs labelled `visual-proof` — commits them to _review_screens/ (git-ignored
+# locally, force-added here) so the PR carries real pixels. It never deploys and
+# touches no runtime asset.
 
 on:
   pull_request:
@@ -79,8 +80,10 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
+      # Committing pixels back is opt-in per PR (label `visual-proof`) so the
+      # lane never pushes to branches that did not ask for it.
       - name: Publish the screenshots into the PR branch
-        if: github.event_name == 'pull_request' && always()
+        if: github.event_name == 'pull_request' && always() && contains(github.event.pull_request.labels.*.name, 'visual-proof')
         run: |
           set -euo pipefail
           if [ ! -d _review_screens/menu ]; then echo "no screenshots"; exit 0; fi
