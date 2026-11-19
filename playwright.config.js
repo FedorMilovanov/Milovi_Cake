@@ -12,7 +12,13 @@ module.exports = defineConfig({
   // Match the ordinary CI lane instead of scaling with every local CPU core.
   workers: 2,
   retries: 1,
-  reporter: [['list'], ['html', { open: 'never' }]],
+  /* На GitHub Actions добавляем reporter github: каждый упавший тест
+     превращается в аннотацию к PR. Без него шаги qa и deep-polish пишут в
+     проверку только «Process completed with exit code 1», и по логам нельзя
+     понять, какой тест и на каком движке упал. */
+  reporter: process.env.GITHUB_ACTIONS === 'true'
+    ? [['list'], ['github'], ['html', { open: 'never' }]]
+    : [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: 'http://127.0.0.1:4173',
     storageState: 'tests/analytics-denied.storage-state.json',

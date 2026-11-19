@@ -1194,3 +1194,100 @@ test('mobile calculator resize clears its backdrop before desktop and on return'
   }
   expect(errors).toEqual([]);
 });
+
+/* [r40] Раньше Enter в поле телефона молчал: в форме на главной не было
+   default submit, а на страницах пригородов формы не было вовсе. Теперь Enter
+   запускает ровно ту же проверенную процедуру, что и кнопка WhatsApp
+   (buildWA → buildMessage → валидация телефона → открытие wa.me), и записывает
+   один handoff. Открытие вкладки WhatsApp по-прежнему не считается отправкой
+   заказа: событие называется generate_lead с lead_source=cart. */
+test.describe('cart phone field: Enter prepares the order', () => {
+  async function prepareCartFormStep(page, testInfo) {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.addInitScript(() => {
+      localStorage.setItem('milovi_analytics_consent_v1', 'granted');
+      window.__goals = [];
+      window.__opened = [];
+      window.gtag = (...args) => window.__goals.push(args);
+      window.ym = () => {};
+      window.open = (url) => { window.__opened.push(url); return {}; };
+    });
+    await page.route(/(googletagmanager\.com|mc\.yandex\.ru)/, (route) => route.abort());
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.evaluate(() => addToCart(2));
+    if (testInfo.project.name.endsWith('-mobile')) await revealMobileAppBar(page);
+    const trigger = page.locator(testInfo.project.name.endsWith('-mobile') ? '#mcNav .mc-btn--order' : '#cartBtn');
+    await trigger.click();
+    await page.locator('#cartStep1Footer button').click();
+    await expect(page.locator('#cartFooter')).toBeVisible();
+  }
+
+  const goals = (page) => page.evaluate(() => window.__goals
+    .filter(([type, name]) => type === 'event' && name === 'generate_lead')
+    .map(([, , params]) => params));
+
+  test('Enter in #cphone sends the same validated WhatsApp handoff as the button', async ({ page }, testInfo) => {
+    await prepareCartFormStep(page, testInfo);
+    await page.locator('#cname').fill('Виктория');
+    await page.locator('#cphone').fill('+7 911 555 44 33');
+    await page.locator('#ccomment').fill('2 кг, авторский декор');
+
+    // Именно Enter внутри поля — без клика по кнопке WhatsApp.
+    await page.locator('#cphone').press('Enter');
+
+    await expect.poll(() => page.evaluate(() => window.__opened.length)).toBe(1);
+    const [url] = await page.evaluate(() => window.__opened);
+    expect(url.startsWith('https://wa.me/79119038886?text=')).toBe(true);
+    const text = decodeURIComponent(url.split('?text=')[1]);
+    expect(text).toContain('Виктория');
+    expect(text).toContain('+7 911 555 44 33');
+    expect(text).toContain('2 кг, авторский декор');
+    expect(text).toContain('Итого (предварительно)');
+
+    // Порядок шагов тот же, что у кнопки: шаг 3 «Отправка» активен.
+    await expect(page.locator('#step3')).toHaveClass(/active/);
+
+    // Ровно один handoff и ни одного «заказ отправлен».
+    expect(await goals(page)).toEqual([{ path: '/', lead_channel: 'whatsapp', lead_source: 'cart' }]);
+    const events = await page.evaluate(() => window.__goals.filter(([type]) => type === 'event').map(([, name]) => name));
+    expect(events).not.toContain('purchase');
+    expect(events).not.toContain('order_sent');
+  });
+
+  test('Enter with an incomplete phone keeps step 2, shows the toast and records nothing', async ({ page }, testInfo) => {
+    await prepareCartFormStep(page, testInfo);
+    await page.locator('#cphone').fill('123');
+    await page.locator('#cphone').press('Enter');
+
+    await expect(page.locator('#toast')).toHaveClass(/show/);
+    await expect(page.locator('#toast')).toHaveText('Введите корректный номер телефона');
+    await expect(page.locator('#cphone')).toBeFocused();
+    await expect(page.locator('#step2')).toHaveClass(/active/);
+    await expect(page.locator('#step3')).not.toHaveClass(/active/);
+    expect(await page.evaluate(() => window.__opened)).toEqual([]);
+    expect(await goals(page)).toEqual([]);
+    // Корзина и состав заказа на месте.
+    expect(await page.evaluate(() => Object.keys(JSON.parse(localStorage.getItem('milovicake_cart') || '{}')).length)).toBeGreaterThan(0);
+  });
+
+  test('the form does not hijack Telegram, and the cart survives a reload after Enter', async ({ page }, testInfo) => {
+    await prepareCartFormStep(page, testInfo);
+    await page.locator('#cname').fill('Алиса');
+    await page.locator('#cphone').fill('+7 911 555 44 33');
+    await page.locator('#cphone').press('Enter');
+    await expect.poll(() => page.evaluate(() => window.__opened.length)).toBe(1);
+
+    await page.evaluate(() => { window.__opened.length = 0; });
+    await page.locator('#btnTG').click();
+    await expect.poll(() => page.evaluate(() => window.__opened.length)).toBe(1);
+    expect(await page.evaluate(() => window.__opened[0])).toBe('https://t.me/MiloviCake');
+    expect(await goals(page)).toEqual([
+      { path: '/', lead_channel: 'whatsapp', lead_source: 'cart' },
+      { path: '/', lead_channel: 'telegram', lead_source: 'cart' },
+    ]);
+
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('milovicake_cart') || '{}'));
+    expect(Object.keys(stored).length).toBeGreaterThan(0);
+  });
+});

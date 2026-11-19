@@ -993,8 +993,16 @@ function _cartReturnFocus(drawer) {
   if (!drawer.contains(document.activeElement)) return;
   var trigger = previous && previous.isConnected && typeof previous.focus === 'function'
     ? previous : document.querySelector('#cartBtn, .cart-btn, .header-cart-btn');
-  if (trigger) trigger.focus({ preventScroll: true });
-  // A programmatic open may have no focusable trigger; never hide focused content.
+  if (!trigger) {
+    // A programmatic open may have no focusable trigger; never hide focused content.
+    if (drawer.contains(document.activeElement)) document.activeElement.blur();
+    return;
+  }
+  /* [r40] Бар мог быть скрыт под корзиной и в этот момент быть inert.
+     Просим его пересчитать состояние синхронно (js/nav.js выставляет
+     window._mcNavSync), иначе focus() по inert-кнопке молча игнорируется. */
+  if (typeof window._mcNavSync === 'function') window._mcNavSync();
+  trigger.focus({ preventScroll: true });
   if (drawer.contains(document.activeElement)) document.activeElement.blur();
 }
 

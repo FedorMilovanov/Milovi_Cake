@@ -116,7 +116,6 @@
           'align-items:stretch;',
           'transition:transform 0.28s cubic-bezier(.4,0,.2,1),opacity 0.2s ease;',
         '}',
-        '.mc-nav.mc-nav--hidden{transform:translateY(100%);}',
         /* [r39] Бар не занимает низ на первом экране. Правила ниже обязаны
            перебивать !important-блок «app shell» из v20-fixes.css, поэтому
            и специфичность (id + 3 класса), и !important. */
@@ -632,8 +631,17 @@
              body.style.position === 'fixed';
     }
     var ticking = false;
+    /* [r40] Корзина, лайтбокс отзывов и модалка отзывов просят скрыть бар
+       классом mc-nav-hidden на body. Раньше эта просьба была пустой: в
+       css/v20-fixes.css стояло `.mc-nav.mc-nav--hidden{transform:translateY(0)!important}`,
+       то есть бар принудительно возвращался на место. Теперь тот же флаг ведёт
+       наше собственное состояние — один источник правды, без лишних !important. */
+    function overlayHidesNav() {
+      return document.body.classList.contains('mc-nav-hidden');
+    }
     function syncNavVisibility() {
-      if (!isUiLocked()) setVeiled(window.scrollY < revealThreshold());
+      if (overlayHidesNav()) setVeiled(true);
+      else if (!isUiLocked()) setVeiled(window.scrollY < revealThreshold());
       ticking = false;
     }
     function scheduleNavSync() {
@@ -641,13 +649,22 @@
       ticking = true;
       requestAnimationFrame(syncNavVisibility);
     }
+    /* Синхронный пересчёт для main.js: перед возвратом фокуса на кнопку бара
+       нужно снять с неё inert в том же вызове, а не на следующем кадре. */
+    window._mcNavSync = syncNavVisibility;
     window.addEventListener('scroll', scheduleNavSync, { passive: true });
     window.addEventListener('resize', scheduleNavSync, { passive: true });
     window.addEventListener('pageshow', scheduleNavSync);
     /* Корзина и меню меняют блокировку body классом/инлайновым стилем —
        пересчитываем видимость сразу после снятия, не дожидаясь скролла. */
     try {
-      new MutationObserver(scheduleNavSync).observe(document.body, { attributes: true, attributeFilter: ['class', 'style'] });
+      /* [r41] Следим только за class и планируем пересчёт на следующий кадр:
+         раньше здесь стоял синхронный вызов на каждый class/style-мутацией
+         body, то есть принудительный layout (чтение scrollY) в момент анимации
+         корзины — на WebKit это тот самый класс проблем, что описан в r38.
+         Синхронный пересчёт перед возвратом фокуса main.js вызывает сам через
+         window._mcNavSync. */
+      new MutationObserver(scheduleNavSync).observe(document.body, { attributes: true, attributeFilter: ['class'] });
     } catch (e) { /* старые движки без MutationObserver — хватит scroll/resize */ }
 
     // ── CSS для mc-sheet-open (только overflow, без position:fixed) ──

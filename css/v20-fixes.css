@@ -577,8 +577,11 @@ body.mc-consent-open { overflow:hidden; }
     opacity:1 !important;
     visibility:visible !important;
   }
-  #mcNav.mc-nav.mc-nav--hidden,
-  .mc-nav.mc-nav--hidden { transform:translateY(0) !important; }
+  /* [r40] Раньше здесь стояло `.mc-nav--hidden{transform:translateY(0)!important}` —
+     оно отменяло скрытие бара под корзиной, лайтбоксом и модалкой отзывов,
+     которое просит js/main.js. Видимостью бара управляет js/nav.js через
+     body.mc-nav-veiled (и класс body.mc-nav-hidden как флаг оверлея), поэтому
+     правило удалено — не возвращайте его обратно. */
   body.has-mc-nav { padding-bottom:calc(var(--mc-nav-total) + 16px) !important; }
   body.has-mc-nav .site-footer,
   body.has-mc-nav footer.site-footer { padding-bottom:24px !important; }
