@@ -658,13 +658,13 @@
     /* Корзина и меню меняют блокировку body классом/инлайновым стилем —
        пересчитываем видимость сразу после снятия, не дожидаясь скролла. */
     try {
-      new MutationObserver(function () {
-        /* Синхронно: класс mc-nav-hidden снимается в том же вызове, который
-           закрывает корзину, и сразу после него main.js возвращает фокус на
-           кнопку бара. Если снять inert только на следующем кадре, focus()
-           молча не сработает. */
-        syncNavVisibility();
-      }).observe(document.body, { attributes: true, attributeFilter: ['class', 'style'] });
+      /* [r41] Следим только за class и планируем пересчёт на следующий кадр:
+         раньше здесь стоял синхронный вызов на каждый class/style-мутацией
+         body, то есть принудительный layout (чтение scrollY) в момент анимации
+         корзины — на WebKit это тот самый класс проблем, что описан в r38.
+         Синхронный пересчёт перед возвратом фокуса main.js вызывает сам через
+         window._mcNavSync. */
+      new MutationObserver(scheduleNavSync).observe(document.body, { attributes: true, attributeFilter: ['class'] });
     } catch (e) { /* старые движки без MutationObserver — хватит scroll/resize */ }
 
     // ── CSS для mc-sheet-open (только overflow, без position:fixed) ──
