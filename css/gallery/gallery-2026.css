@@ -593,3 +593,24 @@ html[data-theme="dark"] .lp-theme-toggle{
   border-color: rgba(232,184,122,.3);
   background: rgba(255,255,255,.05);
 }
+
+/* Context-preserving Telegram/MAX handoff in the gallery lightbox. */
+.lb-draft-panel{box-sizing:border-box;margin:15px 0 8px;padding:16px;
+  border:1px solid rgba(244,212,168,.27);border-radius:13px;
+  background:rgba(255,255,255,.045);color:#f7e8d5}
+.lb-draft-panel[hidden]{display:none}
+.lb-draft-panel h3{margin:0 0 6px;font:500 20px/1.3 Georgia,serif;color:#fff0dc}
+.lb-draft-panel p{margin:0 0 10px;font:400 12px/1.6 sans-serif;color:#f0d5b9}
+.lb-draft-panel label{display:block;margin-bottom:5px;font:500 11px/1.4 sans-serif;color:#f3d8b5}
+.lb-draft-panel textarea{display:block;box-sizing:border-box;resize:vertical;
+  width:100%;min-height:92px;padding:10px;border-radius:9px;
+  border:1px solid rgba(244,212,168,.32);background:#24180f;
+  color:#fff2dc;font:400 12px/1.55 sans-serif}
+.lb-draft-actions{display:flex;flex-wrap:wrap;gap:9px;margin:10px 0 0}
+.lb-draft-actions button,.lb-draft-actions a{box-sizing:border-box;display:inline-flex;
+  flex:1 1 130px;justify-content:center;align-items:center;min-height:44px;
+  padding:10px;border:1px solid rgba(244,212,168,.44);border-radius:9px;
+  background:rgba(255,255,255,.1);color:#fff3dd;font:500 12px/1.4 sans-serif;
+  text-decoration:none;cursor:pointer}
+.lb-draft-panel :is(button,a,textarea):focus-visible{outline:2px solid #f5c78b;outline-offset:2px}
+.lb-draft-panel #lbDraftStatus{min-height:1.4em;margin:9px 0 0}

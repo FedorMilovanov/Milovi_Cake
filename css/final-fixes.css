@@ -9,7 +9,7 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero,
   position: relative !important;
   overflow: visible !important;
   isolation: isolate !important;
-  outline: 0 !important;
+  outline: 0;
   border: 0 !important;
   box-shadow: 0 8px 24px rgba(201,147,74,.24) !important;
 }
@@ -99,15 +99,29 @@ html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero,
 .hero-actions .btn-primary.btn-primary--hero:focus:not(:focus-visible) {
   outline: 0 !important;
 }
-.hero .btn-primary.btn-primary--hero:focus-visible {
-  outline: 2px solid var(--gold-light, #e8b87a) !important;
-  outline-offset: 5px !important;
-}
+/* The more-specific light/dark focus-visible selectors below replace the
+   insufficient older 2px rule; no duplicate important declarations. */
 @media (prefers-contrast: more) {
   .hero .btn-primary.btn-primary--hero,
   .hero .btn-primary.btn-primary--hero:hover {
     outline: 0 !important;
     outline-offset: 5px !important;
+  }
+}
+
+/* AA keyboard focus: outrank light-theme !important resets and mobile hover. */
+:root:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:focus-visible,
+html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:focus-visible,
+html[data-theme="dark"] .hero .btn-primary.btn-primary--hero:focus-visible {
+  outline: 3px solid var(--gold-light, #e8b87a) !important;
+  outline-offset: 5px;
+}
+@media (prefers-contrast: more) {
+  :root:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:focus-visible,
+  html:not([data-theme="dark"]) .hero .btn-primary.btn-primary--hero:focus-visible,
+  html[data-theme="dark"] .hero .btn-primary.btn-primary--hero:focus-visible {
+    outline: 4px solid CanvasText !important;
+    outline-offset: 5px;
   }
 }
 
@@ -559,7 +573,7 @@ html[data-theme="dark"] body #mcNav.mc-nav {
 
 /* Settings dialog appears only on deliberate request; keep it compact and clear. */
 .mc-consent-dialog { border-radius:24px !important; }
-.mc-consent-trigger { white-space:nowrap; }
+.mc-consent-trigger { white-space:nowrap; min-height:24px; }
 
 @media (prefers-reduced-motion:reduce) {
   #contacts .card:not(.card--dark) .form-group.float-label::before { transition:none !important; }
@@ -1556,13 +1570,13 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
 .product-card .slide-dots {
   position: absolute;
   left: 50%;
-  bottom: 12px;
+  bottom: 3px; /* preserve old painted dot-center Y after enlarging hitboxes */
   transform: translateX(-50%);
   width: max-content;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 6px;
+  gap: 0;
   padding: 6px 10px;
   border-radius: 999px;
   /* стеклянная дорожка: точки остаются видны и на светлых фото.
@@ -1576,19 +1590,37 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
 }
 .product-card .slide-dots .dot {
   pointer-events: auto;
-  width: 6px;
-  height: 6px;
+  position: relative;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
   padding: 0;
   border: 0;
   border-radius: 999px;
+  background: transparent;
+  box-shadow: none;
+}
+.product-card .slide-dots .dot::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
   background: rgba(255, 255, 255, .62);
   box-shadow: 0 1px 4px rgba(20, 12, 6, .45);
-  transition: width .38s cubic-bezier(.16, 1, .3, 1), background .3s ease, box-shadow .3s ease;
+  transition: width .38s cubic-bezier(.16,1,.3,1), background .3s ease;
 }
-.product-card .slide-dots .dot.active {
+.product-card .slide-dots .dot.active::before {
   width: 20px;
   background: #f3d9b0;
   box-shadow: 0 1px 5px rgba(20, 12, 6, .42), 0 0 0 1px rgba(201, 147, 74, .5);
+}
+.product-card .slide-dots .dot:focus-visible {
+  outline: 2px solid #f3d9b0;
+  outline-offset: -1px;
 }
 
 /* 7. Мобильная панель товаров листается влево-вправо: одна карточка в кадре
@@ -2184,3 +2216,84 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
    У бенто и 3D описаний нет (см. отчёт, контентный HOLD). Раньше шторка
    показывала пустой блок с отступами — теперь он не занимает места. */
 #fillPopupText:empty { display: none; }
+
+/* r27 approved messenger design — home desktop only. Original protected ring lettering and
+ * brand SVG remain; circular button chrome is visually removed on home. */
+@media (min-width:769px) {
+ body.mc-home .hero-actions .messenger-group--ring { gap:18px; }
+ body.mc-home .hero-actions a.btn-hero-messenger.btn-hero-ring {
+  background:transparent;
+  border:0;
+  box-shadow:none;
+ }
+ body.mc-home .hero-actions a.btn-hero-messenger.btn-hero-ring:hover {
+  transform:none;
+ }
+ body.mc-home .hero-actions a.btn-hero-messenger.btn-hero-ring:focus-visible {
+  outline:2px solid currentColor;
+  outline-offset:5px;
+ }
+ body.mc-home .hero-actions a.btn-hero-messenger.btn-hero-ring svg {
+  transform:scale(1.18);
+  transform-origin:center;
+  transition:transform .4s cubic-bezier(.22,.78,.25,1),filter .35s ease;
+  filter:drop-shadow(0 1px 2px rgba(20,12,5,.08));
+  overflow:visible;
+ }
+ body.mc-home .hero-actions a.btn-hero-messenger.btn-hero-ring:hover svg,
+ body.mc-home .hero-actions a.btn-hero-messenger.btn-hero-ring:focus-visible svg {
+  transform:scale(1.22);
+  filter:drop-shadow(0 2px 5px rgba(20,12,5,.13));
+ }
+ body.mc-home .hero-actions .mc-brand-glyph {
+  transform-box:fill-box;
+  transform-origin:center;
+  transition:transform .43s cubic-bezier(.2,.85,.27,1);
+ }
+ body.mc-home .hero-actions .mc-brand-glyph--wa {transform:scale(1.36)}
+ body.mc-home .hero-actions .mc-brand-glyph--tg,
+ body.mc-home .hero-actions .mc-brand-glyph--max {transform:scale(1.44)}
+ body.mc-home .hero-actions .btn-hero-ring:hover .mc-brand-glyph--wa,
+ body.mc-home .hero-actions .btn-hero-ring:focus-visible .mc-brand-glyph--wa {transform:scale(1.41)}
+ body.mc-home .hero-actions .btn-hero-ring:hover .mc-brand-glyph--tg,
+ body.mc-home .hero-actions .btn-hero-ring:focus-visible .mc-brand-glyph--tg,
+ body.mc-home .hero-actions .btn-hero-ring:hover .mc-brand-glyph--max,
+ body.mc-home .hero-actions .btn-hero-ring:focus-visible .mc-brand-glyph--max {transform:scale(1.49)}
+ body.mc-home .hero-actions .mc-hover-grain {
+  position:absolute;pointer-events:none;z-index:5;
+  border-radius:50%;background:currentColor;opacity:0;
+ }
+}
+@media (min-width:769px) and (prefers-reduced-motion:reduce) {
+ body.mc-home .hero-actions .mc-brand-glyph,
+ body.mc-home .hero-actions a.btn-hero-messenger.btn-hero-ring svg {transition:none}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   [r183] Оверлей открыт → декоративные бесконечные анимации под ним стоят.
+
+   Корзина, лайтбокс и модалка отзывов закрывают страницу собой, но WebKit
+   продолжает композитить невидимые слои: Ken Burns на фотографии hero
+   (26 s infinite alternate) и бегущая лента видео (60 s infinite). Вместе с
+   backdrop-filter самой корзины это переполняет композитор — rAF перестаёт
+   тикать, следом умирает WebProcess (та же природа, что в
+   docs/QA_R35_ACCEPTANCE_2026-11-17.md §9, где снимали повторные blur).
+   Проверки не меняются: анимации работают всегда, когда их видно.
+   Специфичность подобрана под базовые правила, без новых усилений:
+   `body` + три класса состояния перебивают `.hero--visible.hero--motion-ready`.
+   ═══════════════════════════════════════════════════════════════════════════ */
+body.cart-open .hero--visible.hero--motion-ready .hero-photo-bg img,
+body.mc-nav-hidden .hero--visible.hero--motion-ready .hero-photo-bg img,
+body.fill-open .hero--visible.hero--motion-ready .hero-photo-bg img,
+body.cart-open .vstrip-track,
+body.mc-nav-hidden .vstrip-track,
+body.fill-open .vstrip-track {
+  animation-play-state: paused;
+}
+
+/* Пауза не должна держать GPU-слой: will-change снимается вместе с анимацией. */
+body.cart-open .hero--visible.hero--motion-ready .hero-photo-bg img,
+body.mc-nav-hidden .hero--visible.hero--motion-ready .hero-photo-bg img,
+body.fill-open .hero--visible.hero--motion-ready .hero-photo-bg img {
+  will-change: auto;
+}

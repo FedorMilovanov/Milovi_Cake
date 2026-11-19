@@ -54,7 +54,8 @@ test.describe('new SEO landing pages', () => {
       await expect(page.locator('.landing-footer')).toContainText('Пн–Сб, 10:00–21:00');
       await expect(page.locator('body')).not.toContainText('Пн–Вс');
 
-      const wa = page.locator('a[href*="wa.me"]').first();
+      // The page may contain a deliberately hidden popup-block recovery link.
+      const wa = page.locator('a[href*="wa.me"]:visible').first();
       await expect(wa).toBeVisible();
       await expect(wa).toHaveAttribute('href', /wa\.me\/79119038886/);
 
@@ -192,6 +193,181 @@ test.describe('premium media blocks', () => {
     await expect(page.locator('img[src*="gallery-11.webp"]').first()).toBeVisible();
   });
 
+
+  test('wedding contacts use two intentional three-channel panels with branded labels', async ({ page }) => {
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    for (const place of ['hero', 'final']) {
+      const group = page.locator('.wed-messenger-contact--' + place);
+      await expect(group).toHaveCount(1);
+      await expect(group.locator('a')).toHaveCount(3);
+      const links = group.locator('a');
+      await expect(links.nth(0)).toHaveAttribute('href', /^https:\/\/wa\.me\/79119038886\?text=/);
+      await expect(links.nth(1)).toHaveAttribute('href', 'https://t.me/+79119038886');
+      await expect(links.nth(2)).toHaveAttribute('href', 'https://max.ru/u/f9LHodD0cOIzRY9VJX8MoyR41H64ULjndbose2aPPrzXJDLW8QEiyKTpqxs');
+      for (const [i, label] of ['Написать в WhatsApp','Написать в Telegram','Написать в MAX'].entries()) {
+        await expect(links.nth(i)).toHaveAttribute('aria-label', label);
+        await expect(links.nth(i)).toHaveAttribute('rel', /noopener/);
+        await expect(links.nth(i).locator('.wed-contact-brand-name')).toBeVisible();
+      }
+      const ids = await group.locator('path[id]').evaluateAll(nodes => nodes.map(node => node.id));
+      expect(new Set(ids).size).toBe(ids.length);
+    }
+    await expect(page.locator('.lp-final .wed-contact-links')).toHaveCount(0);
+    await expect(page.locator('#wedBrief .wed-brief-contact')).toHaveCount(1);
+    const desktop = page.locator('.wed-messenger-contact--hero a').first();
+    await desktop.focus();
+    await expect(desktop).toBeFocused();
+    expect(await desktop.evaluate(el => getComputedStyle(el).outlineStyle)).not.toBe('none');
+  });
+
+  test('wedding brand glyphs are authentic and cards use a restrained premium treatment', async ({ page }) => {
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    for (const area of ['hero', 'final']) {
+      const group = page.locator('.wed-messenger-contact--' + area);
+      await expect(group.locator('a')).toHaveCount(3);
+      await expect(group.locator('svg text.hero-flat-text')).toHaveCount(3);
+      await expect(group.locator('svg textPath, svg .hero-ring-text, svg circle')).toHaveCount(0);
+      for (const link of await group.locator('a').all()) {
+        const base = await link.evaluate(el => {
+          const style=getComputedStyle(el);
+          return {background:style.backgroundColor,border:parseFloat(style.borderTopWidth),
+            radius:parseFloat(style.borderTopLeftRadius),w:el.getBoundingClientRect().width};
+        });
+        expect(base.background).not.toBe('rgba(0, 0, 0, 0)');
+        expect(base.border).toBeGreaterThan(0);
+        expect(base.radius).toBeGreaterThanOrEqual(12);
+        expect(base.radius).toBeLessThanOrEqual(16);
+        expect(base.w).toBeGreaterThanOrEqual(44);
+      }
+    }
+    const whatsapp=page.locator('.wed-messenger-contact--hero a').first();
+    await whatsapp.focus();
+    await expect(whatsapp.locator('.wed-contact-brand-name')).toBeVisible();
+    await expect(whatsapp).toBeFocused();
+  });
+
+  test('wedding three-channel cards use consistent and spacious geometry without duplicate CTA strips', async ({page}) => {
+    await page.setViewportSize({width:1440,height:900});
+    await page.goto('/svadebnye-torty/', {waitUntil:'domcontentloaded'});
+    for(const area of ['hero','final']){
+      const group=page.locator('.wed-messenger-contact--'+area+' .wed-contact-links');
+      await expect(group.locator('a')).toHaveCount(3);
+      const rects=await group.locator('a').evaluateAll(links=>links.map(a=>{
+        const r=a.getBoundingClientRect(),g=a.querySelector('svg').getBoundingClientRect();
+        return {left:r.left,right:r.right,hit:Math.min(r.width,r.height),glyph:Math.max(g.width,g.height)};
+      }));
+      expect(rects.every(r=>r.hit>=44&&r.glyph>=38)).toBe(true);
+      expect(Math.abs((rects[1].left-rects[0].right)-(rects[2].left-rects[1].right))).toBeLessThanOrEqual(2);
+      expect(rects[1].left-rects[0].right).toBeGreaterThanOrEqual(5);
+    }
+    await expect(page.locator('.wed-messenger-contact')).toHaveCount(2);
+    const mobilePage=page;
+    await mobilePage.setViewportSize({width:390,height:844});
+    const groups=mobilePage.locator('.wed-messenger-contact');
+    await expect(groups).toHaveCount(2);
+    for(const group of await groups.all()){
+      const positions=await group.locator('a').evaluateAll(els=>els.map(el=>({width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height})));
+      expect(positions.every(p=>p.width>=44&&p.height>=44)).toBe(true);
+    }
+  });
+
+  test('wedding messenger links fit mobile widths and reduced-motion remains static', async ({ page }) => {
+    for (const width of [320,390,768,1440]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+      for (const place of ['hero', 'final']) {
+        const group = page.locator('.wed-messenger-contact--' + place);
+        await group.scrollIntoViewIfNeeded();
+        const dimensions = await group.evaluate(el => ({
+          viewport: innerWidth, right: el.getBoundingClientRect().right,
+          left: el.getBoundingClientRect().left,
+          minSize: Math.min(...Array.from(el.querySelectorAll('a')).map(a => Math.min(a.getBoundingClientRect().width, a.getBoundingClientRect().height)))
+        }));
+        expect(dimensions.left).toBeGreaterThanOrEqual(-1);
+        expect(dimensions.right).toBeLessThanOrEqual(width+1);
+        expect(dimensions.minSize).toBeGreaterThanOrEqual(44);
+      }
+      // Responsive content may settle across frames after a viewport change; fail if overflow persists.
+      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - innerWidth),
+        { timeout: 2500, intervals: [50, 100, 200] }).toBeLessThanOrEqual(1);
+    }
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.setViewportSize({ width: 390, height: 844 });
+    const link = page.locator('.wed-messenger-contact--hero a').first();
+    await link.hover();
+    expect(await link.evaluate(el => getComputedStyle(el).transform)).toBe('none');
+  });
+
+  test('wedding superhero cake is a distinct card with honest provenance and responsive assets', async ({ page, request }) => {
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    const card = page.locator('#wedStyles .lp-card').nth(1);
+    await expect(card).toContainText('Многоярусный торт с характером');
+    await expect(card).toContainText('свадебный фон на фото — художественная визуализация');
+    await expect(card.locator('img')).toHaveAttribute('src', '/img/wedding-superhero-couple.webp');
+    await expect(card.locator('img')).toHaveAttribute('alt', /свадебном фоне/);
+    await expect(card.locator('img')).toHaveAttribute('loading', 'lazy');
+    const responsiveSources = await card.locator('source[type="image/avif"]').getAttribute('srcset');
+    expect(responsiveSources).toContain('/img/wedding-superhero-couple-sm.avif 480w');
+    await expect(page.locator('.wed-collection-card')).toHaveCount(4);
+    await expect(page.locator('img[src*="wedding-style-golden-atelier.webp"]')).toHaveCount(1);
+    for (const file of ['/img/wedding-superhero-couple-sm.avif', '/img/wedding-superhero-couple.avif', '/img/wedding-superhero-couple.webp']) {
+      const response = await request.get(file);
+      expect(response.status()).toBe(200);
+      expect(response.headers()['content-type'].startsWith('image/')).toBe(true);
+    }
+    const schemaProduct = await page.evaluate(() => {
+      const data = JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent);
+      const list = data['@graph'].find(item => item['@type'] === 'ItemList');
+      return list.itemListElement.find(item => item.item.name === 'Многоярусный торт с характером')?.item;
+    });
+    expect(schemaProduct.image).toBe('https://milovicake.ru/img/wedding-superhero-couple.webp');
+    expect(schemaProduct.description).toContain('художественная визуализация');
+  });
+
+
+  test('wedding dessert card honestly labels styled cupcakes and serves responsive assets', async ({ page, request }) => {
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    const card = page.locator('#wedStyles .lp-card').nth(2);
+    await expect(card).toContainText('Визуализация оформления');
+    await expect(card).toContainText('меренговые рулеты');
+    await expect(card).toContainText('Павлова');
+    await expect(card).toContainText('художественный вариант свадебной подачи');
+    await expect(card.locator('img')).toHaveAttribute('src', '/img/wedding-cupcakes-styled.webp');
+    await expect(card.locator('img')).toHaveAttribute('alt', /Художественная свадебная визуализация/);
+    const responsive = await card.locator('source[type="image/avif"]').getAttribute('srcset');
+    expect(responsive).toContain('wedding-cupcakes-styled-sm.avif 480w');
+    expect(responsive).toContain('wedding-cupcakes-styled.avif 720w');
+    await expect(page.locator('#wedStyles img[src*="wedding-table"]')).toHaveCount(0);
+    const detail = page.locator('.wed-collection-detail');
+    await expect(detail.locator('img')).toHaveAttribute('src', '/img/wedding-roulade-detail.webp');
+    await expect(detail.locator('.wed-collection-kicker')).toHaveText('Визуализация');
+    await expect(detail.locator('img')).toHaveAttribute('alt', /Художественная визуализация/);
+    await expect(detail.locator('source')).toHaveAttribute('srcset', /wedding-roulade-detail-sm\.avif 800w/);
+    await expect(detail.locator('a')).toHaveAttribute('href', '#wedStyles');
+    await expect(page.locator('img[src*="wedding-style-pure-ivory.webp"]')).toHaveCount(1);
+    for (const file of [
+      '/img/wedding-cupcakes-styled-sm.avif',
+      '/img/wedding-cupcakes-styled.avif',
+      '/img/wedding-cupcakes-styled.webp',
+      '/img/cupcakes.webp',
+      '/img/meringue_roll_6.webp',
+      '/img/pavlova.webp',
+      '/img/wedding-roulade-detail-sm.avif',
+      '/img/wedding-roulade-detail.avif',
+      '/img/wedding-roulade-detail.webp',
+    ]) {
+      const response = await request.get(file);
+      expect(response.status()).toBe(200);
+      expect(response.headers()['content-type'].startsWith('image/')).toBe(true);
+    }
+    const schema = await page.evaluate(() => {
+      const graph = JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent)['@graph'];
+      return graph.find(item => item['@type'] === 'ItemList').itemListElement.find(item => item.item.name === 'Десерты к свадьбе').item;
+    });
+    expect(schema.image).toBe('https://milovicake.ru/img/wedding-cupcakes-styled.webp');
+    expect(schema.description).toContain('Художественная визуализация');
+  });
+
   test('real wedding photo uses a compact mobile source and the process clip stays portrait', async ({ page }) => {
     for (const width of [320, 390, 412]) {
       await page.setViewportSize({ width, height: 844 });
@@ -209,11 +385,35 @@ test.describe('premium media blocks', () => {
     }
   });
 
+  test('wedding direct date links keep the form label below the desktop and mobile header', async ({ page }) => {
+    for (const width of [320, 390, 900, 901, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto('/svadebnye-torty/#wedDateForm', { waitUntil: 'domcontentloaded' });
+      await expect(page.locator('html')).not.toHaveClass(/mc-fast-init/, { timeout: 3500 });
+      await expect.poll(() => page.evaluate(() => {
+        const label = document.querySelector('#wedDateForm label').getBoundingClientRect();
+        const header = document.querySelector('.lp-header').getBoundingClientRect();
+        return label.top - header.bottom;
+      }), { timeout: 4000 }).toBeGreaterThanOrEqual(12);
+      const result = await page.evaluate(() => ({
+        date: document.querySelector('#wedDate').getBoundingClientRect().top,
+        headerBottom: document.querySelector('.lp-header').getBoundingClientRect().bottom,
+        overflow: document.documentElement.scrollWidth - innerWidth,
+      }));
+      expect(result.date).toBeGreaterThan(result.headerBottom);
+      expect(result.overflow).toBeLessThanOrEqual(1);
+    }
+  });
+
   test('wedding portfolio link lands below the fixed header at every layout breakpoint', async ({ page }) => {
     for (const width of [320, 390, 861, 1536]) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
-      await page.locator('.wed-collection-note a').click();
+      // The first-paint content-visibility placeholder is not the final gallery layout.
+      await expect(page.locator('html')).not.toHaveClass(/mc-fast-init/, { timeout: 3500 });
+      const portfolioLink = page.locator('.wed-collection-note a');
+      await portfolioLink.scrollIntoViewIfNeeded();
+      await portfolioLink.click();
       await expect(page).toHaveURL(/#mediaShowcaseTitle$/);
       await page.waitForFunction(() => Math.abs(document.querySelector('#mediaShowcaseTitle').getBoundingClientRect().top - 88) < 2);
       const offset = await page.evaluate(() => ({
@@ -224,60 +424,72 @@ test.describe('premium media blocks', () => {
     }
   });
 
-  test('wedding video poster matches the footage in portfolio, gallery and video metadata', async ({ page, request }) => {
-    const poster = '/img/gallery/video-12-wedding-heart-poster.webp';
-    const description = 'Кондитер оформляет белый торт свежей малиной';
-    const videoRequests = [];
-    // Chromium may negotiate either real source; the lazy-load contract applies to both.
-    page.on('request', (req) => {
-      if (/\/video-12-wedding-heart\.(webm|mp4)(?:\?|$)/.test(req.url())) videoRequests.push(req.url());
+  test('wedding video poster matches portfolio, gallery and metadata without native playback chrome', async ({page,request}) => {
+    const poster='/img/gallery/video-12-wedding-heart-poster.webp';
+    const description='Кондитер оформляет белый торт свежей малиной';
+    const videoRequests=[];
+    page.on('request',req=>{
+      if(/\/video-12-wedding-heart\.(webm|mp4)(?:\?|$)/.test(req.url()))videoRequests.push(req.url());
     });
-    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
-    const schemas = await page.locator('script[type="application/ld+json"]').allTextContents();
-    const reel = schemas.map(JSON.parse).flatMap((schema) => schema['@graph'] || [schema])
-      .find((item) => item['@type'] === 'VideoObject' && item.contentUrl?.includes('video-12-wedding-heart.webm'));
-    expect(reel.thumbnailUrl).toBe(`https://milovicake.ru${poster}`);
+    await page.goto('/svadebnye-torty/',{waitUntil:'domcontentloaded'});
+    const schemas=await page.locator('script[type="application/ld+json"]').allTextContents();
+    const reel=schemas.map(JSON.parse).flatMap(schema=>schema['@graph']||[schema])
+      .find(item=>item['@type']==='VideoObject' && item.contentUrl?.includes('video-12-wedding-heart.webm'));
+    expect(reel.thumbnailUrl).toBe('https://milovicake.ru'+poster);
     expect(reel.name).toContain('малиной');
     expect(reel.description).toBe(description);
-    await expect(page.locator('.lp-media-showcase video')).toHaveAttribute('preload', 'none');
-    await expect(page.locator('.lp-media-showcase video')).toHaveAttribute('loading', 'lazy');
-    const playButton = page.locator('.lp-media-showcase button.lp-media-play');
-    await playButton.focus();
-    await expect(playButton).toBeFocused();
+    const clip=page.locator('.wed-proof-video-frame');
+    const video=clip.locator('video');
+    await expect(video).toHaveAttribute('poster',poster);
+    await expect(video).toHaveAttribute('preload','none');
+    await expect(video).toHaveAttribute('loading','lazy');
+    await expect(clip.locator('.wed-clip-controls button')).toHaveCount(2);
     expect(videoRequests).toHaveLength(0);
-    await page.keyboard.press('Enter');
-    await expect.poll(() => videoRequests.length).toBeGreaterThan(0);
-    await expect(page.locator('.lp-media-showcase video')).toHaveAttribute('controls', '');
-    await expect(page.locator('.lp-media-showcase video')).toBeFocused();
-    await expect(playButton).toBeHidden();
-    const response = await request.get(poster);
+    await video.scrollIntoViewIfNeeded();
+    await expect.poll(()=>videoRequests.length,{timeout:15000}).toBeGreaterThan(0);
+    await expect.poll(()=>video.evaluate(el=>!el.paused),{timeout:15000}).toBe(true);
+    await expect(video).not.toHaveAttribute('controls','');
+    const response=await request.get(poster);
     expect(response.ok()).toBe(true);
     expect((await response.body()).length).toBeLessThan(22_000);
-    const frame = await page.evaluate((src) => new Promise((resolve, reject) => {
-      const image = new Image();
-      image.onload = () => resolve([image.naturalWidth, image.naturalHeight]);
-      image.onerror = reject;
-      image.src = src;
-    }), poster);
-    expect(frame).toEqual([720, 1282]);
-    const videoFit = await page.locator('.wed-proof-video-frame video').evaluate((el) => getComputedStyle(el).objectFit);
-    expect(videoFit).toBe('contain');
-    const sitemap = await (await request.get('/sitemap-videos.xml')).text();
-    expect(sitemap).toContain(`<video:thumbnail_loc>https://milovicake.ru${poster}</video:thumbnail_loc>`);
-    expect(sitemap).toContain(`<video:description>${description}</video:description>`);
-    const home = await (await request.get('/')).text();
-    expect(home).toContain(`{"v":"/img/gallery/videos/video-12-wedding-heart.webm","p":"${poster}","t":"Торт с малиной"}`);
-    await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
+    const dims=await page.evaluate(src=>new Promise((resolve,reject)=>{
+      const image=new Image();
+      image.onload=()=>resolve([image.naturalWidth,image.naturalHeight]);
+      image.onerror=reject;image.src=src;
+    }),poster);
+    expect(dims).toEqual([720,1282]);
+    const videoFit=await video.evaluate(el=>getComputedStyle(el).objectFit);
+    expect(videoFit).toBe('cover');
+    const sitemap=await(await request.get('/sitemap-videos.xml')).text();
+    expect(sitemap).toContain('<video:thumbnail_loc>https://milovicake.ru'+poster+'</video:thumbnail_loc>');
+    expect(sitemap).toContain('<video:description>'+description+'</video:description>');
+    const home=await(await request.get('/')).text();
+    const embeddedVideos = home.match(/data-videos='([\s\S]*?)'/);
+    expect(embeddedVideos).not.toBeNull();
+    const manifestVideos = JSON.parse(embeddedVideos[1]);
+    const source = manifestVideos.find(item => item.v === '/img/gallery/videos/video-12-wedding-heart.webm');
+    expect(source).toBeDefined();
+    expect(source.p).toBe(poster);
+    expect(source.t).toBe('Торт с малиной');
+    // Desktop MP4 companion is optional on the standalone wedding PR;
+    // if present, validate the exact playback path and downloadable media.
+    if (Object.prototype.hasOwnProperty.call(source, 'm')) {
+      expect(source.m).toBe('/img/gallery/videos/video-12-wedding-heart.mp4');
+      const companion = await request.head(source.m);
+      expect(companion.ok()).toBe(true);
+      expect(companion.headers()['content-type']).toContain('video/mp4');
+    }
+    await page.goto('/gallery/',{waitUntil:'domcontentloaded'});
     await page.locator('.gx-chip[data-filter="wedding"]').click();
-    await expect(page.locator('[data-id="v12"] video')).toHaveAttribute('poster', poster);
-    const galleryReel = await page.evaluate(async () => {
-      const { GALLERY_ITEMS } = await import('/js/gallery/data.js?v=20261026r01');
-      return GALLERY_ITEMS.find((item) => item.id === 'v12');
+    await expect(page.locator('[data-id="v12"] video')).toHaveAttribute('poster',poster);
+    const galleryReel=await page.evaluate(async()=>{
+      const {GALLERY_ITEMS}=await import('/js/gallery/data.js?v=20261026r01');
+      return GALLERY_ITEMS.find(item=>item.id==='v12');
     });
     expect(galleryReel.desc).toBe(description);
   });
 
-  test('wedding music caption loads without requesting the video', async ({ page }) => {
+  test('wedding music captions load in view without fetching video eagerly', async ({ page }) => {
     const videoRequests = [];
     page.on('request', (request) => {
       if (/video-12-wedding-heart\.(webm|mp4)(\?|$)/.test(request.url())) videoRequests.push(request.url());
@@ -286,6 +498,10 @@ test.describe('premium media blocks', () => {
     const video = page.locator('.wed-proof-video-frame video');
     await expect(video.locator('track[kind="captions"][srclang="ru"]'))
       .toHaveAttribute('src', '/svadebnye-torty/video-12-wedding-heart.ru.vtt');
+    // Lazy video tracks can remain UNLOADED on mobile until the footage enters view.
+    // Confirm the video is not fetched before that point, then test the actual cue.
+    expect(videoRequests).toEqual([]);
+    await video.scrollIntoViewIfNeeded();
     await video.evaluate((element) => { element.textTracks[0].mode = 'hidden'; });
     await expect.poll(() => video.evaluate((element) => element.textTracks[0].cues?.length ?? 0)).toBe(1);
     const cue = await video.evaluate((element) => {
@@ -293,46 +509,117 @@ test.describe('premium media blocks', () => {
       return { startTime, endTime, text };
     });
     expect(cue).toEqual({ startTime: 0, endTime: 10.01, text: '[Звучит музыка]' });
-    expect(videoRequests).toEqual([]);
+  });
+
+  test('wedding clip auto-plays muted in view, loops and has only two accessible controls', async ({ page }) => {
+    await page.goto('/svadebnye-torty/', {waitUntil:'domcontentloaded'});
+    const frame=page.locator('.wed-proof-video-frame');
+    const video=frame.locator('video');
+    const panel=frame.locator('.wed-clip-controls');
+    const play=panel.locator('.wed-clip-toggle');
+    const sound=panel.locator('.wed-clip-sound');
+    await expect(video).toHaveAttribute('preload','none');
+    await expect(video).toHaveAttribute('loop','');
+    await expect(video).toHaveAttribute('muted','');
+    await expect(video).toHaveAttribute('playsinline','');
+    await expect(video).not.toHaveAttribute('controls','');
+    await expect(panel).toBeVisible({timeout:10000});
+    await expect(panel.locator('button')).toHaveCount(2);
+    await panel.scrollIntoViewIfNeeded();
+    await expect.poll(() => video.evaluate(el => !el.paused && el.currentTime > .15), {timeout:15000}).toBe(true);
+    expect(await video.evaluate(el=>el.muted)).toBe(true);
+    await expect(play).toHaveAttribute('aria-label','Пауза');
+    await expect(sound).toHaveAttribute('aria-label','Включить звук');
+    await expect(panel.locator('.wed-clip-icon-play')).toHaveCSS('display','none');
+    await expect(panel.locator('.wed-clip-icon-pause')).toHaveCSS('display','block');
+    await expect(panel.locator('.wed-clip-icon-muted')).toHaveCSS('display','block');
+    await expect(panel.locator('.wed-clip-icon-sound')).toHaveCSS('display','none');
+    await expect(play).toHaveAttribute('aria-pressed','true');
+    await expect(sound).toHaveAttribute('aria-pressed','false');
+    await play.click();
+    await expect.poll(() => video.evaluate(el => el.paused)).toBe(true);
+    await expect(play).toHaveAttribute('aria-label','Воспроизвести');
+    await play.click();
+    await expect.poll(() => video.evaluate(el => !el.paused)).toBe(true);
+    await sound.click();
+    await expect.poll(() => video.evaluate(el => !el.muted)).toBe(true);
+    await expect(sound).toHaveAttribute('aria-label','Выключить звук');
+    await expect(panel.locator('.wed-clip-icon-muted')).toHaveCSS('display','none');
+    await expect(panel.locator('.wed-clip-icon-sound')).toHaveCSS('display','block');
+    await sound.click();
+    await expect.poll(() => video.evaluate(el => el.muted)).toBe(true);
+    await expect(video).not.toHaveAttribute('controls','');
+    await sound.focus();
+    await expect(sound).toBeFocused();
+    const geometry=await frame.evaluate(el=>({
+      videoFit:getComputedStyle(el.querySelector('video')).objectFit,
+      overflow:document.documentElement.scrollWidth-innerWidth,
+      minHit:Math.min(...[...el.querySelectorAll('.wed-clip-control')].map(b=>Math.min(b.getBoundingClientRect().width,b.getBoundingClientRect().height))),
+    }));
+    expect(geometry.videoFit).toBe('cover');
+    expect(geometry.overflow).toBeLessThanOrEqual(1);
+    expect(geometry.minHit).toBeGreaterThanOrEqual(44);
+  });
+
+  test('wedding video respects reduced motion until explicit play', async ({ page }) => {
+    await page.emulateMedia({reducedMotion:'reduce'});
+    await page.goto('/svadebnye-torty/', {waitUntil:'domcontentloaded'});
+    const frame=page.locator('.wed-proof-video-frame');
+    await frame.scrollIntoViewIfNeeded();
+    const video=frame.locator('video');
+    await page.waitForTimeout(350);
+    expect(await video.evaluate(el=>el.paused)).toBe(true);
+    await frame.locator('.wed-clip-toggle').click();
+    await expect.poll(() => video.evaluate(el=>!el.paused && el.currentTime>.1), {timeout:10000}).toBe(true);
   });
 
   test.describe('wedding video format fallback', () => {
-    test.use({ serviceWorkers: 'block' });
+    test.use({ serviceWorkers:'block' });
 
-    test('plays MP4 after WebM fails or is skipped, and fetches neither before the click', async ({ page }) => {
-      const requests = [];
-      await page.route('**/video-12-wedding-heart.webm', (route) => route.abort('failed'));
-      page.on('request', (request) => {
-        if (/video-12-wedding-heart\.(webm|mp4)$/.test(request.url())) requests.push(new URL(request.url()).pathname);
-      });
-      await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
-      const button = page.locator('.wed-proof-video-play');
-      await button.scrollIntoViewIfNeeded();
+    test('falls back to WebM if preferred MP4 request fails, without native player chrome', async ({page}) => {
+      const requests=[];
+      await page.route('**/video-12-wedding-heart.mp4', route => route.abort('failed'));
+      page.on('request', req => { if (/video-12-wedding-heart\.(webm|mp4)$/.test(req.url())) requests.push(new URL(req.url()).pathname); });
+      await page.goto('/svadebnye-torty/', {waitUntil:'domcontentloaded'});
+      const video=page.locator('.wed-proof-video-frame video');
+      await expect(video.locator('source').first()).toHaveAttribute('type','video/mp4');
+      await expect(video.locator('source').nth(1)).toHaveAttribute('type','video/webm');
+      // This is the lazy playback contract: no asset request before the viewer reaches the section.
       expect(requests).toEqual([]);
-      await button.click();
-      const video = page.locator('.wed-proof-video-frame video');
-      await expect.poll(() => video.evaluate((el) =>
-        el.currentSrc.endsWith('.mp4') && el.readyState >= 2 && el.currentTime > 0.2 && !el.paused
-      ), { timeout: 15_000 }).toBe(true);
-      // Some Chromium runners skip unsupported WebM without fetching it. If
-      // fetched, the route aborts it; in either case real MP4 must play.
-      expect(requests).toContain('/img/gallery/videos/video-12-wedding-heart.mp4');
-      await expect(video).toHaveAttribute('controls', '');
+      await video.scrollIntoViewIfNeeded();
+      // Simulate a broken preferred MP4 and verify the alternative WebM is
+      // genuinely decoded. Separate tests strictly cover muted autoplay
+      // and Safari's MP4-first real-frame playback.
+      await expect.poll(() => video.evaluate(el => el.currentSrc), {timeout:12000})
+        .toContain('/video-12-wedding-heart.webm');
+      await expect.poll(() => video.evaluate(el => el.readyState), {timeout:15000})
+        .toBeGreaterThanOrEqual(2);
+      const startTime = await video.evaluate(el => el.currentTime);
+      // User gesture covers environments where autoplay is policy-blocked;
+      // it does not replace the separate automatic-play contract.
+      if (await video.evaluate(el => el.paused))
+        await page.locator('.wed-proof-video-frame .wed-clip-toggle').click();
+      await expect.poll(() => video.evaluate(el => el.currentTime), {timeout:15000})
+        .toBeGreaterThan(startTime + .2);
+      // Chromium may choose WebM without requesting intentionally blocked MP4.
+      // Decode and playback above plus WebM network request below are the fallback contract.
+      expect(requests).toContain('/img/gallery/videos/video-12-wedding-heart.webm');
+      await expect(video).not.toHaveAttribute('controls','');
     });
   });
 
   test.describe('wedding video without JavaScript', () => {
-    test.use({ javaScriptEnabled: false });
+    test.use({javaScriptEnabled:false});
 
-    test('keeps native controls and hides the script-only play button', async ({ page }) => {
-      await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
-      const video = page.locator('.wed-proof-video-frame video');
+    test('retains native controls as a progressive fallback', async ({page}) => {
+      await page.goto('/svadebnye-torty/', {waitUntil:'domcontentloaded'});
+      const video=page.locator('.wed-proof-video-frame video');
       await video.scrollIntoViewIfNeeded();
       await expect(video).toBeVisible();
-      await expect(video).toHaveAttribute('controls', '');
-      await expect(page.locator('.wed-proof-video-play')).toBeHidden();
+      await expect(video).toHaveAttribute('controls','');
+      await expect(page.locator('.wed-clip-controls')).toBeHidden();
       await expect(video.locator('source[type="video/mp4"]'))
-        .toHaveAttribute('src', '/img/gallery/videos/video-12-wedding-heart.mp4');
+        .toHaveAttribute('src','/img/gallery/videos/video-12-wedding-heart.mp4');
     });
   });
 
@@ -360,9 +647,12 @@ test.describe('premium media blocks', () => {
       await image.scrollIntoViewIfNeeded();
       await expect.poll(() => image.evaluate((img) => img.naturalWidth)).toBeGreaterThan(0);
       await expect.poll(() => image.evaluate((img) => img.currentSrc)).toContain(`wedding-style-${['pure-ivory', 'botanical-romance', 'modern-sculptural', 'golden-atelier'][index]}-sm.avif`);
-      const handoff = new URL(await card.locator('a').getAttribute('href'));
-      expect(handoff.host).toBe('wa.me');
-      expect(handoff.searchParams.get('text')).toContain(name);
+      await expect(card.locator('a')).toHaveAttribute('href', '#wedBrief');
+      await expect(card.locator('a')).toHaveAttribute('data-wed-style', name);
+      await card.locator('a').click();
+      await expect(page.locator('#wedSelectedStyle')).toContainText(name);
+      const wa = new URL(await page.locator('#wedBrief .btn-hero-wa').getAttribute('href'));
+      expect(wa.searchParams.get('text')).toContain('Предпочтительный стиль: ' + name);
     }
   });
 
@@ -371,10 +661,10 @@ test.describe('premium media blocks', () => {
     const cards = page.locator('#wedStyles .lp-card');
     await expect(cards).toHaveCount(3);
     await expect(cards.locator('.wed-collection-kicker')).toHaveText([
-      'Реальная работа', 'Визуализация стиля', 'Визуализация стиля',
+      'Реальная работа', 'По фото реального торта', 'Визуализация оформления',
     ]);
     await expect(cards.nth(1).locator('source[type="image/avif"]'))
-      .toHaveAttribute('srcset', '/img/wedding-style-golden-atelier.avif');
+      .toHaveAttribute('srcset', /wedding-superhero-couple-sm\.avif 480w, \/img\/wedding-superhero-couple\.avif 720w/);
     await expect(cards.nth(1).locator('img')).toHaveAttribute('loading', 'lazy');
     await cards.nth(1).locator('img').scrollIntoViewIfNeeded();
     await expect.poll(() => cards.nth(1).locator('img').evaluate((img) => img.naturalWidth)).toBeGreaterThan(0);
@@ -391,7 +681,7 @@ test.describe('premium media blocks', () => {
       }));
       expect(layout.photos.every((height) => height <= 480 && Math.abs(height - layout.photos[0]) < 1)).toBe(true);
       expect(layout.labelSize).toBeGreaterThanOrEqual(10);
-      expect(layout.columns).toBe(width <= 860 ? 2 : 4);
+      expect(layout.columns).toBe(width <= 375 ? 1 : width <= 860 ? 2 : 4);
       expect(layout.overflow).toBeLessThanOrEqual(1);
     }
     await cards.nth(1).hover();
@@ -416,7 +706,8 @@ test.describe('premium media blocks', () => {
     expect(formats).toHaveLength(3);
     for (const { product, image, credit, label } of formats) {
       expect(product.image).toBe(image);
-      if (credit === 'Визуализация стиля') expect(product.description).toContain('Визуализация стиля');
+      if (credit === 'По фото реального торта') expect(product.description).toContain('художественная визуализация');
+      if (credit === 'Визуализация оформления') expect(product.description).toContain('Художественная визуализация');
       // These are starting rates or require a minimum quantity, not the total
       // purchase price of a single fixed offer.
       expect(product.offers).toBeUndefined();
@@ -424,8 +715,9 @@ test.describe('premium media blocks', () => {
     expect(formats[0].label).toBe('от\u00a03\u00a0000\u00a0₽/кг'); // Keep the price together with real web fonts.
     expect(formats[0].product.description).toContain('от 3 000 ₽/кг');
     expect(formats[2].label).toBe('от 350 ₽/шт.');
-    expect(formats[2].product.description).toContain('минимальный заказ — 2 пирожных или 6 капкейков');
-    await expect(page.locator('#wedStyles .lp-card').nth(2)).toContainText('Минимальный заказ — 2 пирожных или 6 капкейков');
+    expect(formats[2].product.description).toContain('Минимальный заказ: 6 капкейков одного вкуса или 2 пирожных Павлова');
+    await expect(page.locator('#wedStyles .lp-card').nth(2)).toContainText('Капкейки (от 6 шт. одного вкуса)');
+    await expect(page.locator('#wedStyles .lp-card').nth(2)).toContainText('пирожные «Павлова» (от 2 шт.)');
     await expect(page.locator('.wed-meta')).toContainText('От 3 000 ₽/кг');
     await expect(page.locator('.bridal-panel .lp-section-head')).toContainText('от 3 000 ₽/кг');
     for (const selector of ['.wed-meta', '.bridal-panel .lp-section-head p']) {
@@ -458,65 +750,85 @@ test.describe('premium media blocks', () => {
     await expect(page.locator('#wedGuests')).toHaveCSS('outline-width', '2px');
   });
 
-  test('wedding tasting request states individual terms and hands off to WhatsApp', async ({ page }) => {
+  test('wedding tasting is informative and shares one contact funnel with the wedding brief', async ({ page }) => {
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
-    const section = page.locator('#wedTasting');
-    // Имя ссылки начинается с видимого текста («Обсудить в WhatsApp»),
-    // иначе нарушается WCAG 2.5.3 label-in-name. Дегустация — в конце.
-    const link = section.getByRole('link', { name: /обсудить в whatsapp: дегустация/i });
-    await expect(section).toContainText(/по запросу/i);
-    await expect(section).toContainText('стоимость, сроки и возможность изготовления');
-    for (const theme of ['light', 'dark']) {
-      await page.locator('html').evaluate((root, value) => root.setAttribute('data-theme', value), theme);
-      for (const width of [320, 360, 390, 414, 561, 600, 768, 900, 1024, 1440]) {
-        await page.setViewportSize({ width, height: 900 });
+    const section=page.locator('#wedTasting');
+    const link=section.getByRole('link',{name:/указать дегустацию в брифе/i});
+    await expect(section).toContainText(/по запросу|при обращении/i);
+    await expect(section).toContainText('стоимость');
+    await expect(section).toContainText('сроки');
+    await expect(link).toHaveAttribute('href','#wedBrief');
+    for(const theme of ['light','dark']){
+      await page.locator('html').evaluate((root,value)=>root.setAttribute('data-theme',value),theme);
+      for(const width of [320,360,390,414,561,600,768,900,1024,1440]){
+        await page.setViewportSize({width,height:900});
         await link.scrollIntoViewIfNeeded();
         await expect(link).toBeVisible();
-        const box = await link.boundingBox();
+        const box=await link.boundingBox();
         expect(box.x).toBeGreaterThanOrEqual(0);
-        expect(box.x + box.width).toBeLessThanOrEqual(width + 1);
-        expect(await link.evaluate((node) => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
+        expect(box.x+box.width).toBeLessThanOrEqual(width+1);
       }
     }
-    await page.route('https://wa.me/**', (route) => route.abort());
-    const request = page.waitForRequest((req) => req.url().startsWith('https://wa.me/79119038886?'));
     await link.click();
-    const handoff = new URL((await request).url());
-    expect(handoff.searchParams.get('text')).toContain('дегустационный сет начинок');
-    expect(handoff.searchParams.get('text')).toContain('свадебного торта');
+    await expect(page).toHaveURL(/#wedBrief$/);
+    const brief=page.locator('#wedBrief');
+    await expect(brief.locator('.wed-brief-contact a')).toHaveCount(3);
+    await expect(brief.locator('.wed-brief-helper')).toContainText('дегустации добавлен');
+    const wa=new URL(await brief.locator('.btn-hero-wa').getAttribute('href'));
+    expect(wa.searchParams.get('text')).toContain('Интересует дегустационный сет начинок: да.');
+    for(const term of ['Дата свадьбы:','Площадка:','Гостей:','Палитра:','Референсы:']){
+      expect(wa.searchParams.get('text')).toContain(term);
+    }
   });
 
-  test('wedding final invitation keeps the brief on this journey', async ({ page }) => {
+  test('wedding final invitation shows certificates, contacts and related educational project', async ({ page }) => {
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
-    await expect(page.locator('.lp-final h2')).toContainText('свадебный торт');
-    await expect(page.locator('.lp-final p')).toContainText('площадке');
-    const brief = await page.locator('.bridal-callout a').getAttribute('href');
+    await expect(page.locator('.lp-final h2')).toContainText('вниманием к деталям');
+    await expect(page.locator('.lp-final p')).toContainText('обучении');
+    const brief = await page.locator('#wedBrief .btn-hero-wa').getAttribute('href');
     const message = new URL(brief).searchParams.get('text');
     for (const prompt of ['Дата свадьбы:', 'Площадка:', 'Гостей:', 'Палитра:', 'Референсы:']) {
       expect(message).toContain(prompt);
     }
     const final = page.locator('.lp-final .lp-btn-primary');
-    await expect(final).toHaveAttribute('href', brief);
-    await expect(final).toContainText('Отправить бриф');
+    await expect(final).toHaveAttribute('href', '/certificates/');
+    await expect(final).toContainText('Посмотреть сертификаты');
+    await expect(page.locator('.lp-final .wed-contact-links')).toHaveCount(0);
+    await expect(page.locator('.lp-final')).not.toContainText('Отправить бриф');
+    const school = page.locator('.wed-school-project');
+    const projectLink = school.locator('.wed-school-project-link');
+    await expect(school).toContainText('Наш образовательный проект');
+    await expect(school).toContainText('не каталог заказов');
+    await expect(projectLink).toHaveAttribute('href', 'https://french.milovicake.ru/');
+    await expect(projectLink).toHaveAttribute('target', '_blank');
+    await expect(projectLink).toHaveAttribute('rel', /noopener/);
     for (const width of [320, 390, 561, 768, 1440]) {
       await page.setViewportSize({ width, height: 844 });
-      const geometry = await final.evaluate((button) => {
-        const { left, right, height } = button.getBoundingClientRect();
-        return { left, right, height, overflow: button.scrollWidth - button.clientWidth,
-          pageOverflow: document.documentElement.scrollWidth - innerWidth };
-      });
-      expect(geometry.left).toBeGreaterThanOrEqual(0);
-      expect(geometry.right).toBeLessThanOrEqual(width);
-      expect(geometry.height).toBeGreaterThanOrEqual(44);
-      expect(geometry.overflow).toBeLessThanOrEqual(1);
-      expect(geometry.pageOverflow).toBeLessThanOrEqual(1);
+      await expect(page.locator('html')).not.toHaveClass(/mc-fast-init/, { timeout: 3500 });
+      for (const button of [final, projectLink]) {
+        const geometry = await button.evaluate((element) => {
+          const { left, right, height } = element.getBoundingClientRect();
+          return { left, right, height, overflow: element.scrollWidth - element.clientWidth,
+            pageOverflow: document.documentElement.scrollWidth - innerWidth };
+        });
+        expect(geometry.left).toBeGreaterThanOrEqual(0);
+        expect(geometry.right).toBeLessThanOrEqual(width + 1);
+        expect(geometry.height).toBeGreaterThanOrEqual(44);
+        expect(geometry.overflow).toBeLessThanOrEqual(1);
+        expect(geometry.pageOverflow).toBeLessThanOrEqual(1);
+      }
     }
   });
 
   test('wedding detail keeps its image and readable call to action on narrow phones', async ({ page }) => {
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('html')).not.toHaveClass(/mc-fast-init/, { timeout: 3500 });
     for (const width of [320, 393, 440, 500, 501, 561, 1024]) {
       await page.setViewportSize({ width, height: 860 });
+      // Viewport transitions can defer the offscreen detail grid's layout.
+      await page.locator('.wed-collection-detail').scrollIntoViewIfNeeded();
+      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - innerWidth),
+        { timeout: 3000, intervals: [50, 150, 300] }).toBeLessThanOrEqual(1);
       const layout = await page.locator('.wed-collection-detail').evaluate((section) => {
         const box = (selector) => {
           const { left, right, top, bottom, width } = section.querySelector(selector).getBoundingClientRect();
@@ -556,7 +868,7 @@ test.describe('premium media blocks', () => {
         });
         expect(photo.width).toBeCloseTo(width - margin, 0);
         expect(photo.loaded).toBe(true);
-        expect(photo.url).toContain('/img/wedding-style-pure-ivory.avif');
+        expect(photo.url).toMatch(/\/img\/wedding-roulade-detail(?:-sm)?\.avif/);
       } finally {
         await context.close();
       }
@@ -638,6 +950,7 @@ test.describe('premium media blocks', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.addInitScript(() => localStorage.setItem('mc_theme', 'light'));
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('html')).not.toHaveClass(/mc-fast-init/, { timeout: 3500 });
     const menu = page.locator('.wed-mobile-menu');
     await expect(menu.locator('summary')).toBeVisible();
     await menu.locator('summary').click();
@@ -664,7 +977,7 @@ test.describe('premium media blocks', () => {
           const height = (selector) => document.querySelector(selector).getBoundingClientRect().height;
           return {
             background: header.backgroundColor, blur: header.backdropFilter,
-            slider: height('#wedGuests'), video: height('.lp-media-play'),
+            slider: height('#wedGuests'), video: height('.wed-clip-control'),
             detail: height('.wed-collection-detail a'), faq: height('.lp-faq-item summary'),
             detailFont: parseFloat(getComputedStyle(document.querySelector('.wed-collection-detail a')).fontSize),
             detailKicker: height('.wed-collection-detail .wed-collection-kicker'),
@@ -688,7 +1001,52 @@ test.describe('premium media blocks', () => {
     }
   });
 
-  test('wedding date form still opens a prefilled WhatsApp brief after the mobile layout change', async ({ page }) => {
+  test('wedding date counts consent-mediated handoff only when WhatsApp tab opens', async ({ page }) => {
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    await page.evaluate(() => {
+      window.weddingAnalyticsCalls = [];
+      window.weddingOpenUrls = [];
+      window.MiloviConsent = { leadHandoff: (...args) => window.weddingAnalyticsCalls.push(args) };
+      window.open = (url) => { window.weddingOpenUrls.push(url); return null; };
+    });
+    await page.locator('#wedDate').evaluate((el) => el.form.requestSubmit());
+    await expect.poll(() => page.evaluate(() => window.weddingOpenUrls.length)).toBe(1);
+    expect(await page.evaluate(() => window.weddingAnalyticsCalls)).toEqual([]);
+    const fallback = page.locator('#wedDateFallback');
+    await expect(fallback).toBeVisible();
+    await expect(fallback).toHaveAttribute('href', /^https:\/\/wa\.me\/79119038886\?text=/);
+    await expect(page.locator('#wedDateHint')).toContainText('заблокировал');
+
+    await page.evaluate(() => {
+      window.open = (url) => {
+        window.weddingOpenUrls.push(url);
+        return { opener: window };
+      };
+    });
+    await page.locator('#wedDate').evaluate((el) => el.form.requestSubmit());
+    await expect.poll(() => page.evaluate(() => window.weddingAnalyticsCalls)).toEqual([['whatsapp', 'wedding_date']]);
+    expect(await page.evaluate(() => window.weddingOpenUrls.length)).toBe(2);
+    await expect(fallback).toBeHidden();
+    await expect(page.locator('#wedDateHint')).toContainText('Откроется WhatsApp');
+  });
+
+  test('wedding date recovers from popup API exceptions and resets fallback after editing', async ({ page }) => {
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    await page.evaluate(() => {
+      window.open = () => { throw new Error('popup denied by browser'); };
+    });
+    await page.locator('#wedDate').evaluate((el) => el.form.requestSubmit());
+    const fallback = page.locator('#wedDateFallback');
+    await expect(fallback).toBeVisible();
+    expect(new URL(await fallback.getAttribute('href')).searchParams.get('text'))
+      .toContain('дата пока не выбрана');
+    const date = await page.locator('#wedDate').getAttribute('min');
+    await page.locator('#wedDate').fill(date);
+    await expect(fallback).toBeHidden();
+    await expect(page.locator('#wedDateHint')).toContainText('Откроется WhatsApp');
+  });
+
+    test('wedding date form still opens a prefilled WhatsApp brief after the mobile layout change', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
     await page.evaluate(() => {
@@ -1333,6 +1691,389 @@ test.describe('suburb links and page-specific resilience', () => {
   });
 });
 
+test('wedding messenger cards have accessible keyboard focus with no redundant rings', async ({ page }) => {
+  await page.goto('/svadebnye-torty/', {waitUntil:'domcontentloaded'});
+  const icons=page.locator('.wed-wrap .wed-contact-links a.btn-hero-messenger');
+  await expect(icons).toHaveCount(6);
+  for(let i=0;i<6;i++){
+    const icon=icons.nth(i);
+    const normal=await icon.evaluate(el=>{
+      const s=getComputedStyle(el),r=el.getBoundingClientRect();
+      return {background:s.backgroundColor,border:parseFloat(s.borderTopWidth),
+        radius:parseFloat(s.borderTopLeftRadius),width:r.width,height:r.height};
+    });
+    expect(normal.background).not.toBe('rgba(0, 0, 0, 0)');
+    expect(normal.border).toBeGreaterThan(0);
+    expect(normal.radius).toBeGreaterThanOrEqual(12);
+    expect(normal.width).toBeGreaterThanOrEqual(44);
+    expect(normal.height).toBeGreaterThanOrEqual(44);
+    await icon.focus();
+    await expect.poll(()=>icon.evaluate(el=>el.matches(':focus-visible'))).toBe(true);
+    expect(await icon.evaluate(el=>getComputedStyle(el).outlineStyle)).not.toBe('none');
+    await icon.evaluate(el=>el.blur());
+  }
+});
+
+test('wedding navigation has a subtle gold hover line and accessible keyboard state', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('milovi_analytics_consent_v1', 'granted'));
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+
+  const nav = page.locator('.wed-wrap .lp-nav a').first();
+  await expect(nav).toBeVisible();
+  const underlineOpacity = () => nav.evaluate((node) => Number(getComputedStyle(node, '::after').opacity));
+  const fineHover = await page.evaluate(() => matchMedia('(hover:hover) and (pointer:fine)').matches);
+  if (fineHover) {
+    await nav.hover();
+    await expect.poll(underlineOpacity).toBeGreaterThan(0.9);
+    await page.mouse.move(0, 0);
+    await expect.poll(underlineOpacity).toBeLessThan(0.1);
+  }
+
+  await page.keyboard.press('Tab');
+  await nav.focus();
+  await expect.poll(underlineOpacity).toBeGreaterThan(0.9);
+  expect(await nav.evaluate((node) => node.matches(':focus-visible'))).toBe(true);
+
+  const question = page.locator('.wed-wrap .lp-faq-item summary').first();
+  const details = page.locator('.wed-wrap details.lp-faq-item').first();
+  await question.scrollIntoViewIfNeeded();
+  await question.click();
+  await expect(details).toHaveAttribute('open', '');
+  expect(await question.evaluate((node) => getComputedStyle(node, '::after').content)).toBe('"+"');
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const duration = await nav.evaluate((node) => getComputedStyle(node, '::after').transitionDuration);
+  expect(duration.split(',').every((value) => parseFloat(value) === 0)).toBe(true);
+});
+
+test('wedding mobile dock never obscures content and remains reachable', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('milovi_analytics_consent_v1', 'granted'));
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('html')).not.toHaveClass(/mc-fast-init/, { timeout: 3500 });
+
+  const firstAction = page.locator('.wed-mobile-first-action');
+  const sticky = page.locator('.wed-mobile-sticky');
+  const form = page.locator('#wedDateForm');
+  await expect(firstAction).toBeVisible();
+  expect((await firstAction.boundingBox()).height).toBeGreaterThanOrEqual(44);
+  expect((await page.locator('.wed-header .lp-logo').boundingBox()).height).toBeGreaterThanOrEqual(44);
+  await expect(sticky).toBeHidden();
+  await page.evaluate(() => { document.documentElement.style.scrollBehavior = 'auto'; });
+
+  // The optional dock shows only in genuinely free areas of a long editorial page.
+  async function findSafeDock() {
+    // Editorial section heights change with viewport, fonts and responsive images.
+    // Discover a safe position rather than encoding one historic scroll coordinate.
+    const foundAt = await page.evaluate(async () => {
+      const dock = document.querySelector('.wed-mobile-sticky');
+      const limit = document.documentElement.scrollHeight - innerHeight;
+      for (let top = 1000; top < limit; top += 100) {
+        scrollTo(0, top);
+        await new Promise((resolve) =>
+          requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        if (!dock.hidden) return top;
+      }
+      return null;
+    });
+    if (foundAt === null) {
+      throw new Error('Wedding enquiry dock has no unobstructed position on the mobile page');
+    }
+    await expect(sticky).toBeVisible();
+  }
+
+  await findSafeDock();
+  const dock = await sticky.boundingBox();
+  expect(dock.x).toBeGreaterThanOrEqual(0);
+  expect(dock.x + dock.width).toBeLessThanOrEqual(390);
+  expect(dock.y + dock.height).toBeLessThanOrEqual(844);
+  expect(dock.height).toBeGreaterThanOrEqual(44);
+
+  async function placeContentUnderDock(selector) {
+    await page.evaluate((sel) => {
+      const element = document.querySelector(sel);
+      const rect = element.getBoundingClientRect();
+      window.scrollBy(0, rect.top - (innerHeight - 58));
+    }, selector);
+    await expect(sticky).toBeHidden();
+  }
+  for (const selector of [
+    '.wed-clip-toggle', '.wed-collection-card a', '.lp-faq-item summary',
+    '.wed-collection-head h2', '.wed-collection-head > p',
+    '.wed-proof-cake-visual', '.wed-collection-detail picture',
+    '#wedStyles .lp-card picture'
+  ]) {
+    await placeContentUnderDock(selector);
+  }
+
+  await findSafeDock();
+  await sticky.click();
+  await expect(form).toBeInViewport();
+  await expect(sticky).toBeHidden();
+
+  await findSafeDock();
+  const menu = page.locator('.wed-mobile-menu summary');
+  await menu.click();
+  await expect(sticky).toBeHidden();
+  await menu.click();
+
+  await page.locator('.landing-footer').scrollIntoViewIfNeeded();
+  await expect(sticky).toBeHidden();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+});
+
+test('wedding mobile photo and video align, branded contacts remain touch accessible', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('milovi_analytics_consent_v1', 'granted'));
+  for (const width of [320, 390, 560, 700]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    const geometry = await page.evaluate(() => {
+      const rect = (selector) => document.querySelector(selector).getBoundingClientRect();
+      const image = rect('.wed-proof-cake-visual');
+      const video = rect('.wed-proof-video-frame');
+      const caption = rect('.wed-proof-cake .wed-proof-caption');
+      const frame = rect('.wed-proof-process');
+      const groups = [...document.querySelectorAll('.wed-messenger-contact')];
+      return {
+        photoWidth: image.width, videoWidth: video.width, xGap: Math.abs(image.left - video.left),
+        verticalGap: frame.top - caption.bottom, scrollWidth: document.documentElement.scrollWidth,
+        viewportWidth: innerWidth,
+        groups: groups.map((group) => ({
+          direction: getComputedStyle(group).flexDirection,
+          columns: getComputedStyle(group.querySelector('.wed-contact-links')).gridTemplateColumns.split(' ').length,
+          names: [...group.querySelectorAll('.wed-contact-brand-name')].map((name) => ({
+            label: name.textContent.trim(),
+            visible: getComputedStyle(name).display !== 'none',
+          })),
+          sizes: [...group.querySelectorAll('a.btn-hero-messenger')].map((el) => el.getBoundingClientRect().height),
+        })),
+      };
+    });
+    expect(Math.abs(geometry.photoWidth - geometry.videoWidth)).toBeLessThanOrEqual(1);
+    expect(geometry.xGap).toBeLessThanOrEqual(1);
+    expect(geometry.verticalGap).toBeGreaterThanOrEqual(25);
+    expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.viewportWidth + 1);
+    expect(geometry.groups).toHaveLength(2);
+    for (const group of geometry.groups) {
+      expect(group.direction).toBe('column');
+      expect(group.columns).toBe(3);
+      expect(group.names).toEqual([
+        { label: 'WhatsApp', visible: true },
+        { label: 'Telegram', visible: true },
+        { label: 'MAX', visible: true },
+      ]);
+      expect(group.sizes.every((height) => height >= 44)).toBe(true);
+    }
+  }
+});
+
+test('wedding compact phones keep gallery, calculator and enquiry usable', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('milovi_analytics_consent_v1', 'granted'));
+  for (const width of [320, 360, 375, 390, 430]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('html')).not.toHaveClass(/mc-fast-init/, { timeout: 3500 });
+
+    const layout = await page.evaluate(() => {
+      const card = document.querySelector('.wed-collection-card').getBoundingClientRect();
+      const calc = document.querySelector('.wed-calc').getBoundingClientRect();
+      const grid = document.querySelector('.wed-collection-grid');
+      const dock = document.querySelector('.wed-mobile-sticky');
+      const kicker = document.querySelector('.wed-proof-head .wed-collection-kicker');
+      const kickerStyle = getComputedStyle(kicker);
+      const gridColumns = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
+      // Measure the dock's true width without changing its normal visibility lifecycle.
+      const wasHidden = dock.hidden;
+      dock.hidden = false;
+      const dockRect = dock.getBoundingClientRect();
+      dock.hidden = wasHidden;
+      return {
+        cardWidth: card.width, calcWidth: calc.width, gridColumns,
+        dockWidth: dockRect.width, dockLeft: dockRect.left, dockRight: dockRect.right,
+        dockHeight: dockRect.height, scrollWidth: document.documentElement.scrollWidth,
+        viewportWidth: innerWidth,
+        kickerHeight: kicker.getBoundingClientRect().height,
+        kickerLineHeight: parseFloat(kickerStyle.lineHeight),
+        kickerOverflow: kicker.scrollWidth - kicker.clientWidth,
+      };
+    });
+
+    const compact = width <= 375;
+    expect(layout.gridColumns).toBe(compact ? 1 : 2);
+    if (compact) {
+      expect(layout.cardWidth).toBeGreaterThanOrEqual(width - 48);
+      expect(layout.calcWidth).toBeGreaterThanOrEqual(width - 85);
+    }
+    if (width <= 370) {
+      expect(layout.kickerHeight).toBeLessThanOrEqual(layout.kickerLineHeight + 2);
+      expect(layout.kickerOverflow).toBeLessThanOrEqual(1);
+    }
+    expect(layout.dockWidth).toBeLessThanOrEqual(240);
+    expect(layout.dockHeight).toBeGreaterThanOrEqual(44);
+    expect(layout.dockLeft).toBeGreaterThanOrEqual(0);
+    expect(layout.dockRight).toBeLessThanOrEqual(width + 1);
+    expect(layout.scrollWidth).toBeLessThanOrEqual(layout.viewportWidth + 1);
+  }
+});
+
+test('wedding touch layout keeps navigation and gallery return action accessible through tablet breakpoints', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('milovi_analytics_consent_v1', 'granted'));
+  for (const width of [320, 390, 700, 768, 860]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('html')).not.toHaveClass(/mc-fast-init/, { timeout: 3500 });
+
+    expect(await page.locator('.wed-proof-note a').count()).toBe(0);
+    const backLink = page.locator('.wed-collection-backlink');
+    await expect(backLink).toHaveAttribute('href', '#mediaShowcaseTitle');
+    await expect(backLink).toContainText('Смотреть реальные работы');
+    const geometry = await page.evaluate(() => {
+      const selectors = [
+        '.wed-wrap .landing-footer nav a',
+        '.wed-wrap .landing-footer address a',
+        '.wed-wrap .lp-related a',
+        '.wed-wrap .mc-consent-trigger',
+        '.wed-wrap .wed-collection-backlink',
+      ];
+      return {
+        links: selectors.flatMap((selector) =>
+          [...document.querySelectorAll(selector)].map((el) => ({
+            selector, height: el.getBoundingClientRect().height,
+            right: el.getBoundingClientRect().right,
+          }))),
+        returnDisplay: getComputedStyle(document.querySelector('.wed-collection-backlink')).display,
+        overflow: document.documentElement.scrollWidth - innerWidth,
+      };
+    });
+    expect(geometry.links.length).toBeGreaterThanOrEqual(15);
+    for (const link of geometry.links) {
+      expect(link.height, `${width}px ${link.selector}`).toBeGreaterThanOrEqual(44);
+      expect(link.right, `${width}px ${link.selector}`).toBeLessThanOrEqual(width + 1);
+    }
+    expect(geometry.returnDisplay).toBe('flex');
+    expect(geometry.overflow).toBeLessThanOrEqual(1);
+  }
+});
+
+test('wedding collection image sizes match compact one-column and regular two-column widths', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('milovi_analytics_consent_v1', 'granted'));
+  for (const width of [320, 360, 370, 371, 375, 376, 390, 560, 768]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('html')).not.toHaveClass(/mc-fast-init/, { timeout: 3500 });
+    const widths = await page.locator('.wed-collection-grid picture').evaluateAll((pictures) =>
+      pictures.map((picture) => {
+        const image = picture.querySelector('img');
+        const avif = picture.querySelector('source[type="image/avif"]');
+        const cssWidth = image.getBoundingClientRect().width;
+        const expected = innerWidth <= 370 ? innerWidth - 40 : innerWidth <= 375 ? innerWidth - 48 : innerWidth / 2 - 30;
+        return {
+          cssWidth, expected,
+          imageSizes: image.getAttribute('sizes'),
+          avifSizes: avif.getAttribute('sizes'),
+        };
+      })
+    );
+    expect(widths).toHaveLength(4);
+    for (const image of widths) {
+      expect(Math.abs(image.cssWidth - image.expected), `CSS width at ${width}px`).toBeLessThanOrEqual(1);
+      expect(image.imageSizes).toContain('(max-width: 370px) calc(100vw - 40px)');
+      expect(image.imageSizes).toContain('(max-width: 375px) calc(100vw - 48px)');
+      expect(image.avifSizes).toBe(image.imageSizes);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+  }
+});
+
+test('wedding video mutes when it leaves view and never resumes sound automatically', async ({ page }) => {
+  await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+  const frame = page.locator('.wed-proof-video-frame');
+  const video = frame.locator('video');
+  const sound = frame.locator('.wed-clip-sound');
+  await frame.scrollIntoViewIfNeeded();
+  await expect.poll(() => video.evaluate((element) => !element.paused), { timeout: 15000 }).toBe(true);
+  await sound.click();
+  await expect.poll(() => video.evaluate((element) => !element.muted)).toBe(true);
+  await page.locator('.lp-final').scrollIntoViewIfNeeded();
+  await expect.poll(() => video.evaluate((element) => element.paused && element.muted)).toBe(true);
+  await frame.scrollIntoViewIfNeeded();
+  await expect.poll(() => video.evaluate((element) => !element.paused && element.muted),
+    { timeout: 15000 }).toBe(true);
+  await expect(sound).toHaveAttribute('aria-label', 'Включить звук');
+});
+
+test.describe('wedding contact without JavaScript', () => {
+  test.use({ javaScriptEnabled: false });
+
+  test('replaces the inert date submit with a direct WhatsApp contact', async ({ page }) => {
+    for (const width of [320, 390, 768]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+      const form = page.locator('#wedDateForm');
+      await expect(form.locator('.wed-date-row')).toBeHidden();
+      await expect(page.locator('#wedDateHint')).toBeHidden();
+      const fallback = form.locator('.wed-date-nojs-link');
+      await expect(fallback).toBeVisible();
+      await expect(fallback).toHaveAttribute('target', '_blank');
+      await expect(fallback).toHaveAttribute('rel', /noopener/);
+      const address = new URL(await fallback.getAttribute('href'));
+      expect(address.origin).toBe('https://wa.me');
+      expect(address.pathname).toBe('/79119038886');
+      expect(address.searchParams.get('text')).toContain('Дата свадьбы: ___');
+      const bounds = await fallback.boundingBox();
+      expect(bounds.height).toBeGreaterThanOrEqual(44);
+      expect(bounds.x).toBeGreaterThanOrEqual(0);
+      expect(bounds.x + bounds.width).toBeLessThanOrEqual(width + 1);
+    }
+  });
+});
+
+test('wedding first-visit privacy modal receives focus and traps keyboard within its buttons', async ({ page }) => {
+  await page.addInitScript(() => localStorage.removeItem('milovi_analytics_consent_v1'));
+  await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+  const modal = page.getByRole('dialog', { name: 'Настройки аналитики' });
+  await expect(modal).toBeVisible();
+  await expect(modal).toHaveAttribute('aria-modal', 'true');
+  const close = modal.getByRole('button', { name: 'Закрыть настройки конфиденциальности' });
+  await expect.poll(() => page.evaluate(() =>
+    document.activeElement?.classList.contains('mc-consent-close') || false
+  ), { timeout: 5000 }).toBe(true);
+  for (let i = 0; i < 8; i += 1) {
+    await page.keyboard.press('Tab');
+    expect(await page.evaluate(() => !!document.activeElement?.closest('.mc-consent-dialog'))).toBe(true);
+  }
+  await close.click();
+  await expect(modal).toBeHidden({ timeout: 3000 });
+});
+
+test('wedding contacts have valid named groups and blocked popup is announced', async ({ page }) => {
+  await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('group', { name: 'Связаться с Milovi Cake' })).toHaveCount(2);
+  await expect(page.getByRole('navigation', { name: 'Связанные разделы' })).toHaveCount(1);
+  await expect(page.locator('#wedDateHint')).toHaveAttribute('aria-live', 'polite');
+  await page.evaluate(() => { window.open = () => null; });
+  await page.locator('#wedDate').evaluate((input) => input.form.requestSubmit());
+  await expect(page.locator('#wedDateHint')).toContainText('заблокировал');
+  await expect(page.locator('#wedDateFallback')).toBeVisible();
+});
+
+test('wedding document exposes main and footer as separate accessible landmarks', async ({ page }) => {
+  await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('main')).toHaveCount(1);
+  await expect(page.getByRole('contentinfo')).toHaveCount(1);
+  const footer = page.locator('footer.landing-footer');
+  await expect(footer).toBeVisible();
+  expect(await footer.evaluate((el) => el.closest('main'))).toBeNull();
+  await expect(footer.locator('.wed-school-project-link'))
+    .toHaveAttribute('href', 'https://french.milovicake.ru/');
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 844 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth))
+      .toBeLessThanOrEqual(1);
+  }
+});
+
 const localFontPages = ['/o-konditere/', '/bento-torty/', '/svadebnye-torty/',
   '/zakazat-tort-spb/', '/dostavka-i-oplata/', '/otzyvy/'];
 
@@ -1365,4 +2106,243 @@ test('landing content remains usable when local fonts fail', async ({ page }) =>
   const before = await page.locator('html').getAttribute('data-theme');
   await themeButton.click();
   await expect(page.locator('html')).not.toHaveAttribute('data-theme', before || '');
+});
+
+test('wedding editorial header and direct-contact panel keep one balanced visual hierarchy', async ({page}) => {
+  await page.addInitScript(()=>localStorage.setItem('milovi_analytics_consent_v1','denied'));
+  for(const width of [320,360,390,430,600,768]){
+    await page.setViewportSize({width,height:850});
+    await page.goto('/svadebnye-torty/',{waitUntil:'domcontentloaded'});
+    const g=await page.evaluate(()=>{
+      const r=s=>document.querySelector(s).getBoundingClientRect();
+      const border=s=>parseFloat(getComputedStyle(document.querySelector(s)).borderTopWidth);
+      const logo=r('.wed-header .lp-logo'),theme=r('.wed-header .lp-theme-toggle'),menu=r('.wed-mobile-menu summary');
+      return {
+        view:innerWidth,overflow:document.documentElement.scrollWidth-innerWidth,
+        logoRight:logo.right,themeLeft:theme.left,themeRight:theme.right,
+        menuLeft:menu.left,menuRight:menu.right,
+        heroLinkUnderline:parseFloat(getComputedStyle(document.querySelector('.wed-hero-details > .wed-link')).borderBottomWidth),
+        metaRule:border('.wed-meta'),
+        contactGroup:document.querySelectorAll('.wed-messenger-contact').length,
+        footerContact:document.querySelectorAll('.lp-final .wed-contact-links').length,
+      };
+    });
+    expect(g.overflow).toBeLessThanOrEqual(1);
+    expect(g.logoRight).toBeLessThanOrEqual(g.themeLeft-5);
+    expect(g.menuLeft-g.themeRight).toBeGreaterThanOrEqual(4);
+    expect(g.menuLeft-g.themeRight).toBeLessThanOrEqual(16);
+    expect(g.menuRight).toBeLessThanOrEqual(g.view+1);
+    expect(g.heroLinkUnderline).toBe(0);
+    expect(g.metaRule).toBe(0);
+    expect(g.contactGroup).toBe(2);
+    expect(g.footerContact).toBe(0);
+  }
+});
+
+test('wedding consultation preserves selection and offers equal messenger choice without repeated buttons', async ({page}) => {
+  await page.goto('/svadebnye-torty/',{waitUntil:'domcontentloaded'});
+  const cards=page.locator('.wed-collection-card a');
+  await expect(cards).toHaveCount(4);
+  await cards.nth(2).click();
+  await expect(page).toHaveURL(/#wedBrief$/);
+  await expect(page.locator('#wedSelectedStyle')).toContainText('Modern Sculptural');
+  const wa=new URL(await page.locator('#wedBrief .btn-hero-wa').getAttribute('href'));
+  expect(wa.searchParams.get('text')).toContain('Предпочтительный стиль: Modern Sculptural.');
+  await cards.nth(0).click();
+  const updated=new URL(await page.locator('#wedBrief .btn-hero-wa').getAttribute('href'));
+  expect(updated.searchParams.get('text')).toContain('Предпочтительный стиль: Pure Ivory.');
+  expect(updated.searchParams.get('text')).not.toContain('Modern Sculptural');
+  await page.locator('.wed-tasting-link').click();
+  const withTasting=new URL(await page.locator('#wedBrief .btn-hero-wa').getAttribute('href'));
+  expect(withTasting.searchParams.get('text')).toContain('Предпочтительный стиль: Pure Ivory.');
+  expect(withTasting.searchParams.get('text')).toContain('Интересует дегустационный сет начинок: да.');
+  await cards.nth(1).click();
+  const changedStyle=new URL(await page.locator('#wedBrief .btn-hero-wa').getAttribute('href'));
+  expect(changedStyle.searchParams.get('text')).toContain('Предпочтительный стиль: Botanical Romance.');
+  expect(changedStyle.searchParams.get('text')).not.toContain('Pure Ivory');
+  expect(changedStyle.searchParams.get('text').match(/Интересует дегустационный сет начинок: да\./g)).toHaveLength(1);
+  await expect(page.locator('#wedBrief .wed-contact-links a')).toHaveCount(3);
+  await expect(page.locator('#wedTasting .lp-btn-primary')).toHaveCount(0);
+  await expect(page.locator('.lp-final .wed-contact-links')).toHaveCount(0);
+});
+
+
+for (const availability of ['available', 'denied']) {
+  test('wedding cross-channel draft preserves style, tasting and honest copy status (' + availability + ')', async ({page}) => {
+    await page.addInitScript(mode => {
+      Object.defineProperty(navigator, 'clipboard', {
+        configurable: true,
+        value: { writeText: async text => {
+          window.__weddingClipboardWrites = (window.__weddingClipboardWrites || []).concat([text]);
+          if (mode === 'denied') throw new Error('NotAllowedError');
+        } }
+      });
+    }, availability);
+    await page.setViewportSize({width:320,height:850});
+    await page.goto('/svadebnye-torty/', {waitUntil:'domcontentloaded'});
+    await page.locator('.wed-collection-card a[data-wed-style]').nth(1).click();
+    await page.locator('.wed-tasting-link').click();
+    await page.locator('#wedBrief .btn-hero-tg').click();
+    const panel=page.locator('#wedBriefExport');
+    const field=page.locator('#wedBriefExportText');
+    await expect(panel).toBeVisible();
+    await expect(page.locator('#wedBriefCopy')).toBeFocused();
+    await expect(page.locator('#wedBriefOpen')).toHaveAttribute('href','https://t.me/+79119038886');
+    await expect(page.locator('#wedBriefOpen')).toHaveAttribute('rel',/noopener/);
+    await expect(field).toHaveValue(/Botanical Romance/);
+    await expect(field).toHaveValue(/дегустационный сет/);
+    const message=await field.inputValue();
+    const wa=new URL(await page.locator('#wedBrief .btn-hero-wa').getAttribute('href'));
+    expect(wa.searchParams.get('text')).toBe(message);
+    await page.locator('#wedBriefCopy').click();
+    if (availability === 'available') {
+      await expect(page.locator('#wedBriefCopyStatus')).toContainText('Текст скопирован');
+      expect(await page.evaluate(() => window.__weddingClipboardWrites)).toEqual([message]);
+    } else {
+      await expect(page.locator('#wedBriefCopyStatus')).toContainText('недоступно');
+      expect(await field.evaluate(el => document.activeElement === el && el.selectionStart === 0 && el.selectionEnd === el.value.length)).toBe(true);
+    }
+    await page.locator('#wedBrief .btn-hero-max').click();
+    await expect(page.locator('#wedBriefExportTitle')).toContainText('MAX');
+    await expect(page.locator('#wedBriefOpen')).toHaveAttribute('href','https://max.ru/u/f9LHodD0cOIzRY9VJX8MoyR41H64ULjndbose2aPPrzXJDLW8QEiyKTpqxs');
+    await expect(field).toHaveValue(message);
+    await page.locator('.wed-collection-card a[data-wed-style]').nth(0).click();
+    const updated=await field.inputValue();
+    expect(updated).toContain('Pure Ivory');
+    expect(updated).not.toContain('Botanical Romance');
+    expect((updated.match(/Интересует дегустационный сет начинок: да\./g)||[])).toHaveLength(1);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
+  });
+}
+
+test('wedding WebKit decodes real moving frames from MP4-first sources', async ({page,browserName}) => {
+  test.skip(browserName !== 'webkit', 'Safari-specific real-decoding contract');
+  await page.goto('/svadebnye-torty/', {waitUntil:'domcontentloaded'});
+  const video=page.locator('.wed-proof-video-frame video');
+  const sources=video.locator('source');
+  await expect(sources).toHaveCount(2);
+  await expect(sources.nth(0)).toHaveAttribute('type','video/mp4');
+  await expect(sources.nth(0)).toHaveAttribute('src','/img/gallery/videos/video-12-wedding-heart.mp4');
+  await expect(sources.nth(1)).toHaveAttribute('type','video/webm');
+  await expect(video).toHaveAttribute('preload','none');
+  await expect(video).toHaveAttribute('poster','/img/gallery/video-12-wedding-heart-poster.webp');
+  await video.scrollIntoViewIfNeeded();
+  const frame=page.locator('.wed-proof-video-frame');
+  await expect(frame.locator('.wed-clip-controls')).toBeVisible();
+  // Explicit play remains available when autoplay is disallowed by the host.
+  if (await video.evaluate(v=>v.paused)) await frame.locator('.wed-clip-toggle').click();
+  await expect.poll(()=>video.evaluate(v=>v.readyState),{timeout:16000,intervals:[250,500,1000]}).toBeGreaterThanOrEqual(2);
+  await expect.poll(()=>video.evaluate(v=>v.currentSrc),{timeout:10000}).toContain('video-12-wedding-heart.mp4');
+  await expect.poll(()=>video.evaluate(v=>v.currentTime),{timeout:12000}).toBeGreaterThan(0.25);
+  const capture=()=>video.evaluate(v=>{
+    if(v.readyState < 2) return null;
+    const canvas=document.createElement('canvas');
+    canvas.width=40;canvas.height=72;
+    const ctx=canvas.getContext('2d',{willReadFrequently:true});
+    if(!ctx) throw new Error('Canvas 2D unavailable for decoding check');
+    ctx.drawImage(v,0,0,40,72);
+    const pixels=ctx.getImageData(0,0,40,72).data;
+    let checksum=2166136261;
+    for(let i=0;i<pixels.length;i+=5)checksum=Math.imul(checksum ^ pixels[i],16777619);
+    return checksum>>>0;
+  });
+  const first=await capture();
+  expect(first).not.toBeNull();
+  await expect.poll(capture,{timeout:12000,intervals:[500,750,1000]}).not.toBe(first);
+});
+
+for (const order of ['date-first', 'style-first']) {
+  test('wedding unified enquiry preserves date style and tasting (' + order + ')', async ({page}) => {
+    await page.addInitScript(() => {
+      localStorage.setItem('milovi_analytics_consent_v1','denied');
+      window.open = url => {window.__datePopup = url; return {opener:null};};
+    });
+    await page.setViewportSize({width:390,height:850});
+    await page.goto('/svadebnye-torty/',{waitUntil:'domcontentloaded'});
+    const input=page.locator('#wedDate');
+    const minimum=await input.getAttribute('min');
+    const chosen=await page.evaluate(min=>{
+      const date=new Date(min+'T12:00:00');
+      date.setDate(date.getDate()+7);
+      return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
+    },minimum);
+    const chooseStyle=async()=>{
+      await page.locator('.wed-collection-card a[data-wed-style]').nth(1).click();
+      await page.locator('.wed-tasting-link').click();
+    };
+    if (order==='date-first') {await input.fill(chosen);await chooseStyle();}
+    else {await chooseStyle();await input.fill(chosen);}
+    await page.locator('#wedBrief .btn-hero-tg').click();
+    const draft=page.locator('#wedBriefExportText');
+    await expect(draft).toBeVisible();
+    const text=await draft.inputValue();
+    expect(text).toContain(chosen.slice(0,4));
+    expect(text).toContain('Botanical Romance');
+    expect(text).toContain('дегустационный сет');
+    expect(text).not.toContain('Дата свадьбы: ___');
+    const wa=new URL(await page.locator('#wedBrief .btn-hero-wa').getAttribute('href'));
+    expect(wa.searchParams.get('text')).toBe(text);
+    await page.locator('#wedBrief .btn-hero-max').click();
+    await expect(draft).toHaveValue(text);
+    await expect(page.locator('#wedBriefOpen')).toHaveAttribute('href','https://max.ru/u/f9LHodD0cOIzRY9VJX8MoyR41H64ULjndbose2aPPrzXJDLW8QEiyKTpqxs');
+    await input.evaluate(el=>el.form.requestSubmit());
+    const popup=await page.evaluate(()=>window.__datePopup);
+    expect(popup).toBeTruthy();
+    const submitted=new URL(popup).searchParams.get('text');
+    expect(submitted).toContain(chosen.slice(0,4));
+    expect(submitted).toContain('Botanical Romance');
+    expect(submitted).toContain('дегустационный сет');
+    await input.fill('');
+    const cleared=await draft.inputValue();
+    expect(cleared).toContain('Дата свадьбы: ___');
+    expect(cleared).not.toBe(text);
+    expect((cleared.match(/Предпочтительный стиль: /g)||[])).toHaveLength(1);
+    await expect(page.locator('#wedBriefCopyStatus')).toContainText('Заявка изменена');
+    await page.locator('#wedBrief .btn-hero-tg').click();
+    await expect(draft).toHaveValue(cleared);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
+  });
+}
+
+test('wedding clipboard success invalidates after change and in-flight copy cannot lie', async ({page}) => {
+  await page.addInitScript(()=>{
+    localStorage.setItem('milovi_analytics_consent_v1','denied');
+    window.__copyWrites=[];
+    window.__copyPending=[];
+    Object.defineProperty(navigator,'clipboard',{configurable:true,value:{
+      writeText:(text)=>new Promise(resolve=>{
+        window.__copyWrites.push(text);
+        window.__copyPending.push(resolve);
+      })
+    }});
+  });
+  await page.goto('/svadebnye-torty/',{waitUntil:'domcontentloaded'});
+  await page.locator('.wed-collection-card a[data-wed-style]').nth(1).click();
+  await page.locator('#wedBrief .btn-hero-tg').click();
+  const field=page.locator('#wedBriefExportText'), copy=page.locator('#wedBriefCopy');
+  const original=await field.inputValue();
+  await copy.click();
+  await copy.click(); // a second gesture must not issue a competing write
+  expect(await page.evaluate(()=>window.__copyPending.length)).toBe(1);
+  await expect(page.locator('#wedBriefCopyStatus')).toContainText('Копирование ещё выполняется');
+  await page.evaluate(()=>window.__copyPending.shift()());
+  await expect(page.locator('#wedBriefCopyStatus')).toContainText('Текст скопирован');
+  await page.locator('.wed-collection-card a[data-wed-style]').nth(0).click();
+  const updated=await field.inputValue();
+  expect(updated).not.toBe(original);
+  await expect(page.locator('#wedBriefCopyStatus')).toContainText('Заявка изменена');
+  expect(await page.evaluate(()=>window.__copyWrites.at(-1))).toBe(original);
+
+  await copy.click();
+  await page.locator('.wed-collection-card a[data-wed-style]').nth(1).click();
+  await page.evaluate(()=>window.__copyPending.shift()());
+  await expect(page.locator('#wedBriefCopyStatus')).toContainText('Заявка изменилась');
+  await expect(page.locator('#wedBriefCopyStatus')).not.toContainText('Текст скопирован');
+
+  const latest=await field.inputValue();
+  await copy.click();
+  await page.evaluate(()=>window.__copyPending.shift()());
+  await expect(page.locator('#wedBriefCopyStatus')).toContainText('Текст скопирован');
+  expect(await page.evaluate(()=>window.__copyWrites.at(-1))).toBe(latest);
+  expect((await page.evaluate(()=>window.__copyWrites)).length).toBe(3);
 });

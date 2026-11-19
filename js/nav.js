@@ -119,7 +119,7 @@
         /* [r39] Бар не занимает низ на первом экране. Правила ниже обязаны
            перебивать !important-блок «app shell» из v20-fixes.css, поэтому
            и специфичность (id + 3 класса), и !important. */
-        'body.mc-nav-veiled #mcNav.mc-nav{transform:translateY(calc(100% + var(--mc-nav-gap, 8px) + 20px)) !important;opacity:0 !important;pointer-events:none !important;}',
+        'body.mc-nav-veiled #mcNav.mc-nav{transform:translateY(calc(100% + var(--mc-nav-gap, 8px) + 20px)) !important;opacity:0 !important;pointer-events:none !important;transition:none !important;}',
         'body.mc-nav-veiled .mc-nav{transform:translateY(calc(100% + var(--mc-nav-gap, 8px) + 20px)) !important;opacity:0 !important;pointer-events:none !important;}',
 
         /* Кнопки в баре */

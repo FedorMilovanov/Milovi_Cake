@@ -68,7 +68,7 @@ test('gallery defers grid video playback behind consent then restores it after c
   await expect(page.locator('body')).not.toHaveClass(/mc-consent-open/);
   const card = page.locator('#galleryGrid [data-id="v01"]');
   await card.scrollIntoViewIfNeeded();
-  await expect.poll(() => card.locator('video').getAttribute('src')).toContain('/img/gallery/videos/video-01-knigi.webm');
+  await expect.poll(() => card.locator('video').getAttribute('src')).toContain('/img/gallery/videos/video-01-knigi.mp4');
 
   await page.evaluate(() => window.MiloviConsent.open());
   await expect(page.locator('body')).toHaveClass(/mc-consent-open/);
@@ -173,7 +173,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       await page.waitForTimeout(2000);
       expect(await gridVideos.evaluateAll((videos) => videos.filter((video) => video.hasAttribute('src') || !video.paused).length)).toBe(0);
       await page.locator('#lbClose').click();
-      await expect(page.locator('#galleryGrid [data-id="v01"] video')).toHaveAttribute('src', /video-01-knigi\.webm/);
+      await expect(page.locator('#galleryGrid [data-id="v01"] video')).toHaveAttribute('src', /video-01-knigi\.mp4/);
       expect(errors).toEqual([]);
     } catch (error) {
       // Keep the assertion and the gated image unchanged. If it fails, capture
@@ -243,7 +243,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     });
     expect(await gridVideos.evaluateAll((videos) => videos.filter((video) => video.hasAttribute('src') || !video.paused).length)).toBe(0);
     await page.locator('#lbClose').click();
-    await expect(card.locator('video')).toHaveAttribute('src', /video-01-knigi\.webm/);
+    await expect(card.locator('video')).toHaveAttribute('src', /video-01-knigi\.mp4/);
     expect(errors).toEqual([]);
   });
 
@@ -287,7 +287,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       expect(await gridVideos.evaluateAll((videos) => videos.filter((video) => video.hasAttribute('src') || !video.paused).length)).toBe(0);
       await page.locator('#lbClose').click();
       const firstVideo = card.locator('video');
-      await expect(firstVideo).toHaveAttribute('src', /video-01-knigi\.webm/);
+      await expect(firstVideo).toHaveAttribute('src', /video-01-knigi\.mp4/);
       await expect.poll(() => firstVideo.evaluate((video) => !video.paused)).toBe(true);
 
       await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -372,7 +372,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       await page.waitForFunction(() => window.__motionObserverGate.appChanges.includes(true));
       await page.emulateMedia({ reducedMotion: 'no-preference' });
       await page.waitForFunction(() => window.__motionObserverGate.appChanges.includes(false));
-      await expect(firstVideo).toHaveAttribute('src', /video-01-knigi\.webm/);
+      await expect(firstVideo).toHaveAttribute('src', /video-01-knigi\.mp4/);
       await expect.poll(() => firstVideo.evaluate((video) => !video.paused)).toBe(true);
       expect(errors).toEqual([]);
     } catch (error) {
@@ -642,7 +642,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       await expect(page.locator('#lbCounter')).toHaveText('02 / 44');
       const video = page.locator('#lbWrapper .swiper-slide-active video');
       await expect(video).toBeVisible();
-      await expect(video).toHaveAttribute('src', /video-01-knigi\.webm/);
+      await expect(video).toHaveAttribute('src', /video-01-knigi\.mp4/);
       await expect.poll(() => video.evaluate((v) => v.readyState >= 2 || !!v.error)).toBe(true);
       diagnostic.beforeClose = await page.evaluate(() => {
         const describe = (v) => ({ source: v.getAttribute('src'), readyState: v.readyState,
@@ -936,14 +936,14 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     page.on('crash', () => { diagnostic.crashed = true; diagnostic.resources = browserCrashResources(); });
     try {
       await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
-      await page.route('**/*.webm', (route) => { diagnostic.blocked++; return route.abort(); });
+      await page.route('**/*.{webm,mp4}', (route) => { diagnostic.blocked++; return route.abort(); });
       await page.goto('/gallery/', { waitUntil: 'load' });
       const card = page.locator('#galleryGrid [data-id="p01"]');
       await card.click();
       await page.locator('#lbNext').click();
       const video = page.locator('#lbWrapper .swiper-slide-active video');
       await expect(video).toBeVisible();
-      await expect(video).toHaveAttribute('src', /video-01-knigi\.webm/);
+      await expect(video).toHaveAttribute('src', /video-01-knigi\.mp4/);
       await expect.poll(() => video.evaluate((v) => !!v.error)).toBe(true);
       expect(diagnostic.blocked).toBeGreaterThan(0);
       if (process.env.MILOVI_NATIVE_DIAGNOSTICS === '1') {
@@ -988,13 +988,13 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
         const file = path.resolve(root, `.${pathname}`);
         stats.assets++;
         if (/\.(?:webp|avif|png|jpe?g)$/i.test(pathname)) stats.images++;
-        if (/\.webm$/i.test(pathname)) stats.videos++;
+        if (/\.(?:webm|mp4)$/i.test(pathname)) stats.videos++;
         if (!file.startsWith(root + path.sep)) return res.writeHead(403).end();
         fs.stat(file, (error, stat) => {
           if (error || !stat.isFile()) { stats.missing++; return res.writeHead(404).end(); }
           const types = {
             '.js': 'application/javascript', '.css': 'text/css', '.html': 'text/html; charset=utf-8',
-            '.webp': 'image/webp', '.avif': 'image/avif', '.svg': 'image/svg+xml', '.webm': 'video/webm',
+            '.webp': 'image/webp', '.avif': 'image/avif', '.svg': 'image/svg+xml', '.webm': 'video/webm', '.mp4': 'video/mp4',
             '.png': 'image/png', '.jpg': 'image/jpeg', '.json': 'application/json',
           };
           let start = 0, end = stat.size - 1, status = 200;
@@ -1159,12 +1159,13 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
 
 test.describe('video strip fault handling', () => {
   test.use({ serviceWorkers: 'block' });
-  test('video strip ignores non-array JSON and malformed entries without breaking the page', async ({ page }) => {
+  test('video strip ignores non-array JSON and malformed entries without breaking the page', async ({ page }, testInfo) => {
     const fs = require('node:fs');
     const original = fs.readFileSync('index.html', 'utf8');
     expect(original.match(/data-videos='[\s\S]*?'/g)).toHaveLength(1);
     let data = 'null';
-    await page.route((url) => url.origin === 'http://127.0.0.1:4173' && url.pathname === '/', (route) =>
+    const localOrigin = new URL(testInfo.project.use.baseURL).origin;
+    await page.route((url) => url.origin === localOrigin && url.pathname === '/', (route) =>
       route.fulfill({ contentType: 'text/html; charset=utf-8', body: original.replace(/data-videos='[\s\S]*?'/, `data-videos='${data}'`) }));
     const errors = [];
     page.on('pageerror', (error) => errors.push(error.message));
@@ -1213,4 +1214,95 @@ test.describe('catalog image fallback', () => {
     await expect(page.locator('#card-2 .btn-add')).toBeEnabled();
     expect(errors).toEqual([]);
   });
+});
+
+for (const mode of ['allowed','denied','unavailable']) {
+  test('gallery wish-copy handoff preserves selected work and honest clipboard status ('+mode+')', async ({page}) => {
+    await page.addInitScript(mode => {
+      localStorage.setItem('milovi_analytics_consent_v1','denied');
+      if (mode === 'unavailable') {
+        Object.defineProperty(navigator,'clipboard',{configurable:true,value:undefined});
+      } else {
+        Object.defineProperty(navigator,'clipboard',{configurable:true,value:{
+          writeText: async text => {
+            window.__wroteWish=(window.__wroteWish||[]).concat(text);
+            if (mode==='denied') throw new DOMException('Copy denied','NotAllowedError');
+          }
+        }});
+      }
+    },mode);
+    await page.goto('/gallery/',{waitUntil:'domcontentloaded'});
+    const deny=page.locator('.mc-consent-button--deny');
+    if (await deny.isVisible()) await deny.click();
+    const card=page.locator('#galleryGrid [data-id="p01"]');
+    await card.click();
+    const root=page.locator('#lbRoot');
+    await expect(root).toBeVisible();
+    await root.locator('#lbWantTg').click();
+    const panel=root.locator('#lbDraftPanel');
+    const draft=root.locator('#lbDraftMessage');
+    await expect(panel).toBeVisible();
+    await expect(root.locator('#lbDraftCopy')).toBeFocused();
+    await expect(root.locator('#lbDraftOpen')).toHaveAttribute('href','https://t.me/milovi_cake');
+    await expect(draft).toHaveValue(/http/);
+    const text=await draft.inputValue();
+    expect(text).toContain('#p01');
+    await root.locator('#lbDraftCopy').click();
+    if (mode==='allowed') {
+      await expect(root.locator('#lbDraftStatus')).toContainText('Текст скопирован');
+      expect(await page.evaluate(()=>window.__wroteWish)).toEqual([text]);
+    } else {
+      await expect(root.locator('#lbDraftStatus')).toContainText('Копирование недоступно');
+      expect(await draft.evaluate(e=>document.activeElement===e&&e.selectionStart===0&&e.selectionEnd===e.value.length)).toBe(true);
+    }
+    await root.locator('#lbWantMax').click();
+    await expect(root.locator('#lbDraftOpen')).toHaveAttribute('href','https://max.ru/u/f9LHodD0cOIzRY9VJX8MoyR41H64ULjndbose2aPPrzXJDLW8QEiyKTpqxs');
+    await expect(draft).toHaveValue(text);
+    // This test targets draft invalidation, not pointer hit-testing: WebKit
+    // continuously animates the active slide and Playwright's stable-target
+    // prerequisite can outlast the user-facing handler. Activation still
+    // exercises the real click listener and state updates.
+    await root.locator('#lbNext').evaluate(el=>el.click());
+    await expect(panel).toBeHidden();
+  });
+}
+
+test('gallery malformed fragment keeps card navigation functional', async ({page}) => {
+  await page.addInitScript(()=>localStorage.setItem('milovi_analytics_consent_v1','denied'));
+  const errors=[];
+  page.on('pageerror',e=>errors.push(String(e)));
+  for(const hash of ['#%','#%E0%A4%A']) {
+    await page.goto('/gallery/'+hash,{waitUntil:'domcontentloaded'});
+    await expect(page.locator('#galleryGrid [data-id="p01"]')).toBeVisible();
+    await expect(page.locator('#lbRoot')).toHaveCount(0);
+    await page.locator('#galleryGrid [data-id="p01"]').click();
+    await expect(page.locator('#lbRoot')).toBeVisible();
+    await expect(page).toHaveURL(/#p01$/);
+    // Close handler itself is verified here; other suites assert trusted
+    // pointer access. Avoid waiting for a continuously moving Swiper region.
+    await page.locator('#lbClose').evaluate(el=>el.click());
+  }
+  await page.goto('/gallery/#p01',{waitUntil:'domcontentloaded'});
+  await expect(page.locator('#lbRoot')).toBeVisible({timeout:5000});
+  await page.goBack({waitUntil:'domcontentloaded'});
+  expect(errors).toEqual([]);
+});
+
+test('gallery native video keyboard arrows do not navigate slides', async ({page}) => {
+  await page.addInitScript(()=>localStorage.setItem('milovi_analytics_consent_v1','denied'));
+  await page.goto('/gallery/',{waitUntil:'domcontentloaded'});
+  const item=page.locator('#galleryGrid [data-id^="v"]').first();
+  await expect(item).toBeVisible();
+  await item.click();
+  const root=page.locator('#lbRoot');
+  await expect(root).toBeVisible();
+  const before=await root.locator('#lbTitle').innerText();
+  const video=root.locator('.swiper-slide-active video.lb-media');
+  await expect(video).toHaveCount(1);
+  await video.focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(root.locator('#lbTitle')).toHaveText(before);
+  await root.locator('#lbNext').focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(root.locator('#lbTitle')).not.toHaveText(before);
 });

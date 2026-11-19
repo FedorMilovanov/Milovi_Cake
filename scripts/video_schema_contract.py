@@ -22,6 +22,7 @@ GALLERY_ENTRY_RE = re.compile(
     r"\{\s*id:\s*'v\d+',\s*type:\s*'video',\s*src:\s*'(?P<src>[^']+)',"
     r"\s*poster:\s*'(?P<poster>[^']+)',\s*title:\s*'(?P<title>[^']+)',"
     r"\s*desc:\s*'(?P<desc>[^']+)'"
+    r",\s*playback:\s*'(?P<playback>[^']+)'"
 )
 
 
@@ -71,6 +72,8 @@ def check_video_posters(gallery_text: str, published: dict[str, str]) -> dict[st
 
     posters: dict[str, str] = {}
     for src, item in entries.items():
+        if item['playback'] != src[:-5] + '.mp4':
+            fail(f"{src}: gallery MP4 playback mapping differs from published WebM source")
         expected = f"/img/gallery/{Path(src).stem}-poster.webp"
         poster = item['poster']
         if poster != expected:
@@ -92,6 +95,11 @@ def check_video_posters(gallery_text: str, published: dict[str, str]) -> dict[st
     strip = json.loads(unescape(match[1]))
     if {video.get('v'): video.get('p') for video in strip} != posters or len(strip) != len(posters):
         fail('homepage video strip must use the matching 16 frame posters')
+    for video in strip:
+        expected = video['v'][:-5] + '.mp4'
+        if video.get('m') != expected:
+            fail(f"{video['v']}: homepage MP4 playback URL must match published WebM")
+
 
     xml = ET.fromstring((ROOT / 'sitemap-videos.xml').read_text(encoding='utf-8'))
     ns = {'s': 'http://www.sitemaps.org/schemas/sitemap/0.9',
@@ -119,6 +127,67 @@ def check_video_posters(gallery_text: str, published: dict[str, str]) -> dict[st
     return posters
 
 
+
+def assert_h264_aac_samples(companion: Path, canonical: str) -> None:
+    """Verify actual MP4 sample-description codec IDs, without ffprobe or downloads."""
+    data = companion.read_bytes()
+
+    def boxes(start: int, end: int):
+        position = start
+        while position + 8 <= end:
+            size = int.from_bytes(data[position:position+4], 'big')
+            kind = data[position+4:position+8]
+            header = 8
+            if size == 1:
+                if position + 16 > end:
+                    fail(f"{canonical}: truncated MP4 extended-size box")
+                size = int.from_bytes(data[position+8:position+16], 'big')
+                header = 16
+            elif size == 0:
+                size = end - position
+            if size < header or position + size > end:
+                fail(f"{canonical}: invalid MP4 {kind!r} box bounds")
+            yield kind, position + header, position + size
+            position += size
+
+    def child(parent_start: int, parent_end: int, kind: bytes):
+        return next(((a,b) for t,a,b in boxes(parent_start,parent_end) if t==kind),None)
+
+    samples = {}
+    for kind, moov_start, moov_end in boxes(0,len(data)):
+        if kind != b'moov':
+            continue
+        for typ, trak_start, trak_end in boxes(moov_start,moov_end):
+            if typ != b'trak':
+                continue
+            mdia=child(trak_start,trak_end,b'mdia')
+            if not mdia:
+                continue
+            handler=child(*mdia,b'hdlr')
+            minf=child(*mdia,b'minf')
+            if not handler or not minf or handler[0]+12>handler[1]:
+                continue
+            handler_type=data[handler[0]+8:handler[0]+12]
+            stbl=child(*minf,b'stbl')
+            stsd=child(*stbl,b'stsd') if stbl else None
+            if not stsd or stsd[0]+8>stsd[1]:
+                continue
+            count=int.from_bytes(data[stsd[0]+4:stsd[0]+8],'big')
+            pos=stsd[0]+8
+            codecs=[]
+            for _ in range(min(count,16)):
+                if pos+8>stsd[1]:
+                    fail(f"{canonical}: truncated stsd sample entry")
+                size=int.from_bytes(data[pos:pos+4],'big')
+                if size < 8 or pos+size>stsd[1]:
+                    fail(f"{canonical}: malformed stsd sample entry")
+                codecs.append(data[pos+4:pos+8])
+                pos+=size
+            samples.setdefault(handler_type,set()).update(codecs)
+
+    if b'avc1' not in samples.get(b'vide',set()) or b'mp4a' not in samples.get(b'soun',set()):
+        fail(f"{canonical}: expected declared H.264/avc1 video and AAC/mp4a audio sample descriptions, got {samples}")
+
 def main() -> None:
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     published = manifest.get("videos")
@@ -129,6 +198,20 @@ def main() -> None:
         if not isinstance(path, str) or not path.startswith("/img/gallery/videos/") or not path.endswith(".webm"):
             fail(f"manifest contains invalid self-hosted video path {path!r}")
         parse_aware_datetime(timestamp, f"manifest:{path}")
+        # Every published VP9/Opus source must also ship the matching Safari-
+        # compatible H.264/AAC MP4. The canonical WebM provenance, uploadDate,
+        # frame-poster identity and VideoObject URL remain unchanged.
+        companion = (ROOT / path.lstrip('/')).with_suffix('.mp4')
+        if not companion.is_file():
+            fail(f"{path}: required MP4 playback companion is missing: {companion.name}")
+        if not (4096 <= companion.stat().st_size <= 12_000_000):
+            fail(f"{path}: required MP4 has unexpected size: {companion.stat().st_size}")
+        with companion.open('rb') as stream:
+            header = stream.read(12)
+        if header[4:8] != b'ftyp':
+            fail(f"{path}: required MP4 companion has invalid ISO BMFF header")
+        assert_h264_aac_samples(companion, path)
+
 
     gallery_text = GALLERY_DATA.read_text(encoding="utf-8")
     gallery_videos = set(GALLERY_VIDEO_RE.findall(gallery_text))

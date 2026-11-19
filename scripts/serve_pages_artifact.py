@@ -29,6 +29,7 @@ import functools
 import gzip
 import http.server
 import pathlib
+import re
 import socketserver
 import sys
 import urllib.parse
@@ -85,6 +86,55 @@ class ArtifactHandler(http.server.BaseHTTPRequestHandler):
         if self.command != 'HEAD':
             self.wfile.write(body)
 
+    def _send_media(self, body: bytes, content_type: str) -> None:
+        """Serve WebM and MP4 byte ranges like the published static host.
+
+        WebKit requires seeking to read media metadata. A local full-body 200
+        response can leave video.play() pending even though production serves
+        HTTP 206. This is a local QA fidelity requirement, not a media shim.
+        """
+        size = len(body)
+        header = self.headers.get('Range') if self.command == 'GET' else None
+        status, start, end = 200, 0, size - 1
+        if header is not None:
+            match = re.fullmatch(r'bytes=(\d*)-(\d*)', header.strip())
+            invalid = match is None
+            if not invalid:
+                first, last = match.groups()
+                invalid = not (first or last)
+                if not invalid:
+                    if first:
+                        start = int(first)
+                        end = min(int(last), size - 1) if last else size - 1
+                        invalid = start >= size or start > end
+                    else:
+                        count = int(last)
+                        invalid = count < 1
+                        start = max(0, size - count)
+                        end = size - 1
+            if invalid:
+                self.send_response(416)
+                self.send_header('Content-Range', f'bytes */{size}')
+                self.send_header('Accept-Ranges', 'bytes')
+                self.send_header('Content-Length', '0')
+                self.end_headers()
+                return
+            status = 206
+        payload = body[start:end+1]
+        self.send_response(status)
+        self.send_header('Content-Type', content_type)
+        self.send_header('Content-Length', str(len(payload)))
+        self.send_header('Accept-Ranges', 'bytes')
+        self.send_header('Cache-Control', 'no-cache')
+        if status == 206:
+            self.send_header('Content-Range', f'bytes {start}-{end}/{size}')
+        self.end_headers()
+        if self.command != 'HEAD':
+            try:
+                self.wfile.write(payload)
+            except (BrokenPipeError, ConnectionResetError):
+                pass  # Media seeking may abort the previous range request.
+
     def _resolve(self) -> pathlib.Path | None:
         path = urllib.parse.unquote(urllib.parse.urlparse(self.path).path)
         target = (self.root / path.lstrip('/')).resolve()
@@ -100,10 +150,18 @@ class ArtifactHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # noqa: N802 — имя задано базовым классом
         target = self._resolve()
         if target is None:
+            # GitHub Pages serves packaged 404.html, retaining HTTP 404.
+            # Path traversal remains denied by _resolve(), never a 200 fallback.
+            error_page = self.root / '404.html'
+            if error_page.is_file():
+                return self._send(error_page.read_bytes(),
+                                  'text/html; charset=utf-8', 404)
             return self._send(b'not found', 'text/plain; charset=utf-8',
                               404, compress=False)
         suffix = target.suffix.lower()
         content_type = CONTENT_TYPES.get(suffix)
+        if suffix in {'.webm', '.mp4'}:
+            return self._send_media(target.read_bytes(), content_type)
         if content_type:
             return self._send(target.read_bytes(), content_type,
                               compress=suffix in COMPRESSIBLE)

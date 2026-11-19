@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 
-const WIDTHS = [360, 390, 414, 561, 600, 768, 900, 1024];
+const WIDTHS = [320, 360, 390, 414, 430, 561, 600, 768, 900, 1024];
 const THEMES = ['light', 'dark'];
 // final-fixes.css intentionally uses a 94% opaque mobile app-shell surface.
 // Keep the guard aligned with that design token while still rejecting transparency regressions.
@@ -101,7 +101,7 @@ for (const theme of THEMES) {
 }
 
 // Price and button must not squeeze each other on narrow desktop cards.
-for (const width of [900, 1024, 1280, 1440]) {
+for (const width of [900, 1024, 1280, 1440, 1920]) {
   for (const theme of THEMES) {
     test(`@layout-matrix home ${width}px ${theme}: narrow desktop prices stay on one line`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
@@ -227,10 +227,10 @@ test('@layout-matrix @gallery typography cannot trigger a late Google Fonts layo
 
 // The wedding image is an editorial photo, not a background for mobile copy.
 // The crop guard covers the cake's approximate x=880–1230 region in wedding-hero.avif.
-for (const width of [360, 390, 414, 561, 600, 768, 900, 1024, 1536]) {
+for (const width of [320, 360, 390, 414, 430, 561, 600, 768, 900, 1024, 1536]) {
   for (const theme of THEMES) {
     test(`@layout-matrix @wedding-hero ${width}px ${theme}: cake, contrast and spacing`, async ({ browser }) => {
-      const height = width === 360 ? 800 : width === 390 ? 844 : width === 414 ? 896 : 900;
+      const height = width <= 360 ? 800 : width === 390 ? 844 : width === 414 ? 896 : 900;
       const context = await browser.newContext({
         baseURL: 'http://127.0.0.1:4173',
         storageState: 'tests/analytics-denied.storage-state.json',
@@ -344,13 +344,13 @@ test('@layout-matrix @wedding-hero defaults to light without a saved theme even 
   }
 });
 
-for (const width of [360, 390, 414, 561, 600, 768, 900, 1024, 1536]) {
+for (const width of [320, 360, 390, 414, 430, 561, 600, 768, 900, 1024, 1536]) {
   for (const theme of THEMES) {
     test(`@layout-matrix @wedding-collection ${width}px ${theme}: columns, cards and detail spacing`, async ({ browser }) => {
       const context = await browser.newContext({
         baseURL: 'http://127.0.0.1:4173',
         storageState: 'tests/analytics-denied.storage-state.json',
-        viewport: { width, height: width === 360 ? 800 : width === 390 ? 844 : 900 },
+        viewport: { width, height: width <= 360 ? 800 : width === 390 ? 844 : 900 },
         isMobile: width <= 768,
         hasTouch: width <= 768,
         colorScheme: theme,
@@ -363,10 +363,30 @@ for (const width of [360, 390, 414, 561, 600, 768, 900, 1024, 1536]) {
         const pageErrors = [];
         page.on('pageerror', (error) => pageErrors.push(error.message));
         await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
-        await page.locator('.wed-collection-card img').evaluateAll(async (images) => {
+        await page.waitForLoadState('load');
+        // Wait for the page's own two-frame offscreen-layout optimization to finish.
+        // Geometry measured while mc-fast-init is present is intentionally provisional.
+        await expect(page.locator('html')).not.toHaveClass(/mc-fast-init/, { timeout: 3500 });
+        await page.locator('.wed-collection-card img').evaluateAll((images) => {
           images.forEach((image) => { image.loading = 'eager'; });
-          await Promise.all(images.map((image) => image.decode()));
         });
+        // Exercise the real lazy-loading path by visiting the gallery before
+        // inspecting its images; do not demand offscreen bytes at DOMContentLoaded.
+        await page.locator('.wed-collection-grid').scrollIntoViewIfNeeded();
+        await page.locator('.wed-collection-card').last().scrollIntoViewIfNeeded();
+        // Failed images still fail: each must finish loading with nonzero dimensions.
+        await expect.poll(() => page.locator('.wed-collection-card img').evaluateAll(
+          (images) => images.every((image) => image.complete && image.naturalWidth > 0)
+        ), { timeout: 10000, intervals: [50, 150, 300] }).toBe(true);
+        // Force a real on-screen layout; content-visibility:auto may skip
+        // grid track resolution again after scrolling past the last card.
+        await page.locator('.wed-collection-card').first().scrollIntoViewIfNeeded();
+        await page.waitForTimeout(50);
+        const expectedColumns = width <= 375 ? 1 : width <= 860 ? 2 : 4;
+        await expect.poll(() => page.evaluate(() =>
+          getComputedStyle(document.querySelector('.wed-collection-grid'))
+            .gridTemplateColumns.split(' ').length
+        ), { timeout: 3500, intervals: [50, 120, 240] }).toBe(expectedColumns);
         const view = await page.evaluate(() => {
           const element = (selector) => document.querySelector(selector);
           const rect = (node) => {
@@ -400,16 +420,23 @@ for (const width of [360, 390, 414, 561, 600, 768, 900, 1024, 1536]) {
         const channels = (color) => (color.match(/\d+/g) || []).slice(0, 3).map(Number);
         expect(view.theme).toBe(theme);
         expect(view.overflow).toBeLessThanOrEqual(1);
-        expect(view.columns).toBe(width <= 860 ? 2 : 4);
+        expect(view.columns).toBe(expectedColumns);
         expect(view.mobileMenu === 'none').toBe(width > 860);
         expect(parseFloat(view.motion)).toBeLessThanOrEqual(0.00002);
         expect(view.images.every(({ loaded, src }) => loaded && /wedding-style-.*\.avif$/.test(src))).toBe(true);
         expect(Math.max(...view.titles)).toBeLessThanOrEqual(1);
         expect(view.section.top).toBeGreaterThanOrEqual(view.hero.bottom - 1);
         expect(view.photos[0].top - view.intro.bottom).toBeGreaterThanOrEqual(20);
-        expect(view.cards[0].top).toBeCloseTo(view.cards[1].top, 0);
-        if (width <= 860) expect(view.cards[2].top).toBeGreaterThanOrEqual(view.cards[0].bottom + 12);
-        else expect(view.cards[3].top).toBeCloseTo(view.cards[0].top, 0);
+        if (width <= 375) {
+          for (let i = 1; i < view.cards.length; i++) {
+            expect(view.cards[i].top).toBeGreaterThanOrEqual(view.cards[i - 1].bottom + 12);
+            expect(view.cards[i].width).toBeGreaterThanOrEqual(width - 48);
+          }
+        } else {
+          expect(view.cards[0].top).toBeCloseTo(view.cards[1].top, 0);
+          if (width <= 860) expect(view.cards[2].top).toBeGreaterThanOrEqual(view.cards[0].bottom + 12);
+          else expect(view.cards[3].top).toBeCloseTo(view.cards[0].top, 0);
+        }
         expect(view.note.top - view.cards[3].bottom).toBeGreaterThanOrEqual(20);
         expect(view.banner.top - view.note.bottom).toBeGreaterThanOrEqual(32);
         expect(view.bannerAction.bottom).toBeLessThanOrEqual(view.banner.bottom - 14);

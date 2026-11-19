@@ -647,6 +647,10 @@ function clearCart() {
   };
 }
 
+function cartQuantityMax(product){
+  // Keep current business caps, rather than inventing new ones in the UI.
+  return product.unit === 'кг' ? (product.maxiVariant ? 5 : 20) : 20;
+}
 function changeQty(cartKey, delta) {
   const parsed = parseCartKey(cartKey);
   let p = products.find(x => x.id === parsed.numId);
@@ -655,12 +659,23 @@ function changeQty(cartKey, delta) {
   if (p.hasMaxi && entry.mode === 'maxi') p = { ...p, ...p.maxiVariant };
   const step = p.unit === 'кг' ? 0.5 : 1;
   const minQty = p.minQty || (p.unit === 'кг' ? (p.minKg || 1) : 1);
-  var maxQty = p.unit === 'кг' ? (p.maxiVariant ? 5 : 20) : 20;
+  const maxQty = cartQuantityMax(p);
+  const focusedControl = document.activeElement;
+  const restoreQtyFocus = focusedControl?.classList?.contains('qty-btn') &&
+    focusedControl.closest('.cart-item')?.dataset.cartId === cartKey;
   const nextQty = Math.round((entry.qty + delta * step) * 10) / 10;
   entry.qty = delta > 0 ? Math.min(nextQty, Math.max(maxQty, entry.qty)) : nextQty;
   if (entry.qty < minQty) delete cart[cartKey];
   updateCartUI();
   saveCartToStorage();
+  if (restoreQtyFocus) {
+    const item = Array.from(document.querySelectorAll('#cartBody .cart-item'))
+      .find(el => el.dataset.cartId === cartKey);
+    const controls = item?.querySelectorAll('.qty-ctrl .qty-btn');
+    const target = (controls && controls[delta > 0 ? 1 : 0]) ||
+      document.querySelector('#cartBody .qty-btn, #cartBody .cart-empty-cta');
+    if (target) target.focus({ preventScroll: true });
+  }
 }
 
 function setCartStep(step) {
@@ -747,6 +762,10 @@ function updateCartUI() {
     const lineTotalFmt = lineTotal.toLocaleString('ru') + ' ₽';
     const minQty = isKg ? (p.minKg || 1) : (p.minQty || 1);
     const atMin = qty <= minQty;
+    const maxQty = cartQuantityMax(p);
+    const atMax = qty >= maxQty;
+    const limitText = 'Максимум: ' + maxQty + (isKg ? ' кг' : ' шт.');
+    const limitHint = atMax ? '<div class="cart-qty-limit" role="status">' + limitText + '</div>' : '';
     const dessertType = entry.dessertType || 'base';
     const isBase = dessertType !== 'author';
     const keyAttr = escapeCartHtml(cartKey);
@@ -760,7 +779,7 @@ function updateCartUI() {
       return `<label style="display:flex;align-items:center;gap:6px;margin-top:6px;min-width:0;"><span style="font-size:11px;color:var(--cart-muted);letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;">Начинка:</span><select onchange="setCartItemFill(${keyArg}, this.value, this)" style="font-size:12px;font-family:'Jost',sans-serif;padding:3px 8px;border-radius:12px;border:1px solid var(--cream-dark);background:transparent;color:var(--text);cursor:pointer;flex:1;max-width:180px;"><option value="">— уточнить —</option>${opts}</select></label>`;
     })()}</div>`;
 
-    return `<div class="cart-item" data-cart-id="${keyAttr}"><div class="cart-item-info"><h4>${p.name}</h4><div class="item-price">${p.price}</div>${p.min && !entry.fill ? `<div class="item-min">${p.min}</div>` : ''}${entry.decor ? `<div class="item-min" style="opacity:0.7">🎨 ${escapeCartHtml(entry.decor)}${decorAdd > 0 ? ` · +${decorAdd.toLocaleString('ru')} ₽` : ''}</div>` : ''}${entry.biscuit ? `<div class="item-min" style="opacity:0.7">🧁 бисквит: ${entry.biscuit === 'choco' ? 'шоколадный' : 'ванильный'}</div>` : ''}${dessertToggle}</div><div class="qty-ctrl"><button type="button" class="qty-btn" onclick="changeQty(${keyArg}, -1)" ${atMin ? 'title="Минимальный заказ"' : ''}>−</button><span class="qty-val">${qtyLabel}</span><button type="button" class="qty-btn" onclick="changeQty(${keyArg}, 1)">+</button></div><div class="cart-item-right"><div class="cart-line-total">${lineTotalFmt}</div><button type="button" class="del-btn" onclick="removeFromCart(${keyArg})" aria-label="Удалить"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true"><path d="M4 7h16M10 4h4M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></button></div></div>`;
+    return `<div class="cart-item" data-cart-id="${keyAttr}"><div class="cart-item-info"><h4>${p.name}</h4><div class="item-price">${p.price}</div>${p.min && !entry.fill ? `<div class="item-min">${p.min}</div>` : ''}${entry.decor ? `<div class="item-min" style="opacity:0.7">🎨 ${escapeCartHtml(entry.decor)}${decorAdd > 0 ? ` · +${decorAdd.toLocaleString('ru')} ₽` : ''}</div>` : ''}${entry.biscuit ? `<div class="item-min" style="opacity:0.7">🧁 бисквит: ${entry.biscuit === 'choco' ? 'шоколадный' : 'ванильный'}</div>` : ''}${dessertToggle}${limitHint}</div><div class="qty-ctrl"><button type="button" class="qty-btn" onclick="changeQty(${keyArg}, -1)" ${atMin ? 'title="Минимальный заказ"' : ''}>−</button><span class="qty-val">${qtyLabel}</span><button type="button" class="qty-btn" onclick="changeQty(${keyArg}, 1)" aria-disabled="${atMax ? "true" : "false"}" aria-label="${atMax ? limitText : "Увеличить количество"}" title="${atMax ? limitText : "Увеличить количество"}">+</button></div><div class="cart-item-right"><div class="cart-line-total">${lineTotalFmt}</div><button type="button" class="del-btn" onclick="removeFromCart(${keyArg})" aria-label="Удалить"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true"><path d="M4 7h16M10 4h4M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></button></div></div>`;
   }).join('');
 
   const totalFmt = cartTotalText(total);
@@ -1419,6 +1438,229 @@ function initSectionTitleWords() {
   });
 }
 
+/* MILOVI CAKE | desktop hero messenger motion, r25 candidate.
+ * Home desktop only. Mobile UI and suburban pages remain untouched.
+ * One timeline per icon: interruptible, focus-aware, BFCache-idempotent.
+ */
+(() => {
+  'use strict';
+  window.__mcHeroMotionEnabled=true;
+  const media = matchMedia('(min-width:769px) and (hover:hover) and (pointer:fine)');
+  const reduced = matchMedia('(prefers-reduced-motion:reduce)');
+  const NS='http://www.w3.org/2000/svg';
+  const XT='http://www.w3.org/1999/xlink';
+  const items=[['wa','WhatsApp'],['tg','Telegram'],['max','MAX']];
+  const config={enter:370,leave:560,particles:10};
+  let installed=false;
+  const active=new Map();
+  const svgEl=(tag, attrs={})=>{
+    const e=document.createElementNS(NS,tag);
+    Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,String(v)));
+    return e;
+  };
+  const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+  // One easing curve: no compounded ease that finishes movement before text appears.
+  const easeFlow=t=>t*t*(3-2*t);
+  const lerp=(a,b,t)=>a+(b-a)*t;
+  const round=v=>Number(v.toFixed(3));
+  function partsIn(b){
+    return b.querySelectorAll('.mc-hover-grain');
+  }
+  function clean(b) {
+    partsIn(b).forEach(p=>{try{p.getAnimations().forEach(a=>a.cancel())}catch(_e){} p.remove()});
+  }
+  function spray(state) {
+    if(reduced.matches || !state.flat || !state.link.isConnected) return;
+    const link=state.link, label=state.flat;
+    const br=link.getBoundingClientRect(), tr=label.getBoundingClientRect();
+    if(!tr.width || !tr.height) return;
+    clean(link);
+    for(let i=0;i<config.particles;i++){
+      const el=document.createElement('i');
+      el.className='mc-hover-grain';
+      el.setAttribute('aria-hidden','true');
+      // Start at distinct points on the actual label, not at fixed CSS offsets.
+      const u=(i+.35+(i%3)*.09)/config.particles;
+      const left=tr.left-br.left+tr.width*u;
+      const top=tr.top-br.top+tr.height*(.30+(i%4)*.13);
+      const size=.8+(i%4)*.25;
+      el.style.left=round(left)+'px';
+      el.style.top=round(top)+'px';
+      el.style.width=size+'px'; el.style.height=size+'px';
+      link.appendChild(el);
+      const side=((i*17)%19)-9, fall=10+((i*13)%15);
+      const duration=280+(i%4)*22;
+      const anim=el.animate([
+        {opacity:.42,transform:'translate3d(0,0,0) scale(.65)',filter:'blur(0px)'},
+        {opacity:.37,transform:'translate3d('+round(side*.42)+'px,'+round(fall*.48)+'px,0) scale(.85)',offset:.47},
+        {opacity:0,transform:'translate3d('+side+'px,'+fall+'px,0) scale(.17)',filter:'blur(.9px)'}
+      ],{delay:20+(i%4)*12,duration,easing:'cubic-bezier(.19,.47,.3,1)',fill:'forwards'});
+      anim.onfinish=()=>el.remove();
+      anim.oncancel=()=>el.remove();
+    }
+  }
+  function draw(s) {
+    const ring=s.ring,flat=s.flat;
+    const p=clamp(s.value,0,1);
+    // Keep attr values compatible with protected SVG contract tests.
+    const ringOpacity=lerp(.52,.045,p);
+    const flatOpacity=clamp((p-.04)/.86,0,1);
+    const y=lerp(8,-1.1,p);
+    const ringLift=lerp(0,-2.4,p);
+    const fontSize=lerp(6.5,10.4,p);
+    ring.setAttribute('opacity',round(ringOpacity));
+    ring.setAttribute('transform','translate(0,'+round(ringLift)+')');
+    ring.style.setProperty('opacity',String(round(ringOpacity)),'important');
+    ring.style.setProperty('transform','translate(0,'+round(ringLift)+'px)','important');
+    flat.setAttribute('y',round(y));
+    flat.setAttribute('opacity',round(flatOpacity));
+    flat.setAttribute('font-size',round(fontSize));
+    flat.style.setProperty('opacity',String(round(flatOpacity)),'important');
+    flat.style.setProperty('font-size',round(fontSize)+'px','important');
+    flat.style.setProperty('transform','none','important');
+    s.link.style.setProperty('--mc-hover-progress',String(round(p)));
+  }
+  function seek(s,target) {
+    target=target?1:0;
+    if(s.raf) {cancelAnimationFrame(s.raf);s.raf=0;}
+    if(target===1) {s.leaving=false;s.sprayed=false;clean(s.link);}
+    const from=s.value;
+    if(Math.abs(from-target)<.001) {s.value=target;draw(s);return;}
+    if(reduced.matches) {s.value=target;draw(s);return;}
+    const duration=(target?config.enter:config.leave)*Math.max(.4,Math.abs(from-target));
+    const start=performance.now();
+    const easing=easeFlow;
+    function step(now){
+      const t=clamp((now-start)/duration,0,1);
+      s.value=lerp(from,target,easing(t));
+      draw(s);
+      // Release a few grains from the LIVE text bounds during descent.
+      if(!target && s.leaving && !s.sprayed && s.value<=.65 && from>.55) {
+        s.sprayed=true;
+        spray(s);
+      }
+      if(t<1){s.raf=requestAnimationFrame(step)}
+      else{s.raf=0;s.value=target;draw(s)}
+    }
+    s.raf=requestAnimationFrame(step);
+  }
+  function destroy() {
+    for(const state of active.values()){
+      if(state.raf) cancelAnimationFrame(state.raf);
+      state.events.abort();
+      clean(state.link);
+      state.ring.remove();
+      state.flat.remove();
+      state.defs.remove();
+      const glyph=state.link.querySelector('.mc-brand-glyph');
+      if(glyph && glyph.firstElementChild) glyph.replaceWith(glyph.firstElementChild);
+      state.link.removeAttribute('data-mc-motion-init');
+      state.link.removeAttribute('data-mc-arc-center-delta');
+      state.link.style.removeProperty('--mc-hover-progress');
+       for(const [prop,[value,priority]] of state.baseStyles){
+         if(value)state.link.style.setProperty(prop,value,priority);
+         else state.link.style.removeProperty(prop);
+       }
+       const group=state.link.closest('.messenger-group--ring');
+       if(group && group.dataset.mcDesktopGapSaved){
+         if(group.dataset.mcPriorGap)group.style.setProperty('gap',group.dataset.mcPriorGap,group.dataset.mcPriorGapPriority||'');
+         else group.style.removeProperty('gap');
+         delete group.dataset.mcDesktopGapSaved;
+         delete group.dataset.mcPriorGap;
+         delete group.dataset.mcPriorGapPriority;
+       }
+    }
+    active.clear();
+    installed=false;
+  }
+  function init() {
+    if(!media.matches || installed || !document.body.classList.contains('mc-home')) return;
+    installed=true;
+    for(const [key,label] of items){
+      const link=document.querySelector('.hero .btn-hero-'+key+'.btn-hero-ring');
+      const svg=link?.querySelector('svg');
+      if(!svg || link.dataset.mcMotionInit==='1') continue;
+      const originalMark=[...svg.children].find(e=>['g','path'].includes(e.tagName.toLowerCase()));
+      if(!originalMark)continue;
+      link.dataset.mcMotionInit='1';
+       const baseStyles=new Map();
+       // Inline priority defeats the historic protected circular CSS only on desktop.
+       // It is restored exactly when leaving the desktop breakpoint.
+       for(const prop of ['background','border','box-shadow','border-radius','transform']){
+         baseStyles.set(prop,[link.style.getPropertyValue(prop),link.style.getPropertyPriority(prop)]);
+       }
+       for(const prop of ['background','border','box-shadow','border-radius','transform']){
+         link.style.setProperty(prop,({
+           background:'transparent', border:'0', 'box-shadow':'none',
+           'border-radius':'0',transform:'none'
+         })[prop],'important');
+       }
+       const group=link.closest('.messenger-group--ring');
+       if(group && !group.dataset.mcDesktopGapSaved){
+         group.dataset.mcDesktopGapSaved='1';
+         group.dataset.mcPriorGap=group.style.getPropertyValue('gap');
+         group.dataset.mcPriorGapPriority=group.style.getPropertyPriority('gap');
+         group.style.setProperty('gap','18px','important');
+       }
+      const glyph=svgEl('g',{class:'mc-brand-glyph mc-brand-glyph--'+key});
+      originalMark.before(glyph);glyph.appendChild(originalMark);
+      const id='mc-ring-path-'+key;
+      const defs=svgEl('defs');
+      // Non-rendered path: there is no visible circular frame.
+      defs.appendChild(svgEl('path',{id,d:'M7,24 a17,17 0 1,1 0,0.01'}));
+      svg.insertBefore(defs,svg.firstChild);
+      const ring=svgEl('text',{class:'hero-ring-text','font-family':'Jost,sans-serif',fill:'currentColor'});
+      const path=svgEl('textPath',{href:'#'+id,startOffset:'25%','text-anchor':'middle','letter-spacing':'1.65'});
+      path.setAttributeNS(XT,'href','#'+id);
+      path.textContent=label;ring.appendChild(path);
+      const flat=svgEl('text',{class:'hero-flat-text',
+        'font-family':'Jost,sans-serif',fill:'currentColor','text-anchor':'middle',x:'24',
+        y:'8','font-size':'6.5','font-weight':'500','letter-spacing':'.34'});
+      flat.textContent=label;
+      svg.append(ring,flat);
+      // Protected CSS has its own opacity transitions: those lagged JS positioning.
+      // Only the new home-page text layers opt out; suburbs keep their legacy CSS.
+      for(const textLayer of [ring,flat]) textLayer.style.setProperty('transition','none','important');
+      // A stable tiny SVG glow avoids an abrupt filter repaint at 68% progress.
+      flat.style.setProperty('filter','drop-shadow(0 0 .6px currentColor)','important');
+      const state={link,ring,flat,defs,baseStyles,events:new AbortController(),raf:0,value:0,pointer:false,focus:false,leaving:false,sprayed:false};
+      active.set(key,state);
+      draw(state);
+      function update(){seek(state,state.pointer||state.focus)}
+      link.addEventListener('pointerenter',e=>{if(e.pointerType==='touch')return;state.pointer=true;update()},{passive:true,signal:state.events.signal});
+      link.addEventListener('pointerleave',e=>{
+        if(e.pointerType==='touch')return;
+        state.pointer=false;
+        state.leaving=!state.focus && state.value>.55;
+        state.sprayed=false;
+        update();
+      },{passive:true,signal:state.events.signal});
+      link.addEventListener('focusin',()=>{state.focus=true;update()},{signal:state.events.signal});
+      link.addEventListener('focusout',()=>{state.focus=false;update()},{signal:state.events.signal});
+      link.addEventListener('pointercancel',()=>{state.pointer=false;update()},{signal:state.events.signal});
+      link.addEventListener('blur',()=>{if(!state.pointer){state.focus=false;update()}},{signal:state.events.signal});
+      reduced.addEventListener('change',()=>{if(reduced.matches){clean(link);seek(state,state.pointer||state.focus)}},{signal:state.events.signal});
+    }
+    // Font loading can change textPath metrics; defer measurements until ready.
+    document.fonts.ready.then(()=>{
+      for(const [key] of items){
+        const link=document.querySelector('.hero .btn-hero-'+key+'.btn-hero-ring');
+        if(!link?.dataset.mcMotionInit) continue;
+        const arc=link?.querySelector('.hero-ring-text');
+        const glyph=link?.querySelector('.mc-brand-glyph');
+        if(!arc || !glyph)continue;
+        const a=arc.getBoundingClientRect(),g=glyph.getBoundingClientRect();
+        const offset=(a.left+a.width/2)-(g.left+g.width/2);
+        link.dataset.mcArcCenterDelta=offset.toFixed(3);
+      }
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true});
+  else init();
+  media.addEventListener('change',()=>{if(media.matches)init();else destroy()});
+  addEventListener('pageshow',e=>{if(e.persisted){if(media.matches)init();else destroy()}});
+})();
+
 // [r18] Messenger ring-to-flat animation — единый для всех страниц
 (function() {
   var items = [
@@ -1459,6 +1701,7 @@ function initSectionTitleWords() {
   }
 
   function initMessengerRings() {
+    if (window.__mcHeroMotionEnabled && document.body.classList.contains('mc-home')) return;
     if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
     items.forEach(function(item) {
       var btn = document.querySelector('.' + item.btnClass);
