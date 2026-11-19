@@ -2268,3 +2268,32 @@ html:not([data-theme="dark"]) body:has(.hero-tag) .price-card-note {
  body.mc-home .hero-actions .mc-brand-glyph,
  body.mc-home .hero-actions a.btn-hero-messenger.btn-hero-ring svg {transition:none}
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   [r183] Оверлей открыт → декоративные бесконечные анимации под ним стоят.
+
+   Корзина, лайтбокс и модалка отзывов закрывают страницу собой, но WebKit
+   продолжает композитить невидимые слои: Ken Burns на фотографии hero
+   (26 s infinite alternate) и бегущая лента видео (60 s infinite). Вместе с
+   backdrop-filter самой корзины это переполняет композитор — rAF перестаёт
+   тикать, следом умирает WebProcess (та же природа, что в
+   docs/QA_R35_ACCEPTANCE_2026-11-17.md §9, где снимали повторные blur).
+   Проверки не меняются: анимации работают всегда, когда их видно.
+   Специфичность подобрана под базовые правила, без новых усилений:
+   `body` + три класса состояния перебивают `.hero--visible.hero--motion-ready`.
+   ═══════════════════════════════════════════════════════════════════════════ */
+body.cart-open .hero--visible.hero--motion-ready .hero-photo-bg img,
+body.mc-nav-hidden .hero--visible.hero--motion-ready .hero-photo-bg img,
+body.fill-open .hero--visible.hero--motion-ready .hero-photo-bg img,
+body.cart-open .vstrip-track,
+body.mc-nav-hidden .vstrip-track,
+body.fill-open .vstrip-track {
+  animation-play-state: paused;
+}
+
+/* Пауза не должна держать GPU-слой: will-change снимается вместе с анимацией. */
+body.cart-open .hero--visible.hero--motion-ready .hero-photo-bg img,
+body.mc-nav-hidden .hero--visible.hero--motion-ready .hero-photo-bg img,
+body.fill-open .hero--visible.hero--motion-ready .hero-photo-bg img {
+  will-change: auto;
+}
