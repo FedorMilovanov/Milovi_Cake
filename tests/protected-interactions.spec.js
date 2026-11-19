@@ -75,7 +75,7 @@ test.describe('protected homepage interactions', () => {
     const endpoints = [
       {cls:'wa', target:/^https:\/\/wa\.me\/79119038886\?/, name:/WhatsApp/i},
       {cls:'tg', target:/^https:\/\/t\.me\/\+79119038886$/, name:/Telegram/i},
-      {cls:'max', target:/^https:\/\/max\.ru\/MiloviCake$/, name:/MAX/i},
+      {cls:'max', target:'https://max.ru/u/f9LHodD0cOIzRY9VJX8MoyR41H64ULjndbose2aPPrzXJDLW8QEiyKTpqxs', name:/MAX/i},
     ];
     for (const endpoint of endpoints) {
       const link=page.locator('.hero .btn-hero-'+endpoint.cls).first();
