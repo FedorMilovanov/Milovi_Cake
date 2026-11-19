@@ -1301,6 +1301,8 @@ test.describe('cart phone field: Enter prepares the order', () => {
     const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('milovicake_cart') || '{}'));
     expect(Object.keys(stored).length).toBeGreaterThan(0);
   });
+});
+
 test('cart quantity keyboard focus survives rerender and maximum is explicit', async ({page}) => {
   await page.addInitScript(()=>{
     localStorage.clear();
