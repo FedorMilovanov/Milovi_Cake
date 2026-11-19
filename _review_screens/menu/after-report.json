@@ -22,18 +22,15 @@
     },
     "foot": {
       "x": 0,
-      "y": 415,
+      "y": 407,
       "w": 320,
-      "h": 153
+      "h": 161
     },
     "bodyScrolls": true,
-    "bodyOverflow": 188,
+    "bodyOverflow": 152,
     "rows": 19,
-    "rowsAboveFold": 18,
-    "tapTooSmall": [
-      "Светлая",
-      "Тёмная"
-    ],
+    "rowsAboveFold": 19,
+    "tapTooSmall": [],
     "overflowX": []
   },
   {
@@ -59,18 +56,15 @@
     },
     "foot": {
       "x": 0,
-      "y": 415,
+      "y": 407,
       "w": 320,
-      "h": 153
+      "h": 161
     },
     "bodyScrolls": true,
-    "bodyOverflow": 188,
+    "bodyOverflow": 152,
     "rows": 19,
-    "rowsAboveFold": 18,
-    "tapTooSmall": [
-      "Светлая",
-      "Тёмная"
-    ],
+    "rowsAboveFold": 19,
+    "tapTooSmall": [],
     "overflowX": []
   },
   {
@@ -96,18 +90,15 @@
     },
     "foot": {
       "x": 0,
-      "y": 581,
+      "y": 575,
       "w": 360,
-      "h": 159
+      "h": 165
     },
     "bodyScrolls": true,
-    "bodyOverflow": 92,
+    "bodyOverflow": 54,
     "rows": 19,
     "rowsAboveFold": 19,
-    "tapTooSmall": [
-      "Светлая",
-      "Тёмная"
-    ],
+    "tapTooSmall": [],
     "overflowX": []
   },
   {
@@ -133,18 +124,15 @@
     },
     "foot": {
       "x": 0,
-      "y": 581,
+      "y": 575,
       "w": 360,
-      "h": 159
+      "h": 165
     },
     "bodyScrolls": true,
-    "bodyOverflow": 92,
+    "bodyOverflow": 54,
     "rows": 19,
     "rowsAboveFold": 19,
-    "tapTooSmall": [
-      "Светлая",
-      "Тёмная"
-    ],
+    "tapTooSmall": [],
     "overflowX": []
   },
   {
@@ -170,18 +158,15 @@
     },
     "foot": {
       "x": 0,
-      "y": 685,
+      "y": 679,
       "w": 390,
-      "h": 159
+      "h": 165
     },
     "bodyScrolls": false,
     "bodyOverflow": 0,
     "rows": 19,
     "rowsAboveFold": 19,
-    "tapTooSmall": [
-      "Светлая",
-      "Тёмная"
-    ],
+    "tapTooSmall": [],
     "overflowX": []
   },
   {
@@ -207,18 +192,15 @@
     },
     "foot": {
       "x": 0,
-      "y": 685,
+      "y": 679,
       "w": 390,
-      "h": 159
+      "h": 165
     },
     "bodyScrolls": false,
     "bodyOverflow": 0,
     "rows": 19,
     "rowsAboveFold": 19,
-    "tapTooSmall": [
-      "Светлая",
-      "Тёмная"
-    ],
+    "tapTooSmall": [],
     "overflowX": []
   },
   {
@@ -244,18 +226,15 @@
     },
     "foot": {
       "x": 0,
-      "y": 773,
+      "y": 767,
       "w": 430,
-      "h": 159
+      "h": 165
     },
     "bodyScrolls": false,
     "bodyOverflow": 0,
     "rows": 19,
     "rowsAboveFold": 19,
-    "tapTooSmall": [
-      "Светлая",
-      "Тёмная"
-    ],
+    "tapTooSmall": [],
     "overflowX": []
   },
   {
@@ -281,18 +260,15 @@
     },
     "foot": {
       "x": 0,
-      "y": 773,
+      "y": 767,
       "w": 430,
-      "h": 159
+      "h": 165
     },
     "bodyScrolls": false,
     "bodyOverflow": 0,
     "rows": 19,
     "rowsAboveFold": 19,
-    "tapTooSmall": [
-      "Светлая",
-      "Тёмная"
-    ],
+    "tapTooSmall": [],
     "overflowX": []
   },
   {
@@ -318,18 +294,15 @@
     },
     "foot": {
       "x": 0,
-      "y": 865,
+      "y": 859,
       "w": 768,
-      "h": 159
+      "h": 165
     },
     "bodyScrolls": false,
     "bodyOverflow": 0,
     "rows": 19,
     "rowsAboveFold": 19,
-    "tapTooSmall": [
-      "Светлая",
-      "Тёмная"
-    ],
+    "tapTooSmall": [],
     "overflowX": []
   },
   {
@@ -355,18 +328,15 @@
     },
     "foot": {
       "x": 0,
-      "y": 865,
+      "y": 859,
       "w": 768,
-      "h": 159
+      "h": 165
     },
     "bodyScrolls": false,
     "bodyOverflow": 0,
     "rows": 19,
     "rowsAboveFold": 19,
-    "tapTooSmall": [
-      "Светлая",
-      "Тёмная"
-    ],
+    "tapTooSmall": [],
     "overflowX": []
   },
   {
@@ -392,18 +362,15 @@
     },
     "foot": {
       "x": 0,
-      "y": 267,
+      "y": 559,
       "w": 390,
-      "h": 153
+      "h": 161
     },
-    "bodyScrolls": true,
-    "bodyOverflow": 336,
+    "bodyScrolls": false,
+    "bodyOverflow": 0,
     "rows": 19,
-    "rowsAboveFold": 12,
-    "tapTooSmall": [
-      "Светлая",
-      "Тёмная"
-    ],
+    "rowsAboveFold": 6,
+    "tapTooSmall": [],
     "overflowX": []
   },
   {
@@ -429,18 +396,15 @@
     },
     "foot": {
       "x": 0,
-      "y": 267,
+      "y": 559,
       "w": 390,
-      "h": 153
+      "h": 161
     },
-    "bodyScrolls": true,
-    "bodyOverflow": 336,
+    "bodyScrolls": false,
+    "bodyOverflow": 0,
     "rows": 19,
-    "rowsAboveFold": 12,
-    "tapTooSmall": [
-      "Светлая",
-      "Тёмная"
-    ],
+    "rowsAboveFold": 6,
+    "tapTooSmall": [],
     "overflowX": []
   },
   {
@@ -466,18 +430,15 @@
     },
     "foot": {
       "x": 0,
-      "y": 222,
+      "y": 527,
       "w": 667,
-      "h": 153
+      "h": 161
     },
-    "bodyScrolls": true,
-    "bodyOverflow": 349,
+    "bodyScrolls": false,
+    "bodyOverflow": 0,
     "rows": 19,
-    "rowsAboveFold": 12,
-    "tapTooSmall": [
-      "Светлая",
-      "Тёмная"
-    ],
+    "rowsAboveFold": 6,
+    "tapTooSmall": [],
     "overflowX": []
   },
   {
@@ -503,18 +464,15 @@
     },
     "foot": {
       "x": 0,
-      "y": 222,
+      "y": 527,
       "w": 667,
-      "h": 153
+      "h": 161
     },
-    "bodyScrolls": true,
-    "bodyOverflow": 349,
+    "bodyScrolls": false,
+    "bodyOverflow": 0,
     "rows": 19,
-    "rowsAboveFold": 12,
-    "tapTooSmall": [
-      "Светлая",
-      "Тёмная"
-    ],
+    "rowsAboveFold": 6,
+    "tapTooSmall": [],
     "overflowX": []
   }
 ]
