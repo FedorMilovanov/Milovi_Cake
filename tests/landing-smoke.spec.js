@@ -1226,8 +1226,12 @@ test.describe('homepage structured data and links', () => {
     expect(graphTypes).not.toContain('HowTo');
     expect(graphTypes).not.toContain('BreadcrumbList');
 
+    // Кластер направлений проверяем в футере: с r44 те же адреса есть и в
+    // мобильном меню (закрытая панель), поэтому «первая ссылка на странице»
+    // больше не описывает видимый кластер.
+    const cluster = page.locator('footer .footer-col a');
     for (const href of ['/zakazat-tort-spb/', '/tort-s-dostavkoy/', '/bento-torty/', '/detskie-torty/', '/svadebnye-torty/', '/o-konditere/', '/dostavka-i-oplata/', '/otzyvy/']) {
-      await expect(page.locator(`a[href="${href}"]`).first()).toBeVisible();
+      await expect(cluster.locator(`[href="${href}"]`).first()).toBeVisible();
     }
   });
 });

@@ -2016,17 +2016,13 @@ body.vview-open{overflow:hidden}
     .mm-msg svg { width: 15px; height: 15px; }
     .mm-theme-opt { padding: 0 10px; }
   }
+  /* Длительности переходов под reduced-motion уже обнуляет глобальное правило
+     `* { transition-duration: 0.01ms }` в style.css; здесь достаточно убрать
+     задержку, иначе панель остаётся видимой ещё 240 мс после закрытия. */
   @media (prefers-reduced-motion: reduce) {
     .mobile-menu,
-    .mobile-menu.open,
-    .mobile-menu-nav a,
-    .mm-chip,
-    .mm-sublink,
-    .mm-msg,
-    .mm-theme-opt,
-    .mobile-menu-close,
-    .mm-link-arrow {
-      transition: none;
+    .mobile-menu.open {
+      transition-delay: 0s;
     }
   }
 }

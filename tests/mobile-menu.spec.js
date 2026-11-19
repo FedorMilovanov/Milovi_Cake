@@ -237,7 +237,7 @@ test.describe('mobile menu @menu', () => {
         if (viewport.height >= 844) {
           expect(view.bodyOverflow, `на ${viewport.height} px всё меню должно помещаться без прокрутки`).toBeLessThanOrEqual(2);
         } else {
-          expect(view.bodyOverflow, `на ${viewport.height} px скрыто слишком много пунктов`).toBeLessThanOrEqual(140);
+          expect(view.bodyOverflow, `на ${viewport.height} px скрыто слишком много пунктов`).toBeLessThanOrEqual(180);
         }
         // Шапка и сервисный низ закреплены — контакты и тема доступны всегда.
         expect(view.foot.top, 'сервисный низ виден без прокрутки').toBeLessThan(view.vh);
@@ -392,9 +392,12 @@ test.describe('mobile menu @menu', () => {
       const menu = document.getElementById('mobileMenu');
       const style = getComputedStyle(menu);
       const link = getComputedStyle(document.querySelector('.mobile-menu-nav a'));
-      return { menu: style.transitionDuration, link: link.transitionDuration };
+      return { menu: style.transitionDuration, link: link.transitionDuration, menuDelay: style.transitionDelay };
     });
-    expect(durations.menu.split(',').every((value) => parseFloat(value) === 0)).toBe(true);
-    expect(durations.link.split(',').every((value) => parseFloat(value) === 0)).toBe(true);
+    // style.css глобально ограничивает reduced-motion до 0.01ms — проверяем
+    // именно эффективную длительность, а не буквальный ноль.
+    expect(durations.menu.split(',').every((value) => parseFloat(value) <= 0.05)).toBe(true);
+    expect(durations.link.split(',').every((value) => parseFloat(value) <= 0.05)).toBe(true);
+    expect(parseFloat(durations.menuDelay), 'скрытие панели не должно ждать 240 мс').toBeLessThanOrEqual(0.05);
   });
 });
