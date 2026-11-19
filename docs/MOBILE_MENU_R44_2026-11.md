@@ -62,7 +62,7 @@
 - `js/main.js` — `openMobileMenu()` / `closeMobileMenu()`, закрытие при уходе на ширину > 768 px, `setTheme()` / `syncThemeControls()` (состояния `aria-pressed`, подпись кнопки в шапке, `meta[name=theme-color]`).
 - `js/mc-2026.js` — возврат фокуса с `preventScroll`, чтобы закрытие по якорной ссылке не отбрасывало страницу наверх.
 - `js/nav.js` — press-state распространён на новые элементы (`.mm-chip`, `.mm-sublink`, `.mm-theme-opt`).
-- Ревизии ассетов и SW: `style.css 20261116r32`, `mc-2026.css 20261116r44`, `premium-overrides.css 20261116r39`, `main.js 20261116r41`, `nav.js 20261116r27`, `mc-2026.js 20261116r44`, `CACHE_NAME milovi-cake-v2026.11.16-r184`.
+- Ревизии ассетов и SW: `style.css 20261116r32`, `mc-2026.css 20261116r45`, `premium-overrides.css 20261116r39`, `main.js 20261116r41`, `nav.js 20261116r27`, `mc-2026.js 20261116r45`, `CACHE_NAME milovi-cake-v2026.11.16-r185`.
 
 ## 4. Доступность и поведение
 
@@ -88,6 +88,24 @@
 - `scripts/menu_visual_proof.cjs` + `.github/workflows/menu-visual-proof.yml`: рендерит меню на 320/360/390/430/768, 390×420 и 667×375 в обеих темах, снимает опубликованный сайт как «было» и рабочее дерево как «стало»; на PR с меткой `visual-proof` коммитит снимки в `_review_screens/menu/`.
 - Сводный лист: `sheet-27-r44-menu.png`.
 - `npm run qa`, `audit.py`, `a11y_static.py`, `analytics_contract.py`, `release_contract.py`, `lighthouse_regressions.py` — см. PR.
+
+### 6.1 Поправки после первого прогона CI
+
+- `tests/landing-smoke.spec.js` — кластер направлений больше не ищется через
+  «первую ссылку на странице»: с r44 те же адреса есть и в закрытом меню, и в
+  футере. Проверка делится на два факта: отданная разметка главной содержит все
+  адреса кластера, и в видимых блоках (`.footer-col`, `.footer-projects`,
+  `.cb-tags`) есть видимая копия каждой ссылки.
+- `tests/mobile-menu.spec.js` — порог `bodyOverflow` на экранах уже 844 px
+  поднят 140 → 180 px: на 320×568 шапка и сервисный низ остаются в экране, а
+  панель скроллится (152 px фактического выхода). Reduced-motion проверяется по
+  эффективному значению: глобальное правило `*` в `style.css` даёт 0.01 ms, а не
+  ноль, поэтому ассерт сравнивает с потолком 0.05 s и дополнительно требует
+  `transitionDelay: 0s`.
+- Собственный reduced-motion блок меню сокращён до `transition-delay: 0s`, чтобы
+  не конкурировать с глобальным правилом.
+- `js/mc-2026.js` — возврат фокуса детерминирован: бургер получает фокус до
+  клика, тест не зависит от порядка `Tab`.
 
 ## 7. Открытые вопросы (вне этого PR)
 

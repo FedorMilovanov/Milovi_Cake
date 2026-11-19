@@ -1226,13 +1226,26 @@ test.describe('homepage structured data and links', () => {
     expect(graphTypes).not.toContain('HowTo');
     expect(graphTypes).not.toContain('BreadcrumbList');
 
-    // Кластер направлений: с r44 те же адреса есть и в закрытом мобильном меню,
-    // поэтому «первая ссылка на странице» больше не описывает видимый кластер.
-    // Проверяем именно видимую копию — адрес должен быть доступен на экране,
-    // а не только в скрытой панели или в разметке футера.
-    for (const href of ['/zakazat-tort-spb/', '/tort-s-dostavkoy/', '/bento-torty/', '/detskie-torty/', '/svadebnye-torty/', '/o-konditere/', '/dostavka-i-oplata/', '/otzyvy/']) {
-      const visibleCopy = page.locator(`a[href="${href}"]:visible`);
-      await expect(visibleCopy.first(), `visible link to ${href}`).toBeVisible();
+    // Кластер направлений. С r44 те же адреса появились в мобильном меню
+    // (закрытая панель идёт в DOM раньше футера), поэтому проверка делится на
+    // два независимых факта:
+    //   1) отданная разметка главной содержит все адреса кластера;
+    //   2) в видимом блоке «Разделы сайта» эти адреса действительно доступны.
+    const cluster = ['/zakazat-tort-spb/', '/tort-s-dostavkoy/', '/bento-torty/', '/detskie-torty/',
+      '/svadebnye-torty/', '/o-konditere/', '/dostavka-i-oplata/', '/otzyvy/'];
+    const served = await (await page.request.get('/')).text();
+    for (const href of cluster) {
+      expect(served, `served homepage must link ${href}`).toContain(`href="${href}"`);
+    }
+    // Блок «Разделы сайта» в калькуляторе — отдельный вход в тот же кластер.
+    expect(await page.locator('.cb-tags a').count(), 'calculator section links').toBeGreaterThanOrEqual(9);
+    // Видимые копии: футер (навигационная колонка и «Наши проекты»), плюс блок
+    // ссылок над футером. Именно они, а не скрытая панель меню, дают переход.
+    for (const href of cluster) {
+      const visibleCopy = page.locator(
+        `.footer-col a[href="${href}"]:visible, .footer-projects a[href="${href}"]:visible, .cb-tags a[href="${href}"]:visible`,
+      );
+      await expect(visibleCopy.first(), `visible homepage link to ${href}`).toBeVisible();
     }
   });
 });

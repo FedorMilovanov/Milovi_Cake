@@ -92,33 +92,6 @@ function measure() {
   };
 }
 
-
-// ── Временная диагностика (TEMP-PROBE) ─────────────────────────────────────
-// Нужна, чтобы понять, почему `footer .footer-col a` в CI не находит ссылку
-// на /zakazat-tort-spb/, хотя в разметке она внутри .footer-col.
-const PROBE = String(process.env.MM_PROBE || '') === '1';
-const probeRows = [];
-async function domProbe(page, label) {
-  if (!PROBE) return;
-  probeRows.push(await page.evaluate((tag) => {
-    const q = (sel) => document.querySelectorAll(sel).length;
-    const footer = document.querySelector('footer');
-    return {
-      label: tag,
-      url: location.pathname,
-      footers: q('footer'),
-      footerCol: q('footer .footer-col'),
-      footerColAnchors: q('footer .footer-col a'),
-      footerColTarget: q('footer .footer-col a[href="/zakazat-tort-spb/"]'),
-      anyTarget: q('a[href="/zakazat-tort-spb/"]'),
-      siteFooterColAnchors: q('.site-footer .footer-col a'),
-      footerHtmlLength: footer ? footer.outerHTML.length : 0,
-      footerClass: footer ? footer.className : null,
-      footerChildTags: footer ? Array.from(footer.children).map((c) => c.tagName + '.' + c.className).slice(0, 6) : [],
-    };
-  }, label));
-}
-
 (async () => {
   fs.mkdirSync(OUT, { recursive: true });
   const browser = await chromium.launch();
@@ -143,7 +116,6 @@ async function domProbe(page, label) {
       const page = await context.newPage();
       await page.goto(`${BASE}/`, { waitUntil: 'domcontentloaded' });
       await page.waitForTimeout(900);
-      await domProbe(page, `${viewport.width}x${viewport.height}-${theme}`);
       const opened = await openMenu(page);
       const file = path.join(OUT, `${PREFIX}-${viewport.width}x${viewport.height}-${theme}.png`);
       await page.screenshot({ path: file, fullPage: false });
@@ -180,7 +152,6 @@ async function domProbe(page, label) {
 
   await browser.close();
   fs.writeFileSync(path.join(OUT, `${PREFIX}-report.json`), JSON.stringify(report, null, 2));
-  if (PROBE) fs.writeFileSync(path.join(OUT, `${PREFIX}-dom-probe.json`), JSON.stringify(probeRows, null, 2));
   for (const row of report) {
     const flags = [];
     if (!row.open) flags.push('NOT-OPEN');
