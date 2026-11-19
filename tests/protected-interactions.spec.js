@@ -1,5 +1,15 @@
 const { test, expect } = require('@playwright/test');
 
+/* [r39] Нижний бар появляется после начала прокрутки: на первом экране его нет,
+   поэтому перед кликом по нему страницу надо прокрутить — как живой пользователь. */
+async function revealMobileAppBar(page) {
+  if (await page.evaluate(() => window.innerWidth > 768)) return;
+  if (!(await page.evaluate(() => document.body.classList.contains('mc-nav-veiled')))) return;
+  await page.evaluate(() => window.scrollTo(0, Math.max(520, Math.round(window.innerHeight * 0.8))));
+  await page.waitForFunction(() => !document.body.classList.contains('mc-nav-veiled'), null, { timeout: 15000 });
+}
+
+
 test.describe('protected homepage interactions', () => {
   test('catalog photo dots support Enter, Space, and bento variant replacement', async ({ page }) => {
     for (const route of ['/', '/prigorody/gatchina/']) {
@@ -327,7 +337,12 @@ test.describe('premium baseline consolidation contracts', () => {
     const nav = page.locator('#mcNav');
     const sheet = page.locator('#mcSheet');
     const more = page.locator('#mcMoreBtn');
+    /* [r39] На первом экране бар скрыт — это часть контракта, а не регрессия. */
+    await expect(page.locator('body')).toHaveClass(/mc-nav-veiled/);
+    expect(await nav.evaluate((el) => el.getBoundingClientRect().top >= window.innerHeight - 1)).toBe(true);
+    await revealMobileAppBar(page);
     await expect(nav).toBeVisible();
+    await expect(page.locator('body')).not.toHaveClass(/mc-nav-veiled/);
     await expect(sheet).toHaveCount(1);
 
     const closed = await sheet.evaluate((el) => {

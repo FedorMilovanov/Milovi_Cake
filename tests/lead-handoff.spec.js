@@ -1,5 +1,15 @@
 const { test, expect } = require('@playwright/test');
 
+/* [r39] Нижний бар появляется после начала прокрутки: на первом экране его нет,
+   поэтому перед кликом по нему страницу надо прокрутить — как живой пользователь. */
+async function revealMobileAppBar(page) {
+  if (await page.evaluate(() => window.innerWidth > 768)) return;
+  if (!(await page.evaluate(() => document.body.classList.contains('mc-nav-veiled')))) return;
+  await page.evaluate(() => window.scrollTo(0, Math.max(520, Math.round(window.innerHeight * 0.8))));
+  await page.waitForFunction(() => !document.body.classList.contains('mc-nav-veiled'), null, { timeout: 15000 });
+}
+
+
 // The animated CTA moves under the pointer after validation; test the real
 // keyboard/click handoff with the user's reduced-motion preference enabled.
 test.beforeEach(async ({ page }) => { await page.emulateMedia({ reducedMotion: 'reduce' }); });
@@ -86,6 +96,7 @@ test('cart records each validated WhatsApp/Telegram handoff only when the tab op
   await watchHandoffs(page);
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => addToCart(2));
+  if (testInfo.project.name === 'chromium-mobile') await revealMobileAppBar(page); // [r39]
   const trigger = page.locator(testInfo.project.name === 'chromium-mobile'
     ? '#mcNav .mc-btn--order' : '#cartBtn');
   await expect(trigger).toBeVisible();

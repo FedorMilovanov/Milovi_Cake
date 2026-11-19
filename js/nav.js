@@ -114,9 +114,14 @@
           'bottom:var(--mc-nav-gap, 8px);',
           'z-index:105;',
           'align-items:stretch;',
-          'transition:transform 0.28s cubic-bezier(.4,0,.2,1);',
+          'transition:transform 0.28s cubic-bezier(.4,0,.2,1),opacity 0.2s ease;',
         '}',
         '.mc-nav.mc-nav--hidden{transform:translateY(100%);}',
+        /* [r39] Бар не занимает низ на первом экране. Правила ниже обязаны
+           перебивать !important-блок «app shell» из v20-fixes.css, поэтому
+           и специфичность (id + 3 класса), и !important. */
+        'body.mc-nav-veiled #mcNav.mc-nav{transform:translateY(calc(100% + var(--mc-nav-gap, 8px) + 20px)) !important;opacity:0 !important;pointer-events:none !important;transition:none !important;}',
+        'body.mc-nav-veiled .mc-nav{transform:translateY(calc(100% + var(--mc-nav-gap, 8px) + 20px)) !important;opacity:0 !important;pointer-events:none !important;}',
 
         /* Кнопки в баре */
         '.mc-btn{',
@@ -303,6 +308,7 @@
         '.mc-sheet-safe{height:env(safe-area-inset-bottom,0px);}',
       '}', /* end @media */
   
+  '@media(prefers-reduced-motion:reduce){.mc-nav{transition:none;}}',
   /* has-mc-nav: CSS class approach for body bottom-padding (no inline style) */
   '.has-mc-nav{padding-bottom:calc(60px + env(safe-area-inset-bottom,0px)) !important;}',
   '@media(min-width:769px){.has-mc-nav{padding-bottom:0 !important;}}',
@@ -584,25 +590,65 @@
       }
     }
 
-    // ── Скрывать nav при скролле вниз ──
-    var lastScrollY = window.scrollY;
+    // ── [r39] Бар появляется, когда он нужен ──
+    // Владелец: на стартовом экране «корзина / заказы» внизу не нужны.
+    // Раньше бар висел всегда: v20-fixes.css прибивал его к низу через
+    // transform:translateY(0)!important, поэтому прежняя логика
+    // «скрыть при скролле вниз» (класс mc-nav--hidden) визуально не работала.
+    // Теперь состояние живёт на body (mc-nav-veiled) и перебивает тот блок:
+    // пока не прокручена половина вьюпорта (200…480 px) — бара нет, после —
+    // он на месте, при возврате наверх снова уезжает.
+    var NAV_REVEAL_MIN = 200, NAV_REVEAL_MAX = 480;
+    function revealThreshold() {
+      return Math.min(Math.max(window.innerHeight * 0.5, NAV_REVEAL_MIN), NAV_REVEAL_MAX);
+    }
+    var veiled = null; // null → ещё не применено
+    function setVeiled(next) {
+      if (next === veiled) return;
+      veiled = next;
+      document.body.classList.toggle('mc-nav-veiled', next);
+      if (next) {
+        /* Скрытый бар не должен ловить Tab: off-screen кнопки без inert
+           превращаются в невидимые точки фокуса (WCAG 2.4.7). */
+        nav.setAttribute('inert', '');
+        nav.setAttribute('aria-hidden', 'true');
+      } else {
+        nav.removeAttribute('inert');
+        nav.removeAttribute('aria-hidden');
+      }
+    }
+    setVeiled(window.scrollY < revealThreshold());
+
+    /* Пока открыта корзина, меню или настройки согласия, страница прибита
+       к position:fixed и window.scrollY обнуляется. Если бы мы верили этому
+       нулю, бар «прятался» бы в момент открытия корзины — и возврат фокуса на
+       него после закрытия ломался бы (inert). Поэтому в этот момент состояние
+       не трогаем, а пересчитываем после снятия блокировки. */
+    function isUiLocked() {
+      var body = document.body;
+      return body.classList.contains('cart-open') ||
+             body.classList.contains('menu-open') ||
+             body.classList.contains('mc-consent-open') ||
+             body.style.position === 'fixed';
+    }
     var ticking = false;
-    window.addEventListener('scroll', function() {
+    function syncNavVisibility() {
+      if (!isUiLocked()) setVeiled(window.scrollY < revealThreshold());
+      ticking = false;
+    }
+    function scheduleNavSync() {
       if (ticking) return;
       ticking = true;
-      requestAnimationFrame(function() {
-        var y = window.scrollY;
-        if (y > lastScrollY + 10 && y > 120 && !isOpen) {
-          nav.classList.add('mc-nav--hidden');
-          document.body.classList.add('mc-nav-hidden');
-        } else if (y < lastScrollY - 5) {
-          nav.classList.remove('mc-nav--hidden');
-          document.body.classList.remove('mc-nav-hidden');
-        }
-        lastScrollY = y;
-        ticking = false;
-      });
-    }, { passive: true });
+      requestAnimationFrame(syncNavVisibility);
+    }
+    window.addEventListener('scroll', scheduleNavSync, { passive: true });
+    window.addEventListener('resize', scheduleNavSync, { passive: true });
+    window.addEventListener('pageshow', scheduleNavSync);
+    /* Корзина и меню меняют блокировку body классом/инлайновым стилем —
+       пересчитываем видимость сразу после снятия, не дожидаясь скролла. */
+    try {
+      new MutationObserver(scheduleNavSync).observe(document.body, { attributes: true, attributeFilter: ['class', 'style'] });
+    } catch (e) { /* старые движки без MutationObserver — хватит scroll/resize */ }
 
     // ── CSS для mc-sheet-open (только overflow, без position:fixed) ──
     var lockStyle = document.createElement('style');

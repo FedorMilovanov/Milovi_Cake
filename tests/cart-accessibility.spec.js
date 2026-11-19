@@ -221,6 +221,7 @@ test('clear-cart confirmation is themed, labelled and keyboard-contained', async
     await page.addInitScript((mode) => { localStorage.setItem('mc_theme', mode); }, theme);
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.evaluate(() => addToCart(2));
+    if (testInfo.project.name === 'chromium-mobile') await revealMobileAppBar(page); // [r39]
     const trigger = page.locator(testInfo.project.name === 'chromium-mobile'
       ? '#mcNav .mc-btn--order' : '#cartBtn');
     await trigger.click();
@@ -304,6 +305,7 @@ for (const theme of ['light', 'dark']) {
       let scrollBefore = 0;
       if (mobile) {
         await page.locator('#catalog').scrollIntoViewIfNeeded();
+        await revealMobileAppBar(page); // [r39] бар появляется после прокрутки
         scrollBefore = await page.evaluate(() => window.scrollY);
         expect(scrollBefore).toBeGreaterThan(0);
       }
@@ -559,8 +561,42 @@ for (const failure of ['QuotaExceededError', 'SecurityError']) {
   });
 }
 
+/* [r38] Ждём, пока контрол перестанет двигаться: drawer выезжает за .4 s,
+   и клик, начатый в середине въезда, на медленном движке (WebKit + 4×CPU)
+   может так и не получить подтверждение «стабилен». Это не повышение
+   таймаута: ожидание заканчивается, как только прямоугольник совпал на трёх
+   кадрах подряд, и ограничено 90 кадрами. */
+/* [r39] Нижний бар появляется после начала прокрутки: на первом экране его нет,
+   поэтому перед кликом по бару страницу надо прокрутить — как живой пользователь. */
+async function revealMobileAppBar(page) {
+  if (await page.evaluate(() => window.innerWidth > 768)) return;
+  if (!(await page.evaluate(() => document.body.classList.contains('mc-nav-veiled')))) return;
+  await page.evaluate(() => window.scrollTo(0, Math.max(520, Math.round(window.innerHeight * 0.8))));
+  await page.waitForFunction(() => !document.body.classList.contains('mc-nav-veiled'), null, { timeout: 15000 });
+}
+
+async function settleElement(page, selector) {
+  await page.evaluate((sel) => new Promise((resolve) => {
+    const element = document.querySelector(sel);
+    if (!element) return resolve();
+    let previous = null;
+    let stable = 0;
+    let frames = 0;
+    const tick = () => {
+      const box = element.getBoundingClientRect();
+      const key = [box.x, box.y, box.width, box.height].map((value) => Math.round(value * 10) / 10).join(',');
+      if (key === previous) stable += 1; else { previous = key; stable = 0; }
+      frames += 1;
+      if (stable >= 3 || frames > 90) resolve();
+      else requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }), selector);
+}
+
 async function openCartByUser(page, testInfo) {
   const mobile = testInfo.project.name.endsWith('-mobile');
+  if (mobile) await revealMobileAppBar(page); // [r39]
   const trigger = page.locator(mobile ? '#mcNav .mc-btn--order' : '#cartBtn');
   await expect(trigger).toBeVisible();
   await trigger.click();
@@ -873,7 +909,8 @@ test('mobile calculator panel stays reachable and restores keyboard focus', asyn
   for (const route of ['/', '/prigorody/pushkin/']) {
     await page.goto(route, { waitUntil: 'domcontentloaded' });
     // A real navigation click releases the deferred catalog before scrolling.
-    await page.locator('#mcNav [data-section="catalog"]').click();
+    await revealMobileAppBar(page); // [r39]
+  await page.locator('#mcNav [data-section="catalog"]').click();
     await expect(page.locator('#card-2 .btn-add')).toBeVisible();
     await page.locator('#fillings').scrollIntoViewIfNeeded();
     // Dock spec 2026-11-16: the price strip stays idle until the first real
@@ -920,7 +957,8 @@ test('mobile calculator fast Tab keeps actions available with reduced motion', a
   await page.emulateMedia({ reducedMotion: 'reduce' });
   for (const route of ['/', '/prigorody/pushkin/']) {
     await page.goto(route, { waitUntil: 'domcontentloaded' });
-    await page.locator('#mcNav [data-section="catalog"]').click();
+    await revealMobileAppBar(page); // [r39]
+  await page.locator('#mcNav [data-section="catalog"]').click();
     await expect(page.locator('#card-2 .btn-add')).toBeVisible();
     await page.locator('#fillings').scrollIntoViewIfNeeded();
     await page.locator('#calcType .calc-type-card.selected').click(); // dock spec 2026-11-16: first real choice reveals the price strip
@@ -973,6 +1011,7 @@ test('mobile calculator ignores a stale scroll event but closes on a real scroll
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await revealMobileAppBar(page); // [r39]
   await page.locator('#mcNav [data-section="catalog"]').click();
   await page.locator('#fillings').scrollIntoViewIfNeeded();
   await page.locator('#calcType .calc-type-card.selected').click();
@@ -1034,7 +1073,8 @@ test('mobile calculator clears the navigation above a safe-area inset', async ({
   try {
     for (const route of ['/', '/prigorody/pushkin/']) {
       await page.goto(route, { waitUntil: 'domcontentloaded' });
-      await page.locator('#mcNav [data-section="catalog"]').click();
+      await revealMobileAppBar(page); // [r39]
+  await page.locator('#mcNav [data-section="catalog"]').click();
       await expect(page.locator('#card-2 .btn-add')).toBeVisible();
       await page.locator('#fillings').scrollIntoViewIfNeeded();
       await page.locator('#calcType .calc-type-card.selected').click();
@@ -1138,7 +1178,8 @@ test('mobile calculator resize clears its backdrop before desktop and on return'
   for (const route of ['/', '/prigorody/pushkin/']) {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(route, { waitUntil: 'domcontentloaded' });
-    await page.locator('#mcNav [data-section="catalog"]').click();
+    await revealMobileAppBar(page); // [r39]
+  await page.locator('#mcNav [data-section="catalog"]').click();
     await expect(page.locator('#card-2 .btn-add')).toBeVisible();
     await page.locator('#fillings').scrollIntoViewIfNeeded();
     await page.locator('#calcType .calc-type-card.selected').click();
