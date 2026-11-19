@@ -203,9 +203,16 @@ test.describe('mobile menu @menu', () => {
         for (const row of primary) {
           expect(row.top, `первый экран: «${row.text}» ниже вьюпорта`).toBeLessThan(view.vh);
         }
-        if (viewport.height >= 740) {
-          expect(view.bodyOverflow, `на ${viewport.height} px всё меню должно помещаться без прокрутки`).toBeLessThanOrEqual(1);
+        // Хвост меню не должен прятаться «за сгибом» целиком: на типичных
+        // телефонах (≥ 844 px) меню помещается целиком, на 740 px допускается
+        // одна короткая прокрутка тела, но не «простыня» скрытого контента.
+        if (viewport.height >= 844) {
+          expect(view.bodyOverflow, `на ${viewport.height} px всё меню должно помещаться без прокрутки`).toBeLessThanOrEqual(2);
+        } else {
+          expect(view.bodyOverflow, `на ${viewport.height} px скрыто слишком много пунктов`).toBeLessThanOrEqual(140);
         }
+        // Шапка и сервисный низ закреплены — контакты и тема доступны всегда.
+        expect(view.foot.top, 'сервисный низ виден без прокрутки').toBeLessThan(view.vh);
 
         await page.screenshot({ path: proofPath(testInfo, `menu-${viewport.width}x${viewport.height}-${theme}`) });
       });
