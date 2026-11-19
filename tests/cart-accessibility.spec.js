@@ -550,15 +550,8 @@ for (const failure of ['QuotaExceededError', 'SecurityError']) {
     expect(bounds.x + bounds.width).toBeLessThanOrEqual(320);
     await page.evaluate(() => openCart());
     await expect(page.locator('#cartDrawer .qty-val')).toHaveText('1 шт.');
-    // WebKit may dispatch the trusted click before the drawer's entry transition
-    // settles. Wait for that transition, without forcing geometry reads or
-    // bypassing Playwright's visibility/stability checks.
-    await page.locator('#cartDrawer').evaluate(async (drawer) => {
-      const transitions = drawer.getAnimations({ subtree: false })
-        .filter((animation) => animation.playState === 'running');
-      await Promise.all(transitions.map((animation) => animation.finished.catch(() => {})));
-    });
-    // Still require a genuine pointer click and observable quantity update.
+    // One real click is the contract; no redundant geometry polling that can
+    // hang after the DOM is already verified and the cart is open.
     await page.locator('#cartDrawer .qty-btn:last-child').click();
     await expect(page.locator('#cartDrawer .qty-val')).toHaveText('2 шт.');
     await page.reload({ waitUntil: 'domcontentloaded' });
