@@ -1,0 +1,520 @@
+[
+  {
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "theme": "light",
+    "open": true,
+    "vw": 320,
+    "vh": 568,
+    "menu": {
+      "x": 0,
+      "y": 0,
+      "w": 320,
+      "h": 568
+    },
+    "head": {
+      "x": 0,
+      "y": 0,
+      "w": 320,
+      "h": 69
+    },
+    "foot": {
+      "x": 0,
+      "y": 415,
+      "w": 320,
+      "h": 153
+    },
+    "bodyScrolls": true,
+    "bodyOverflow": 188,
+    "rows": 19,
+    "rowsAboveFold": 18,
+    "tapTooSmall": [
+      "Светлая",
+      "Тёмная"
+    ],
+    "overflowX": []
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "theme": "dark",
+    "open": true,
+    "vw": 320,
+    "vh": 568,
+    "menu": {
+      "x": 0,
+      "y": 0,
+      "w": 320,
+      "h": 568
+    },
+    "head": {
+      "x": 0,
+      "y": 0,
+      "w": 320,
+      "h": 69
+    },
+    "foot": {
+      "x": 0,
+      "y": 415,
+      "w": 320,
+      "h": 153
+    },
+    "bodyScrolls": true,
+    "bodyOverflow": 188,
+    "rows": 19,
+    "rowsAboveFold": 18,
+    "tapTooSmall": [
+      "Светлая",
+      "Тёмная"
+    ],
+    "overflowX": []
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 740
+    },
+    "theme": "light",
+    "open": true,
+    "vw": 360,
+    "vh": 740,
+    "menu": {
+      "x": 0,
+      "y": 0,
+      "w": 360,
+      "h": 740
+    },
+    "head": {
+      "x": 0,
+      "y": 0,
+      "w": 360,
+      "h": 69
+    },
+    "foot": {
+      "x": 0,
+      "y": 581,
+      "w": 360,
+      "h": 159
+    },
+    "bodyScrolls": true,
+    "bodyOverflow": 92,
+    "rows": 19,
+    "rowsAboveFold": 19,
+    "tapTooSmall": [
+      "Светлая",
+      "Тёмная"
+    ],
+    "overflowX": []
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 740
+    },
+    "theme": "dark",
+    "open": true,
+    "vw": 360,
+    "vh": 740,
+    "menu": {
+      "x": 0,
+      "y": 0,
+      "w": 360,
+      "h": 740
+    },
+    "head": {
+      "x": 0,
+      "y": 0,
+      "w": 360,
+      "h": 69
+    },
+    "foot": {
+      "x": 0,
+      "y": 581,
+      "w": 360,
+      "h": 159
+    },
+    "bodyScrolls": true,
+    "bodyOverflow": 92,
+    "rows": 19,
+    "rowsAboveFold": 19,
+    "tapTooSmall": [
+      "Светлая",
+      "Тёмная"
+    ],
+    "overflowX": []
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "theme": "light",
+    "open": true,
+    "vw": 390,
+    "vh": 844,
+    "menu": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    "head": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 69
+    },
+    "foot": {
+      "x": 0,
+      "y": 685,
+      "w": 390,
+      "h": 159
+    },
+    "bodyScrolls": false,
+    "bodyOverflow": 0,
+    "rows": 19,
+    "rowsAboveFold": 19,
+    "tapTooSmall": [
+      "Светлая",
+      "Тёмная"
+    ],
+    "overflowX": []
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "theme": "dark",
+    "open": true,
+    "vw": 390,
+    "vh": 844,
+    "menu": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    "head": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 69
+    },
+    "foot": {
+      "x": 0,
+      "y": 685,
+      "w": 390,
+      "h": 159
+    },
+    "bodyScrolls": false,
+    "bodyOverflow": 0,
+    "rows": 19,
+    "rowsAboveFold": 19,
+    "tapTooSmall": [
+      "Светлая",
+      "Тёмная"
+    ],
+    "overflowX": []
+  },
+  {
+    "viewport": {
+      "width": 430,
+      "height": 932
+    },
+    "theme": "light",
+    "open": true,
+    "vw": 430,
+    "vh": 932,
+    "menu": {
+      "x": 0,
+      "y": 0,
+      "w": 430,
+      "h": 932
+    },
+    "head": {
+      "x": 0,
+      "y": 0,
+      "w": 430,
+      "h": 69
+    },
+    "foot": {
+      "x": 0,
+      "y": 773,
+      "w": 430,
+      "h": 159
+    },
+    "bodyScrolls": false,
+    "bodyOverflow": 0,
+    "rows": 19,
+    "rowsAboveFold": 19,
+    "tapTooSmall": [
+      "Светлая",
+      "Тёмная"
+    ],
+    "overflowX": []
+  },
+  {
+    "viewport": {
+      "width": 430,
+      "height": 932
+    },
+    "theme": "dark",
+    "open": true,
+    "vw": 430,
+    "vh": 932,
+    "menu": {
+      "x": 0,
+      "y": 0,
+      "w": 430,
+      "h": 932
+    },
+    "head": {
+      "x": 0,
+      "y": 0,
+      "w": 430,
+      "h": 69
+    },
+    "foot": {
+      "x": 0,
+      "y": 773,
+      "w": 430,
+      "h": 159
+    },
+    "bodyScrolls": false,
+    "bodyOverflow": 0,
+    "rows": 19,
+    "rowsAboveFold": 19,
+    "tapTooSmall": [
+      "Светлая",
+      "Тёмная"
+    ],
+    "overflowX": []
+  },
+  {
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "theme": "light",
+    "open": true,
+    "vw": 768,
+    "vh": 1024,
+    "menu": {
+      "x": 0,
+      "y": 0,
+      "w": 768,
+      "h": 1024
+    },
+    "head": {
+      "x": 0,
+      "y": 0,
+      "w": 768,
+      "h": 69
+    },
+    "foot": {
+      "x": 0,
+      "y": 865,
+      "w": 768,
+      "h": 159
+    },
+    "bodyScrolls": false,
+    "bodyOverflow": 0,
+    "rows": 19,
+    "rowsAboveFold": 19,
+    "tapTooSmall": [
+      "Светлая",
+      "Тёмная"
+    ],
+    "overflowX": []
+  },
+  {
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "theme": "dark",
+    "open": true,
+    "vw": 768,
+    "vh": 1024,
+    "menu": {
+      "x": 0,
+      "y": 0,
+      "w": 768,
+      "h": 1024
+    },
+    "head": {
+      "x": 0,
+      "y": 0,
+      "w": 768,
+      "h": 69
+    },
+    "foot": {
+      "x": 0,
+      "y": 865,
+      "w": 768,
+      "h": 159
+    },
+    "bodyScrolls": false,
+    "bodyOverflow": 0,
+    "rows": 19,
+    "rowsAboveFold": 19,
+    "tapTooSmall": [
+      "Светлая",
+      "Тёмная"
+    ],
+    "overflowX": []
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 420
+    },
+    "theme": "light",
+    "open": true,
+    "vw": 390,
+    "vh": 420,
+    "menu": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 420
+    },
+    "head": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 69
+    },
+    "foot": {
+      "x": 0,
+      "y": 267,
+      "w": 390,
+      "h": 153
+    },
+    "bodyScrolls": true,
+    "bodyOverflow": 336,
+    "rows": 19,
+    "rowsAboveFold": 12,
+    "tapTooSmall": [
+      "Светлая",
+      "Тёмная"
+    ],
+    "overflowX": []
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 420
+    },
+    "theme": "dark",
+    "open": true,
+    "vw": 390,
+    "vh": 420,
+    "menu": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 420
+    },
+    "head": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 69
+    },
+    "foot": {
+      "x": 0,
+      "y": 267,
+      "w": 390,
+      "h": 153
+    },
+    "bodyScrolls": true,
+    "bodyOverflow": 336,
+    "rows": 19,
+    "rowsAboveFold": 12,
+    "tapTooSmall": [
+      "Светлая",
+      "Тёмная"
+    ],
+    "overflowX": []
+  },
+  {
+    "viewport": {
+      "width": 667,
+      "height": 375
+    },
+    "theme": "light",
+    "open": true,
+    "vw": 667,
+    "vh": 375,
+    "menu": {
+      "x": 0,
+      "y": 0,
+      "w": 667,
+      "h": 375
+    },
+    "head": {
+      "x": 0,
+      "y": 0,
+      "w": 667,
+      "h": 69
+    },
+    "foot": {
+      "x": 0,
+      "y": 222,
+      "w": 667,
+      "h": 153
+    },
+    "bodyScrolls": true,
+    "bodyOverflow": 349,
+    "rows": 19,
+    "rowsAboveFold": 12,
+    "tapTooSmall": [
+      "Светлая",
+      "Тёмная"
+    ],
+    "overflowX": []
+  },
+  {
+    "viewport": {
+      "width": 667,
+      "height": 375
+    },
+    "theme": "dark",
+    "open": true,
+    "vw": 667,
+    "vh": 375,
+    "menu": {
+      "x": 0,
+      "y": 0,
+      "w": 667,
+      "h": 375
+    },
+    "head": {
+      "x": 0,
+      "y": 0,
+      "w": 667,
+      "h": 69
+    },
+    "foot": {
+      "x": 0,
+      "y": 222,
+      "w": 667,
+      "h": 153
+    },
+    "bodyScrolls": true,
+    "bodyOverflow": 349,
+    "rows": 19,
+    "rowsAboveFold": 12,
+    "tapTooSmall": [
+      "Светлая",
+      "Тёмная"
+    ],
+    "overflowX": []
+  }
+]
