@@ -474,5 +474,75 @@
     "rowsAboveFold": 6,
     "tapTooSmall": [],
     "overflowX": []
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "theme": "light",
+    "page": "/prigorody/pushkin/",
+    "open": true,
+    "vw": 390,
+    "vh": 844,
+    "menu": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    "head": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 69
+    },
+    "foot": {
+      "x": 0,
+      "y": 679,
+      "w": 390,
+      "h": 165
+    },
+    "bodyScrolls": false,
+    "bodyOverflow": 0,
+    "rows": 19,
+    "rowsAboveFold": 19,
+    "tapTooSmall": [],
+    "overflowX": []
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "theme": "dark",
+    "page": "/prigorody/pushkin/",
+    "open": true,
+    "vw": 390,
+    "vh": 844,
+    "menu": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    "head": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 69
+    },
+    "foot": {
+      "x": 0,
+      "y": 679,
+      "w": 390,
+      "h": 165
+    },
+    "bodyScrolls": false,
+    "bodyOverflow": 0,
+    "rows": 19,
+    "rowsAboveFold": 19,
+    "tapTooSmall": [],
+    "overflowX": []
   }
 ]
