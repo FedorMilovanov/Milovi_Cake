@@ -248,7 +248,20 @@ test.describe('mobile menu @menu', () => {
   }
 
   test('модальное поведение: фокус, Tab-ловушка, Escape и возврат фокуса', async ({ page }) => {
-    await openMenu(page);
+    // Явно делаем бургер владельцем фокуса до открытия: тогда возврат фокуса
+    // детерминирован и не зависит от того, фокусирует ли движок кнопку по клику.
+    await page.addInitScript(() => {
+      try {
+        localStorage.setItem('mc_theme', 'light');
+        localStorage.setItem('milovi_analytics_consent_v1', 'denied');
+      } catch (e) {}
+      document.documentElement.setAttribute('data-theme', 'light');
+    });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.locator('#burgerBtn').focus();
+    await page.locator('#burgerBtn').click();
+    await expect(page.locator('#mobileMenu')).toHaveClass(/open/);
+    await page.waitForTimeout(280);
 
     await expect(page.locator('#burgerBtn')).toHaveAttribute('aria-expanded', 'true');
     await expect(page.locator('#mobileMenu')).toHaveAttribute('aria-modal', 'true');
