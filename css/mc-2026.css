@@ -1987,6 +1987,27 @@ body.vview-open{overflow:hidden}
     .mm-link-note { display: none; }
     .mobile-menu-nav a { min-height: 46px; }
   }
+  /* Очень низкие экраны (телефон в landscape): закреплённый низ съедал бы
+     больше трети высоты, поэтому прокручивается вся панель, а закреплена
+     только шапка с кнопкой закрытия. */
+  @media (max-height: 480px) {
+    .mobile-menu {
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+    .mobile-menu-head {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: var(--mm-surface);
+    }
+    .mobile-menu-body {
+      flex: 0 0 auto;
+      overflow: visible;
+    }
+    .mobile-menu-foot { position: static; }
+  }
   @media (max-width: 359px) {
     .mobile-menu-brand-name { font-size: 17px; letter-spacing: 0.12em; }
     .mobile-menu-nav a { min-height: 54px; }
