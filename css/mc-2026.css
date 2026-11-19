@@ -1638,6 +1638,7 @@ body.vview-open{overflow:hidden}
     --mm-ink-soft: #6b4c38;
     --mm-ink-mute: #765941;
     --mm-gold: #865a24;
+    --mm-pad: clamp(20px, 5.2vw, 42px);
 
     position: fixed;
     top: 0;
@@ -1681,7 +1682,7 @@ body.vview-open{overflow:hidden}
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: calc(12px + env(safe-area-inset-top, 0px)) 14px 12px 20px;
+    padding: calc(12px + env(safe-area-inset-top, 0px)) calc(var(--mm-pad) - 6px) 12px var(--mm-pad);
     border-bottom: 1px solid var(--mm-line);
   }
   .mobile-menu-brand {
@@ -1739,11 +1740,11 @@ body.vview-open{overflow:hidden}
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
-    padding: 14px 0 10px;
+    padding: clamp(12px, 2.4vh, 22px) 0 10px;
   }
   .mobile-menu-section-label {
     display: block;
-    padding: 0 20px 7px;
+    padding: 0 var(--mm-pad) 7px;
     font-family: 'Jost', sans-serif;
     font-size: 9.5px;
     font-weight: 500;
@@ -1753,7 +1754,7 @@ body.vview-open{overflow:hidden}
   }
   .mm-formats,
   .mm-sublinks {
-    margin-top: 18px;
+    margin-top: clamp(18px, 4.2vh, 34px);
   }
 
   /* ── Основные разделы ── */
@@ -1764,8 +1765,8 @@ body.vview-open{overflow:hidden}
     align-items: center;
     justify-content: space-between;
     gap: 14px;
-    min-height: 58px;
-    padding: 9px 20px;
+    min-height: clamp(56px, 7vh, 66px);
+    padding: 9px var(--mm-pad);
     border-bottom: 1px solid var(--mm-line);
     transition: background-color 0.16s ease;
     -webkit-tap-highlight-color: transparent;
@@ -1792,7 +1793,7 @@ body.vview-open{overflow:hidden}
   .mm-link-arrow {
     flex: 0 0 auto;
     color: var(--mm-gold);
-    opacity: 0.45;
+    opacity: 0.6;
     transition: transform 0.18s ease, opacity 0.18s ease;
   }
   .mobile-menu-nav a:active .mm-link-arrow {
@@ -1805,12 +1806,12 @@ body.vview-open{overflow:hidden}
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
-    padding: 0 20px;
+    padding: 0 var(--mm-pad);
   }
   .mm-chip {
     display: flex;
     align-items: center;
-    min-height: 44px;
+    min-height: clamp(44px, 5.4vh, 52px);
     padding: 8px 13px;
     border: 1px solid var(--mm-line-strong);
     border-radius: 11px;
@@ -1835,7 +1836,7 @@ body.vview-open{overflow:hidden}
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0 10px;
-    padding: 0 20px;
+    padding: 0 var(--mm-pad);
   }
   .mm-sublink {
     display: flex;
@@ -1855,7 +1856,7 @@ body.vview-open{overflow:hidden}
   /* ── Сервисный низ: контакты + тема ── */
   .mobile-menu-foot {
     flex: 0 0 auto;
-    padding: 10px 20px calc(10px + env(safe-area-inset-bottom, 0px));
+    padding: 10px var(--mm-pad) calc(10px + env(safe-area-inset-bottom, 0px));
     background: var(--mm-surface-2);
     border-top: 1px solid var(--mm-line);
   }
@@ -1885,6 +1886,16 @@ body.vview-open{overflow:hidden}
     -webkit-tap-highlight-color: transparent;
   }
   .mm-msg svg { flex: 0 0 auto; display: block; }
+  @media (min-width: 480px) {
+    .mm-contacts {
+      display: flex;
+      gap: 10px;
+    }
+    .mm-msg {
+      flex: 0 0 auto;
+      padding: 0 18px;
+    }
+  }
   .mm-msg--wa svg { color: #25d366; }
   .mm-msg--tg svg { color: #229ed9; }
   .mm-msg:active { background: rgba(201, 147, 74, 0.10); border-color: rgba(201, 147, 74, 0.38); }
@@ -1959,31 +1970,21 @@ body.vview-open{overflow:hidden}
   }
 
   /* ── Низкие экраны: шапка закреплена, остальное прокручивается ── */
-  @media (max-height: 620px) {
-    .mobile-menu {
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      -webkit-overflow-scrolling: touch;
+  @media (max-height: 640px) {
+    .mobile-menu-nav a {
+      min-height: 52px;
+      padding-top: 7px;
+      padding-bottom: 7px;
     }
-    .mobile-menu-head {
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      background: var(--mm-surface);
-    }
-    .mobile-menu-body {
-      flex: 0 0 auto;
-      overflow: visible;
-      padding-top: 10px;
-    }
-    .mobile-menu-foot { position: static; }
-    .mobile-menu-nav a { min-height: 52px; padding-top: 7px; padding-bottom: 7px; }
     .mobile-menu-nav a{font-size:21px;}
-    .mm-formats, .mm-sublinks { margin-top: 12px; }
-    .mobile-menu-body { padding-bottom: 4px; }
-    .mobile-menu-foot { padding-top: 8px; }
+    .mm-link-note { font-size: 9.5px; }
+    .mm-formats, .mm-sublinks { margin-top: 14px; }
+    .mobile-menu-nav a + a { margin-top: 0; }
+    .mobile-menu-body { padding-top: 10px; }
+    .mobile-menu-foot { padding-top: 8px; padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)); }
+    .mm-theme-opt { min-height: 36px; }
   }
-  @media (max-height: 620px) and (orientation: landscape) {
+  @media (max-height: 640px) and (orientation: landscape) {
     .mm-link-note { display: none; }
     .mobile-menu-nav a { min-height: 46px; }
   }

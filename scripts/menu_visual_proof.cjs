@@ -37,7 +37,7 @@ const VIEWPORTS = [
   { width: 430, height: 932 },
   { width: 768, height: 1024 },
   { width: 390, height: 420 },   // низкая высота (открытая клавиатура / малый экран)
-  { width: 844, height: 390 },   // landscape
+  { width: 667, height: 375 },   // телефон в landscape (ширина остаётся мобильной)
 ];
 
 const THEMES = ['light', 'dark'];
@@ -45,6 +45,7 @@ const THEMES = ['light', 'dark'];
 async function openMenu(page) {
   const burger = page.locator('#burgerBtn');
   if (!(await burger.count())) return false;
+  if (!(await burger.isVisible())) return false;
   await burger.click();
   await page.waitForTimeout(420);
   return page.evaluate(() => {

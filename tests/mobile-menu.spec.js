@@ -88,6 +88,7 @@ test.describe('mobile menu @menu', () => {
       '/prigorody/',
       '/o-konditere/',
       '/otzyvy/',
+      '/certificates/',
       '#fillings',
       '#contacts',
       'tel:+79119038886',
