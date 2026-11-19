@@ -201,12 +201,6 @@
   opacity: 1;
 }
 
-[data-theme="dark"] .calc-guests-badge {
-  color: var(--gold) !important;
-  background: rgba(212,167,106,0.09) !important;
-  border-color: rgba(212,167,106,0.22) !important;
-}
-
 [data-theme="dark"] .calc-stepper-btn {
   background: #251a0c !important;
   border-color: rgba(212,167,106,0.22) !important;
@@ -517,17 +511,6 @@
 [data-theme="dark"] #fillPopup {
   background: var(--card-bg) !important;
   border-color: rgba(212,167,106,0.14) !important;
-}
-[data-theme="dark"] .fill-popup-header {
-  border-bottom-color: rgba(212,167,106,0.12) !important;
-  background: var(--card-bg-elevated) !important;
-}
-[data-theme="dark"] .fill-popup-title {
-  color: var(--text) !important;
-}
-[data-theme="dark"] .fill-popup-close {
-  color: var(--text-muted) !important;
-  background: rgba(212,167,106,0.08) !important;
 }[data-theme="dark"] .cookie-banner{
   background: var(--card-bg) !important;
   border-color: rgba(212,167,106,0.16) !important;
@@ -712,11 +695,6 @@
 
 [data-theme="dark"] #gxLight {
   background: rgba(4,2,1,0.95) !important;
-}
-
-[data-theme="dark"] .gx-light-panel {
-  background: var(--card-bg) !important;
-  border-left-color: rgba(212,167,106,0.12) !important;
 }
 [data-theme="dark"] #gxTitleV2 {
   color: var(--text) !important;
@@ -1429,13 +1407,6 @@ details.faq-item > div > p {
 [data-theme="dark"] .delivery-stat {
   background: var(--card-bg) !important;
   color: var(--text-muted) !important;
-}
-
-[data-theme="dark"] .delivery-stat-label {
-  color: #a08060 !important;
-}
-[data-theme="dark"] .delivery-stat-value {
-  color: var(--text) !important;
 }
 
 
