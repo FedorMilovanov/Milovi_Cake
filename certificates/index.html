@@ -40,6 +40,9 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://milovicake.ru/certificates/" />
   <meta property="og:image" content="https://milovicake.ru/img/og-cover.jpg" />
+  <meta property="og:image:alt" content="Сертификаты кондитерского мастерства Milovi Cake" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:width" content="1200" />
   <meta property="og:locale" content="ru_RU" />
   <meta property="og:site_name" content="Milovi Cake" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -719,6 +722,21 @@
 html:not([data-theme="dark"]) .lp-theme-toggle .lp-ti-moon{display:block}
 html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 @media(max-width:768px){.lp-theme-toggle{margin-left:12px;width:40px;height:40px;min-width:40px}}
+
+    /* Кнопка-оверлей: карточка остаётся <article> с заголовком,
+       а фокусируемый элемент — нативная кнопка поверх неё. */
+    .cert-card__open {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      padding: 0; border: 0; background: transparent; cursor: pointer;
+      border-radius: inherit; z-index: 3;
+    }
+        .cert-card__open-text {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    }
+    .cert-card__open:focus-visible {
+      outline: 2px solid var(--gold); outline-offset: 3px;
+    }
 </style>
 </head>
 <body>
@@ -754,73 +772,93 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     <div class="certs-grid">
 
       <!-- Cert 1: Tort na million (featured — most prestigious) -->
-      <article class="cert-card featured" onclick="openLightbox(0)" role="button" tabindex="0">
+      <article class="cert-card featured">
         <div class="cert-img-wrap">
           <img src="../img/cert_tort_million.webp"
                alt="Сертификат Виктории Миловановой — курс «Торт на миллион 3.0», Ксения Большан, октябрь 2022"
-               width="1536" height="1024" loading="eager" />
+               width="1536" height="1024" loading="eager"  decoding="async" />
         </div>
         <div class="cert-info">
           <div class="cert-year">Октябрь 2022</div>
           <h2 class="cert-title">«Торт на миллион 3.0»</h2>
           <p class="cert-issuer">Трансформационный курс для кондитеров от Ксении Большан (@mafita.cakes). Полная программа: конструкция, декор, продажи</p>
         </div>
+      
+        <button type="button" class="cert-card__open" onclick="openLightbox(0)">
+          <span class="cert-card__open-text">Открыть сертификат курса «Торт на миллион 3.0»</span>
+        </button>
       </article>
 
       <!-- Cert 2: Shokoladnaya floristika -->
-      <article class="cert-card" onclick="openLightbox(1)" role="button" tabindex="0">
+      <article class="cert-card">
         <div class="cert-img-wrap">
           <img src="../img/cert_shokolad.webp"
                alt="Сертификат курса «Шоколадная флористика» — Ирина Мошкина, золотой призёр чемпионата России, май 2024"
-               width="1536" height="1024" loading="lazy" />
+               width="1536" height="1024" loading="lazy"  decoding="async" />
         </div>
         <div class="cert-info">
           <div class="cert-year">Май 2024</div>
           <h2 class="cert-title">Шоколадная флористика</h2>
           <p class="cert-issuer">Ирина Мошкина — золотой призёр Чемпионата России по кондитерскому искусству</p>
         </div>
+      
+        <button type="button" class="cert-card__open" onclick="openLightbox(1)">
+          <span class="cert-card__open-text">Открыть сертификат курса «Шоколадная флористика»</span>
+        </button>
       </article>
 
       <!-- Cert 3: Detskie torty -->
-      <article class="cert-card" onclick="openLightbox(2)" role="button" tabindex="0">
+      <article class="cert-card">
         <div class="cert-img-wrap">
           <img src="../img/cert_detskie_torty.webp"
                alt="Сертификат мастер-класса «Детские торты» — Виктория Милованова, школа Praline, май 2024"
-               width="1536" height="1024" loading="lazy" />
+               width="1536" height="1024" loading="lazy"  decoding="async" />
         </div>
         <div class="cert-info">
           <div class="cert-year">Май 2024</div>
           <h2 class="cert-title">Детские торты</h2>
           <p class="cert-issuer">Кондитерская школа Praline — Припутнева Юлия</p>
         </div>
+      
+        <button type="button" class="cert-card__open" onclick="openLightbox(2)">
+          <span class="cert-card__open-text">Открыть сертификат мастер-класса «Детские торты»</span>
+        </button>
       </article>
 
       <!-- Cert 4: Akvarel / Baryef -->
-      <article class="cert-card" onclick="openLightbox(3)" role="button" tabindex="0">
+      <article class="cert-card">
         <div class="cert-img-wrap">
           <img src="../img/cert_akvarel.webp"
                alt="Сертификат — основы акварельной росписи по мастике, техника «Барельеф», школа Praline, декабрь 2023"
-               width="1535" height="1024" loading="lazy" />
+               width="1535" height="1024" loading="lazy"  decoding="async" />
         </div>
         <div class="cert-info">
           <div class="cert-year">Декабрь 2023</div>
           <h2 class="cert-title">Акварельная роспись по мастике. Барельеф</h2>
           <p class="cert-issuer">Кондитерская школа Praline — Припутнева Юлия</p>
         </div>
+      
+        <button type="button" class="cert-card__open" onclick="openLightbox(3)">
+          <span class="cert-card__open-text">Открыть сертификат по акварельной росписи мастики</span>
+        </button>
       </article>
 
       <!-- Cert 5: Tort A do Ya -->
-      <article class="cert-card" onclick="openLightbox(4)" role="button" tabindex="0">
+      <article class="cert-card">
         <div class="cert-img-wrap">
           <img src="../img/cert_tort_a_ya.webp"
                alt="Сертификат кондитерского мастер-класса «Торт от А до Я» — Виктория Милованова, школа Praline, октябрь 2022"
-               width="1536" height="1024" loading="lazy" />
+               width="1536" height="1024" loading="lazy"  decoding="async" />
         </div>
         <div class="cert-info">
           <div class="cert-year">Октябрь 2022</div>
           <h2 class="cert-title">Торт от А до Я</h2>
           <p class="cert-issuer">Кондитерская школа Praline — Припутнева Юлия</p>
         </div>
+      
+        <button type="button" class="cert-card__open" onclick="openLightbox(4)">
+          <span class="cert-card__open-text">Открыть сертификат мастер-класса «Торт от А до Я»</span>
+        </button>
       </article>
 
     </div>

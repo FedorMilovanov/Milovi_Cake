@@ -81,6 +81,14 @@
   {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        "opens": "10:00",
+        "closes": "21:00"
+      }
+    ],
     "@id": "https://milovicake.ru/#business",
     "name": "Milovi Cake",
     "description": "Авторские торты, меренговые рулеты и десерты на заказ с доставкой в Пушкин от частного кондитера.",
@@ -106,7 +114,7 @@
     "areaServed": {"@type": "City", "name": "Пушкин"},
     "sameAs": [
         "https://vk.com/milovi_cake",
-        "https://t.me/MiloviCake",
+        "https://t.me/milovi_cake",
         "https://www.youtube.com/@milovi_cake",
         "https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/"
     ]
@@ -119,8 +127,8 @@
 <link rel="stylesheet" href="/css/fonts.css?v=20261102r01" />
 
   <!-- noscript fonts -->
-  <link rel="stylesheet" href="../../css/style.css?v=20261120r33" />
-  <link rel="stylesheet" href="../../css/mc-2026.css?v=20261120r46" />
+  <link rel="stylesheet" href="../../css/style.css?v=20261120r34" />
+  <link rel="stylesheet" href="../../css/mc-2026.css?v=20261120r47" />
   <link rel="stylesheet" href="../../css/premium-overrides.css?v=20261116r39" />
   <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20261120r28">
   <script type="application/ld+json">
@@ -195,9 +203,9 @@
     <span class="bnav-label">Каталог</span>
   </a>
   <button type="button" class="bottom-nav-item bottom-nav-item--order" onclick="openCart()" aria-label="Заказать торт">
-    <div class="bnav-icon-wrap">
+    <span class="bnav-icon-wrap">
       <svg class="bnav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-    </div>
+    </span>
     <span class="bnav-label" style="color:var(--gold)">Заказать</span>
   </button>
   <a href="#reviews" class="bottom-nav-item" data-section="reviews" aria-label="Отзывы">
@@ -220,7 +228,7 @@
 <header class="site-header header-city" id="siteHeader">
   <div class="hdr-main-row">
     <a href="../../" class="header-logo">Milovi Cake<span class="header-logo-sub">авторские торты</span></a>
-    <nav class="header-nav">
+    <nav class="header-nav" aria-label="Основная навигация">
       <a href="#catalog">Каталог</a>
       <a href="#fillings">Начинки</a>
       <a href="#reviews">Отзывы</a>
@@ -243,13 +251,13 @@
       <span></span><span></span><span></span>
     </button>
   </div>
-  <div class="header-crumb-strip" aria-label="Breadcrumb">
+  <nav class="header-crumb-strip" aria-label="Хлебные крошки">
     <a href="../../">Milovi Cake</a>
     <span class="hcs-sep">›</span>
     <a href="/prigorody/">Пригороды</a>
     <span class="hcs-sep">›</span>
     <span>Пушкине</span>
-  </div>
+  </nav>
 </header>
 
 <!-- ── MOBILE MENU ──
@@ -317,7 +325,7 @@
         <span>WhatsApp</span>
       </a>
       <a class="mm-msg mm-msg--tg"
-         href="https://t.me/+79119038886"
+         href="https://t.me/milovi_cake"
          target="_blank" rel="noopener noreferrer" aria-label="Написать в Telegram" onclick="closeMobileMenu()">
         <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" focusable="false"><path fill="currentColor" d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71l-4.13-3.05-1.99 1.93c-.23.23-.42.42-.84.42z"/></svg>
         <span>Telegram</span>
@@ -343,9 +351,9 @@
     </div>
 
     <a class="mm-call" href="tel:+79119038886" onclick="closeMobileMenu()" aria-label="Позвонить: +7 911 903 88 86">
-      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.07 2.18 2 2 0 012.03 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-      <span>+7 911 903 88 86</span>
-    </a>
+&nbsp;&nbsp;&nbsp;<svg viewBox="0&nbsp;0&nbsp;24&nbsp;24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M22&nbsp;16.92v3a2&nbsp;2&nbsp;0&nbsp;01-2.18&nbsp;2&nbsp;19.79&nbsp;19.79&nbsp;0&nbsp;01-8.63-3.07A19.5&nbsp;19.5&nbsp;0&nbsp;013.07&nbsp;10.8&nbsp;19.79&nbsp;19.79&nbsp;0&nbsp;01.07&nbsp;2.18&nbsp;2&nbsp;2&nbsp;0&nbsp;012.03&nbsp;0h3a2&nbsp;2&nbsp;0&nbsp;012&nbsp;1.72c.127.96.361&nbsp;1.903.7&nbsp;2.81a2&nbsp;2&nbsp;0&nbsp;01-.45&nbsp;2.11L6.09&nbsp;7.91a16&nbsp;16&nbsp;0&nbsp;006&nbsp;6l1.27-1.27a2&nbsp;2&nbsp;0&nbsp;012.11-.45c.907.339&nbsp;1.85.573&nbsp;2.81.7A2&nbsp;2&nbsp;0&nbsp;0122&nbsp;16.92z"/></svg>
+&nbsp;&nbsp;&nbsp;<span>+7&nbsp;911&nbsp;903&nbsp;88&nbsp;86</span>
+&nbsp;&nbsp;</a>
 
     <div class="mm-service">
       <div class="mm-theme" role="group" aria-label="Тема оформления">
@@ -438,7 +446,7 @@
               <path transform="translate(14,14) scale(0.833)" fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
             </svg>
           </a>
-          <a href="https://t.me/+79119038886" target="_blank" rel="noopener noreferrer" class="btn-hero-messenger btn-hero-tg" aria-label="Telegram">
+          <a href="https://t.me/milovi_cake" target="_blank" rel="noopener noreferrer" class="btn-hero-messenger btn-hero-tg" aria-label="Telegram">
             <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible">
               <defs><path id="ring-path-tg" d="M7,24 a17,17 0 1,1 0,0.01"/></defs>
               <text id="ring-text-tg" font-family="Jost,sans-serif" font-size="6.5" fill="currentColor" opacity="0.5">
@@ -666,7 +674,7 @@
             </div>
 
             <!-- Раскрывающаяся часть — полный блок -->
-            <div class="calc-result-expandable" id="calcExpandable" role="region" aria-label="Итог расчёта торта" tabindex="0">
+            <section class="calc-result-expandable" id="calcExpandable" aria-label="Итог расчёта торта" tabindex="0">
               <div class="calc-result-expand-inner">
                 <div class="calc-result-label" id="calcLabel">Примерная стоимость</div>
                 <div class="calc-result-price" id="calcResult">5 600 ₽</div>
@@ -685,7 +693,7 @@
                   </button>
                 </div>
               </div>
-            </div>
+            </section>
 
           </div>
         </div><!-- /.calc-right-col -->
@@ -709,32 +717,15 @@
   </div>
 </section>
 
-<!-- ══════════ WHY US ══════════ -->
+<!-- ══════════ CITY STORY (r47): уникальный текст под каждый город ══════════ -->
 <div class="section-fade-divider" aria-hidden="true"></div>
-<section id="why">
+<section class="city-story" id="story">
   <div class="container">
-    <h2 class="section-title reveal">Почему Выбирают Нас</h2>
-    <div class="features-grid">
-      <div class="feature reveal">
-        <div class="feature-icon"><svg class="ui-ico" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 14a4 4 0 0 1-1-7.9A3.5 3.5 0 0 1 12 4a3.5 3.5 0 0 1 7 2.1A4 4 0 0 1 19 14v6H6v-6z"/></svg></div>
-        <h3>Ручная Работа</h3>
-        <p>Каждый десерт создаётся с любовью и заботой вручную</p>
-      </div>
-      <div class="feature reveal">
-        <div class="feature-icon"><svg class="ui-ico" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 22C2 22 6 17 12 17c6 0 10-5 10-15C22 2 12 2 7 7c-5 5-5 15-5 15z"/><path d="M7 17c2-4 5-7 9-9"/></svg></div>
-        <h3>Внимание к составу</h3>
-        <p>Ингредиенты и пищевые ограничения обсудим при заказе</p>
-      </div>
-      <div class="feature reveal">
-        <div class="feature-icon"><svg class="ui-ico" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l1.7 4.8L18.5 10.5l-4.8 1.7L12 17l-1.7-4.8L5.5 10.5l4.8-1.7z"/></svg></div>
-        <h3>Свежесть под заказ</h3>
-        <p>Готовим специально для вас, всегда свежее</p>
-      </div>
-      <div class="feature reveal">
-        <div class="feature-icon"><svg class="ui-ico" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
-        <h3>Доставка по СПб</h3>
-        <p>Аккуратная доставка в красивой упаковке</p>
-      </div>
+    <h2 class="section-title reveal">Лицей, парки и торты: доставка в Пушкин и Царское Село</h2>
+    <div class="city-story__text reveal">
+      <p class="city-story__lead">До Пушкина около 25 километров и примерно полчаса пути — это одно из самых удобных направлений, поэтому торт сюда реально привезти даже в день заказа, если он простой по декору. Едем через Пулковское шоссе или по Софийской, маршрут выбираем по пробкам: для кремовых тортов лишние 15 минут в дороге хуже, чем лишние 5 километров крюка.</p>
+      <p>Доставляем в Царское Село, центр, Александровскую и район Парковой улицы; выезжаем в Детскосельский и Софию. Стоимость — от 1 000 ₽. Отдельно учитываем исторический центр: на узких улицах вокруг Екатерининского дворца и Лицея бывает сложно с парковкой, поэтому точное время лучше подтвердить за час — курьер подождёт у входа, но не будет кружить по кварталу.</p>
+      <p>Пушкин любят за семейные праздники: здесь заказывают бенто на день рождения, детские торты на выпускной в детском саду и небольшие бисквитные торты на 8–10 человек. Для школьных и лицейских мероприятий везём уже разрезанный торт в индивидуальной упаковке — так удобнее раздавать. Самовывоз с Пулковской, 19 занимает те же полчаса, но без риска для декора.</p>
     </div>
   </div>
 </section>
@@ -759,14 +750,14 @@
   </div>
   <div class="review-filmstrip-wrap">
     <div class="review-filmstrip reveal">
-      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(0)" aria-label="Открыть скриншот отзыва 1 в полном размере"><img src="../../img/review_1-thumb.webp" alt="Скриншот отзыва покупателя 1" loading="lazy" width="280" height="497"></button>
-      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(1)" aria-label="Открыть скриншот отзыва 2 в полном размере"><img src="../../img/review_2-thumb.webp" alt="Скриншот отзыва покупателя 2" loading="lazy" width="280" height="497"></button>
-      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(2)" aria-label="Открыть скриншот отзыва 3 в полном размере"><img src="../../img/review_3-thumb.webp" alt="Скриншот отзыва покупателя 3" loading="lazy" width="280" height="497"></button>
-      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(3)" aria-label="Открыть скриншот отзыва 4 в полном размере"><img src="../../img/review_4-thumb.webp" alt="Скриншот отзыва покупателя 4" loading="lazy" width="280" height="497"></button>
-      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(4)" aria-label="Открыть скриншот отзыва 5 в полном размере"><img src="../../img/review_5-thumb.webp" alt="Скриншот отзыва покупателя 5" loading="lazy" width="280" height="497"></button>
-      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(5)" aria-label="Открыть скриншот отзыва 6 в полном размере"><img src="../../img/review_6-thumb.webp" alt="Скриншот отзыва покупателя 6" loading="lazy" width="280" height="497"></button>
-      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(6)" aria-label="Открыть скриншот отзыва 7 в полном размере"><img src="../../img/review_7-thumb.webp" alt="Скриншот отзыва покупателя 7" loading="lazy" width="280" height="497"></button>
-      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(7)" aria-label="Открыть скриншот отзыва 8 в полном размере"><img src="../../img/review_8-thumb.webp" alt="Скриншот отзыва покупателя 8" loading="lazy" width="280" height="497"></button>
+      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(0)" aria-label="Открыть скриншот отзыва 1 в полном размере"><img src="../../img/review_1-thumb.webp" alt="Скриншот отзыва покупателя 1" loading="lazy" width="280" height="497" decoding="async"></button>
+      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(1)" aria-label="Открыть скриншот отзыва 2 в полном размере"><img src="../../img/review_2-thumb.webp" alt="Скриншот отзыва покупателя 2" loading="lazy" width="280" height="497" decoding="async"></button>
+      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(2)" aria-label="Открыть скриншот отзыва 3 в полном размере"><img src="../../img/review_3-thumb.webp" alt="Скриншот отзыва покупателя 3" loading="lazy" width="280" height="497" decoding="async"></button>
+      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(3)" aria-label="Открыть скриншот отзыва 4 в полном размере"><img src="../../img/review_4-thumb.webp" alt="Скриншот отзыва покупателя 4" loading="lazy" width="280" height="497" decoding="async"></button>
+      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(4)" aria-label="Открыть скриншот отзыва 5 в полном размере"><img src="../../img/review_5-thumb.webp" alt="Скриншот отзыва покупателя 5" loading="lazy" width="280" height="497" decoding="async"></button>
+      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(5)" aria-label="Открыть скриншот отзыва 6 в полном размере"><img src="../../img/review_6-thumb.webp" alt="Скриншот отзыва покупателя 6" loading="lazy" width="280" height="497" decoding="async"></button>
+      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(6)" aria-label="Открыть скриншот отзыва 7 в полном размере"><img src="../../img/review_7-thumb.webp" alt="Скриншот отзыва покупателя 7" loading="lazy" width="280" height="497" decoding="async"></button>
+      <button type="button" class="review-filmstrip-item" onclick="openChatLightbox(7)" aria-label="Открыть скриншот отзыва 8 в полном размере"><img src="../../img/review_8-thumb.webp" alt="Скриншот отзыва покупателя 8" loading="lazy" width="280" height="497" decoding="async"></button>
     </div>
   </div>
   <div class="map-badges-center">
@@ -845,14 +836,14 @@
         <!-- Основные контакты -->
         <div class="contact-primary">
           <a href="tel:+79119038886" class="contact-primary-item">
-            <div class="contact-primary-icon">
-              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.07 2.18 2 2 0 012.03 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-            </div>
-            <div>
-              <div class="contact-primary-label">Позвоните нам</div>
-              <div class="contact-primary-value">+7 911 903 88 86</div>
-            </div>
-          </a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="contact-primary-icon">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0&nbsp;0&nbsp;24&nbsp;24"><path d="M22&nbsp;16.92v3a2&nbsp;2&nbsp;0&nbsp;01-2.18&nbsp;2&nbsp;19.79&nbsp;19.79&nbsp;0&nbsp;01-8.63-3.07A19.5&nbsp;19.5&nbsp;0&nbsp;013.07&nbsp;10.8&nbsp;19.79&nbsp;19.79&nbsp;0&nbsp;01.07&nbsp;2.18&nbsp;2&nbsp;2&nbsp;0&nbsp;012.03&nbsp;0h3a2&nbsp;2&nbsp;0&nbsp;012&nbsp;1.72c.127.96.361&nbsp;1.903.7&nbsp;2.81a2&nbsp;2&nbsp;0&nbsp;01-.45&nbsp;2.11L6.09&nbsp;7.91a16&nbsp;16&nbsp;0&nbsp;006&nbsp;6l1.27-1.27a2&nbsp;2&nbsp;0&nbsp;012.11-.45c.907.339&nbsp;1.85.573&nbsp;2.81.7A2&nbsp;2&nbsp;0&nbsp;0122&nbsp;16.92z"/></svg>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="contact-primary-label">Позвоните&nbsp;нам</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="contact-primary-value">+7&nbsp;911&nbsp;903&nbsp;88&nbsp;86</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
           <a href="https://maps.app.goo.gl/6aCJvobUQPcBZTmz6" target="_blank" class="contact-primary-item" rel="noopener noreferrer">
             <div class="contact-primary-icon">
               <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -880,7 +871,7 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.05-1.727-1.033-1-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C5.044 10.8 4.06 8.494 4.06 8.087c0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.677.863 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.203.17-.407.44-.407h2.744c.373 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.253-1.406 2.151-3.574 2.151-3.574.119-.254.322-.491.762-.491h1.744c.525 0 .644.27.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.779 1.203 1.253.745.847 1.32 1.558 1.473 2.05.17.49-.085.745-.576.745z"/></svg>
             ВКонтакте
           </a>
-          <a href="https://t.me/MiloviCake" target="_blank" class="social-link tg" rel="noopener noreferrer">
+          <a href="https://t.me/milovi_cake" target="_blank" class="social-link tg" rel="noopener noreferrer">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.96 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
             Telegram
           </a>
@@ -1109,7 +1100,7 @@
         <label for="cphone">Телефон *</label>
       </div>
       <div class="form-group float-label">
-        <input type="date" id="cdate" placeholder=" " />
+        <input type="date" id="cdate" />
         <label for="cdate">Дата получения</label>
       </div>
       <div class="form-group float-label">
@@ -1124,13 +1115,13 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
         Отправить в WhatsApp
       </a>
-      <a id="btnTG" href="https://t.me/MiloviCake" target="_blank" rel="noopener noreferrer" class="btn-tg tg" onclick="buildTG(event)">
+      <a id="btnTG" href="https://t.me/milovi_cake" target="_blank" rel="noopener noreferrer" class="btn-tg tg" onclick="buildTG(event)">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.96 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
         Отправить в Telegram
       </a>
       <a href="tel:+79119038886" class="btn-tg call">
-        📞 Позвонить +7 911 903 88 86
-      </a>
+&nbsp;&nbsp;&nbsp;&nbsp;📞&nbsp;Позвонить&nbsp;+7&nbsp;911&nbsp;903&nbsp;88&nbsp;86
+&nbsp;&nbsp;&nbsp;</a>
     </div>
     <p class="policy-note">Нажимая кнопку, вы соглашаетесь с <a href="/privacy/">обработкой персональных данных</a></p>
   </div>
@@ -1146,7 +1137,7 @@
           <a href="https://wa.me/79119038886" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           </a>
-          <a href="https://t.me/MiloviCake" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
+          <a href="https://t.me/milovi_cake" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 00 0 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
           </a>
           <a href="https://vk.com/milovi_cake" target="_blank" rel="noopener noreferrer" aria-label="ВКонтакте">
@@ -1177,9 +1168,9 @@
       </div>
       <div class="footer-col">
         <h3>Контакты</h3>
-        <a href="tel:+79119038886">+7 911 903 88 86</a>
+        <a href="tel:+79119038886">+7&nbsp;911&nbsp;903&nbsp;88&nbsp;86</a>
         <a href="https://wa.me/79119038886" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-        <a href="https://t.me/MiloviCake" target="_blank" rel="noopener noreferrer">Telegram</a>
+        <a href="https://t.me/milovi_cake" target="_blank" rel="noopener noreferrer">Telegram</a>
         <p class="footer-hours">Пн–Сб, 10:00–21:00</p>
       </div>
     </div>
@@ -1220,7 +1211,7 @@
     </div>
 
     <!-- Яндекс отзывы -->
-    <div class="reviews-modal-list" id="reviewsYandex" role="region" aria-label="Отзывы на Яндекс Картах" tabindex="0">
+    <section class="reviews-modal-list" id="reviewsYandex" aria-label="Отзывы на Яндекс Картах" tabindex="0">
 
       <div class="modal-review">
         <div class="modal-review-header">
@@ -1270,10 +1261,10 @@
         <p class="modal-review-text">Огромное спасибо, Виктория! За вашу оперативность, внимательный подход, рекомендации по вкусам и конечно же за вашу работу! Торт получился отличным, именинница довольна. Уже стоит в планах — как только окажусь в Питере, закажу торт у Виктории снова.</p>
       </div>
 
-    </div>
+    </section>
 
     <!-- Google отзывы -->
-    <div class="reviews-modal-list" id="reviewsGoogle" role="region" aria-label="Отзывы на Google Картах" tabindex="0" style="display:none;">
+    <section class="reviews-modal-list" id="reviewsGoogle" aria-label="Отзывы на Google Картах" tabindex="0" style="display:none;">
 
       <div class="modal-review">
         <div class="modal-review-header">
@@ -1319,7 +1310,7 @@
         <p class="modal-review-text">Спасибо за такой классный тортик! Всё очень понравилось 🙏 Всё от заказа до доставки на 5+!!! Как хорошо, что мне из другого города попались именно Вы — все подсказали, привезли. Красиво, вкусно 💛 Именинник доволен и родители тоже. Обязательно обратимся ещё!</p>
       </div>
 
-    </div>
+    </section>
 
     <div class="reviews-modal-footer">
       <a href="https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/reviews/"

@@ -82,6 +82,14 @@
       },
       {
         "@type": "LocalBusiness",
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+            "opens": "10:00",
+            "closes": "21:00"
+          }
+        ],
         "@id": "https://milovicake.ru/#business",
         "name": "Milovi Cake",
         "url": "https://milovicake.ru/",
@@ -105,7 +113,7 @@
         "openingHours": "Mo-Sa 10:00-21:00",
         "sameAs": [
           "https://vk.com/milovi_cake",
-          "https://t.me/MiloviCake",
+          "https://t.me/milovi_cake",
           "https://www.youtube.com/@milovi_cake",
           "https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/"
         ]
@@ -116,8 +124,8 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/cormorant-garamond-cyrillic-wght-normal.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/jost-cyrillic-wght-normal.woff2" />
 <link rel="stylesheet" href="/css/fonts.css?v=20261102r01" />
-<link rel="stylesheet" href="../css/style.css?v=20261120r33" />
-  <link rel="stylesheet" href="/css/mc-2026.css?v=20261120r46" />
+<link rel="stylesheet" href="../css/style.css?v=20261120r34" />
+  <link rel="stylesheet" href="/css/mc-2026.css?v=20261120r47" />
   <link rel="stylesheet" href="/css/premium-overrides.css?v=20261116r39" />
   <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20261120r28">
   <style>
@@ -259,7 +267,7 @@
   <section class="hub-seo" aria-labelledby="hubSeoTitle">
     <h2 id="hubSeoTitle">Что мы доставляем в пригороды Санкт-Петербурга и Ленобласть</h2>
     <p>Кондитерская Виктории Миловановой (Московский район СПб, м. Звёздная, Пулковская ул., 19) готовит авторские торты и десерты ручной работы под конкретную дату. Доставку на дом, в коттедж, отель или банкетный зал Санкт-Петербурга и Ленинградской области согласуем по адресу.</p>
-    <div class="hub-cats" aria-label="Категории десертов с доставкой">
+    <nav class="hub-cats" aria-label="Категории десертов с доставкой">
       <a href="/zakazat-tort-spb/">Заказать торт в СПб (от 2 800 ₽/кг)</a>
       <a href="/tort-s-dostavkoy/">Торт с доставкой по СПб</a>
       <a href="/bento-torty/">Бенто-торты (1 600 ₽)</a>
@@ -272,7 +280,7 @@
       <a href="/o-konditere/">О кондитере</a>
       <a href="/certificates/">Сертификаты</a>
       <a href="/gallery/">Галерея работ</a>
-    </div>
+    </nav>
     <h2>Частые вопросы о доставке в пригороды СПб</h2>
     <div class="hub-faq">
       <details class="hub-faq-item">

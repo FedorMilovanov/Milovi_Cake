@@ -202,7 +202,7 @@ test.describe('premium media blocks', () => {
       await expect(group.locator('a')).toHaveCount(3);
       const links = group.locator('a');
       await expect(links.nth(0)).toHaveAttribute('href', /^https:\/\/wa\.me\/79119038886\?text=/);
-      await expect(links.nth(1)).toHaveAttribute('href', 'https://t.me/+79119038886');
+      await expect(links.nth(1)).toHaveAttribute('href', 'https://t.me/milovi_cake');
       await expect(links.nth(2)).toHaveAttribute('href', 'https://max.ru/u/f9LHodD0cOIzRY9VJX8MoyR41H64ULjndbose2aPPrzXJDLW8QEiyKTpqxs');
       for (const [i, label] of ['Написать в WhatsApp','Написать в Telegram','Написать в MAX'].entries()) {
         await expect(links.nth(i)).toHaveAttribute('aria-label', label);
@@ -2205,7 +2205,7 @@ for (const availability of ['available', 'denied']) {
     const field=page.locator('#wedBriefExportText');
     await expect(panel).toBeVisible();
     await expect(page.locator('#wedBriefCopy')).toBeFocused();
-    await expect(page.locator('#wedBriefOpen')).toHaveAttribute('href','https://t.me/+79119038886');
+    await expect(page.locator('#wedBriefOpen')).toHaveAttribute('href','https://t.me/milovi_cake');
     await expect(page.locator('#wedBriefOpen')).toHaveAttribute('rel',/noopener/);
     await expect(field).toHaveValue(/Botanical Romance/);
     await expect(field).toHaveValue(/дегустационный сет/);

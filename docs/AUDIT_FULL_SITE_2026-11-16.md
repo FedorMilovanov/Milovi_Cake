@@ -6,6 +6,11 @@
 
 Документ построен в два прохода: §1–5 — ссылки, SEO и баги; §6 — конформность HTML, доступность, вес ресурсов и надёжность JS (инструментами `html-validate`, `eslint`, `linkinator`).
 
+
+> **Статус на 2026-11-19:** пункты 1–11 и 13 закрыты реальными правками, 12 и 14 —
+> известный долг, зафиксированный отдельно (обоснование — §10). Все штатные гарды
+> и новые контракты зелёные.
+
 ---
 
 ## 1. TL;DR — что чинить в первую очередь
@@ -326,3 +331,53 @@ npx linkinator http://127.0.0.1:4199/ --recurse --skip "^https?://(?!127\.0\.0\.
 ```
 
 Проверки ссылок, ассетов, якорей, мета-тегов, JSON-LD, схожести текстов, веса страниц и структуры HTML в этом аудите выполнены разовыми скриптами на Python; при желании их можно оформить как `scripts/audit_links_seo.py`, чтобы ловить регрессии в CI рядом с существующими `audit.py` и `a11y_static.py`.
+
+---
+
+## 10. Статус закрытия (волна 2026-11-19)
+
+Ветка `arena/a3bb719e-milovi-cake`. Ниже — что именно сделано по каждому пункту,
+чем это проверяется автоматически и что осознанно оставлено как долг.
+
+| # | Пункт | Итог | Как закрыто |
+|---|---|---|---|
+| 1 | P0 Telegram-канал вместо чата | ✅ | Канон — личный аккаунт `https://t.me/milovi_cake` (есть кнопка «Send Message»). Заменено в 31 HTML, `js/main.js` (`buildTG`, строка 941) и трёх Playwright-спеках. Новый тест `tests/test_messenger_contract.py::test_single_canonical_telegram_chat` запрещает любой другой `t.me/*` на страницах; `tests/test_wedding_contract.py` теперь берёт канон прямо из `js/main.js`, чтобы свадебный бриф не разъезжался с сайтом |
+| 2 | P1 три живых адреса Telegram | ✅ | Остался один — см. п.1 |
+| 3 | P1 `og:image` в webp | ✅ | 7 новых JPEG 1200×630 (`img/og-*.jpg`, 38–128 КБ) для `bento-torty`, `detskie-torty`, `gallery`, `meringue-roll`, `o-konditere`, `svadebnye-torty`, `tort-na-den-rozhdeniya`; `og:image:type/width/height/alt` на всех 9 страницах с og-блоком; `404.html` получил полный og/twitter-блок, `call/` — размеры и alt |
+| 4 | P1 14 почти одинаковых городов | ✅ | В `prigorody/_cities.csv` добавлены `story_h2`, `story_p1..p3` — 2 257 слов уникального текста (141–172 слова на город), новая секция `#story` в шаблоне; с городских страниц убран блок «Почему выбирают нас», дословно дублировавший главную. Схожесть: средний Jaccard 5-грамм **0.693 → 0.581**, максимум 0.72 → **0.604**. Остаток совпадения — интерфейс (калькулятор, корзина, начинки, контакты, навигация), а не контент. Гард: `scripts/check_prigorody_uniqueness.py` (порог средней 0.62 / пары 0.68 / ≥120 слов городского текста) |
+| 5 | P1 устаревший `lastmod` | ✅ | `scripts/sync_sitemap_lastmod.py` + состояние `data/sitemap-lastmod.json`: дата пересчитывается по sha256 контента страницы (ревизии `?v=` из хэша исключены, чтобы поднятие версии CSS не выглядело правкой текста), городские даты синхронно пишутся в `_cities.csv`. Режим `--check` в `qa`/`audit:all`, 29/29 URL совпадают |
+| 6 | P2 `aria-label` на `<div>` (27) и безымянные `<nav>` (17) | ✅ | Блоки ссылок `.lp-related`/`.info-related`/`.hub-cats`/`.gx-seo-facts` → `<nav>`, хлебные крошки → `<nav aria-label="Хлебные крошки">`, `header-nav` → «Основная навигация», подвал → «Разделы сайта»; `role="region"` → `<section>` (48), `role="button"` → нативные `<button type="button">` (27, вместе с `onkeydown`-костылями), `role="navigation"` → `<nav>`, `role="list"` убран. Итог: **77 нарушений четырёх правил → 0** |
+| 7 | P2 пустой `alt` у трёх hero | ✅ (не баг) | `hero-poster-cake.jpg` и `wedding-hero.webp` лежат внутри контейнеров с `aria-hidden="true"` (декоративный слой), `gallery-01.webp` — внутри `<button>`, имя которому даёт видимый `.card-title`; дублировать текст в `alt` значило бы удвоить имя для скринридера. Реальная проблема того же экрана (CLS) закрыта: у LCP-картинки появились честные `width="667" height="1000"` |
+| 8 | P2 Swiper без SRI | ✅ | Версия закреплена `swiper@11.2.10`, `integrity` sha384 для CSS и для динамически создаваемого `<script>` в лоадере, `crossorigin="anonymous"`, добавлен `preconnect` к `cdn.jsdelivr.net`. Хэши посчитаны по файлам из npm-тарбола этой версии |
+| 9 | P2 LCP галереи без размеров | ✅ | `width/height` у LCP-картинки + `decoding="async"` на всех `<img>` (146 добавлено, включая JS-карточки галереи) |
+| 10 | P2 неполная микроразметка | ✅ / ⛔ частично | `Product`: `sku`, `category`, `itemCondition`, `image[]` — добавлены. `availability` и `priceValidUntil` **не добавляем**: `tests/test_schema_contract.py` прямо запрещает неподтверждённые «в наличии» и срок действия цены — торт делается на заказ, склад и дата окончания цены не подтверждены. `LocalBusiness` получил `openingHoursSpecification` (Пн–Сб 10:00–21:00, как в Google Business Profile) на всех 16 страницах |
+| 11 | P2 глобал `IMG_BASE` | ✅ | В `js/main.js` локальный фолбэк `var IMG_BASE = (typeof window.IMG_BASE === 'string' && window.IMG_BASE) ? window.IMG_BASE : 'img'` — 39 `no-undef` снято, корзина/калькулятор/лайтбокс больше не падают, если на новой странице забыть инлайн-строку |
+| 12 | P2 gzip-бюджеты | ⛔ долг | CSS 122,8 КБ / JS 115,5 КБ против 180 000. Это не регрессия волны (см. `docs/PERFORMANCE_STATUS.md`): мёртвый код удалён (−2,2 КБ JS), но бюджет требует отдельного прохода по CSS-каскаду. `audit.py` держит это как WARN, а не FAIL |
+| 13 | P3 конформность | ✅ | `placeholder` у `input[type=date]` убран (метка и так плавает через `:not(:placeholder-shown)`), `<style>` из `<body>` в `<head>` (`call/`), а no-JS-фолбэк каталога переведён на класс `no-js` + правила в `style.css`; невалидный `loading` убран у 9 `<video>`; `theme-color` теперь пара light/dark на `call/` и `gallery/`; удалён мёртвый код (`getStageCenter`, `#calcApproxBadge`, legacy-карусель `#reviewsTrack`) |
+| 14 | P3 CSS-долг (2 048 `!important`) | ⛔ долг | Требует отдельного рефакторинга каскада с визуальной регрессией на каждой странице; в этой волне не трогали, чтобы не смешивать семантику и вёрстку |
+
+### Новые гарды (в `qa` и `audit:all`)
+
+| Скрипт | Что ловит |
+|---|---|
+| `scripts/run_html_validate.py` + `.htmlvalidate.json`, `npm run audit:html` | конформность HTML по `html-validate:recommended` без стилевых правил: сейчас **0 нарушений на 34 документах** (было 77) |
+| `scripts/check_prigorody_uniqueness.py` | деградацию уникальности городских страниц |
+| `scripts/sync_sitemap_lastmod.py --check` | рассинхрон `lastmod` с контентом |
+| `scripts/build_video_sitemap.py --check` | `video:duration`/`publication_date` в видео-карте |
+| `tests/test_messenger_contract.py::test_single_canonical_telegram_chat` | возврат второго адреса Telegram |
+
+### Проверки после волны
+
+```
+python3 scripts/audit.py                     → PASSED, 3 WARN (только gzip-бюджеты)
+python3 scripts/run_html_validate.py         → OK, 34 документа, 0 нарушений
+python3 scripts/a11y_static.py               → OK, 34 документа
+python3 scripts/release_contract.py          → OK, 16 ревизий / 14 меток
+python3 scripts/run_contract_tests.py        → OK, 85 тестов
+python3 scripts/video_schema_contract.py     → OK, 9 VideoObject / 16 роликов
+python3 scripts/check_prigorody_idempotent.py→ OK, 14 страниц
+python3 scripts/check_prigorody_uniqueness.py→ OK, средний Jaccard 0.581
+python3 scripts/sync_prigorody_sitemap.py --check → синхронизировано
+python3 scripts/sync_sitemap_lastmod.py --check   → OK, 29 URL
+локальный сервер: 31 страница → 200, 67 уникальных ассетов → 200
+```

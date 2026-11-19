@@ -42,7 +42,7 @@
   <meta name="twitter:site" content="@milovicake" />
   <meta name="twitter:title" content="Меренговый рулет на заказ в СПб — 2 500 ₽ | Milovi Cake" />
   <meta name="twitter:description" content="Воздушная меренга, малина, крем-чиз. 1 100 г — 2 500 ₽. Доставка по СПб и ЛО." />
-  <meta name="twitter:image" content="https://milovicake.ru/img/meringue_roll.webp" />
+  <meta name="twitter:image" content="https://milovicake.ru/img/og-meringue-roll.jpg" />
   <meta name="keywords" content="меренговый рулет на заказ, меренговый рулет СПб, меренговый рулет купить СПб, меренговый рулет с малиной, заказать меренговый рулет Санкт-Петербург" />
   <meta name="yandex-verification" content="9bde19424208d6ce" />
   <meta property="vk:image" content="https://milovicake.ru/img/meringue_roll.webp" />
@@ -50,11 +50,11 @@
 
   <meta property="og:title" content="Меренговый рулет на заказ — Milovi Cake, СПб" />
   <meta property="og:description" content="Воздушная меренга, малина, нежный крем чиз. 1 100 г — 2 500 ₽. Доставка по СПб и ЛО." />
-  <meta property="og:image" content="https://milovicake.ru/img/meringue_roll.webp" />
-  <meta property="og:image:type" content="image/webp" />
-  <meta property="og:image:width" content="1024" />
-  <meta property="og:image:alt" content="Меренговый рулет на заказ в Санкт-Петербурге — Milovi Cake" />
-  <meta property="og:image:height" content="1536" />
+  <meta property="og:image" content="https://milovicake.ru/img/og-meringue-roll.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:alt" content="Меренговый рулет с малиной — Milovi Cake" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:url" content="https://milovicake.ru/meringue-roll/" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="ru_RU" />
@@ -75,17 +75,28 @@
     "name": "Меренговый рулет",
     "description": "Меренговый рулет с малиной и нежным сливочным кремом чиз. Воздушная меренга и свежие ягоды.",
     "url": "https://milovicake.ru/meringue-roll/",
-    "brand": { "@type": "Brand", "name": "Milovi Cake" },
+    "brand": {
+      "@type": "Brand",
+      "name": "Milovi Cake"
+    },
+    "sku": "MC-ROLL-01",
+    "category": "Кондитерские изделия",
     "offers": {
       "@type": "Offer",
       "price": "2500",
       "priceCurrency": "RUB",
+      "itemCondition": "https://schema.org/NewCondition",
       "url": "https://milovicake.ru/meringue-roll/",
-      "seller": { "@id": "https://milovicake.ru/#business" }
+      "seller": {
+        "@id": "https://milovicake.ru/#business"
+      }
     },
-    "image": "https://milovicake.ru/img/meringue_roll.webp"
+    "image": [
+      "https://milovicake.ru/img/og-meringue-roll.jpg",
+      "https://milovicake.ru/img/meringue_roll.webp"
+    ]
   }
-  </script>
+</script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -100,6 +111,14 @@
   {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        "opens": "10:00",
+        "closes": "21:00"
+      }
+    ],
     "@id": "https://milovicake.ru/#business",
     "name": "Milovi Cake",
     "description": "Авторские торты и десерты ручной работы на заказ в Санкт-Петербурге. Меренговые рулеты, бисквитные торты, Павлова, капкейки. Доставка по СПб и Ленобласти.",
@@ -124,7 +143,7 @@
     "priceRange": "₽₽",
     "sameAs": [
       "https://vk.com/milovi_cake",
-      "https://t.me/MiloviCake",
+      "https://t.me/milovi_cake",
       "https://www.youtube.com/@milovi_cake",
       "https://yandex.ru/maps/org/milovi_cake_torty_na_zakaz/89655951103/"
     ]
@@ -1985,7 +2004,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
         <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
         WhatsApp
       </a>
-      <a href="https://t.me/MiloviCake" target="_blank" rel="noopener noreferrer" class="btn-ghost"
+      <a href="https://t.me/milovi_cake" target="_blank" rel="noopener noreferrer" class="btn-ghost"
          aria-label="Заказать меренговый рулет в Telegram" title="Написать в Telegram Milovi Cake">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
         Telegram
@@ -2001,23 +2020,23 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 <!-- PHOTO GALLERY -->
 <div class="gallery-strip" id="gallery">
   <div class="gallery-item" data-src="../img/meringue_roll_2.webp">
-    <picture><source type="image/avif" srcset="../img/meringue_roll_2.avif"><img src="../img/meringue_roll_2.webp" alt="Меренговый рулет на заказ в СПб — срез, видна малина и крем чиз" loading="lazy" width="800" height="600" /></picture>
+    <picture><source type="image/avif" srcset="../img/meringue_roll_2.avif"><img src="../img/meringue_roll_2.webp" alt="Меренговый рулет на заказ в СПб — срез, видна малина и крем чиз" loading="lazy" width="800" height="600"  decoding="async" /></picture>
     <div class="gallery-item-overlay"></div>
   </div>
   <div class="gallery-item" data-src="../img/meringue_roll_3.webp">
-    <picture><source type="image/avif" srcset="../img/meringue_roll_3.avif"><img src="../img/meringue_roll_3.webp" alt="Воздушная меренга — текстура безе ручной работы, Milovi Cake" loading="lazy" width="800" height="600" /></picture>
+    <picture><source type="image/avif" srcset="../img/meringue_roll_3.avif"><img src="../img/meringue_roll_3.webp" alt="Воздушная меренга — текстура безе ручной работы, Milovi Cake" loading="lazy" width="800" height="600"  decoding="async" /></picture>
     <div class="gallery-item-overlay"></div>
   </div>
   <div class="gallery-item" data-src="../img/meringue_roll_5.webp">
-    <picture><source type="image/avif" srcset="../img/meringue_roll_5.avif"><img src="../img/meringue_roll_5.webp" alt="Меренговый рулет с фисташками и малиной — крупный план" loading="lazy" width="800" height="600" /></picture>
+    <picture><source type="image/avif" srcset="../img/meringue_roll_5.avif"><img src="../img/meringue_roll_5.webp" alt="Меренговый рулет с фисташками и малиной — крупный план" loading="lazy" width="800" height="600"  decoding="async" /></picture>
     <div class="gallery-item-overlay"></div>
   </div>
   <div class="gallery-item" data-src="../img/meringue_roll_4.webp">
-    <picture><source type="image/avif" srcset="../img/meringue_roll_4.avif"><img src="../img/meringue_roll_4.webp" alt="Меренговый рулет готов к подаче — авторский десерт на заказ в Петербурге" loading="lazy" width="800" height="600" /></picture>
+    <picture><source type="image/avif" srcset="../img/meringue_roll_4.avif"><img src="../img/meringue_roll_4.webp" alt="Меренговый рулет готов к подаче — авторский десерт на заказ в Петербурге" loading="lazy" width="800" height="600"  decoding="async" /></picture>
     <div class="gallery-item-overlay"></div>
   </div>
   <div class="gallery-item" data-src="../img/meringue_roll_6.webp">
-    <picture><source type="image/avif" srcset="../img/meringue_roll_6.avif"><img src="../img/meringue_roll_6.webp" alt="Меренговый рулет в фирменной подарочной упаковке Milovi Cake" loading="lazy" width="800" height="600" /></picture>
+    <picture><source type="image/avif" srcset="../img/meringue_roll_6.avif"><img src="../img/meringue_roll_6.webp" alt="Меренговый рулет в фирменной подарочной упаковке Milovi Cake" loading="lazy" width="800" height="600"  decoding="async" /></picture>
     <div class="gallery-item-overlay"></div>
   </div>
 </div>
@@ -2062,7 +2081,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     </div>
   </div>
   <div class="split-photo">
-    <picture><source type="image/avif" srcset="../img/meringue_roll_5.avif"><img src="../img/meringue_roll_5.webp" alt="Меренговый рулет — состав и текстура" loading="lazy" width="800" height="600" /></picture>
+    <picture><source type="image/avif" srcset="../img/meringue_roll_5.avif"><img src="../img/meringue_roll_5.webp" alt="Меренговый рулет — состав и текстура" loading="lazy" width="800" height="600"  decoding="async" /></picture>
     <div class="split-overlay"></div>
   </div>
 </div>
@@ -2084,12 +2103,12 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 <!-- SPLIT: DETAILS -->
 <div class="split">
   <div class="split-photo">
-    <picture><source type="image/avif" srcset="../img/meringue_roll_6.avif"><img src="../img/meringue_roll_6.webp" alt="Меренговый рулет в фирменной коробке" loading="lazy" width="800" height="600" /></picture>
+    <picture><source type="image/avif" srcset="../img/meringue_roll_6.avif"><img src="../img/meringue_roll_6.webp" alt="Меренговый рулет в фирменной коробке" loading="lazy" width="800" height="600"  decoding="async" /></picture>
     <div class="split-overlay"></div>
   </div>
   <div class="split-text split-text--light" style="position:relative;overflow:hidden;">
-    <picture><source type="image/avif" srcset="../img/meringue_rolls_cut.avif"><img class="roll-float" src="../img/meringue_rolls_cut.webp" alt="" aria-hidden="true" width="500" height="500" /></picture>
-    <picture><source type="image/avif" srcset="../img/meringue_box_nobg.avif"><img class="box-float" src="../img/meringue_box_nobg.webp" alt="" aria-hidden="true" width="408" height="612" /></picture>
+    <picture><source type="image/avif" srcset="../img/meringue_rolls_cut.avif"><img class="roll-float" src="../img/meringue_rolls_cut.webp" alt="" aria-hidden="true" width="500" height="500"  decoding="async" /></picture>
+    <picture><source type="image/avif" srcset="../img/meringue_box_nobg.avif"><img class="box-float" src="../img/meringue_box_nobg.webp" alt="" aria-hidden="true" width="408" height="612"  decoding="async" /></picture>
     <span class="sec-label reveal" style="display:inline-block;transition:color 0.4s,letter-spacing 0.4s,text-shadow 0.4s;cursor:default;" onmouseenter="this.style.color='#e8b87a';this.style.letterSpacing='0.4em';this.style.textShadow='0 0 16px rgba(201,147,74,0.2)'" onmouseleave="this.style.color='';this.style.letterSpacing='';this.style.textShadow=''">Детали заказа</span>
     <h2 class="sec-title reveal rd1">
       <span class="ht-word ht-word-wide">Вес и цена</span><br><em class="ht-em">меренгового рулета</em>
@@ -2121,7 +2140,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     </div>
     <!-- Коробка — только мобиль, под списком -->
     <div class="box-float-mobile-wrap">
-      <picture><source type="image/avif" srcset="../img/meringue_box_nobg.avif"><img class="box-float-mobile" src="../img/meringue_box_nobg.webp" alt="Фирменная коробка Milovi Cake" width="408" height="612" /></picture>
+      <picture><source type="image/avif" srcset="../img/meringue_box_nobg.avif"><img class="box-float-mobile" src="../img/meringue_box_nobg.webp" alt="Фирменная коробка Milovi Cake" width="408" height="612"  decoding="async" /></picture>
     </div>
   </div>
 </div>
@@ -2135,7 +2154,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     <!-- Ручная работа — тортик -->
     <div class="feature-card card-heart reveal">
       <div class="feature-icon" style="transition: transform 0.5s cubic-bezier(.16,1,.3,1), border-color 0.5s, box-shadow 0.5s;">
-        <img src="../img/icon-loading.webp" alt="" aria-hidden="true" width="30" height="30" style="width:30px;height:30px;object-fit:cover;border-radius:50%;opacity:0.85;transition:opacity 0.5s,transform 0.5s cubic-bezier(.16,1,.3,1);" class="heart-svg"/>
+        <img src="../img/icon-loading.webp" alt="" aria-hidden="true" width="30" height="30" style="width:30px;height:30px;object-fit:cover;border-radius:50%;opacity:0.85;transition:opacity 0.5s,transform 0.5s cubic-bezier(.16,1,.3,1);" class="heart-svg" decoding="async" />
       </div>
       <h3 class="feature-title"><span class="ht-word">Ручная работа</span></h3>
       <div class="feature-text wave-text">Каждый рулет создаётся вручную — никакого конвейера и полуфабрикатов</div>
@@ -2246,7 +2265,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
         <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
         WhatsApp
       </a>
-      <a href="https://t.me/MiloviCake" target="_blank" rel="noopener noreferrer" class="btn-ghost">
+      <a href="https://t.me/milovi_cake" target="_blank" rel="noopener noreferrer" class="btn-ghost">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
         Telegram
       </a>
@@ -2255,9 +2274,9 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
         MAX
       </a>
       <a href="tel:+79119038886" class="btn-ghost">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c9934a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.07 2.18 2 2 0 012.03 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-        +7 911 903 88 86
-      </a>
+&nbsp;&nbsp;&nbsp;&nbsp;<svg width="15" height="15" viewBox="0&nbsp;0&nbsp;24&nbsp;24" fill="none" stroke="#c9934a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22&nbsp;16.92v3a2&nbsp;2&nbsp;0&nbsp;01-2.18&nbsp;2&nbsp;19.79&nbsp;19.79&nbsp;0&nbsp;01-8.63-3.07A19.5&nbsp;19.5&nbsp;0&nbsp;013.07&nbsp;10.8&nbsp;19.79&nbsp;19.79&nbsp;0&nbsp;01.07&nbsp;2.18&nbsp;2&nbsp;2&nbsp;0&nbsp;012.03&nbsp;0h3a2&nbsp;2&nbsp;0&nbsp;012&nbsp;1.72c.127.96.361&nbsp;1.903.7&nbsp;2.81a2&nbsp;2&nbsp;0&nbsp;01-.45&nbsp;2.11L6.09&nbsp;7.91a16&nbsp;16&nbsp;0&nbsp;006&nbsp;6l1.27-1.27a2&nbsp;2&nbsp;0&nbsp;012.11-.45c.907.339&nbsp;1.85.573&nbsp;2.81.7A2&nbsp;2&nbsp;0&nbsp;0122&nbsp;16.92z"/></svg>
+&nbsp;&nbsp;&nbsp;&nbsp;+7&nbsp;911&nbsp;903&nbsp;88&nbsp;86
+&nbsp;&nbsp;&nbsp;</a>
     </div>
     <p style="margin-top:20px;font-size:12px;color:var(--muted);text-align:center;" class="wave-text reveal">
       Срок заказа согласуем · Пн–Сб, 10:00–21:00
@@ -2340,7 +2359,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     <p class="mr-cities__sub reveal">Возможность и способ доставки обсудим при оформлении заказа. Ниже — ориентиры стоимости доставки в основные пригороды; итоговую стоимость уточняем по адресу.</p>
 
     <div class="mr-cities__grid reveal">
-    <span class="mr-city-tag" aria-label="Меренговый рулет на заказ в Санкт-Петербурге"><span class="mr-city-tag__name">Санкт-Петербург</span> <span class="mr-city-tag__price">по согласованию</span></span>
+    <a href="/zakazat-tort-spb/" class="mr-city-tag" data-slug="spb" aria-label="Санкт-Петербург по согласованию — меренговый рулет с доставкой"><span class="mr-city-tag__name">Санкт-Петербург</span> <span class="mr-city-tag__price">по согласованию</span></a>
     <a href="/prigorody/pushkin/" class="mr-city-tag" data-slug="pushkin" aria-label="Пушкин от 1 000 ₽ — меренговый рулет с доставкой"><span class="mr-city-tag__name">Пушкин</span> <span class="mr-city-tag__price">от 1 000 ₽</span></a>
     <a href="/prigorody/peterhof/" class="mr-city-tag" data-slug="peterhof" aria-label="Петергоф от 1 500 ₽ — меренговый рулет с доставкой"><span class="mr-city-tag__name">Петергоф</span> <span class="mr-city-tag__price">от 1 500 ₽</span></a>
     <a href="/prigorody/gatchina/" class="mr-city-tag" data-slug="gatchina" aria-label="Гатчина от 1 500 ₽ — меренговый рулет с доставкой"><span class="mr-city-tag__name">Гатчина</span> <span class="mr-city-tag__price">от 1 500 ₽</span></a>
@@ -2393,7 +2412,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
         <a href="https://wa.me/79119038886" target="_blank" rel="noopener noreferrer" class="footer-social" aria-label="WhatsApp">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
         </a>
-        <a href="https://t.me/MiloviCake" target="_blank" rel="noopener noreferrer" class="footer-social" aria-label="Telegram">
+        <a href="https://t.me/milovi_cake" target="_blank" rel="noopener noreferrer" class="footer-social" aria-label="Telegram">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
         </a>
         <a href="https://max.ru/u/f9LHodD0cOIzRY9VJX8MoyR41H64ULjndbose2aPPrzXJDLW8QEiyKTpqxs" target="_blank" rel="noopener noreferrer" class="footer-social" aria-label="MAX">
@@ -2428,9 +2447,9 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     </div>
     <div class="footer-col">
       <div class="footer-col-title">Контакты</div>
-      <a href="tel:+79119038886">+7 911 903 88 86</a>
+      <a href="tel:+79119038886">+7&nbsp;911&nbsp;903&nbsp;88&nbsp;86</a>
       <a href="https://wa.me/79119038886" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-      <a href="https://t.me/MiloviCake" target="_blank" rel="noopener noreferrer">Telegram</a>
+      <a href="https://t.me/milovi_cake" target="_blank" rel="noopener noreferrer">Telegram</a>
       <a href="https://max.ru/u/f9LHodD0cOIzRY9VJX8MoyR41H64ULjndbose2aPPrzXJDLW8QEiyKTpqxs" target="_blank" rel="noopener noreferrer">MAX</a>
       <p>Пн–Сб, 10:00–21:00</p>
       <p style="margin-top:4px">Пулковская ул., 19, СПб</p>

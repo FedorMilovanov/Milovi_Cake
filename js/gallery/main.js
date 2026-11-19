@@ -221,7 +221,7 @@ function renderGrid(){
         card.insertAdjacentHTML('beforeend','<span class="card-skeleton" aria-hidden="true"></span>');
         card.appendChild(wrapInPictureWithAvif(img));
       }
-      card.insertAdjacentHTML('beforeend', `<div class="card-overlay"><span class="card-title">${esc(item.title)}</span></div>`);
+      card.insertAdjacentHTML('beforeend', `<span class="card-overlay"><span class="card-title">${esc(item.title)}</span></span>`);
       card.addEventListener('click',()=>openLightbox(index));
       attachCardTilt(card);
       frag.appendChild(card);

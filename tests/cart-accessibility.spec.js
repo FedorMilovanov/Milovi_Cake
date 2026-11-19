@@ -1291,7 +1291,7 @@ test.describe('cart phone field: Enter prepares the order', () => {
     await page.evaluate(() => { window.__opened.length = 0; });
     await page.locator('#btnTG').click();
     await expect.poll(() => page.evaluate(() => window.__opened.length)).toBe(1);
-    expect(await page.evaluate(() => window.__opened[0])).toBe('https://t.me/MiloviCake');
+    expect(await page.evaluate(() => window.__opened[0])).toBe('https://t.me/milovi_cake');
     expect(await goals(page)).toEqual([
       { path: '/', lead_channel: 'whatsapp', lead_source: 'cart' },
       { path: '/', lead_channel: 'telegram', lead_source: 'cart' },

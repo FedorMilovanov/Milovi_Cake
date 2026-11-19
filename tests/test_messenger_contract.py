@@ -79,6 +79,26 @@ class MessengerCtaContractTest(unittest.TestCase):
                 self.assertEqual(found, home,
                                  f"{page.relative_to(ROOT)}: кнопки заказа расходятся с главной")
 
+    def test_single_canonical_telegram_chat(self):
+        """Один адрес Telegram на всём сайте — и это чат, а не канал.
+
+        `t.me/MiloviCake` — публичный канал (он существует, но писать в него
+        нельзя), `t.me/+79119038886` — чат по номеру телефона. До r47 на сайте
+        жили все три адреса сразу: шапка вела в чат по номеру, а кнопка
+        «Отправить заказ в Telegram» — в канал, где скопированный текст заказа
+        вставить невозможно. Канон: личный аккаунт, куда можно написать.
+        """
+        canon = "https://t.me/milovi_cake"
+        suspicious = []
+        for page in html_pages():
+            text = page.read_text(encoding="utf-8")
+            for found in re.findall(r"https://t\.me/[^\"'<>\s)]+", text):
+                if found != canon:
+                    suspicious.append(f"{page.relative_to(ROOT)} → {found}")
+        self.assertEqual(suspicious, [], f"неканонический Telegram: {suspicious}")
+        main_js = (ROOT / "js" / "main.js").read_text(encoding="utf-8")
+        self.assertIn(f"'{canon}'", main_js, "buildTG должен открывать канонический чат")
+
 
 if __name__ == "__main__":
     unittest.main()

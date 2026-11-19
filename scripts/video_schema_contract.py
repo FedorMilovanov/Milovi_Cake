@@ -120,10 +120,24 @@ def check_video_posters(gallery_text: str, published: dict[str, str]) -> dict[st
         for field, expected in (
             ('thumbnail_loc', 'https://milovicake.ru' + posters[src]),
             ('title', item['title']), ('description', item['desc']),
+            ('publication_date', published[src]),
         ):
             actual = reel.findtext('v:' + field, namespaces=ns)
             if actual != expected:
                 fail(f'video sitemap {src} {field}: {actual!r} != {expected!r}')
+        # Google recommends video:duration; without it the clip loses eligibility
+        # for video rich results. Range check keeps a stray placeholder honest.
+        raw_duration = reel.findtext('v:duration', namespaces=ns)
+        if raw_duration is None:
+            fail(f'video sitemap {src}: missing video:duration (run scripts/build_video_sitemap.py)')
+        try:
+            duration = int(raw_duration)
+        except ValueError:
+            fail(f'video sitemap {src}: video:duration must be integer seconds, got {raw_duration!r}')
+        if not 1 <= duration <= 300:
+            fail(f'video sitemap {src}: implausible video:duration {duration}')
+        if reel.findtext('v:family_friendly', namespaces=ns) not in ('yes', 'no'):
+            fail(f'video sitemap {src}: video:family_friendly must be yes/no')
     return posters
 
 

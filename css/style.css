@@ -716,3 +716,22 @@ body{background:var(--cream);color:var(--text)}
 /* 2) Weight/qty headings: a touch more air below the type grid (~350гр pill). */
 #calcWeightRow, #calcQtyRow { margin-top: 8px; }
 /* 3) Wave words hover: color only — no shadow/transform boxes (owner: the thin frame is unwanted). */
+
+/* ══════════════════════════════════════════════════════════════════════════
+   r34 · Каталог без JavaScript. Раньше правила лежали в <style> внутри
+   <noscript> в body — это невалидный HTML. Теперь стили в основной таблице,
+   а переключение идёт по классу `no-js` на <html> (его снимает inline-скрипт
+   в head до первой отрисовки).
+   ══════════════════════════════════════════════════════════════════════════ */
+#catalogGrid .catalog-nojs{display:none}
+html.no-js #catalogGrid{display:block!important;overflow:visible!important}
+html.no-js #catalogGrid>.skeleton-card{display:none!important}
+html.no-js #catalogGrid .catalog-nojs{display:block;margin:0 auto;padding:22px 24px;max-width:1100px;border:1px solid rgba(163,119,67,.28);border-radius:16px;background:#f8f0e6;color:#322216;font-family:inherit}
+html.no-js #catalogGrid .catalog-nojs h3{margin:0 0 8px;font-size:24px;line-height:1.3}
+html.no-js #catalogGrid .catalog-nojs p{line-height:1.6;margin:0 0 15px}
+html.no-js #catalogGrid .catalog-nojs ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 22px;list-style:none;padding:0;margin:0 0 18px}
+html.no-js #catalogGrid .catalog-nojs li{padding:10px 0;border-top:1px solid rgba(163,119,67,.25)}
+html.no-js #catalogGrid .catalog-nojs li strong{display:block;font-size:15px}
+html.no-js #catalogGrid .catalog-nojs li span{font-size:14px}
+html.no-js #catalogGrid .catalog-nojs a{display:inline-flex;min-height:44px;align-items:center;padding:10px 17px;border-radius:8px;background:#ac7836;color:#fff9ee;text-decoration:none;font-weight:600}
+@media(max-width:600px){html.no-js #catalogGrid .catalog-nojs{padding:16px}html.no-js #catalogGrid .catalog-nojs ul{grid-template-columns:1fr}}

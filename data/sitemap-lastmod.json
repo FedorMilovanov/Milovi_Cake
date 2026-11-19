@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "pages": {
+    "/": {
+      "hash": "29d9006762f670a4ca779fcc6402af4214f805836706fda4a1ef81bee3c62576",
+      "date": "2026-11-19"
+    },
+    "/zakazat-tort-spb/": {
+      "hash": "fa14c560ae7462009b47e4b25237b083a6d933b292dca1d7dcfcb0256be01eae",
+      "date": "2026-11-19"
+    },
+    "/tort-na-den-rozhdeniya/": {
+      "hash": "4c46732285e73abff9a41af1045966bdab7b495534ffb83751add307438bc682",
+      "date": "2026-11-19"
+    },
+    "/meringue-roll/": {
+      "hash": "8df76186b976e1c5c7f87b8f87e1c8d8324a90d5c1df9c52164e6db769c1c85b",
+      "date": "2026-11-19"
+    },
+    "/prigorody/": {
+      "hash": "b4f9447c7106a793f0206c0fee2e5453bcf8d019c5f59caf15abd9a10e3e6851",
+      "date": "2026-11-19"
+    },
+    "/prigorody/vsevolozhsk/": {
+      "hash": "28b1a49cfe710c02c8f9864eb005c807146169cbff7b2fda49b2d3978c0ca7e7",
+      "date": "2026-11-19"
+    },
+    "/prigorody/murino/": {
+      "hash": "733633570881e7e78c2b9f5a4e175ee2679602d45c45f5b4682635ae2e5b223d",
+      "date": "2026-11-19"
+    },
+    "/prigorody/kudrovo/": {
+      "hash": "b8dca6c1fc5a681dcdd5b0369a1033cb193586b35a8957be228b7667614d3478",
+      "date": "2026-11-19"
+    },
+    "/prigorody/gatchina/": {
+      "hash": "8598e4f734c7986b1d8108371d273e9a8b95d08af19721df6c5f275e2fd9029c",
+      "date": "2026-11-19"
+    },
+    "/prigorody/pushkin/": {
+      "hash": "cf9ffb1037ad8f361ab467058ec51649eaf035ba38a8a288efb25f9c4356a94a",
+      "date": "2026-11-19"
+    },
+    "/prigorody/peterhof/": {
+      "hash": "01d0e690bad86293351dd3effb7caf234c7b6328fc5a4871755d085bcdf8495e",
+      "date": "2026-11-19"
+    },
+    "/prigorody/kolpino/": {
+      "hash": "9d1665e4e8cfb8f544378f75895d801e52307ce74261e2280926bad1cd6f9bbe",
+      "date": "2026-11-19"
+    },
+    "/prigorody/kronshtadt/": {
+      "hash": "3fb5d04a91ce496130ce098331730848334c29e07609fa3465942236e831a46b",
+      "date": "2026-11-19"
+    },
+    "/prigorody/lomonosov/": {
+      "hash": "631a584cbab5503e327b46f5c816944937528d14a24496f901312faf14e888b7",
+      "date": "2026-11-19"
+    },
+    "/prigorody/pavlovsk/": {
+      "hash": "266ea2e8eb5333213cd0ccdf293587948957d4469760ab8e3c707f795e97fafe",
+      "date": "2026-11-19"
+    },
+    "/prigorody/sestroretsk/": {
+      "hash": "dd80ead345e9aacb9551285b00a23b16cf9d739f449b4e7e870297dfa17a6d99",
+      "date": "2026-11-19"
+    },
+    "/prigorody/shushary/": {
+      "hash": "8c16c067755bf48b37dd7dffd7721295a3f14e7e7032045c7c46892f95835cef",
+      "date": "2026-11-19"
+    },
+    "/prigorody/tosno/": {
+      "hash": "7e1f46d5541d7b96d33bda995d41d5af4bfd93cfc57ad4012ae76d67a027c752",
+      "date": "2026-11-19"
+    },
+    "/prigorody/krasnoe-selo/": {
+      "hash": "c23dde8bb09a1819401f3aa60cbf6fafc9459508c45686fa51db823cb9a35551",
+      "date": "2026-11-19"
+    },
+    "/certificates/": {
+      "hash": "14fad264841737585f868cad60bbc72ed76185ac204c5ee1b120b1337feee159",
+      "date": "2026-11-19"
+    },
+    "/gallery/": {
+      "hash": "ad23f278cd51621db93e9fbeeb1544bb3143bcf662eb821ae2992b5618dae4e1",
+      "date": "2026-11-19"
+    },
+    "/tort-s-dostavkoy/": {
+      "hash": "108aec452d1e5826d38e9cf5a82dd00a7364b9c69e4964f2d739c8f3515ef222",
+      "date": "2026-11-19"
+    },
+    "/bento-torty/": {
+      "hash": "c4d28a74feedcdb690f1f71dbd19bf52c62bc155caaa2a7f83b92d0f981b4787",
+      "date": "2026-11-19"
+    },
+    "/detskie-torty/": {
+      "hash": "1ab8643ab07fa3aacaf61cbff7361bcca8ed1ed63cca20371a3c493e87d82a08",
+      "date": "2026-11-19"
+    },
+    "/svadebnye-torty/": {
+      "hash": "5c6cbb9ab6f58e088a2d644fe7ace7b68f11dcd5d2ebc67358fc2cfe3fbc6673",
+      "date": "2026-11-19"
+    },
+    "/o-konditere/": {
+      "hash": "fbe48f4a0b250749b9a526f558a74ce7153ffbdfd11e8b24617fead89ac0f23b",
+      "date": "2026-11-19"
+    },
+    "/dostavka-i-oplata/": {
+      "hash": "18c3600401c136ced543d99704be9623bb3cd79999dd3cf828f084f2b86ec551",
+      "date": "2026-11-19"
+    },
+    "/otzyvy/": {
+      "hash": "3a34184aaa79de63a7f143b847656d5f4ff18396be8f5af4725491d3d099ab0b",
+      "date": "2026-11-19"
+    },
+    "/privacy/": {
+      "hash": "0218eb21d5b2c5a6fd53d78542ec1a66958b5307bec29726fae15e47e0bcb07a",
+      "date": "2026-11-19"
+    }
+  }
+}
