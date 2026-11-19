@@ -73,25 +73,6 @@ jobs:
         if: failure() && matrix.engine == 'webkit' && steps.primary_contracts.outcome == 'failure'
         run: python3 scripts/browser_log_summary.py "$RUNNER_TEMP/webkit-primary-browser.log"
 
-      - name: Repeat WebKit storage fault interactions
-        if: matrix.engine == 'webkit'
-        env:
-          HOME: /root
-        run: >-
-          npx playwright test tests/cart-accessibility.spec.js
-          --project=webkit-desktop --grep='cart stays usable and warns'
-          --repeat-each=3 --workers=1 --retries=0 --reporter=list,github
-
-      - name: Repeat WebKit gallery close and delayed-load interactions
-        if: matrix.engine == 'webkit'
-        env:
-          HOME: /root
-        run: >-
-          npx playwright test tests/video-posters.spec.js
-          --project=webkit-desktop --project=webkit-mobile
-          --grep='gallery can close an active video|late Swiper initializes'
-          --repeat-each=3 --workers=1 --retries=0 --reporter=list,github
-
       - name: Upload failed browser artifacts
         if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -255,6 +236,104 @@ jobs:
         run: |
           cp "$RUNNER_TEMP/gallery-main-original.js" js/gallery/main.js
           sha256sum --check "$RUNNER_TEMP/gallery-main-original.sha256"
+
+  # Repeat WebKit contracts in fresh containers, independent of the long primary matrix.
+  # Original tests and assertions remain required; no failures are waived.
+  webkit-repeated-storage:
+    name: webkit repeated storage fault interactions
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --shm-size=1g
+    timeout-minutes: 18
+    env:
+      HOME: /root
+      MILOVI_BROWSER_COMPAT: '1'
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Setup pinned Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22.13.0'
+          cache: npm
+      - name: Setup Python for the local test server
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: '3.12'
+      - name: Install project dependencies
+        run: npm ci
+      - name: Repeat WebKit storage fault interactions
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Recreate WebKit's browser process on each pass, rather than carrying
+          # media/Storage state across six repeats in one Playwright process.
+          # All 3 x 2 original exact-source assertions remain required.
+          for pass in 1 2 3; do
+            echo "::group::WebKit storage fault run ${pass}/3"
+            npx playwright test tests/cart-accessibility.spec.js \
+              --project=webkit-desktop --grep='cart stays usable and warns' \
+              --workers=1 --retries=0 --reporter=list,github
+            echo "::endgroup::"
+          done
+      - name: Upload failed storage fault artifacts
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: webkit-storage-${{ github.run_id }}-${{ github.run_attempt }}
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+          include-hidden-files: false
+
+  webkit-repeated-media:
+    name: webkit repeated gallery media interactions
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --shm-size=1g
+    timeout-minutes: 18
+    env:
+      HOME: /root
+      MILOVI_BROWSER_COMPAT: '1'
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Setup pinned Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22.13.0'
+          cache: npm
+      - name: Setup Python for the local test server
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: '3.12'
+      - name: Install project dependencies
+        run: npm ci
+      - name: Repeat WebKit gallery close and delayed-load interactions
+        run: >-
+          npx playwright test tests/video-posters.spec.js
+          --project=webkit-desktop --project=webkit-mobile
+          --grep='gallery can close an active video|late Swiper initializes'
+          --repeat-each=3 --workers=1 --retries=0 --reporter=list,github
+      - name: Upload failed gallery media artifacts
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: webkit-media-${{ github.run_id }}-${{ github.run_attempt }}
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+          include-hidden-files: false
 
   motion-ordering:
     name: ${{ matrix.engine }} reduced-motion ordering

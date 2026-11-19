@@ -154,7 +154,7 @@ html { scroll-padding-top: 88px; }
 
 .mr-cities { padding: 56px 24px 64px; background: linear-gradient(180deg, var(--cream, #f5f0e8) 0%, var(--cream-dark, #ede5d5) 100%); }
 .mr-cities__inner { max-width: 880px; margin: 0 auto; text-align: center; }
-.mr-cities__eyebrow { display: inline-block; font-family: 'Jost', sans-serif; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold, #c9934a); margin-bottom: 14px; }
+.mr-cities__eyebrow { display: inline-block; font-family: 'Jost', sans-serif; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold-ink); margin-bottom: 14px; }
 .mr-cities__title { font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 4vw, 42px); font-weight: 500; color: var(--brown, #3d2b1f); margin: 0 0 12px; letter-spacing: -0.012em; }
 .mr-cities__sub { font-size: 15px; color: var(--text-muted, #9a7a62); font-weight: 300; line-height: 1.7; margin: 0 auto 32px; max-width: 560px; }
 .mr-cities__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin-bottom: 24px; }

@@ -363,10 +363,30 @@ for (const width of [360, 390, 414, 561, 600, 768, 900, 1024, 1536]) {
         const pageErrors = [];
         page.on('pageerror', (error) => pageErrors.push(error.message));
         await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
-        await page.locator('.wed-collection-card img').evaluateAll(async (images) => {
+        await page.waitForLoadState('load');
+        // Wait for the page's own two-frame offscreen-layout optimization to finish.
+        // Geometry measured while mc-fast-init is present is intentionally provisional.
+        await expect(page.locator('html')).not.toHaveClass(/mc-fast-init/, { timeout: 3500 });
+        await page.locator('.wed-collection-card img').evaluateAll((images) => {
           images.forEach((image) => { image.loading = 'eager'; });
-          await Promise.all(images.map((image) => image.decode()));
         });
+        // Exercise the real lazy-loading path by visiting the gallery before
+        // inspecting its images; do not demand offscreen bytes at DOMContentLoaded.
+        await page.locator('.wed-collection-grid').scrollIntoViewIfNeeded();
+        await page.locator('.wed-collection-card').last().scrollIntoViewIfNeeded();
+        // Failed images still fail: each must finish loading with nonzero dimensions.
+        await expect.poll(() => page.locator('.wed-collection-card img').evaluateAll(
+          (images) => images.every((image) => image.complete && image.naturalWidth > 0)
+        ), { timeout: 10000, intervals: [50, 150, 300] }).toBe(true);
+        // Force a real on-screen layout; content-visibility:auto may skip
+        // grid track resolution again after scrolling past the last card.
+        await page.locator('.wed-collection-card').first().scrollIntoViewIfNeeded();
+        await page.waitForTimeout(50);
+        const expectedColumns = width <= 375 ? 1 : width <= 860 ? 2 : 4;
+        await expect.poll(() => page.evaluate(() =>
+          getComputedStyle(document.querySelector('.wed-collection-grid'))
+            .gridTemplateColumns.split(' ').length
+        ), { timeout: 3500, intervals: [50, 120, 240] }).toBe(expectedColumns);
         const view = await page.evaluate(() => {
           const element = (selector) => document.querySelector(selector);
           const rect = (node) => {
@@ -400,16 +420,23 @@ for (const width of [360, 390, 414, 561, 600, 768, 900, 1024, 1536]) {
         const channels = (color) => (color.match(/\d+/g) || []).slice(0, 3).map(Number);
         expect(view.theme).toBe(theme);
         expect(view.overflow).toBeLessThanOrEqual(1);
-        expect(view.columns).toBe(width <= 860 ? 2 : 4);
+        expect(view.columns).toBe(expectedColumns);
         expect(view.mobileMenu === 'none').toBe(width > 860);
         expect(parseFloat(view.motion)).toBeLessThanOrEqual(0.00002);
         expect(view.images.every(({ loaded, src }) => loaded && /wedding-style-.*\.avif$/.test(src))).toBe(true);
         expect(Math.max(...view.titles)).toBeLessThanOrEqual(1);
         expect(view.section.top).toBeGreaterThanOrEqual(view.hero.bottom - 1);
         expect(view.photos[0].top - view.intro.bottom).toBeGreaterThanOrEqual(20);
-        expect(view.cards[0].top).toBeCloseTo(view.cards[1].top, 0);
-        if (width <= 860) expect(view.cards[2].top).toBeGreaterThanOrEqual(view.cards[0].bottom + 12);
-        else expect(view.cards[3].top).toBeCloseTo(view.cards[0].top, 0);
+        if (width <= 375) {
+          for (let i = 1; i < view.cards.length; i++) {
+            expect(view.cards[i].top).toBeGreaterThanOrEqual(view.cards[i - 1].bottom + 12);
+            expect(view.cards[i].width).toBeGreaterThanOrEqual(width - 48);
+          }
+        } else {
+          expect(view.cards[0].top).toBeCloseTo(view.cards[1].top, 0);
+          if (width <= 860) expect(view.cards[2].top).toBeGreaterThanOrEqual(view.cards[0].bottom + 12);
+          else expect(view.cards[3].top).toBeCloseTo(view.cards[0].top, 0);
+        }
         expect(view.note.top - view.cards[3].bottom).toBeGreaterThanOrEqual(20);
         expect(view.banner.top - view.note.bottom).toBeGreaterThanOrEqual(32);
         expect(view.bannerAction.bottom).toBeLessThanOrEqual(view.banner.bottom - 14);

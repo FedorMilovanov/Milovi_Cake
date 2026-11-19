@@ -40,7 +40,7 @@ class SchemaContentContractTest(unittest.TestCase):
             'tort-na-den-rozhdeniya/index.html': ['Торт на день рождения', 'Детский 3D-торт'],
             'tort-s-dostavkoy/index.html': ['Бисквитный торт с доставкой'],
             'zakazat-tort-spb/index.html': ['Бисквитный торт', '3D-торт'],
-            'svadebnye-torty/index.html': ['Камерный свадебный торт', 'Многоярусный торт', 'Десерты к свадьбе'],
+            'svadebnye-torty/index.html': ['Камерный свадебный торт', 'Многоярусный торт с характером', 'Десерты к свадьбе'],
         }
         for relative, names in variable.items():
             for name in names:

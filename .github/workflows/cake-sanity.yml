@@ -21,6 +21,9 @@ jobs:
     # нехватка времени, а не падения. Каждый тест по-прежнему ограничен
     # 60 с в playwright.config.js, поэтому зависание одного теста видно как
     # его таймаут, а не растворяется в общем лимите задания.
+    # Full QA now takes >25 minutes in CI; previous attempts were cancelled
+    # by the old job cap after 682–711 successful tests, not test assertions.
+    # Keep every test, Pages build and artifact audit as required checks.
     timeout-minutes: 40
     env:
       RELEASE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}

@@ -64,13 +64,44 @@ const server = http2.createSecureServer(tls, (request, response) => {
       'content-type': types[ext] || 'application/octet-stream',
       'cache-control': 'no-cache',
     };
+    let status = 200;
+    if (ext === '.mp4' || ext === '.webm') {
+      headers['accept-ranges'] = 'bytes';
+      const range = request.headers.range;
+      if (range) {
+        const match = /^bytes=(\d*)-(\d*)$/.exec(range);
+        let from = -1, to = -1;
+        if (match && (match[1] || match[2])) {
+          if (!match[1]) {
+            const suffix = Number(match[2]);
+            if (Number.isSafeInteger(suffix) && suffix > 0) {
+              from = Math.max(0, body.length - suffix);
+              to = body.length - 1;
+            }
+          } else {
+            from = Number(match[1]);
+            to = match[2] ? Number(match[2]) : body.length - 1;
+          }
+        }
+        if (!Number.isSafeInteger(from) || !Number.isSafeInteger(to)
+            || from < 0 || from >= body.length || to < from) {
+          response.writeHead(416, {...headers,'content-range':'bytes */'+body.length,'content-length':'0'});
+          response.end();
+          return;
+        }
+        to = Math.min(to, body.length - 1);
+        headers['content-range'] = 'bytes ' + from + '-' + to + '/' + body.length;
+        body = body.subarray(from, to + 1);
+        status = 206;
+      }
+    }
     if (compressible.has(ext) && body.length > 512 && /\bgzip\b/i.test(request.headers['accept-encoding'] || '')) {
       body = zlib.gzipSync(body, { level: 6 });
       headers['content-encoding'] = 'gzip';
       headers.vary = 'Accept-Encoding';
     }
     headers['content-length'] = String(body.length);
-    response.writeHead(200, headers);
+    response.writeHead(status, headers);
     response.end(request.method === 'HEAD' ? undefined : body);
   } catch {
     response.writeHead(404, { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-cache' });

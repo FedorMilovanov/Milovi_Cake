@@ -80,8 +80,20 @@ class BrowserCompatibilityContractTest(unittest.TestCase):
         ):
             with self.subTest(name=name):
                 section = workflow.split(f'- name: {name}', 1)[1].split('\n      - name:', 1)[0]
-                self.assertIn('--repeat-each=3', section)
                 self.assertIn('--retries=0', section)
+                self.assertNotIn('continue-on-error', section)
+                self.assertNotIn('|| true', section)
+                if name == 'Repeat WebKit storage fault interactions':
+                    # Preserve three repetitions of both Storage failure cases.
+                    # Independent Playwright processes prevent accumulated WebKit
+                    # state from hanging the fifth or sixth iteration.
+                    self.assertIn('for pass in 1 2 3; do', section)
+                    self.assertIn('set -euo pipefail', section)
+                    self.assertIn('npx playwright test tests/cart-accessibility.spec.js', section)
+                    self.assertIn("--grep='cart stays usable and warns'", section)
+                    self.assertIn('--project=webkit-desktop', section)
+                else:
+                    self.assertIn('--repeat-each=3', section)
         gallery = workflow.split('- name: Repeat WebKit gallery close and delayed-load interactions', 1)[1]
         self.assertIn('--project=webkit-desktop --project=webkit-mobile', gallery)
 

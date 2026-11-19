@@ -254,19 +254,31 @@ test('a tap on the video strip under the hidden back-to-top opens the video', as
 
     const point = await page.evaluate(() => {
       const btt = document.getElementById('backToTop').getBoundingClientRect();
-      const hit = document.elementFromPoint(btt.left + btt.width / 2, btt.top + btt.height / 2);
-      return {
-        x: Math.round(btt.left + btt.width / 2),
-        y: Math.round(btt.top + btt.height / 2),
-        onTile: !!(hit && hit.closest && hit.closest('.vtile')),
-        hitIsBtt: !!(hit && hit.closest && hit.closest('#backToTop')),
-      };
+      // The BTT's center may fall in a 10px GAP between two video tiles.
+      // Test a real tile pixel inside the hidden BTT bounds, not an arbitrary gap.
+      for (const tile of document.querySelectorAll('#mcVideoStrip .vtile')) {
+        const rect = tile.getBoundingClientRect();
+        const left = Math.max(0, btt.left, rect.left);
+        const right = Math.min(innerWidth, btt.right, rect.right);
+        const top = Math.max(0, btt.top, rect.top);
+        const bottom = Math.min(innerHeight, btt.bottom, rect.bottom);
+        if (right - left < 3 || bottom - top < 3) continue;
+        for (let y = Math.ceil(top + 1); y < bottom - 1; y += 4) {
+          for (let x = Math.ceil(left + 1); x < right - 1; x += 4) {
+            const hit = document.elementFromPoint(x, y);
+            if (hit && hit.closest('.vtile') === tile) {
+              return { found: true, x, y, hitIsBtt: !!hit.closest('#backToTop') };
+            }
+          }
+        }
+      }
+      return { found: false };
     });
+    expect(point.found, `на ${width}px не найдено пересечение скрытой кнопки и живой плитки`).toBe(true);
     expect(point.hitIsBtt).toBe(false);
-    expect(point.onTile, `под кнопкой на ${width}px должна быть плитка ленты`).toBe(true);
 
-    // Живой тап ровно в точку кнопки: событие обязано дойти до плитки и
-    // открыть видео, а не «съесться» невидимой кнопкой.
+    // Trusted tap on a real video-tile pixel within the hidden BTT's bounds:
+    // transparent controls must never consume the video gesture.
     await tapPoint(page, point.x, point.y);
     await expect(page.locator('body')).toHaveClass(/vview-open/, { timeout: 5_000 });
     await page.keyboard.press('Escape');
