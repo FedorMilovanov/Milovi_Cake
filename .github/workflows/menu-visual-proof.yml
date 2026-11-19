@@ -69,6 +69,8 @@ jobs:
         run: node scripts/menu_visual_proof.cjs --base=https://milovicake.ru --prefix=before
 
       - name: Screenshot the working tree (after) menu
+        env:
+          MM_PROBE: '1'  # TEMP-PROBE: диагностика DOM, снять после разбора
         run: node scripts/menu_visual_proof.cjs --base=http://127.0.0.1:4173 --prefix=after
 
       - name: Upload screenshots as an artifact
