@@ -268,10 +268,19 @@ jobs:
       - name: Install project dependencies
         run: npm ci
       - name: Repeat WebKit storage fault interactions
-        run: >-
-          npx playwright test tests/cart-accessibility.spec.js
-          --project=webkit-desktop --grep='cart stays usable and warns'
-          --repeat-each=3 --workers=1 --retries=0 --reporter=list,github
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Recreate WebKit's browser process on each pass, rather than carrying
+          # media/Storage state across six repeats in one Playwright process.
+          # All 3 x 2 original exact-source assertions remain required.
+          for pass in 1 2 3; do
+            echo "::group::WebKit storage fault run ${pass}/3"
+            npx playwright test tests/cart-accessibility.spec.js \
+              --project=webkit-desktop --grep='cart stays usable and warns' \
+              --workers=1 --retries=0 --reporter=list,github
+            echo "::endgroup::"
+          done
       - name: Upload failed storage fault artifacts
         if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
