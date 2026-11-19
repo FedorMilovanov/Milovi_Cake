@@ -157,7 +157,11 @@
       menuTrapRelease();
       menuTrapRelease = null;
       if (menuReturnFocus && menuReturnFocus.focus){
-        try { menuReturnFocus.focus(); } catch(e){}
+        /* preventScroll: закрытие по якорной ссылке не должно отбрасывать
+           страницу к шапке — прокрутку задаёт сам переход по ссылке. */
+        try { menuReturnFocus.focus({ preventScroll: true }); } catch(e){
+          try { menuReturnFocus.focus(); } catch(err){}
+        }
       }
       menuReturnFocus = null;
     }

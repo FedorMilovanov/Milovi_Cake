@@ -119,9 +119,9 @@
 <link rel="stylesheet" href="/css/fonts.css?v=20261102r01" />
 
   <!-- noscript fonts -->
-  <link rel="stylesheet" href="../../css/style.css?v=20261120r31" />
-  <link rel="stylesheet" href="../../css/mc-2026.css?v=20261120r43" />
-  <link rel="stylesheet" href="../../css/premium-overrides.css?v=20261120r38" />
+  <link rel="stylesheet" href="../../css/style.css?v=20261116r32" />
+  <link rel="stylesheet" href="../../css/mc-2026.css?v=20261116r44" />
+  <link rel="stylesheet" href="../../css/premium-overrides.css?v=20261116r39" />
   <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20261118r27">
   <script type="application/ld+json">
   {
@@ -252,28 +252,113 @@
   </div>
 </header>
 
-<!-- ── MOBILE MENU ── -->
-<div class="mobile-menu" id="mobileMenu" role="dialog" aria-label="Навигационное меню" aria-modal="true">
-  <button type="button" class="mobile-menu-close" onclick="closeMobileMenu()">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-    Закрыть
-  </button>
-  <div class="mobile-menu-nav">
-    <a href="#catalog" onclick="closeMobileMenu()">Каталог</a>
-    <a href="#fillings" onclick="closeMobileMenu()">Начинки</a>
-    <a href="#reviews" onclick="closeMobileMenu()">Отзывы</a>
-    <a href="#contacts" onclick="closeMobileMenu()">Контакты</a>
-    <button type="button" class="mm-theme-row" onclick="toggleTheme()" aria-label="Переключить тему оформления">
-      <span class="mobile-menu-section-label" style="margin:0;">Тема оформления</span>
-      <span class="mm-theme-icons" aria-hidden="true">
-        <svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        <svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
-      </span>
+<!-- ── MOBILE MENU ──
+     Единый компонент мобильной навигации: главная и пригороды используют
+     одну и ту же разметку. Стили — css/mc-2026.css (§ MOBILE MENU),
+     поведение — js/main.js (openMobileMenu / closeMobileMenu / setTheme),
+     focus-trap и Esc — js/mc-2026.js. -->
+<div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Меню сайта">
+  <div class="mobile-menu-head">
+    <p class="mobile-menu-brand">
+      <span class="mobile-menu-brand-name">Milovi Cake</span>
+      <span class="mobile-menu-brand-sub">Авторские торты · СПб</span>
+    </p>
+    <button type="button" class="mobile-menu-close" onclick="closeMobileMenu()" aria-label="Закрыть меню">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M18 6L6 18M6 6l12 12"/></svg>
     </button>
-    <a href="tel:+79119038886" class="mobile-menu-phone" onclick="closeMobileMenu()">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.07 2.18 2 2 0 012.03 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-      +7 911 903 88 86
+  </div>
+
+  <div class="mobile-menu-body">
+    <nav class="mobile-menu-nav" aria-labelledby="mmOrderLabel">
+      <p class="mobile-menu-section-label" id="mmOrderLabel">Заказать</p>
+      <a href="#catalog" onclick="closeMobileMenu()">
+        <span class="mm-link-text">Каталог и цены<em class="mm-link-note">Выбрать торт и вес</em></span>
+        <svg class="mm-link-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m9 5.5 6.5 6.5L9 18.5"/></svg>
+      </a>
+      <a href="/svadebnye-torty/" onclick="closeMobileMenu()">
+        <span class="mm-link-text">Свадебные торты<em class="mm-link-note">Дизайн, дегустация, бриф</em></span>
+        <svg class="mm-link-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m9 5.5 6.5 6.5L9 18.5"/></svg>
+      </a>
+      <a href="/gallery/" onclick="closeMobileMenu()">
+        <span class="mm-link-text">Галерея работ<em class="mm-link-note">Реальные заказы</em></span>
+        <svg class="mm-link-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m9 5.5 6.5 6.5L9 18.5"/></svg>
+      </a>
+      <a href="/dostavka-i-oplata/" onclick="closeMobileMenu()">
+        <span class="mm-link-text">Доставка и оплата<em class="mm-link-note">СПб и пригороды</em></span>
+        <svg class="mm-link-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m9 5.5 6.5 6.5L9 18.5"/></svg>
+      </a>
+    </nav>
+
+    <nav class="mm-formats" aria-labelledby="mmFormatsLabel">
+      <p class="mobile-menu-section-label" id="mmFormatsLabel">Форматы</p>
+      <div class="mm-chips">
+        <a class="mm-chip" href="/bento-torty/" onclick="closeMobileMenu()">Бенто-торты</a>
+        <a class="mm-chip" href="/detskie-torty/" onclick="closeMobileMenu()">Детские торты</a>
+        <a class="mm-chip" href="/meringue-roll/" onclick="closeMobileMenu()">Меренговый рулет</a>
+        <a class="mm-chip" href="/prigorody/" onclick="closeMobileMenu()">Пригороды</a>
+      </div>
+    </nav>
+
+    <nav class="mm-sublinks" aria-label="О кондитере и контакты">
+      <a class="mm-sublink" href="/o-konditere/" onclick="closeMobileMenu()">О кондитере</a>
+      <a class="mm-sublink" href="/otzyvy/" onclick="closeMobileMenu()">Отзывы</a>
+      <a class="mm-sublink" href="#fillings" onclick="closeMobileMenu()">Начинки</a>
+      <a class="mm-sublink" href="#contacts" onclick="closeMobileMenu()">Контакты</a>
+    </nav>
+  </div>
+
+  <div class="mobile-menu-foot">
+    <div class="mm-contacts">
+      <a class="mm-msg mm-msg--wa"
+         href="https://wa.me/79119038886?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D1%81%D0%B4%D0%B5%D0%BB%D0%B0%D1%82%D1%8C%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7"
+         target="_blank" rel="noopener noreferrer" aria-label="Написать в WhatsApp" onclick="closeMobileMenu()">
+        <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" focusable="false"><path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        <span>WhatsApp</span>
+      </a>
+      <a class="mm-msg mm-msg--tg"
+         href="https://t.me/+79119038886"
+         target="_blank" rel="noopener noreferrer" aria-label="Написать в Telegram" onclick="closeMobileMenu()">
+        <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" focusable="false"><path fill="currentColor" d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71l-4.13-3.05-1.99 1.93c-.23.23-.42.42-.84.42z"/></svg>
+        <span>Telegram</span>
+      </a>
+      <!-- MAX: фирменный знак из брендбука https://go.max.ru/brandbook
+           (геометрия знака — как у официальной иконки приложения, заливка
+           фирменным градиентом «Голубая комета → Пурпурная туманность»). -->
+      <a class="mm-msg mm-msg--max"
+         href="https://max.ru/u/f9LHodD0cOIzRY9VJX8MoyR41H64ULjndbose2aPPrzXJDLW8QEiyKTpqxs"
+         target="_blank" rel="noopener noreferrer" aria-label="Написать в MAX" onclick="closeMobileMenu()">
+        <svg viewBox="0 0 16 16" width="17" height="17" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="mmMaxGrad" x1="0" y1="16" x2="16" y2="0" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#00BFFF"/>
+              <stop offset=".55" stop-color="#6E1AFF"/>
+              <stop offset="1" stop-color="#9500FF"/>
+            </linearGradient>
+          </defs>
+          <path fill="url(#mmMaxGrad)" fill-rule="evenodd" clip-rule="evenodd" d="M8.1719 15.9543C6.6017 15.9543 5.872 15.7241 4.60361 14.8032C3.80132 15.8392 1.26074 16.6488 1.14995 15.2637C1.14995 14.2238 0.920723 13.3452 0.660933 12.3859C0.351479 11.2041 0 9.88801 0 7.98101C0 3.42646 3.7211 0 8.12987 0C12.5425 0 16 3.59529 16 8.02321C16.0148 12.3827 12.5125 15.9311 8.1719 15.9543ZM8.23684 3.93679C6.08976 3.82551 4.41641 5.31811 4.04583 7.6587C3.7402 9.59639 4.2827 11.9562 4.74497 12.0789C4.96656 12.1327 5.52434 11.6799 5.872 11.3307C6.44687 11.7296 7.1163 11.9691 7.81277 12.0252C10.0375 12.1327 11.9384 10.4317 12.0878 8.19972C12.1748 5.96306 10.4619 4.06862 8.23684 3.94062L8.23684 3.93679Z"/>
+        </svg>
+        <span>MAX</span>
+      </a>
+    </div>
+
+    <a class="mm-call" href="tel:+79119038886" onclick="closeMobileMenu()" aria-label="Позвонить: +7 911 903 88 86">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.07 2.18 2 2 0 012.03 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+      <span>+7 911 903 88 86</span>
     </a>
+
+    <div class="mm-service">
+      <div class="mm-theme" role="group" aria-label="Тема оформления">
+        <button type="button" class="mm-theme-opt" data-theme-set="light" onclick="setTheme('light')" aria-pressed="true">
+          <svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <span>Светлая</span>
+        </button>
+        <button type="button" class="mm-theme-opt" data-theme-set="dark" onclick="setTheme('dark')" aria-pressed="false">
+          <svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <span>Тёмная</span>
+        </button>
+      </div>
+      <div class="mm-privacy-host"></div>
+    </div>
   </div>
 </div>
 
@@ -930,9 +1015,9 @@
 </section>
 
 <script>var IMG_BASE = '../../img';</script>
-<script src="../../js/main.js?v=20261120r40" defer></script>
-<script src="../../js/nav.js?v=20261120r26" defer></script>
-<script src="../../js/mc-2026.js?v=20261120r43" defer></script>
+<script src="../../js/main.js?v=20261116r41" defer></script>
+<script src="../../js/nav.js?v=20261116r27" defer></script>
+<script src="../../js/mc-2026.js?v=20261116r44" defer></script>
 
 <!-- ══════════ BOTTOM SHEET: Начинка ══════════ -->
 <div class="fill-mobile-overlay" id="fillOverlay"></div>

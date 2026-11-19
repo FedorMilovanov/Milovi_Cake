@@ -361,7 +361,7 @@ for public_html in public_html_files():
 
 # Changed shared styles must agree between every consumer and the precache.
 for asset in ('style.css', 'mc-2026.css', 'premium-overrides.css', 'v20-dark-and-fixes.css'):
-    revision = {'style.css': '20261120r31', 'mc-2026.css': '20261120r43', 'premium-overrides.css': '20261120r38', 'v20-dark-and-fixes.css': '20261118r27'}.get(asset, '20261116r06')
+    revision = {'style.css': '20261116r32', 'mc-2026.css': '20261116r44', 'premium-overrides.css': '20261116r39', 'v20-dark-and-fixes.css': '20261118r27'}.get(asset, '20261116r06')
     require(f"'/css/{asset}?v={revision}'," in sw, f'{asset} service-worker revision drifted')
     for public_html in public_html_files():
         refs = re.findall(rf'css/{re.escape(asset)}\?v=([0-9a-z]+)', read(public_html))
@@ -371,13 +371,13 @@ for asset in ('style.css', 'mc-2026.css', 'premium-overrides.css', 'v20-dark-and
 for public_html in public_html_files():
     html = read(public_html)
     refs = re.findall(r'js/main\.js\?v=([0-9a-z]+)', html)
-    require(all(ref == '20261120r40' for ref in refs), f'{public_html} shared main.js revision drifted')
+    require(all(ref == '20261116r41' for ref in refs), f'{public_html} shared main.js revision drifted')
 
-require("const CACHE_NAME = 'milovi-cake-v2026.11.20-r183';" in sw, 'service-worker cache generation drifted')
+require("const CACHE_NAME = 'milovi-cake-v2026.11.16-r184';" in sw, 'service-worker cache generation drifted')
 require("'/css/gallery/gallery-2026.css?v=20261120r07'," in sw, 'gallery CSS service-worker revision drifted')
 require(style_ref != '/css/style.css?v=20261023r01', 'service-worker precache still points at stale shared CSS revision')
-require("'/js/main.js?v=20261120r40'," in sw, 'service-worker precache still points at stale shared main.js revision')
-require("'/js/nav.js?v=20261120r26'," in sw, 'service-worker precache still points at stale shared nav.js revision')
+require("'/js/main.js?v=20261116r41'," in sw, 'service-worker precache still points at stale shared main.js revision')
+require("'/js/nav.js?v=20261116r27'," in sw, 'service-worker precache still points at stale shared nav.js revision')
 require("'/js/gallery/main.js?v=20261120r05'," in sw, 'service-worker precache still points at stale gallery runtime revision')
 require("'/js/gallery/data.js?v=20261120r03'," in sw, 'service-worker precache still points at stale gallery data revision')
 require("'/js/consent-analytics.js?v=20261120r04'," in sw, 'service-worker precache still points at stale consent loader revision')
