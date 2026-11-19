@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 
-const WIDTHS = [360, 390, 414, 561, 600, 768, 900, 1024];
+const WIDTHS = [320, 360, 390, 414, 430, 561, 600, 768, 900, 1024];
 const THEMES = ['light', 'dark'];
 // final-fixes.css intentionally uses a 94% opaque mobile app-shell surface.
 // Keep the guard aligned with that design token while still rejecting transparency regressions.
@@ -101,7 +101,7 @@ for (const theme of THEMES) {
 }
 
 // Price and button must not squeeze each other on narrow desktop cards.
-for (const width of [900, 1024, 1280, 1440]) {
+for (const width of [900, 1024, 1280, 1440, 1920]) {
   for (const theme of THEMES) {
     test(`@layout-matrix home ${width}px ${theme}: narrow desktop prices stay on one line`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
@@ -227,10 +227,10 @@ test('@layout-matrix @gallery typography cannot trigger a late Google Fonts layo
 
 // The wedding image is an editorial photo, not a background for mobile copy.
 // The crop guard covers the cake's approximate x=880–1230 region in wedding-hero.avif.
-for (const width of [360, 390, 414, 561, 600, 768, 900, 1024, 1536]) {
+for (const width of [320, 360, 390, 414, 430, 561, 600, 768, 900, 1024, 1536]) {
   for (const theme of THEMES) {
     test(`@layout-matrix @wedding-hero ${width}px ${theme}: cake, contrast and spacing`, async ({ browser }) => {
-      const height = width === 360 ? 800 : width === 390 ? 844 : width === 414 ? 896 : 900;
+      const height = width <= 360 ? 800 : width === 390 ? 844 : width === 414 ? 896 : 900;
       const context = await browser.newContext({
         baseURL: 'http://127.0.0.1:4173',
         storageState: 'tests/analytics-denied.storage-state.json',
@@ -344,13 +344,13 @@ test('@layout-matrix @wedding-hero defaults to light without a saved theme even 
   }
 });
 
-for (const width of [360, 390, 414, 561, 600, 768, 900, 1024, 1536]) {
+for (const width of [320, 360, 390, 414, 430, 561, 600, 768, 900, 1024, 1536]) {
   for (const theme of THEMES) {
     test(`@layout-matrix @wedding-collection ${width}px ${theme}: columns, cards and detail spacing`, async ({ browser }) => {
       const context = await browser.newContext({
         baseURL: 'http://127.0.0.1:4173',
         storageState: 'tests/analytics-denied.storage-state.json',
-        viewport: { width, height: width === 360 ? 800 : width === 390 ? 844 : 900 },
+        viewport: { width, height: width <= 360 ? 800 : width === 390 ? 844 : 900 },
         isMobile: width <= 768,
         hasTouch: width <= 768,
         colorScheme: theme,
