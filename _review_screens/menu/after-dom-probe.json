@@ -1,0 +1,212 @@
+[
+  {
+    "label": "320x568-light",
+    "url": "/",
+    "footers": 1,
+    "footerCol": 3,
+    "footerColAnchors": 19,
+    "footerColTarget": 1,
+    "anyTarget": 2,
+    "siteFooterColAnchors": 19,
+    "footerHtmlLength": 7746,
+    "footerClass": "site-footer",
+    "footerChildTags": [
+      "DIV.container"
+    ]
+  },
+  {
+    "label": "320x568-dark",
+    "url": "/",
+    "footers": 1,
+    "footerCol": 3,
+    "footerColAnchors": 19,
+    "footerColTarget": 1,
+    "anyTarget": 2,
+    "siteFooterColAnchors": 19,
+    "footerHtmlLength": 7746,
+    "footerClass": "site-footer",
+    "footerChildTags": [
+      "DIV.container"
+    ]
+  },
+  {
+    "label": "360x740-light",
+    "url": "/",
+    "footers": 1,
+    "footerCol": 3,
+    "footerColAnchors": 19,
+    "footerColTarget": 1,
+    "anyTarget": 2,
+    "siteFooterColAnchors": 19,
+    "footerHtmlLength": 7746,
+    "footerClass": "site-footer",
+    "footerChildTags": [
+      "DIV.container"
+    ]
+  },
+  {
+    "label": "360x740-dark",
+    "url": "/",
+    "footers": 1,
+    "footerCol": 3,
+    "footerColAnchors": 19,
+    "footerColTarget": 1,
+    "anyTarget": 2,
+    "siteFooterColAnchors": 19,
+    "footerHtmlLength": 7746,
+    "footerClass": "site-footer",
+    "footerChildTags": [
+      "DIV.container"
+    ]
+  },
+  {
+    "label": "390x844-light",
+    "url": "/",
+    "footers": 1,
+    "footerCol": 3,
+    "footerColAnchors": 19,
+    "footerColTarget": 1,
+    "anyTarget": 2,
+    "siteFooterColAnchors": 19,
+    "footerHtmlLength": 7746,
+    "footerClass": "site-footer",
+    "footerChildTags": [
+      "DIV.container"
+    ]
+  },
+  {
+    "label": "390x844-dark",
+    "url": "/",
+    "footers": 1,
+    "footerCol": 3,
+    "footerColAnchors": 19,
+    "footerColTarget": 1,
+    "anyTarget": 2,
+    "siteFooterColAnchors": 19,
+    "footerHtmlLength": 7746,
+    "footerClass": "site-footer",
+    "footerChildTags": [
+      "DIV.container"
+    ]
+  },
+  {
+    "label": "430x932-light",
+    "url": "/",
+    "footers": 1,
+    "footerCol": 3,
+    "footerColAnchors": 19,
+    "footerColTarget": 1,
+    "anyTarget": 2,
+    "siteFooterColAnchors": 19,
+    "footerHtmlLength": 7746,
+    "footerClass": "site-footer",
+    "footerChildTags": [
+      "DIV.container"
+    ]
+  },
+  {
+    "label": "430x932-dark",
+    "url": "/",
+    "footers": 1,
+    "footerCol": 3,
+    "footerColAnchors": 19,
+    "footerColTarget": 1,
+    "anyTarget": 2,
+    "siteFooterColAnchors": 19,
+    "footerHtmlLength": 7746,
+    "footerClass": "site-footer",
+    "footerChildTags": [
+      "DIV.container"
+    ]
+  },
+  {
+    "label": "768x1024-light",
+    "url": "/",
+    "footers": 1,
+    "footerCol": 3,
+    "footerColAnchors": 19,
+    "footerColTarget": 1,
+    "anyTarget": 2,
+    "siteFooterColAnchors": 19,
+    "footerHtmlLength": 7746,
+    "footerClass": "site-footer",
+    "footerChildTags": [
+      "DIV.container"
+    ]
+  },
+  {
+    "label": "768x1024-dark",
+    "url": "/",
+    "footers": 1,
+    "footerCol": 3,
+    "footerColAnchors": 19,
+    "footerColTarget": 1,
+    "anyTarget": 2,
+    "siteFooterColAnchors": 19,
+    "footerHtmlLength": 7746,
+    "footerClass": "site-footer",
+    "footerChildTags": [
+      "DIV.container"
+    ]
+  },
+  {
+    "label": "390x420-light",
+    "url": "/",
+    "footers": 1,
+    "footerCol": 3,
+    "footerColAnchors": 19,
+    "footerColTarget": 1,
+    "anyTarget": 2,
+    "siteFooterColAnchors": 19,
+    "footerHtmlLength": 7746,
+    "footerClass": "site-footer",
+    "footerChildTags": [
+      "DIV.container"
+    ]
+  },
+  {
+    "label": "390x420-dark",
+    "url": "/",
+    "footers": 1,
+    "footerCol": 3,
+    "footerColAnchors": 19,
+    "footerColTarget": 1,
+    "anyTarget": 2,
+    "siteFooterColAnchors": 19,
+    "footerHtmlLength": 7746,
+    "footerClass": "site-footer",
+    "footerChildTags": [
+      "DIV.container"
+    ]
+  },
+  {
+    "label": "667x375-light",
+    "url": "/",
+    "footers": 1,
+    "footerCol": 3,
+    "footerColAnchors": 19,
+    "footerColTarget": 1,
+    "anyTarget": 2,
+    "siteFooterColAnchors": 19,
+    "footerHtmlLength": 7746,
+    "footerClass": "site-footer",
+    "footerChildTags": [
+      "DIV.container"
+    ]
+  },
+  {
+    "label": "667x375-dark",
+    "url": "/",
+    "footers": 1,
+    "footerCol": 3,
+    "footerColAnchors": 19,
+    "footerColTarget": 1,
+    "anyTarget": 2,
+    "siteFooterColAnchors": 19,
+    "footerHtmlLength": 7746,
+    "footerClass": "site-footer",
+    "footerChildTags": [
+      "DIV.container"
+    ]
+  }
+]
