@@ -1615,3 +1615,418 @@ body.vview-open{overflow:hidden}
   font:500 12px/1.4 'Jost',sans-serif;text-decoration:none;cursor:pointer
 }
 .vview-media-error :is(button,a):focus-visible{outline:2px solid #f0ca93;outline-offset:2px}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MOBILE MENU (r44) — единый компонент
+   ───────────────────────────────────────────────────────────────────
+   До r44 стилей меню было три конкурирующих слоя: базовый style.css
+   (центрированный список 46px), слой premium-overrides.css
+   (принудительный display:flex, градиенты, «пилюли» мессенджеров) и
+   точечные патчи final-fixes/v20-dark. Теперь всё меню описано здесь одним
+   блоком, без приоритетных флагов, на токенах темы. Разметка — index.html и
+   prigorody/_template.html (одинаковая), поведение — js/main.js.
+   ═══════════════════════════════════════════════════════════════════ */
+.mobile-menu { display: none; }
+
+@media (max-width: 768px) {
+  .mobile-menu {
+    --mm-line: rgba(61, 43, 31, 0.10);
+    --mm-line-strong: rgba(61, 43, 31, 0.17);
+    --mm-surface: #f8f3ea;
+    --mm-surface-2: #f2ebdd;
+    --mm-ink: #3d2b1f;
+    --mm-ink-soft: #6b4c38;
+    --mm-ink-mute: #765941;
+    --mm-gold: #865a24;
+    --mm-pad: clamp(20px, 5.2vw, 42px);
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    background: var(--mm-surface);
+    color: var(--mm-ink);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.24s ease, visibility 0s linear 0.24s;
+  }
+  .mobile-menu.open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 0.24s ease, visibility 0s linear 0s;
+  }
+
+  [data-theme="dark"] .mobile-menu {
+    --mm-line: rgba(212, 167, 106, 0.14);
+    --mm-line-strong: rgba(212, 167, 106, 0.24);
+    --mm-surface: #16100a;
+    --mm-surface-2: #1d1509;
+    --mm-ink: #f0e4d0;
+    --mm-ink-soft: #d9c0a0;
+    --mm-ink-mute: #bda184;
+    --mm-gold: #d4a76a;
+  }
+
+  /* ── Шапка ── */
+  .mobile-menu-head {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: calc(12px + env(safe-area-inset-top, 0px)) calc(var(--mm-pad) - 6px) 12px var(--mm-pad);
+    border-bottom: 1px solid var(--mm-line);
+  }
+  .mobile-menu-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+  .mobile-menu-brand-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: 0.145em;
+    text-transform: uppercase;
+    color: var(--mm-ink);
+  }
+  .mobile-menu-brand-sub {
+    font-family: 'Jost', sans-serif;
+    font-size: 9px;
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: 0.19em;
+    text-transform: uppercase;
+    color: var(--mm-ink-mute);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .mobile-menu-close {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--mm-line-strong);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--mm-ink);
+    cursor: pointer;
+    transition: background-color 0.18s ease, border-color 0.18s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mobile-menu-close:active {
+    background: rgba(201, 147, 74, 0.14);
+    border-color: rgba(201, 147, 74, 0.4);
+  }
+
+  /* ── Прокручиваемое тело ── */
+  .mobile-menu-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: clamp(12px, 2.4vh, 22px) 0 10px;
+  }
+  .mobile-menu-section-label {
+    display: block;
+    padding: 0 var(--mm-pad) 7px;
+    font-family: 'Jost', sans-serif;
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--mm-ink-mute);
+  }
+  .mm-formats,
+  .mm-sublinks {
+    margin-top: clamp(18px, 4.2vh, 34px);
+  }
+
+  /* ── Основные разделы ── */
+  .mobile-menu-nav { display: block; }
+  .mobile-menu-nav a{font-family:'Cormorant Garamond',serif;font-size:23px;font-weight:500;color:var(--mm-ink);text-decoration:none;letter-spacing:0.005em;line-height:1.15;}
+  .mobile-menu-nav a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    min-height: clamp(56px, 7vh, 66px);
+    padding: 9px var(--mm-pad);
+    border-bottom: 1px solid var(--mm-line);
+    transition: background-color 0.16s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mobile-menu-nav a:active {
+    background: rgba(201, 147, 74, 0.09);
+  }
+  .mm-link-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .mm-link-note {
+    font-family: 'Jost', sans-serif;
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.35;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--mm-ink-mute);
+  }
+  .mm-link-arrow {
+    flex: 0 0 auto;
+    color: var(--mm-gold);
+    opacity: 0.6;
+    transition: transform 0.18s ease, opacity 0.18s ease;
+  }
+  .mobile-menu-nav a:active .mm-link-arrow {
+    transform: translateX(2px);
+    opacity: 0.85;
+  }
+
+  /* ── Форматы ── */
+  .mm-chips {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 0 var(--mm-pad);
+  }
+  .mm-chip {
+    display: flex;
+    align-items: center;
+    min-height: clamp(44px, 5.4vh, 52px);
+    padding: 8px 13px;
+    border: 1px solid var(--mm-line-strong);
+    border-radius: 11px;
+    font-family: 'Jost', sans-serif;
+    font-size: 12.5px;
+    font-weight: 400;
+    line-height: 1.3;
+    letter-spacing: 0.015em;
+    color: var(--mm-ink-soft);
+    text-decoration: none;
+    transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mm-chip:active {
+    background: rgba(201, 147, 74, 0.10);
+    border-color: rgba(201, 147, 74, 0.42);
+    color: var(--mm-ink);
+  }
+
+  /* ── О кондитере / отзывы / начинки / контакты ── */
+  .mm-sublinks {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0 10px;
+    padding: 0 var(--mm-pad);
+  }
+  .mm-sublink {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    font-family: 'Jost', sans-serif;
+    font-size: 12.5px;
+    font-weight: 400;
+    letter-spacing: 0.015em;
+    color: var(--mm-ink-soft);
+    text-decoration: none;
+    transition: color 0.16s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mm-sublink:active { color: var(--mm-gold); }
+
+  /* ── Сервисный низ: контакты + тема ── */
+  .mobile-menu-foot {
+    flex: 0 0 auto;
+    padding: 10px var(--mm-pad) calc(10px + env(safe-area-inset-bottom, 0px));
+    background: var(--mm-surface-2);
+    border-top: 1px solid var(--mm-line);
+  }
+  .mm-contacts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .mm-msg {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 44px;
+    padding: 0 8px;
+    border: 1px solid var(--mm-line-strong);
+    border-radius: 999px;
+    background: transparent;
+    font-family: 'Jost', sans-serif;
+    font-size: 11.5px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--mm-ink);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 0.16s ease, border-color 0.16s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mm-msg svg { flex: 0 0 auto; display: block; }
+  @media (min-width: 480px) {
+    .mm-contacts {
+      display: flex;
+      gap: 10px;
+    }
+    .mm-msg {
+      flex: 0 0 auto;
+      padding: 0 18px;
+    }
+  }
+  .mm-msg--wa svg { color: #25d366; }
+  .mm-msg--tg svg { color: #229ed9; }
+  .mm-msg:active { background: rgba(201, 147, 74, 0.10); border-color: rgba(201, 147, 74, 0.38); }
+
+  .mm-call {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    font-variant-numeric: tabular-nums;
+    color: var(--mm-ink);
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mm-call svg { color: var(--mm-gold); }
+  .mm-call:active { color: var(--mm-gold); }
+
+  .mm-service {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 6px;
+  }
+  .mm-theme {
+    display: inline-flex;
+    flex: 0 0 auto;
+    padding: 2px;
+    border: 1px solid var(--mm-line-strong);
+    border-radius: 999px;
+  }
+  .mm-theme-opt {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 44px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    font-family: 'Jost', sans-serif;
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: var(--mm-ink-mute);
+    cursor: pointer;
+    transition: background-color 0.18s ease, color 0.18s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mm-theme-opt svg { flex: 0 0 auto; opacity: 0.8; }
+  .mm-theme-opt[aria-pressed="true"] {
+    background: var(--mm-ink);
+    color: var(--mm-surface);
+  }
+  .mm-theme-opt[aria-pressed="true"] svg { opacity: 1; }
+
+  /* ── Фокус ── */
+  .mobile-menu :is(a, button):focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: -2px;
+    border-radius: 8px;
+  }
+  .mobile-menu-close:focus-visible,
+  .mm-theme-opt:focus-visible {
+    outline-offset: 2px;
+  }
+
+  /* ── Низкие экраны: шапка закреплена, остальное прокручивается ── */
+  @media (max-height: 640px) {
+    .mobile-menu-nav a {
+      min-height: 52px;
+      padding-top: 7px;
+      padding-bottom: 7px;
+    }
+    .mobile-menu-nav a{font-size:21px;}
+    .mm-link-note { font-size: 9.5px; }
+    .mm-formats, .mm-sublinks { margin-top: 14px; }
+    .mobile-menu-nav a + a { margin-top: 0; }
+    .mobile-menu-body { padding-top: 10px; }
+    .mobile-menu-foot { padding-top: 8px; padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)); }
+  }
+  @media (max-height: 640px) and (orientation: landscape) {
+    .mm-link-note { display: none; }
+    .mobile-menu-nav a { min-height: 46px; }
+  }
+  /* Очень низкие экраны (телефон в landscape): закреплённый низ съедал бы
+     больше трети высоты, поэтому прокручивается вся панель, а закреплена
+     только шапка с кнопкой закрытия. */
+  @media (max-height: 480px) {
+    .mobile-menu {
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+    .mobile-menu-head {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: var(--mm-surface);
+    }
+    .mobile-menu-body {
+      flex: 0 0 auto;
+      overflow: visible;
+    }
+    .mobile-menu-foot { position: static; }
+  }
+  @media (max-width: 359px) {
+    .mobile-menu-brand-name { font-size: 17px; letter-spacing: 0.12em; }
+    .mobile-menu-nav a { min-height: 54px; }
+    .mobile-menu-nav a{font-size:21px;}
+    .mm-chip { font-size: 12px; padding: 7px 10px; }
+    .mm-msg { font-size: 10.5px; gap: 5px; padding: 0 6px; }
+    .mm-msg svg { width: 15px; height: 15px; }
+    .mm-theme-opt { padding: 0 10px; }
+  }
+  /* Длительности переходов под reduced-motion уже обнуляет глобальное правило
+     `* { transition-duration: 0.01ms }` в style.css; здесь достаточно убрать
+     задержку, иначе панель остаётся видимой ещё 240 мс после закрытия. */
+  @media (prefers-reduced-motion: reduce) {
+    .mobile-menu,
+    .mobile-menu.open {
+      transition-delay: 0s;
+    }
+  }
+}
+
+@media print {
+  .mobile-menu { display: none; }
+}

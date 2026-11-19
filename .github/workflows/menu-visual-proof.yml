@@ -1,0 +1,95 @@
+name: Menu visual proof
+
+# Dev-only lane: renders the mobile menu at the widths required by the visual
+# acceptance protocol (AGENTS.md §11), captures the *published* site as "before"
+# and the working tree as "after", uploads them as an artifact and — only for
+# PRs labelled `visual-proof` — commits them to _review_screens/ (git-ignored
+# locally, force-added here) so the PR carries real pixels. It never deploys and
+# touches no runtime asset.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'prigorody/_template.html'
+      - 'css/**'
+      - 'js/**'
+      - 'scripts/menu_visual_proof.cjs'
+      - '.github/workflows/menu-visual-proof.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: menu-visual-proof-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  proof:
+    name: Screenshot the mobile menu in both themes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Setup pinned Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22.13.0'
+          cache: npm
+
+      - name: Setup Python for the local static server
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: '3.12'
+
+      - name: Install project dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Serve the working tree
+        run: |
+          python3 scripts/serve_pages_artifact.py --port 4173 --root . &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:4173/ >/dev/null && exit 0
+            sleep 1
+          done
+          echo "local server did not start" >&2
+          exit 1
+
+      - name: Screenshot the published (before) menu
+        continue-on-error: true
+        run: node scripts/menu_visual_proof.cjs --base=https://milovicake.ru --prefix=before
+
+      - name: Screenshot the working tree (after) menu
+        run: node scripts/menu_visual_proof.cjs --base=http://127.0.0.1:4173 --prefix=after
+
+      - name: Upload screenshots as an artifact
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: menu-visual-proof-${{ github.run_id }}-${{ github.run_attempt }}
+          path: _review_screens/menu/
+          if-no-files-found: warn
+          retention-days: 14
+
+      # Committing pixels back is opt-in per PR (label `visual-proof`) so the
+      # lane never pushes to branches that did not ask for it.
+      - name: Publish the screenshots into the PR branch
+        if: github.event_name == 'pull_request' && always() && contains(github.event.pull_request.labels.*.name, 'visual-proof')
+        run: |
+          set -euo pipefail
+          if [ ! -d _review_screens/menu ]; then echo "no screenshots"; exit 0; fi
+          git config user.name "milovi-visual-proof"
+          git config user.email "actions@users.github.com"
+          git add -f _review_screens/menu
+          if git diff --cached --quiet; then echo "screenshots unchanged"; exit 0; fi
+          git commit -m "chore(visual-proof): mobile menu screenshots [skip ci]"
+          git push origin "HEAD:${{ github.event.pull_request.head.ref }}"

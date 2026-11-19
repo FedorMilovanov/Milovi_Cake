@@ -13,13 +13,34 @@
   document.documentElement.setAttribute('data-theme', theme);
 })();
 
-function toggleTheme() {
-  var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  var next   = isDark ? 'light' : 'dark';
+// Синхронизация всех элементов управления темой: переключатель в шапке,
+// сегмент «Светлая / Тёмная» в мобильном меню, aria-состояния и meta theme-color.
+function syncThemeControls() {
+  var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  var opts = document.querySelectorAll('[data-theme-set]');
+  for (var i = 0; i < opts.length; i++) {
+    var isDark = opts[i].getAttribute('data-theme-set') === 'dark';
+    opts[i].setAttribute('aria-pressed', isDark === dark ? 'true' : 'false');
+  }
+  var headBtn = document.getElementById('themeToggleBtn');
+  if (headBtn) headBtn.setAttribute('aria-label', dark ? 'Включить светлую тему' : 'Включить тёмную тему');
+  var meta = document.querySelector('meta[name="theme-color"]:not([media])');
+  if (meta) meta.setAttribute('content', dark ? '#16100a' : '#f5f0e8');
+}
+function setTheme(theme) {
+  var next = theme === 'dark' ? 'dark' : 'light';
   document.documentElement.setAttribute('data-theme', next);
   try { localStorage.setItem('mc_theme', next); } catch(e){}
+  syncThemeControls();
+}
+function toggleTheme() {
+  setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
 }
 window.toggleTheme = toggleTheme;
+window.setTheme = setTheme;
+window.syncThemeControls = syncThemeControls;
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', syncThemeControls);
+else syncThemeControls();
 
 // ── FILLS DATA ──
 const FILLS = {
@@ -2022,7 +2043,20 @@ const counterObserver = new IntersectionObserver(entries => { entries.forEach(e 
 document.querySelectorAll('.stat-num').forEach(el => counterObserver.observe(el));
 
 // ── BURGER MENU ──
+// Единый контроллер мобильного меню: одна разметка (index.html и
+// prigorody/_template.html), один набор классов. Focus-trap, Esc и возврат
+// фокуса живут в js/mc-2026.js (там же MutationObserver на .mobile-menu.open),
+// поэтому здесь только состояние, блокировка прокрутки и закрытие на ресайзе.
 const burgerBtn = document.getElementById('burgerBtn'), mobileMenu = document.getElementById('mobileMenu');
+function _menuIsOpen() { return !!(mobileMenu && mobileMenu.classList.contains('open')); }
+function openMobileMenu() {
+  if (!burgerBtn || !mobileMenu || _menuIsOpen()) return;
+  burgerBtn.classList.add('open');
+  mobileMenu.classList.add('open');
+  burgerBtn.setAttribute('aria-expanded', 'true');
+  document.body.classList.add('menu-open');
+  if (typeof window.syncThemeControls === 'function') window.syncThemeControls();
+}
 function closeMobileMenu() {
   if (!burgerBtn || !mobileMenu) return;
   burgerBtn.classList.remove('open'); mobileMenu.classList.remove('open');
@@ -2030,8 +2064,14 @@ function closeMobileMenu() {
   document.body.classList.remove('menu-open');
 }
 if (burgerBtn && mobileMenu) {
-  burgerBtn.addEventListener('click', () => { const isOpen = burgerBtn.classList.toggle('open'); mobileMenu.classList.toggle('open', isOpen); burgerBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false'); document.body.classList.toggle('menu-open', isOpen); });
-  document.addEventListener('click', (e) => { if (mobileMenu.classList.contains('open') && !mobileMenu.contains(e.target) && !burgerBtn.contains(e.target)) closeMobileMenu(); });
+  burgerBtn.addEventListener('click', () => { _menuIsOpen() ? closeMobileMenu() : openMobileMenu(); });
+  // Меню живёт только до 768px: при переходе на десктоп оно не должно
+  // оставлять body.menu-open (иначе страница теряла прокрутку).
+  const _menuMq = window.matchMedia('(min-width: 769px)');
+  const _closeOnDesktop = (e) => { if (e.matches) closeMobileMenu(); };
+  if (_menuMq.addEventListener) _menuMq.addEventListener('change', _closeOnDesktop);
+  else if (_menuMq.addListener) _menuMq.addListener(_closeOnDesktop);
+  window.openMobileMenu = openMobileMenu;
 }
 
 // ── LIGHTBOX ──

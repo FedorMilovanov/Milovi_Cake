@@ -106,8 +106,12 @@ def main() -> int:
         '--muted:   rgba(237,224,204,0.56);',
     )))
 
-    errors.extend(require_text('css/style.css', (
+    # Меню (r44) описано одним блоком в css/mc-2026.css — гард на фирменную
+    # типографику пунктов переехал вместе с правилом.
+    errors.extend(require_text('css/mc-2026.css', (
         '.mobile-menu-nav a{font-family:',
+    )))
+    errors.extend(require_text('css/style.css', (
         '.cart-close{background:transparent',
         'width:44px;height:44px',
         '[data-theme="dark"] .bridal-panel{',

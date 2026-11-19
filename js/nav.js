@@ -785,7 +785,7 @@
   'use strict';
   function ready(fn){ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }
   ready(function(){
-    var pressSelector = '#mcNav .mc-btn, #mcSheet .mc-row, #mcSheet .mc-sheet-close, .mobile-menu-nav a, .mobile-menu-close, .mm-msg';
+    var pressSelector = '#mcNav .mc-btn, #mcSheet .mc-row, #mcSheet .mc-sheet-close, .mobile-menu-nav a, .mobile-menu-close, .mm-msg, .mm-chip, .mm-sublink, .mm-theme-opt';
 
     document.addEventListener('pointerdown', function(e){
       var el = e.target && e.target.closest ? e.target.closest(pressSelector) : null;

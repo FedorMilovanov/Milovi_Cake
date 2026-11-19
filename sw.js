@@ -7,22 +7,22 @@
      - skipWaiting + clients.claim → обновления подхватываются мгновенно
    ═══════════════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'milovi-cake-v2026.11.20-r183';
+const CACHE_NAME = 'milovi-cake-v2026.11.16-r185';
 
 const PRECACHE = [
   '/',
-  '/css/style.css?v=20261120r31',
+  '/css/style.css?v=20261116r32',
   '/css/fonts.css?v=20261102r01',
   '/css/fonts-italic.css?v=20261102r01',
-  '/css/mc-2026.css?v=20261120r43',
-  '/css/premium-overrides.css?v=20261120r38',
+  '/css/mc-2026.css?v=20261116r45',
+  '/css/premium-overrides.css?v=20261116r39',
   '/css/v20-dark-and-fixes.css?v=20261118r27',
   '/css/v20-fixes.css?v=20261120r33',
   '/css/final-fixes.css?v=20261120r47',
   '/css/gallery/gallery-2026.css?v=20261120r07',
-  '/js/main.js?v=20261120r40',
-  '/js/nav.js?v=20261120r26',
-  '/js/mc-2026.js?v=20261120r43',
+  '/js/main.js?v=20261116r41',
+  '/js/nav.js?v=20261116r27',
+  '/js/mc-2026.js?v=20261116r45',
   '/js/v20-faq-fix.js?v=20260728r27',
   '/js/gallery/main.js?v=20261120r05',
   '/js/gallery/data.js?v=20261120r03',
