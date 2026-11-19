@@ -428,6 +428,12 @@ test.describe('mobile app bar hides under overlays', () => {
           await expect(page.locator(overlay.visible), `${name} opens`).toHaveCount(1);
           await expect(page.locator('body')).toHaveClass(/mc-nav-hidden/);
 
+          /* [r41] Регрессия: consent-analytics снимал флаг бара на КАЖДОМ
+             скролле (функция висела на window.scroll), поэтому открытая
+             корзина теряла mc-nav-hidden от любого движения страницы. */
+          await page.evaluate(() => window.dispatchEvent(new Event('scroll')));
+          await expect(page.locator('body'), `${name}: scroll does not steal the overlay flag`).toHaveClass(/mc-nav-hidden/);
+
           await expect.poll(() => barState(page), { message: `${name}: bar leaves the screen` })
             .toEqual({ offscreen: true, opacity: 0, inert: true, ariaHidden: 'true' });
 

@@ -322,9 +322,12 @@
       old.style.setProperty('display', 'none', 'important');
       old.style.setProperty('pointer-events', 'none', 'important');
     });
-    var nav = document.getElementById('mcNav');
-    if (nav) nav.classList.remove('mc-nav--hidden');
-    document.body.classList.remove('mc-nav-hidden');
+    /* [r41] Флаг скрытия бара (body.mc-nav-hidden) принадлежит корзине,
+       лайтбоксу и модалке отзывов, а видимостью управляет js/nav.js.
+       Здесь он снимался на КАЖДОМ скролле (функция висит на window.scroll),
+       из-за чего открытая корзина теряла флаг при любом движении страницы и
+       бар возвращался под ней. Задача этой функции — спрятать устаревшие
+       нижние панели, баром она не занимается. */
   }
 
   function removeMobilePrivacyRow() {

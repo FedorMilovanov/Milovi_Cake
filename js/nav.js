@@ -649,6 +649,9 @@
       ticking = true;
       requestAnimationFrame(syncNavVisibility);
     }
+    /* Синхронный пересчёт для main.js: перед возвратом фокуса на кнопку бара
+       нужно снять с неё inert в том же вызове, а не на следующем кадре. */
+    window._mcNavSync = syncNavVisibility;
     window.addEventListener('scroll', scheduleNavSync, { passive: true });
     window.addEventListener('resize', scheduleNavSync, { passive: true });
     window.addEventListener('pageshow', scheduleNavSync);
