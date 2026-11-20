@@ -99,7 +99,9 @@ test.describe('commercial landing videos', () => {
       expect(requests).toEqual([]);
       for (let i = 0; i < landing.videos; i += 1) {
         await expect(videos.nth(i)).toHaveAttribute('preload', 'none');
-        await expect(videos.nth(i)).toHaveAttribute('loading', 'lazy');
+        // `loading` у <video> нестандартен и не давал эффекта: отсрочку держат
+        // preload="none" + постер + кнопка play. Тест запрещает возврат атрибута.
+        await expect(videos.nth(i)).not.toHaveAttribute('loading', /lazy/);
         await expect(buttons.nth(i)).toHaveAttribute('aria-label', /^Смотреть видео: /);
       }
       const button = buttons.first();
