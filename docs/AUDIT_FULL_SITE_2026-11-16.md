@@ -348,7 +348,7 @@ npx linkinator http://127.0.0.1:4199/ --recurse --skip "^https?://(?!127\.0\.0\.
 | 5 | P1 устаревший `lastmod` | ✅ | `scripts/sync_sitemap_lastmod.py` + состояние `data/sitemap-lastmod.json`: дата пересчитывается по sha256 контента страницы (ревизии `?v=` из хэша исключены, чтобы поднятие версии CSS не выглядело правкой текста), городские даты синхронно пишутся в `_cities.csv`. Режим `--check` в `qa`/`audit:all`, 29/29 URL совпадают |
 | 6 | P2 `aria-label` на `<div>` (27) и безымянные `<nav>` (17) | ✅ | Блоки ссылок `.lp-related`/`.info-related`/`.hub-cats`/`.gx-seo-facts` → `<nav>`, хлебные крошки → `<nav aria-label="Хлебные крошки">`, `header-nav` → «Основная навигация», подвал → «Разделы сайта»; `role="region"` → `<section>` (48), `role="button"` → нативные `<button type="button">` (27, вместе с `onkeydown`-костылями), `role="navigation"` → `<nav>`, `role="list"` убран. Итог: **77 нарушений четырёх правил → 0** |
 | 7 | P2 пустой `alt` у трёх hero | ✅ (не баг) | `hero-poster-cake.jpg` и `wedding-hero.webp` лежат внутри контейнеров с `aria-hidden="true"` (декоративный слой), `gallery-01.webp` — внутри `<button>`, имя которому даёт видимый `.card-title`; дублировать текст в `alt` значило бы удвоить имя для скринридера. Реальная проблема того же экрана (CLS) закрыта: у LCP-картинки появились честные `width="667" height="1000"` |
-| 8 | P2 Swiper с CDN | ✅ (частично) | Версия закреплена `swiper@11.2.10` (`@11` плавал внутри мажора), добавлен `preconnect` к `cdn.jsdelivr.net`, асинхронная схема загрузки сохранена. SRI **осознанно не ставим**: `integrity` на динамически создаваемом `<script>` ломает контракт отказоустойчивости в `tests/video-posters.spec.js` — два теста подменяют CDN на stub, и браузер обязан исполнить stub, а не отбросить его по хэшу. Полный self-host CSS/JS — отдельная задача (нужен вендорный каталог и обновление гарда ревизий) |
+| 8 | P2 Swiper с CDN | ✅ | Версия закреплена `swiper@11.2.10` (`@11` плавал внутри мажора), добавлен `preconnect` к `cdn.jsdelivr.net`, асинхронная схема загрузки сохранена. **SRI стоит и на CSS, и на динамическом `<script>`** (`integrity` + `crossorigin="anonymous"`), хэши сверены с байтами `npm pack swiper@11.2.10`. Тесты подмены CDN переписывают хэш в отдаваемом HTML на sha384 самого stub, поэтому SRI реально проверяется, а не обходится; отдельный негативный контроль подтверждает, что подменённый бандл отбрасывается и фолбэк продолжает работать |
 | 9 | P2 LCP галереи без размеров | ✅ | `width/height` у LCP-картинки + `decoding="async"` на всех `<img>` (146 добавлено, включая JS-карточки галереи) |
 | 10 | P2 неполная микроразметка | ✅ / ⛔ частично | `Product`: `sku`, `category`, `itemCondition`, `image[]` — добавлены. `availability` и `priceValidUntil` **не добавляем**: `tests/test_schema_contract.py` прямо запрещает неподтверждённые «в наличии» и срок действия цены — торт делается на заказ, склад и дата окончания цены не подтверждены. `LocalBusiness` получил `openingHoursSpecification` (Пн–Сб 10:00–21:00, как в Google Business Profile) на всех 16 страницах |
 | 11 | P2 глобал `IMG_BASE` | ✅ | В `js/main.js` локальный фолбэк `var IMG_BASE = (typeof window.IMG_BASE === 'string' && window.IMG_BASE) ? window.IMG_BASE : 'img'` — 39 `no-undef` снято, корзина/калькулятор/лайтбокс больше не падают, если на новой странице забыть инлайн-строку |
@@ -384,7 +384,7 @@ python3 scripts/audit.py                     → PASSED, 3 WARN (только gz
 python3 scripts/run_html_validate.py         → OK, 34 документа, 0 нарушений
 python3 scripts/a11y_static.py               → OK, 34 документа
 python3 scripts/release_contract.py          → OK, 16 ревизий / 14 меток
-python3 scripts/run_contract_tests.py        → OK, 85 тестов
+python3 scripts/run_contract_tests.py        → OK, 101 тест
 python3 scripts/video_schema_contract.py     → OK, 9 VideoObject / 16 роликов
 python3 scripts/check_prigorody_idempotent.py→ OK, 14 страниц
 python3 scripts/check_prigorody_uniqueness.py→ OK, средний Jaccard 0.581
@@ -392,3 +392,15 @@ python3 scripts/sync_prigorody_sitemap.py --check → синхронизиров
 python3 scripts/sync_sitemap_lastmod.py --check   → OK, 29 URL
 локальный сервер: 31 страница → 200, 67 уникальных ассетов → 200
 ```
+
+## 11. Пост-мерж приёмка (20.11.2026)
+
+Замечания независимой приёмки к уже слитому `main` (`f3d88ef`), закрытые в отдельной ветке.
+
+| Замечание | Что было | Что сделано |
+|---|---|---|
+| `build_video_sitemap.py`, `mvhd` версии 1 | `struct.unpack(">IQ", data[at+20:at+32])` читал `timescale` из хвоста `modification_time`; на файле v1 это «нулевой timescale», то есть падение генератора | Срез исправлен на `at+24:at+36` (у v1 два 64-битных времени). `tests/test_mp4_duration_contract.py`: синтетические заголовки v0 и v1 обязаны дать **90 секунд**, ненулевые 64-битные времена не влияют, нулевой `timescale` падает с внятным сообщением. Проверено на живых файлах: все 16 роликов сейчас в контейнере v0, поэтому текущие `duration` в `sitemap-videos.xml` корректны — дефект был латентным. Тест падает на старом коде (`AssertionError: 1654 != 90`) и проходит на новом |
+| `check_prigorody_uniqueness.py` | Считал метрики по найденным файлам и по CSV отдельно: пропавшая страница давала «OK: 2 страниц» и Jaccard 0.000, пустое объединение считалось как 0, объём текста брался из CSV, а не из HTML | Скрипт стал проверкой серии: набор `slug` из CSV обязан совпасть с каталогами (пропавшие и лишние — ошибка), HTML не пустой и содержит ≥300 слов, секция `#story` есть и её абзацы не пусты, текст абзацев совпадает с `story_p1..p3` как подпоследовательность слов. `tests/test_suburb_generator_contract.py`: 9 тестов, включая контрольные наборы «страницы нет», «файл пустой», «секции нет», «секция пустая», «текст разошёлся с CSV», «страница обрезана» — каждый обязан падать |
+| Swiper SRI (пункт 2 приёмки) | В волне 1 `integrity` был снят, чтобы подмена CDN на stub проходила | SRI возвращён (CSS + динамический `<script>`, хэши сверены с `npm pack swiper@11.2.10`). Тесты `video-posters.spec.js` переписывают `SWIPER_SRI` в отдаваемом HTML на sha384 самого stub (и добавляют `Access-Control-Allow-Origin` при cross-origin подмене), поэтому проверка целостности исполняется по-настоящему. Добавлен негативный контроль: бандл, изменённый на один байт, обязан быть отброшен — `window.Swiper` не появляется, побочный эффект не исполняется, скрипт удаляется обработчиком ошибки, фолбэк листает дальше. `scripts/lighthouse_regressions.py` теперь падает, если SRI пропадёт из CSS, `<noscript>`-фолбэка или лоадера |
+
+Проверки ветки: `audit:all` PASSED (3 WARN — только gzip-бюджеты), html-validate 34/0, a11y 34, контрактные тесты **101 OK**, видео-карта 16, уникальность пригородов 0.581/0.604, lastmod 29/29, ревизии 16/14.

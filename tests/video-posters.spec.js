@@ -102,6 +102,17 @@ const swiperStub = `
 `;
 const swiperCss = '.swiper-wrapper{display:flex;width:100%;height:100%}.swiper-slide{flex-shrink:0}';
 
+// Загрузчик галереи ставит `integrity` на динамический <script>. Чтобы подмена
+// CDN на локальный stub не маскировала реальную загрузку, тест переписывает
+// хэш в отдаваемом HTML на sha384 самого stub: браузер по-прежнему проверяет
+// целостность, но проверяет её против того, что тест действительно отдал.
+const swiperStubSri = `sha384-${require('node:crypto').createHash('sha384').update(swiperStub).digest('base64')}`;
+function withStubSri(html, sri = swiperStubSri) {
+  const replaced = html.replace(/const SWIPER_SRI = '[^']+';/, `const SWIPER_SRI = '${sri}';`);
+  expect(replaced).not.toBe(html);
+  return replaced;
+}
+
 async function enlargeCaptionText(page) {
   // Simulate 200% text-only zoom without changing layout or scroll positions.
   await page.evaluate(() => {
@@ -978,7 +989,8 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     const requested = new Promise((resolve) => { markRequested = resolve; });
     const server = http.createServer((req, res) => {
       if (req.url === '/gallery/') {
-        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }).end(html.replace(src, '/delayed-swiper.js'));
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
+          .end(withStubSri(html.replace(src, '/delayed-swiper.js')));
       } else if (req.url === '/delayed-swiper.js') {
         response = res;
         markRequested();
@@ -1076,12 +1088,49 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
   });
 
   test('a loaded script alone cannot replace the fallback when Swiper CSS fails', async ({ page }) => {
+    const galleryHtml = require('node:fs').readFileSync('gallery/index.html', 'utf8');
+    await page.route('**/gallery/', (route) => route.fulfill({
+      contentType: 'text/html; charset=utf-8',
+      body: withStubSri(galleryHtml),
+    }));
     await page.route('**/swiper-bundle.min.css', (route) => route.abort());
-    await page.route('**/swiper-bundle.min.js', (route) => route.fulfill({ contentType: 'application/javascript', body: swiperStub }));
+    await page.route('**/swiper-bundle.min.js', (route) => route.fulfill({
+      contentType: 'application/javascript',
+      headers: { 'Access-Control-Allow-Origin': '*' },
+      body: swiperStub,
+    }));
     await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
     await page.locator('#galleryGrid [data-id="p01"]').click();
     await page.waitForFunction(() => !!window.Swiper);
     await expect(page.locator('#lbSwiper')).not.toHaveClass(/swiper-initialized/);
+    await page.locator('#lbNext').click();
+    await expect(page.locator('#lbCounter')).toHaveText('02 / 44');
+  });
+
+  test('tampered Swiper bundle is rejected by integrity and the fallback keeps working', async ({ page }) => {
+    // Обратный контроль к подмене CDN: хэш в странице НЕ переписывается, а
+    // подменённый бандл отличается от него на один байт. Браузер обязан
+    // отбросить скрипт: глобали нет, побочный эффект не исполнился, скрипт
+    // удалён обработчиком ошибки, а галерея продолжает работать на фолбэке.
+    const tampered = `${swiperStub}\nwindow.__swiperTampered = true;`;
+    await page.route('**/swiper-bundle.min.js', (route) => route.fulfill({
+      contentType: 'application/javascript',
+      headers: { 'Access-Control-Allow-Origin': '*' },
+      body: tampered,
+    }));
+    await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
+    await page.locator('#galleryGrid [data-id="p01"]').click();
+    await expect(page.locator('#lbRoot')).toHaveCount(1);
+    await expect(page.locator('#lbCounter')).toHaveText('01 / 44');
+    await expect.poll(() => page.evaluate(() => ({
+      swiper: typeof window.Swiper,
+      tampered: '__swiperTampered' in window,
+      script: !!document.querySelector('script[data-gallery-swiper]'),
+    })), { message: 'SRI обязан отбросить подменённый бандл' }).toEqual({
+      swiper: 'undefined',
+      tampered: false,
+      script: false,
+    });
     await page.locator('#lbNext').click();
     await expect(page.locator('#lbCounter')).toHaveText('02 / 44');
   });
