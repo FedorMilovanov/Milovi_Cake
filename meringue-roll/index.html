@@ -188,6 +188,21 @@
       --muted:   rgba(237,224,204,0.56);
       --serif:   'Cormorant Garamond', Georgia, serif;
       --sans:    'Jost', system-ui, sans-serif;
+      /* [mobile shell] Геометрия нижнего бара. Эта страница — единственная,
+         что подключает js/nav.js, но не css/style.css: единственный источник
+         этих токенов — :root в style.css. А css/v20-fixes.css и
+         css/final-fixes.css адресуют их без фолбэков и с !important
+         (left/right/bottom бара, его height/padding, bottom шторки «Ещё»,
+         padding-bottom body.has-mc-nav). Неразрешённый var() делает
+         объявление недействительным при вычислении значения — свойство
+         получает unset (auto), и бар перестаёт быть прижатым к низу экрана.
+         Значения — ровно те же, что в style.css (:root): один договор на две
+         страницы. Гард — tests/mobile-shell.spec.js. */
+      --mc-safe-b:      env(safe-area-inset-bottom, 0px);
+      --mc-nav-side:    12px;
+      --mc-nav-gap:     8px;
+      --mc-nav-h:       60px;
+      --mc-nav-total:   calc(var(--mc-nav-gap) + var(--mc-nav-h) + var(--mc-safe-b));
     }
 
     /* scroll-behavior управляется точечно через JS */
@@ -2154,7 +2169,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     <!-- Ручная работа — тортик -->
     <div class="feature-card card-heart reveal">
       <div class="feature-icon" style="transition: transform 0.5s cubic-bezier(.16,1,.3,1), border-color 0.5s, box-shadow 0.5s;">
-        <img src="../img/icon-loading.webp" alt="" aria-hidden="true" width="30" height="30" style="width:30px;height:30px;object-fit:cover;border-radius:50%;opacity:0.85;transition:opacity 0.5s,transform 0.5s cubic-bezier(.16,1,.3,1);" class="heart-svg" decoding="async" />
+        <img src="../img/meringue_feature_handwork.webp" alt="" aria-hidden="true" width="30" height="30" style="width:30px;height:30px;object-fit:cover;border-radius:50%;opacity:0.85;transition:opacity 0.5s,transform 0.5s cubic-bezier(.16,1,.3,1);" class="heart-svg" loading="lazy" decoding="async" />
       </div>
       <h3 class="feature-title"><span class="ht-word">Ручная работа</span></h3>
       <div class="feature-text wave-text">Каждый рулет создаётся вручную — никакого конвейера и полуфабрикатов</div>
@@ -2487,43 +2502,47 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
   });
   setTimeout(() => document.getElementById('loader').classList.add('gone'), 4000);
 
-  // ── Bottom nav + progress bar + mobile CTA (mobile only) ──
+  // ── Progress bar + плавающие элементы (mobile only) ──
   (function() {
     var isMobile = window.matchMedia('(max-width: 768px)');
     var mrCta  = document.getElementById('mobileStickyWa');
     var mrProg = document.getElementById('mrScrollProgress');
 
     function initMobile(mq) {
-      if (mq.matches) {
-        if (mrCta)  mrCta.style.display  = '';
-      } else {
-        if (mrCta)  mrCta.style.display  = 'none';
-      }
+      /* Кнопку .mobile-sticky-cta сайт скрывает глобальным правилом «одна нижняя
+         навигация» (premium-overrides.css + v20-fixes.css, !important), так
+         что на экране её нет. Логика оставлена рабочей: включат CTA обратно —
+         поведение уже готово, чинить нечего. */
+      if (mrCta) mrCta.style.display = mq.matches ? '' : 'none';
     }
     initMobile(isMobile);
     if (isMobile.addEventListener) isMobile.addEventListener('change', initMobile);
     else isMobile.addListener(initMobile);
 
-    // Progress bar + CTA show/hide on scroll
-    var lastY = 0;
-    window.addEventListener('scroll', function() {
+    /* Прогресс и видимость CTA считаем и сразу на старте: после перезагрузки
+       на восстановленной позиции и при переходе по якорю (#faq, #order)
+       scroll-событие не приходит — полоса прогресса стояла на нуле, а
+       плавающая кнопка не появлялась, пока страницу не тронут. */
+    function syncFloating() {
       var y = window.scrollY;
       var total = document.body.scrollHeight - window.innerHeight;
-      // Progress
       if (mrProg) mrProg.style.width = (total > 0 ? (y / total * 100) : 0) + '%';
-      // CTA появляется после 300px
-      if (mrCta && isMobile.matches) {
-        mrCta.classList.toggle('visible', y > 300);
-      }
-      lastY = y;
-    }, { passive: true });
+      if (mrCta && isMobile.matches) mrCta.classList.toggle('visible', y > 300);
+    }
+    window.addEventListener('scroll', syncFloating, { passive: true });
+    window.addEventListener('resize', syncFloating, { passive: true });
+    syncFloating();
   })();
 
   // Header scroll
   const hdr = document.getElementById('siteHdr');
-  window.addEventListener('scroll', () => {
-    hdr.classList.toggle('scrolled', window.scrollY > 48);
-  }, { passive: true });
+  if (hdr) {
+    const syncHdr = () => hdr.classList.toggle('scrolled', window.scrollY > 48);
+    window.addEventListener('scroll', syncHdr, { passive: true });
+    // Восстановленная прокрутка не рождает scroll: применяем состояние сразу,
+    // иначе шапка остаётся прозрачной поверх уже прокрученной страницы.
+    syncHdr();
+  }
 
   // Parallax
   function updateParallax() {
@@ -2588,9 +2607,13 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     });
   }
   const btn = document.getElementById('backTop');
-  window.addEventListener('scroll', () => {
-    btn.classList.toggle('show', window.scrollY > 400);
-  }, { passive: true });
+  if (btn) {
+    const syncBackTop = () => btn.classList.toggle('show', window.scrollY > 400);
+    window.addEventListener('scroll', syncBackTop, { passive: true });
+    // То же для кнопки «наверх»: при восстановленной позиции она не появлялась
+    // до первого scroll-события, хотя прокрутка уже глубокая.
+    syncBackTop();
+  }
 
   // Wave text — all .wave-text paragraphs
   (function() {
