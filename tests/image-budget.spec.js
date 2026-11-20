@@ -1,42 +1,56 @@
 // Бюджеты веса картинок на /meringue-roll/ + контракт адаптивных изображений.
 //
-// История: страница годами возила портретные оригиналы 1024×1536 (59–103 КБ каждый)
-// в рамки, где object-fit: cover срезал две трети кадра; hero-AVIF весил 117 660 Б
-// при fetchpriority=high; декоративная иконка 30×30 была файлом на 61 514 Б.
+// История: страница возила портретные оригиналы 1024×1536 (59–103 КБ каждый) в рамки,
+// где object-fit: cover срезал две трети кадра; hero-AVIF весил 117 660 Б при
+// fetchpriority=high; декоративная иконка 30×30 была файлом на 61 514 Б.
 // После переезда на srcset/sizes с испечёнными кадрами (AVIF, уникальные файлы):
 //   · телефон (Pixel 7, 412 CSS, DPR 2.625): hero 50 852 Б вместо 117 660 Б;
 //   · телефон с DPR 1 (390 CSS): hero 34 692 Б вместо 117 660 Б;
 //   · десктоп (1440 CSS, DPR1): hero 58 919 Б вместо 117 660 Б;
 //   · иконка карточки «Ручная работа»: 1 654 Б вместо 61 514 Б;
-//   · все уникальные файлы страницы: 317 101 Б на телефоне и 232 605 Б на десктопе
-//     вместо 576 365 Б на любом вьюпорте.
-// Тест держит и вес, и сам контракт (srcset/sizes у каждого <picture>), иначе
-// следующая правка молча вернёт портреты в плитки.
+//   · все отрисованные файлы страницы: 318 755 Б на телефоне и 234 259 Б на
+//     десктопе вместо 576 365 Б на любом вьюпорте.
+//
+// Почему бюджет считается по currentSrc, а не по всем сетевым запросам:
+// Chromium с isMobile-эмуляцией стартует с layout-вьюпорта 980 px и до применения
+// <meta viewport> успевает выбрать кандидата по sizes=100vw — в сети оказываются
+// два файла на слот, хотя отрисован один. Это артефакт эмуляции, а не реальная
+// стоимость страницы, поэтому весовой контракт держится на том, что реально
+// нарисовано, а «двойное скачивание» проверяется там, где оно настоящее —
+// на hero (preload + <picture> должны совпадать ровно).
 const { test, expect } = require('@playwright/test');
 
 const PAGE = '/meringue-roll/';
 const HERO_FILE_BUDGET = 60 * 1024;           // факт: 34 692 Б (DPR1) … 50 852 Б (Pixel 7)
-const MOBILE_FIRST_VIEW_BUDGET = 180 * 1024;  // hero + плитки, попавшие в запас lazy-загрузки
-const MOBILE_FULL_BUDGET = 380 * 1024;        // факт ≈ 317 КБ (было ≈ 576 КБ)
+const MOBILE_DRAWN_BUDGET = 340 * 1024;       // факт 318 755 Б (было 576 365 Б)
+const DESKTOP_DRAWN_BUDGET = 260 * 1024;      // факт 234 259 Б (было 576 365 Б)
 const DECOR_ICON_BUDGET = 20 * 1024;          // <img>, нарисованный ≤64 px
+
+function isDesktop(testInfo) {
+  return testInfo.project.name.endsWith('desktop');
+}
 
 async function collectImageBytes(page) {
   const bytes = new Map();
   const requests = [];
   page.on('response', async (response) => {
-    const request = response.request();
-    if (request.resourceType() !== 'image') return;
+    if (response.request().resourceType() !== 'image') return;
     const url = response.url();
     requests.push(url);
     if (bytes.has(url)) return;
     try {
-      const body = await response.body();
-      bytes.set(url, body.length);
+      bytes.set(url, (await response.body()).length);
     } catch {
       /* редирект или отменённый запрос — не считаем */
     }
   });
   return { bytes, requests };
+}
+
+async function sizeOf(page, bytes, url) {
+  if (bytes.has(url)) return bytes.get(url);
+  const response = await page.request.get(url);
+  return (await response.body()).length;
 }
 
 async function scrollThrough(page) {
@@ -52,56 +66,64 @@ async function scrollThrough(page) {
   });
 }
 
-test('@image-budget meringue: первый экран телефона не толще бюджета, hero скачан один раз', async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name.endsWith('desktop'), 'бюджет снят с мобильного профиля (Pixel 7)');
+test('@image-budget meringue: hero скачан один раз и укладывается в бюджет', async ({ page }) => {
   const { bytes, requests } = await collectImageBytes(page);
-
   await page.goto(PAGE, { waitUntil: 'load' });
   await page.waitForTimeout(600);
 
-  const firstView = [...bytes.values()].reduce((sum, n) => sum + n, 0);
   const heroFiles = requests.filter((url) => url.includes('/img/meringue_roll-hero-'));
-
   // Preload (imagesrcset/imagesizes) обязан совпадать с <picture> байт-в-байт:
   // расхождение даёт два скачивания одной и той же картинки.
   expect(heroFiles, `hero скачан ${heroFiles.length} раз(а): ${heroFiles.join(', ')}`).toHaveLength(1);
-  const heroBytes = bytes.get(heroFiles[0]);
-  expect(heroBytes, 'вес hero не измерен').toBeDefined();
+  const heroBytes = await sizeOf(page, bytes, heroFiles[0]);
   expect(heroBytes, `hero: ${Math.round(heroBytes / 1024)} КБ (было 117 660 Б портретного кадра)`)
     .toBeLessThanOrEqual(HERO_FILE_BUDGET);
-  expect(firstView, `первый экран: ${Math.round(firstView / 1024)} КБ картинок`)
-    .toBeLessThanOrEqual(MOBILE_FIRST_VIEW_BUDGET);
+});
 
+test('@image-budget meringue: суммарный вес отрисованных картинок в бюджете', async ({ page }, testInfo) => {
+  const { bytes } = await collectImageBytes(page);
+  await page.goto(PAGE, { waitUntil: 'domcontentloaded' });
   await scrollThrough(page);
   await page.waitForTimeout(600);
-  const total = [...bytes.values()].reduce((sum, n) => sum + n, 0);
-  expect(total, `вся страница: ${Math.round(total / 1024)} КБ картинок`)
-    .toBeLessThanOrEqual(MOBILE_FULL_BUDGET);
+
+  const drawn = await page.evaluate(() => [...document.images]
+    .filter((img) => img.currentSrc && img.currentSrc.startsWith(location.origin))
+    .map((img) => img.currentSrc));
+  const unique = [...new Set(drawn)];
+
+  let total = 0;
+  const heavy = [];
+  for (const url of unique) {
+    const size = await sizeOf(page, bytes, url);
+    total += size;
+    heavy.push([url.split('/').pop(), size]);
+  }
+  heavy.sort((a, b) => b[1] - a[1]);
+
+  const budget = isDesktop(testInfo) ? DESKTOP_DRAWN_BUDGET : MOBILE_DRAWN_BUDGET;
+  const top = heavy.slice(0, 6).map(([name, size]) => `${name} ${Math.round(size / 1024)} КБ`).join(', ');
+  expect(total, `нарисовано ${unique.length} файлов, ${Math.round(total / 1024)} КБ (было 576 365 Б). `
+    + `Крупнейшие: ${top}`).toBeLessThanOrEqual(budget);
 });
 
 test('@image-budget meringue: декоративные картинки не тяжелее бюджета', async ({ page }) => {
-  await page.goto(PAGE, { waitUntil: 'domcontentloaded' });
   const { bytes } = await collectImageBytes(page);
+  await page.goto(PAGE, { waitUntil: 'domcontentloaded' });
   await scrollThrough(page);
   await page.waitForTimeout(600);
 
-  // Находим картинки, которые нарисованы мелко (≤64 CSS px), и сверяем их вес.
-  const tiny = await page.evaluate(() => document.images
+  // Картинки, нарисованные мелко (≤64 CSS px), не имеют права весить как фото.
+  const tiny = await page.evaluate(() => [...document.images]
     .filter((img) => {
       const box = img.getBoundingClientRect();
       return box.width > 0 && box.height > 0 && Math.max(box.width, box.height) <= 64;
     })
     .map((img) => img.currentSrc || img.src)
-    .filter((url) => url.startsWith('http')));  // data:-заглушка лайтбокса не файл
+    .filter((url) => url.startsWith('http')));
 
   const oversized = [];
   for (const url of tiny) {
-    let size = bytes.get(url);
-    if (size === undefined) {
-      // Картинка могла быть забрана из кеша до старта наблюдателя — проверим запросом.
-      const response = await page.request.get(url);
-      size = (await response.body()).length;
-    }
+    const size = await sizeOf(page, bytes, url);
     if (size > DECOR_ICON_BUDGET) oversized.push(`${url.split('/').pop()}: ${Math.round(size / 1024)} КБ`);
   }
   expect(oversized, `мелкие картинки тяжелее ${DECOR_ICON_BUDGET / 1024} КБ`).toEqual([]);
