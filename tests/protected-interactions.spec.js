@@ -267,7 +267,9 @@ test.describe('premium baseline consolidation contracts', () => {
     for (const [name, label] of [['Google', 'Отзывы на Google Картах'], ['Yandex', 'Отзывы на Яндекс Картах']]) {
       if (name === 'Yandex') await page.locator('#tabYandex').click();
       const list = page.locator(`#reviews${name}`);
-      await expect(list).toHaveAttribute('role', 'region');
+      // Нативный <section aria-label> сам отдаёт роль region, поэтому проверяем
+      // вычисленную роль, а не избыточный атрибут role.
+      await expect(list).toHaveRole('region');
       await expect(list).toHaveAttribute('aria-label', label);
       await expect(list).toHaveAttribute('tabindex', '0');
       let reached = false;

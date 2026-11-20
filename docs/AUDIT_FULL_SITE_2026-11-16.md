@@ -295,9 +295,9 @@ const handoff = window.open('https://t.me/MiloviCake', '_blank');
 9. Снять дублирующие блоки, добавить 150–250 слов локального текста и кейсы на каждый из 14 городов.
 
 **PR «Перф и мелочь» (P2–P3)**
-10. Swiper → self-host или SRI + `preconnect` + точная версия; `width/height` для LCP-картинки галереи; `loading="lazy"` для 4 из 5 сертификатов.
+10. Swiper → self-host или SRI + `preconnect` + точная версия _(сделано: точная версия + `preconnect`; SRI отклонён по контракту отказоустойчивости, см. §10)_; `width/height` для LCP-картинки галереи; `loading="lazy"` для 4 из 5 сертификатов.
 11. Доступность и конформность из §6.1: `role`/`<nav>` для `aria-label`, уникальные имена двух `<nav>`, инлайновые `<style>` — в CSS, `placeholder` у `date`.
-12. `alt` для трёх hero-картинок; `loading="lazy"` убрать с `hero-img` на главной (там он противоречит `fetchpriority="high"`).
+12. `alt` для трёх hero-картинок; `loading="lazy"` убрать с `hero-img` на главной _(отклонено: `.hero-photo-bg` скрыт на мобильных, `eager` тянет невидимые 18 КБ и выбивает бюджет Lighthouse — см. §10)_.
 13. `var IMG_BASE = window.IMG_BASE || 'img';` в начале `js/main.js` — снимает главный риск «новой страницы» (§6.4).
 14. Убрать `loading="lazy"` у `<video>`, добить `theme-color`, `decoding`, мёртвый код (`getStageCenter`, `#calcApproxBadge`, `#reviewsTrack`, `eslint-disable` в `v20-faq-fix.js`, мёртвое условие в `sw.js`).
 15. Вернуться к gzip-бюджетам (121 962 / 115 806 B) и к инлайн-CSS `meringue-roll` (65,5 КБ) — отдельной задачей, после контентных PR.
@@ -348,13 +348,23 @@ npx linkinator http://127.0.0.1:4199/ --recurse --skip "^https?://(?!127\.0\.0\.
 | 5 | P1 устаревший `lastmod` | ✅ | `scripts/sync_sitemap_lastmod.py` + состояние `data/sitemap-lastmod.json`: дата пересчитывается по sha256 контента страницы (ревизии `?v=` из хэша исключены, чтобы поднятие версии CSS не выглядело правкой текста), городские даты синхронно пишутся в `_cities.csv`. Режим `--check` в `qa`/`audit:all`, 29/29 URL совпадают |
 | 6 | P2 `aria-label` на `<div>` (27) и безымянные `<nav>` (17) | ✅ | Блоки ссылок `.lp-related`/`.info-related`/`.hub-cats`/`.gx-seo-facts` → `<nav>`, хлебные крошки → `<nav aria-label="Хлебные крошки">`, `header-nav` → «Основная навигация», подвал → «Разделы сайта»; `role="region"` → `<section>` (48), `role="button"` → нативные `<button type="button">` (27, вместе с `onkeydown`-костылями), `role="navigation"` → `<nav>`, `role="list"` убран. Итог: **77 нарушений четырёх правил → 0** |
 | 7 | P2 пустой `alt` у трёх hero | ✅ (не баг) | `hero-poster-cake.jpg` и `wedding-hero.webp` лежат внутри контейнеров с `aria-hidden="true"` (декоративный слой), `gallery-01.webp` — внутри `<button>`, имя которому даёт видимый `.card-title`; дублировать текст в `alt` значило бы удвоить имя для скринридера. Реальная проблема того же экрана (CLS) закрыта: у LCP-картинки появились честные `width="667" height="1000"` |
-| 8 | P2 Swiper без SRI | ✅ | Версия закреплена `swiper@11.2.10`, `integrity` sha384 для CSS и для динамически создаваемого `<script>` в лоадере, `crossorigin="anonymous"`, добавлен `preconnect` к `cdn.jsdelivr.net`. Хэши посчитаны по файлам из npm-тарбола этой версии |
+| 8 | P2 Swiper с CDN | ✅ (частично) | Версия закреплена `swiper@11.2.10` (`@11` плавал внутри мажора), добавлен `preconnect` к `cdn.jsdelivr.net`, асинхронная схема загрузки сохранена. SRI **осознанно не ставим**: `integrity` на динамически создаваемом `<script>` ломает контракт отказоустойчивости в `tests/video-posters.spec.js` — два теста подменяют CDN на stub, и браузер обязан исполнить stub, а не отбросить его по хэшу. Полный self-host CSS/JS — отдельная задача (нужен вендорный каталог и обновление гарда ревизий) |
 | 9 | P2 LCP галереи без размеров | ✅ | `width/height` у LCP-картинки + `decoding="async"` на всех `<img>` (146 добавлено, включая JS-карточки галереи) |
 | 10 | P2 неполная микроразметка | ✅ / ⛔ частично | `Product`: `sku`, `category`, `itemCondition`, `image[]` — добавлены. `availability` и `priceValidUntil` **не добавляем**: `tests/test_schema_contract.py` прямо запрещает неподтверждённые «в наличии» и срок действия цены — торт делается на заказ, склад и дата окончания цены не подтверждены. `LocalBusiness` получил `openingHoursSpecification` (Пн–Сб 10:00–21:00, как в Google Business Profile) на всех 16 страницах |
 | 11 | P2 глобал `IMG_BASE` | ✅ | В `js/main.js` локальный фолбэк `var IMG_BASE = (typeof window.IMG_BASE === 'string' && window.IMG_BASE) ? window.IMG_BASE : 'img'` — 39 `no-undef` снято, корзина/калькулятор/лайтбокс больше не падают, если на новой странице забыть инлайн-строку |
 | 12 | P2 gzip-бюджеты | ⛔ долг | CSS 122,8 КБ / JS 115,5 КБ против 180 000. Это не регрессия волны (см. `docs/PERFORMANCE_STATUS.md`): мёртвый код удалён (−2,2 КБ JS), но бюджет требует отдельного прохода по CSS-каскаду. `audit.py` держит это как WARN, а не FAIL |
 | 13 | P3 конформность | ✅ | `placeholder` у `input[type=date]` убран (метка и так плавает через `:not(:placeholder-shown)`), `<style>` из `<body>` в `<head>` (`call/`), а no-JS-фолбэк каталога переведён на класс `no-js` + правила в `style.css`; невалидный `loading` убран у 9 `<video>`; `theme-color` теперь пара light/dark на `call/` и `gallery/`; удалён мёртвый код (`getStageCenter`, `#calcApproxBadge`, legacy-карусель `#reviewsTrack`) |
 | 14 | P3 CSS-долг (2 048 `!important`) | ⛔ долг | Требует отдельного рефакторинга каскада с визуальной регрессией на каждой странице; в этой волне не трогали, чтобы не смешивать семантику и вёрстку |
+
+### Правки после первого прогона CI
+
+Первый прогон PR поймал три вещи, которые локальные гарды не видели (браузер недоступен, Lighthouse считается только на артефакте):
+
+| Что | Симптом | Решение |
+|---|---|---|
+| `loading="eager"` на `hero-img` | Lighthouse `total-byte-weight` на `/`: 444 365 Б против бюджета 438 272 Б (+18 156 Б = ровно `head_mobile-640.avif`) | `.hero-photo-bg` скрыт на `max-width: 768px`, и `eager` тянул невидимую мобильную картинку. Вернули `loading="lazy"`: на десктопе картинка в вьюпорте и грузится сразу, на мобильных её нет. LCP не ухудшился (медиана 2 666 → 2 587 мс) |
+| SRI на динамическом `<script>` Swiper | `video-posters.spec.js:963/1077` — `window.Swiper` не появляется, `swiper-initialized` нет, таймаут 60 с | `integrity`/`crossorigin` с динамического лоадера сняты (браузер отбрасывал stub по хэшу). Тест сверяет адрес загрузчика, поэтому константа в тесте обновлена на закреплённую `@11.2.10` |
+| `role` → нативные `<section>` | `cart-accessibility.spec.js:902` и `protected-interactions.spec.js:261` ждали атрибут `role="region"` | `<section aria-label>` отдаёт роль `region` неявно, а явный атрибут даёт `no-redundant-role` в html-validate. В тестах — `toHaveRole('region')` (вычисленная роль, а не строка атрибута) |
 
 ### Новые гарды (в `qa` и `audit:all`)
 
