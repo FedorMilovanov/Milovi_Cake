@@ -481,45 +481,29 @@ for (const failure of ['QuotaExceededError', 'SecurityError']) {
   test(`cart stays usable and warns when storage throws ${failure}`, async ({ page }) => {
     const errors = [];
     page.on('pageerror', (error) => errors.push(error.message));
+    // Соседние контракты этой же корзины гоняются с reduced-motion: тест про
+    // обработку отказа Storage ничего не утверждает про анимации, а живой
+    // WebKit под ними падал (см. комментарий ниже).
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.addInitScript((name) => {
       const write = Storage.prototype.setItem;
       window.__cartFaultAttempts = 0;
       window.__cartFaultClicks = 0;
-      window.__cartFaultEvents = [];
-      for (const type of ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click']) {
-        document.addEventListener(type, (event) => {
-          if (type === 'click' && event.target.closest('#card-2 .btn-add')) window.__cartFaultClicks++;
-          const card = document.getElementById('card-2');
-          const button = card?.querySelector('.btn-add');
-          const measure = (element) => {
-            if (!element) return null;
-            const rect = element.getBoundingClientRect();
-            return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
-          };
-          /* [r38] Геометрию карточки замеряем только на её собственных pointer-
-             событиях. Раньше getBoundingClientRect/getComputedStyle вызывались
-             на pointerdown/up и для кликов внутри открытой корзины: это
-             принудительный layout каталога с бегущей лентой в момент, когда
-             drawer анимируется. На WebKit такая комбинация совпадала с
-             «элемент не стабилен» на #cartDrawer .qty-btn и 20-секундным
-             ожиданием. Само событие по-прежнему логируется целиком. */
-          const pointerBoundary = (type === 'pointerdown' || type === 'pointerup')
-            && !!(event.target.closest && event.target.closest('#card-2'));
-          window.__cartFaultEvents.push({
-            type, time: Math.round(performance.now()), trusted: event.isTrusted,
-            target: event.target?.id || event.target?.className || event.target?.nodeName,
-            card: event.target?.closest?.('.product-card')?.id || '',
-            x: event.clientX, y: event.clientY, scrollY: window.scrollY,
-            buttonRect: pointerBoundary ? measure(button) : null,
-            cardRect: pointerBoundary ? measure(card) : null,
-            cardClass: pointerBoundary ? card?.className : null,
-            cardTransform: pointerBoundary && card ? getComputedStyle(card).transform : null,
-            buttonTransform: pointerBoundary && button ? getComputedStyle(button).transform : null,
-            fonts: pointerBoundary ? document.fonts?.status : null,
-          });
-          if (window.__cartFaultEvents.length > 20) window.__cartFaultEvents.shift();
-        }, true);
-      }
+      /* [r40] Здесь раньше висели пять capturing-слушателей
+         (pointerdown/mousedown/pointerup/mouseup/click), и на каждом событии
+         они читали getBoundingClientRect, getComputedStyle(card/button) и
+         document.fonts.status — то есть заставляли движок пересчитывать стиль
+         и раскладку на каждое движение мыши, поверх бегущей ленты каталога.
+         На WebKit (образ playwright:v1.64.1-noble) это совпадало с падением
+         web-процесса ровно на клике «+» в открытой корзине: Playwright
+         получал «Target page, context or browser has been closed» вместо
+         результата действия. Для контракта нужны только два счётчика,
+         поэтому геометрия из слушателя убрана совсем, а сам слушатель один
+         и ничего не измеряет. */
+      document.addEventListener('click', (event) => {
+        if (!event.target.closest) return;
+        if (event.target.closest('#card-2 .btn-add')) window.__cartFaultClicks++;
+      }, true);
       Storage.prototype.setItem = function(key, value) {
         if (key === 'milovicake_cart') {
           window.__cartFaultAttempts++;
@@ -539,10 +523,10 @@ for (const failure of ['QuotaExceededError', 'SecurityError']) {
     } catch (error) {
       const state = await page.evaluate(() => ({
         clicks: window.__cartFaultClicks, writes: window.__cartFaultAttempts,
-        events: window.__cartFaultEvents, documentHasFocus: document.hasFocus(),
+        focused: document.hasFocus(), pageOpen: true,
         badge: document.querySelector('#cartBadge')?.textContent,
         toast: document.querySelector('#toast')?.outerHTML,
-      }));
+      })).catch(() => ({ pageOpen: false, closedReason: 'web process gone' }));
       throw new Error(`${error.message}\nStorage fault diagnostics: ${JSON.stringify({ ...state, errors })}`);
     }
     const bounds = await page.locator('#toast').boundingBox();
