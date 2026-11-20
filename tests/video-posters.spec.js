@@ -968,7 +968,8 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     const path = require('node:path');
     const root = process.cwd();
     const html = fs.readFileSync('gallery/index.html', 'utf8');
-    const src = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js';
+    // Тот же закреплённый адрес, что и в SWIPER_SRC загрузчика галереи.
+    const src = 'https://cdn.jsdelivr.net/npm/swiper@11.2.10/swiper-bundle.min.js';
     expect(html.split(src)).toHaveLength(2);
     let response;
     let markRequested;

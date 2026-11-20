@@ -8,6 +8,20 @@ from urllib.parse import parse_qs, urlsplit
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def canonical_telegram_chat():
+    """Личный чат Telegram, который сайт считает каноническим.
+
+    Источник — js/main.js (buildTG): именно оттуда адрес попадает во все кнопки,
+    поэтому тест проверяет «свадебный блок использует тот же чат», а не строку,
+    которую легко забыть обновить вместе с сайтом.
+    """
+    main_js = (ROOT / 'js' / 'main.js').read_text(encoding='utf-8')
+    match = re.search(r"https://t\.me/[A-Za-z0-9_]+", main_js)
+    if not match:
+        raise AssertionError('js/main.js: не найден канонический адрес Telegram')
+    return match.group(0)
+
+
 class WeddingContentContractTest(unittest.TestCase):
     def test_tasting_request_is_conditional_and_uses_shared_consultation(self):
         page = (ROOT / 'svadebnye-torty' / 'index.html').read_text(encoding='utf-8')
@@ -27,7 +41,8 @@ class WeddingContentContractTest(unittest.TestCase):
         panel = brief.group(1)
         self.assertIn('дегустация', panel.lower())
         self.assertEqual(len(re.findall(r'class="btn-hero-messenger', panel)), 3)
-        self.assertIn('https://t.me/+79119038886', panel)
+        self.assertIn(canonical_telegram_chat(), panel,
+                      'Wedding brief must use the site-wide Telegram chat')
         self.assertIn('https://max.ru/u/f9LHodD0cOIzRY9VJX8MoyR41H64ULjndbose2aPPrzXJDLW8QEiyKTpqxs', panel)
         wa = re.search(r'<a href="(https://wa\.me/[^"]+)"[^>]*class="btn-hero-messenger btn-hero-wa', panel)
         self.assertIsNotNone(wa)

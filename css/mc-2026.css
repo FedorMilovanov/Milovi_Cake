@@ -2010,3 +2010,15 @@ body.vview-open{overflow:hidden}
 @media print {
   .mobile-menu { display: none; }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   r47 · CITY STORY — уникальный городской текст на страницах пригородов
+   Блок не дублируется между городами: текст приходит из prigorody/_cities.csv
+   ══════════════════════════════════════════════════════════════════════════ */
+.city-story{padding:clamp(48px,7vw,88px) 0}
+.city-story .container{max-width:820px}
+.city-story__text{font-size:clamp(1rem,1.05vw + .72rem,1.08rem);line-height:1.78;color:var(--mm-ink-soft,#5b4636)}
+.city-story__text p{margin:0 0 1.1em}
+.city-story__text p:last-child{margin-bottom:0}
+.city-story__lead{font-size:1.14em;color:var(--mm-ink,#2a1d14)}
+@media (max-width:640px){.city-story{padding:40px 0}}

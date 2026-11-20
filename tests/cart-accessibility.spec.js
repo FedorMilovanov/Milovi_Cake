@@ -921,7 +921,9 @@ test('mobile calculator panel stays reachable and restores keyboard focus', asyn
     const bar = page.locator('#calcCollapsedBar');
     const region = page.locator('#calcExpandable');
     const add = page.locator('.calc-add-btn');
-    await expect(region).toHaveAttribute('role', 'region');
+    // <section aria-label> получает роль region неявно; явный атрибут даёт
+    // «redundant role» в html-validate.
+    await expect(region).toHaveRole('region');
     await expect(bar).toHaveAttribute('aria-expanded', 'false');
     await expect(add).toBeHidden();
     await expectDockGrownOutOfNav(page, `${route} closed price dock`);
@@ -1291,7 +1293,7 @@ test.describe('cart phone field: Enter prepares the order', () => {
     await page.evaluate(() => { window.__opened.length = 0; });
     await page.locator('#btnTG').click();
     await expect.poll(() => page.evaluate(() => window.__opened.length)).toBe(1);
-    expect(await page.evaluate(() => window.__opened[0])).toBe('https://t.me/MiloviCake');
+    expect(await page.evaluate(() => window.__opened[0])).toBe('https://t.me/milovi_cake');
     expect(await goals(page)).toEqual([
       { path: '/', lead_channel: 'whatsapp', lead_source: 'cart' },
       { path: '/', lead_channel: 'telegram', lead_source: 'cart' },

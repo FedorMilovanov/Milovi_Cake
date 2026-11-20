@@ -74,7 +74,9 @@ test.describe('protected homepage interactions', () => {
     await page.goto('/', {waitUntil:'domcontentloaded'});
     const endpoints = [
       {cls:'wa', target:/^https:\/\/wa\.me\/79119038886\?/, name:/WhatsApp/i},
-      {cls:'tg', target:/^https:\/\/t\.me\/\+79119038886$/, name:/Telegram/i},
+      // Кнопка «написать» ведёт в личный чат (t.me/+79119038886 удалён),
+      // канал остаётся только в соцблоках и sameAs.
+      {cls:'tg', target:/^https:\/\/t\.me\/milovi_cake$/, name:/Telegram/i},
       {cls:'max', target:'https://max.ru/u/f9LHodD0cOIzRY9VJX8MoyR41H64ULjndbose2aPPrzXJDLW8QEiyKTpqxs', name:/MAX/i},
     ];
     for (const endpoint of endpoints) {
@@ -267,7 +269,9 @@ test.describe('premium baseline consolidation contracts', () => {
     for (const [name, label] of [['Google', 'Отзывы на Google Картах'], ['Yandex', 'Отзывы на Яндекс Картах']]) {
       if (name === 'Yandex') await page.locator('#tabYandex').click();
       const list = page.locator(`#reviews${name}`);
-      await expect(list).toHaveAttribute('role', 'region');
+      // Нативный <section aria-label> сам отдаёт роль region, поэтому проверяем
+      // вычисленную роль, а не избыточный атрибут role.
+      await expect(list).toHaveRole('region');
       await expect(list).toHaveAttribute('aria-label', label);
       await expect(list).toHaveAttribute('tabindex', '0');
       let reached = false;

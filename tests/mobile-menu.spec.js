@@ -167,8 +167,9 @@ test.describe('mobile menu @menu', () => {
     expect(html).not.toContain('M3 4h2.4l3.1 7.6');
 
     expect(messengers[0].href.startsWith('https://wa.me/79119038886')).toBe(true);
-    expect(messengers[1].href).toBe('https://t.me/+79119038886');
+    expect(messengers[1].href).toBe('https://t.me/milovi_cake');
     expect(html).not.toContain('t.me/MiloviCake');
+    expect(html).not.toContain('t.me/+79119038886');
 
     for (const messenger of messengers) {
       expect(messenger.aria, `у ${messenger.text} нет доступного имени`).toBeTruthy();

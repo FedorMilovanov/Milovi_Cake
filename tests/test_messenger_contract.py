@@ -79,6 +79,68 @@ class MessengerCtaContractTest(unittest.TestCase):
                 self.assertEqual(found, home,
                                  f"{page.relative_to(ROOT)}: кнопки заказа расходятся с главной")
 
+    def test_telegram_uses_channel_for_presence_and_chat_for_contact(self):
+        """У Telegram на сайте две роли, и они не должны меняться местами.
+
+        * **Написать** (кнопки «Отправить в Telegram», hero, бар заказа, меню,
+          контакты в подвале, CTA) — личный аккаунт `t.me/milovi_cake`: только
+          туда можно вставить скопированный текст заказа. До r47 кнопка заказа
+          вела в канал, где писать некуда — заказ терялся.
+        * **Присутствие** (блок «Мы в соцсетях», иконки соцсетей в подвале,
+          `sameAs` в JSON-LD) — канал `t.me/MiloviCake`, он для подписки.
+
+        Третьих адресов (`t.me/+79119038886` и подобных) быть не должно.
+        """
+        direct = "https://t.me/milovi_cake"
+        channel = "https://t.me/MiloviCake"
+        presence_classes = ("social-link", "footer-social")
+        problems: list[str] = []
+        seen: dict[str, int] = {direct: 0, channel: 0}
+
+        for page in html_pages():
+            text = page.read_text(encoding="utf-8")
+            rel = page.relative_to(ROOT)
+
+            for found in re.findall(r"https://t\.me/[^\"'<>\s)]+", text):
+                if found not in (direct, channel):
+                    problems.append(f"{rel}: посторонний адрес Telegram → {found}")
+
+            for tag, inner in re.findall(r"(<a\b[^>]*>)(.*?)</a>", text, re.S):
+                href = re.search(r'href="(https://t\.me/[^"]+)"', tag)
+                if not href:
+                    continue
+                href = href.group(1)
+                seen[href] = seen.get(href, 0) + 1
+                classes = re.search(r'class="([^"]*)"', tag)
+                classes = classes.group(1).split() if classes else []
+                is_cta = any(cls.startswith("btn") or cls.startswith("mm-msg")
+                             or cls.startswith("messenger-bar") for cls in classes)
+                is_presence = any(cls in presence_classes for cls in classes)
+                visible_text = re.sub(r"<[^>]+>", "", inner).strip()
+                # иконка соцсети без подписи (aria-label + нет текста) = присутствие
+                if not is_cta and not visible_text and 'aria-label="Telegram"' in tag:
+                    is_presence = True
+                expected = channel if is_presence else direct
+                if href != expected:
+                    problems.append(
+                        f"{rel}: {'соцссылка' if is_presence else 'кнопка связи'} "
+                        f"ведёт на {href}, ожидается {expected}")
+
+            for block in re.findall(r'<script type="application/ld\+json">(.*?)</script>', text, re.S):
+                if "sameAs" not in block:
+                    continue
+                if direct in block:
+                    problems.append(f"{rel}: личный чат в sameAs — там должен быть канал")
+                if channel in block:
+                    seen[channel] = seen.get(channel, 0) + block.count(channel)
+
+        self.assertEqual(problems, [], "\n".join(problems))
+        self.assertGreater(seen.get(channel, 0), 0, "канал пропал из соцблоков/sameAs")
+        self.assertGreater(seen.get(direct, 0), 0, "прямой чат пропал из кнопок связи")
+        main_js = (ROOT / "js" / "main.js").read_text(encoding="utf-8")
+        self.assertIn(f"'{direct}'", main_js, "buildTG должен открывать личный чат")
+        self.assertNotIn(f"'{channel}'", main_js, "buildTG не должен открывать канал")
+
 
 if __name__ == "__main__":
     unittest.main()

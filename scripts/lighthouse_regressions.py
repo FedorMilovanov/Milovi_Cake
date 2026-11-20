@@ -220,13 +220,26 @@ require('<source type="image/avif" srcset="/img/gallery/gallery-01.avif">' in ga
 require('fetchpriority="high" src="/img/gallery/gallery-01.webp"' in gallery, 'gallery static LCP fallback lost high priority')
 require('id="galleryGrid" role="list"' not in gallery, 'gallery grid regained synthetic list semantics')
 require('role="listitem"' not in gallery, 'gallery native card button regained incompatible listitem role')
-require('<img class="card-media" alt="" loading="eager"' in gallery, 'gallery static card media is no longer decorative inside its labelled button')
+# Атрибуты могут идти в любом порядке (размеры добавились для CLS), важны
+# сами три свойства: декоративный alt, eager и класс статической карточки.
+require(
+    re.search(r'<img class="card-media"(?=[^>]*\balt="")(?=[^>]*\bloading="eager")[^>]*>', gallery),
+    'gallery static card media is no longer decorative inside its labelled button',
+)
 require(
     'id="gxEmpty" style="display: none;"' in gallery,
     'gallery initial-layout reserve sentinel drifted',
 )
-swiper_css = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css'
-swiper_js = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js'
+# Версия Swiper должна быть закреплена точным патчем, а не плавающим @11:
+# адрес берём из самой страницы, чтобы гард ловил и возврат к плавающей версии,
+# и рассинхрон между CSS и JS.
+swiper_pin = re.search(
+    r'https://cdn\.jsdelivr\.net/npm/swiper@(\d+\.\d+\.\d+)/swiper-bundle\.min\.js',
+    gallery,
+)
+require(swiper_pin, 'gallery Swiper source is not pinned to an exact patch version')
+swiper_css = f'https://cdn.jsdelivr.net/npm/swiper@{swiper_pin.group(1)}/swiper-bundle.min.css'
+swiper_js = f'https://cdn.jsdelivr.net/npm/swiper@{swiper_pin.group(1)}/swiper-bundle.min.js'
 require(
     'href="/css/fonts.css?v=' in gallery,
     'gallery lost its self-hosted font stylesheet',
@@ -322,8 +335,20 @@ for number in [5, 6, 9, 12, 18]:
     require(Path(f'img/gallery/gallery-{number:02d}-card.avif').is_file(), f'gallery phone-card derivative missing for gallery-{number:02d}')
 
 gatchina = read('prigorody/gatchina/index.html')
-for title in ['Ручная Работа', 'Внимание к составу', 'Свежесть под заказ', 'Доставка по СПб']:
-    require(f'<h3>{title}</h3>' in gatchina and f'<h4>{title}</h4>' not in gatchina, f'Gatchina heading order drift: {title}')
+# Блок «Почему выбирают нас» дословно дублировал главную и удалён вместе с
+# четырьмя h3; вместо него на странице уникальный городской текст в #story.
+# Гард держит структуру заголовков: ровно один h1 в начале и живая секция #story.
+for duplicated in ['Ручная Работа', 'Внимание к составу', 'Свежесть под заказ', 'Доставка по СПб']:
+    require(
+        f'<h3>{duplicated}</h3>' not in gatchina and f'<h4>{duplicated}</h4>' not in gatchina,
+        f'Gatchina duplicated homepage block returned: {duplicated}',
+    )
+gatchina_levels = [int(level) for level in re.findall(r'<h([1-6])[\s>]', gatchina)]
+require(
+    gatchina_levels and gatchina_levels[0] == 1 and gatchina_levels.count(1) == 1,
+    'Gatchina heading order drift: page must start with a single h1',
+)
+require('<section class="city-story" id="story">' in gatchina, 'Gatchina unique city story section disappeared')
 require(gatchina.count('<button type="button" class="cb-faq-q"') == 3, 'Gatchina FAQ is not three native buttons')
 require('min-height:48px' in gatchina, 'Gatchina FAQ target-size contract missing')
 
@@ -361,8 +386,12 @@ for public_html in public_html_files():
 
 # Changed shared styles must agree between every consumer and the precache.
 for asset in ('style.css', 'mc-2026.css', 'premium-overrides.css', 'v20-dark-and-fixes.css'):
-    revision = {'style.css': '20261120r33', 'mc-2026.css': '20261120r46', 'premium-overrides.css': '20261116r39', 'v20-dark-and-fixes.css': '20261120r28'}.get(asset, '20261116r06')
-    require(f"'/css/{asset}?v={revision}'," in sw, f'{asset} service-worker revision drifted')
+    # Ревизию берём из precache: источник истины — сам service worker, а не
+    # список констант в гарде. Так гард ловит именно рассинхрон потребителей
+    # с precache, а не каждое плановое поднятие версии CSS.
+    precache = re.search(rf"'/css/{re.escape(asset)}\?v=([0-9a-z]+)',", sw)
+    require(precache, f'{asset} service-worker revision missing')
+    revision = precache.group(1)
     for public_html in public_html_files():
         refs = re.findall(rf'css/{re.escape(asset)}\?v=([0-9a-z]+)', read(public_html))
         require(all(ref == revision for ref in refs), f'{public_html} {asset} revision drifted')
@@ -373,7 +402,9 @@ for public_html in public_html_files():
     refs = re.findall(r'js/main\.js\?v=([0-9a-z]+)', html)
     require(all(ref == '20261116r41' for ref in refs), f'{public_html} shared main.js revision drifted')
 
-require("const CACHE_NAME = 'milovi-cake-v2026.11.16-r186';" in sw, 'service-worker cache generation drifted')
+cache_gen = re.search(r"const CACHE_NAME = 'milovi-cake-v2026\.11\.16-r(\d+)';", sw)
+require(cache_gen, 'service-worker cache generation format drifted')
+require(int(cache_gen.group(1)) >= 186, 'service-worker cache generation rolled back')
 require("'/css/gallery/gallery-2026.css?v=20261120r07'," in sw, 'gallery CSS service-worker revision drifted')
 require(style_ref != '/css/style.css?v=20261023r01', 'service-worker precache still points at stale shared CSS revision')
 require("'/js/main.js?v=20261116r41'," in sw, 'service-worker precache still points at stale shared main.js revision')

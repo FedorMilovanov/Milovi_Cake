@@ -1,6 +1,11 @@
 (function () {
   'use strict';
 
+  // IMG_BASE приходит из инлайн-скрипта страницы (`var IMG_BASE = ...` → свойство window).
+  // Локальный фолбэк гарантирует, что корзина, калькулятор и лайтбокс не упадут
+  // с ReferenceError, если на новой странице инлайн-строку забудут.
+  var IMG_BASE = (typeof window.IMG_BASE === 'string' && window.IMG_BASE) ? window.IMG_BASE : 'img';
+
 /* ═══════════════════════════════════════════════════════
    MILOVI CAKE r18 — Общий JavaScript
    ═══════════════════════════════════════════════════════ */
@@ -173,7 +178,6 @@ function setCartItemDessertType(cartKey, type) {
 }
 window.setCartItemDessertType = setCartItemDessertType;
 
-
 const slideTimers = {};
 const sliderCurrentIdx = {};
 
@@ -329,9 +333,6 @@ function renderCatalog() {
   observeReveal();
   initPriceGlowObserver();
 }
-
-
-
 
 function sliderStep(pid, dir) {
   const wrap = document.getElementById('slider-' + pid);
@@ -554,7 +555,6 @@ function loadCartFromStorage() {
     saveCartToStorage();
   } catch(e) {}
 }
-
 
 // ── Confetti ──
 function confettiBurst(x, y) {
@@ -938,7 +938,7 @@ function buildTG(e) {
   if (btn) btn.classList.add('loading');
   /* r29: bug #17 — clipboard fallback */
   (function(text){ try { navigator.clipboard.writeText(text).then(function(){ showToast("Скопировано! Вставьте в чат Telegram (Ctrl+V)"); }).catch(function(){ var ta=document.createElement("textarea"); ta.value=text; ta.style.cssText="position:fixed;left:-9999px"; document.body.appendChild(ta); ta.select(); try{document.execCommand("copy");showToast("Скопировано! Вставьте в чат Telegram")}catch(e){showToast("Не удалось скопировать — выделите и скопируйте текст вручную")} document.body.removeChild(ta); }); } catch(e){ showToast("Не удалось скопировать текст"); } })(msg);
-  const handoff = window.open('https://t.me/MiloviCake', '_blank');
+  const handoff = window.open('https://t.me/milovi_cake', '_blank');
   if (handoff && window.MiloviConsent) window.MiloviConsent.leadHandoff('telegram', 'cart');
   if (btn) btn.classList.remove('loading');
 }
@@ -1862,7 +1862,6 @@ function initApp() {
 
 if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initApp); } else { initApp(); }
 
-
 // ── SCROLL HANDLER ──
 const _scrollEl = document.getElementById('scroll-progress');
 const backToTopEl = document.getElementById('backToTop');
@@ -2336,8 +2335,6 @@ function updateCalc() {
   if (collapsedPrice) collapsedPrice.textContent = prefix + total.toLocaleString('ru') + ' ₽';
   const calcNoteEl = document.getElementById('calcNote');
   if (calcNoteEl) calcNoteEl.textContent = noteText;
-  const badge = document.getElementById('calcApproxBadge');
-  if (badge) badge.classList.toggle('visible', isApprox);
   const summaryEl = document.getElementById('calcSummary');
   if (summaryEl) {
     const chipSvg = (inner) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${inner}</svg>`;
@@ -2365,33 +2362,6 @@ function updateCalc() {
   }
 }
 
-// ── Legacy reviews carousel ──
-(function initLegacyReviewsCarousel() {
-  const legacyTrack = document.getElementById('reviewsTrack');
-  if (!legacyTrack) return;
-  let currentReview = 0;
-  function goReview(idx) {
-    const slides = legacyTrack.querySelectorAll('.review-slide'), dots = document.querySelectorAll('.rev-dot');
-    if (!slides.length || !dots.length) return;
-    if (slides[currentReview]) slides[currentReview].classList.remove('active');
-    if (dots[currentReview]) dots[currentReview].classList.remove('rev-dot-active');
-    currentReview = (idx + slides.length) % slides.length;
-    if (slides[currentReview]) slides[currentReview].classList.add('active');
-    if (dots[currentReview]) dots[currentReview].classList.add('rev-dot-active');
-  }
-  function shiftReview(dir) { goReview(currentReview + dir); }
-  let reviewAutoplay = null, reviewPaused = false;
-  function startReviewAutoplay() { if (reviewAutoplay) clearInterval(reviewAutoplay); reviewAutoplay = setInterval(() => { if (!reviewPaused && !document.hidden) shiftReview(1); }, 5000); }
-  function stopReviewAutoplay() { if (reviewAutoplay) { clearInterval(reviewAutoplay); reviewAutoplay = null; } }
-  startReviewAutoplay();
-  const reviewsCarousel = document.querySelector('.reviews-carousel');
-  if (reviewsCarousel) { reviewsCarousel.addEventListener('mouseenter', () => { reviewPaused = true; }); reviewsCarousel.addEventListener('mouseleave', () => { reviewPaused = false; }); }
-  document.addEventListener('visibilitychange', () => { if (document.hidden) stopReviewAutoplay(); else startReviewAutoplay(); });
-  let touchStartX = 0;
-  legacyTrack.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
-  legacyTrack.addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - touchStartX; if (Math.abs(dx) > 40) shiftReview(dx < 0 ? 1 : -1); }, { passive: true });
-})();
-
 let bentoToastTimer = null;
 function showBentoWeightToast(text) {
   if (window.matchMedia('(hover: hover)').matches) return;
@@ -2404,7 +2374,6 @@ function showBentoWeightToast(text) {
 }
 
 // ── Яндекс.Метрика ──
-
 
 // ── Cookie banner ──
 // ── Privacy modal ──
@@ -2952,7 +2921,6 @@ if (scField && trackEl && dotsEl && stageEl) {
   let tsX=0, tsY=0;
   if (trackEl) { trackEl.addEventListener('touchstart', e=>{ tsX=e.touches[0].clientX; tsY=e.touches[0].clientY; },{passive:true}); trackEl.addEventListener('touchend', e=>{ const dx=e.changedTouches[0].clientX-tsX, dy=e.changedTouches[0].clientY-tsY; if(Math.abs(dx)>Math.abs(dy)*1.4 && Math.abs(dx)>40){ if (!_goToBusy) goTo(dx<0 ? cur+1 : cur-1); } }); }
 
-  function getStageCenter(){ if (!stageEl) return { x:0, y:0 }; const r=stageEl.getBoundingClientRect(); return { x: r.left+r.width/2, y: r.top+r.height/2 }; }
   let sectionSnapH = 0;
   function snapSectionHeight(){ const el = document.getElementById('reviews'); sectionSnapH = el ? el.offsetHeight : 0; }
   let _snapResizeTimer = null;

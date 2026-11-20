@@ -247,6 +247,10 @@ def render_city(template, p):
         '{{districts}}':           p.get('districts', ''),
         '{{local_landmark}}':      p.get('local_landmark', ''),
         '{{local_flavor_text}}':   p.get('local_flavor_text', ''),
+        '{{story_h2}}':            p.get('story_h2', ''),
+        '{{story_p1}}':            p.get('story_p1', ''),
+        '{{story_p2}}':            p.get('story_p2', ''),
+        '{{story_p3}}':            p.get('story_p3', ''),
         '{{faq_q1}}':              p.get('faq_q1', ''),
         '{{faq_a1}}':              p.get('faq_a1', ''),
         '{{faq_q2}}':              p.get('faq_q2', ''),
@@ -269,7 +273,8 @@ def main():
     # ── r34: bug #34 — CSV structure validation ──
     with open(CSV_PATH, encoding='utf-8') as vf:
         vreader = csv.DictReader(vf)
-        required_cols = ['slug', 'title', 'meta_desc', 'h1_city', 'hero_p', 'delivery_price', 'lastmod', 'ld_area_type']
+        required_cols = ['slug', 'title', 'meta_desc', 'h1_city', 'hero_p', 'delivery_price', 'lastmod', 'ld_area_type',
+                     'story_h2', 'story_p1', 'story_p2', 'story_p3']
         for col in required_cols:
             if col not in vreader.fieldnames:
                 print(f'ОШИБКА: столбец "{col}" отсутствует в CSV')
