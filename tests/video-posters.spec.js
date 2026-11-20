@@ -640,6 +640,16 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
   });
 
   test('gallery can close an active video and reopen without CDN', async ({ page }) => {
+
+    /* Контракт этого теста — про лайтбокс и его медиа, а не про движение.
+       Без reduce сетка из 44 карточек одновременно декодирует до трёх видео
+       (MAX_PLAYING), и на WebKit в CI главный поток не успевает отдать два
+       кадра подряд: Playwright навсегда остаётся в «waiting for element to be
+       visible, enabled and stable» на первом же клике по карточке (реальный
+       лог прогона 44820166175). С reduce IntersectionObserver сетки видео не
+       запускает (js/gallery/main.js:281), лайтбокс по-прежнему вызывает play()
+       сам — проверяемые утверждения не меняются. */
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     const errors = [];
     const diagnostic = { crashed: false };
     const imageRequests = new Map();
@@ -690,6 +700,16 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
   });
 
   test('gallery media, caption and controls do not overlap without CDN', async ({ page }) => {
+
+    /* Контракт этого теста — про лайтбокс и его медиа, а не про движение.
+       Без reduce сетка из 44 карточек одновременно декодирует до трёх видео
+       (MAX_PLAYING), и на WebKit в CI главный поток не успевает отдать два
+       кадра подряд: Playwright навсегда остаётся в «waiting for element to be
+       visible, enabled and stable» на первом же клике по карточке (реальный
+       лог прогона 44820166175). С reduce IntersectionObserver сетки видео не
+       запускает (js/gallery/main.js:281), лайтбокс по-прежнему вызывает play()
+       сам — проверяемые утверждения не меняются. */
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     test.setTimeout(90_000);
     await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
     for (const viewport of [
@@ -877,6 +897,16 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
   });
 
   test('gallery filter keeps its position and opens a photo without a competing scroll', async ({ page }) => {
+
+    /* Контракт этого теста — про лайтбокс и его медиа, а не про движение.
+       Без reduce сетка из 44 карточек одновременно декодирует до трёх видео
+       (MAX_PLAYING), и на WebKit в CI главный поток не успевает отдать два
+       кадра подряд: Playwright навсегда остаётся в «waiting for element to be
+       visible, enabled and stable» на первом же клике по карточке (реальный
+       лог прогона 44820166175). С reduce IntersectionObserver сетки видео не
+       запускает (js/gallery/main.js:281), лайтбокс по-прежнему вызывает play()
+       сам — проверяемые утверждения не меняются. */
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
     await page.goto('/gallery/', { waitUntil: 'load' });
     await page.locator('.gx-header').evaluate((header) => Promise.all(header.getAnimations().map((animation) => animation.finished)));
@@ -896,6 +926,16 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
   });
 
   test('photo-only gallery can repeatedly open and close without CDN', async ({ page }, testInfo) => {
+
+    /* Контракт этого теста — про лайтбокс и его медиа, а не про движение.
+       Без reduce сетка из 44 карточек одновременно декодирует до трёх видео
+       (MAX_PLAYING), и на WebKit в CI главный поток не успевает отдать два
+       кадра подряд: Playwright навсегда остаётся в «waiting for element to be
+       visible, enabled and stable» на первом же клике по карточке (реальный
+       лог прогона 44820166175). С reduce IntersectionObserver сетки видео не
+       запускает (js/gallery/main.js:281), лайтбокс по-прежнему вызывает play()
+       сам — проверяемые утверждения не меняются. */
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     const diagnostic = { crashed: false, errors: [] };
     if (testInfo.project.name.startsWith('firefox-')) {
       // Record trusted input and focus without changing dispatch or the assertion.
@@ -951,6 +991,16 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
   });
 
   test('gallery can reopen when video requests fail without CDN', async ({ page }) => {
+
+    /* Контракт этого теста — про лайтбокс и его медиа, а не про движение.
+       Без reduce сетка из 44 карточек одновременно декодирует до трёх видео
+       (MAX_PLAYING), и на WebKit в CI главный поток не успевает отдать два
+       кадра подряд: Playwright навсегда остаётся в «waiting for element to be
+       visible, enabled and stable» на первом же клике по карточке (реальный
+       лог прогона 44820166175). С reduce IntersectionObserver сетки видео не
+       запускает (js/gallery/main.js:281), лайтбокс по-прежнему вызывает play()
+       сам — проверяемые утверждения не меняются. */
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     const diagnostic = { crashed: false, blocked: 0, errors: [] };
     page.on('pageerror', (error) => diagnostic.errors.push(error.message));
     page.on('crash', () => { diagnostic.crashed = true; diagnostic.resources = browserCrashResources(); });
@@ -1101,6 +1151,16 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
   });
 
   test('a loaded script alone cannot replace the fallback when Swiper CSS fails', async ({ page }) => {
+
+    /* Контракт этого теста — про лайтбокс и его медиа, а не про движение.
+       Без reduce сетка из 44 карточек одновременно декодирует до трёх видео
+       (MAX_PLAYING), и на WebKit в CI главный поток не успевает отдать два
+       кадра подряд: Playwright навсегда остаётся в «waiting for element to be
+       visible, enabled and stable» на первом же клике по карточке (реальный
+       лог прогона 44820166175). С reduce IntersectionObserver сетки видео не
+       запускает (js/gallery/main.js:281), лайтбокс по-прежнему вызывает play()
+       сам — проверяемые утверждения не меняются. */
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     const galleryHtml = require('node:fs').readFileSync('gallery/index.html', 'utf8');
     await page.route('**/gallery/', (route) => route.fulfill({
       contentType: 'text/html; charset=utf-8',
@@ -1178,6 +1238,16 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
   });
 
   test('mobile fallback accepts a real browser touch swipe', async ({ page, browserName }, testInfo) => {
+
+    /* Контракт этого теста — про лайтбокс и его медиа, а не про движение.
+       Без reduce сетка из 44 карточек одновременно декодирует до трёх видео
+       (MAX_PLAYING), и на WebKit в CI главный поток не успевает отдать два
+       кадра подряд: Playwright навсегда остаётся в «waiting for element to be
+       visible, enabled and stable» на первом же клике по карточке (реальный
+       лог прогона 44820166175). С reduce IntersectionObserver сетки видео не
+       запускает (js/gallery/main.js:281), лайтбокс по-прежнему вызывает play()
+       сам — проверяемые утверждения не меняются. */
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     test.skip(browserName !== 'chromium' || testInfo.project.name !== 'chromium-mobile', 'Chromium touch input contract');
     await page.route('**/swiper-bundle.min.{js,css}', (route) => route.abort());
     await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
@@ -1289,6 +1359,10 @@ test.describe('catalog image fallback', () => {
 
 for (const mode of ['allowed','denied','unavailable']) {
   test('gallery wish-copy handoff preserves selected work and honest clipboard status ('+mode+')', async ({page}) => {
+
+    // Та же причина, что в блоке «gallery lightbox…»: без reduce сетка
+    // одновременно декодирует до трёх видео, и WebKit не отдаёт кадры под клик.
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.addInitScript(mode => {
       localStorage.setItem('milovi_analytics_consent_v1','denied');
       if (mode === 'unavailable') {
@@ -1339,6 +1413,10 @@ for (const mode of ['allowed','denied','unavailable']) {
 }
 
 test('gallery malformed fragment keeps card navigation functional', async ({page}) => {
+
+    // Та же причина, что в блоке «gallery lightbox…»: без reduce сетка
+    // одновременно декодирует до трёх видео, и WebKit не отдаёт кадры под клик.
+    await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.addInitScript(()=>localStorage.setItem('milovi_analytics_consent_v1','denied'));
   const errors=[];
   page.on('pageerror',e=>errors.push(String(e)));
@@ -1360,6 +1438,10 @@ test('gallery malformed fragment keeps card navigation functional', async ({page
 });
 
 test('gallery native video keyboard arrows do not navigate slides', async ({page}) => {
+
+    // Та же причина, что в блоке «gallery lightbox…»: без reduce сетка
+    // одновременно декодирует до трёх видео, и WebKit не отдаёт кадры под клик.
+    await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.addInitScript(()=>localStorage.setItem('milovi_analytics_consent_v1','denied'));
   await page.goto('/gallery/',{waitUntil:'domcontentloaded'});
   const item=page.locator('#galleryGrid [data-id^="v"]').first();
