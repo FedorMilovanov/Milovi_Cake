@@ -546,21 +546,63 @@ require(
     'built suburb page lost the preferred mobile AVIF hero preload',
 )
 
-# Meringue hero picture renders AVIF first; the preload must match it instead of
-# fetching the WebP fallback that AVIF-capable browsers never display.
+# Meringue hero: арт-дирекшн под рамку + preload, повторяющий srcset один-в-один.
+# Раньше здесь стоял портретный кадр 1024×1536 (117 660 Б) на слот, который
+# object-fit:cover срезал до полосы 1.82:1 — телефон возил две трети лишних
+# пикселей. Теперь hero режется под рамку и грузится по srcset: 50 852 Б на
+# Pixel 7 вместо 117 660 Б. Preload обязан совпадать с <picture> через
+# imagesrcset/imagesizes, иначе браузер скачивает два файла.
 meringue = read('meringue-roll/index.html')
 require(
-    '<link rel="preload" as="image" type="image/avif" href="../img/meringue_roll.avif" fetchpriority="high" />' in meringue,
-    'meringue preferred AVIF hero preload missing',
+    '<link rel="preload" as="image" type="image/avif" media="(max-width: 1024px)"' in meringue
+    and 'imagesrcset="../img/meringue_roll-hero-m.avif 820w, ../img/meringue_roll-hero-m2x.avif 1024w"'
+    in meringue
+    and 'imagesizes="100vw"' in meringue,
+    'meringue mobile AVIF hero preload (imagesrcset/imagesizes) missing',
+)
+require(
+    '<link rel="preload" as="image" type="image/avif" media="(min-width: 1025px)"' in meringue
+    and 'imagesrcset="../img/meringue_roll-hero-d.avif 760w, ../img/meringue_roll-hero-d2x.avif 1024w"'
+    in meringue
+    and 'imagesizes="50vw"' in meringue,
+    'meringue desktop AVIF hero preload (imagesrcset/imagesizes) missing',
+)
+require(
+    'href="../img/meringue_roll.avif"' not in meringue,
+    'meringue preload regressed to the portrait 1024×1536 original',
 )
 require(
     '<link rel="preload" as="image" href="../img/meringue_roll.webp"' not in meringue,
     'meringue duplicate WebP hero preload returned',
 )
 require(
-    '<source type="image/avif" srcset="../img/meringue_roll.avif">' in meringue
-    and '<img src="../img/meringue_roll.webp"' in meringue,
-    'meringue AVIF picture source or WebP fallback drifted',
+    '<source media="(max-width: 1024px)" type="image/avif"' in meringue
+    and '<source media="(min-width: 1025px)" type="image/avif"' in meringue,
+    'meringue hero art direction (two media sources) drifted',
 )
+require(
+    'srcset="../img/meringue_roll.avif"' not in meringue,
+    'meringue hero shipped the portrait original again',
+)
+require(
+    '<img src="../img/meringue_roll.webp"' in meringue
+    and 'fetchpriority="high"' in meringue,
+    'meringue WebP fallback or hero priority drifted',
+)
+
+# Контракт адаптивных картинок на /meringue-roll/: каждый <source> обязан нести
+# и srcset, и sizes — иначе браузер берёт первый кандидат (1024w) и снова тянет
+# тяжёлый кадр в маленький слот. 11 <picture> = hero + 5 галерейных + 2 сплита
+# + 3 декора.
+import re as _re
+meringue_pictures = _re.findall(r'<picture>.*?</picture>', meringue, _re.S)
+require(len(meringue_pictures) == 11, f'meringue pictures: {len(meringue_pictures)}, ожидалось 11')
+for _index, _block in enumerate(meringue_pictures):
+    _sources = _re.findall(r'<source[^>]*>', _block)
+    require(_sources, f'meringue picture #{_index}: нет <source type="image/avif">')
+    for _source in _sources:
+        require('srcset=' in _source and 'sizes=' in _source,
+                f'meringue picture #{_index}: <source> без srcset/sizes')
+    require(_re.search(r'<img [^>]*>', _block), f'meringue picture #{_index}: нет <img>')
 
 print('Lighthouse root-cause regression contract OK')
