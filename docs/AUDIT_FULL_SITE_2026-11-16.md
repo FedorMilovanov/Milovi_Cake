@@ -341,8 +341,8 @@ npx linkinator http://127.0.0.1:4199/ --recurse --skip "^https?://(?!127\.0\.0\.
 
 | # | Пункт | Итог | Как закрыто |
 |---|---|---|---|
-| 1 | P0 Telegram-канал вместо чата | ✅ | Канон — личный аккаунт `https://t.me/milovi_cake` (есть кнопка «Send Message»). Заменено в 31 HTML, `js/main.js` (`buildTG`, строка 941) и трёх Playwright-спеках. Новый тест `tests/test_messenger_contract.py::test_single_canonical_telegram_chat` запрещает любой другой `t.me/*` на страницах; `tests/test_wedding_contract.py` теперь берёт канон прямо из `js/main.js`, чтобы свадебный бриф не разъезжался с сайтом |
-| 2 | P1 три живых адреса Telegram | ✅ | Остался один — см. п.1 |
+| 1 | P0 Telegram-канал вместо чата | ✅ | Все точки «написать» переведены на личный аккаунт `https://t.me/milovi_cake` (там есть «Send Message»): `#btnTG` (16 страниц), hero-кнопка, бар заказа, мобильное меню, контакты в подвале, CTA. Канал `https://t.me/MiloviCake` остался там, где он уместен, — блок «Мы в соцсетях» (16), иконки соцсетей в подвале (17) и `sameAs` в JSON-LD (28). Тест `tests/test_messenger_contract.py::test_telegram_uses_channel_for_presence_and_chat_for_contact` фиксирует это разделение ролей и запрещает третьи адреса; `tests/test_wedding_contract.py` берёт адрес из `js/main.js`, чтобы свадебный бриф не разъезжался с сайтом |
+| 2 | P1 три живых адреса Telegram | ✅ | Осталось два адреса с разными ролями (личный чат — действие, канал — присутствие), `t.me/+79119038886` удалён полностью. До волны роли были перепутаны: кнопка заказа вела в канал, а контакты в подвале — в канал вместо чата |
 | 3 | P1 `og:image` в webp | ✅ | 7 новых JPEG 1200×630 (`img/og-*.jpg`, 38–128 КБ) для `bento-torty`, `detskie-torty`, `gallery`, `meringue-roll`, `o-konditere`, `svadebnye-torty`, `tort-na-den-rozhdeniya`; `og:image:type/width/height/alt` на всех 9 страницах с og-блоком; `404.html` получил полный og/twitter-блок, `call/` — размеры и alt |
 | 4 | P1 14 почти одинаковых городов | ✅ | В `prigorody/_cities.csv` добавлены `story_h2`, `story_p1..p3` — 2 257 слов уникального текста (141–172 слова на город), новая секция `#story` в шаблоне; с городских страниц убран блок «Почему выбирают нас», дословно дублировавший главную. Схожесть: средний Jaccard 5-грамм **0.693 → 0.581**, максимум 0.72 → **0.604**. Остаток совпадения — интерфейс (калькулятор, корзина, начинки, контакты, навигация), а не контент. Гард: `scripts/check_prigorody_uniqueness.py` (порог средней 0.62 / пары 0.68 / ≥120 слов городского текста) |
 | 5 | P1 устаревший `lastmod` | ✅ | `scripts/sync_sitemap_lastmod.py` + состояние `data/sitemap-lastmod.json`: дата пересчитывается по sha256 контента страницы (ревизии `?v=` из хэша исключены, чтобы поднятие версии CSS не выглядело правкой текста), городские даты синхронно пишутся в `_cities.csv`. Режим `--check` в `qa`/`audit:all`, 29/29 URL совпадают |
@@ -364,7 +364,7 @@ npx linkinator http://127.0.0.1:4199/ --recurse --skip "^https?://(?!127\.0\.0\.
 | `scripts/check_prigorody_uniqueness.py` | деградацию уникальности городских страниц |
 | `scripts/sync_sitemap_lastmod.py --check` | рассинхрон `lastmod` с контентом |
 | `scripts/build_video_sitemap.py --check` | `video:duration`/`publication_date` в видео-карте |
-| `tests/test_messenger_contract.py::test_single_canonical_telegram_chat` | возврат второго адреса Telegram |
+| `tests/test_messenger_contract.py::test_telegram_uses_channel_for_presence_and_chat_for_contact` | подмену ролей Telegram: чат в кнопках связи, канал в соцблоках и `sameAs`, отсутствие третьих адресов |
 
 ### Проверки после волны
 
