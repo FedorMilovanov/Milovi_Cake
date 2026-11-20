@@ -9,14 +9,6 @@
 }
 
 
-.mobile-sticky-cta,
-#mobileStickyWa {
-  display: none !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-}
-
-
 
 
 
@@ -60,12 +52,6 @@ h3, h4 {
 .review-text {
   text-shadow: none;
   font-weight: 500;
-}
-
-
-.mobile-sticky-cta,
-#mobileStickyWa {
-  display: none !important;
 }
 
 
@@ -1229,7 +1215,7 @@ button[disabled] {
 }
 
 
-@media print {.site-header, #scroll-progress, .mc-nav, #mcNav, .floating-cta, .mobile-sticky-cta, .calc-right-col, .cookie-banner, .lightbox, #lightbox, #fillToast, .fill-mobile-popup, #fillPopup, .gx-cursor{
+@media print {.site-header, #scroll-progress, .mc-nav, #mcNav, .floating-cta, .calc-right-col, .cookie-banner, .lightbox, #lightbox, #fillToast, .fill-mobile-popup, #fillPopup, .gx-cursor{
     display: none !important;
   }
   body { background: #fff !important; color: #000 !important; }

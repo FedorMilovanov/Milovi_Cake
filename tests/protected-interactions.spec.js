@@ -1031,8 +1031,12 @@ test('catalog slider dots retain 24px hit boxes and activate their chosen slide'
     await page.setViewportSize({width,height:900});
     await expect(dots.nth(1)).toBeVisible();
     const rect=await dots.nth(1).boundingBox();
-    expect(rect.width).toBeGreaterThanOrEqual(24);
-    expect(rect.height).toBeGreaterThanOrEqual(24);
+    // Firefox отдаёт дробную геометрию: точка ровно 24×24 px приходит как
+    // 23.99999237060547 из-за округления до device-пикселей. Допуск 0.01 px
+    // отсекает этот артефакт замера, но не пропускает 23 px и меньше.
+    const minHit = 24 - 0.01;
+    expect(rect.width).toBeGreaterThanOrEqual(minHit);
+    expect(rect.height).toBeGreaterThanOrEqual(minHit);
     const paint=await dots.nth(1).evaluate(e=>getComputedStyle(e,'::before').height);
     expect(parseFloat(paint)).toBe(6);
     await dots.nth(1).click();
