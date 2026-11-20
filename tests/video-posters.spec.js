@@ -107,8 +107,17 @@ const swiperCss = '.swiper-wrapper{display:flex;width:100%;height:100%}.swiper-s
 // хэш в отдаваемом HTML на sha384 самого stub: браузер по-прежнему проверяет
 // целостность, но проверяет её против того, что тест действительно отдал.
 const swiperStubSri = `sha384-${require('node:crypto').createHash('sha384').update(swiperStub).digest('base64')}`;
-function withStubSri(html, sri = swiperStubSri) {
-  const replaced = html.replace(/const SWIPER_SRI = '[^']+';/, `const SWIPER_SRI = '${sri}';`);
+const swiperCssSri = `sha384-${require('node:crypto').createHash('sha384').update(swiperCss).digest('base64')}`;
+// Меняем оба хэша на хэши того, что тест реально отдаёт: JS-константу лоадера и
+// integrity CSS-ссылки (она же в <noscript>). Слайдер инициализируется только
+// при загруженном CSS (`css.sheet`), поэтому без этого браузер отбрасывал CSS
+// по SRI и инициализация не наступала.
+function withStubIntegrity(html) {
+  const withScript = html.replace(/const SWIPER_SRI = '[^']+';/, `const SWIPER_SRI = '${swiperStubSri}';`);
+  const replaced = withScript.replace(
+    /(swiper-bundle\.min\.css"\s+integrity=")sha384-[^"]+(")/g,
+    `$1${swiperCssSri}$2`,
+  );
   expect(replaced).not.toBe(html);
   return replaced;
 }
@@ -990,7 +999,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     const server = http.createServer((req, res) => {
       if (req.url === '/gallery/') {
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
-          .end(withStubSri(html.replace(src, '/delayed-swiper.js')));
+          .end(withStubIntegrity(html.replace(src, '/delayed-swiper.js')));
       } else if (req.url === '/delayed-swiper.js') {
         response = res;
         markRequested();
@@ -1035,7 +1044,11 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
       }
     };
     try {
-      await page.route('**/swiper-bundle.min.css', (route) => route.fulfill({ contentType: 'text/css', body: swiperCss }));
+      await page.route('**/swiper-bundle.min.css', (route) => route.fulfill({
+        contentType: 'text/css',
+        headers: { 'Access-Control-Allow-Origin': '*' },
+        body: swiperCss,
+      }));
       await page.route('https://fonts.googleapis.com/**', (route) => route.abort());
       await page.goto(`http://127.0.0.1:${server.address().port}/gallery/`, { waitUntil: 'load' });
       await page.locator('.mc-consent-button--deny').click();
@@ -1091,7 +1104,7 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     const galleryHtml = require('node:fs').readFileSync('gallery/index.html', 'utf8');
     await page.route('**/gallery/', (route) => route.fulfill({
       contentType: 'text/html; charset=utf-8',
-      body: withStubSri(galleryHtml),
+      body: withStubIntegrity(galleryHtml),
     }));
     await page.route('**/swiper-bundle.min.css', (route) => route.abort());
     await page.route('**/swiper-bundle.min.js', (route) => route.fulfill({
