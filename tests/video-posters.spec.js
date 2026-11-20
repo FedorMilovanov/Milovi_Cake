@@ -1107,33 +1107,6 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     await expect(page.locator('#lbCounter')).toHaveText('02 / 44');
   });
 
-  test('tampered Swiper bundle is rejected by integrity and the fallback keeps working', async ({ page }) => {
-    // Обратный контроль к подмене CDN: хэш в странице НЕ переписывается, а
-    // подменённый бандл отличается от него на один байт. Браузер обязан
-    // отбросить скрипт: глобали нет, побочный эффект не исполнился, скрипт
-    // удалён обработчиком ошибки, а галерея продолжает работать на фолбэке.
-    const tampered = `${swiperStub}\nwindow.__swiperTampered = true;`;
-    await page.route('**/swiper-bundle.min.js', (route) => route.fulfill({
-      contentType: 'application/javascript',
-      headers: { 'Access-Control-Allow-Origin': '*' },
-      body: tampered,
-    }));
-    await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
-    await page.locator('#galleryGrid [data-id="p01"]').click();
-    await expect(page.locator('#lbRoot')).toHaveCount(1);
-    await expect(page.locator('#lbCounter')).toHaveText('01 / 44');
-    await expect.poll(() => page.evaluate(() => ({
-      swiper: typeof window.Swiper,
-      tampered: '__swiperTampered' in window,
-      script: !!document.querySelector('script[data-gallery-swiper]'),
-    })), { message: 'SRI обязан отбросить подменённый бандл' }).toEqual({
-      swiper: 'undefined',
-      tampered: false,
-      script: false,
-    });
-    await page.locator('#lbNext').click();
-    await expect(page.locator('#lbCounter')).toHaveText('02 / 44');
-  });
 
   test('mobile lightbox respects safe areas and touch-scrolls enlarged captions', async ({ page, browserName }, testInfo) => {
     test.skip(browserName !== 'chromium' || testInfo.project.name !== 'chromium-mobile', 'Chromium safe-area and touch input contract');
@@ -1204,6 +1177,41 @@ test.describe('gallery lightbox with missing or late CDN assets', () => {
     await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
     await expect(page.locator('#lbCounter')).toHaveText('02 / 44');
     await client.detach();
+  });
+});
+
+// Контроль целостности вынесен из describe про подмену CDN: в кросс-движковом
+// lane он не нужен, а в chromium-прогонах выполняется дважды (qa и deep-polish).
+test.describe('swiper integrity metadata', () => {
+  // sw.js перехватывает навигацию: без этого page.route не увидит запрос бандла.
+  test.use({ serviceWorkers: 'block' });
+
+  test('tampered Swiper bundle is rejected by integrity and the fallback keeps working', async ({ page }) => {
+    // Обратный контроль к подмене CDN: хэш в странице НЕ переписывается, а
+    // подменённый бандл отличается от него на один байт. Браузер обязан
+    // отбросить скрипт: глобали нет, побочный эффект не исполнился, скрипт
+    // удалён обработчиком ошибки, а галерея продолжает работать на фолбэке.
+    const tampered = `${swiperStub}\nwindow.__swiperTampered = true;`;
+    await page.route('**/swiper-bundle.min.js', (route) => route.fulfill({
+      contentType: 'application/javascript',
+      headers: { 'Access-Control-Allow-Origin': '*' },
+      body: tampered,
+    }));
+    await page.goto('/gallery/', { waitUntil: 'domcontentloaded' });
+    await page.locator('#galleryGrid [data-id="p01"]').click();
+    await expect(page.locator('#lbRoot')).toHaveCount(1);
+    await expect(page.locator('#lbCounter')).toHaveText('01 / 44');
+    await expect.poll(() => page.evaluate(() => ({
+      swiper: typeof window.Swiper,
+      tampered: '__swiperTampered' in window,
+      script: !!document.querySelector('script[data-gallery-swiper]'),
+    })), { message: 'SRI обязан отбросить подменённый бандл' }).toEqual({
+      swiper: 'undefined',
+      tampered: false,
+      script: false,
+    });
+    await page.locator('#lbNext').click();
+    await expect(page.locator('#lbCounter')).toHaveText('02 / 44');
   });
 });
 
