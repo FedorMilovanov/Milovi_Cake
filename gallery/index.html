@@ -108,12 +108,16 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/jost-cyrillic-wght-normal.woff2" />
 <link rel="stylesheet" href="/css/fonts.css?v=20261102r01" />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11.2.10/swiper-bundle.min.css" media="print" onload="this.onload=null;this.media='all'" />
-  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11.2.10/swiper-bundle.min.css" /></noscript>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11.2.10/swiper-bundle.min.css" integrity="sha384-gAPqlBuTCdtVcYt9ocMOYWrnBZ4XSL6q+4eXqwNycOr4iFczhNKtnYhF3NEXJM51" crossorigin="anonymous" media="print" onload="this.onload=null;this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11.2.10/swiper-bundle.min.css" integrity="sha384-gAPqlBuTCdtVcYt9ocMOYWrnBZ4XSL6q+4eXqwNycOr4iFczhNKtnYhF3NEXJM51" crossorigin="anonymous" /></noscript>
   <script id="gallery-swiper-interaction-loader">
   (function () {
     'use strict';
     const SWIPER_SRC = 'https://cdn.jsdelivr.net/npm/swiper@11.2.10/swiper-bundle.min.js';
+    // SRI привязан к точной сборке из npm-тарбола 11.2.10 (jsdelivr отдаёт
+    // те же байты). Без integrity закреплённая версия всё равно остаётся
+    // подменяемой на стороне CDN, поэтому атрибуты обязательны.
+    const SWIPER_SRI = 'sha384-2UI1PfnXFjVMQ7/ZDEF70CR943oH3v6uZrFQGGqJYlvhh4g6z6uVktxYbOlAczav';
     let loading = false;
     function detach() {
       document.removeEventListener('pointerdown', maybeLoad, true);
@@ -127,6 +131,8 @@
       const script = document.createElement('script');
       script.src = SWIPER_SRC;
       script.async = true;
+      script.integrity = SWIPER_SRI;
+      script.crossOrigin = 'anonymous';
       script.dataset.gallerySwiper = 'interaction';
       script.addEventListener('load', detach, { once: true });
       script.addEventListener('error', function () {

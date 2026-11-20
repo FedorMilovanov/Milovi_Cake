@@ -46,10 +46,14 @@ def mp4_duration_seconds(path: Path) -> int:
     if at < 0:
         raise SystemExit(f"{path}: не найден атом mvhd")
     version = data[at + 4]
+    # `at` — первый байт типа «mvhd». Дальше: version(1) + flags(3), затем
+    # creation/modification по 4 (v0) или по 8 (v1) байт, и только потом
+    # timescale(4) и duration(4 у v0 / 8 у v1). Для v1 timescale начинается
+    # на at+24, а не на at+20: сдвиг на 4 байта давал «нулевой timescale».
     if version == 0:
         timescale, duration = struct.unpack(">II", data[at + 16 : at + 24])
     elif version == 1:
-        timescale, duration = struct.unpack(">IQ", data[at + 20 : at + 32])
+        timescale, duration = struct.unpack(">IQ", data[at + 24 : at + 36])
     else:
         raise SystemExit(f"{path}: неизвестная версия mvhd {version}")
     if not timescale:

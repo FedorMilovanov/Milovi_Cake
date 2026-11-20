@@ -249,8 +249,13 @@ require(
     'gallery regained a third-party font origin',
 )
 require(
-    f'href="{swiper_css}" media="print" onload="this.onload=null;this.media=\'all\'"' in gallery,
-    'gallery Swiper CSS returned to the critical render path',
+    re.search(
+        rf'href="{re.escape(swiper_css)}"(?=[^>]*\bintegrity="sha384-[^"]+")'
+        rf'(?=[^>]*\bcrossorigin="anonymous")'
+        rf'(?=[^>]*\bmedia="print")(?=[^>]*\bonload="this\.onload=null;this\.media=\'all\'")',
+        gallery,
+    ),
+    'gallery Swiper CSS returned to the critical render path or lost SRI',
 )
 # Локальный css/fonts.css грузится обычным stylesheet: noscript-дубль больше
 # не нужен, а его возврат означал бы, что кто-то снова сделал шрифты асинхронными.
@@ -259,8 +264,12 @@ require(
     'gallery font stylesheet became third-party again',
 )
 require(
-    f'<noscript><link rel="stylesheet" href="{swiper_css}" /></noscript>' in gallery,
-    'gallery Swiper noscript fallback missing',
+    re.search(
+        rf'<noscript><link rel="stylesheet" href="{re.escape(swiper_css)}"'
+        rf'(?=[^>]*\bintegrity="sha384-[^"]+")[^>]*></noscript>',
+        gallery,
+    ),
+    'gallery Swiper noscript fallback missing or without SRI',
 )
 require(f'<script src="{swiper_js}"' not in gallery, 'gallery Swiper JS returned to initial page load')
 require('id="gallery-swiper-interaction-loader"' in gallery, 'gallery inline Swiper interaction loader missing')
@@ -272,6 +281,12 @@ for event in ['pointerdown', 'focusin', 'click']:
         f'gallery Swiper loader lost {event} interaction trigger',
     )
 require('script.async = true;' in gallery, 'gallery Swiper interaction load is not asynchronous')
+require(
+    "const SWIPER_SRI = 'sha384-" in gallery
+    and 'script.integrity = SWIPER_SRI;' in gallery
+    and "script.crossOrigin = 'anonymous';" in gallery,
+    'gallery Swiper interaction loader lost integrity metadata',
+)
 require("script.addEventListener('error'" in gallery and 'loading = false;' in gallery, 'gallery Swiper loader cannot retry after CDN failure')
 require('/css/gallery/gallery-2026.css?v=20261120r07" />' in gallery, 'gallery critical local CSS became deferred or changed revision')
 require('/css/final-fixes.css?v=20261120r47" />' in gallery, 'gallery final critical CSS became deferred')
