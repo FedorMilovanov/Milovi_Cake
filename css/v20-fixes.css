@@ -556,9 +556,7 @@ body.mc-consent-open { overflow:hidden; }
 /* Mobile application shell: one persistent bottom navigation. */
 @media (max-width:768px) {
   #bottomNav,
-  #mrBottomNav,
-  .mobile-sticky-cta,
-  #mobileStickyWa { display:none !important; visibility:hidden !important; pointer-events:none !important; }
+  #mrBottomNav { display:none !important; visibility:hidden !important; pointer-events:none !important; }
   #mcNav.mc-nav,
   .mc-nav {
     display:flex !important;

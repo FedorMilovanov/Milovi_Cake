@@ -43,6 +43,7 @@
   <meta name="twitter:title" content="Меренговый рулет на заказ в СПб — 2 500 ₽ | Milovi Cake" />
   <meta name="twitter:description" content="Воздушная меренга, малина, крем-чиз. 1 100 г — 2 500 ₽. Доставка по СПб и ЛО." />
   <meta name="twitter:image" content="https://milovicake.ru/img/og-meringue-roll.jpg" />
+  <meta name="twitter:image:alt" content="Меренговый рулет с малиной и фисташками в фирменной коробке Milovi Cake" />
   <meta name="keywords" content="меренговый рулет на заказ, меренговый рулет СПб, меренговый рулет купить СПб, меренговый рулет с малиной, заказать меренговый рулет Санкт-Петербург" />
   <meta name="yandex-verification" content="9bde19424208d6ce" />
   <meta property="vk:image" content="https://milovicake.ru/img/meringue_roll.webp" />
@@ -163,7 +164,15 @@
   </script>
 
 <link rel="dns-prefetch" href="https://wa.me" />
-<link rel="preload" as="image" type="image/avif" href="../img/meringue_roll.avif" fetchpriority="high" />
+<!-- Preload повторяет srcset/sizes героя один-в-один (imagesrcset + imagesizes):
+       расхождение заставило бы браузер скачать два файла. href не задаём сознательно —
+       адрес выбирает тот же алгоритм srcset, что и у <picture>. -->
+<link rel="preload" as="image" type="image/avif" media="(max-width: 1024px)"
+      imagesrcset="../img/meringue_roll-hero-m.avif 820w, ../img/meringue_roll-hero-m2x.avif 1024w"
+      imagesizes="100vw" fetchpriority="high" />
+<link rel="preload" as="image" type="image/avif" media="(min-width: 1025px)"
+      imagesrcset="../img/meringue_roll-hero-d.avif 760w, ../img/meringue_roll-hero-d2x.avif 1024w"
+      imagesizes="50vw" fetchpriority="high" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/cormorant-garamond-cyrillic-wght-normal.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/jost-cyrillic-wght-normal.woff2" />
 <link rel="stylesheet" href="/css/fonts.css?v=20261102r01" />
@@ -1509,22 +1518,6 @@
        nav.js builds .mc-nav, not .bottom-nav — no element in this page uses .bottom-nav.
        These styles were parsed by the browser on every load without applying to anything. */
 
-    /* ─── MOBILE STICKY CTA ─── */
-    .mobile-sticky-cta {
-      display: none; position: fixed;
-      bottom: calc(76px + env(safe-area-inset-bottom)); right: 16px; z-index: 90;
-      background: #25D366; color: #fff; padding: 12px 20px; border-radius: 50px;
-      font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 500;
-      text-decoration: none; align-items: center; gap: 8px;
-      box-shadow: 0 4px 20px rgba(37,211,102,0.4);
-      opacity: 0; transform: translateY(20px);
-      transition: opacity 0.3s, transform 0.3s;
-      -webkit-tap-highlight-color: transparent;
-    }
-    @media (max-width: 768px) {
-      .mobile-sticky-cta { display: flex; }
-      .mobile-sticky-cta.visible { opacity: 1; transform: translateY(0); }
-    }
 
     /* ─── BACK TO TOP ─── */
     .back-top {
@@ -1689,8 +1682,10 @@
       .order-btns { flex-direction: column; align-items: center; }
       .order-btns a { width: 100%; max-width: 360px; justify-content: center; }
 
-      /* ── Back to top — выше bottom-nav ── */
-      .back-top { bottom: calc(76px + env(safe-area-inset-bottom)); right: 20px; }
+      /* ── Back to top — над нижним баром: та же геометрия, что у бара
+         (--mc-nav-total = зазор + высота бара + safe-area), поэтому кнопка
+         не разъезжается с баром на iPhone с home-indicator. ── */
+      .back-top { bottom: calc(var(--mc-nav-total) + 10px); right: 20px; }
 
       /* ── Style band текст ── */
       .style-band-quote { font-size: clamp(24px, 7vw, 40px); }
@@ -1847,9 +1842,9 @@
   }
   </script>
 
-  <link rel="stylesheet" href="/css/premium-overrides.css?v=20261116r39" />
+  <link rel="stylesheet" href="/css/premium-overrides.css?v=20261116r40" />
   <link rel="stylesheet" href="/css/v20-dark-and-fixes.css?v=20261120r28">
-  <link rel="stylesheet" href="/css/v20-fixes.css?v=20261120r33">
+  <link rel="stylesheet" href="/css/v20-fixes.css?v=20261120r34">
   <link rel="stylesheet" href="/css/final-fixes.css?v=20261120r47" />
 <style id="lp-theme-toggle-css">
 .lp-theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;min-width:38px;border-radius:50%;border:1px solid rgba(201,147,74,.3);background:rgba(255,255,255,.04);color:var(--gold,#c9934a);cursor:pointer;padding:0;flex-shrink:0;margin-left:auto;-webkit-tap-highlight-color:transparent;transition:border-color .2s,background .2s,transform .15s}
@@ -1951,12 +1946,6 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 <!-- ── SCROLL PROGRESS ── -->
 <div id="mrScrollProgress" style="position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,#c9934a,#d4a76a,#e8b87a);z-index:var(--z-nav,100);border-radius:0 2px 2px 0;transition:width 0.08s linear;box-shadow:0 0 8px rgba(201,147,74,0.5);pointer-events:none;"></div>
 
-<!-- ── MOBILE STICKY CTA ── -->
-<a href="https://wa.me/79119038886?text=Здравствуйте!%20Хочу%20заказать%20меренговый%20рулет" target="_blank" rel="noopener noreferrer" class="mobile-sticky-cta" id="mobileStickyWa" aria-label="Заказать меренговый рулет в WhatsApp" style="display:none;">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-  Заказать рулет
-</a>
-
 <header class="site-hdr" id="siteHdr">
   <a href="https://milovicake.ru/" class="hdr-logo">
     Milovi Cake
@@ -1973,9 +1962,19 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 <section class="hero" id="home">
   <!-- Photo side -->
   <div class="hero-photo">
-    <picture><source type="image/avif" srcset="../img/meringue_roll.avif"><img src="../img/meringue_roll.webp"
-         alt="Меренговый рулет с малиной от Milovi Cake — Санкт-Петербург"
-         fetchpriority="high" decoding="async" width="960" height="1080" /></picture>
+    <!-- Арт-дирекшн героя: ≤1024px рамка 100vw × 55vw (1.82:1), >1024px — 50vw × ~100vh (0.8:1).
+         Кадры испечены под рамку, поэтому телефон не качает портретный оригинал 1024×1536
+         (117 660 Б) ради полосы, которую всё равно срезал object-fit: cover. -->
+    <picture>
+      <source media="(max-width: 1024px)" type="image/avif"
+              srcset="../img/meringue_roll-hero-m.avif 820w, ../img/meringue_roll-hero-m2x.avif 1024w"
+              sizes="100vw">
+      <source media="(min-width: 1025px)" type="image/avif"
+              srcset="../img/meringue_roll-hero-d.avif 760w, ../img/meringue_roll-hero-d2x.avif 1024w"
+              sizes="50vw">
+      <img src="../img/meringue_roll.webp"
+           alt="Меренговый рулет с малиной от Milovi Cake — Санкт-Петербург"
+           fetchpriority="high" decoding="async" width="960" height="1080" /></picture>
     <div class="hero-photo-overlay"></div>
   </div>
 
@@ -2035,23 +2034,23 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 <!-- PHOTO GALLERY -->
 <div class="gallery-strip" id="gallery">
   <div class="gallery-item" data-src="../img/meringue_roll_2.webp">
-    <picture><source type="image/avif" srcset="../img/meringue_roll_2.avif"><img src="../img/meringue_roll_2.webp" alt="Меренговый рулет на заказ в СПб — срез, видна малина и крем чиз" loading="lazy" width="800" height="600"  decoding="async" /></picture>
+    <picture><source type="image/avif" srcset="../img/meringue_roll_2-sm.avif 480w, ../img/meringue_roll_2-md.avif 800w, ../img/meringue_roll_2-lg.avif 1024w" sizes="(max-width: 1024px) 100vw, 50vw"><img src="../img/meringue_roll_2.webp" srcset="../img/meringue_roll_2-sm.webp 480w, ../img/meringue_roll_2-md.webp 800w, ../img/meringue_roll_2-lg.webp 1024w" sizes="(max-width: 1024px) 100vw, 50vw" alt="Меренговый рулет на заказ в СПб — срез, видна малина и крем чиз" loading="lazy" width="800" height="600"  decoding="async" /></picture>
     <div class="gallery-item-overlay"></div>
   </div>
   <div class="gallery-item" data-src="../img/meringue_roll_3.webp">
-    <picture><source type="image/avif" srcset="../img/meringue_roll_3.avif"><img src="../img/meringue_roll_3.webp" alt="Воздушная меренга — текстура безе ручной работы, Milovi Cake" loading="lazy" width="800" height="600"  decoding="async" /></picture>
+    <picture><source type="image/avif" srcset="../img/meringue_roll_3-sm.avif 480w, ../img/meringue_roll_3-md.avif 800w, ../img/meringue_roll_3-lg.avif 1024w" sizes="(max-width: 1024px) 50vw, 25vw"><img src="../img/meringue_roll_3.webp" srcset="../img/meringue_roll_3-sm.webp 480w, ../img/meringue_roll_3-md.webp 800w, ../img/meringue_roll_3-lg.webp 1024w" sizes="(max-width: 1024px) 50vw, 25vw" alt="Воздушная меренга — текстура безе ручной работы, Milovi Cake" loading="lazy" width="800" height="600"  decoding="async" /></picture>
     <div class="gallery-item-overlay"></div>
   </div>
   <div class="gallery-item" data-src="../img/meringue_roll_5.webp">
-    <picture><source type="image/avif" srcset="../img/meringue_roll_5.avif"><img src="../img/meringue_roll_5.webp" alt="Меренговый рулет с фисташками и малиной — крупный план" loading="lazy" width="800" height="600"  decoding="async" /></picture>
+    <picture><source type="image/avif" srcset="../img/meringue_roll_5-sm.avif 480w, ../img/meringue_roll_5-md.avif 800w, ../img/meringue_roll_5-lg.avif 1024w" sizes="(max-width: 1024px) 50vw, 25vw"><img src="../img/meringue_roll_5.webp" srcset="../img/meringue_roll_5-sm.webp 480w, ../img/meringue_roll_5-md.webp 800w, ../img/meringue_roll_5-lg.webp 1024w" sizes="(max-width: 1024px) 50vw, 25vw" alt="Меренговый рулет с фисташками и малиной — крупный план" loading="lazy" width="800" height="600"  decoding="async" /></picture>
     <div class="gallery-item-overlay"></div>
   </div>
   <div class="gallery-item" data-src="../img/meringue_roll_4.webp">
-    <picture><source type="image/avif" srcset="../img/meringue_roll_4.avif"><img src="../img/meringue_roll_4.webp" alt="Меренговый рулет готов к подаче — авторский десерт на заказ в Петербурге" loading="lazy" width="800" height="600"  decoding="async" /></picture>
+    <picture><source type="image/avif" srcset="../img/meringue_roll_4-sm.avif 480w, ../img/meringue_roll_4-md.avif 800w, ../img/meringue_roll_4-lg.avif 1024w" sizes="(max-width: 1024px) 50vw, 25vw"><img src="../img/meringue_roll_4.webp" srcset="../img/meringue_roll_4-sm.webp 480w, ../img/meringue_roll_4-md.webp 800w, ../img/meringue_roll_4-lg.webp 1024w" sizes="(max-width: 1024px) 50vw, 25vw" alt="Меренговый рулет готов к подаче — авторский десерт на заказ в Петербурге" loading="lazy" width="800" height="600"  decoding="async" /></picture>
     <div class="gallery-item-overlay"></div>
   </div>
   <div class="gallery-item" data-src="../img/meringue_roll_6.webp">
-    <picture><source type="image/avif" srcset="../img/meringue_roll_6.avif"><img src="../img/meringue_roll_6.webp" alt="Меренговый рулет в фирменной подарочной упаковке Milovi Cake" loading="lazy" width="800" height="600"  decoding="async" /></picture>
+    <picture><source type="image/avif" srcset="../img/meringue_roll_6-sm.avif 480w, ../img/meringue_roll_6-md.avif 800w, ../img/meringue_roll_6-lg.avif 1024w" sizes="(max-width: 1024px) 50vw, 25vw"><img src="../img/meringue_roll_6.webp" srcset="../img/meringue_roll_6-sm.webp 480w, ../img/meringue_roll_6-md.webp 800w, ../img/meringue_roll_6-lg.webp 1024w" sizes="(max-width: 1024px) 50vw, 25vw" alt="Меренговый рулет в фирменной подарочной упаковке Milovi Cake" loading="lazy" width="800" height="600"  decoding="async" /></picture>
     <div class="gallery-item-overlay"></div>
   </div>
 </div>
@@ -2096,7 +2095,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     </div>
   </div>
   <div class="split-photo">
-    <picture><source type="image/avif" srcset="../img/meringue_roll_5.avif"><img src="../img/meringue_roll_5.webp" alt="Меренговый рулет — состав и текстура" loading="lazy" width="800" height="600"  decoding="async" /></picture>
+    <picture><source type="image/avif" srcset="../img/meringue_roll_5-sm.avif 480w, ../img/meringue_roll_5-md.avif 800w, ../img/meringue_roll_5-lg.avif 1024w" sizes="(max-width: 1024px) 100vw, 50vw"><img src="../img/meringue_roll_5.webp" srcset="../img/meringue_roll_5-sm.webp 480w, ../img/meringue_roll_5-md.webp 800w, ../img/meringue_roll_5-lg.webp 1024w" sizes="(max-width: 1024px) 100vw, 50vw" alt="Меренговый рулет — состав и текстура" loading="lazy" width="800" height="600"  decoding="async" /></picture>
     <div class="split-overlay"></div>
   </div>
 </div>
@@ -2118,12 +2117,12 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 <!-- SPLIT: DETAILS -->
 <div class="split">
   <div class="split-photo">
-    <picture><source type="image/avif" srcset="../img/meringue_roll_6.avif"><img src="../img/meringue_roll_6.webp" alt="Меренговый рулет в фирменной коробке" loading="lazy" width="800" height="600"  decoding="async" /></picture>
+    <picture><source type="image/avif" srcset="../img/meringue_roll_6-sm.avif 480w, ../img/meringue_roll_6-md.avif 800w, ../img/meringue_roll_6-lg.avif 1024w" sizes="(max-width: 1024px) 100vw, 50vw"><img src="../img/meringue_roll_6.webp" srcset="../img/meringue_roll_6-sm.webp 480w, ../img/meringue_roll_6-md.webp 800w, ../img/meringue_roll_6-lg.webp 1024w" sizes="(max-width: 1024px) 100vw, 50vw" alt="Меренговый рулет в фирменной коробке" loading="lazy" width="800" height="600"  decoding="async" /></picture>
     <div class="split-overlay"></div>
   </div>
   <div class="split-text split-text--light" style="position:relative;overflow:hidden;">
-    <picture><source type="image/avif" srcset="../img/meringue_rolls_cut.avif"><img class="roll-float" src="../img/meringue_rolls_cut.webp" alt="" aria-hidden="true" width="500" height="500"  decoding="async" /></picture>
-    <picture><source type="image/avif" srcset="../img/meringue_box_nobg.avif"><img class="box-float" src="../img/meringue_box_nobg.webp" alt="" aria-hidden="true" width="408" height="612"  decoding="async" /></picture>
+    <picture><source type="image/avif" srcset="../img/meringue_rolls_cut-sm.avif 400w, ../img/meringue_rolls_cut.avif 500w" sizes="(max-width: 1024px) 90vw, 28vw"><img class="roll-float" src="../img/meringue_rolls_cut.webp" srcset="../img/meringue_rolls_cut-sm.webp 400w, ../img/meringue_rolls_cut.webp 500w" sizes="(max-width: 1024px) 90vw, 28vw" alt="" aria-hidden="true" width="500" height="500"  decoding="async" /></picture>
+    <picture><source type="image/avif" srcset="../img/meringue_box_nobg-sm.avif 280w, ../img/meringue_box_nobg.avif 408w" sizes="(max-width: 1024px) 44vw, 26vw"><img class="box-float" src="../img/meringue_box_nobg.webp" srcset="../img/meringue_box_nobg-sm.webp 280w, ../img/meringue_box_nobg.webp 408w" sizes="(max-width: 1024px) 44vw, 26vw" alt="" aria-hidden="true" width="408" height="612"  decoding="async" /></picture>
     <span class="sec-label reveal" style="display:inline-block;transition:color 0.4s,letter-spacing 0.4s,text-shadow 0.4s;cursor:default;" onmouseenter="this.style.color='#e8b87a';this.style.letterSpacing='0.4em';this.style.textShadow='0 0 16px rgba(201,147,74,0.2)'" onmouseleave="this.style.color='';this.style.letterSpacing='';this.style.textShadow=''">Детали заказа</span>
     <h2 class="sec-title reveal rd1">
       <span class="ht-word ht-word-wide">Вес и цена</span><br><em class="ht-em">меренгового рулета</em>
@@ -2155,7 +2154,7 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
     </div>
     <!-- Коробка — только мобиль, под списком -->
     <div class="box-float-mobile-wrap">
-      <picture><source type="image/avif" srcset="../img/meringue_box_nobg.avif"><img class="box-float-mobile" src="../img/meringue_box_nobg.webp" alt="Фирменная коробка Milovi Cake" width="408" height="612"  decoding="async" /></picture>
+      <picture><source type="image/avif" srcset="../img/meringue_box_nobg-sm.avif 280w, ../img/meringue_box_nobg.avif 408w" sizes="140px"><img class="box-float-mobile" src="../img/meringue_box_nobg.webp" srcset="../img/meringue_box_nobg-sm.webp 280w, ../img/meringue_box_nobg.webp 408w" sizes="140px" alt="Фирменная коробка Milovi Cake" width="408" height="612"  decoding="async" /></picture>
     </div>
   </div>
 </div>
@@ -2502,36 +2501,20 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
   });
   setTimeout(() => document.getElementById('loader').classList.add('gone'), 4000);
 
-  // ── Progress bar + плавающие элементы (mobile only) ──
+  // ── Полоса прогресса чтения (mobile only) ──
   (function() {
-    var isMobile = window.matchMedia('(max-width: 768px)');
-    var mrCta  = document.getElementById('mobileStickyWa');
     var mrProg = document.getElementById('mrScrollProgress');
-
-    function initMobile(mq) {
-      /* Кнопку .mobile-sticky-cta сайт скрывает глобальным правилом «одна нижняя
-         навигация» (premium-overrides.css + v20-fixes.css, !important), так
-         что на экране её нет. Логика оставлена рабочей: включат CTA обратно —
-         поведение уже готово, чинить нечего. */
-      if (mrCta) mrCta.style.display = mq.matches ? '' : 'none';
-    }
-    initMobile(isMobile);
-    if (isMobile.addEventListener) isMobile.addEventListener('change', initMobile);
-    else isMobile.addListener(initMobile);
-
-    /* Прогресс и видимость CTA считаем и сразу на старте: после перезагрузки
-       на восстановленной позиции и при переходе по якорю (#faq, #order)
-       scroll-событие не приходит — полоса прогресса стояла на нуле, а
-       плавающая кнопка не появлялась, пока страницу не тронут. */
-    function syncFloating() {
-      var y = window.scrollY;
+    if (!mrProg) return;
+    /* Прогресс считаем и сразу на старте: после перезагрузки на восстановленной
+       позиции и при переходе по якорю (#faq, #order) scroll-событие не приходит —
+       полоса стояла на нуле, пока страницу не тронут. */
+    function syncProgress() {
       var total = document.body.scrollHeight - window.innerHeight;
-      if (mrProg) mrProg.style.width = (total > 0 ? (y / total * 100) : 0) + '%';
-      if (mrCta && isMobile.matches) mrCta.classList.toggle('visible', y > 300);
+      mrProg.style.width = (total > 0 ? (window.scrollY / total * 100) : 0) + '%';
     }
-    window.addEventListener('scroll', syncFloating, { passive: true });
-    window.addEventListener('resize', syncFloating, { passive: true });
-    syncFloating();
+    window.addEventListener('scroll', syncProgress, { passive: true });
+    window.addEventListener('resize', syncProgress, { passive: true });
+    syncProgress();
   })();
 
   // Header scroll
