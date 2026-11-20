@@ -444,7 +444,8 @@ test.describe('premium media blocks', () => {
     const video=clip.locator('video');
     await expect(video).toHaveAttribute('poster',poster);
     await expect(video).toHaveAttribute('preload','none');
-    await expect(video).toHaveAttribute('loading','lazy');
+    // `loading` у <video> нестандартен; отсрочку держат preload="none" и постер.
+    await expect(video).not.toHaveAttribute('loading', /lazy/);
     await expect(clip.locator('.wed-clip-controls button')).toHaveCount(2);
     expect(videoRequests).toHaveLength(0);
     await video.scrollIntoViewIfNeeded();
