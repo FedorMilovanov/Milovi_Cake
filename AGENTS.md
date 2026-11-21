@@ -402,6 +402,18 @@ grep -E "CACHE_NAME|\?v=" sw.js
 
 > **Главная боль владельца:** предыдущие агенты прогоняли десятки Playwright-тестов, отчитывались «61 passed», но в реальной мобильной версии оставались **очевидные баги, которые видно невооружённым глазом**: обрезанная кнопка «Добавить в корзину», цена наезжает на кнопку, полупрозрачная нижняя панель поверх текста, дубли элементов. **Так нельзя. Это проходит мимо носа, как верблюд.**
 
+### Arena Sandbox: Chromium для локального QA (если обычная установка недоступна)
+
+В ограниченной **Arena Sandbox** ранее проверен Chromium 153.0.8010.0 на Debian 12/x86_64 через `@sparticuz/chromium@153.0.0` и Playwright. Это **не** требование к обычной разработке или GitHub Actions.
+
+```bash
+npm install --prefix /tmp/arena-browser --no-audit --no-fund @sparticuz/chromium@153.0.0 playwright@1.64.1
+```
+
+Вызови `Chromium.executablePath()`; если не хватает системных NSS-библиотек, распакуй `@sparticuz/chromium/bin/al2023.tar.br` (Brotli → tar) в `/tmp/arena-browser/libs` и добавь `/tmp/arena-browser/libs/lib` в `LD_LIBRARY_PATH`, сохранив старое значение. В Playwright укажи полученный `executablePath`, `headless: true` и `args: ['--no-sandbox', '--disable-dev-shm-usage']`. Не копируй весь `Chromium.args` — там есть `--disable-web-security`. NSS-патчи и `LD_PRELOAD` в проверенной конфигурации не требовались.
+
+`/tmp` может не сохраниться: проверяй наличие браузера и запускай smoke-test. При заблокированном CDN не повторяй безрезультатный `playwright install`. Сетевые подмены делай адресно и фиксируй; Chromium не равен WebKit/Firefox или физическим устройствам. Это подсказка для восстановления среды, а не запрет на другие способы.
+
 ### 11.1 Почему Playwright их пропускал
 Стандартные проверки типа `expect(locator).toBeVisible()` или сравнение скриншотов с baseline ловят только **регрессии относительно предыдущего состояния**. Они НЕ ловят:
 - текст, который **не влезает** в кнопку и обрезается (`overflow` / `text-overflow`);
