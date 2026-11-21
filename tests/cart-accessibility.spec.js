@@ -555,8 +555,30 @@ for (const failure of ['QuotaExceededError', 'SecurityError']) {
 async function revealMobileAppBar(page) {
   if (await page.evaluate(() => window.innerWidth > 768)) return;
   if (!(await page.evaluate(() => document.body.classList.contains('mc-nav-veiled')))) return;
-  await page.evaluate(() => window.scrollTo(0, Math.max(520, Math.round(window.innerHeight * 0.8))));
-  await page.waitForFunction(() => !document.body.classList.contains('mc-nav-veiled'), null, { timeout: 15000 });
+  // domcontentloaded may precede the page's first layout, making scrollTo
+  // clamp to zero on a fresh reload; wait until the requested scroll is valid.
+  await page.waitForFunction(() => document.documentElement.scrollHeight > window.innerHeight + 520);
+  await page.evaluate(async () => {
+    // Global smooth scrolling can leave programmatic scrollTo mid-flight while
+    // the cart test is waiting for the nav state. Make this test's user-like
+    // reveal deterministic, then explicitly sync the nav's scroll observer.
+    document.documentElement.style.scrollBehavior = 'auto';
+    window.scrollTo(0, Math.max(520, Math.round(window.innerHeight * 0.8)));
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    if (typeof window._mcNavSync === 'function') window._mcNavSync();
+  });
+  try {
+    await page.waitForFunction(() => !document.body.classList.contains('mc-nav-veiled'), null, { timeout: 15000 });
+  } catch (error) {
+    const state = await page.evaluate(() => ({
+      scrollY: window.scrollY,
+      threshold: Math.min(Math.max(window.innerHeight * 0.5, 200), 480),
+      bodyClass: document.body.className,
+      bodyPosition: document.body.style.position,
+      navSync: typeof window._mcNavSync,
+    }));
+    throw new Error(`${error.message}; mobile-nav state: ${JSON.stringify(state)}`);
+  }
 }
 
 async function settleElement(page, selector) {
