@@ -2358,7 +2358,7 @@ function updateCalc() {
     else { const w = _calcWeight; const wStr = w % 1 === 0 ? w + ' кг' : w.toFixed(1) + ' кг'; const guests = Math.round(w / 0.2); chips.push({ icon: weightIcon, label: 'Вес', val: wStr + ' · ~' + guests + ' чел' }); }
     if (fillName) chips.push({ icon: fillIcon, label: 'Начинка', val: fillName });
     if (_cakeType !== 'bento' && decorName) chips.push({ icon: decorIcon, label: 'Декор', val: decorName });
-    summaryEl.innerHTML = chips.map(c => `<span class="calc-summary-chip"><span class="chip-icon">${c.icon}</span>${c.label}: <span class="chip-val">${c.val}</span></span>`).join('');
+    summaryEl.innerHTML = chips.map(c => `<span class="calc-summary-chip"><span class="chip-icon">${c.icon}</span><span class="chip-label">${c.label}: </span><span class="chip-val">${c.val}</span></span>`).join('');
   }
 }
 
@@ -2795,6 +2795,11 @@ if (scField && trackEl && dotsEl && stageEl) {
     const slides = trackEl.querySelectorAll('.review-slide');
     const txtEl = slides[cur].querySelector('.review-text');
     const full = txtEl.dataset.full;
+    if (window.matchMedia('(prefers-reduced-motion: reduce), (max-width: 768px)').matches) {
+      txtEl.textContent = full;
+      startWaiting();
+      return;
+    }
     const myGen = typeGen;
     if(typeTimer){ clearTimeout(typeTimer); typeTimer=null; }
     const CHAR_DELAY = 28, ASSEMBLE_DUR = 600;
@@ -2820,8 +2825,10 @@ if (scField && trackEl && dotsEl && stageEl) {
     const letterEls = txtEl.querySelectorAll('.pl');
     const letterData = [];
     letterEls.forEach((el, i) => {
-      const angle = Math.random() * Math.PI * 2, dist = 60 + Math.random() * 120;
-      const fromX = Math.cos(angle) * dist, fromY = Math.sin(angle) * dist, fromR = (Math.random() - 0.5) * 60, fromS = 0.3 + Math.random() * 0.4;
+      // Keep the review card visually anchored while its copy appears. The
+      // former 60–180px random scatter made the first slide look displaced
+      // when a visitor landed on #reviews during the typewriter animation.
+      const fromX = 0, fromY = 6, fromR = 0, fromS = 0.985;
       const startAt = i * CHAR_DELAY;
       el.style.opacity = '0'; el.style.transform = `translate(${fromX}px, ${fromY}px) rotate(${fromR}deg) scale(${fromS})`;
       el.style.filter = `blur(${2 + Math.random()*3}px)`;

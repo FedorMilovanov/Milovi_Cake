@@ -38,10 +38,14 @@ html[data-theme="dark"] .delivery-faq .faq-item,
   #calcDecor.calc-options {
     width: 100% !important;
     align-self: stretch !important;
-    justify-content: stretch !important;
   }
+  .calc-options:not(#calcDecor) { justify-content: stretch !important; }
   .calc-opt { flex: 1 1 auto !important; min-width: 0 !important; }
 }
+
+/* Keep the two decoration choices compact; the final layer centers this pair
+   as one group, while other calculator options retain the mobile flex sizing. */
+#calcDecor .calc-opt { flex: 0 1 160px !important; }
 
 .calc-result-collapsed-arrow {
   display: flex !important;

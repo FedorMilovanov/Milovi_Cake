@@ -2297,3 +2297,106 @@ body.mc-nav-hidden .hero--visible.hero--motion-ready .hero-photo-bg img,
 body.fill-open .hero--visible.hero--motion-ready .hero-photo-bg img {
   will-change: auto;
 }
+
+/* The calculator result used to be a <section>, so the site-wide section
+   rhythm injected 100px horizontal padding into the summary panel.  Keep the
+   result column full-width, and make each flex child use that available width. */
+.calc-right-col .calc-result-expandable {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0;
+  align-items: stretch;
+}
+.calc-right-col .calc-result-expand-inner {
+  box-sizing: border-box;
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-direction: column;
+  align-items: stretch;
+}
+.calc-right-col .calc-result-price {
+  white-space: nowrap;
+}
+.calc-right-col .calc-result-summary {
+  align-self: stretch;
+  min-width: 0;
+}
+.calc-right-col .calc-summary-chip {
+  box-sizing: border-box;
+  display: flex;
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 0;
+  gap: 5px;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+.calc-right-col .calc-summary-chip .chip-label {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+.calc-right-col .calc-summary-chip .chip-val {
+  min-width: 0;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+.calc-right-col .calc-add-row {
+  box-sizing: border-box;
+  align-self: stretch;
+  min-width: 0;
+}
+.calc-right-col .calc-add-row .calc-add-btn {
+  box-sizing: border-box;
+  min-width: 0;
+  white-space: nowrap;
+}
+.calc-right-col .calc-add-btn-label {
+  white-space: nowrap;
+  word-break: normal;
+}
+
+@media (max-width: 768px) {
+  /* At tablet/mobile widths, keep the review carousel editorial and stable:
+     the large decorative screenshot cloud crowds the card and filmstrip. The
+     regular single-card slider and its filmstrip remain available. */
+  #reviews .sc-field {
+    display: none;
+  }
+  #reviews .review-filmstrip {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0 16px 8px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+  }
+  #reviews .review-filmstrip::-webkit-scrollbar { display: none; }
+  #reviews .review-filmstrip-item {
+    flex: 0 0 72px;
+    width: 72px;
+    max-width: 72px;
+    scroll-snap-align: start;
+  }
+}
+
+/* The narrow-screen decor choices use a centered two-button group, not grid
+   tracks with left-aligned max-width children. This keeps the pair symmetric
+   from small phones through tablet widths. */
+#calcDecor.calc-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+#calcDecor .calc-opt {
+  width: 160px;
+  max-width: calc((100% - 12px) / 2);
+  justify-self: auto;
+}

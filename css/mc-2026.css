@@ -470,7 +470,7 @@
 
 
 @media (max-width: 768px){
-  section{
+  section:not(.calc-result-expandable){
     padding: 48px 20px !important;
   }
   #reviews{
