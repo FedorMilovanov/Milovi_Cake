@@ -1660,6 +1660,68 @@ test.describe('suburb links and page-specific resilience', () => {
     }
   });
 
+  test('roll gallery thumbnails work as keyboard buttons and contain focus in the lightbox', async ({ page }) => {
+    await page.goto('/meringue-roll/', { waitUntil: 'domcontentloaded' });
+    const tiles = page.locator('.gallery-item[data-src]');
+    const dialog = page.locator('#lbOverlay');
+    const close = page.locator('#lbX');
+    const image = page.locator('#lbImg');
+    await expect(tiles).toHaveCount(5);
+    for (const tile of await tiles.all()) {
+      await expect(tile).toHaveAttribute('type', 'button');
+      await expect(tile).toHaveAttribute('aria-haspopup', 'dialog');
+      await expect(tile).toHaveAttribute('aria-label', /Открыть фото:/);
+    }
+
+    const secondTile = tiles.nth(1);
+    await secondTile.focus();
+    await page.keyboard.press('Enter');
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toHaveAttribute('aria-modal', 'true');
+    await expect(close).toBeFocused();
+    await expect(page.locator('#lbArrCounter')).toHaveText('2 / 5');
+    await expect(image).toHaveAttribute('alt', await secondTile.locator('img').getAttribute('alt'));
+
+    await page.keyboard.press('Shift+Tab');
+    await expect(page.locator('#lbNext')).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(close).toBeFocused();
+    await page.keyboard.press('ArrowRight');
+    await expect(page.locator('#lbArrCounter')).toHaveText('3 / 5');
+    await expect(image).toHaveAttribute('alt', await tiles.nth(2).locator('img').getAttribute('alt'));
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+    await expect(secondTile).toBeFocused();
+
+    const thirdTile = tiles.nth(2);
+    await thirdTile.focus();
+    await page.keyboard.press('Space');
+    await expect(dialog).toBeVisible();
+    await expect(page.locator('#lbArrCounter')).toHaveText('3 / 5');
+    await page.keyboard.press('Escape');
+    await expect(thirdTile).toBeFocused();
+  });
+
+  test('telephone SVG icons render without parsing errors across landing, call and suburb pages', async ({ page }) => {
+    const svgErrors = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error' && /<svg> attribute|<path> attribute/.test(message.text())) {
+        svgErrors.push(message.text());
+      }
+    });
+    const paths = ['/', '/call/', '/meringue-roll/',
+      ...['gatchina', 'kolpino', 'krasnoe-selo', 'kronshtadt', 'kudrovo', 'lomonosov', 'murino',
+        'pavlovsk', 'peterhof', 'pushkin', 'sestroretsk', 'shushary', 'tosno', 'vsevolozhsk']
+        .map((city) => `/prigorody/${city}/`)];
+    for (const path of paths) {
+      await page.goto(path, { waitUntil: 'domcontentloaded' });
+      await expect(page.locator('body')).toBeVisible();
+    }
+    await page.goto('/meringue-roll/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('.order-btns a[href="tel:+79119038886"] svg')).toHaveAttribute('viewBox', '0 0 24 24');
+    expect(svgErrors).toEqual([]);
+  });
+
   test('roll header stays legible and uncrowded at 320–1440px', async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem('mc_theme', 'dark'));
     await page.goto('/meringue-roll/', { waitUntil: 'domcontentloaded' });

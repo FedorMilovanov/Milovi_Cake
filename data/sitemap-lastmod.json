@@ -2,8 +2,8 @@
   "schema_version": 1,
   "pages": {
     "/": {
-      "hash": "78881be7298799a477d7f4c3a029fc08b6c62e0490166cb75bf8f805603f6d6a",
-      "date": "2026-11-20"
+      "hash": "4153162f9dbd6ac8c73a739fd04fbba3c74de888f26ee1179f692e52df31c9be",
+      "date": "2026-11-16"
     },
     "/zakazat-tort-spb/": {
       "hash": "c78ff5edfdbf4cdd3507f20ce75707208eb1d4c23e835e8d2294296fc443785b",
@@ -14,7 +14,7 @@
       "date": "2026-11-20"
     },
     "/meringue-roll/": {
-      "hash": "a472328a357eeaf0fa47ef89c8754cdd510a2b61d8a133335345c58d11ba72eb",
+      "hash": "663204c9a5ebac8a9c46a329a208e5abeb4fa493f209c34a27fb1d874d65a1a4",
       "date": "2026-11-16"
     },
     "/prigorody/": {
@@ -22,60 +22,60 @@
       "date": "2026-11-20"
     },
     "/prigorody/vsevolozhsk/": {
-      "hash": "cdd9a26a06b05a8fd51a355927eb2b6ed6d63b3c83507f6aee961825a5f581d8",
-      "date": "2026-11-20"
+      "hash": "0715f106e26ff1beee6175ddbd0ff4fe0b3ea3088b8ace11066fe65bcbb51e17",
+      "date": "2026-11-16"
     },
     "/prigorody/murino/": {
-      "hash": "11e8cd6bd07ca35d296b5b712d9a436121d19c6c35fafa72a794a1a66769e845",
-      "date": "2026-11-20"
+      "hash": "5500ccd8e73a66d41fb78248fdc3f8f29b042c2250eb0807774f10d11495e327",
+      "date": "2026-11-16"
     },
     "/prigorody/kudrovo/": {
-      "hash": "0dbe2d309bdb31e582f0899ad5d366b7905eb843c9df7ebf155b7a0974a869ff",
-      "date": "2026-11-20"
+      "hash": "93efc4f94a6e637192f2739c04d7848d44e5a73b69efa420da297b0f83ceac7d",
+      "date": "2026-11-16"
     },
     "/prigorody/gatchina/": {
-      "hash": "0cc9c51bdfe97135f29aac642862a98d4bf8c6c719ef0c4a2e4277d62f3edf15",
-      "date": "2026-11-20"
+      "hash": "d8432f158d16e18c44d7215e6cc26350704f4ba038946adf60e60687d6615227",
+      "date": "2026-11-16"
     },
     "/prigorody/pushkin/": {
-      "hash": "5b2eff79b3432801d7231343c300a53392902608401e59f51a739ac613fb763b",
-      "date": "2026-11-20"
+      "hash": "0e5cf49ec36575d9b5fb136191e68f454fb9c26f2035913956a4e4844390eaeb",
+      "date": "2026-11-16"
     },
     "/prigorody/peterhof/": {
-      "hash": "8c8e7c3b981a6d5e887bad481c8d9a81a52da43632e74579f88209ee93c88e8b",
-      "date": "2026-11-20"
+      "hash": "67aad5c086940029c2fba4cf0b4a5f8d170b5593ed59f8cf0f4bb7c07339d665",
+      "date": "2026-11-16"
     },
     "/prigorody/kolpino/": {
-      "hash": "97eff88eb7fc7dff3a0a49b78bcf0b8837c6c5849ee77dddcc22801df9e63abe",
-      "date": "2026-11-20"
+      "hash": "e43341de82cc7b4ada09766f500eabf1a70cdd07016c8358e77a0c9db8cd4325",
+      "date": "2026-11-16"
     },
     "/prigorody/kronshtadt/": {
-      "hash": "4aea83f528a1e1ad26a258fa2c0951bd8e3cb7f609b0772756ece2a4492a81c8",
-      "date": "2026-11-20"
+      "hash": "7bc8a8595493777bef274004ff8659cd54941a75846ac07f86b78d1a0833cba0",
+      "date": "2026-11-16"
     },
     "/prigorody/lomonosov/": {
-      "hash": "00179ffd6faf911ff99a45697c3cb82975bd56936718412bb0267ac73437829e",
-      "date": "2026-11-20"
+      "hash": "3f660ba9ab5f7160424bfbef770cead9a4105c71f83b3949415a191a88d045b3",
+      "date": "2026-11-16"
     },
     "/prigorody/pavlovsk/": {
-      "hash": "ff07b434af96013547e003cceed51de20ee1fde0c09d8d2d882822570113d0b3",
-      "date": "2026-11-20"
+      "hash": "7ae7fd9e6a01aca13122deb20a0233fe81eed7759e75eefb435a5b6a3201cc80",
+      "date": "2026-11-16"
     },
     "/prigorody/sestroretsk/": {
-      "hash": "8ac047477c3fa3c28c8a46006afac9d4884bee1343e8a7d7e4805b45fb3e7ca5",
-      "date": "2026-11-20"
+      "hash": "2b105648776389ebe6c39558ce7409c84e9ba4d5cb75f8d068d2122b23c171de",
+      "date": "2026-11-16"
     },
     "/prigorody/shushary/": {
-      "hash": "f9a89fcb916a98b6f15871a197215bb7fdc446a18ed0b1f6a48a46cdde9aa718",
-      "date": "2026-11-20"
+      "hash": "7a97fa8bbed8aca69f9bf17b7f356d58d28dcaeed97230ae24017bf0a5be9e11",
+      "date": "2026-11-16"
     },
     "/prigorody/tosno/": {
-      "hash": "e92421b5c8522fe3da578098e3b98ac2059559bccb500840447c382f47bcc487",
-      "date": "2026-11-20"
+      "hash": "0f3b2d0eec8459c8b613d4d95d888134b1ad02eaee2cf41925a09c023765516e",
+      "date": "2026-11-16"
     },
     "/prigorody/krasnoe-selo/": {
-      "hash": "8f05543d0a4b12618aab6bdd494bc7abfc92b928e2214d35a85572b1cb0eac08",
-      "date": "2026-11-20"
+      "hash": "aebe051c6e25730673cb12887ba769cdfed84a21b30fac67add5892991b172f4",
+      "date": "2026-11-16"
     },
     "/certificates/": {
       "hash": "14fad264841737585f868cad60bbc72ed76185ac204c5ee1b120b1337feee159",
