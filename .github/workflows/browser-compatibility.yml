@@ -18,7 +18,7 @@ jobs:
     # Match the Playwright version in package.json: this official image already
     # contains its browsers and system libraries, avoiding apt/CDN setup stalls.
     container:
-      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      image: mcr.microsoft.com/playwright:v1.65.1-noble
       # Provide headless browsers ample shared memory for media-heavy pages;
       # this does not alter page assets or assertions.
       options: --shm-size=1g
@@ -243,7 +243,7 @@ jobs:
     name: webkit repeated storage fault interactions
     runs-on: ubuntu-24.04
     container:
-      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      image: mcr.microsoft.com/playwright:v1.65.1-noble
       options: --shm-size=1g
     timeout-minutes: 18
     env:
@@ -295,7 +295,7 @@ jobs:
     name: webkit repeated gallery media interactions
     runs-on: ubuntu-24.04
     container:
-      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      image: mcr.microsoft.com/playwright:v1.65.1-noble
       options: --shm-size=1g
     timeout-minutes: 18
     env:
@@ -339,7 +339,7 @@ jobs:
     name: ${{ matrix.engine }} reduced-motion ordering
     runs-on: ubuntu-24.04
     container:
-      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      image: mcr.microsoft.com/playwright:v1.65.1-noble
       options: --shm-size=1g
     timeout-minutes: 12
     env:
@@ -396,7 +396,7 @@ jobs:
     if: ${{ !cancelled() && (needs.compatibility.result == 'failure' || needs.compatibility.result == 'cancelled') }}
     runs-on: ubuntu-24.04
     container:
-      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      image: mcr.microsoft.com/playwright:v1.65.1-noble
       options: --shm-size=1g --cap-add=SYS_PTRACE --security-opt seccomp=unconfined
     timeout-minutes: 20
     env:
