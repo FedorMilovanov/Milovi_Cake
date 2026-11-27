@@ -207,6 +207,38 @@ class SchemaContentContractTest(unittest.TestCase):
                     page = next(node for node in all_nodes if node.get('@type') == kind)
                     self.assertEqual(page['url'], f'https://milovicake.ru/prigorody/{slug}/')
 
+
+    def test_suburb_breadcrumbs_use_canonical_city_names(self):
+        with (ROOT / 'prigorody/_cities.csv').open(encoding='utf-8', newline='') as source:
+            rows = list(csv.DictReader(source))
+        self.assertEqual(len(rows), 14)
+        for row in rows:
+            slug = row['slug']
+            relative = f'prigorody/{slug}/index.html'
+            html = (ROOT / relative).read_text(encoding='utf-8')
+            with self.subTest(city=slug):
+                crumb = re.search(r'<nav class="header-crumb-strip".*?</nav>', html, re.S)
+                self.assertIsNotNone(crumb)
+                self.assertIn(f'<span>{row["ld_area"]}</span>', crumb.group())
+                trail = [n for n in page_nodes(relative) if n.get('@type') == 'BreadcrumbList']
+                self.assertEqual(len(trail), 1)
+                self.assertEqual(trail[0]['itemListElement'][-1], {
+                    '@type': 'ListItem', 'position': 3, 'name': row['ld_area'],
+                    'item': f'https://milovicake.ru/prigorody/{slug}/'})
+
+    def test_kudrovo_roll_storage_matches_product_facts(self):
+        with (ROOT / 'prigorody/_cities.csv').open(encoding='utf-8', newline='') as source:
+            row = next(r for r in csv.DictReader(source) if r['slug'] == 'kudrovo')
+        story = row['story_p3']
+        facts = (ROOT / 'llms.txt').read_text(encoding='utf-8')
+        roll = (ROOT / 'meringue-roll/index.html').read_text(encoding='utf-8')
+        for fragment in ('+2…+6 °C', '48 часов с момента изготовления'):
+            self.assertIn(fragment, story)
+            self.assertIn(fragment, facts)
+            self.assertIn(fragment, roll)
+        self.assertNotIn('не требует холодильника', story)
+        self.assertIn(story, (ROOT / 'prigorody/kudrovo/index.html').read_text(encoding='utf-8'))
+
     def test_suburb_hub_covers_fourteen_directions_without_geography_or_faq_drift(self):
         relative = 'prigorody/index.html'
         html = (ROOT / relative).read_text(encoding='utf-8')
