@@ -14,6 +14,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+from html.parser import HTMLParser
 
 ROOT = Path(__file__).resolve().parents[1]
 LOADER_TAG = '<script defer src="/js/consent-analytics.js"></script>'
@@ -354,6 +355,31 @@ def check_workflow_pins(errors: list[str]) -> None:
                 errors.append(f'{workflow.relative_to(ROOT)}:{number}: action is not pinned to an exact SHA: {target}')
 
 
+def check_private_fields(path: Path, text: str, errors: list[str]) -> None:
+    rel = path.relative_to(ROOT)
+    if rel == Path('index.html') or rel == Path('prigorody/_template.html') or (
+        len(rel.parts) == 3 and rel.parts[0] == 'prigorody' and rel.name == 'index.html'
+    ):
+        required = {'fname', 'fphone', 'fcomment', 'cname', 'cphone', 'cdate', 'ccomment'}
+    elif rel == Path('svadebnye-torty/index.html'):
+        required = {'wedDate', 'wedDateRecoveryText', 'wedBriefExportText'}
+    else:
+        return
+
+    class Fields(HTMLParser):
+        def handle_starttag(self, tag, attrs):
+            values = dict(attrs)
+            if tag in ('input', 'textarea') and values.get('id') in required:
+                if 'ym-disable-keys' not in (values.get('class') or '').split():
+                    errors.append(f"{rel}: unmasked private field {values['id']}")
+                seen.add(values['id'])
+
+    seen = set()
+    Fields().feed(text)
+    for missing in sorted(required - seen):
+        errors.append(f'{rel}: expected private field missing: {missing}')
+
+
 def check() -> list[str]:
     errors: list[str] = []
     privacy = ROOT / 'privacy' / 'index.html'
@@ -366,6 +392,7 @@ def check() -> list[str]:
     for path in collect_html():
         text = path.read_text('utf-8')
         rel = path.relative_to(ROOT)
+        check_private_fields(path, text, errors)
         for token in FORBIDDEN_ANALYTICS:
             if token in text:
                 errors.append(f'{rel}: legacy analytics token remains: {token}')

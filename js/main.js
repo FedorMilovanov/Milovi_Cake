@@ -897,7 +897,7 @@ function showCartHandoffRecovery(text, url, channel, notice) {
   document.getElementById('cartHandoffRecovery')?.remove();
   const panel = document.createElement('div');
   panel.id = 'cartHandoffRecovery';
-  panel.className = 'cart-form';
+  panel.className = 'cart-form ym-hide-content';
   const status = document.createElement('p');
   status.className = 'note';
   status.setAttribute('role', 'status');
@@ -909,17 +909,33 @@ function showCartHandoffRecovery(text, url, channel, notice) {
   label.textContent = 'Полный текст заказа';
   const area = document.createElement('textarea');
   area.id = 'cartHandoffText';
+  area.className = 'ym-disable-keys';
   area.rows = 5;
   area.readOnly = true;
   area.value = text;
   area.style.minHeight = '96px';
   group.append(label, area);
   const link = document.createElement('a');
-  link.className = 'btn-tg ' + (channel === 'whatsapp' ? 'wa' : 'tg');
-  link.href = url;
+  link.className = 'btn-tg ym-disable-tracklink ' + (channel === 'whatsapp' ? 'wa' : 'tg');
+  // The actual order stays in a closure, never in the clickable DOM URL:
+  // enhanced link analytics may collect href even outside our own handlers.
+  const destination = new URL(url);
+  const retryWithText = channel === 'whatsapp' && destination.searchParams.has('text');
+  destination.search = '';
+  destination.hash = '';
+  link.href = destination.href;
   link.target = '_blank';
   link.rel = 'noopener noreferrer';
   link.textContent = 'Открыть ' + (channel === 'whatsapp' ? 'WhatsApp' : 'Telegram');
+  if (retryWithText) {
+    link.addEventListener('click', event => {
+      if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      if (openCartMessenger(url, channel)) event.preventDefault();
+      else status.textContent = 'Не удалось открыть заполненный заказ. Скопируйте полный текст и вставьте его в чат WhatsApp.';
+      // If the scripted popup is still blocked, native navigation opens
+      // the bare chat. The full readonly text remains available.
+    });
+  }
   panel.append(status, group, link);
   footer.insertBefore(panel, footer.querySelector('.cart-actions'));
   return status;
@@ -938,6 +954,7 @@ function copyCartText(text, attempt) {
     let copied = false;
     try {
       area = document.createElement('textarea');
+      area.className = 'ym-disable-keys ym-hide-content';
       area.value = text;
       area.style.cssText = 'position:fixed;left:-9999px';
       document.body.appendChild(area);

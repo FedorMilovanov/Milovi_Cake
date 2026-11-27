@@ -440,7 +440,7 @@ require(style_ref != '/css/style.css?v=20261023r01', 'service-worker precache st
 require("'/js/nav.js?v=20261116r27'," in sw, 'service-worker precache still points at stale shared nav.js revision')
 require("'/js/gallery/main.js?v=20261120r05'," in sw, 'service-worker precache still points at stale gallery runtime revision')
 require("'/js/gallery/data.js?v=20261120r03'," in sw, 'service-worker precache still points at stale gallery data revision')
-require("'/js/consent-analytics.js?v=20261120r04'," in sw, 'service-worker precache still points at stale consent loader revision')
+require("'/js/consent-analytics.js?v=20261127r01'," in sw, 'service-worker precache still points at stale consent loader revision')
 
 cfg = json.loads(read('.github/lighthouse-config.json'))
 require(cfg['ci']['collect'].get('numberOfRuns') == 3, 'Lighthouse collection is not three runs')

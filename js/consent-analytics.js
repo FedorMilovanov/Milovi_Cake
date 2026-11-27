@@ -231,19 +231,19 @@
       var link = target && target.closest ? target.closest('a') : null;
       if (!link) return;
       var href = link.getAttribute('href') || '';
-      var params = {
-        path: location.pathname,
-        href: href,
-        text: (link.textContent || '').trim().slice(0, 80)
-      };
-      if (href.indexOf('wa.me') !== -1) sendGoal('lp_wa_click', params);
-      else if (href.indexOf('t.me') !== -1) sendGoal('lp_tg_click', params);
-      else if (href.indexOf('max.ru') !== -1) sendGoal('lp_max_click', params);
-      else if (href.indexOf('tel:') === 0) sendGoal('lp_phone_click', params);
+      var url;
+      try { url = new URL(href, location.href); } catch (_) { return; }
+      // Never send href, query strings, link text, or order contents.
+      // Route and channel are sufficient for measuring a contact click.
+      var params = { path: location.pathname };
+      if (url.protocol === 'https:' && url.hostname === 'wa.me') sendGoal('lp_wa_click', { path: params.path, lead_channel: 'whatsapp' });
+      else if (url.protocol === 'https:' && url.hostname === 't.me') sendGoal('lp_tg_click', { path: params.path, lead_channel: 'telegram' });
+      else if (url.protocol === 'https:' && url.hostname === 'max.ru') sendGoal('lp_max_click', { path: params.path, lead_channel: 'max' });
+      else if (url.protocol === 'tel:') sendGoal('lp_phone_click', { path: params.path, lead_channel: 'phone' });
       if (link.classList.contains('lp-btn') || link.classList.contains('info-btn') || link.classList.contains('btn-primary')) {
         sendGoal('lp_cta_click', params);
       }
-      if (href.indexOf('/gallery/') !== -1) sendGoal('lp_gallery_click', params);
+      if (url.origin === location.origin && url.pathname.indexOf('/gallery/') === 0) sendGoal('lp_gallery_click', params);
     }, true);
     document.addEventListener('play', function (event) {
       if (event.target && event.target.tagName === 'VIDEO') sendGoal('lp_video_play', { path: location.pathname });

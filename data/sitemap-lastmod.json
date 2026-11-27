@@ -2,8 +2,8 @@
   "schema_version": 1,
   "pages": {
     "/": {
-      "hash": "4153162f9dbd6ac8c73a739fd04fbba3c74de888f26ee1179f692e52df31c9be",
-      "date": "2026-11-16"
+      "hash": "94c9f4530fd57757ff56bd11cb6eec374e88bff2fbcd6902be81b6ee53cfc5c6",
+      "date": "2026-11-27"
     },
     "/zakazat-tort-spb/": {
       "hash": "c78ff5edfdbf4cdd3507f20ce75707208eb1d4c23e835e8d2294296fc443785b",
@@ -22,59 +22,59 @@
       "date": "2026-11-20"
     },
     "/prigorody/vsevolozhsk/": {
-      "hash": "b6775f24ef835f68296971c054f448a5d353682bbca154f2b28f681c8bb3c03a",
+      "hash": "92c030edd861560402214e227d650b36f3ed9d8bff6b2d6f466934c946011d00",
       "date": "2026-11-27"
     },
     "/prigorody/murino/": {
-      "hash": "50d9ebf122d9c11b1d15659c11abd64db77e7bb68ea4842e8ede66042bd01246",
+      "hash": "1997f8b5a812bce77e3906b1fa4dced9261a2c00efc1b1eb5a1d2cb83c0e0813",
       "date": "2026-11-27"
     },
     "/prigorody/kudrovo/": {
-      "hash": "d1630e2e806f18b0ad0c6b56aa1af7cbb583bfc30c56cc9f789c43acca5a6bea",
+      "hash": "dc33ac0c5786c0885140178c1f083251e4ba673627172ed0f0d1fd7f94c3456e",
       "date": "2026-11-27"
     },
     "/prigorody/gatchina/": {
-      "hash": "4d3b25de5bdb971db36ed831ada21ae62624a415568e6a271d6835753f50247a",
+      "hash": "26414a75e368c4d1ca5ca940476a151db5a64eb02a3766ea00b6f2255723c4e0",
       "date": "2026-11-27"
     },
     "/prigorody/pushkin/": {
-      "hash": "01b26747e70adf0aaf803458bd4ce9d7e3a070dc423008135707f446db06e6ba",
+      "hash": "60fe3e1b8b94477447819401b9cace3ac08714adcf2f2800dbc76e715e885794",
       "date": "2026-11-27"
     },
     "/prigorody/peterhof/": {
-      "hash": "1b1701f3412bb651a3d9cbec2ce7c083a5a753931a7919039eecb95dfa707938",
+      "hash": "6d7e46d03f68e5772dd3f096573923850d41b604613ee13940e640ca65e64356",
       "date": "2026-11-27"
     },
     "/prigorody/kolpino/": {
-      "hash": "ad8697b3aac7cc405b1580422cfbf6a4cb1c5caacc390d18930e5c30abbc6e1b",
+      "hash": "1b3e94dd2fe7c938ef6ca573fe3444a1187e9b09144572fb88c349da918e3a1a",
       "date": "2026-11-27"
     },
     "/prigorody/kronshtadt/": {
-      "hash": "9a41afbb621d18f27908690506e24d1ba3b454b13eec91fec1a359e9de5f3df3",
+      "hash": "0a2c34b19902d6d82cabf7e314a9bb4a1f247c626821cd7f3ced51fa1579dad6",
       "date": "2026-11-27"
     },
     "/prigorody/lomonosov/": {
-      "hash": "901f3a27647ff4bf918e574b15ca25fd49aab9c0ebbfbf6ca124ddcc865ed78f",
+      "hash": "44da7a4e6b0c346c9655f8915457c5aeabb4d371468012e866aba036f44282e5",
       "date": "2026-11-27"
     },
     "/prigorody/pavlovsk/": {
-      "hash": "f289124400d34190435521b43429538c9e5402b832d7632ec9c2628cab1e0d96",
+      "hash": "2913b4b7fb8e8e603607a1b319f2270f7d32e0cd88216c0f4e73553d1053d96d",
       "date": "2026-11-27"
     },
     "/prigorody/sestroretsk/": {
-      "hash": "5fea10e91f49657d2eb7dc82519ad79ede9dd41a350c099202f7cd9c261f8a17",
+      "hash": "b6f335f28b0f8bf9b19b60cf1d78d451e66b70f46596d29f7692cbc3dcf8b05a",
       "date": "2026-11-27"
     },
     "/prigorody/shushary/": {
-      "hash": "4e838685e766aa2a3614325bb503cc4cce9e80eb52d38d9ef17c839b20fcf58d",
+      "hash": "3c7b512ad7df0160815b90431ad07e4f8612e1f30088818c2cd448c9c9a329d4",
       "date": "2026-11-27"
     },
     "/prigorody/tosno/": {
-      "hash": "054dc25a3f5a542f5d5adf5784333446a14af6a65d35d3c74dab9942924ee2d4",
+      "hash": "c00b56378559d2ad4ddf1a181fbf51d59048da11c591e31f2e2cbfb4e9bef574",
       "date": "2026-11-27"
     },
     "/prigorody/krasnoe-selo/": {
-      "hash": "f52f97dbd0f0cdab54608f7c2f9c310bf475b72398249e12ab0f30579a507d4f",
+      "hash": "2bdc32906e81db6f1ff48e49fe6fad4b10101859ea03759815131673ebc5231f",
       "date": "2026-11-27"
     },
     "/certificates/": {
@@ -98,8 +98,8 @@
       "date": "2026-11-20"
     },
     "/svadebnye-torty/": {
-      "hash": "6be143aa39ae3b1f163e9d7d76fcaa737e9899b0534c2f8cd9eaab90fb6f35a2",
-      "date": "2026-11-20"
+      "hash": "ef36f4cb6febd062c801ac60dda21635d30adfad0d7e1a98e9e249318383390f",
+      "date": "2026-11-27"
     },
     "/o-konditere/": {
       "hash": "b52c8d5c51ef207a3c291a52eca0199ee186f85878f03b045eb5694468808813",
