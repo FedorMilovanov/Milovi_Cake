@@ -916,7 +916,7 @@ function showCartHandoffRecovery(text, url, channel, notice) {
   area.style.minHeight = '96px';
   group.append(label, area);
   const link = document.createElement('a');
-  link.className = 'btn-tg ' + (channel === 'whatsapp' ? 'wa' : 'tg');
+  link.className = 'btn-tg ym-disable-tracklink ' + (channel === 'whatsapp' ? 'wa' : 'tg');
   // The actual order stays in a closure, never in the clickable DOM URL:
   // enhanced link analytics may collect href even outside our own handlers.
   const destination = new URL(url);
@@ -954,6 +954,7 @@ function copyCartText(text, attempt) {
     let copied = false;
     try {
       area = document.createElement('textarea');
+      area.className = 'ym-disable-keys ym-hide-content';
       area.value = text;
       area.style.cssText = 'position:fixed;left:-9999px';
       document.body.appendChild(area);

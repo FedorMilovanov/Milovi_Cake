@@ -901,15 +901,15 @@
         <p class="hours" style="opacity:0"> </p>
         <form onsubmit="event.preventDefault(); sendFormWA();" novalidate>
         <div class="form-group float-label">
-          <input type="text" id="fname" placeholder=" " />
+          <input type="text" id="fname" class="ym-disable-keys" placeholder=" " />
           <label for="fname">Как к Вам обращаться?</label>
         </div>
         <div class="form-group float-label">
-          <input type="tel" id="fphone" placeholder=" " required autocomplete="tel" inputmode="tel" />
+          <input type="tel" id="fphone" class="ym-disable-keys" placeholder=" " required autocomplete="tel" inputmode="tel" />
           <label for="fphone">Телефон *</label>
         </div>
         <div class="form-group float-label">
-          <textarea id="fcomment" placeholder=" "></textarea>
+          <textarea id="fcomment" class="ym-disable-keys" placeholder=" "></textarea>
           <label for="fcomment">Комментарий — вес, декор, дата…</label>
         </div>
         <p class="form-note">Нажимая кнопку, вы соглашаетесь с <a href="/privacy/">обработкой персональных данных</a></p>
@@ -1010,7 +1010,7 @@
 </section>
 
 <script>var IMG_BASE = '../../img';</script>
-<script src="../../js/main.js?v=20261127r02" defer></script>
+<script src="../../js/main.js?v=20261127r03" defer></script>
 <script src="../../js/nav.js?v=20261116r27" defer></script>
 <script src="../../js/mc-2026.js?v=20261116r45" defer></script>
 
@@ -1092,19 +1092,19 @@
       </div>
       <h4>Ваши данные</h4>
       <div class="form-group float-label">
-        <input type="text" id="cname" placeholder=" " />
+        <input type="text" id="cname" class="ym-disable-keys" placeholder=" " />
         <label for="cname">Как к Вам обращаться?</label>
       </div>
       <div class="form-group float-label">
-        <input type="tel" id="cphone" placeholder=" " required />
+        <input type="tel" id="cphone" class="ym-disable-keys" placeholder=" " required />
         <label for="cphone">Телефон *</label>
       </div>
       <div class="form-group float-label">
-        <input type="date" id="cdate" />
+        <input type="date" id="cdate" class="ym-disable-keys" />
         <label for="cdate">Дата получения</label>
       </div>
       <div class="form-group float-label">
-        <textarea id="ccomment" placeholder=" " style="min-height:52px;"></textarea>
+        <textarea id="ccomment" class="ym-disable-keys" placeholder=" " style="min-height:52px;"></textarea>
         <label for="ccomment">Вес, декор, доставка/самовывоз…</label>
       </div>
         <button type="submit" class="cart-form-submit" tabindex="-1" aria-hidden="true" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0;">Отправить заказ в WhatsApp</button>
