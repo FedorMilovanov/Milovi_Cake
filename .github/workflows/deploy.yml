@@ -18,7 +18,8 @@ jobs:
   build:
     name: Validate and build exact Pages candidate
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # Full browser QA took 29.3m on #183; keep time for the artifact audit/upload.
+    timeout-minutes: 40
     env:
       RELEASE_SHA: ${{ github.sha }}
     steps:
