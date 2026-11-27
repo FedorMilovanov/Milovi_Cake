@@ -341,3 +341,114 @@ test('a different biscuit is a different position (protected cart key)', async (
   expect(cart.lineTexts[0]).toContain('бисквит: ванильный');
   expect(cart.lineTexts[1]).toContain('бисквит: шоколадный');
 });
+
+/* Checkout must preserve the complete order when a browser blocks a handoff. */
+async function prepareRecoveryForm(page, testInfo, options = {}) {
+  await prepare(page, testInfo);
+  await page.evaluate(({ popupBlocked, fallbackWorks }) => {
+    window.__cartHandoffs = [];
+    window.__cartCopies = [];
+    window.__copyFallbackCalls = 0;
+    window.open = url => { window.__cartHandoffs.push(url); return popupBlocked ? null : {}; };
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText: text => {
+        window.__cartCopies.push(text);
+        return Promise.reject(new Error('Clipboard denied for test'));
+      } }
+    });
+    document.execCommand = command => {
+      if (command === 'copy') window.__copyFallbackCalls++;
+      return command === 'copy' && !!fallbackWorks;
+    };
+    addToCart(2);
+  }, options);
+  await openCart(page, testInfo);
+  await page.locator('#cartStep1Footer button').first().click();
+  await page.locator('#cname').fill('QA');
+  await page.locator('#cphone').fill('+7 000 000 00 00');
+}
+
+test('oversized WhatsApp order offers the entire text without an oversized popup', async ({ page }, testInfo) => {
+  if (testInfo.project.name.endsWith('-mobile')) await page.setViewportSize({ width: 320, height: 568 });
+  await prepareRecoveryForm(page, testInfo);
+  const longComment = 'Подробности оформления и доставки. '.repeat(45);
+  await page.locator('#ccomment').fill(longComment);
+  await page.locator('#btnWA').click();
+  const recovery = page.locator('#cartHandoffRecovery');
+  await expect(recovery).toBeVisible();
+  await expect(recovery.getByRole('status')).toContainText('Не удалось скопировать автоматически');
+  const [full] = await page.evaluate(() => window.__cartCopies);
+  expect(full).toContain('QA');
+  expect(full).toContain('+7 000 000 00 00');
+  expect(full).toMatch(/1\s?600/);
+  await expect(recovery.locator('#cartHandoffText')).toHaveValue(full);
+  await expect(recovery.locator('#cartHandoffText')).toBeInViewport({ ratio: 0.95 });
+  await expect(recovery.getByRole('link')).toBeInViewport({ ratio: 0.95 });
+  expect(full).toContain(longComment.trim());
+  expect(encodeURIComponent(full).length).toBeGreaterThan(4096);
+  await expect(recovery.locator('#cartHandoffText')).toHaveAttribute('readonly', '');
+  await expect(recovery.getByRole('link')).toHaveAttribute('href', 'https://wa.me/79119038886');
+  expect(await page.evaluate(() => window.__cartHandoffs)).toEqual([]);
+  expect(await page.evaluate(() => window.__copyFallbackCalls)).toBe(1);
+  await expect(page.locator('#step2')).toHaveClass(/active/);
+  await expect(page.locator('#step3')).not.toHaveClass(/active/);
+  await page.locator('#ccomment').fill('Уточнённый комментарий');
+  await expect(recovery).toHaveCount(0);
+});
+
+test('blocked WhatsApp popup keeps the form and supplies an exact retry link', async ({ page }, testInfo) => {
+  await prepareRecoveryForm(page, testInfo, { popupBlocked: true });
+  await page.locator('#btnWA').click();
+  const recovery = page.locator('#cartHandoffRecovery');
+  await expect(recovery.getByRole('status')).toContainText('Не удалось открыть WhatsApp');
+  const [attempted] = await page.evaluate(() => window.__cartHandoffs);
+  const full = new URL(attempted).searchParams.get('text');
+  expect(full).toContain('QA');
+  expect(full).toContain('+7 000 000 00 00');
+  expect(full).toMatch(/1\s?600/);
+  await expect(recovery.locator('#cartHandoffText')).toHaveValue(full);
+  await expect(recovery.getByRole('link')).toHaveAttribute('href', attempted);
+  await expect(page.locator('#step2')).toHaveClass(/active/);
+  await expect(page.locator('#step3')).not.toHaveClass(/active/);
+  await page.locator('#cartDrawer .cart-close').click();
+  await expect(recovery).toHaveCount(0);
+});
+
+test('Telegram copy refusal displays the complete manual text, not false success', async ({ page }, testInfo) => {
+  await prepareRecoveryForm(page, testInfo);
+  await page.locator('#btnTG').click();
+  const recovery = page.locator('#cartHandoffRecovery');
+  await expect(recovery.getByRole('status')).toContainText('Не удалось скопировать автоматически');
+  const [full] = await page.evaluate(() => window.__cartCopies);
+  expect(full).toContain('QA');
+  expect(full).toContain('+7 000 000 00 00');
+  expect(full).toMatch(/1\s?600/);
+  await expect(recovery.locator('#cartHandoffText')).toHaveValue(full);
+  await expect(recovery.getByRole('link')).toHaveAttribute('href', 'https://t.me/milovi_cake');
+  await expect(page.locator('#toast')).not.toHaveText(/Скопировано!/);
+  expect(await page.evaluate(() => window.__copyFallbackCalls)).toBe(1);
+  expect(await page.evaluate(() => window.__cartHandoffs)).toEqual(['https://t.me/milovi_cake']);
+});
+
+test('Telegram clipboard fallback success is based on the actual copy result', async ({ page }, testInfo) => {
+  await prepareRecoveryForm(page, testInfo, { fallbackWorks: true });
+  await page.locator('#btnTG').click();
+  await expect(page.locator('#toast')).toContainText('Скопировано!');
+  await expect(page.locator('#cartHandoffRecovery')).toHaveCount(0);
+  expect(await page.evaluate(() => window.__copyFallbackCalls)).toBe(1);
+});
+
+test('blocked Telegram popup retains full text even after successful copy', async ({ page }, testInfo) => {
+  await prepareRecoveryForm(page, testInfo, { popupBlocked: true, fallbackWorks: true });
+  await page.locator('#btnTG').click();
+  const recovery = page.locator('#cartHandoffRecovery');
+  await expect(recovery.getByRole('status')).toContainText('Скопировано!');
+  const [full] = await page.evaluate(() => window.__cartCopies);
+  expect(full).toContain('QA');
+  expect(full).toContain('+7 000 000 00 00');
+  await expect(recovery.locator('#cartHandoffText')).toHaveValue(full);
+  await expect(recovery.getByRole('link')).toHaveAttribute('href', 'https://t.me/milovi_cake');
+  await expect(page.locator('#step2')).toHaveClass(/active/);
+  await expect(page.locator('#step3')).not.toHaveClass(/active/);
+});
