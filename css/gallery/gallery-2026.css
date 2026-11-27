@@ -394,6 +394,12 @@ video.lb-media { background:#080402!important; }
 }
 @media (orientation:landscape) and (max-height:360px) {
   .lb-title { font-size:16px; line-height:1.05; }
+  /* Remove both inline formatting contexts: platform font descenders must not
+     introduce phantom scroll in the short landscape grid. Keep real text zoom
+     overflow scrollable and preserve the media and control sizes. */
+  .lb-info-inner { display:flow-root; width:fit-content; margin-inline:auto; }
+  .lb-actions { display:flex; width:fit-content; margin-inline:auto; }
+  .lb-thumbs { margin-top:4px; }
 }
 
 

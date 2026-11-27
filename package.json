@@ -42,7 +42,7 @@
     "audit:html": "python3 scripts/run_html_validate.py"
   },
   "engines": {
-    "node": ">=22.13.0",
+    "node": "^22.22.0 || >= 24.8.0",
     "npm": ">=10.9.2"
   },
   "keywords": [

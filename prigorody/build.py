@@ -186,7 +186,7 @@ def render_city(template, p):
     html = html.replace('{{canonical_url}}', f'https://milovicake.ru/prigorody/{slug}/')
 
     # LD+JSON
-    html = html.replace('{{ld_breadcrumb_name}}', f'"name": "Торты {_pre(p["breadcrumb_name"])} {p["breadcrumb_name"]}"')
+    html = html.replace('{{ld_breadcrumb_name}}', f'"name": "{p["ld_area"]}"')
     html = html.replace('{{ld_description}}',
         f'"description": "Авторские торты, меренговые рулеты и десерты на заказ '
         f'с доставкой {_pre(p["ld_city"])} {p["ld_city"]} от частного кондитера.",'
@@ -224,7 +224,7 @@ def render_city(template, p):
         '{{geo_label}}':     p['geo_label'],
         '{{h1}}':            f'Торты на заказ в {p["h1_city"]}',
         '{{hero_city_pre}}':  'во' if p['h1_city'].startswith('В') else 'в',
-        '{{breadcrumb_name}}': p['breadcrumb_name'],
+        '{{breadcrumb_name}}': p['ld_area'],
         '{{h1_city}}':      p['h1_city'],
         '{{hero_p}}':        p['hero_p'],
         '{{hero_span}}':     p['hero_span'],

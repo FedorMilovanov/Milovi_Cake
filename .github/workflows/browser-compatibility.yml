@@ -41,7 +41,7 @@ jobs:
       - name: Setup pinned Node
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: '22.13.0'
+          node-version: '22.23.1'
           cache: npm
 
       - name: Setup Python for the local test server
@@ -259,7 +259,7 @@ jobs:
       - name: Setup pinned Node
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: '22.13.0'
+          node-version: '22.23.1'
           cache: npm
       - name: Setup Python for the local test server
         uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
@@ -311,7 +311,7 @@ jobs:
       - name: Setup pinned Node
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: '22.13.0'
+          node-version: '22.23.1'
           cache: npm
       - name: Setup Python for the local test server
         uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
@@ -360,7 +360,7 @@ jobs:
       - name: Setup pinned Node
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: '22.13.0'
+          node-version: '22.23.1'
           cache: npm
 
       - name: Setup Python for the local test server
@@ -415,7 +415,7 @@ jobs:
       - name: Setup pinned Node
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: '22.13.0'
+          node-version: '22.23.1'
           cache: npm
       - name: Setup Python for the local test server
         uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
