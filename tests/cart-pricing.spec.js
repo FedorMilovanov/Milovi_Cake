@@ -398,19 +398,67 @@ test('oversized WhatsApp order offers the entire text without an oversized popup
 });
 
 test('blocked WhatsApp popup keeps the form and supplies an exact retry link', async ({ page }, testInfo) => {
+  // Synthetic opt-in only: exercise real goal handlers against stubs, never
+  // send a test order or a real analytics request.
+  await page.route('https://www.googletagmanager.com/**', route => route.abort());
+  await page.route('https://mc.yandex.ru/**', route => route.abort());
+  await page.route('https://wa.me/**', route => route.abort());
+  await page.addInitScript(() => {
+    localStorage.setItem('milovi_analytics_consent_v1', 'granted');
+    window.__privacyGoals = [];
+    window.ym = (...args) => window.__privacyGoals.push(['ym', ...args]);
+    window.gtag = (...args) => window.__privacyGoals.push(['gtag', ...args]);
+  });
   await prepareRecoveryForm(page, testInfo, { popupBlocked: true });
+  const marker = 'QA_PRIVATE_ORDER_7D93';
+  await page.locator('#cname').fill(marker);
+  await page.locator('#ccomment').fill(marker + ' synthetic comment');
   await page.locator('#btnWA').click();
   const recovery = page.locator('#cartHandoffRecovery');
   await expect(recovery.getByRole('status')).toContainText('Не удалось открыть WhatsApp');
   const [attempted] = await page.evaluate(() => window.__cartHandoffs);
   const full = new URL(attempted).searchParams.get('text');
-  expect(full).toContain('QA');
+  expect(full).toContain(marker);
   expect(full).toContain('+7 000 000 00 00');
   expect(full).toMatch(/1\s?600/);
   await expect(recovery.locator('#cartHandoffText')).toHaveValue(full);
-  await expect(recovery.getByRole('link')).toHaveAttribute('href', attempted);
+  await expect(recovery).toHaveClass(/ym-hide-content/);
+  await expect(recovery.locator('#cartHandoffText')).toHaveClass(/ym-disable-keys/);
+  await expect(recovery.getByRole('link')).toHaveAttribute('href', 'https://wa.me/79119038886');
   await expect(page.locator('#step2')).toHaveClass(/active/);
   await expect(page.locator('#step3')).not.toHaveClass(/active/);
+  await page.evaluate(() => {
+    window.open = url => { window.__cartHandoffs.push(url); return {}; };
+  });
+  await recovery.getByRole('link').click();
+  expect(await page.evaluate(() => window.__cartHandoffs)).toEqual([attempted, attempted]);
+  await expect(page.locator('#step3')).toHaveClass(/active/);
+  // Defense in depth: even a future link containing a private query/text
+  // must not leak either value to manual click or generic CTA analytics.
+  const goals = await page.evaluate(({ url, marker }) => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.textContent = marker;
+    link.className = 'lp-btn';
+    link.addEventListener('click', event => event.preventDefault());
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    return window.__privacyGoals.filter(e =>
+      e[0] === 'ym' && e[2] === 'reachGoal' || e[0] === 'gtag' && e[1] === 'event');
+  }, { url: attempted, marker });
+  for (const vendor of ['ym', 'gtag']) {
+    const matching = goals.filter(e => e[0] === vendor);
+    const named = name => matching.filter(e => e[vendor === 'ym' ? 3 : 2] === name);
+    expect(named('lp_wa_click').length).toBeGreaterThanOrEqual(2);
+    for (const e of named('lp_wa_click')) expect(e.at(-1)).toEqual({ path: '/', lead_channel: 'whatsapp' });
+    expect(named('lp_cta_click')).toHaveLength(1);
+    expect(named('lp_cta_click')[0].at(-1)).toEqual({ path: '/' });
+    expect(named('generate_lead')).toHaveLength(1);
+    expect(named('generate_lead')[0].at(-1)).toEqual({ path: '/', lead_channel: 'whatsapp', lead_source: 'cart' });
+  }
+  expect(JSON.stringify(goals)).not.toContain(marker);
+  expect(JSON.stringify(goals)).not.toContain(encodeURIComponent('+7 000 000 00 00'));
   await page.locator('#cartDrawer .cart-close').click();
   await expect(recovery).toHaveCount(0);
 });
