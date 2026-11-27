@@ -288,7 +288,7 @@ require(
     'gallery Swiper interaction loader lost integrity metadata',
 )
 require("script.addEventListener('error'" in gallery and 'loading = false;' in gallery, 'gallery Swiper loader cannot retry after CDN failure')
-require('/css/gallery/gallery-2026.css?v=20261120r07" />' in gallery, 'gallery critical local CSS became deferred or changed revision')
+require('/css/gallery/gallery-2026.css?v=20261127r01" />' in gallery, 'gallery critical local CSS became deferred or changed revision')
 require('/css/final-fixes.css?v=20261120r47" />' in gallery, 'gallery final critical CSS became deferred')
 require('id="gallery-lcp-media-fastpath"' in gallery, 'gallery eager-media LCP fast path missing')
 require(
@@ -420,7 +420,7 @@ for public_html in public_html_files():
 cache_gen = re.search(r"const CACHE_NAME = 'milovi-cake-v2026\.11\.16-r(\d+)';", sw)
 require(cache_gen, 'service-worker cache generation format drifted')
 require(int(cache_gen.group(1)) >= 186, 'service-worker cache generation rolled back')
-require("'/css/gallery/gallery-2026.css?v=20261120r07'," in sw, 'gallery CSS service-worker revision drifted')
+require("'/css/gallery/gallery-2026.css?v=20261127r01'," in sw, 'gallery CSS service-worker revision drifted')
 require(style_ref != '/css/style.css?v=20261023r01', 'service-worker precache still points at stale shared CSS revision')
 require("'/js/main.js?v=20261116r41'," in sw, 'service-worker precache still points at stale shared main.js revision')
 require("'/js/nav.js?v=20261116r27'," in sw, 'service-worker precache still points at stale shared nav.js revision')
