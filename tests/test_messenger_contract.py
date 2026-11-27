@@ -22,15 +22,28 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-# Адреса, которые открывает JS. Это источник истины для href-фолбэка.
-def script_targets() -> dict[str, str]:
-    main_js = (ROOT / "js" / "main.js").read_text(encoding="utf-8")
-    wa = re.search(r"waUrl\s*=\s*'(https://wa\.me/[^'?]+)", main_js)
-    tg = re.search(r"window\.open\('(https://t\.me/[^']+)'", main_js)
+# Адреса, которые открывает JS. Ограничиваем поиск телом соответствующего
+# обработчика, чтобы сторонняя ссылка на тот же мессенджер не скрыла ошибку.
+def script_targets(main_js: str | None = None) -> dict[str, str]:
+    if main_js is None:
+        main_js = (ROOT / "js" / "main.js").read_text(encoding="utf-8")
+
+    def handler(name: str) -> str:
+        match = re.search(rf"^function {name}\(e\) \{{\n(.*?)^\}}", main_js, re.M | re.S)
+        if not match:
+            raise AssertionError(f"js/main.js: отсутствует {name}")
+        return match.group(1)
+
+    wa_body, tg_body = handler("buildWA"), handler("buildTG")
+    wa = re.search(r"const chat\s*=\s*'(https://wa\.me/\d+)';", wa_body)
+    tg = re.search(r"const url\s*=\s*'(https://t\.me/[A-Za-z0-9_]+)';", tg_body)
     if not wa or not tg:
         raise AssertionError("js/main.js: не найдены адреса WhatsApp/Telegram для buildWA/buildTG")
+    if "fitCartWhatsAppUrl(chat, msg)" not in wa_body or "openCartMessenger(fit.url, 'whatsapp')" not in wa_body:
+        raise AssertionError("buildWA не передаёт адрес в фактический обработчик открытия")
+    if "openCartMessenger(url, 'telegram')" not in tg_body:
+        raise AssertionError("buildTG не передаёт адрес в фактический обработчик открытия")
     return {"btnWA": wa.group(1), "btnTG": tg.group(1)}
-
 
 def html_pages() -> list[Path]:
     return sorted(p for p in ROOT.rglob("*.html") if "node_modules" not in p.parts)
@@ -46,6 +59,17 @@ def attr(tag: str, name: str) -> str | None:
 
 
 class MessengerCtaContractTest(unittest.TestCase):
+    def test_script_target_parser_rejects_unrelated_or_disconnected_addresses(self):
+        main_js = (ROOT / "js" / "main.js").read_text(encoding="utf-8")
+        targets = script_targets(main_js)
+        self.assertEqual(targets["btnTG"], "https://t.me/milovi_cake")
+        with self.assertRaises(AssertionError):
+            script_targets(main_js.replace("openCartMessenger(url, 'telegram')",
+                                           "openCartMessenger(other, 'telegram')"))
+        with self.assertRaises(AssertionError):
+            script_targets(main_js.replace("fitCartWhatsAppUrl(chat, msg)",
+                                           "fitCartWhatsAppUrl(other, msg)"))
+
     def test_no_page_uses_hash_placeholder_links(self):
         offenders = [str(p.relative_to(ROOT)) for p in html_pages() if 'href="#"' in p.read_text(encoding="utf-8")]
         self.assertEqual(offenders, [], f"href=\"#\" снова появился в: {offenders}")
