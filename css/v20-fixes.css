@@ -680,3 +680,65 @@ html[data-theme="dark"] #mcSheet .mc-row-privacy .mc-row-icon { background:linea
    отставало от страницы на быстром скролле (двойное сглаживание). */
 /* Стрелка: тонкая шампань, без второй рамки вокруг. */
 .back-to-top svg{stroke-width:1.6}
+
+
+/* Contact-form recovery: use the card's theme-aware field tokens instead of
+   inheriting the older dark-only form-group styling. */
+#contactHandoffRecovery {
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px solid var(--mc-field-border);
+  border-radius: 15px;
+  background: var(--mc-card-surface);
+  color: var(--mc-field-text);
+  min-width: 0;
+}
+#contactHandoffRecovery [role="status"] {
+  margin: 0 0 12px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+#contactHandoffRecovery label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--mc-field-text);
+}
+#contactHandoffRecovery textarea {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 112px;
+  padding: 10px 12px;
+  border: 1px solid var(--mc-field-border);
+  border-radius: 10px;
+  background: var(--mc-field-surface);
+  color: var(--mc-field-text);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.45;
+  resize: vertical;
+}
+#contactHandoffRecovery .contact-recovery-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px solid var(--mc-field-border);
+  border-radius: 10px;
+  background: var(--mc-field-surface);
+  color: var(--mc-field-text);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+#contactHandoffRecovery textarea:focus,
+#contactHandoffRecovery .contact-recovery-link:focus-visible {
+  outline: 2px solid var(--mc-field-border-focus);
+  outline-offset: 2px;
+}

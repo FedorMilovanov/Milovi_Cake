@@ -567,6 +567,13 @@ require(
 # Pixel 7 вместо 117 660 Б. Preload обязан совпадать с <picture> через
 # imagesrcset/imagesizes, иначе браузер скачивает два файла.
 meringue = read('meringue-roll/index.html')
+
+# First paint must not depend on deferred JS or a full-document opacity gate.
+for paint_page in ('meringue-roll/index.html', 'prigorody/index.html', 'certificates/index.html', 'call/index.html'):
+    paint_html = read(paint_page)
+    require(not re.search(r'body\s*:\s*not\(\s*\.ready\s*\)\s*\{[^}]*opacity\s*:\s*0(?:\s|[;}])', paint_html),
+            f'{paint_page}: full-document opacity gate returned')
+require('id="loader"' not in meringue, 'meringue blocking loading screen returned')
 require(
     '<link rel="preload" as="image" type="image/avif" media="(max-width: 1024px)"' in meringue
     and 'imagesrcset="../img/meringue_roll-hero-m.avif 820w, ../img/meringue_roll-hero-m2x.avif 1024w"'

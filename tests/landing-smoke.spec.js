@@ -2550,3 +2550,110 @@ test('meringue first paint is not gated by deferred navigation or a loading scre
   await page.waitForLoadState('domcontentloaded');
   await expect(page.locator('#faq')).toBeAttached();
 });
+
+for (const route of ['/prigorody/', '/certificates/', '/call/']) {
+  for (const theme of ['light', 'dark']) {
+    test('document paints before deferred consent loader on ' + route + ' (' + theme + ')', async ({page}) => {
+      await page.addInitScript(theme => {
+        localStorage.setItem('mc_theme', theme);
+        localStorage.setItem('milovi_analytics_consent_v1', 'denied');
+        // Isolate the DOMContentLoaded dependency from the obsolete 1.2s fallback:
+        // the old implementation must fail even on a slow runner.
+        const nativeTimeout = window.setTimeout;
+        window.setTimeout = function(callback, delay, ...args) {
+          if (delay === 1200 && typeof callback === 'function' && callback.name === 'reveal') {
+            return nativeTimeout.call(window, callback, 60000, ...args);
+          }
+          return nativeTimeout.call(window, callback, delay, ...args);
+        };
+      }, theme);
+      let releaseConsent;
+      const gate = new Promise(resolve => { releaseConsent = resolve; });
+      let intercepted = false;
+      await page.route('**/js/consent-analytics.js*', async route => {
+        intercepted = true;
+        await gate;
+        await route.continue();
+      });
+      try {
+        await page.goto(route, {waitUntil:'commit'});
+        await expect.poll(() => intercepted).toBe(true);
+        await expect(page.locator('h1')).toBeVisible();
+        await expect(page.locator('body')).toHaveCSS('opacity', '1');
+        await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+        expect(await page.evaluate(() => document.readyState)).not.toBe('complete');
+      } finally { releaseConsent(); }
+      await page.waitForLoadState('domcontentloaded');
+    });
+  }
+}
+
+for (const route of ['/', '/prigorody/gatchina/']) {
+  test('contact form recovers blocked and oversized WhatsApp drafts privately on ' + route, async ({page}, testInfo) => {
+    const mobile = testInfo.project.name.includes('mobile');
+    const theme = mobile ? 'dark' : 'light';
+    await page.setViewportSize({width:mobile ? 320 : 1440,height:844});
+    await page.emulateMedia({reducedMotion:'reduce'});
+    await page.addInitScript(theme => {
+      localStorage.setItem('mc_theme',theme);
+      localStorage.setItem('milovi_analytics_consent_v1','granted');
+      window.__contactQA = {events:[],popups:[],handles:[],blocked:true};
+      window.gtag = (...args) => window.__contactQA.events.push(['ga',...args]);
+      window.ym = (...args) => window.__contactQA.events.push(['ym',...args]);
+      window.open = url => {
+        window.__contactQA.popups.push(String(url));
+        if (window.__contactQA.blocked) return null;
+        const handle = {opener:'original'};
+        window.__contactQA.handles.push(handle);
+        return handle;
+      };
+    },theme);
+    await page.route(/(?:googletagmanager\.com|google-analytics\.com|mc\.yandex\.ru|wa\.me|whatsapp\.com)/,route=>route.abort());
+    await page.goto(route,{waitUntil:'domcontentloaded'});
+    const form=page.locator('#fphone').locator('xpath=ancestor::form'),send=form.locator('button[type=submit]');
+    const marker='SYNTHETIC_CONTACT_TEST';
+    await page.locator('#fname').fill(marker);
+    await page.locator('#fphone').fill('+7 000 000 00 00');
+    await page.locator('#fcomment').fill(marker);
+    await send.click();
+    const panel=page.locator('#contactHandoffRecovery'), field=panel.locator('textarea'), link=panel.locator('a');
+    await expect(panel).toBeVisible();
+    await expect(field).toBeFocused();
+    const original=await page.evaluate(()=>window.__contactQA.popups[0]);
+    const full=new URL(original).searchParams.get('text');
+    await expect(field).toHaveValue(full);
+    await expect(field).toHaveClass(/ym-disable-keys/);
+    await expect(panel).toHaveClass(/ym-hide-content/);
+    await expect(link).toHaveAttribute('href','https://wa.me/79119038886');
+    await expect(link).toHaveClass(/ym-disable-tracklink/);
+    const leads=()=>page.evaluate(()=>window.__contactQA.events.filter(e=>e[0]==='ga'&&e[1]==='event'&&e[2]==='generate_lead').map(e=>e[3]));
+    expect(await leads()).toEqual([]);
+    const contrast=await panel.evaluate(e=>{
+      const lum=s=>s.match(/[0-9.]+/g).slice(0,3).map(Number).map(v=>{
+        v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;
+      }).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
+      const ratio=(a,b)=>{const x=lum(a),y=lum(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);};
+      const st=getComputedStyle,bg=st(e).backgroundColor,t=e.querySelector('textarea'),a=e.querySelector('a');
+      return Math.min(ratio(st(e.querySelector('[role=status]')).color,bg),ratio(st(e.querySelector('label')).color,bg),
+        ratio(st(t).color,st(t).backgroundColor),ratio(st(a).color,st(a).backgroundColor));
+    });
+    expect(contrast).toBeGreaterThanOrEqual(4.5);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
+    await page.evaluate(()=>window.__contactQA.blocked=false);
+    await link.click();
+    expect(await page.evaluate(()=>window.__contactQA.popups)).toEqual([original,original]);
+    expect(await page.evaluate(()=>window.__contactQA.handles[0].opener)).toBeNull();
+    expect(await leads()).toEqual([{path:route,lead_channel:'whatsapp',lead_source:'contact_form'}]);
+    await page.locator('#fcomment').fill('т'.repeat(1500)+marker);
+    await expect(panel).toHaveCount(0);
+    await send.click();
+    await expect(field).toHaveValue(new RegExp(marker));
+    expect((await field.inputValue()).includes('т'.repeat(1500)+marker)).toBe(true);
+    expect(await page.evaluate(()=>window.__contactQA.popups.length)).toBe(2);
+    expect(await leads()).toHaveLength(1);
+    expect(JSON.stringify(await page.evaluate(()=>window.__contactQA.events))).not.toContain(marker);
+    expect(await page.locator('a[href]').evaluateAll((a,marker)=>a.some(x=>x.href.includes(marker)),marker)).toBe(false);
+    await page.locator('#fcomment').fill(marker+' edited');
+    await expect(panel).toHaveCount(0);
+  });
+}

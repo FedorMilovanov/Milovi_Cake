@@ -976,12 +976,21 @@ function copyCartText(text, attempt) {
   return Promise.resolve(fallback());
 }
 
-function openCartMessenger(url, channel) {
+// Keep the popup handle for accurate blocked-window reporting, then detach
+// its opener. Passing noopener directly to window.open may return null even
+// when the browser did open a tab.
+function openPrivateMessenger(url) {
   let handoff = null;
   try { handoff = window.open(url, '_blank'); } catch (err) {}
+  if (handoff) { try { handoff.opener = null; } catch (err) {} }
+  return !!handoff;
+}
+
+function openCartMessenger(url, channel) {
+  const handoff = openPrivateMessenger(url);
   setCartStep(handoff ? 3 : 2);
   if (handoff && window.MiloviConsent) window.MiloviConsent.leadHandoff(channel, 'cart');
-  return !!handoff;
+  return handoff;
 }
 
 function fitCartWhatsAppUrl(chat, full) {
@@ -1072,16 +1081,80 @@ function buildTG(e) {
 
 document.getElementById('cartFooter')?.addEventListener('input', resetCartHandoffRecovery);
 
-function sendFormWA() {
-  const name = document.getElementById('fname').value.trim() || '—';
-  const phone = document.getElementById('fphone').value.trim();
-  const comment = document.getElementById('fcomment').value.trim() || '—';
-  if (!phone) { showToast('Пожалуйста, укажите телефон'); document.getElementById('fphone').focus(); return; }
-  const phoneDigits = phone.replace(/\D/g, '');
-  if (phoneDigits.length < 11) { showToast('Введите корректный номер телефона'); document.getElementById('fphone').focus(); return; }
-  const handoff = window.open(`https://wa.me/79119038886?text=${encodeURIComponent(`Привет! 👋\nИмя: ${name}\nТелефон: ${phone}\nКомментарий: ${comment}`)}`, '_blank');
-  if (handoff && window.MiloviConsent) window.MiloviConsent.leadHandoff('whatsapp', 'contact_form');
+function resetContactHandoffRecovery() {
+  document.getElementById('contactHandoffRecovery')?.remove();
 }
+
+function openContactMessenger(url) {
+  const opened = openPrivateMessenger(url);
+  if (opened && window.MiloviConsent) window.MiloviConsent.leadHandoff('whatsapp', 'contact_form');
+  return opened;
+}
+
+function showContactHandoffRecovery(form, text, chat, retryUrl) {
+  resetContactHandoffRecovery();
+  const panel = document.createElement('div');
+  panel.id = 'contactHandoffRecovery';
+  panel.className = 'ym-hide-content';
+  const status = document.createElement('p');
+  status.setAttribute('role', 'status');
+  status.textContent = retryUrl
+    ? 'Не удалось открыть WhatsApp. Повторите попытку или скопируйте полный текст.'
+    : 'Заявка не помещается в ссылку. Скопируйте полный текст и вставьте его в чат WhatsApp.';
+  const group = document.createElement('div');
+  const label = document.createElement('label');
+  label.htmlFor = 'contactHandoffText';
+  label.textContent = 'Полный текст заявки';
+  const area = document.createElement('textarea');
+  area.id = 'contactHandoffText';
+  area.className = 'ym-disable-keys';
+  area.rows = 5;
+  area.readOnly = true;
+  area.value = text;
+  group.append(label, area);
+  const retry = document.createElement('a');
+  retry.className = 'contact-recovery-link ym-disable-tracklink';
+  retry.href = chat;
+  retry.target = '_blank';
+  retry.rel = 'noopener noreferrer';
+  retry.textContent = 'Открыть WhatsApp';
+  if (retryUrl) {
+    retry.addEventListener('click', event => {
+      if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      if (openContactMessenger(retryUrl)) {
+        event.preventDefault();
+        status.textContent = 'Вкладка WhatsApp открыта. Проверьте текст перед отправкой.';
+      } else {
+        status.textContent = 'Скопируйте полный текст и вставьте его в чат WhatsApp.';
+      }
+    });
+  }
+  panel.append(status, group, retry);
+  form.append(panel);
+  area.focus({preventScroll:true});
+  panel.scrollIntoView({block:'center', inline:'nearest', behavior:'instant'});
+}
+
+function sendFormWA() {
+  resetContactHandoffRecovery();
+  const name = document.getElementById('fname').value.trim() || '—';
+  const phoneEl = document.getElementById('fphone');
+  const phone = phoneEl.value.trim();
+  const comment = document.getElementById('fcomment').value.trim() || '—';
+  if (!phone) { showToast('Пожалуйста, укажите телефон'); phoneEl.focus(); return; }
+  const phoneDigits = phone.replace(/\D/g, '');
+  if (phoneDigits.length < 11) { showToast('Введите корректный номер телефона'); phoneEl.focus(); return; }
+  const chat = 'https://wa.me/79119038886';
+  const text = `Привет! 👋\nИмя: ${name}\nТелефон: ${phone}\nКомментарий: ${comment}`;
+  const url = chat + '?text=' + encodeURIComponent(text);
+  const retryUrl = url.length <= 4096 ? url : null;
+  if (retryUrl && openContactMessenger(retryUrl)) return;
+  showContactHandoffRecovery(phoneEl.form, text, chat, retryUrl);
+}
+
+document.getElementById('fphone')?.form?.addEventListener('input', event => {
+  if (['fname', 'fphone', 'fcomment'].includes(event.target.id)) resetContactHandoffRecovery();
+});
 
 function navigateToStep(step) {
   const hasItems = Object.keys(cart).length > 0;
