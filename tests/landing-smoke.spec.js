@@ -2496,3 +2496,33 @@ test('wedding private draft stays out of links and blocked WhatsApp offers full 
   const hrefs = await page.locator('a[href]').evaluateAll(links => links.map(link => link.href));
   expect(hrefs).not.toContain(actual);
 });
+
+
+for (const route of ['/', '/meringue-roll/']) {
+  test('first-visit privacy focus is inside the visible dialog on ' + route, async ({page}) => {
+    await page.addInitScript(() => {
+      if (!sessionStorage.getItem('qa-first-privacy-visit')) {
+        localStorage.removeItem('milovi_analytics_consent_v1');
+        sessionStorage.setItem('qa-first-privacy-visit','1');
+      }
+    });
+    await page.goto(route, {waitUntil:'domcontentloaded'});
+    const modal = page.getByRole('dialog', {name:'Настройки аналитики'});
+    const close = modal.getByRole('button', {name:'Закрыть настройки конфиденциальности'});
+    await expect(modal).toBeVisible();
+    await expect(close).toBeFocused();
+    await page.keyboard.press('Shift+Tab');
+    await expect(modal.locator('[data-choice="granted"]')).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(close).toBeFocused();
+    await modal.locator('[data-choice="denied"]').click();
+    await expect(modal).toBeHidden();
+    await page.evaluate(() => window.MiloviConsent.open());
+    await expect(close).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(modal).toBeHidden();
+    await page.reload({waitUntil:'domcontentloaded'});
+    await expect(modal).toBeHidden();
+    expect(await page.evaluate(() => window.MiloviConsent.getChoice())).toBe('denied');
+  });
+}

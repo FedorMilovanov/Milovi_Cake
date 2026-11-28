@@ -20,7 +20,7 @@ const filterButtons = [
 ];
 const CONTACT_PHONE = '79119038886';
 const TELEGRAM_USERNAME = 'milovi_cake';
-const state = { filter:'all', items:[], visible:[], swiper:null, lbIndex:0, observer:null, bgTimer:null, mediaWarmupTimer: null, gridRenderToken: 0 };
+const state = { filter:'all', items:[], visible:[], swiper:null, lbIndex:0, observer:null, bgTimer:null, mediaWarmupTimer: null, gridRenderToken: 0, posterObserver: null };
 
 
 function esc(s=''){ return String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
@@ -147,6 +147,15 @@ function renderGrid(){
   if(totalSpan) totalSpan.textContent=String(visibleItems.length);
   const grid=$('#galleryGrid'), empty=$('#gxEmpty');
   const renderToken=++state.gridRenderToken;
+  state.posterObserver?.disconnect();
+  state.posterObserver = typeof IntersectionObserver === "function" ? new IntersectionObserver(entries => {
+    if (renderToken !== state.gridRenderToken) return;
+    for (const entry of entries) if (entry.isIntersecting) {
+      const video = entry.target;
+      if (video.dataset.pendingPoster) { video.poster = video.dataset.pendingPoster; delete video.dataset.pendingPoster; }
+      state.posterObserver.unobserve(video);
+    }
+  }, {rootMargin:"600px 0px"}) : null;
   grid.setAttribute('data-hydrating','true');
   const staticCard = grid.querySelector('[data-static-lcp="p01"]');
   const reuseStaticLcp = state.filter === 'all' && staticCard && visibleItems[0]?.id === staticCard.dataset.id;
@@ -193,7 +202,8 @@ function renderGrid(){
       if(item.type==='video') {
         const v=document.createElement('video');
         v.className='card-media';
-        v.poster=item.src;
+        if (index < 4 || !state.posterObserver) v.poster=item.src;
+        else { v.dataset.pendingPoster=item.src; state.posterObserver.observe(v); }
         v.muted=true;
         v.loop=true;
         v.playsInline=true;
@@ -286,30 +296,30 @@ function setupVideoObserver(){
   /* r17 robustness: cap concurrently PLAYING videos to avoid decoder/memory
      pressure (WebKit/Safari can crash with many simultaneous autoplays). */
   var MAX_PLAYING = 3;
-  var playingQueue = [];
-  function startPlay(v){
-    if (playingQueue.indexOf(v) === -1) playingQueue.push(v);
-    while (playingQueue.length > MAX_PLAYING){
-      var old = playingQueue.shift();
-      if (old && old !== v) { try { old.pause(); } catch(e){} }
-    }
-    v.play().catch(function(){});
-  }
-  function stopPlay(v){
-    var i = playingQueue.indexOf(v); if (i !== -1) playingQueue.splice(i,1);
-    try { v.pause(); } catch(e){}
+  var eligible = new Set();
+  var playing = new Set();
+  function rank(v) {
+    var r = v.getBoundingClientRect();
+    var visible = Math.max(0, Math.min(r.bottom, innerHeight) - Math.max(r.top, 0)) *
+      Math.max(0, Math.min(r.right, innerWidth) - Math.max(r.left, 0));
+    return { video: v, visible: visible, distance: Math.abs((r.top+r.bottom)/2-innerHeight/2) };
   }
   state.observer=new IntersectionObserver(entries=>{
-    if ($('#lbRoot') || motionPreference.matches || document.body.classList.contains('mc-consent-open')) return; // Callbacks can arrive after either state changes.
+    if ($('#lbRoot') || motionPreference.matches || document.body.classList.contains('mc-consent-open')) return;
     entries.forEach(entry=>{
-      const v=entry.target; 
-      if(entry.isIntersecting){ 
-        if(saveData) return; /* poster stays; tap opens full video in lightbox */
-        if(!v.src&&v.dataset.src)v.src=v.dataset.src; 
-        startPlay(v);
-      } else stopPlay(v);
+      if (entry.isIntersecting) eligible.add(entry.target);
+      else eligible.delete(entry.target);
     });
-  },{threshold:.3,rootMargin:'200px 0px'}); 
+    if (saveData) return;
+    var selected = new Set(Array.from(eligible).filter(v=>v.isConnected).map(rank)
+      .sort((a,b)=>b.visible-a.visible || a.distance-b.distance).slice(0,MAX_PLAYING).map(x=>x.video));
+    playing.forEach(v=>{ if (!selected.has(v)) { try { v.pause(); } catch(e){} } });
+    selected.forEach(v=>{
+      if(!v.src && v.dataset.src) v.src=v.dataset.src;
+      if(!playing.has(v) || v.paused) v.play().catch(function(){});
+    });
+    playing=selected;
+  },{threshold:.3,rootMargin:'200px 0px'});
   $$('#galleryGrid video').forEach(v=>state.observer.observe(v)); 
 }
 function lightboxTemplate(){ 

@@ -207,7 +207,7 @@ video.lb-media { background:#080402!important; }
    при увеличенном тексте (200%) прокручивал на 4 px меньше, и элемент
    оказывался подрезан. Явный scroll-margin задаёт запас при прокрутке. */
 .lb-info a, .lb-info button, .lb-info [tabindex] { scroll-margin-block: 8px; }
-.lb-info-inner { display:inline-block; max-width:100%; }
+.lb-info-inner { display:inline-block; max-width:100%; vertical-align:top; }
 .lb-title { font-family:'Cormorant Garamond',serif; font-size:clamp(22px,3.5vw,32px); font-weight:400; font-style:italic; color:#fff; margin:0 0 8px; overflow-wrap:anywhere; animation:infoSlideUp .5s cubic-bezier(.16,1,.3,1); text-shadow:0 2px 20px rgba(0,0,0,.5); }
 .lb-desc { font-size:11px; letter-spacing:.15em; color:rgba(255,255,255,.7); text-transform:uppercase; margin:0; animation:infoSlideUp .5s cubic-bezier(.16,1,.3,1) .05s both; }
 .lb-disclaimer { margin-top: 10px; font-size: 10px; color: rgba(255,255,255,.75); letter-spacing: 0.05em; text-transform: uppercase; animation: infoSlideUp 0.5s ease 0.1s both; }
@@ -394,6 +394,12 @@ video.lb-media { background:#080402!important; }
 }
 @media (orientation:landscape) and (max-height:360px) {
   .lb-title { font-size:16px; line-height:1.05; }
+  /* Remove both inline formatting contexts: platform font descenders must not
+     introduce phantom scroll in the short landscape grid. Keep real text zoom
+     overflow scrollable and preserve the media and control sizes. */
+  .lb-info-inner { display:flow-root; width:fit-content; margin-inline:auto; }
+  .lb-actions { display:flex; width:fit-content; margin-inline:auto; }
+  .lb-thumbs { margin-top:4px; }
 }
 
 

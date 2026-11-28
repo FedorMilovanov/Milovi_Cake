@@ -463,6 +463,8 @@
     return overlay;
   }
 
+  var dialogFocusEpoch = 0;
+
   function openDialog(autoOpened) {
     if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
     ensureDialog();
@@ -473,21 +475,31 @@
     }
     lastFocused = autoOpened ? null : document.activeElement;
     syncDialog();
+    // On the first visit show a fully visible dialog before moving focus.
+    // Manually reopened settings keep the existing entrance transition.
+    if (autoOpened) overlay.classList.add('is-open');
     overlay.hidden = false;
     document.body.classList.add('mc-consent-open');
+    var focusEpoch = ++dialogFocusEpoch;
+    function stillOpening() { return focusEpoch === dialogFocusEpoch && !overlay.hidden; }
+    function focusDialog() {
+      if (!stillOpening() || !overlay.classList.contains('is-open') || dialog.contains(document.activeElement)) return;
+      var focusTarget = overlay.querySelector('.mc-consent-close');
+      if (focusTarget) focusTarget.focus({ preventScroll: true });
+    }
     requestAnimationFrame(function () {
+      if (!stillOpening()) return;
       overlay.classList.add('is-open');
-      // Let visibility:hidden -> visible settle before moving focus into the modal.
-      // Focusing in the same frame silently fails in Chromium on a cold visit.
-      requestAnimationFrame(function () {
-        var focusTarget = overlay.querySelector('.mc-consent-close');
-        if (focusTarget && !overlay.hidden && overlay.classList.contains('is-open')) focusTarget.focus({ preventScroll: true });
-      });
+      requestAnimationFrame(focusDialog);
+      // CSS visibility transitions can outlive two frames on a busy engine.
+      // Retry once after the entrance; do not steal focus or revive a closed dialog.
+      setTimeout(focusDialog, 320);
     });
   }
 
   function closeDialog() {
     if (!overlay || overlay.hidden) return;
+    dialogFocusEpoch += 1;
     overlay.classList.remove('is-open');
     document.body.classList.remove('mc-consent-open');
     closeTimer = setTimeout(function () {

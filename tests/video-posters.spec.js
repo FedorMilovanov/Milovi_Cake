@@ -1459,3 +1459,74 @@ test('gallery native video keyboard arrows do not navigate slides', async ({page
   await page.keyboard.press('ArrowRight');
   await expect(root.locator('#lbTitle')).not.toHaveText(before);
 });
+
+
+test('gallery loads distant video posters on approach and across filter rebuilds', async ({page}) => {
+  await page.setViewportSize({width:390,height:844});
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.addInitScript(() => localStorage.setItem('milovi_analytics_consent_v1','denied'));
+  await page.goto('/gallery/',{waitUntil:'domcontentloaded'});
+  const grid = page.locator('#galleryGrid');
+  const videos = grid.locator('video');
+  await expect(grid.locator('.card')).toHaveCount(44);
+  await expect(videos).toHaveCount(16);
+  await expect(videos.first()).toHaveAttribute('poster', /-poster\.webp$/);
+  await expect(videos.last()).not.toHaveAttribute('poster', /-poster\.webp$/);
+  for (const video of await videos.all()) {
+    await video.scrollIntoViewIfNeeded();
+    await expect(video).toHaveAttribute('poster', /-poster\.webp$/);
+  }
+  await page.locator('.gx-chip[data-filter="photo"]').click();
+  await expect(grid.locator('.card')).toHaveCount(28);
+  await page.locator('.gx-chip[data-filter="video"]').click();
+  await expect(videos).toHaveCount(16);
+  await videos.last().scrollIntoViewIfNeeded();
+  await expect(videos.last()).toHaveAttribute('poster', /-poster\.webp$/);
+  await page.locator('.gx-chip[data-filter="all"]').click();
+  await expect(grid.locator('.card')).toHaveCount(44);
+});
+
+
+test('gallery playback keeps visible videos ahead of offscreen decoder candidates', async ({page}) => {
+  await page.setViewportSize({width:1440,height:900});
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  await page.addInitScript(() => {
+    localStorage.setItem('milovi_analytics_consent_v1','denied');
+    const Native = window.IntersectionObserver;
+    window.__galleryPlaybackCalls = [];
+    // Isolate only the video playback observer; retain native poster observer
+    // and layout. Deterministic entry order reproduces Firefox's eviction.
+    window.IntersectionObserver = class extends Native {
+      constructor(callback, options) {
+        if (options?.rootMargin === '200px 0px') {
+          super(() => {}, options);
+          window.__galleryPlaybackCallback = callback;
+        } else super(callback, options);
+      }
+    };
+    HTMLMediaElement.prototype.play = function() {
+      if (this.closest('#galleryGrid')) window.__galleryPlaybackCalls.push(['play',this.closest('.card').dataset.id]);
+      return Promise.resolve();
+    };
+    HTMLMediaElement.prototype.pause = function() {
+      if (this.closest('#galleryGrid')) window.__galleryPlaybackCalls.push(['pause',this.closest('.card').dataset.id]);
+    };
+  });
+  await page.route(/\.(mp4|webm)(\?|$)/, route => route.abort());
+  await page.goto('/gallery/',{waitUntil:'domcontentloaded'});
+  await expect(page.locator('#galleryGrid video')).toHaveCount(16);
+  await page.waitForFunction(() => typeof window.__galleryPlaybackCallback === 'function');
+  const calls = await page.evaluate(() => {
+    const vids = [...document.querySelectorAll('#galleryGrid video')].slice(0,4);
+    // First is fully visible; second partly visible; third/fourth in margin.
+    const top = [189,715,978,978], height = [523,248,234,234];
+    vids.forEach((v,i)=>{v.getBoundingClientRect=()=>({top:top[i],bottom:top[i]+height[i],left:100,right:400,width:300,height:height[i]})});
+    window.__galleryPlaybackCalls.length=0;
+    window.__galleryPlaybackCallback(vids.map(target=>({target,isIntersecting:true})));
+    return window.__galleryPlaybackCalls.slice();
+  });
+  const plays = calls.filter(e=>e[0]==='play').map(e=>e[1]);
+  expect(plays).toHaveLength(3);
+  expect(plays).toContain('v01');
+  expect(calls).not.toContainEqual(['pause','v01']);
+});
