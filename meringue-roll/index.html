@@ -2,28 +2,20 @@
 <html lang="ru">
 <head>
 
-  <!-- ANTI-FOUC v1: instant background match + body opacity reveal -->
+  <!-- ANTI-FOUC v1: instant background match, no document-wide paint gate -->
   <!-- r11: Meringue page is DARK BY DEFAULT (honours explicit user theme choice) -->
   <style id="anti-fouc">
     html{background:#1a1108;color-scheme:dark}
     html[data-theme="light"]{background:#f5f0e8;color-scheme:light}
     body{background:inherit}
-    body:not(.ready){opacity:0}
-    body.ready{opacity:1;transition:opacity .28s ease-out}
-    @media (prefers-reduced-motion:reduce){body{opacity:1!important;transition:none!important}}
   </style>
-  <noscript><style>body:not(.ready){opacity:1!important}html body #loader{display:none}html body .reveal{opacity:1;transform:none}</style></noscript>
+  <noscript><style>html body .reveal{opacity:1;transform:none}</style></noscript>
   <script>
     (function(){
       try{var t=localStorage.getItem('mc_theme');
         // Meringue defaults to DARK: respect an explicit choice, otherwise force dark.
         document.documentElement.setAttribute('data-theme', t==='light' ? 'light' : 'dark');
       }catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
-      function reveal(){requestAnimationFrame(function(){document.body&&document.body.classList.add('ready')})}
-      if(document.readyState!=='loading')reveal();
-      else document.addEventListener('DOMContentLoaded',reveal);
-      // safety net
-      setTimeout(reveal,1200);
     })();
   </script>
 
@@ -230,24 +222,6 @@
       touch-action: manipulation; /* убирает 300ms задержку клика */
     }
     img { -webkit-touch-callout: none; } /* запрещаем долгое нажатие на картинки на iOS */
-
-    /* ─── LOADER ─── */
-    #loader {
-      position: fixed; inset: 0; z-index: 9999;
-      background: var(--ink);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 20px;
-      transition: opacity 0.7s ease, visibility 0.7s ease;
-    }
-    #loader.gone { opacity: 0; visibility: hidden; pointer-events: none; }
-    #loader.gone .loader-line { animation: none; }
-    .loader-logo { font-family: var(--serif); font-size: 22px; letter-spacing: 0.18em; color: var(--gold); text-transform: uppercase; }
-    .loader-line {
-      width: 80px; height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-      animation: loaderLine 1.4s ease-in-out infinite;
-    }
-    @keyframes loaderLine { 0%,100%{transform:scaleX(0.3);opacity:0.4} 50%{transform:scaleX(1);opacity:1} }
 
     /* ─── HEADER ─── */
     .site-hdr {
@@ -1939,13 +1913,6 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 <body>
 <a href="#order" class="skip-link">Перейти к содержимому</a>
 
-<!-- LOADER -->
-<div id="loader">
-  <div class="loader-line"></div>
-  <div class="loader-logo">Milovi Cake</div>
-  <div class="loader-line"></div>
-</div>
-
 <!-- ── SCROLL PROGRESS ── -->
 <div id="mrScrollProgress" style="position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,#c9934a,#d4a76a,#e8b87a);z-index:var(--z-nav,100);border-radius:0 2px 2px 0;transition:width 0.08s linear;box-shadow:0 0 8px rgba(201,147,74,0.5);pointer-events:none;"></div>
 
@@ -2485,24 +2452,8 @@ html[data-theme="dark"] .lp-theme-toggle .lp-ti-sun{display:block}
 </button>
 
 <script>
-  // [M-1 FIXED] Loader flash fix: immediately hide loader on repeat/cached visits.
-  // On first visit the loader shows until window.load + 350ms. On subsequent visits
-  // sessionStorage flag causes instant hide, avoiding the flash entirely.
-  (function() {
-    var ld = document.getElementById('loader');
-    if (!ld) return;
-    try {
-      if (sessionStorage.getItem('meringueLoaded')) {
-        ld.classList.add('gone'); // instant — no transition needed for cached visit
-      }
-      sessionStorage.setItem('meringueLoaded', '1');
-      sessionStorage.setItem('fromMeringue', '1');
-    } catch (err) { /* Storage may be disabled; the load handlers still hide the loader. */ }
-  })();
-  window.addEventListener('load', () => {
-    setTimeout(() => document.getElementById('loader').classList.add('gone'), 350);
-  });
-  setTimeout(() => document.getElementById('loader').classList.add('gone'), 4000);
+  // Preserve the existing cross-page navigation marker without blocking first paint.
+  try { sessionStorage.setItem('fromMeringue', '1'); } catch (err) {}
 
   // ── Полоса прогресса чтения (mobile only) ──
   (function() {

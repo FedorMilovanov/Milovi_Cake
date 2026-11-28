@@ -2526,3 +2526,27 @@ for (const route of ['/', '/meringue-roll/']) {
     expect(await page.evaluate(() => window.MiloviConsent.getChoice())).toBe('denied');
   });
 }
+
+
+test('meringue first paint is not gated by deferred navigation or a loading screen', async ({page}) => {
+  await page.addInitScript(() => localStorage.setItem('milovi_analytics_consent_v1', 'denied'));
+  let releaseNav;
+  const gate = new Promise(resolve => { releaseNav = resolve; });
+  let intercepted = false;
+  await page.route('**/js/nav.js*', async route => {
+    intercepted = true;
+    await gate;
+    await route.continue();
+  });
+  try {
+    await page.goto('/meringue-roll/', {waitUntil:'commit'});
+    await expect.poll(() => intercepted).toBe(true);
+    await expect(page.locator('.hero-photo img')).toBeVisible();
+    await expect(page.locator('body')).toHaveCSS('opacity', '1');
+    await expect(page.locator('#loader')).toHaveCount(0);
+    expect(await page.evaluate(() => document.readyState)).not.toBe('complete');
+    await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
+  } finally { releaseNav(); }
+  await page.waitForLoadState('domcontentloaded');
+  await expect(page.locator('#faq')).toBeAttached();
+});
