@@ -2677,3 +2677,47 @@ for (const route of ['/', '/prigorody/gatchina/']) {
     await expect(panel).toHaveCount(0);
   });
 }
+
+// Consent fine print crosses both a deliberately dark homepage card and
+// theme-following suburb cards. Test actual text/link against both ends of
+// the card gradient, rather than assuming the global page theme is its color.
+for (const route of ['/', '/prigorody/gatchina/', '/svadebnye-torty/']) {
+  for (const theme of ['light', 'dark']) {
+    test('contact and wedding fine print stays readable on ' + route + ' (' + theme + ')', async ({page}, testInfo) => {
+      const mobile = testInfo.project.name.includes('mobile');
+      await page.setViewportSize({width:mobile ? 320 : 1440,height:844});
+      await page.emulateMedia({reducedMotion:'reduce'});
+      await page.addInitScript(theme => {
+        localStorage.setItem('mc_theme',theme);
+        localStorage.setItem('milovi_analytics_consent_v1','denied');
+      },theme);
+      await page.goto(route,{waitUntil:'domcontentloaded'});
+      const wedding=route.includes('svadebnye-torty');
+      const target=page.locator(wedding?'.wed-meta':'#contacts .consent-note').first();
+      await target.scrollIntoViewIfNeeded();
+      await expect(target).toBeVisible();
+      const contrast=()=>target.evaluate((e,wedding)=>{
+        const channels=s=>s.match(/[\d.]+/g).map(Number);
+        const lum=v=>v.slice(0,3).map(x=>x/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4)
+          .reduce((a,v,i)=>a+v*[.2126,.7152,.0722][i],0);
+        const st=getComputedStyle;
+        const bg=st(e.closest(wedding?'.wed-hero':'.card'));
+        const stops=[...bg.backgroundImage.matchAll(/rgba?\([^)]*\)/g)].map(m=>channels(m[0]));
+        if(!stops.length)stops.push(channels(bg.backgroundColor));
+        const score=(n,b)=>{
+          const s=st(n),fg=channels(s.color);
+          const alpha=(fg[3]??1)*Number(s.opacity)*(n===e?1:Number(st(e).opacity));
+          const blend=fg.slice(0,3).map((v,i)=>v*alpha+b[i]*(1-alpha));
+          const a=lum(blend),z=lum(b);
+          return (Math.max(a,z)+.05)/(Math.min(a,z)+.05);
+        };
+        return Math.min(...[e,...e.querySelectorAll('a')].flatMap(n=>stops.map(b=>score(n,b))));
+      },wedding);
+      await expect.poll(contrast).toBeGreaterThanOrEqual(4.5);
+      if(!wedding&&!mobile) {
+        await target.locator('a').first().hover();
+        await expect.poll(contrast).toBeGreaterThanOrEqual(4.5);
+      }
+    });
+  }
+}
