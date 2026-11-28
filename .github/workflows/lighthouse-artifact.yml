@@ -169,7 +169,6 @@ jobs:
             exit 1
           fi
           python3 scripts/runner_lhr_extract.py "$results" --out /tmp/artifact-runs.json --expect-workflow .github/workflows/lighthouse-artifact.yml
-          echo "::notice::meringue-roll byte weight is an uncalibrated baseline; common LCP/TBT/CLS and score assertions still apply"
           python3 - /tmp/artifact-runs.json <<'PY'
           import json, statistics as st, sys
           try:

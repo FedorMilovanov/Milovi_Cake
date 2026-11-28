@@ -93,6 +93,7 @@ test('back-to-top restores progress and visibility without any scroll', async ({
     const fill = document.querySelector('.btt-ring-fill');
     const total = document.documentElement.scrollHeight - window.innerHeight;
     return {
+      total, y: window.scrollY,
       offset: Number(fill.style.strokeDashoffset),
       expected: Number(((1 - window.scrollY / total) * 100).toFixed(2)),
       visible: document.getElementById('backToTop').classList.contains('visible'),
@@ -101,6 +102,10 @@ test('back-to-top restores progress and visibility without any scroll', async ({
   });
 
   const before = await read();
+  expect(before.visible).toBe(true);
+  expect(before.y).toBeGreaterThan(600);
+  expect(Math.abs(before.offset - before.expected)).toBeLessThan(0.6);
+  expect(Math.abs(parseFloat(before.bar) - (100 - before.expected))).toBeLessThan(0.6);
   await page.reload({ waitUntil: 'load' });
   await page.waitForTimeout(500);
   await settleLayout(page);
@@ -110,8 +115,46 @@ test('back-to-top restores progress and visibility without any scroll', async ({
   // кольцо и кнопка должны сразу отражать её, а не вчерашнее значение.
   expect(after.visible).toBe(true);
   expect(Math.abs(after.offset - after.expected)).toBeLessThan(0.6);
-  expect(after.offset).toBeCloseTo(before.offset, 0);
+  expect(after.y).toBeGreaterThan(600);
   expect(after.bar).toMatch(/%$/);
+  expect(Math.abs(parseFloat(after.bar) - (100 - after.expected))).toBeLessThan(0.6);
+  // A reload can rehydrate lazy content and move the native scroll anchor.
+  // Only identical geometry entails an identical progress percentage.
+  if (after.total === before.total && after.y === before.y) {
+    expect(after.offset).toBeCloseTo(before.offset, 0);
+  }
+
+  // Force a real change in document height below the viewport while keeping
+  // the restored scroll position fixed. The previous percentage is now
+  // provably wrong. No manual scroll is allowed to rescue stale UI.
+  const grown = await page.evaluate(() => {
+    const spacer = document.createElement('div');
+    spacer.setAttribute('aria-hidden', 'true');
+    spacer.style.cssText = 'height:1800px;overflow-anchor:none';
+    document.body.append(spacer);
+    return { y: window.scrollY, total: document.documentElement.scrollHeight - innerHeight };
+  });
+  expect(grown.total - after.total).toBeGreaterThanOrEqual(1700);
+  expect(grown.y).toBe(after.y);
+  await expect.poll(async () => {
+    const s = await read();
+    return Math.max(Math.abs(s.offset - s.expected), Math.abs(parseFloat(s.bar) - (100 - s.expected)));
+  }).toBeLessThan(0.6);
+  const expanded = await read();
+  expect(expanded.y).toBe(after.y);
+  expect(expanded.visible).toBe(true);
+  expect(Math.abs(expanded.offset - after.offset)).toBeGreaterThan(1);
+
+  // The lifecycle path must restore visibility even without a scroll event.
+  await page.evaluate(() => {
+    document.getElementById('backToTop').classList.remove('visible');
+    window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }));
+  });
+  await expect(page.locator('#backToTop')).toHaveClass(/visible/);
+  const resumed = await read();
+  expect(resumed.y).toBe(expanded.y);
+  expect(Math.abs(resumed.offset - resumed.expected)).toBeLessThan(0.6);
+  expect(Math.abs(parseFloat(resumed.bar) - (100 - resumed.expected))).toBeLessThan(0.6);
 });
 
 test('back-to-top ring has a single smoothing source (no CSS catch-up)', async ({ page }) => {

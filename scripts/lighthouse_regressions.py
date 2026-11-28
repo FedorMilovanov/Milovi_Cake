@@ -289,7 +289,13 @@ require(
 )
 require("script.addEventListener('error'" in gallery and 'loading = false;' in gallery, 'gallery Swiper loader cannot retry after CDN failure')
 require('/css/gallery/gallery-2026.css?v=20261127r02" />' in gallery, 'gallery critical local CSS became deferred or changed revision')
-require('/css/final-fixes.css?v=20261120r47" />' in gallery, 'gallery final critical CSS became deferred')
+final_match = re.search(r"'/css/final-fixes\.css\?v=([^']+)',", sw)
+require(final_match is not None, 'service-worker precache lost its versioned final CSS')
+final_ref = f'/css/final-fixes.css?v={final_match.group(1)}'
+require(
+    gallery.count(f'<link rel="stylesheet" href="{final_ref}" />') == 1,
+    'gallery final critical CSS became deferred or differs from SW revision',
+)
 require('id="gallery-lcp-media-fastpath"' in gallery, 'gallery eager-media LCP fast path missing')
 require(
     '#galleryGrid .card:has(img.card-media[loading="eager"]) .card-skeleton { display: none; }' in gallery,

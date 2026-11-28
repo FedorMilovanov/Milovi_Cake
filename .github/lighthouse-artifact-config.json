@@ -65,6 +65,18 @@
           }
         },
         {
+          "matchingUrlPattern": "^https://127\\.0\\.0\\.1:4300/meringue-roll/$",
+          "assertions": {
+            "total-byte-weight": [
+              "error",
+              {
+                "maxNumericValue": 634880,
+                "aggregationMethod": "pessimistic"
+              }
+            ]
+          }
+        },
+        {
           "matchingUrlPattern": "^https://127\\.0\\.0\\.1:4300/bento-torty/$",
           "assertions": {
             "total-byte-weight": [

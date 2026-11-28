@@ -623,7 +623,17 @@ html body .site-footer .footer-bottom .mc-consent-trigger { color:rgba(226,192,1
 }
 
 /* Fine-print must remain quiet, not illegible. */
-#contacts .consent-note { color:rgba(237,216,188,.62) !important; }
+#contacts .consent-note {
+  color: var(--mc-contact-consent-ink, var(--text-muted-acc, var(--text-muted))) !important;
+  --gold: var(--gold-acc, #865a24);
+}
+/* The homepage contact card stays dark in both themes. Suburb cards follow
+   the actual page theme; do not paint cream fine print on cream surfaces. */
+#contacts .card.card--dark .consent-note,
+html[data-theme="dark"] #contacts .consent-note {
+  --mc-contact-consent-ink: #e8cfae;
+  --gold-acc: #e8b87a;
+}
 #contacts .card:not(.card--dark) .form-note { font-size:11.5px !important; }
 html[data-theme="dark"] #contacts .card:not(.card--dark) .form-note { color:rgba(235,215,187,.68) !important; }
 

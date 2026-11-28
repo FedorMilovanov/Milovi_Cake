@@ -1,5 +1,29 @@
 # Performance: текущее состояние и критерии завершения
 
+## Production 28 ноября 2026 — #190
+
+Точный опубликованный SHA \`624b00d7e8f4ff2717151bdce3fcb67b952794ef\`, [Pages deploy 46132843905](https://github.com/FedorMilovanov/Milovi_Cake/actions/runs/46132843905), smoke 46/46, IndexNow 29 URL. [Live 46135505556](https://github.com/FedorMilovanov/Milovi_Cake/actions/runs/46135505556) и [artifact 46135505530](https://github.com/FedorMilovanov/Milovi_Cake/actions/runs/46135505530): по 27 валидных независимых LHR, 9 URL × 3. Полнота подтверждена новым валидатором.
+
+| URL | Live LCP median | Artifact LCP median | Live TBT median | Artifact TBT median |
+| --- | ---: | ---: | ---: | ---: |
+| / | 2318 | 2554 | 147 | 34 |
+| /meringue-roll/ | 2435 | 2777 | 21 | 0 |
+| /prigorody/gatchina/ | 2314 | 2327 | 83 | 14 |
+| /gallery/ | 1903 | 1429 | 44 | 0 |
+| /bento-torty/ | 1823 | 1817 | 0 | 0 |
+| /svadebnye-torty/ | 2121 | 2000 | 26 | 3 |
+| /zakazat-tort-spb/ | 1819 | 1987 | 0 | 0 |
+| /o-konditere/ | 1970 | 1978 | 0 | 0 |
+| /privacy/ | 1051 | 1057 | 0 | 0 |
+
+Все медианы TBT и все CLS в бюджете (max CLS 0.068818); отдельный live TBT главной 2073ms, live max LCP главной 2505ms и рулета 2810ms. **#100 OPEN**: live LCP 9/9, artifact LCP 7/9, field p75 не подтверждён.
+
+Первый полный HTTPS/H2 artifact замер рулета: transfer 617984–618007 B (median/max); новый fail-closed бюджет **620 KiB / 634880 B** (запас 2.73% над наблюдаемым максимумом). Это ограничение регрессии передачи, не доказательство прохождения LCP. Восемь прежних бюджетов и общие пороги не изменены.
+
+W26: контролируемый A/B объединения scroll-height reads 12 сеансов на #191: 7→5 при старте и 20→1 при искусственном burst resize, но median Layout home 586→574ms, Gatchina 610→634ms. Кандидат отклонён, runtime не изменён.
+
+Ниже — исторические серии, а не текущий release verdict.
+
 ## Подтверждённый production — 8 ноября 2026
 
 **Published SHA:** `d10c82caacf7a288d9e2174ccf00e69f5b60772a`, [Pages deploy + smoke success](https://github.com/FedorMilovanov/Milovi_Cake/actions/runs/42447340590); PR #149 (UX карусели) merged, branch deleted. **Performance issue #100 OPEN:** [48 первичных live/artifact LHR для merge SHA](https://github.com/FedorMilovanov/Milovi_Cake/issues/100#issuecomment-6717501238). Медиана LCP live прошла 8/8 URL; Pages-артефакт 7/8 (Гатчина 2619ms). Выбросы: live главная LCP 3205ms/TBT 574ms, live Гатчина LCP 2850ms, artifact Гатчина LCP 4073ms. Ни медиана, ни Lighthouse CI success не доказывают полевые CWV p75.
