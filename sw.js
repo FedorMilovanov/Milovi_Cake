@@ -7,7 +7,7 @@
      - skipWaiting + clients.claim → обновления подхватываются мгновенно
    ═══════════════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'milovi-cake-v2026.11.16-r189';
+const CACHE_NAME = 'milovi-cake-v2026.11.16-r191';
 
 const PRECACHE = [
   '/',
@@ -17,10 +17,10 @@ const PRECACHE = [
   '/css/mc-2026.css?v=20261120r47',
   '/css/premium-overrides.css?v=20261116r40',
   '/css/v20-dark-and-fixes.css?v=20261120r28',
-  '/css/v20-fixes.css?v=20261120r34',
+  '/css/v20-fixes.css?v=20261128r03',
   '/css/final-fixes.css?v=20261120r47',
   '/css/gallery/gallery-2026.css?v=20261127r02',
-  '/js/main.js?v=20261127r03',
+  '/js/main.js?v=20261128r02',
   '/js/nav.js?v=20261116r27',
   '/js/mc-2026.js?v=20261116r45',
   '/js/v20-faq-fix.js?v=20260728r27',
@@ -40,10 +40,19 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       var misses = 0;
+      var criticalMisses = 0;
       return Promise.all(PRECACHE.map((url) =>
-        cache.add(url).catch(() => { misses++; console.warn('SW precache miss:', url); })
+        cache.add(url).catch(() => {
+          misses++;
+          const pathname = new URL(url, self.location.origin).pathname;
+          if (pathname === '/' || pathname.endsWith('.js') || pathname.endsWith('.css')) criticalMisses++;
+          console.warn('SW precache miss:', url);
+        })
       )).then(() => {
-        if (misses > 3) { console.error('SW: too many precache misses (' + misses + '), not activating'); throw new Error('precache-failed'); }
+        if (criticalMisses || misses > 3) {
+          console.error('SW: precache incomplete (' + misses + ' misses, ' + criticalMisses + ' critical), not activating');
+          return caches.delete(CACHE_NAME).then(() => { throw new Error('precache-failed'); });
+        }
       });
     }).then(() => self.skipWaiting())
   );

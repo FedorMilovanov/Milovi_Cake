@@ -146,6 +146,7 @@ jobs:
             https://127.0.0.1:4300/
             https://127.0.0.1:4300/gallery/
             https://127.0.0.1:4300/svadebnye-torty/
+            https://127.0.0.1:4300/meringue-roll/
             https://127.0.0.1:4300/bento-torty/
             https://127.0.0.1:4300/zakazat-tort-spb/
             https://127.0.0.1:4300/o-konditere/
@@ -167,7 +168,8 @@ jobs:
             echo "::error::каталог .lighthouseci не найден — измерение не подтверждено"
             exit 1
           fi
-          python3 scripts/runner_lhr_extract.py "$results" --out /tmp/artifact-runs.json
+          python3 scripts/runner_lhr_extract.py "$results" --out /tmp/artifact-runs.json --expect-workflow .github/workflows/lighthouse-artifact.yml
+          echo "::notice::meringue-roll byte weight is an uncalibrated baseline; common LCP/TBT/CLS and score assertions still apply"
           python3 - /tmp/artifact-runs.json <<'PY'
           import json, statistics as st, sys
           try:
