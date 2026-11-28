@@ -2529,6 +2529,7 @@ for (const route of ['/', '/meringue-roll/']) {
 
 
 test('meringue first paint is not gated by deferred navigation or a loading screen', async ({page}) => {
+  await page.emulateMedia({reducedMotion:'no-preference'});
   await page.addInitScript(() => localStorage.setItem('milovi_analytics_consent_v1', 'denied'));
   let releaseNav;
   const gate = new Promise(resolve => { releaseNav = resolve; });
@@ -2544,6 +2545,12 @@ test('meringue first paint is not gated by deferred navigation or a loading scre
     await expect(page.locator('.hero-photo img')).toBeVisible();
     await expect(page.locator('body')).toHaveCSS('opacity', '1');
     await expect(page.locator('#loader')).toHaveCount(0);
+    if (await page.evaluate(() => matchMedia('(max-width: 1024px)').matches)) {
+      for (const selector of ['.hero-title', '.hero-desc', '.hero-price-block', '.hero-cta-group']) {
+        await expect(page.locator(selector)).toHaveCSS('animation-name','none');
+        await expect(page.locator(selector)).toHaveCSS('opacity','1');
+      }
+    }
     expect(await page.evaluate(() => document.readyState)).not.toBe('complete');
     await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
   } finally { releaseNav(); }

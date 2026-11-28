@@ -1534,6 +1534,14 @@
       }
       .hero-photo-overlay { background: linear-gradient(to bottom, rgba(11,8,6,0) 40%, var(--ink) 100%); }
       .hero-content { padding: 40px 32px 72px; }
+      /* A shopper should not have to wait for an entrance sequence before
+         reading the price or choosing a messenger on a narrow screen. */
+      .hero-eyebrow, .hero-title, .hero-divider, .hero-desc,
+      .hero-price-block, .hero-tags, .hero-cta-group {
+        opacity: 1;
+        transform: none;
+        animation: none;
+      }
       .gallery-strip { grid-template-columns: 1fr 1fr; grid-template-rows: 200px 200px 200px; height: auto; }
       .gallery-item:first-child { grid-column: 1 / 3; grid-row: 1 / 2; }
       .split { grid-template-columns: 1fr; }
