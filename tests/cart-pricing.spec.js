@@ -341,3 +341,162 @@ test('a different biscuit is a different position (protected cart key)', async (
   expect(cart.lineTexts[0]).toContain('бисквит: ванильный');
   expect(cart.lineTexts[1]).toContain('бисквит: шоколадный');
 });
+
+/* Checkout must preserve the complete order when a browser blocks a handoff. */
+async function prepareRecoveryForm(page, testInfo, options = {}) {
+  await prepare(page, testInfo);
+  await page.evaluate(({ popupBlocked, fallbackWorks }) => {
+    window.__cartHandoffs = [];
+    window.__cartCopies = [];
+    window.__copyFallbackCalls = 0;
+    window.open = url => { window.__cartHandoffs.push(url); return popupBlocked ? null : {}; };
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText: text => {
+        window.__cartCopies.push(text);
+        return Promise.reject(new Error('Clipboard denied for test'));
+      } }
+    });
+    document.execCommand = command => {
+      if (command === 'copy') window.__copyFallbackCalls++;
+      return command === 'copy' && !!fallbackWorks;
+    };
+    addToCart(2);
+  }, options);
+  await openCart(page, testInfo);
+  await page.locator('#cartStep1Footer button').first().click();
+  await page.locator('#cname').fill('QA');
+  await page.locator('#cphone').fill('+7 000 000 00 00');
+}
+
+test('oversized WhatsApp order offers the entire text without an oversized popup', async ({ page }, testInfo) => {
+  if (testInfo.project.name.endsWith('-mobile')) await page.setViewportSize({ width: 320, height: 568 });
+  await prepareRecoveryForm(page, testInfo);
+  const longComment = 'Подробности оформления и доставки. '.repeat(45);
+  await page.locator('#ccomment').fill(longComment);
+  await page.locator('#btnWA').click();
+  const recovery = page.locator('#cartHandoffRecovery');
+  await expect(recovery).toBeVisible();
+  await expect(recovery.getByRole('status')).toContainText('Не удалось скопировать автоматически');
+  const [full] = await page.evaluate(() => window.__cartCopies);
+  expect(full).toContain('QA');
+  expect(full).toContain('+7 000 000 00 00');
+  expect(full).toMatch(/1\s?600/);
+  await expect(recovery.locator('#cartHandoffText')).toHaveValue(full);
+  await expect(recovery.locator('#cartHandoffText')).toBeInViewport({ ratio: 0.95 });
+  await expect(recovery.getByRole('link')).toBeInViewport({ ratio: 0.95 });
+  expect(full).toContain(longComment.trim());
+  expect(encodeURIComponent(full).length).toBeGreaterThan(4096);
+  await expect(recovery.locator('#cartHandoffText')).toHaveAttribute('readonly', '');
+  await expect(recovery.getByRole('link')).toHaveAttribute('href', 'https://wa.me/79119038886');
+  expect(await page.evaluate(() => window.__cartHandoffs)).toEqual([]);
+  expect(await page.evaluate(() => window.__copyFallbackCalls)).toBe(1);
+  await expect(page.locator('#step2')).toHaveClass(/active/);
+  await expect(page.locator('#step3')).not.toHaveClass(/active/);
+  await page.locator('#ccomment').fill('Уточнённый комментарий');
+  await expect(recovery).toHaveCount(0);
+});
+
+test('blocked WhatsApp popup keeps the form and supplies an exact retry link', async ({ page }, testInfo) => {
+  // Synthetic opt-in only: exercise real goal handlers against stubs, never
+  // send a test order or a real analytics request.
+  await page.route('https://www.googletagmanager.com/**', route => route.abort());
+  await page.route('https://mc.yandex.ru/**', route => route.abort());
+  await page.route('https://wa.me/**', route => route.abort());
+  await page.addInitScript(() => {
+    localStorage.setItem('milovi_analytics_consent_v1', 'granted');
+    window.__privacyGoals = [];
+    window.ym = (...args) => window.__privacyGoals.push(['ym', ...args]);
+    window.gtag = (...args) => window.__privacyGoals.push(['gtag', ...args]);
+  });
+  await prepareRecoveryForm(page, testInfo, { popupBlocked: true });
+  const marker = 'QA_PRIVATE_ORDER_7D93';
+  await page.locator('#cname').fill(marker);
+  await page.locator('#ccomment').fill(marker + ' synthetic comment');
+  await page.locator('#btnWA').click();
+  const recovery = page.locator('#cartHandoffRecovery');
+  await expect(recovery.getByRole('status')).toContainText('Не удалось открыть WhatsApp');
+  const [attempted] = await page.evaluate(() => window.__cartHandoffs);
+  const full = new URL(attempted).searchParams.get('text');
+  expect(full).toContain(marker);
+  expect(full).toContain('+7 000 000 00 00');
+  expect(full).toMatch(/1\s?600/);
+  await expect(recovery.locator('#cartHandoffText')).toHaveValue(full);
+  await expect(recovery).toHaveClass(/ym-hide-content/);
+  await expect(recovery.locator('#cartHandoffText')).toHaveClass(/ym-disable-keys/);
+  await expect(recovery.getByRole('link')).toHaveAttribute('href', 'https://wa.me/79119038886');
+  await expect(page.locator('#step2')).toHaveClass(/active/);
+  await expect(page.locator('#step3')).not.toHaveClass(/active/);
+  await page.evaluate(() => {
+    window.open = url => { window.__cartHandoffs.push(url); return {}; };
+  });
+  await recovery.getByRole('link').click();
+  expect(await page.evaluate(() => window.__cartHandoffs)).toEqual([attempted, attempted]);
+  await expect(page.locator('#step3')).toHaveClass(/active/);
+  // Defense in depth: even a future link containing a private query/text
+  // must not leak either value to manual click or generic CTA analytics.
+  const goals = await page.evaluate(({ url, marker }) => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.textContent = marker;
+    link.className = 'lp-btn';
+    link.addEventListener('click', event => event.preventDefault());
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    return window.__privacyGoals.filter(e =>
+      e[0] === 'ym' && e[2] === 'reachGoal' || e[0] === 'gtag' && e[1] === 'event');
+  }, { url: attempted, marker });
+  for (const vendor of ['ym', 'gtag']) {
+    const matching = goals.filter(e => e[0] === vendor);
+    const named = name => matching.filter(e => e[vendor === 'ym' ? 3 : 2] === name);
+    expect(named('lp_wa_click').length).toBeGreaterThanOrEqual(2);
+    for (const e of named('lp_wa_click')) expect(e.at(-1)).toEqual({ path: '/', lead_channel: 'whatsapp' });
+    expect(named('lp_cta_click')).toHaveLength(1);
+    expect(named('lp_cta_click')[0].at(-1)).toEqual({ path: '/' });
+    expect(named('generate_lead')).toHaveLength(1);
+    expect(named('generate_lead')[0].at(-1)).toEqual({ path: '/', lead_channel: 'whatsapp', lead_source: 'cart' });
+  }
+  expect(JSON.stringify(goals)).not.toContain(marker);
+  expect(JSON.stringify(goals)).not.toContain(encodeURIComponent('+7 000 000 00 00'));
+  await page.locator('#cartDrawer .cart-close').click();
+  await expect(recovery).toHaveCount(0);
+});
+
+test('Telegram copy refusal displays the complete manual text, not false success', async ({ page }, testInfo) => {
+  await prepareRecoveryForm(page, testInfo);
+  await page.locator('#btnTG').click();
+  const recovery = page.locator('#cartHandoffRecovery');
+  await expect(recovery.getByRole('status')).toContainText('Не удалось скопировать автоматически');
+  const [full] = await page.evaluate(() => window.__cartCopies);
+  expect(full).toContain('QA');
+  expect(full).toContain('+7 000 000 00 00');
+  expect(full).toMatch(/1\s?600/);
+  await expect(recovery.locator('#cartHandoffText')).toHaveValue(full);
+  await expect(recovery.getByRole('link')).toHaveAttribute('href', 'https://t.me/milovi_cake');
+  await expect(page.locator('#toast')).not.toHaveText(/Скопировано!/);
+  expect(await page.evaluate(() => window.__copyFallbackCalls)).toBe(1);
+  expect(await page.evaluate(() => window.__cartHandoffs)).toEqual(['https://t.me/milovi_cake']);
+});
+
+test('Telegram clipboard fallback success is based on the actual copy result', async ({ page }, testInfo) => {
+  await prepareRecoveryForm(page, testInfo, { fallbackWorks: true });
+  await page.locator('#btnTG').click();
+  await expect(page.locator('#toast')).toContainText('Скопировано!');
+  await expect(page.locator('#cartHandoffRecovery')).toHaveCount(0);
+  expect(await page.evaluate(() => window.__copyFallbackCalls)).toBe(1);
+});
+
+test('blocked Telegram popup retains full text even after successful copy', async ({ page }, testInfo) => {
+  await prepareRecoveryForm(page, testInfo, { popupBlocked: true, fallbackWorks: true });
+  await page.locator('#btnTG').click();
+  const recovery = page.locator('#cartHandoffRecovery');
+  await expect(recovery.getByRole('status')).toContainText('Скопировано!');
+  const [full] = await page.evaluate(() => window.__cartCopies);
+  expect(full).toContain('QA');
+  expect(full).toContain('+7 000 000 00 00');
+  await expect(recovery.locator('#cartHandoffText')).toHaveValue(full);
+  await expect(recovery.getByRole('link')).toHaveAttribute('href', 'https://t.me/milovi_cake');
+  await expect(page.locator('#step2')).toHaveClass(/active/);
+  await expect(page.locator('#step3')).not.toHaveClass(/active/);
+});

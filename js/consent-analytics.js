@@ -231,19 +231,19 @@
       var link = target && target.closest ? target.closest('a') : null;
       if (!link) return;
       var href = link.getAttribute('href') || '';
-      var params = {
-        path: location.pathname,
-        href: href,
-        text: (link.textContent || '').trim().slice(0, 80)
-      };
-      if (href.indexOf('wa.me') !== -1) sendGoal('lp_wa_click', params);
-      else if (href.indexOf('t.me') !== -1) sendGoal('lp_tg_click', params);
-      else if (href.indexOf('max.ru') !== -1) sendGoal('lp_max_click', params);
-      else if (href.indexOf('tel:') === 0) sendGoal('lp_phone_click', params);
+      var url;
+      try { url = new URL(href, location.href); } catch (_) { return; }
+      // Never send href, query strings, link text, or order contents.
+      // Route and channel are sufficient for measuring a contact click.
+      var params = { path: location.pathname };
+      if (url.protocol === 'https:' && url.hostname === 'wa.me') sendGoal('lp_wa_click', { path: params.path, lead_channel: 'whatsapp' });
+      else if (url.protocol === 'https:' && url.hostname === 't.me') sendGoal('lp_tg_click', { path: params.path, lead_channel: 'telegram' });
+      else if (url.protocol === 'https:' && url.hostname === 'max.ru') sendGoal('lp_max_click', { path: params.path, lead_channel: 'max' });
+      else if (url.protocol === 'tel:') sendGoal('lp_phone_click', { path: params.path, lead_channel: 'phone' });
       if (link.classList.contains('lp-btn') || link.classList.contains('info-btn') || link.classList.contains('btn-primary')) {
         sendGoal('lp_cta_click', params);
       }
-      if (href.indexOf('/gallery/') !== -1) sendGoal('lp_gallery_click', params);
+      if (url.origin === location.origin && url.pathname.indexOf('/gallery/') === 0) sendGoal('lp_gallery_click', params);
     }, true);
     document.addEventListener('play', function (event) {
       if (event.target && event.target.tagName === 'VIDEO') sendGoal('lp_video_play', { path: location.pathname });
@@ -463,6 +463,8 @@
     return overlay;
   }
 
+  var dialogFocusEpoch = 0;
+
   function openDialog(autoOpened) {
     if (typeof window.closeMcSheet === 'function') window.closeMcSheet();
     ensureDialog();
@@ -473,21 +475,31 @@
     }
     lastFocused = autoOpened ? null : document.activeElement;
     syncDialog();
+    // On the first visit show a fully visible dialog before moving focus.
+    // Manually reopened settings keep the existing entrance transition.
+    if (autoOpened) overlay.classList.add('is-open');
     overlay.hidden = false;
     document.body.classList.add('mc-consent-open');
+    var focusEpoch = ++dialogFocusEpoch;
+    function stillOpening() { return focusEpoch === dialogFocusEpoch && !overlay.hidden; }
+    function focusDialog() {
+      if (!stillOpening() || !overlay.classList.contains('is-open') || dialog.contains(document.activeElement)) return;
+      var focusTarget = overlay.querySelector('.mc-consent-close');
+      if (focusTarget) focusTarget.focus({ preventScroll: true });
+    }
     requestAnimationFrame(function () {
+      if (!stillOpening()) return;
       overlay.classList.add('is-open');
-      // Let visibility:hidden -> visible settle before moving focus into the modal.
-      // Focusing in the same frame silently fails in Chromium on a cold visit.
-      requestAnimationFrame(function () {
-        var focusTarget = overlay.querySelector('.mc-consent-close');
-        if (focusTarget && !overlay.hidden && overlay.classList.contains('is-open')) focusTarget.focus({ preventScroll: true });
-      });
+      requestAnimationFrame(focusDialog);
+      // CSS visibility transitions can outlive two frames on a busy engine.
+      // Retry once after the entrance; do not steal focus or revive a closed dialog.
+      setTimeout(focusDialog, 320);
     });
   }
 
   function closeDialog() {
     if (!overlay || overlay.hidden) return;
+    dialogFocusEpoch += 1;
     overlay.classList.remove('is-open');
     document.body.classList.remove('mc-consent-open');
     closeTimer = setTimeout(function () {

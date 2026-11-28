@@ -210,7 +210,7 @@ require('media="(max-width: 768px)" srcset="/img/head_mobile.avif"' in order, 'o
 gallery = read('gallery/index.html')
 require('id="preloader"' not in gallery, 'gallery blocking preloader returned')
 require('/img/gallery/gallery-01.avif" fetchpriority="high"' in gallery, 'gallery LCP preload missing')
-require('/js/gallery/main.js?v=20261120r05' in gallery, 'gallery runtime revision drift')
+require('/js/gallery/main.js?v=20261128r01' in gallery, 'gallery runtime revision drift')
 require("./data.js?v=20261120r03" in read('js/gallery/main.js'), 'gallery data import revision drift')
 require('#galleryGrid[data-hydrating="true"] { min-height: 100svh; }' in gallery, 'gallery hydration reserve missing')
 require('#galleryGrid[data-static-lcp-root="true"] { animation: none; }' in gallery, 'gallery grid animation gates initial LCP again')
@@ -411,22 +411,36 @@ for asset in ('style.css', 'mc-2026.css', 'premium-overrides.css', 'v20-dark-and
         refs = re.findall(rf'css/{re.escape(asset)}\?v=([0-9a-z]+)', read(public_html))
         require(all(ref == revision for ref in refs), f'{public_html} {asset} revision drifted')
 
-# Shared main.js identity must agree across every HTML consumer.
+# Shared main.js identity must agree across every HTML consumer and the
+# precache. Keep the last proven baseline as a rollback floor, not as an
+# exact pin that fails every intentional coordinated asset revision.
+main_match = re.search(r"'/js/main\.js\?v=(\d{8}r\d+)',", sw)
+require(main_match is not None, 'service-worker precache lost its versioned shared main.js')
+main_revision = main_match.group(1)
+def revision_key(value):
+    date, sequence = value.split('r')
+    return int(date), int(sequence)
+
+require(revision_key(main_revision) >= revision_key('20261116r41'),
+        'service-worker precache still points at stale shared main.js revision')
+main_consumers = 0
 for public_html in public_html_files():
     html = read(public_html)
     refs = re.findall(r'js/main\.js\?v=([0-9a-z]+)', html)
-    require(all(ref == '20261116r41' for ref in refs), f'{public_html} shared main.js revision drifted')
+    require(all(ref == main_revision for ref in refs), f'{public_html} shared main.js revision drifted')
+    if refs:
+        main_consumers += 1
+require(main_consumers >= 15, 'shared main.js consumer coverage regressed')
 
 cache_gen = re.search(r"const CACHE_NAME = 'milovi-cake-v2026\.11\.16-r(\d+)';", sw)
 require(cache_gen, 'service-worker cache generation format drifted')
 require(int(cache_gen.group(1)) >= 186, 'service-worker cache generation rolled back')
 require("'/css/gallery/gallery-2026.css?v=20261127r02'," in sw, 'gallery CSS service-worker revision drifted')
 require(style_ref != '/css/style.css?v=20261023r01', 'service-worker precache still points at stale shared CSS revision')
-require("'/js/main.js?v=20261116r41'," in sw, 'service-worker precache still points at stale shared main.js revision')
 require("'/js/nav.js?v=20261116r27'," in sw, 'service-worker precache still points at stale shared nav.js revision')
-require("'/js/gallery/main.js?v=20261120r05'," in sw, 'service-worker precache still points at stale gallery runtime revision')
+require("'/js/gallery/main.js?v=20261128r01'," in sw, 'service-worker precache still points at stale gallery runtime revision')
 require("'/js/gallery/data.js?v=20261120r03'," in sw, 'service-worker precache still points at stale gallery data revision')
-require("'/js/consent-analytics.js?v=20261120r04'," in sw, 'service-worker precache still points at stale consent loader revision')
+require("'/js/consent-analytics.js?v=20261128r01'," in sw, 'service-worker precache still points at stale consent loader revision')
 
 cfg = json.loads(read('.github/lighthouse-config.json'))
 require(cfg['ci']['collect'].get('numberOfRuns') == 3, 'Lighthouse collection is not three runs')

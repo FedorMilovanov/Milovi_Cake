@@ -1,5 +1,27 @@
 const { test, expect } = require('@playwright/test');
 
+async function weddingWhatsAppUrl(page) {
+  const link = page.locator('#wedBrief .btn-hero-wa');
+  const generic = new URL(await link.getAttribute('href'));
+  expect(generic.hostname).toBe('wa.me');
+  expect(generic.searchParams.get('text')).toContain('Дата свадьбы: ___');
+  expect(generic.searchParams.get('text')).not.toContain('Предпочтительный стиль:');
+  expect(generic.searchParams.get('text')).not.toContain('Интересует дегустационный сет');
+  await page.evaluate(() => {
+    window.__wedPreviousOpen = window.open;
+    window.__wedActualUrl = null;
+    window.open = url => { window.__wedActualUrl = url; return { opener: null }; };
+  });
+  try {
+    await link.click();
+    const actual = await page.evaluate(() => window.__wedActualUrl);
+    expect(actual).toBeTruthy();
+    return actual;
+  } finally {
+    await page.evaluate(() => { window.open = window.__wedPreviousOpen; delete window.__wedPreviousOpen; });
+  }
+}
+
 async function contrastOnBackground(locator, backgroundSelector, overlaySelector = null) {
   return locator.evaluate((element, selectors) => {
     const channels = (color) => {
@@ -654,7 +676,7 @@ test.describe('premium media blocks', () => {
       await expect(card.locator('a')).toHaveAttribute('data-wed-style', name);
       await card.locator('a').click();
       await expect(page.locator('#wedSelectedStyle')).toContainText(name);
-      const wa = new URL(await page.locator('#wedBrief .btn-hero-wa').getAttribute('href'));
+      const wa = new URL(await weddingWhatsAppUrl(page));
       expect(wa.searchParams.get('text')).toContain('Предпочтительный стиль: ' + name);
     }
   });
@@ -777,7 +799,7 @@ test.describe('premium media blocks', () => {
     const brief=page.locator('#wedBrief');
     await expect(brief.locator('.wed-brief-contact a')).toHaveCount(3);
     await expect(brief.locator('.wed-brief-helper')).toContainText('дегустации добавлен');
-    const wa=new URL(await brief.locator('.btn-hero-wa').getAttribute('href'));
+    const wa=new URL(await weddingWhatsAppUrl(page));
     expect(wa.searchParams.get('text')).toContain('Интересует дегустационный сет начинок: да.');
     for(const term of ['Дата свадьбы:','Площадка:','Гостей:','Палитра:','Референсы:']){
       expect(wa.searchParams.get('text')).toContain(term);
@@ -1017,7 +1039,9 @@ test.describe('premium media blocks', () => {
     expect(await page.evaluate(() => window.weddingAnalyticsCalls)).toEqual([]);
     const fallback = page.locator('#wedDateFallback');
     await expect(fallback).toBeVisible();
-    await expect(fallback).toHaveAttribute('href', /^https:\/\/wa\.me\/79119038886\?text=/);
+    await expect(fallback).toHaveAttribute('href', 'https://wa.me/79119038886');
+    const original = await page.evaluate(() => window.weddingOpenUrls[0]);
+    await expect(page.locator('#wedDateRecoveryText')).toHaveValue(new URL(original).searchParams.get('text'));
     await expect(page.locator('#wedDateHint')).toContainText('заблокировал');
 
     await page.evaluate(() => {
@@ -1026,9 +1050,9 @@ test.describe('premium media blocks', () => {
         return { opener: window };
       };
     });
-    await page.locator('#wedDate').evaluate((el) => el.form.requestSubmit());
+    await fallback.click();
     await expect.poll(() => page.evaluate(() => window.weddingAnalyticsCalls)).toEqual([['whatsapp', 'wedding_date']]);
-    expect(await page.evaluate(() => window.weddingOpenUrls.length)).toBe(2);
+    expect(await page.evaluate(() => window.weddingOpenUrls)).toEqual([original, original]);
     await expect(fallback).toBeHidden();
     await expect(page.locator('#wedDateHint')).toContainText('Откроется WhatsApp');
   });
@@ -1041,8 +1065,8 @@ test.describe('premium media blocks', () => {
     await page.locator('#wedDate').evaluate((el) => el.form.requestSubmit());
     const fallback = page.locator('#wedDateFallback');
     await expect(fallback).toBeVisible();
-    expect(new URL(await fallback.getAttribute('href')).searchParams.get('text'))
-      .toContain('дата пока не выбрана');
+    await expect(fallback).toHaveAttribute('href', 'https://wa.me/79119038886');
+    await expect(page.locator('#wedDateRecoveryText')).toHaveValue(/дата пока не выбрана/);
     const date = await page.locator('#wedDate').getAttribute('min');
     await page.locator('#wedDate').fill(date);
     await expect(fallback).toBeHidden();
@@ -2229,18 +2253,18 @@ test('wedding consultation preserves selection and offers equal messenger choice
   await cards.nth(2).click();
   await expect(page).toHaveURL(/#wedBrief$/);
   await expect(page.locator('#wedSelectedStyle')).toContainText('Modern Sculptural');
-  const wa=new URL(await page.locator('#wedBrief .btn-hero-wa').getAttribute('href'));
+  const wa=new URL(await weddingWhatsAppUrl(page));
   expect(wa.searchParams.get('text')).toContain('Предпочтительный стиль: Modern Sculptural.');
   await cards.nth(0).click();
-  const updated=new URL(await page.locator('#wedBrief .btn-hero-wa').getAttribute('href'));
+  const updated=new URL(await weddingWhatsAppUrl(page));
   expect(updated.searchParams.get('text')).toContain('Предпочтительный стиль: Pure Ivory.');
   expect(updated.searchParams.get('text')).not.toContain('Modern Sculptural');
   await page.locator('.wed-tasting-link').click();
-  const withTasting=new URL(await page.locator('#wedBrief .btn-hero-wa').getAttribute('href'));
+  const withTasting=new URL(await weddingWhatsAppUrl(page));
   expect(withTasting.searchParams.get('text')).toContain('Предпочтительный стиль: Pure Ivory.');
   expect(withTasting.searchParams.get('text')).toContain('Интересует дегустационный сет начинок: да.');
   await cards.nth(1).click();
-  const changedStyle=new URL(await page.locator('#wedBrief .btn-hero-wa').getAttribute('href'));
+  const changedStyle=new URL(await weddingWhatsAppUrl(page));
   expect(changedStyle.searchParams.get('text')).toContain('Предпочтительный стиль: Botanical Romance.');
   expect(changedStyle.searchParams.get('text')).not.toContain('Pure Ivory');
   expect(changedStyle.searchParams.get('text').match(/Интересует дегустационный сет начинок: да\./g)).toHaveLength(1);
@@ -2275,7 +2299,7 @@ for (const availability of ['available', 'denied']) {
     await expect(field).toHaveValue(/Botanical Romance/);
     await expect(field).toHaveValue(/дегустационный сет/);
     const message=await field.inputValue();
-    const wa=new URL(await page.locator('#wedBrief .btn-hero-wa').getAttribute('href'));
+    const wa=new URL(await weddingWhatsAppUrl(page));
     expect(wa.searchParams.get('text')).toBe(message);
     await page.locator('#wedBriefCopy').click();
     if (availability === 'available') {
@@ -2382,7 +2406,7 @@ for (const order of ['date-first', 'style-first']) {
     expect(text).toContain('Botanical Romance');
     expect(text).toContain('дегустационный сет');
     expect(text).not.toContain('Дата свадьбы: ___');
-    const wa=new URL(await page.locator('#wedBrief .btn-hero-wa').getAttribute('href'));
+    const wa=new URL(await weddingWhatsAppUrl(page));
     expect(wa.searchParams.get('text')).toBe(text);
     await page.locator('#wedBrief .btn-hero-max').click();
     await expect(draft).toHaveValue(text);
@@ -2448,3 +2472,57 @@ test('wedding clipboard success invalidates after change and in-flight copy cann
   expect(await page.evaluate(()=>window.__copyWrites.at(-1))).toBe(latest);
   expect((await page.evaluate(()=>window.__copyWrites)).length).toBe(3);
 });
+
+test('wedding private draft stays out of links and blocked WhatsApp offers full recovery', async ({page}) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('milovi_analytics_consent_v1', 'denied');
+    window.__privateWeddingAttempts = [];
+    window.open = url => { window.__privateWeddingAttempts.push(url); return null; };
+  });
+  await page.goto('/svadebnye-torty/', { waitUntil: 'domcontentloaded' });
+  const date = page.locator('#wedDate');
+  await date.fill(await date.getAttribute('min'));
+  await page.locator('.wed-collection-card a[data-wed-style]').nth(1).click();
+  await page.locator('.wed-tasting-link').click();
+  await page.locator('#wedBrief .btn-hero-wa').click();
+  const actual = await page.evaluate(() => window.__privateWeddingAttempts[0]);
+  const full = new URL(actual).searchParams.get('text');
+  expect(full).toContain('Botanical Romance');
+  expect(full).not.toContain('Дата свадьбы: ___');
+  await expect(page.locator('#wedBriefExport')).toBeVisible();
+  await expect(page.locator('#wedBriefExportText')).toHaveValue(full);
+  await expect(page.locator('#wedBriefExportText')).toHaveClass(/ym-disable-keys/);
+  await expect(page.locator('#wedBriefOpen')).toHaveAttribute('href', 'https://wa.me/79119038886');
+  const hrefs = await page.locator('a[href]').evaluateAll(links => links.map(link => link.href));
+  expect(hrefs).not.toContain(actual);
+});
+
+
+for (const route of ['/', '/meringue-roll/']) {
+  test('first-visit privacy focus is inside the visible dialog on ' + route, async ({page}) => {
+    await page.addInitScript(() => {
+      if (!sessionStorage.getItem('qa-first-privacy-visit')) {
+        localStorage.removeItem('milovi_analytics_consent_v1');
+        sessionStorage.setItem('qa-first-privacy-visit','1');
+      }
+    });
+    await page.goto(route, {waitUntil:'domcontentloaded'});
+    const modal = page.getByRole('dialog', {name:'Настройки аналитики'});
+    const close = modal.getByRole('button', {name:'Закрыть настройки конфиденциальности'});
+    await expect(modal).toBeVisible();
+    await expect(close).toBeFocused();
+    await page.keyboard.press('Shift+Tab');
+    await expect(modal.locator('[data-choice="granted"]')).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(close).toBeFocused();
+    await modal.locator('[data-choice="denied"]').click();
+    await expect(modal).toBeHidden();
+    await page.evaluate(() => window.MiloviConsent.open());
+    await expect(close).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(modal).toBeHidden();
+    await page.reload({waitUntil:'domcontentloaded'});
+    await expect(modal).toBeHidden();
+    expect(await page.evaluate(() => window.MiloviConsent.getChoice())).toBe('denied');
+  });
+}

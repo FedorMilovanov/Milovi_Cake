@@ -246,17 +246,19 @@ test('catalog CTA row keeps one baseline on wide screens', async ({ page }) => {
   }
 });
 
-test('a very long order keeps contacts and total inside the WhatsApp link', async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 1000 });
+test('a very long order keeps contacts and total inside the WhatsApp link', async ({ page }, testInfo) => {
+  if (!testInfo.project.name.endsWith('-mobile')) await page.setViewportSize({ width: 1440, height: 1000 });
   await page.addInitScript(() => {
     try {
-      const fills = ['Микс ягод', 'Воздушный поцелуй', 'Красный бархат', 'Медовик', 'Малина'];
+      localStorage.setItem('milovi_analytics_consent_v1', 'denied');
+      const fills = ['Микс ягод', 'Воздушный поцелуй', 'Красный бархат', 'Ванильная вишня', 'Супер-Шоколад'];
+      const bentoFills = ['Микс ягод', 'Карамель с орехами', 'Карамель с вафлями', 'Малина', 'Вишня'];
       const decors = ['Базовый декор', 'Авторский декор'];
       const lines = {};
-      fills.forEach((fill) => decors.forEach((decor) => {
+      fills.forEach((fill, index) => decors.forEach((decor) => {
         lines[`1:regular:${fill}:${decor}`] = { qty: 2, mode: 'regular', fill, decor, decorAdd: decor === 'Авторский декор' ? 1000 : 0 };
-        lines[`2:regular:${fill}:${decor}`] = { qty: 1, mode: 'regular', fill, decor, decorAdd: 0, biscuit: 'choco' };
-        lines[`3:regular:${fill}:${decor}`] = { qty: 1, mode: 'regular', fill, decor, decorAdd: 0 };
+        lines[`2:regular:${bentoFills[index]}:${decor}:choco`] = { qty: 1, mode: 'regular', fill: bentoFills[index], decor, decorAdd: 0, biscuit: 'choco' };
+        lines[`2:maxi:${bentoFills[index]}:${decor}:vanilla`] = { qty: 1, mode: 'maxi', fill: bentoFills[index], decor, decorAdd: 0, biscuit: 'vanilla' };
       }));
       localStorage.setItem('milovicake_cart', JSON.stringify(lines));
     } catch (e) {}
@@ -264,6 +266,7 @@ test('a very long order keeps contacts and total inside the WhatsApp link', asyn
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await page.waitForTimeout(400);
   await page.evaluate(() => { if (typeof openCart === 'function') openCart(); });
+  await expect(page.locator('.cart-item')).toHaveCount(30);
   await expect(page.locator('.cart-item').first()).toBeVisible();
 
   await page.evaluate(() => {
@@ -284,6 +287,15 @@ test('a very long order keeps contacts and total inside the WhatsApp link', asyn
   expect(flat, 'хотя бы одна позиция остаётся в сообщении').toContain('• ');
   // Пользователь предупреждён, что состав сокращён.
   await expect(page.locator('#toast, .toast').first()).toContainText(/сокращён/i);
+  const recovery = page.locator('#cartHandoffRecovery');
+  await expect(recovery).toBeVisible();
+  const full = await recovery.locator('#cartHandoffText').inputValue();
+  expect(full).toContain('+7 999 123-45-67');
+  expect(full).toContain('Итого (предварительно)');
+  expect(full.split('\n').filter(line => line.startsWith('•')).length).toBe(30);
+  expect(full).toContain('бисквит: шоколадный');
+  await expect(recovery.locator('#cartHandoffText')).toHaveAttribute('readonly', '');
+
 });
 
 test('the migrated cart survives a reload without duplicating lines', async ({ page }) => {

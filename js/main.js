@@ -815,6 +815,7 @@ function goToFormStep() {
   const cartFooter = document.getElementById('cartFooter');
   const cartBody = document.getElementById('cartBody');
   if (!cartFooter || !cartBody) return;
+  resetCartHandoffRecovery();
   setCartStep(2);
   cartBody.style.display = 'none';
   cartFooter.style.display = 'block';
@@ -880,68 +881,196 @@ function buildMessage(compact) {
   return `Привет! Хочу сделать заказ 🎂\n\n${items}\n\nИтого (предварительно): ${cartTotalText(total)}\n⚠️ Цена предварительная — окончательная стоимость согласовывается после обсуждения декора и нюансов.\n\nИмя: ${name}\nТелефон: ${phone}\nДата: ${date}\nКомментарий: ${comment}`;
 }
 
+let cartHandoffAttempt = 0;
+
+function resetCartHandoffRecovery() {
+  cartHandoffAttempt++;
+  document.getElementById('cartHandoffRecovery')?.remove();
+  return cartHandoffAttempt;
+}
+
+// Keep the full order available when a browser cannot complete the handoff.
+// The text exists only in the open cart; edits/back/close remove it.
+function showCartHandoffRecovery(text, url, channel, notice) {
+  const footer = document.getElementById('cartFooter');
+  if (!footer) return;
+  document.getElementById('cartHandoffRecovery')?.remove();
+  const panel = document.createElement('div');
+  panel.id = 'cartHandoffRecovery';
+  panel.className = 'cart-form ym-hide-content';
+  const status = document.createElement('p');
+  status.className = 'note';
+  status.setAttribute('role', 'status');
+  status.textContent = notice;
+  const group = document.createElement('div');
+  group.className = 'form-group';
+  const label = document.createElement('label');
+  label.htmlFor = 'cartHandoffText';
+  label.textContent = 'Полный текст заказа';
+  const area = document.createElement('textarea');
+  area.id = 'cartHandoffText';
+  area.className = 'ym-disable-keys';
+  area.rows = 5;
+  area.readOnly = true;
+  area.value = text;
+  area.style.minHeight = '96px';
+  group.append(label, area);
+  const link = document.createElement('a');
+  link.className = 'btn-tg ym-disable-tracklink ' + (channel === 'whatsapp' ? 'wa' : 'tg');
+  // The actual order stays in a closure, never in the clickable DOM URL:
+  // enhanced link analytics may collect href even outside our own handlers.
+  const destination = new URL(url);
+  const retryWithText = channel === 'whatsapp' && destination.searchParams.has('text');
+  destination.search = '';
+  destination.hash = '';
+  link.href = destination.href;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  link.textContent = 'Открыть ' + (channel === 'whatsapp' ? 'WhatsApp' : 'Telegram');
+  if (retryWithText) {
+    link.addEventListener('click', event => {
+      if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      if (openCartMessenger(url, channel)) event.preventDefault();
+      else status.textContent = 'Не удалось открыть заполненный заказ. Скопируйте полный текст и вставьте его в чат WhatsApp.';
+      // If the scripted popup is still blocked, native navigation opens
+      // the bare chat. The full readonly text remains available.
+    });
+  }
+  panel.append(status, group, link);
+  footer.insertBefore(panel, footer.querySelector('.cart-actions'));
+  return status;
+}
+
+function revealCartHandoffRecovery() {
+  const panel = document.getElementById('cartHandoffRecovery');
+  if (panel) panel.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'instant' });
+}
+
+function copyCartText(text, attempt) {
+  const fallback = () => {
+    if (attempt !== cartHandoffAttempt) return false;
+    let area;
+    const previous = document.activeElement;
+    let copied = false;
+    try {
+      area = document.createElement('textarea');
+      area.className = 'ym-disable-keys ym-hide-content';
+      area.value = text;
+      area.style.cssText = 'position:fixed;left:-9999px';
+      document.body.appendChild(area);
+      area.select();
+      copied = document.execCommand('copy') === true;
+    } catch (err) {
+      // The visible recovery field remains available for manual copying.
+    } finally {
+      if (area) area.remove();
+      previous?.focus?.({ preventScroll: true });
+    }
+    return copied;
+  };
+  try {
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+      return Promise.resolve(navigator.clipboard.writeText(text)).then(() => true, fallback);
+    }
+  } catch (err) {}
+  return Promise.resolve(fallback());
+}
+
+function openCartMessenger(url, channel) {
+  let handoff = null;
+  try { handoff = window.open(url, '_blank'); } catch (err) {}
+  setCartStep(handoff ? 3 : 2);
+  if (handoff && window.MiloviConsent) window.MiloviConsent.leadHandoff(channel, 'cart');
+  return !!handoff;
+}
+
+function fitCartWhatsAppUrl(chat, full) {
+  const link = text => chat + '?text=' + encodeURIComponent(text);
+  const direct = link(full);
+  if (direct.length <= 4096) return { url: direct, compact: false };
+  const compact = buildMessage(true);
+  if (!compact) return null;
+  const compactUrl = link(compact);
+  if (compactUrl.length <= 4096) return { url: compactUrl, compact: true };
+  const lines = compact.split('\n');
+  const tailStart = lines.findIndex(line => line.startsWith('Итого (предварительно)'));
+  if (tailStart < 0) return null;
+  const items = lines.slice(2, tailStart).filter(line => line.startsWith('•'));
+  for (let count = items.length - 1; count >= 1; count--) {
+    const candidate = lines.slice(0, 2).concat(items.slice(0, count),
+      '  …и ещё ' + (items.length - count) + ' поз.', lines.slice(tailStart)).join('\n');
+    const url = link(candidate);
+    if (url.length <= 4096) return { url, compact: true };
+  }
+  return null;
+}
+
 function buildWA(e) {
   e.preventDefault();
-  let msg = buildMessage();
+  const msg = buildMessage();
   if (!msg) return;
-  setCartStep(3);
-  const btn = document.getElementById('btnWA');
-  if (btn) btn.classList.add('loading');
-  var waUrl = 'https://wa.me/79119038886?text=' + encodeURIComponent(msg);
-  /* r34: bug #22 — WhatsApp limit. [r31] Режем СОСТАВ, а не хвост: раньше
-     msg.substring(0, 800) отрезал имя, телефон, дату и комментарий — заказ
-     уходил без контактов. Компактная версия сохраняет шапку, позиции одной
-     строкой, итог и все поля покупателя.
-     [r34] Обрезка теперь считается по реальной длине ссылки: бюджет «120
-     символов на позицию» не учитывал процентное кодирование кириллицы
-     (каждый символ ≈ 9 знаков в URL), и при 30 позициях ссылка весила 4304
-     при лимите 4096. Полный текст на всякий случай копируем в буфер обмена —
-     заказ не теряется, даже если WhatsApp получил сокращённую версию. */
-  var fullMsg = msg;
-  if (waUrl.length > 4096) {
-    var compactMsg = buildMessage(true);
-    if (compactMsg) { msg = compactMsg; waUrl = 'https://wa.me/79119038886?text=' + encodeURIComponent(msg); }
-    if (waUrl.length > 4096) {
-      var lines = msg.split('\n');
-      var head = lines.slice(0, 2);
-      var tailStart = lines.findIndex(function (l) { return l.indexOf('Итого (предварительно)') === 0; });
-      if (tailStart > -1) {
-        var tail = lines.slice(tailStart);
-        var items = lines.slice(2, tailStart).filter(function (l) { return l.indexOf('•') === 0; });
-        var kept = items.slice();
-        var rest = 0;
-        while (kept.length > 0) {
-          var candidate = head.concat(kept).join('\n') + (rest > 0 ? '\n  …и ещё ' + rest + ' поз.' : '') + '\n' + tail.join('\n');
-          var candidateUrl = 'https://wa.me/79119038886?text=' + encodeURIComponent(candidate);
-          if (candidateUrl.length <= 4096) { msg = candidate; waUrl = candidateUrl; break; }
-          kept.pop();
-          rest = items.length - kept.length;
-        }
-      }
+  const attempt = resetCartHandoffRecovery();
+  const chat = 'https://wa.me/79119038886';
+  const fit = fitCartWhatsAppUrl(chat, msg);
+  if (fit && !fit.compact) {
+    if (!openCartMessenger(fit.url, 'whatsapp')) {
+      const notice = 'Не удалось открыть WhatsApp. Откройте чат по ссылке ниже.';
+      showCartHandoffRecovery(msg, fit.url, 'whatsapp', notice);
+      revealCartHandoffRecovery();
+      showToast('Не удалось открыть WhatsApp');
     }
-    showToast('Заказ очень длинный — состав сокращён, контакты и итог сохранены. Полный текст в буфере обмена');
-    try {
-      if (fullMsg && navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(fullMsg).catch(function () {});
-    } catch (err) {}
+    return;
   }
-  // Keep the popup in the user gesture; delayed opens are blocked on mobile.
-  const handoff = window.open(waUrl, '_blank');
-  if (handoff && window.MiloviConsent) window.MiloviConsent.leadHandoff('whatsapp', 'cart');
-  if (btn) btn.classList.remove('loading');
+  // Keep the prior compact handoff when it fits, but never lose the original.
+  // If even one line plus contact/comment exceeds the budget, do not open it.
+  const reason = fit
+    ? 'Заказ очень длинный — состав сокращён, контакты и итог сохранены. '
+    : 'Заказ не помещается в ссылку. ';
+  const status = showCartHandoffRecovery(msg, chat, 'whatsapp',
+    reason + 'Полный текст доступен ниже.');
+  const copying = copyCartText(msg, attempt);
+  const opened = fit ? openCartMessenger(fit.url, 'whatsapp') : false;
+  if (!fit) setCartStep(2);
+  if (!opened) revealCartHandoffRecovery();
+  copying.then(copied => {
+    if (attempt !== cartHandoffAttempt) return;
+    const notice = reason + (copied
+      ? 'Полный текст заказа скопирован. Вставьте его в чат WhatsApp.'
+      : 'Не удалось скопировать автоматически. Скопируйте полный текст вручную.')
+      + (!opened ? ' Откройте WhatsApp по ссылке ниже.' : '');
+    if (status) status.textContent = notice;
+    if (!opened || !copied) revealCartHandoffRecovery();
+    showToast(fit ? 'Состав сокращён. Полный текст заказа доступен ниже.'
+      : 'Полный текст заказа доступен ниже.');
+  });
 }
+
 function buildTG(e) {
   e.preventDefault();
   const msg = buildMessage();
   if (!msg) return;
-  setCartStep(3);
-  const btn = document.getElementById('btnTG');
-  if (btn) btn.classList.add('loading');
-  /* r29: bug #17 — clipboard fallback */
-  (function(text){ try { navigator.clipboard.writeText(text).then(function(){ showToast("Скопировано! Вставьте в чат Telegram (Ctrl+V)"); }).catch(function(){ var ta=document.createElement("textarea"); ta.value=text; ta.style.cssText="position:fixed;left:-9999px"; document.body.appendChild(ta); ta.select(); try{document.execCommand("copy");showToast("Скопировано! Вставьте в чат Telegram")}catch(e){showToast("Не удалось скопировать — выделите и скопируйте текст вручную")} document.body.removeChild(ta); }); } catch(e){ showToast("Не удалось скопировать текст"); } })(msg);
-  const handoff = window.open('https://t.me/milovi_cake', '_blank');
-  if (handoff && window.MiloviConsent) window.MiloviConsent.leadHandoff('telegram', 'cart');
-  if (btn) btn.classList.remove('loading');
+  const attempt = resetCartHandoffRecovery();
+  const url = 'https://t.me/milovi_cake';
+  const copying = copyCartText(msg, attempt);
+  const opened = openCartMessenger(url, 'telegram');
+  if (!opened) showCartHandoffRecovery(msg, url, 'telegram',
+    'Не удалось открыть Telegram. Откройте чат по ссылке ниже.');
+  copying.then(copied => {
+    if (attempt !== cartHandoffAttempt) return;
+    const notice = copied
+      ? 'Скопировано! Вставьте полный текст заказа в чат Telegram.'
+      : 'Не удалось скопировать автоматически. Скопируйте полный текст заказа вручную.';
+    const fullNotice = opened ? notice : notice + ' Откройте Telegram по ссылке ниже.';
+    if (!copied || !opened) {
+      showCartHandoffRecovery(msg, url, 'telegram', fullNotice);
+      revealCartHandoffRecovery();
+    }
+    showToast(copied ? 'Скопировано! Вставьте текст заказа в Telegram.'
+      : 'Не удалось скопировать. Полный текст заказа ниже.');
+  });
 }
+
+document.getElementById('cartFooter')?.addEventListener('input', resetCartHandoffRecovery);
 
 function sendFormWA() {
   const name = document.getElementById('fname').value.trim() || '—';
@@ -965,6 +1094,7 @@ function goBackToCart() {
   const cartFooter = document.getElementById('cartFooter');
   const cartBody = document.getElementById('cartBody');
   if (!cartFooter || !cartBody) return;
+  resetCartHandoffRecovery();
   setCartStep(1);
   cartFooter.style.display = 'none';
   cartBody.style.display = '';
@@ -1123,6 +1253,7 @@ function closeCart() {
   var overlay = document.getElementById('cartOverlay');
   if (!drawer || !overlay) return;
   if (_cartState === 'closed' || _cartState === 'closing') return;
+  resetCartHandoffRecovery();
   /* r32: bug #38 — release cart focus trap */
   if (window._cartTrapRelease) { window._cartTrapRelease(); window._cartTrapRelease = null; }
   if (drawer._scrollClose) { window.removeEventListener('scroll', drawer._scrollClose); drawer._scrollClose = null; }
