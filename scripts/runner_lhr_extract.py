@@ -25,7 +25,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
+import re
 import sys
+from collections import Counter
 from pathlib import Path
 
 # Порог, с которого задача считается длинной (как в Lighthouse).
@@ -277,6 +280,8 @@ def extract_dir(root: Path) -> dict:
         if not is_lhr(payload):
             continue
         try:
+            if payload.get("runtimeError"):
+                raise ValueError(f"Lighthouse runtime error: {payload['runtimeError']}")
             url = payload.get("finalDisplayedUrl") or payload.get("finalUrl") or payload.get("requestedUrl")
             identity = (url, payload.get("fetchTime"))
             if not all(isinstance(value, str) and value for value in identity):
@@ -297,6 +302,37 @@ def extract_dir(root: Path) -> dict:
     if not reports:
         failures.append({"file": str(root), "error": "no valid independent Lighthouse reports"})
     return {"reports": reports, "failures": failures, "duplicates": duplicates}
+
+
+
+def expected_workflow_urls(path: Path) -> list[str]:
+    workflow = path.read_text("utf-8")
+    marker = "          urls: |\n"
+    if workflow.count(marker) != 1:
+        raise ValueError("expected exactly one Lighthouse workflow URL list")
+    block = workflow.split(marker, 1)[1].split("          configPath:", 1)[0]
+    urls = re.findall(r"^\s+(https://\S+)$", block, re.M)
+    if not urls or len(set(urls)) != len(urls):
+        raise ValueError("empty or duplicate Lighthouse workflow URLs")
+    return urls
+
+
+def validate_matrix(payload: dict, expected_urls: list[str], runs: int = 3) -> list[str]:
+    """Fail closed on omitted routes, unexpected routes and invalid measurements."""
+    errors = []
+    counts = Counter(report["url"] for report in payload["reports"])
+    expected = Counter({url: runs for url in expected_urls})
+    for url in sorted(counts.keys() | expected.keys()):
+        if counts[url] != expected[url]:
+            errors.append(f"{url}: expected {expected[url]} independent reports, found {counts[url]}")
+    for report in payload["reports"]:
+        fields = {key: report["metrics"].get(key) for key in ("fcp", "lcp", "tbt", "cls")}
+        fields["total-byte-weight"] = report["bytes"].get("total")
+        for key, value in fields.items():
+            if (not isinstance(value, (int, float)) or isinstance(value, bool) or not math.isfinite(value)
+                    or value < 0 or (key in ("fcp", "lcp", "total-byte-weight") and value == 0)):
+                errors.append(f"{report['url']} {report['fetch_time']}: missing/invalid {key}")
+    return errors
 
 
 def self_test() -> int:
@@ -361,6 +397,28 @@ def self_test() -> int:
         print(f"  {name:10s} recomputed {got:6.1f} | reported {expected:6.1f} | "
               f"delta {delta:4.1f} | {status}")
 
+    import copy
+    urls = ["https://example.test/", "https://example.test/meringue-roll/"]
+    valid = {"reports": [
+        {"url": url, "fetch_time": f"run-{i}", "metrics": {"fcp": 1000, "lcp": 2000, "tbt": 50, "cls": 0.01},
+         "bytes": {"total": 123456}}
+        for url in urls for i in range(3)
+    ]}
+    missing = {"reports": valid["reports"][:3]}
+    extra = {"reports": valid["reports"] + [valid["reports"][0]]}
+    wrong = copy.deepcopy(valid)
+    wrong["reports"][0]["url"] = "https://example.test/wrong/"
+    invalid = copy.deepcopy(valid)
+    invalid["reports"][0]["metrics"]["lcp"] = None
+    invalid["reports"][1]["metrics"]["tbt"] = float("nan")
+    cases = [("complete", valid, False), ("missing route", missing, True),
+             ("extra run", extra, True), ("unexpected route", wrong, True),
+             ("invalid metrics", invalid, True), ("empty", {"reports": []}, True)]
+    for name, payload, rejected in cases:
+        got = bool(validate_matrix(payload, urls))
+        if got != rejected:
+            failures += 1
+        print(f"  matrix {name}: {'PASS' if got == rejected else 'FAIL'}")
     print("self-test PASS" if not failures else "self-test FAIL")
     return 1 if failures else 0
 
@@ -370,6 +428,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument("source", nargs="?", help="каталог с LHR из lighthouse-results")
     parser.add_argument("--out", help="куда записать компактный JSON")
     parser.add_argument("--self-test", action="store_true")
+    parser.add_argument("--expect-workflow", type=Path, help="require three independent valid reports for every exact URL in this workflow")
     args = parser.parse_args(argv)
 
     if args.self_test:
@@ -384,6 +443,24 @@ def main(argv: list[str]) -> int:
 
     payload = extract_dir(root)
     payload["source_dir"] = str(root)
+    if args.expect_workflow:
+        try:
+            expected = expected_workflow_urls(args.expect_workflow)
+            errors = validate_matrix(payload, expected)
+        except (OSError, ValueError) as exc:
+            errors = [str(exc)]
+        for error in errors:
+            payload["failures"].append({"file": str(args.expect_workflow), "error": error})
+            print(f"Matrix validation: {error}", file=sys.stderr)
+        if not errors and not payload["failures"]:
+            print(f"Complete Lighthouse matrix: {len(expected)} URLs x 3 independent valid reports")
+            from statistics import median
+            for url in expected:
+                rows = [r for r in payload["reports"] if r["url"] == url]
+                def med_max(key):
+                    values = [r["metrics"][key] for r in rows]
+                    return f"{median(values):.1f}/{max(values):.1f}"
+                print(f"{url} | LCP {med_max('lcp')} | TBT {med_max('tbt')} | CLS max {max(r['metrics']['cls'] for r in rows):.6f} | bytes max {max(r['bytes']['total'] for r in rows):.0f} (median/max ms)")
     # ensure_ascii: сам LHR иногда содержит U+FFFD — Chrome обрезает snippet
     # посередине многобайтового символа. Экранирование сохраняет значение
     # байт-в-байт (JSON escape — тот же кодпоинт), но не кладёт в файл

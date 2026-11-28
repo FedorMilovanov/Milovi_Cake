@@ -45,6 +45,17 @@ jobs:
           uploadArtifacts: true
           temporaryPublicStorage: true
 
+      - name: Verify complete independent live audit matrix
+        if: always()
+        run: |
+          set -euo pipefail
+          results=$(find "$GITHUB_WORKSPACE" /tmp -maxdepth 6 -type d -name '.lighthouseci' -print -quit 2>/dev/null || true)
+          if [ -z "$results" ]; then
+            echo "::error::live Lighthouse reports not found"
+            exit 1
+          fi
+          python3 scripts/runner_lhr_extract.py "$results" --out /tmp/live-runs.json --expect-workflow .github/workflows/lighthouse.yml
+
       - name: Re-prove exact live release after Lighthouse
         env:
           EXPECTED_RELEASE_SHA: ${{ env.AUDIT_SHA }}

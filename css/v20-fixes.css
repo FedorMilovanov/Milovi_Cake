@@ -742,3 +742,32 @@ html[data-theme="dark"] #mcSheet .mc-row-privacy .mc-row-icon { background:linea
   outline: 2px solid var(--mc-field-border-focus);
   outline-offset: 2px;
 }
+
+
+/* A one-column 1fr track still honours the contact card's intrinsic minimum.
+   On narrow phones that can push the whole enquiry form outside the viewport.
+   Keep the existing desktop composition and protected contact icon styling. */
+@media (max-width: 768px) {
+  #contacts .contacts-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  #contacts .contacts-grid > .card {
+    min-width: 0;
+  }
+}
+@media (max-width: 480px) {
+  #contacts > .container {
+    padding-inline: 0;
+  }
+  #contacts .contacts-grid > .card {
+    padding: 20px 16px;
+  }
+  #contacts .contact-primary-item > div:not(.contact-primary-icon) {
+    flex: 1;
+    min-width: 0;
+  }
+  #contacts .contact-primary-item:not([href^="tel:"]) .contact-primary-value {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}

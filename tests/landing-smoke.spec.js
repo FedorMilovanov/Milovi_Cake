@@ -2639,6 +2639,26 @@ for (const route of ['/', '/prigorody/gatchina/']) {
     });
     expect(contrast).toBeGreaterThanOrEqual(4.5);
     expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
+    // overflow-x:hidden can conceal an entire overflowing grid track; test
+    // actual viewport coordinates and readable text, not document scrollWidth.
+    const layout = await panel.evaluate(e => {
+      const r=e.getBoundingClientRect();
+      const cards=[...document.querySelectorAll('#contacts .contacts-grid > .card')];
+      const within=(a,b)=>a.left>=b.left-1&&a.right<=b.right+1;
+      const controls=cards.every(card=>{
+        const bounds=card.getBoundingClientRect();
+        return within(bounds,{left:0,right:innerWidth})&&
+          [...card.querySelectorAll('a,button,input,textarea')].filter(n=>n.getClientRects().length&&n.getBoundingClientRect().width>0)
+          .every(n=>within(n.getBoundingClientRect(),bounds)&&(!n.clientWidth||n.scrollWidth<=n.clientWidth+1));
+      });
+      const values=[...document.querySelectorAll('#contacts .contact-primary-item .contact-primary-value')];
+      const textFits=values.every(n=>{const range=document.createRange();range.selectNodeContents(n);return within(range.getBoundingClientRect(),n.closest('a').getBoundingClientRect());});
+      const phone=document.querySelector('#contacts .contact-primary-item[href^="tel:"]');
+      const noIndentationText=[...phone.childNodes].filter(n=>n.nodeType===3).every(n=>!n.textContent.includes(String.fromCharCode(160)));
+      return {width:r.width,inside:within(r,{left:0,right:innerWidth}),controls,textFits,noIndentationText};
+    });
+    expect(layout).toMatchObject({inside:true,controls:true,textFits:true,noIndentationText:true});
+    if (mobile) expect(layout.width).toBeGreaterThanOrEqual(220);
     await page.evaluate(()=>window.__contactQA.blocked=false);
     await link.click();
     expect(await page.evaluate(()=>window.__contactQA.popups)).toEqual([original,original]);

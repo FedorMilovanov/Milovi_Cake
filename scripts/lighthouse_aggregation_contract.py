@@ -177,25 +177,39 @@ for audit, (level, key, threshold, aggregation) in ARTIFACT_EXPECTED.items():
         f'artifact {audit} aggregation drifted from {aggregation}',
     )
 
-# Состав аудита сверяется с самим воркфлоу: выкинутая из замера страница
-# перестаёт давать предупреждение, но это не улучшение, а пропажа измерения.
-artifact_workflow = Path('.github/workflows/lighthouse-artifact.yml').read_text('utf-8')
-# Match only the eight LHCI URLs, never the curl/release healthcheck URLs.
-url_list_marker = '          urls: |\n'
-require(artifact_workflow.count(url_list_marker) == 1, 'expected one artifact URL list')
-audit_list = artifact_workflow.split(url_list_marker, 1)[1].split('          configPath:', 1)[0]
-audited_urls = re.findall(r'^\s+(https://127\.0\.0\.1:4300\S*)$', audit_list, re.M)
-require(
-    len(audited_urls) == len(ARTIFACT_BYTE_BUDGETS),
-    f'artifact workflow audits {len(audited_urls)} URLs, budgets define {len(ARTIFACT_BYTE_BUDGETS)}',
-)
-for url in audited_urls:
-    # Экранируем только точки: re.escape() добавил бы «\-» и не совпал бы
-    # с ключами словаря, записанными как в JSON-конфиге.
-    pattern = '^' + url.replace('.', '\\.') + '$'
-    require(
-        pattern in ARTIFACT_BYTE_BUDGETS,
-        f'artifact workflow audits an unpinned URL: {url}',
-    )
+# Roll is measured by both instruments from now on. Its artifact transfer
+# budget is intentionally not guessed from a CDN run: calibrate against the
+# first complete HTTPS/H2 artifact series. All eight existing byte budgets and
+# common metric assertions remain unchanged.
+PENDING_ARTIFACT_BYTE_BASELINE = {'/meringue-roll/'}
+def workflow_urls(path, origin):
+    workflow = Path(path).read_text('utf-8')
+    marker = '          urls: |\n'
+    require(workflow.count(marker) == 1, f'{path}: expected one Lighthouse URL list')
+    block = workflow.split(marker, 1)[1].split('          configPath:', 1)[0]
+    urls = re.findall(r'^\s+(https://\S+)$', block, re.M)
+    require(all(url.startswith(origin + '/') for url in urls), f'{path}: invalid audit origin')
+    paths = [url[len(origin):] for url in urls]
+    require(len(paths) == len(set(paths)), f'{path}: duplicate audit URL')
+    return set(paths), workflow
+
+budget_paths = {pattern.removeprefix('^https://127\\.0\\.0\\.1:4300').removesuffix('$')
+                for pattern in ARTIFACT_BYTE_BUDGETS}
+require(not budget_paths.intersection(PENDING_ARTIFACT_BYTE_BASELINE),
+        'a calibrated route must leave the pending baseline set')
+expected_paths = budget_paths | PENDING_ARTIFACT_BYTE_BASELINE
+live_paths, live_workflow = workflow_urls('.github/workflows/lighthouse.yml', 'https://milovicake.ru')
+artifact_paths, artifact_workflow = workflow_urls('.github/workflows/lighthouse-artifact.yml', 'https://127.0.0.1:4300')
+require(live_paths == expected_paths, f'live audit route set drifted: {sorted(live_paths ^ expected_paths)}')
+require(artifact_paths == expected_paths, f'artifact audit route set drifted: {sorted(artifact_paths ^ expected_paths)}')
+for name, workflow in [('lighthouse.yml', live_workflow), ('lighthouse-artifact.yml', artifact_workflow)]:
+    require(f'--expect-workflow .github/workflows/{name}' in workflow,
+            f'{name}: independent LHR completeness validation missing')
+artifact_settings = dict(artifact_ci['collect']['settings'])
+artifact_settings.pop('chromeFlags')
+require(artifact_settings == ci['collect']['settings'], 'live/artifact collection settings drifted')
+
+from runner_lhr_extract import self_test as lhr_self_test
+require(lhr_self_test() == 0, 'LHR extractor regression self-test failed')
 
 print('Lighthouse aggregation contract OK')
