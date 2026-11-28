@@ -116,6 +116,7 @@ ARTIFACT_BYTE_BUDGETS = {
     '^https://127\\.0\\.0\\.1:4300/$': 438272,
     '^https://127\\.0\\.0\\.1:4300/gallery/$': 5942272,
     '^https://127\\.0\\.0\\.1:4300/svadebnye-torty/$': 377856,
+    '^https://127\\.0\\.0\\.1:4300/meringue-roll/$': 634880,
     '^https://127\\.0\\.0\\.1:4300/bento-torty/$': 537600,
     '^https://127\\.0\\.0\\.1:4300/zakazat-tort-spb/$': 516096,
     '^https://127\\.0\\.0\\.1:4300/o-konditere/$': 256000,
@@ -177,11 +178,7 @@ for audit, (level, key, threshold, aggregation) in ARTIFACT_EXPECTED.items():
         f'artifact {audit} aggregation drifted from {aggregation}',
     )
 
-# Roll is measured by both instruments from now on. Its artifact transfer
-# budget is intentionally not guessed from a CDN run: calibrate against the
-# first complete HTTPS/H2 artifact series. All eight existing byte budgets and
-# common metric assertions remain unchanged.
-PENDING_ARTIFACT_BYTE_BASELINE = {'/meringue-roll/'}
+# All nine artifact routes have measured, pinned transfer budgets.
 def workflow_urls(path, origin):
     workflow = Path(path).read_text('utf-8')
     marker = '          urls: |\n'
@@ -195,9 +192,7 @@ def workflow_urls(path, origin):
 
 budget_paths = {pattern.removeprefix('^https://127\\.0\\.0\\.1:4300').removesuffix('$')
                 for pattern in ARTIFACT_BYTE_BUDGETS}
-require(not budget_paths.intersection(PENDING_ARTIFACT_BYTE_BASELINE),
-        'a calibrated route must leave the pending baseline set')
-expected_paths = budget_paths | PENDING_ARTIFACT_BYTE_BASELINE
+expected_paths = budget_paths
 live_paths, live_workflow = workflow_urls('.github/workflows/lighthouse.yml', 'https://milovicake.ru')
 artifact_paths, artifact_workflow = workflow_urls('.github/workflows/lighthouse-artifact.yml', 'https://127.0.0.1:4300')
 require(live_paths == expected_paths, f'live audit route set drifted: {sorted(live_paths ^ expected_paths)}')
